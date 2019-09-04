@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MassEffectModManager")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Mass Effect Mod Manager")]
+[assembly: AssemblyDescription("Mod Manager for the Mass Effect Trilogy games")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MassEffectModManager")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCompany("ME3Tweaks")]
+[assembly: AssemblyProduct("Mass Effect Mod Manager")]
+[assembly: AssemblyCopyright("Copyright © 2012 - 2019 ME3Tweaks")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("6.0.0.100")]
+[assembly: AssemblyFileVersion("6.0.0.100")]

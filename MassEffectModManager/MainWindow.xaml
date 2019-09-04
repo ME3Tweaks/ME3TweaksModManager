@@ -7,6 +7,7 @@
         xmlns:fa="http://schemas.fontawesome.com/wpf"
         xmlns:fa1="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
+        ContentRendered="ModManager_ContentRendered"
         Title="Mass Effect Mod Manager" Height="600" Width="800">
     <Window.Resources>
         <Storyboard x:Key="OpenLoadingSpinner" Storyboard.TargetProperty="(FrameworkElement.Width)">
@@ -15,10 +16,12 @@
         <Storyboard x:Key="CloseLoadingSpinner">
             <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
         </Storyboard>
+        <SolidColorBrush x:Key="MainWindowMainBackgroundBrush" Color="#f0f0f0"/>
+        <SolidColorBrush x:Key="MainWindowMenuBackgroundBrush" Color="White"/>
     </Window.Resources>
 
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
+        <Menu DockPanel.Dock="Top" Background="{StaticResource MainWindowMenuBackgroundBrush}">
             <MenuItem Header="Actions" Padding="4"/>
             <MenuItem Header="Mod Management" Padding="4"/>
             <MenuItem Header="Mod Utils" Padding="4"/>
@@ -26,14 +29,14 @@
             <MenuItem Header="Restore" Padding="4"/>
             <MenuItem Header="Help" Padding="4"/>
         </Menu>
-        <StatusBar DockPanel.Dock="Bottom" Background="{x:Static SystemColors.ControlLightBrush}" Padding="5,0">
+        <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource MainWindowMainBackgroundBrush}" Padding="5,0">
             <StatusBarItem HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Name="LoadingSpinnerContainer" Width="Auto" Height="36" Padding="0">
                 <StatusBarItem.Resources>
                     <Storyboard x:Key="imageRotationStoryboard" Storyboard.TargetName="LoadingSpinner_Image" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)">
                         <DoubleAnimation From="0" To="360" BeginTime="0:0:0" Duration="0:0:0.75" RepeatBehavior="Forever" />
                     </Storyboard>
                 </StatusBarItem.Resources>
-                <Image x:Name="LoadingSpinner_Image" Source="/images/loadingspinner.png" Width="32" Height="32" RenderTransformOrigin="0.5, 0.5">
+                <Image x:Name="LoadingSpinner_Image" Source="/images/loadingspinner.png" Width="0" Height="32" RenderTransformOrigin="0.5, 0.5">
                     <Image.Triggers>
                         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
                             <EventTrigger.Actions>
@@ -46,17 +49,17 @@
                     </Image.RenderTransform>
                 </Image>
             </StatusBarItem>
-            <StatusBarItem Background="{x:Static SystemColors.ControlLightBrush}">
+            <StatusBarItem Background="{StaticResource MainWindowMainBackgroundBrush}">
                 <TextBlock Text="{Binding CurrentOperationText, FallbackValue=Welcome To Mod Manager}"/>
             </StatusBarItem>
             <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                 <StackPanel Orientation="Horizontal" >
                     <Button MinWidth="70" Padding="4" Content="{Binding ApplyModButtonText, FallbackValue=ApplyMod}"/>
-                    <Button MinWidth="70" Padding="4" Content="{Binding ApplyModButtonText, FallbackValue=StartGame}" Margin="5,0,0,0"/>
+                    <Button MinWidth="70" Padding="4" Content="{Binding StartGameButtonText, FallbackValue=StartGame}" Margin="5,0,0,0"/>
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
-        <Grid Background="{x:Static SystemColors.ControlLightBrush}">
+        <Grid Background="{StaticResource MainWindowMainBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="7"/>
                 <ColumnDefinition Width="150"/>
@@ -76,14 +79,14 @@
             </Grid.RowDefinitions>
             <!-- Header Panel -->
 
-            <TextBlock Text="{Binding AppTitleText, FallbackValue=Mass Effect Mod Manager 6}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold"/>
             <TextBlock Text="{Binding AppTitleText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
             <ComboBox ItemsSource="{Binding InstallationTargets}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0"/>
             <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Grid.Row="3" Grid.Column="4" Padding="5,0"/>
             <Separator Grid.Row="4" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="1">
                 <TextBlock DockPanel.Dock="Top" Text="Available Mods" FontWeight="Bold"/>
-                <ListBox Name="ModsList_ListBox"/>
+                <ListBox Name="ModsList_ListBox" DisplayMemberPath="ModName"/>
             </DockPanel>
             <GridSplitter Grid.Row="5" Grid.Column="2"/>
             <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2">
