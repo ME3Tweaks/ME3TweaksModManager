@@ -14,6 +14,11 @@ namespace MassEffectModManager
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Utilities.EnsureDirectories();
+        }
+
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
 
         public static string AppVersionHR

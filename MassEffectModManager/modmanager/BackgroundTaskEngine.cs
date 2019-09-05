@@ -47,6 +47,11 @@ namespace MassEffectModManager.modmanager
                 updateTextDelegate(backgroundJobs[0].uiText);
             }
         }
+
+        public void SubmitJobCompletion(BackgroundTask bt)
+        {
+            SubmitJobCompletion(bt.jobID);
+        }
     }
 
     public class BackgroundTask

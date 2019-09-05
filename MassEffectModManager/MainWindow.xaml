@@ -4,8 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManager"
-        xmlns:fa="http://schemas.fontawesome.com/wpf"
-        xmlns:fa1="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
         ContentRendered="ModManager_ContentRendered"
         Title="Mass Effect Mod Manager" Height="600" Width="800">
@@ -16,10 +14,23 @@
         <Storyboard x:Key="CloseLoadingSpinner">
             <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
         </Storyboard>
+        <Storyboard x:Key="OpenWebsitePanel" Storyboard.TargetProperty="(FrameworkElement.Height)">
+            <DoubleAnimation To="20" Duration="0:0:0.25">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="CloseWebsitePanel">
+            <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
         <SolidColorBrush x:Key="MainWindowMainBackgroundBrush" Color="#f0f0f0"/>
         <SolidColorBrush x:Key="MainWindowMenuBackgroundBrush" Color="White"/>
     </Window.Resources>
-
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="{StaticResource MainWindowMenuBackgroundBrush}">
             <MenuItem Header="Actions" Padding="4"/>
@@ -36,7 +47,7 @@
                         <DoubleAnimation From="0" To="360" BeginTime="0:0:0" Duration="0:0:0.75" RepeatBehavior="Forever" />
                     </Storyboard>
                 </StatusBarItem.Resources>
-                <Image x:Name="LoadingSpinner_Image" Source="/images/loadingspinner.png" Width="0" Height="32" RenderTransformOrigin="0.5, 0.5">
+                <Image x:Name="LoadingSpinner_Image" Source="/images/loadingspinner.png" Width="0" Height="32" RenderTransformOrigin="0.5, 0.5" >
                     <Image.Triggers>
                         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
                             <EventTrigger.Actions>
@@ -62,7 +73,7 @@
         <Grid Background="{StaticResource MainWindowMainBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="7"/>
-                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -83,15 +94,22 @@
             <TextBlock Text="{Binding AppTitleText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
             <ComboBox ItemsSource="{Binding InstallationTargets}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0"/>
             <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Grid.Row="3" Grid.Column="4" Padding="5,0"/>
-            <Separator Grid.Row="4" Grid.ColumnSpan="6" Margin="0,5"/>
+            <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="1">
                 <TextBlock DockPanel.Dock="Top" Text="Available Mods" FontWeight="Bold"/>
-                <ListBox Name="ModsList_ListBox" DisplayMemberPath="ModName"/>
+                <ListBox Name="ModsList_ListBox" ItemsSource="{Binding LoadedMods}"  DisplayMemberPath="ModName" SelectionChanged="ModsList_ListBox_OnSelectionChanged"/>
             </DockPanel>
-            <GridSplitter Grid.Row="5" Grid.Column="2"/>
+            <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch" />
             <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2">
                 <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold"/>
-                <TextBox Name="ModDescription_TextBox"/>
+                <StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
+                    <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
+                        <Hyperlink Command="{Binding OpenWebsiteCommand}" RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
+                            <TextBlock Text="{Binding SelectedMod.ModName, StringFormat=Visit {0}\'s web site}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+                <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding SelectedMod.DisplayedModDescription, Mode=OneWay}" TextWrapping="Wrap"/>
             </DockPanel>
         </Grid>
 
