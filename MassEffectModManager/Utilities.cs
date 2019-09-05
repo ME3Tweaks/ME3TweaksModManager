@@ -40,5 +40,22 @@ namespace MassEffectModManager
         {
             Process.Start(uri);
         }
+
+        internal static string GetAppCrashHandledFile()
+        {
+            return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH_HANDLED");
+        }
+
+        internal static string GetAppCrashFile()
+        {
+            return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH");
+        }
+
+        internal static string GetAppDataFolder()
+        {
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
+            Directory.CreateDirectory(folder);
+            return folder;
+        }
     }
 }

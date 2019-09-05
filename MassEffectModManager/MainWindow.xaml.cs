@@ -76,7 +76,7 @@ namespace MassEffectModManager
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
-                var uiTask = backgroundTaskEngine.SubmitBackgroundJob("ModLoader", "Loading mods");
+                var uiTask = backgroundTaskEngine.SubmitBackgroundJob("ModLoader", "Loading mods", "Loaded mods");
 
                 var modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => Path.Combine(x, "moddesc.ini")).Where(File.Exists);
                 foreach (var moddesc in modDescsToLoad)
@@ -119,6 +119,11 @@ namespace MassEffectModManager
         private void RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Utilities.OpenWebpage(e.Uri.AbsoluteUri);
+        }
+
+        private void ExitApplication_Click(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IniParser.Parser;
+using Serilog;
 
 namespace MassEffectModManager.modmanager
 {
@@ -28,6 +29,7 @@ namespace MassEffectModManager.modmanager
         public string ModName { get; set; }
         public string ModDeveloper { get; set; }
         public string ModDescription { get; set; }
+        public int ModModMakerID { get; set; }
 
         public string DisplayedModDescription
         {
@@ -42,9 +44,12 @@ namespace MassEffectModManager.modmanager
 
                 //Todo: Optional manuals
 
-                sb.AppendLine($"Mod version: {ModVersionString}");
+                sb.AppendLine($"Mod version: {ModVersionString ?? "1.0"}");
                 sb.AppendLine($"Mod developer: {ModDeveloper}");
-
+                if (ModModMakerID > 0)
+                {
+                    sb.AppendLine($"ModMaker code: {ModModMakerID}");
+                }
                 return sb.ToString();
             }
         }
@@ -62,6 +67,7 @@ namespace MassEffectModManager.modmanager
 
         public Mod(string filePath)
         {
+            Log.Information("Loading moddesc: " + filePath);
             loadMod(File.ReadAllText(filePath));
         }
 
@@ -69,6 +75,15 @@ namespace MassEffectModManager.modmanager
         {
             var parser = new IniDataParser();
             var iniData = parser.Parse(iniText);
+            if (double.TryParse(iniData["ModManager"]["cmmver"], out double parsedModCmmVer))
+            {
+                ModDescTargetVersion = parsedModCmmVer;
+            }
+            else
+            {
+                //Run in legacy mode (ME3CMM 1.0)
+                ModDescTargetVersion = 1.0;
+            }
 
             ModName = iniData["ModInfo"]["modname"];
             ModDescription = Utilities.ConvertBrToNewline(iniData["ModInfo"]["moddesc"]);

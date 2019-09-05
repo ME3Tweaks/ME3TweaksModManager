@@ -22,9 +22,13 @@ namespace MassEffectModManager.modmanager
             this.hideIndicatorDelegate = hideIndicatorDelegate;
         }
 
-        public BackgroundTask SubmitBackgroundJob(string taskName, string uiText = null)
+        public BackgroundTask SubmitBackgroundJob(string taskName, string uiText = null, string finishedUiText = null)
         {
-            BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText);
+            if (uiText != null && finishedUiText == null || uiText == null && finishedUiText != null)
+            {
+                throw new Exception("Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
+            }
+            BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
             backgroundJobs.Add(bt);
             if (uiText != null)
             {
@@ -34,12 +38,17 @@ namespace MassEffectModManager.modmanager
             return bt;
         }
 
-        public void SubmitJobCompletion(int jobID)
+        public void SubmitJobCompletion(BackgroundTask task)
         {
-            var finishingJob = backgroundJobs.RemoveAll(x => x.jobID == jobID);
+
+            var finishingJob = backgroundJobs.RemoveAll(x => x.jobID == task.jobID);
             if (backgroundJobs.Count <= 0)
             {
                 hideIndicatorDelegate();
+                if (task.finishedUiText != null)
+                {
+                    updateTextDelegate(task.finishedUiText);
+                }
             }
             else
             {
@@ -47,24 +56,21 @@ namespace MassEffectModManager.modmanager
                 updateTextDelegate(backgroundJobs[0].uiText);
             }
         }
-
-        public void SubmitJobCompletion(BackgroundTask bt)
-        {
-            SubmitJobCompletion(bt.jobID);
-        }
     }
 
     public class BackgroundTask
     {
         internal string taskName; //Taskname is mostly useful for debugging.
         internal string uiText;
+        internal string finishedUiText;
         internal int jobID;
         internal bool active;
 
-        public BackgroundTask(string taskName, int jobID, string uiText = null)
+        public BackgroundTask(string taskName, int jobID, string uiText = null, string finishedUiText = null)
         {
             this.taskName = taskName;
             this.uiText = uiText;
+            this.finishedUiText = finishedUiText;
             this.jobID = jobID;
         }
     }

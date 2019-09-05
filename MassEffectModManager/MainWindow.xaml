@@ -8,6 +8,16 @@
         ContentRendered="ModManager_ContentRendered"
         Title="Mass Effect Mod Manager" Height="600" Width="800">
     <Window.Resources>
+        <Style x:Key="MenuItemHeaderStyle" TargetType="{x:Type MenuItem}">
+            <Setter Property="FontSize"
+                    Value="10" />
+            <Setter Property="FontWeight"
+                    Value="Bold" />
+            <Setter Property="Height"
+                    Value="12" />
+            <Setter Property="IsEnabled"
+                    Value="False" />
+        </Style>
         <Storyboard x:Key="OpenLoadingSpinner" Storyboard.TargetProperty="(FrameworkElement.Width)">
             <DoubleAnimation To="32" Duration="0:0:0.25"/>
         </Storyboard>
@@ -33,12 +43,97 @@
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="{StaticResource MainWindowMenuBackgroundBrush}">
-            <MenuItem Header="Actions" Padding="4"/>
-            <MenuItem Header="Mod Management" Padding="4"/>
-            <MenuItem Header="Mod Utils" Padding="4"/>
-            <MenuItem Header="Backup" Padding="4"/>
-            <MenuItem Header="Restore" Padding="4"/>
-            <MenuItem Header="Help" Padding="4"/>
+            <MenuItem Header="Actions" Padding="4">
+                <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
+                <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True"/>
+                <MenuItem Header="Options"/>
+                <Separator/>
+                <MenuItem Header="Check for content updates"></MenuItem>
+                <MenuItem Header="Reloads Mods"/>
+                <MenuItem Header="Exit" Click="ExitApplication_Click"/>
+            </MenuItem>
+            <MenuItem Header="Mod Management" Padding="4">
+                <MenuItem Header="Import Mod">
+                    <MenuItem Header="Import mod from .7z/.rar/.zip"/>
+                    <MenuItem Header="Import already installed Custom DLC mod"/>
+                </MenuItem>
+                <MenuItem Header="Download ModMaker mod"/>
+                <MenuItem Header="ASI Mod Manager"/>
+                <MenuItem Header="Custom DLC Conflict Detector"/>
+                <MenuItem Header="Batch Mod Installer"/>
+                <MenuItem Header="Open mods folder"/>
+                <MenuItem Header="Mixins (for ME3)">
+                    <MenuItem Header="MixIn Library"/>
+                    <MenuItem Header="Clear Mixin Cache"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Mod Utils" Padding="4">
+                <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False"/>
+                <MenuItem Header="Check for updates"/>
+                <MenuItem Header="Restore mod from ME3Tweaks"/>
+                <Separator/>
+                <MenuItem Header="Customize mod" Style="{StaticResource MenuItemHeaderStyle}"/>
+
+
+                <MenuItem Header="Variants (Deprecated)"/>
+                <MenuItem Header="Alternate installation options"/>
+                <Separator/>
+                <MenuItem Header="Install custom keybinds into this mod"/>
+                <MenuItem Header="Developer options">
+                    <MenuItem Header="Metadata editor"/>
+                    <MenuItem Header="Deploy mod to 7z file for distribution"/>
+                    <MenuItem Header="Prepare for updater service"/>
+                    <MenuItem Header="Mount.dlc files"/>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Open mod folder"/>
+                <MenuItem Header="Delete mod from library"/>
+            </MenuItem>
+            <MenuItem Header="Tools" Padding="4">
+                <MenuItem Header="DLC Unpacker (ME3)"/>
+                <MenuItem Header="Run official game configuration tool">
+                    <MenuItem Header="Mass Effect"/>
+                    <MenuItem Header="Mass Effect 2"/>
+                    <MenuItem Header="Mass Effect 3"/>
+                </MenuItem>
+                <MenuItem Header="Binkw32 Bypasses">
+                    <MenuItem Header="Mass Effect" Style="{StaticResource MenuItemHeaderStyle}"/>
+                    <MenuItem Header="Binkw32 ASI Bypass is installed"/>
+                    <MenuItem Header="Uninstall bypass"/>
+                    <Separator/>
+                    <MenuItem Header="Mass Effect 2" Style="{StaticResource MenuItemHeaderStyle}"/>
+                    <MenuItem Header="Binkw32 ASI Bypass is installed"/>
+                    <MenuItem Header="Uninstall bypass"/>
+                    <Separator/>
+                    <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
+                    <MenuItem Header="Binkw32 ASI Bypass is installed"/>
+                    <MenuItem Header="Uninstall bypass"/>
+                </MenuItem>
+                <MenuItem Header="Grant write access to game directories"/>
+
+                <Separator/>
+                <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
+                <MenuItem Header="ALOT Installer"/>
+                <MenuItem Header="Mass Effect INI Modder"/>
+                <MenuItem Header="Mass Effect Modder"/>
+                <MenuItem Header="Mass Effect Randomizer"/>
+                <MenuItem Header="ME3Explorer - ME3Tweaks Fork"/>
+            </MenuItem>
+            <MenuItem Header="Backup &amp; Restore" Padding="4">
+
+            </MenuItem>
+            <MenuItem Header="Help" Padding="4">
+                <MenuItem Name="DynamicHelp_MenuItem" Header="Dynamic Help" Style="{StaticResource MenuItemHeaderStyle}"/>
+
+                <Separator/>
+                <MenuItem Header="Diagnostics" Style="{StaticResource MenuItemHeaderStyle}"/>
+                <MenuItem Header="Mod Manager Logs"/>
+                <MenuItem Header="Generate game diagnostic"/>
+                <Separator/>
+                <MenuItem Header="About" Style="{StaticResource MenuItemHeaderStyle}"/>
+                <MenuItem Header="moddesc.ini file format specification"></MenuItem>
+                <MenuItem Header="About Mass Effect Mod Manager"></MenuItem>
+            </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource MainWindowMainBackgroundBrush}" Padding="5,0">
             <StatusBarItem HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Name="LoadingSpinnerContainer" Width="Auto" Height="36" Padding="0">
