@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManager.modmanager;
+using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
 
 namespace MassEffectModManager
@@ -33,11 +35,13 @@ namespace MassEffectModManager
         public string StartGameButtonText { get; set; } = "Start Game";
         public Mod SelectedMod { get; set; }
         public ObservableCollectionExtended<Mod> LoadedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
         private BackgroundTaskEngine backgroundTaskEngine;
         //private ModLoader modLoader;
         public MainWindow()
         {
             DataContext = this;
+            LoadCommands();
             InitializeComponent();
             backgroundTaskEngine = new BackgroundTaskEngine((updateText) => CurrentOperationText = updateText,
                 () =>
@@ -60,6 +64,11 @@ namespace MassEffectModManager
                 }
             );
         }
+
+        private void LoadCommands()
+        {
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void ModManager_ContentRendered(object sender, EventArgs e)
@@ -85,6 +94,16 @@ namespace MassEffectModManager
                     if (mod.ValidMod)
                     {
                         Application.Current.Dispatcher.Invoke(delegate { LoadedMods.Add(mod); });
+                    }
+                    else
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            FailedMods.Add(mod);
+                            Storyboard sb = this.FindResource("OpenWebsitePanel") as Storyboard;
+                            Storyboard.SetTarget(sb, FailedModsPanel);
+                            sb.Begin();
+                        });
                     }
                 }
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
@@ -124,6 +143,21 @@ namespace MassEffectModManager
         private void ExitApplication_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void OpenOptions_Clicked(object sender, RoutedEventArgs e)
+        {
+            var o = new OptionsWindow();
+            o.Owner = this;
+            o.ShowDialog();
+        }
+
+        private void OpenModFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedMod != null)
+            {
+                Process.Start(SelectedMod.ModPath);
+            }
         }
     }
 }

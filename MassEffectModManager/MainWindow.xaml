@@ -46,7 +46,7 @@
             <MenuItem Header="Actions" Padding="4">
                 <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
                 <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True"/>
-                <MenuItem Header="Options"/>
+                <MenuItem Header="Options" Click="OpenOptions_Clicked"/>
                 <Separator/>
                 <MenuItem Header="Check for content updates"></MenuItem>
                 <MenuItem Header="Reloads Mods"/>
@@ -86,7 +86,7 @@
                     <MenuItem Header="Mount.dlc files"/>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Header="Open mod folder"/>
+                <MenuItem Header="Open mod folder" Click="OpenModFolder_Click"/>
                 <MenuItem Header="Delete mod from library"/>
             </MenuItem>
             <MenuItem Header="Tools" Padding="4">
@@ -192,6 +192,13 @@
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="1">
                 <TextBlock DockPanel.Dock="Top" Text="Available Mods" FontWeight="Bold"/>
+                <StackPanel Name="FailedModsPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
+                    <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
+                        <Hyperlink RequestNavigate="RequestNavigate" Foreground="Red">
+                            <TextBlock Text="{Binding Path=FailedMods.Count, StringFormat={}{0} mods failed to load, Mode=OneWay}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
                 <ListBox Name="ModsList_ListBox" ItemsSource="{Binding LoadedMods}"  DisplayMemberPath="ModName" SelectionChanged="ModsList_ListBox_OnSelectionChanged"/>
             </DockPanel>
             <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch" />
@@ -207,6 +214,5 @@
                 <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding SelectedMod.DisplayedModDescription, Mode=OneWay}" TextWrapping="Wrap"/>
             </DockPanel>
         </Grid>
-
     </DockPanel>
 </Window>
