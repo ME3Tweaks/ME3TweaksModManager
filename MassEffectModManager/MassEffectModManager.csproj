@@ -109,6 +109,17 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="modmanager\CLog.cs" />
+    <Compile Include="modmanager\converters\GameToImageIconConverter.cs" />
+    <Compile Include="modmanager\converters\NullEnabledConverter.cs" />
+    <Compile Include="modmanager\helpers\Extensions.cs" />
+    <Compile Include="modmanager\helpers\StreamIO.cs" />
+    <Compile Include="modmanager\medirectories\ME1Directory.cs" />
+    <Compile Include="modmanager\medirectories\ME2Directory.cs" />
+    <Compile Include="modmanager\medirectories\ME3Directory.cs" />
+    <Compile Include="modmanager\medirectories\MEDirectories.cs" />
+    <Compile Include="modmanager\medirectories\MELoadedFiles.cs" />
+    <Compile Include="modmanager\medirectories\MountFile.cs" />
+    <Compile Include="modmanager\objects\GameTarget.cs" />
     <Compile Include="modmanager\windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -141,7 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="modmanager\BackgroundTaskEngine.cs" />
-    <Compile Include="modmanager\Mod.cs" />
+    <Compile Include="modmanager\objects\Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -176,6 +187,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="NewFolder1\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\gameicons\ME1_48.ico" />
+    <Resource Include="images\gameicons\ME2_48.ico" />
+    <Resource Include="images\gameicons\ME3_48.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />

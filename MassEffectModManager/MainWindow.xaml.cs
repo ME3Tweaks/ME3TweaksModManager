@@ -15,7 +15,9 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using MassEffectModManager.GameDirectories;
 using MassEffectModManager.modmanager;
+using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
 
@@ -36,12 +38,15 @@ namespace MassEffectModManager
         public Mod SelectedMod { get; set; }
         public ObservableCollectionExtended<Mod> LoadedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+
         private BackgroundTaskEngine backgroundTaskEngine;
         //private ModLoader modLoader;
         public MainWindow()
         {
             DataContext = this;
             LoadCommands();
+            PopulateTargets();
             InitializeComponent();
             backgroundTaskEngine = new BackgroundTaskEngine((updateText) => CurrentOperationText = updateText,
                 () =>
@@ -111,6 +116,25 @@ namespace MassEffectModManager
             bw.RunWorkerAsync();
         }
 
+        private void PopulateTargets()
+        {
+            if (ME1Directory.gamePath != null)
+            {
+                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME1, ME1Directory.gamePath));
+            }
+            if (ME2Directory.gamePath != null)
+            {
+                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath));
+            }
+            if (ME3Directory.gamePath != null)
+            {
+                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME3, ME3Directory.gamePath));
+            }
+
+            // TODO: Read cached settings.
+            // TODO: Read and import java version configuration
+        }
+
         private void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
@@ -158,6 +182,18 @@ namespace MassEffectModManager
             {
                 Process.Start(SelectedMod.ModPath);
             }
+        }
+
+        private void OpenME3Tweaks_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://me3tweaks.com");
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            var o = new AboutWindow();
+            o.Owner = this;
+            o.ShowDialog();
         }
     }
 }

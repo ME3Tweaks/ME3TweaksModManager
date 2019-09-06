@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManager.modmanager.windows"
         mc:Ignorable="d"
-        Title="AboutWindow" Height="450" Width="800">
+        WindowStartupLocation="CenterOwner"
+        Title="About Mass Effect Mod Manager" Height="450" Width="800">
     <Grid>
         
     </Grid>
