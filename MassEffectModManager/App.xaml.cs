@@ -117,6 +117,7 @@ namespace MassEffectModManager
             string version = fvi.FileVersion;
             Log.Information("Mass Effect Mod Manager " + version);
             Log.Information("Application boot: " + DateTime.UtcNow.ToString());
+            Log.Information("Executable location: " + System.Reflection.Assembly.GetEntryAssembly().Location);
 
             #region Update mode boot
             if (updateDestinationPath != null)

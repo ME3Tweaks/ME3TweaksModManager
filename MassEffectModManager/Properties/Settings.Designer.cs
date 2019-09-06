@@ -46,5 +46,29 @@ namespace MassEffectModManager.Properties {
                 this["LogMixinStartup"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ModLibraryPath {
+            get {
+                return ((string)(this["ModLibraryPath"]));
+            }
+            set {
+                this["ModLibraryPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseCustomLibraryLocation {
+            get {
+                return ((bool)(this["UseCustomLibraryLocation"]));
+            }
+            set {
+                this["UseCustomLibraryLocation"] = value;
+            }
+        }
     }
 }

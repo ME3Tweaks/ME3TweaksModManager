@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManager"
         xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
+        Closing="ModManagerWindow_Closing"
         ContentRendered="ModManager_ContentRendered"
         Title="Mass Effect Mod Manager" Height="600" Width="800">
     <Window.Resources>
@@ -23,6 +25,12 @@
             <DoubleAnimation To="32" Duration="0:0:0.25"/>
         </Storyboard>
         <Storyboard x:Key="CloseLoadingSpinner">
+            <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
+        </Storyboard>
+        <Storyboard x:Key="OpenBottomBarGameIcon" Storyboard.TargetProperty="(FrameworkElement.Width)">
+            <DoubleAnimation To="25" Duration="0:0:0.25"/>
+        </Storyboard>
+        <Storyboard x:Key="CloseBottomBarGameIcon">
             <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
         </Storyboard>
         <Storyboard x:Key="OpenWebsitePanel" Storyboard.TargetProperty="(FrameworkElement.Height)">
@@ -162,14 +170,9 @@
             </StatusBarItem>
             <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                 <StackPanel Orientation="Horizontal" >
-                    <Button MinWidth="70" Padding="4">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" MaxWidth="16" MaxHeight="16" Margin="0,0,5,0"/>
-                            <TextBlock Text="{Binding ApplyModButtonText}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-
+                    <Button MinWidth="70" Padding="4" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"/>
                     <Button MinWidth="70" Padding="4" Content="{Binding StartGameButtonText, FallbackValue=StartGame}" Margin="5,0,0,0"/>
+                    <Image Name="BottomBarGameID_Image" Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="0" Height="25"/>
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
@@ -195,23 +198,34 @@
 
             <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold"/>
             <TextBlock Text="{Binding AppTitleText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
-            <ComboBox ItemsSource="{Binding InstallationTargets}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0">
+            <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0"/>
+                        <DockPanel HorizontalAlignment="Stretch">
+                            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="{Binding TargetPath}"/>
-                        </StackPanel>
+                        </DockPanel>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
             </ComboBox>
             <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Grid.Row="3" Grid.Column="4" Padding="5,0"/>
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="1">
-                <TextBlock DockPanel.Dock="Top" Text="Available Mods" FontWeight="Bold"/>
+                <DockPanel DockPanel.Dock="Top">
+                    <Button DockPanel.Dock="Right" Margin="0,0,5,0" Background="Transparent" BorderThickness="0" Command="{Binding ReloadModsCommand}">
+                        <fa5:ImageAwesome  Icon="Solid_Redo" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="Gray"/>
+                    </Button>
+                    <TextBlock Text="Available Mods" FontWeight="Bold"/>
+                </DockPanel>
+
                 <StackPanel Name="FailedModsPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                     <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
-                        <Hyperlink RequestNavigate="RequestNavigate" Foreground="Red">
+                        <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
                             <TextBlock Text="{Binding Path=FailedMods.Count, StringFormat={}{0} mods failed to load, Mode=OneWay}"/>
                         </Hyperlink>
                     </TextBlock>
@@ -237,7 +251,8 @@
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
-                <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding SelectedMod.DisplayedModDescription, Mode=OneWay}" TextWrapping="Wrap"/>
+                <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" 
+                         Text="{Binding SelectedMod.DisplayedModDescription, Mode=OneWay}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
             </DockPanel>
         </Grid>
     </DockPanel>

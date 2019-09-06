@@ -73,15 +73,16 @@ namespace MassEffectModManager.modmanager
 
         }
 
-        public Mod(string filePath)
+        public Mod(string filePath, MEGame expectedGame)
         {
             ModPath = Path.GetDirectoryName(filePath);
             Log.Information("Loading moddesc: " + filePath);
-            loadMod(File.ReadAllText(filePath));
+            loadMod(File.ReadAllText(filePath), expectedGame);
         }
 
-        private void loadMod(string iniText)
+        private void loadMod(string iniText, MEGame expectedGame)
         {
+            Game = expectedGame; //we will assign this later. This is for startup errors only
             var outputStartup = Properties.Settings.Default.LogModStartup;
             var parser = new IniDataParser();
             var iniData = parser.Parse(iniText);
@@ -96,6 +97,13 @@ namespace MassEffectModManager.modmanager
             }
 
             ModName = iniData["ModInfo"]["modname"];
+            if (ModName == null || ModName == "")
+            {
+                ModName = Path.GetFileName(ModPath);
+                Log.Error($"Moddesc.ini in {ModPath} does not set the modname descriptor.");
+                LoadFailedReason = $"The moddesc.ini file located at {ModPath} does not have a value set for modname. This value is required.";
+                return; //Won't set valid
+            }
             ModDescription = Utilities.ConvertBrToNewline(iniData["ModInfo"]["moddesc"]);
             ModDeveloper = iniData["ModInfo"]["moddev"];
             ModVersionString = iniData["ModInfo"]["modver"];
@@ -120,7 +128,7 @@ namespace MassEffectModManager.modmanager
             string game = iniData["ModInfo"]["game"];
             switch (game)
             {
-                case null:
+                //case null: //will have to find a way to deal with the null case, in the event it's an ME3 mod manager mod from < 6.0.
                 case "ME3":
                     Game = MEGame.ME3;
                     break;
@@ -131,9 +139,14 @@ namespace MassEffectModManager.modmanager
                     Game = MEGame.ME1;
                     break;
                 default:
-                    Log.Error($"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}");
-                    LoadFailedReason = $"This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}";
-                    return;
+                    //Check if this is in ME3 game directory. If it's null, it might be a legacy mod
+                    if (game == null && Game != MEGame.ME3)
+                    {
+                        Log.Error($"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}");
+                        LoadFailedReason = $"This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}";
+                        return;
+                    }
+                    break;
             }
 
             if (ModDescTargetVersion < 6 && Game != MEGame.ME3)

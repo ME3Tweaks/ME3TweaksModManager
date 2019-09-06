@@ -12,7 +12,18 @@ namespace MassEffectModManager
     {
         public static string GetExecutableDirectory() => Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        public static string GetModsDirectory() => Path.Combine(GetExecutableDirectory(), "mods");
+        public static string GetModsDirectory()
+        {
+            var libraryPath = Properties.Settings.Default.ModLibraryPath;
+            if (Directory.Exists(libraryPath))
+            {
+                return libraryPath;
+            }
+            else
+            {
+                return Path.Combine(GetExecutableDirectory(), "mods");
+            }
+        }
 
         internal static void EnsureDirectories()
         {

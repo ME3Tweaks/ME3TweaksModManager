@@ -109,6 +109,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="modmanager\CLog.cs" />
+    <Compile Include="modmanager\converters\BoolVisibilityConverter.cs" />
     <Compile Include="modmanager\converters\GameToImageIconConverter.cs" />
     <Compile Include="modmanager\converters\NullEnabledConverter.cs" />
     <Compile Include="modmanager\helpers\Extensions.cs" />
@@ -125,6 +126,9 @@
     </Compile>
     <Compile Include="modmanager\windows\OptionsWindow.xaml.cs">
       <DependentUpon>OptionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="modmanager\windows\FailedModsWindow.xaml.cs">
+      <DependentUpon>FailedModsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ui\Commands.cs" />
     <Compile Include="ui\ObservableCollectionExtended.cs" />
@@ -146,6 +150,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="modmanager\windows\OptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="modmanager\windows\FailedModsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -192,6 +200,9 @@
     <Resource Include="images\gameicons\ME1_48.ico" />
     <Resource Include="images\gameicons\ME2_48.ico" />
     <Resource Include="images\gameicons\ME3_48.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\gameicons\Unknown_48.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,6 +21,7 @@ using MassEffectModManager.modmanager;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
+using static MassEffectModManager.modmanager.Mod;
 
 namespace MassEffectModManager
 {
@@ -48,6 +50,11 @@ namespace MassEffectModManager
             LoadCommands();
             PopulateTargets();
             InitializeComponent();
+            //Must be done after UI has initialized
+            if (InstallationTargets.Count > 0)
+            {
+                InstallationTargets_ComboBox.SelectedItem = InstallationTargets[0];
+            }
             backgroundTaskEngine = new BackgroundTaskEngine((updateText) => CurrentOperationText = updateText,
                 () =>
                 {
@@ -70,35 +77,72 @@ namespace MassEffectModManager
             );
         }
 
+        public ICommand ReloadModsCommand { get; set; }
+        public ICommand ApplyModCommand { get; set; }
         private void LoadCommands()
         {
+            ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
+            ApplyModCommand = new GenericCommand(ApplyMod, CanApplyMod);
         }
 
+        private bool isLoadingMods { get; set; }
+        private bool CanReloadMods()
+        {
+            return !isLoadingMods;
+        }
+
+        private bool CanApplyMod()
+        {
+            return false; //todo: Add checks for this.
+        }
+
+        private void ApplyMod()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ReloadMods()
+        {
+            LoadMods();
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void ModManager_ContentRendered(object sender, EventArgs e)
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyname = null)
         {
-            //modLoader.LoadAllMods();
-            LoadME3Mods();
-            //LoadME2Mods();
-            //LoadME1Mods();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
 
-        private void LoadME3Mods()
+        private void ModManager_ContentRendered(object sender, EventArgs e)
         {
+            LoadMods();
+        }
+
+        private void LoadMods()
+        {
+            isLoadingMods = true;
+            LoadedMods.ClearEx();
+            FailedMods.ClearEx();
+            {
+                Storyboard sb = this.FindResource("CloseWebsitePanel") as Storyboard;
+                Storyboard.SetTarget(sb, FailedModsPanel);
+                sb.Begin();
+            }
             BackgroundWorker bw = new BackgroundWorker();
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob("ModLoader", "Loading mods", "Loaded mods");
-
-                var modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => Path.Combine(x, "moddesc.ini")).Where(File.Exists);
+                CLog.Information("Loading mods from mod library: " + Utilities.GetModsDirectory(), Properties.Settings.Default.LogModStartup);
+                var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
+                var modDescsToLoad = me3modDescsToLoad.Concat(me2modDescsToLoad).Concat(me1modDescsToLoad);
                 foreach (var moddesc in modDescsToLoad)
                 {
-                    var mod = new Mod(moddesc);
+                    var mod = new Mod(moddesc.path, moddesc.game);
                     if (mod.ValidMod)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate { LoadedMods.Add(mod); });
+                        Application.Current.Dispatcher.Invoke(delegate { LoadedMods.Add(mod); LoadedMods.Sort(x => x.ModName); });
                     }
                     else
                     {
@@ -113,23 +157,30 @@ namespace MassEffectModManager
                 }
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
             };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                isLoadingMods = false;
+                OnPropertyChanged(nameof(isLoadingMods));
+            };
             bw.RunWorkerAsync();
         }
 
         private void PopulateTargets()
         {
-            if (ME1Directory.gamePath != null)
-            {
-                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME1, ME1Directory.gamePath));
-            }
-            if (ME2Directory.gamePath != null)
-            {
-                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath));
-            }
             if (ME3Directory.gamePath != null)
             {
-                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME3, ME3Directory.gamePath));
+                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME3, ME3Directory.gamePath, true));
             }
+
+            if (ME2Directory.gamePath != null)
+            {
+                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath, true));
+            }
+            if (ME1Directory.gamePath != null)
+            {
+                InstallationTargets.Add(new GameTarget(Mod.MEGame.ME1, ME1Directory.gamePath, true));
+            }
+
 
             // TODO: Read cached settings.
             // TODO: Read and import java version configuration
@@ -141,7 +192,11 @@ namespace MassEffectModManager
             {
                 SelectedMod = (Mod)e.AddedItems[0];
                 SetWebsitePanelVisibility(SelectedMod.ModWebsite != Mod.DefaultWebsite);
-
+                var installTarget = InstallationTargets.FirstOrDefault(x => x.Active && x.Game == SelectedMod.Game);
+                if (installTarget != null)
+                {
+                    InstallationTargets_ComboBox.SelectedItem = installTarget;
+                }
                 //CurrentDescriptionText = newSelectedMod.DisplayedModDescription;
             }
             else
@@ -150,8 +205,15 @@ namespace MassEffectModManager
                 SetWebsitePanelVisibility(false);
                 CurrentDescriptionText = DefaultDescriptionText;
             }
+            SetBottomBarGameIDVisibility(e.AddedItems.Count > 0);
         }
 
+        private void SetBottomBarGameIDVisibility(bool open)
+        {
+            Storyboard sb = this.FindResource(open ? "OpenBottomBarGameIcon" : "CloseBottomBarGameIcon") as Storyboard;
+            Storyboard.SetTarget(sb, VisitWebsitePanel);
+            sb.Begin();
+        }
         private void SetWebsitePanelVisibility(bool open)
         {
             Storyboard sb = this.FindResource(open ? "OpenWebsitePanel" : "CloseWebsitePanel") as Storyboard;
@@ -194,6 +256,16 @@ namespace MassEffectModManager
             var o = new AboutWindow();
             o.Owner = this;
             o.ShowDialog();
+        }
+
+        private void ModManagerWindow_Closing(object sender, CancelEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+        }
+
+        private void FailedMods_LinkClick(object sender, RequestNavigateEventArgs e)
+        {
+            new FailedModsWindow(FailedMods.ToList()) { Owner = this }.ShowDialog();
         }
     }
 }
