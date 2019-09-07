@@ -18,9 +18,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManager.GameDirectories;
 using MassEffectModManager.modmanager;
+using MassEffectModManager.modmanager.helpers;
+using MassEffectModManager.modmanager.me3tweaks;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
+using Serilog;
 using static MassEffectModManager.modmanager.Mod;
 
 namespace MassEffectModManager
@@ -85,10 +88,10 @@ namespace MassEffectModManager
             ApplyModCommand = new GenericCommand(ApplyMod, CanApplyMod);
         }
 
-        private bool isLoadingMods { get; set; }
+        public bool IsLoadingMods { get; set; }
         private bool CanReloadMods()
         {
-            return !isLoadingMods;
+            return !IsLoadingMods;
         }
 
         private bool CanApplyMod()
@@ -115,11 +118,12 @@ namespace MassEffectModManager
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
             LoadMods();
+            PerformUpdateCheck();
         }
 
         private void LoadMods()
         {
-            isLoadingMods = true;
+            IsLoadingMods = true;
             LoadedMods.ClearEx();
             FailedMods.ClearEx();
             {
@@ -159,8 +163,8 @@ namespace MassEffectModManager
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
-                isLoadingMods = false;
-                OnPropertyChanged(nameof(isLoadingMods));
+                IsLoadingMods = false;
+                OnPropertyChanged(nameof(IsLoadingMods));
             };
             bw.RunWorkerAsync();
         }
@@ -205,15 +209,9 @@ namespace MassEffectModManager
                 SetWebsitePanelVisibility(false);
                 CurrentDescriptionText = DefaultDescriptionText;
             }
-            SetBottomBarGameIDVisibility(e.AddedItems.Count > 0);
         }
 
-        private void SetBottomBarGameIDVisibility(bool open)
-        {
-            Storyboard sb = this.FindResource(open ? "OpenBottomBarGameIcon" : "CloseBottomBarGameIcon") as Storyboard;
-            Storyboard.SetTarget(sb, VisitWebsitePanel);
-            sb.Begin();
-        }
+
         private void SetWebsitePanelVisibility(bool open)
         {
             Storyboard sb = this.FindResource(open ? "OpenWebsitePanel" : "CloseWebsitePanel") as Storyboard;
@@ -266,6 +264,29 @@ namespace MassEffectModManager
         private void FailedMods_LinkClick(object sender, RequestNavigateEventArgs e)
         {
             new FailedModsWindow(FailedMods.ToList()) { Owner = this }.ShowDialog();
+        }
+
+        private void OpenModsDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(Utilities.GetModsDirectory());
+        }
+
+        public void PerformUpdateCheck()
+        {
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("ContentCheckThread");
+            bw.DoWork += (a, b) =>
+            {
+                Log.Information("Start of online startup manifest fetch thread");
+                var bgTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
+                var manifest = OnlineContent.FetchOnlineStartupManifest();
+                if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
+                {
+                    //Todo: Update available
+                }
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                Log.Information("End of online startup manifest fetch thread");
+            };
+            bw.RunWorkerAsync();
         }
     }
 }

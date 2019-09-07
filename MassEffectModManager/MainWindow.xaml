@@ -17,7 +17,7 @@
             <Setter Property="FontWeight"
                     Value="Bold" />
             <Setter Property="Height"
-                    Value="12" />
+                    Value="14" />
             <Setter Property="IsEnabled"
                     Value="False" />
         </Style>
@@ -27,12 +27,12 @@
         <Storyboard x:Key="CloseLoadingSpinner">
             <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
         </Storyboard>
-        <Storyboard x:Key="OpenBottomBarGameIcon" Storyboard.TargetProperty="(FrameworkElement.Width)">
+        <!--<Storyboard x:Key="OpenBottomBarGameIcon" Storyboard.TargetProperty="Width">
             <DoubleAnimation To="25" Duration="0:0:0.25"/>
         </Storyboard>
         <Storyboard x:Key="CloseBottomBarGameIcon">
-            <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
-        </Storyboard>
+            <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="Width"/>
+        </Storyboard>-->
         <Storyboard x:Key="OpenWebsitePanel" Storyboard.TargetProperty="(FrameworkElement.Height)">
             <DoubleAnimation To="20" Duration="0:0:0.25">
                 <DoubleAnimation.EasingFunction>
@@ -50,6 +50,8 @@
         <SolidColorBrush x:Key="MainWindowMainBackgroundBrush" Color="#f0f0f0"/>
         <SolidColorBrush x:Key="MainWindowMenuBackgroundBrush" Color="White"/>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
+        <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
+        <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="{StaticResource MainWindowMenuBackgroundBrush}">
@@ -59,7 +61,7 @@
                 <MenuItem Header="Options" Click="OpenOptions_Clicked"/>
                 <Separator/>
                 <MenuItem Header="Check for content updates"></MenuItem>
-                <MenuItem Header="Reloads Mods"/>
+                <MenuItem Header="Reloads Mods" Command="{Binding ReloadModsCommand}"/>
                 <MenuItem Header="Exit" Click="ExitApplication_Click"/>
             </MenuItem>
             <MenuItem Header="Mod Management" Padding="4">
@@ -71,13 +73,13 @@
                 <MenuItem Header="ASI Mod Manager"/>
                 <MenuItem Header="Custom DLC Conflict Detector"/>
                 <MenuItem Header="Batch Mod Installer"/>
-                <MenuItem Header="Open mods folder"/>
+                <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click"/>
                 <MenuItem Header="Mixins (for ME3)">
                     <MenuItem Header="MixIn Library"/>
                     <MenuItem Header="Clear Mixin Cache"/>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="Mod Utils" Padding="4">
+            <MenuItem Header="Mod Utils" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                 <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False"/>
                 <MenuItem Header="Check for updates"/>
                 <MenuItem Header="Restore mod from ME3Tweaks"/>
@@ -170,16 +172,16 @@
             </StatusBarItem>
             <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                 <StackPanel Orientation="Horizontal" >
+                    <Image Name="BottomBarGameID_Image" Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0"/>
                     <Button MinWidth="70" Padding="4" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"/>
                     <Button MinWidth="70" Padding="4" Content="{Binding StartGameButtonText, FallbackValue=StartGame}" Margin="5,0,0,0"/>
-                    <Image Name="BottomBarGameID_Image" Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="0" Height="25"/>
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
         <Grid Background="{StaticResource MainWindowMainBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="7"/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -230,7 +232,7 @@
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
-                <ListBox Name="ModsList_ListBox" ItemsSource="{Binding LoadedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged">
+                <ListBox Name="ModsList_ListBox" ItemsSource="{Binding LoadedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

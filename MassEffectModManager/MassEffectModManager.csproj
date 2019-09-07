@@ -109,11 +109,16 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="modmanager\CLog.cs" />
+    <Compile Include="modmanager\converters\BoolEnabledConverter.cs" />
     <Compile Include="modmanager\converters\BoolVisibilityConverter.cs" />
     <Compile Include="modmanager\converters\GameToImageIconConverter.cs" />
     <Compile Include="modmanager\converters\NullEnabledConverter.cs" />
     <Compile Include="modmanager\helpers\Extensions.cs" />
+    <Compile Include="modmanager\helpers\NamedBackgroundWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="modmanager\helpers\StreamIO.cs" />
+    <Compile Include="modmanager\me3tweaks\OnlineContent.cs" />
     <Compile Include="modmanager\medirectories\ME1Directory.cs" />
     <Compile Include="modmanager\medirectories\ME2Directory.cs" />
     <Compile Include="modmanager\medirectories\ME3Directory.cs" />
