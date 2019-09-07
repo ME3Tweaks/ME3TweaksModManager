@@ -30,6 +30,7 @@ namespace MassEffectModManager
         public static string LogDir;
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
+        internal static readonly double HighestSupportedModDesc = 6.0;
 
         [STAThread]
         public static void Main()
@@ -172,6 +173,7 @@ namespace MassEffectModManager
         }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
+        internal static Dictionary<string, Dictionary<string, Dictionary<string, string>>> ThirdPartyIdentificationService;
 
         public static string AppVersionHR
         {

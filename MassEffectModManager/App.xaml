@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:MassEffectModManager"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
+            <Setter Property="Background" Value="#f0f0f0" />
+        </Style>
+        <Style x:Key="MenuStyle" TargetType="{x:Type Menu}">
+            <Setter Property="Background" Value="White" />
+        </Style>
     </Application.Resources>
 </Application>

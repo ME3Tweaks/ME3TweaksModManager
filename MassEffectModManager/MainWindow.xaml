@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         Closing="ModManagerWindow_Closing"
         ContentRendered="ModManager_ContentRendered"
+        Style="{StaticResource WindowStyle}"
         Title="Mass Effect Mod Manager" Height="600" Width="800">
     <Window.Resources>
         <Style x:Key="MenuItemHeaderStyle" TargetType="{x:Type MenuItem}">
@@ -47,14 +48,12 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-        <SolidColorBrush x:Key="MainWindowMainBackgroundBrush" Color="#f0f0f0"/>
-        <SolidColorBrush x:Key="MainWindowMenuBackgroundBrush" Color="White"/>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
     </Window.Resources>
     <DockPanel>
-        <Menu DockPanel.Dock="Top" Background="{StaticResource MainWindowMenuBackgroundBrush}">
+        <Menu DockPanel.Dock="Top" Style="{StaticResource MenuStyle}">
             <MenuItem Header="Actions" Padding="4">
                 <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
                 <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click"/>
@@ -102,11 +101,15 @@
                 <MenuItem Header="Delete mod from library"/>
             </MenuItem>
             <MenuItem Header="Tools" Padding="4">
-                <MenuItem Header="DLC Unpacker (ME3)"/>
                 <MenuItem Header="Run official game configuration tool">
                     <MenuItem Header="Mass Effect"/>
                     <MenuItem Header="Mass Effect 2"/>
                     <MenuItem Header="Mass Effect 3"/>
+                </MenuItem>
+                <MenuItem Header="Generate new mod (Starter Kit)">
+                    <MenuItem Name="GenerateStarterKitME1_MenuItem" Header="Mass Effect" Click="GenerateStarterKit_Clicked"/>
+                    <MenuItem Name="GenerateStarterKitME2_MenuItem"  Header="Mass Effect 2" Click="GenerateStarterKit_Clicked"/>
+                    <MenuItem Name="GenerateStarterKitME3_MenuItem"  Header="Mass Effect 3" Click="GenerateStarterKit_Clicked"/>
                 </MenuItem>
                 <MenuItem Header="Binkw32 Bypasses">
                     <MenuItem Header="Mass Effect" Style="{StaticResource MenuItemHeaderStyle}"/>
@@ -118,7 +121,7 @@
                     <MenuItem Header="Uninstall bypass"/>
                     <Separator/>
                     <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="Binkw32 ASI Bypass is installed"/>
+                    <MenuItem Header="Binkw32 ASI Bypass is insstalled"/>
                     <MenuItem Header="Uninstall bypass"/>
                 </MenuItem>
                 <MenuItem Header="Grant write access to game directories"/>
@@ -147,7 +150,7 @@
                 <MenuItem Header="About Mass Effect Mod Manager" Click="About_Click"/>
             </MenuItem>
         </Menu>
-        <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource MainWindowMainBackgroundBrush}" Padding="5,0">
+        <StatusBar DockPanel.Dock="Bottom" Padding="5,0">
             <StatusBarItem HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Name="LoadingSpinnerContainer" Width="Auto" Height="36" Padding="0">
                 <StatusBarItem.Resources>
                     <Storyboard x:Key="imageRotationStoryboard" Storyboard.TargetName="LoadingSpinner_Image" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)">
@@ -167,7 +170,7 @@
                     </Image.RenderTransform>
                 </Image>
             </StatusBarItem>
-            <StatusBarItem Background="{StaticResource MainWindowMainBackgroundBrush}">
+            <StatusBarItem>
                 <TextBlock Text="{Binding CurrentOperationText, FallbackValue=Welcome To Mod Manager}"/>
             </StatusBarItem>
             <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
@@ -178,7 +181,7 @@
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
-        <Grid Background="{StaticResource MainWindowMainBackgroundBrush}">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="7"/>
                 <ColumnDefinition Width="250"/>

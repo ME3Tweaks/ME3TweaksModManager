@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MassEffectModManager.modmanager;
 
 namespace MassEffectModManager
 {
@@ -25,11 +26,36 @@ namespace MassEffectModManager
             }
         }
 
+        public static string GetModDirectoryForGame(Mod.MEGame game)
+        {
+            if (game == Mod.MEGame.ME1) return GetME1ModsDirectory();
+            if (game == Mod.MEGame.ME2) return GetME2ModsDirectory();
+            if (game == Mod.MEGame.ME3) return GetME3ModsDirectory();
+            return null;
+        }
+
         internal static void EnsureDirectories()
         {
             Directory.CreateDirectory(GetME3ModsDirectory());
             Directory.CreateDirectory(GetME2ModsDirectory());
             Directory.CreateDirectory(GetME1ModsDirectory());
+        }
+
+        internal static string GetME3TweaksServicesCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ME3TweaksServicesCache")).FullName;
+        }
+
+        internal static bool CanFetchContentThrottleCheck()
+        {
+            var lastContentCheck = Properties.Settings.Default.LastContentCheck;
+            var timeNow = DateTime.Now;
+            return (timeNow - lastContentCheck).TotalDays > 1;
+        }
+
+        internal static string GetThirdPartyIdentificationCachedFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyidentificationservice.json");
         }
 
         /**
@@ -41,6 +67,7 @@ namespace MassEffectModManager
 	 * @return String that has been fixed
 	 */
         public static string ConvertBrToNewline(string str) => str?.Replace("<br>", "\n");
+        public static string ConvertNewlineToBr(string str) => str?.Replace("\n", "<br>");
 
 
         public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
@@ -68,5 +95,6 @@ namespace MassEffectModManager
             Directory.CreateDirectory(folder);
             return folder;
         }
+
     }
 }

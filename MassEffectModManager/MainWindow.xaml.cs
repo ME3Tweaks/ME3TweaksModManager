@@ -118,10 +118,10 @@ namespace MassEffectModManager
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
             LoadMods();
-            PerformUpdateCheck();
+            PerformStartupNetworkFetches();
         }
 
-        private void LoadMods()
+        public void LoadMods(Mod modToHighlight = null)
         {
             IsLoadingMods = true;
             LoadedMods.ClearEx();
@@ -131,7 +131,7 @@ namespace MassEffectModManager
                 Storyboard.SetTarget(sb, FailedModsPanel);
                 sb.Begin();
             }
-            BackgroundWorker bw = new BackgroundWorker();
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("ModLoaderThread");
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
@@ -146,7 +146,10 @@ namespace MassEffectModManager
                     var mod = new Mod(moddesc.path, moddesc.game);
                     if (mod.ValidMod)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate { LoadedMods.Add(mod); LoadedMods.Sort(x => x.ModName); });
+                        Application.Current.Dispatcher.Invoke(delegate {
+                            LoadedMods.Add(mod);
+                            
+                            LoadedMods.Sort(x => x.ModName); });
                     }
                     else
                     {
@@ -159,12 +162,19 @@ namespace MassEffectModManager
                         });
                     }
                 }
+                if (modToHighlight != null)
+                {
+                    args.Result = LoadedMods.FirstOrDefault(x => x.ModPath == modToHighlight.ModPath);
+                }
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
                 IsLoadingMods = false;
-                OnPropertyChanged(nameof(IsLoadingMods));
+                if (b.Result is Mod m)
+                {
+                    ModsList_ListBox.SelectedItem = m;
+                }
             };
             bw.RunWorkerAsync();
         }
@@ -271,12 +281,12 @@ namespace MassEffectModManager
             Process.Start(Utilities.GetModsDirectory());
         }
 
-        public void PerformUpdateCheck()
+        public void PerformStartupNetworkFetches()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("ContentCheckThread");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("StartupNetworkThread");
             bw.DoWork += (a, b) =>
             {
-                Log.Information("Start of online startup manifest fetch thread");
+                Log.Information("Start of startup network thread");
                 var bgTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
                 var manifest = OnlineContent.FetchOnlineStartupManifest();
                 if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
@@ -284,9 +294,25 @@ namespace MassEffectModManager
                     //Todo: Update available
                 }
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                Log.Information("End of online startup manifest fetch thread");
+
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("ThirdPartyIdentificationServiceFetch", "Initializing Third Party Identification Service information", "Initialized Third Party Identification Service");
+                App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(false);
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+                Properties.Settings.Default.LastContentCheck = DateTime.Now;
+                Properties.Settings.Default.Save();
+                Log.Information("End of startup network thread");
             };
             bw.RunWorkerAsync();
+        }
+
+        private void GenerateStarterKit_Clicked(object sender, RoutedEventArgs e)
+        {
+            MEGame g = MEGame.Unknown;
+            if (sender == GenerateStarterKitME1_MenuItem) g = MEGame.ME1;
+            if (sender == GenerateStarterKitME2_MenuItem) g = MEGame.ME2;
+            if (sender == GenerateStarterKitME3_MenuItem) g = MEGame.ME3;
+            new StarterKitGeneratorWindow(g) {Owner = this}.ShowDialog();
         }
     }
 }

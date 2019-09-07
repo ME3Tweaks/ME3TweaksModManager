@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -519,6 +520,7 @@ namespace MassEffectModManager.modmanager.helpers
             return numArray;
         }
 
+
         ///// <summary>
         ///// Begins an animation that automatically sets final value to be held. Used with FillType.Stop rather than default FillType.Hold.
         ///// </summary>
@@ -555,5 +557,15 @@ namespace MassEffectModManager.modmanager.helpers
         //{
         //    element.BeginAdjustableAnimation(dp, anim, (object)anim.To);
         //}
+    }
+
+    public static class WebClientExtensions
+    {
+        public static string DownloadStringAwareOfEncoding(this WebClient webClient, string uri)
+        {
+            var rawData = webClient.DownloadData(uri);
+            var encoding = WebUtils.GetEncodingFrom(webClient.ResponseHeaders, Encoding.UTF8);
+            return encoding.GetString(rawData);
+        }
     }
 }

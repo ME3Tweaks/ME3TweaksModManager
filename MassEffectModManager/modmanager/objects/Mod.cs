@@ -168,7 +168,7 @@ namespace MassEffectModManager.modmanager
                 }
             }
 
-            Thread.Sleep(500);
+            //Thread.Sleep(500);
             ValidMod = true;
         }
     }

@@ -1,0 +1,100 @@
+﻿<Window x:Class="MassEffectModManager.modmanager.windows.StarterKitGeneratorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MassEffectModManager.modmanager.windows"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Style="{StaticResource WindowStyle}"
+        Title="DLC Mod Starter Kit Generator" SizeToContent="Height" Width="525">
+    <Window.Resources>
+        <converters:StarterKitRowHeightConverter x:Key="StarterKitRowHeightConverter"/>
+    </Window.Resources>
+    <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyText}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5"/>
+                <!-- Mod Site -->
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <!-- Mod Developer -->
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <!-- Mod Site -->
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <!-- Mod Internal Name DLC_MOD_VALUE -->
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <!-- Internal Name  Not ME1 -->
+                <RowDefinition Height="{Binding Game, Converter={StaticResource StarterKitRowHeightConverter}, ConverterParameter='Not_ME1'}"/>
+                <!-- Internal TLK ID -->
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <!-- Mount Priority -->
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <!-- Mount Flag-->
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <RowDefinition Height="200"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Text="Mod Name" Grid.Row="1" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mod Developer" Grid.Row="2" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mod Website/Nexusmods page" Grid.Row="3" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Internal DLC Name" Grid.Row="4" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Internal Name" Grid.Row="5" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Internal Name TLK ID" Grid.Row="6" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mount Priority" Grid.Row="7" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mount Flag" Grid.Row="8" Grid.Column="1"/>
+
+            <xctk:WatermarkTextBox Grid.Row="1" Grid.Column="2" Watermark="Faster Legs" Text="{Binding ModName}"/>
+            <xctk:WatermarkTextBox Grid.Row="2" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper}"/>
+            <xctk:WatermarkTextBox Grid.Row="3" Grid.Column="2" Watermark="https://nexusmods.com/masseffect2/..." Text="{Binding ModURL}"/>
+            <xctk:WatermarkTextBox Grid.Row="4" Grid.Column="2" Watermark="FasterLegs" Text="{Binding ModDLCFolderName}"/>
+            <xctk:WatermarkTextBox Grid.Row="5" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName}"/>
+            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID}"/>
+            <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority}"/>
+            <xctk:WatermarkComboBox Grid.Row="8" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected"/>
+
+            <xctk:WatermarkTextBox Watermark="{Binding DescriptionWatermarkText}" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription}"/>
+            <TextBlock Grid.Column="1" Grid.Row ="10" Text="Ensure you are using a unique mount priority for your mod." TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="14">
+                <StackPanel.Resources>
+                    <Style x:Key="GameIcon" TargetType="RadioButton">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Opacity" Value="0.25"/>
+                            </Trigger>
+                        </Style.Triggers>
+
+                        <Setter Property="BorderThickness" Value="1"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="RadioButton">
+                                    <Image Source="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </StackPanel.Resources>
+
+                <RadioButton Name="ME1_RadioButton" Click="RadioButton_Click" Content="/images/gameicons/ME1_48.ico" Style="{StaticResource GameIcon}" BorderBrush="Red" Width="24" Height="24" />
+                <RadioButton Name="ME2_RadioButton" Click="RadioButton_Click" Content="/images/gameicons/ME2_48.ico" Style="{StaticResource GameIcon}" BorderBrush="Orange" Width="24" Height="24" Margin="5,0"/>
+                <RadioButton Name="ME3_RadioButton" Click="RadioButton_Click" Content="/images/gameicons/ME3_48.ico" Style="{StaticResource GameIcon}" BorderBrush="Green" Width="24" Height="24"/>
+            </StackPanel>
+            <Button Content="Generate Starter Kit" Grid.Column="2" Grid.Row="14" Command="{Binding GenerateStarterKitCommand}"/>
+        </Grid>
+    </xctk:BusyIndicator>
+
+</Window>

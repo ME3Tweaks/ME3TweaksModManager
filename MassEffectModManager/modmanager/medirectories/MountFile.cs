@@ -13,7 +13,9 @@ namespace MassEffectModManager.GameDirectories
         ME3_SPMP_SaveFileDependency = 0x1C,
         ME3_MPOnly_Patch = 0x0C,
         ME3_MPOnly_1 = 0x14,
-        ME3_MPOnly_2 = 0x34
+        ME3_MPOnly_2 = 0x34,
+        ME1_SaveFileDependency = 0x100, //not an actual value.
+        ME1_NoSaveFileDependency = 0x101 //not an actual value.
     }
 
     public class MountFile

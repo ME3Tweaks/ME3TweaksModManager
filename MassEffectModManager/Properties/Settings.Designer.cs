@@ -70,5 +70,17 @@ namespace MassEffectModManager.Properties {
                 this["UseCustomLibraryLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1970-01-01")]
+        public global::System.DateTime LastContentCheck {
+            get {
+                return ((global::System.DateTime)(this["LastContentCheck"]));
+            }
+            set {
+                this["LastContentCheck"] = value;
+            }
+        }
     }
 }

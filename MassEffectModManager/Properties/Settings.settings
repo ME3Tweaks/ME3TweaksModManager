@@ -14,5 +14,8 @@
     <Setting Name="UseCustomLibraryLocation" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="LastContentCheck" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">1970-01-01</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
