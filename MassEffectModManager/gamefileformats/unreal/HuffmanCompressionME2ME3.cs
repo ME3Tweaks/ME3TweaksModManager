@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml;
+using MassEffectModManager.gamefileformats;
 
 namespace ME3Explorer
 {
@@ -16,7 +17,7 @@ namespace ME3Explorer
         private List<HuffmanNode> _huffmanTree = new List<HuffmanNode>();
         private Dictionary<char, BitArray> _huffmanCodes = new Dictionary<char, BitArray>();
 
-        private class TLKEntry : IComparable
+        public class TLKEntry : IComparable
         {
             public int StringID;
             public int position;
@@ -80,10 +81,15 @@ namespace ME3Explorer
         /// </remarks>
         /// </summary>
         /// <param name="fileName"></param>
-        public void SaveToTlkFile(string fileName)
+        public void SaveToTlkFile(string fileName, List<TLKEntry> stringRefs = null)
         {
             File.Delete(fileName);
-
+            if (stringRefs != null)
+            {
+                _inputData = stringRefs;
+                _inputData.Sort();
+                PrepareHuffmanCoding();
+            }
             /* converts Huffmann Tree to binary form */
             List<int> treeBuffer = ConvertHuffmanTreeToBuffer();
 

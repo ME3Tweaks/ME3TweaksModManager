@@ -30,6 +30,9 @@ namespace MassEffectModManager.modmanager.windows
     /// </summary>
     public partial class StarterKitGeneratorWindow : Window, INotifyPropertyChanged
     {
+        private static (string filecode, string langcode)[] me3languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("JPN", "jp-jp") };
+        private static (string filecode, string langcode)[] me2languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("HUN", "hu-hu"), ("CZE", "cs-cz") };
+
         public static GridLength VisibleRowHeight { get; } = new GridLength(25);
         public string BusyText { get; set; }
         public bool IsBusy { get; set; }
@@ -251,8 +254,42 @@ namespace MassEffectModManager.modmanager.windows
                     if (skOption.ModGame == Mod.MEGame.ME3)
                     {
                         //Extract Default.Sfar
-                        Utilities.ExtractInternalFile("MassEffectModManager.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir,"Default.sfar"), true);
+                        Utilities.ExtractInternalFile("MassEffectModManager.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, "Default.sfar"), true);
+                    }
+                    else
+                    {
+                        IniData bioEngineIni = new IniData();
+                        bioEngineIni["Core.System"]["!CookPaths"] = "CLEAR";
+                        bioEngineIni["Core.System"]["+SeekFreePCPaths"] = $@"..\BIOGame\DLC\{dlcFolderName}\CookedPC";
 
+                        //bioEngineIni["Engine.PackagesToAlwaysCook"]["!Package"] = "CLEAR";
+                        //bioEngineIni["Engine.PackagesToAlwaysCook"]["!SeekFreePackage"] = "CLEAR";
+
+                        //Todo: Find way to tell user what this is for and how to pick one. No idea what it's used for.
+                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = 61.ToString(); //Have to figure out what the point of this is.
+
+                        bioEngineIni["DLCInfo"]["Version"] = 0.ToString(); //unknown
+                        bioEngineIni["DLCInfo"]["Flags"] = 2.ToString(); //unknown
+                        bioEngineIni["DLCInfo"]["Name"] = skOption.ModInternalTLKID.ToString();
+
+                        new FileIniDataParser().WriteFile(Path.Combine(cookedDir, "BIOEngine.ini"), bioEngineIni);
+                    }
+
+                    var languages = skOption.ModGame == Mod.MEGame.ME2 ? me2languages : me3languages;
+                    foreach (var lang in languages)
+                    {
+                        List<HuffmanCompressionME2ME3.TLKEntry> strs = new List<HuffmanCompressionME2ME3.TLKEntry>();
+                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
+                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, skOption.ModDLCFolderName));
+                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 2, 2, lang.langcode));
+                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 3, 3, "Male"));
+                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 4, 4, "Female"));
+
+                        foreach (var str in strs)
+                        {
+                            str.data = str.data.Replace("\r\n", "\n") + '\0';
+                        }
+                        new HuffmanCompressionME2ME3().SaveToTlkFile(Path.Combine(cookedDir, $"{dlcFolderName}_{lang.filecode}.tlk"), strs);
                     }
                 }
 
@@ -270,7 +307,7 @@ namespace MassEffectModManager.modmanager.windows
                 new FileIniDataParser().WriteFile(modDescPath, ini);
                 Mod m = new Mod(modDescPath, skOption.ModGame);
                 args.Result = m;
-                Thread.Sleep(5999);
+                Thread.Sleep(2999);
             };
             bw.RunWorkerCompleted += (a, b) => { FinishedCallback(b.Result as Mod); };
             bw.RunWorkerAsync(options);
