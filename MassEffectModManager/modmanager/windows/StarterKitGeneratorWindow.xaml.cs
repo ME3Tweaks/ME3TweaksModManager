@@ -206,6 +206,8 @@ namespace MassEffectModManager.modmanager.windows
                     IniData autoload = new IniData();
                     autoload["Packages"]["GlobalTalkTable1"] = $"{dlcFolderName}.GlobalTlk_tlk";
 
+                    autoload["GUI"]["NameStrRef"] = skOption.ModInternalTLKID.ToString();
+
                     autoload["ME1DLCMOUNT"]["ModName"] = skOption.ModName;
                     autoload["ME1DLCMOUNT"]["ModMount"] = skOption.ModMountPriority.ToString();
                     new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, "AutoLoad.ini"), autoload);
