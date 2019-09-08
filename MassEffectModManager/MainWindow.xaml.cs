@@ -297,6 +297,11 @@ namespace MassEffectModManager
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("ThirdPartyIdentificationServiceFetch", "Initializing Third Party Identification Service information", "Initialized Third Party Identification Service");
                 App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(false);
+
+
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
+                var success = OnlineContent.EnsureStaticAssets();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 Properties.Settings.Default.LastContentCheck = DateTime.Now;

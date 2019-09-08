@@ -13,6 +13,8 @@ using System.Windows.Documents;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using ME3Explorer.Packages;
+using ME3Explorer.Unreal;
 
 namespace MassEffectModManager.modmanager.helpers
 {
@@ -56,6 +58,10 @@ namespace MassEffectModManager.modmanager.helpers
         public static T[] GetRange<T>(this T[] oldArray, int offset)
         {
             return oldArray.GetRange<T>(offset, oldArray.Length - offset);
+        }
+        public static bool IsEmpty<T>(this ICollection<T> list)
+        {
+            return list.Count == 0;
         }
 
         /// <summary>
@@ -163,6 +169,54 @@ namespace MassEffectModManager.modmanager.helpers
                     enumerable.Add(ch);
             }
             return new string(enumerable.ToArray<char>(enumerable.Count));
+        }
+
+        public static byte[] Slice(this byte[] src, int start, int length)
+        {
+            var slice = new byte[length];
+            Buffer.BlockCopy(src, start, slice, 0, length);
+            return slice;
+        }
+
+        /// <summary>
+        /// Overwrites a portion of an array starting at offset with the contents of another array.
+        /// Accepts negative indexes
+        /// </summary>
+        /// <typeparam name="T">Content of array.</typeparam>
+        /// <param name="dest">Array to write to</param>
+        /// <param name="offset">Start index in dest. Can be negative (eg. last element is -1)</param>
+        /// <param name="source">data to write to dest</param>
+        public static void OverwriteRange<T>(this IList<T> dest, int offset, IList<T> source)
+        {
+            if (offset < 0)
+            {
+                offset = dest.Count + offset;
+                if (offset < 0)
+                {
+                    throw new IndexOutOfRangeException("Attempt to write before the beginning of the array.");
+                }
+            }
+            if (offset + source.Count > dest.Count)
+            {
+                throw new IndexOutOfRangeException("Attempt to write past the end of the array.");
+            }
+            for (int i = 0; i < source.Count; i++)
+            {
+                dest[offset + i] = source[i];
+            }
+        }
+
+        public static T[] TypedClone<T>(this T[] src)
+        {
+            return (T[])src.Clone();
+        }
+
+        /// <summary>
+        /// Creates a shallow copy
+        /// </summary>
+        public static List<T> Clone<T>(this IEnumerable<T> src)
+        {
+            return new List<T>(src);
         }
 
         /// <summary>
@@ -566,6 +620,141 @@ namespace MassEffectModManager.modmanager.helpers
             var rawData = webClient.DownloadData(uri);
             var encoding = WebUtils.GetEncodingFrom(webClient.ResponseHeaders, Encoding.UTF8);
             return encoding.GetString(rawData);
+        }
+    }
+
+    public static class DictionaryExtensions
+    {
+        /// <summary>
+        /// Adds <paramref name="value"/> to List&lt;<typeparamref name="TValue"/>&gt; associated with <paramref name="key"/>. Creates List&lt;<typeparamref name="TValue"/>&gt; if neccesary.
+        /// </summary>
+        public static void AddToListAt<TKey, TValue>(this Dictionary<TKey, List<TValue>> dict, TKey key, TValue value)
+        {
+            if (!dict.TryGetValue(key, out List<TValue> list))
+            {
+                list = new List<TValue>();
+                dict[key] = list;
+            }
+            list.Add(value);
+        }
+
+        public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> kvp, out TKey key, out TValue value)
+        {
+            key = kvp.Key;
+            value = kvp.Value;
+        }
+    }
+
+    public static class StringExtensions
+    {
+        public static bool isNumericallyEqual(this string first, string second)
+        {
+            return double.TryParse(first, out double a)
+                && double.TryParse(second, out double b)
+                && (Math.Abs(a - b) < double.Epsilon);
+        }
+
+        //based on algorithm described here: http://www.codeproject.com/Articles/13525/Fast-memory-efficient-Levenshtein-algorithm
+        public static int LevenshteinDistance(this string a, string b)
+        {
+            int n = a.Length;
+            int m = b.Length;
+            if (n == 0)
+            {
+                return m;
+            }
+            if (m == 0)
+            {
+                return n;
+            }
+
+            var v1 = new int[m + 1];
+            for (int i = 0; i <= m; i++)
+            {
+                v1[i] = i;
+            }
+
+            for (int i = 1; i <= n; i++)
+            {
+                int[] v0 = v1;
+                v1 = new int[m + 1];
+                v1[0] = i;
+                for (int j = 1; j <= m; j++)
+                {
+                    int above = v1[j - 1] + 1;
+                    int left = v0[j] + 1;
+                    int cost;
+                    if (j > m || j > n)
+                    {
+                        cost = 1;
+                    }
+                    else
+                    {
+                        cost = a[j - 1] == b[j - 1] ? 0 : 1;
+                    }
+                    cost += v0[j - 1];
+                    v1[j] = Math.Min(above, Math.Min(left, cost));
+
+                }
+            }
+
+            return v1[m];
+        }
+
+        public static bool FuzzyMatch(this IEnumerable<string> words, string word, double threshold = 0.75)
+        {
+            foreach (string s in words)
+            {
+                int dist = s.LevenshteinDistance(word);
+                if (1 - (double)dist / Math.Max(s.Length, word.Length) > threshold)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+
+        public static Guid ToGuid(this string src) //Do not edit this function!
+        {
+            byte[] stringbytes = Encoding.UTF8.GetBytes(src);
+            byte[] hashedBytes = new System.Security.Cryptography.SHA1CryptoServiceProvider().ComputeHash(stringbytes);
+            Array.Resize(ref hashedBytes, 16);
+            return new Guid(hashedBytes);
+        }
+    }
+
+    public static class IOExtensions
+    {
+
+        /// <summary>
+        /// Copies the inputstream to the outputstream, for the specified amount of bytes
+        /// </summary>
+        /// <param name="input">Stream to copy from</param>
+        /// <param name="output">Stream to copy to</param>
+        /// <param name="bytes">The number of bytes to copy</param>
+        public static void CopyToEx(this Stream input, Stream output, int bytes)
+        {
+            var buffer = new byte[32768];
+            int read;
+            while (bytes > 0 &&
+                   (read = input.Read(buffer, 0, Math.Min(buffer.Length, bytes))) > 0)
+            {
+                output.Write(buffer, 0, read);
+                bytes -= read;
+            }
+        }
+
+        public static NameReference ReadNameReference(this Stream stream, IMEPackage pcc)
+        {
+            return new NameReference(pcc.getNameEntry(stream.ReadInt32()), stream.ReadInt32());
+        }
+
+        public static void WriteNameReference(this Stream stream, NameReference name, IMEPackage pcc)
+        {
+            stream.WriteInt32(pcc.FindNameOrAdd(name.Name));
+            stream.WriteInt32(name.Number);
         }
     }
 }

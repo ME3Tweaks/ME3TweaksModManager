@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9F364D6B-5046-4186-B684-968B52AFCB81}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Gammtek.Conduit</RootNamespace>
+    <AssemblyName>Gammtek.Conduit.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET;NET46</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET;NET46</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Annotations.cs" />
+    <Compile Include="Argument.cs" />
+    <Compile Include="Argument.Expression.cs" />
+    <Compile Include="CMath.cs" />
+    <Compile Include="Collections\ComponentModel\ObservableInt16Collection.cs" />
+    <Compile Include="Collections\ComponentModel\ObservableInt32Collection.cs" />
+    <Compile Include="Collections\ComponentModel\ObservableInt64Collection.cs" />
+    <Compile Include="Collections\ComponentModel\ObservableUInt16Collection.cs" />
+    <Compile Include="Collections\ComponentModel\ObservableUInt32Collection.cs" />
+    <Compile Include="Collections\ComponentModel\ObservableUInt64Collection.cs" />
+    <Compile Include="Collections\Generic\BinaryHeap.cs" />
+    <Compile Include="Collections\Generic\Buffer.cs" />
+    <Compile Include="Collections\Generic\HeapHelper.cs" />
+    <Compile Include="Collections\Generic\HeapPriorityQueue.cs" />
+    <Compile Include="Collections\Generic\HeapSort.cs" />
+    <Compile Include="Collections\Generic\Heap.cs" />
+    <Compile Include="Collections\Generic\IPriorityQueue.cs" />
+    <Compile Include="Collections\Generic\IPriorityQueueNode.cs" />
+    <Compile Include="Collections\Generic\PriorityQueue.cs" />
+    <Compile Include="Collections\Generic\PriorityQueueNode.cs" />
+    <Compile Include="Collections\Generic\PriorityQueueOrder.cs" />
+    <Compile Include="Collections\ObjectModel\ObservableDictionary.cs" />
+    <Compile Include="ComponentModel\BindableBase.cs" />
+    <Compile Include="Data\IValueValidator.cs" />
+    <Compile Include="Dynamic\Collections\DynamicDictionary.cs" />
+    <Compile Include="Dynamic\Collections\DynamicKeyValuePair.cs" />
+    <Compile Include="Dynamic\DynamicExtensions.cs" />
+    <Compile Include="Dynamic\ElasticObject.cs" />
+    <Compile Include="Dynamic\FormatType.cs" />
+    <Compile Include="Dynamic\IElasticHierarchyWrapper.cs" />
+    <Compile Include="Dynamic\IHierarchyWrapperProvider.cs" />
+    <Compile Include="Dynamic\NodeType.cs" />
+    <Compile Include="Dynamic\SimpleHierarchyWrapper.cs" />
+    <Compile Include="Enum.cs" />
+    <Compile Include="Extensions\Collections\Generic\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\Collections\Generic\EnumerableExtensions.Imperative.cs" />
+    <Compile Include="Extensions\Collections\Generic\EnumerableExtensions.Single.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\Reflection\AssemblyExtensions.cs" />
+    <Compile Include="Extensions\Reflection\MemberInfoExtensions.cs" />
+    <Compile Include="Extensions\Reflection\TypeExtensions.cs" />
+    <Compile Include="Extensions\Reflection\TypeInfoExtensions.cs" />
+    <Compile Include="Helpers\BindingFlagsHelper.cs" />
+    <Compile Include="Helpers\CollectionHelper.cs" />
+    <Compile Include="Helpers\ObjectHelper.cs" />
+    <Compile Include="Helpers\ObjectToStringHelper.cs" />
+    <Compile Include="Helpers\StringToObjectHelper.cs" />
+    <Compile Include="IO\BitBinaryReader.cs" />
+    <Compile Include="IO\BitBinaryWriter.cs" />
+    <Compile Include="IO\BitRingBuffer.cs" />
+    <Compile Include="IO\BitStream.cs" />
+    <Compile Include="IO\BitStreamReader.cs" />
+    <Compile Include="IO\BitStreamWriter.cs" />
+    <Compile Include="IO\ConduitPath.cs" />
+    <Compile Include="IO\Endian.cs" />
+    <Compile Include="IO\Converters\EndianConverter.cs" />
+    <Compile Include="IO\EndianMarker.cs" />
+    <Compile Include="IO\EndianReader.cs" />
+    <Compile Include="IO\EndianWriter.cs" />
+    <Compile Include="IO\VarInt.cs" />
+    <Compile Include="IO\Converters\ZigZagConverter.cs" />
+    <Compile Include="Paths\AbsolutePathType.cs" />
+    <Compile Include="Paths\EnvironmentVariableResolvingStatus.cs" />
+    <Compile Include="Paths\IAbsoluteDirectoryPath.cs" />
+    <Compile Include="Paths\IAbsoluteFilePath.cs" />
+    <Compile Include="Paths\IAbsolutePath.cs" />
+    <Compile Include="Paths\IDirectoryPath.cs" />
+    <Compile Include="Paths\IEnvironmentVariableDirectoryPath.cs" />
+    <Compile Include="Paths\IEnvironmentVariableFilePath.cs" />
+    <Compile Include="Paths\IEnvironmentVariablePath.cs" />
+    <Compile Include="Paths\IFilePath.cs" />
+    <Compile Include="Paths\InternalEnumerableExtensions.cs" />
+    <Compile Include="Paths\InternalPathsCollectionExtensions.cs" />
+    <Compile Include="Paths\InternalSetExtensions.cs" />
+    <Compile Include="Paths\InternalStringExtensions.cs" />
+    <Compile Include="Paths\IPath.cs" />
+    <Compile Include="Paths\IDriveLetter.cs" />
+    <Compile Include="Paths\IRelativeDirectoryPath.cs" />
+    <Compile Include="Paths\IRelativeFilePath.cs" />
+    <Compile Include="Paths\IRelativePath.cs" />
+    <Compile Include="Paths\IVariableDirectoryPath.cs" />
+    <Compile Include="Paths\IVariableFilePath.cs" />
+    <Compile Include="Paths\IVariablePath.cs" />
+    <Compile Include="Paths\PathType.cs" />
+    <Compile Include="Paths\VariablePathResolvingStatus.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="ThrowHelper.cs" />
+    <Compile Include="Extensions\BooleanExtensions.cs" />
+    <Compile Include="Extensions\ByteExtensions.cs" />
+    <Compile Include="Extensions\CharExtensions.cs" />
+    <Compile Include="Extensions\Collections\BitArrayExtensions.cs" />
+    <Compile Include="Extensions\Collections\ByteArrayExtensions.cs" />
+    <Compile Include="Extensions\Collections\Generic\CollectionExtensions.cs" />
+    <Compile Include="Extensions\DoubleExtensions.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\Int16Extensions.cs" />
+    <Compile Include="Extensions\Int32Extensions.cs" />
+    <Compile Include="Extensions\Int64Extensions.cs" />
+    <Compile Include="Extensions\IntPtrExtensions.cs" />
+    <Compile Include="Extensions\IO\BinaryReaderExtensions.cs" />
+    <Compile Include="Extensions\IO\PathWrapper.cs" />
+    <Compile Include="Extensions\IO\StreamExtensions.cs" />
+    <Compile Include="Extensions\Linq\ExpressionExtensions.cs" />
+    <Compile Include="Extensions\SByteExtensions.cs" />
+    <Compile Include="Extensions\SingleExtensions.cs" />
+    <Compile Include="Extensions\StringComparisonExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\UInt16Extensions.cs" />
+    <Compile Include="Extensions\UInt32Extensions.cs" />
+    <Compile Include="Extensions\UInt64Extensions.cs" />
+    <Compile Include="Extensions\UIntPtrExtensions.cs" />
+    <Compile Include="IO\BufferAcquisitionException.cs" />
+    <Compile Include="IO\ByteBufferReader.cs" />
+    <Compile Include="IO\ByteOrder.cs" />
+    <Compile Include="IO\ByteOrderConverter.cs" />
+    <Compile Include="IO\ConsoleManager.cs" />
+    <Compile Include="IO\DataReader.cs" />
+    <Compile Include="IO\DataWriter.cs" />
+    <Compile Include="IO\IBuffer.cs" />
+    <Compile Include="IO\IBufferManager.cs" />
+    <Compile Include="IO\IDataStream.cs" />
+    <Compile Include="IO\MemoryTributary.cs" />
+    <Compile Include="IO\MultiStream.cs" />
+    <Compile Include="IO\MutableByte.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Collections\Specialized\EnumInitializationException.cs" />
+    <Compile Include="Collections\Specialized\EnumSet.cs" />
+    <Compile Include="Collections\Specialized\Incrementer.cs" />
+    <Compile Include="Collections\Specialized\PolymorphicEnum.cs" />
+    <Compile Include="Collections\Specialized\UnregisteredEnumException.cs" />
+    <Compile Include="Text\Formatting\ArrayFormatInfo.cs" />
+    <Compile Include="Text\Formatting\CompactArrayFormatEnumerator.cs" />
+    <Compile Include="Text\Formatting\CompactArrayFormatInfo.cs" />
+    <Compile Include="Text\Formatting\CompactMatrixFormatInfo.cs" />
+    <Compile Include="Text\Formatting\DictionaryFormatInfo.cs" />
+    <Compile Include="Text\Formatting\EnumerableFormatInfo.cs" />
+    <Compile Include="Text\Formatting\FormatInfoUtils.cs" />
+    <Compile Include="Text\Formatting\GeneralFormatInfo.cs" />
+    <Compile Include="Text\Formatting\GeneralMemberDescription.cs" />
+    <Compile Include="Text\Formatting\ScalarFormatInfo.cs" />
+    <Compile Include="Text\Formatting\VerboseFormatInfo.cs" />
+    <Compile Include="Text\Formatting\VerboseFormatInfoBase.cs" />
+    <Compile Include="Text\StringMatching\CombinedStringMatcher.cs" />
+    <Compile Include="Text\StringMatching\DefaultStringMatcher.cs" />
+    <Compile Include="Text\StringMatching\ExactMatcher.cs" />
+    <Compile Include="Text\StringMatching\IStringMatcher.cs" />
+    <Compile Include="Text\StringMatching\RegexMatcher.cs" />
+    <Compile Include="Text\StringMatching\WildcardMatcher.cs" />
+    <Compile Include="TypeSwitch.cs" />
+    <Compile Include="Windows\AutoComplete.cs" />
+    <Compile Include="Windows\PathCharType.cs" />
+    <Compile Include="Windows\PInvoke.cs" />
+    <Compile Include="Windows\ShMisc.cs" />
+    <Compile Include="Windows\ShPath.cs" />
+    <Compile Include="Windows\WindowsApi.cs" />
+    <Compile Include="Xml\Dynamic\DynamicXml.cs" />
+    <Compile Include="Xml\Dynamic\XElementExtension.cs" />
+    <Compile Include="Xml\Dynamic\XmlNamespaceRemover.cs" />
+    <Compile Include="Xml\IXmlIncludeElement.cs" />
+    <Compile Include="Xml\Linq\XIncludeElement.cs" />
+    <Compile Include="Xml\Linq\XmlBaseUriAnnotation.cs" />
+    <Compile Include="Xml\Linq\IXObjectExtension.cs" />
+    <Compile Include="Xml\Linq\XBaseUriAnnotation.cs" />
+    <Compile Include="Xml\Linq\XElementExtension.cs" />
+    <Compile Include="Extensions\Xml\Linq\XElementExtensions.cs" />
+    <Compile Include="Xml\Linq\XNodeExtension.cs" />
+    <Compile Include="Extensions\Xml\Linq\XNodeExtensions.cs" />
+    <Compile Include="Extensions\Xml\Linq\XObjectExtensions.cs" />
+    <Compile Include="Xml\XmlIncludeElement.cs" />
+    <Compile Include="Xml\XmlIncludeParseType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Xml\Dynamic\StripNamespace.xslt" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

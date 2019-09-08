@@ -8,8 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using ME3Explorer.Packages;
-using ME1Explorer;
 using System.Diagnostics;
+using MassEffectModManager.modmanager;
 
 namespace MassEffectModManager.gamefileformats
 {
@@ -126,7 +126,7 @@ namespace MassEffectModManager.gamefileformats
 
 
         #region Constructors
-        public TalkFile(IMEPackage _pcc, int uindex)
+        public TalkFileME1(IMEPackage _pcc, int uindex)
         {
             pcc = _pcc;
             //index = _index;
@@ -135,9 +135,9 @@ namespace MassEffectModManager.gamefileformats
             LoadTlkData();
         }
 
-        public TalkFile(ExportEntry export)
+        public TalkFileME1(ExportEntry export)
         {
-            if (export.FileRef.Game != MEGame.ME1)
+            if (export.FileRef.Game != Mod.MEGame.ME1)
             {
                 throw new Exception("ME1 Unreal TalkFile cannot be initialized with a non-ME1 file");
             }
@@ -147,7 +147,7 @@ namespace MassEffectModManager.gamefileformats
             LoadTlkData();
         }
 
-        public TalkFile(IMEPackage _pcc, int uindex, bool _male, int _langRef, int _tlkSetIndex)
+        public TalkFileME1(IMEPackage _pcc, int uindex, bool _male, int _langRef, int _tlkSetIndex)
         {
             pcc = _pcc;
             //index = _index;
@@ -420,5 +420,4 @@ namespace MassEffectModManager.gamefileformats
 
 
     }
-}
 }

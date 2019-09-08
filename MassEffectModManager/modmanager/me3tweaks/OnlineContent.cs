@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManager.modmanager.helpers;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace MassEffectModManager.modmanager.me3tweaks
 {
@@ -42,6 +43,28 @@ namespace MassEffectModManager.modmanager.me3tweaks
             {
                 return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
             }
+        }
+
+        public static bool EnsureStaticAssets()
+        {
+            string[] objectInfoFiles = {"ME1ObjectInfo.json", "ME2ObjectInfo.json", "ME3ObjectInfo.json"};
+            string baseURL = "https://raw.githubusercontent.com/ME3Tweaks/MassEffectModManager/master/MassEffectModManager/staticfiles/";
+            string localBaseDir = Utilities.GetObjectInfoFolder();
+            foreach (var info in objectInfoFiles)
+            {
+                var localPath = Path.Combine(localBaseDir, info);
+                if (!File.Exists(localPath))
+                {
+                    using (var wc = new System.Net.WebClient())
+                    {
+                        var fullURL = baseURL + info;
+                        Log.Information("Downloading static asset: "+fullURL);
+                        wc.DownloadFile(fullURL, localPath);
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -17,8 +17,11 @@ using System.Windows.Media.Imaging;
 using IniParser;
 using IniParser.Model;
 using MassEffectModManager.GameDirectories;
+using MassEffectModManager.gamefileformats;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.ui;
+using ME3Explorer;
+using ME3Explorer.Packages;
 
 namespace MassEffectModManager.modmanager.windows
 {
@@ -211,6 +214,25 @@ namespace MassEffectModManager.modmanager.windows
                     var dialogdir = Directory.CreateDirectory(Path.Combine(cookedDir, "Packages", "Dialog")).FullName;
                     var tlkGlobalFile = Path.Combine(dialogdir, $"{dlcFolderName}_GlobalTlk.upk");
                     Utilities.ExtractInternalFile("MassEffectModManager.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
+                    var tlkFile = MEPackageHandler.OpenMEPackage(tlkGlobalFile);
+                    var tlk1 = new TalkFileME1(tlkFile.getUExport(1));
+                    var tlk2 = new TalkFileME1(tlkFile.getUExport(2));
+
+                    tlk1.StringRefs[0].StringID = skOption.ModInternalTLKID;
+                    tlk2.StringRefs[0].StringID = skOption.ModInternalTLKID;
+
+                    tlk1.StringRefs[0].Data = skOption.ModInternalName;
+                    tlk2.StringRefs[0].Data = skOption.ModInternalName;
+
+                    HuffmanCompressionME1 huff = new HuffmanCompressionME1();
+                    huff.LoadInputData(tlk1.StringRefs.ToList());
+                    huff.serializeTalkfileToExport(tlkFile.getUExport(1));
+
+                    huff = new HuffmanCompressionME1();
+                    huff.LoadInputData(tlk2.StringRefs.ToList());
+                    huff.serializeTalkfileToExport(tlkFile.getUExport(2));
+
+                    tlkFile.save();
                 }
                 else
                 {

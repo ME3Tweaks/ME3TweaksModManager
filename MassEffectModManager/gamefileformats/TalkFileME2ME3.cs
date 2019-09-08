@@ -64,7 +64,7 @@ namespace MassEffectModManager.gamefileformats
             }
 
             TLKHeader Header;
-            public List<ME1Explorer.Unreal.Classes.TalkFile.TLKStringRef> StringRefs;
+            public List<TalkFileME1.TLKStringRef> StringRefs;
             public string name;
             public string path;
             List<HuffmanNode> CharacterTree;
@@ -150,10 +150,10 @@ namespace MassEffectModManager.gamefileformats
                  * Sometimes there's no such key, in that case, our String ID is probably a substring
                  * of another String present in rawStrings. 
                  */
-                StringRefs = new List<ME1Explorer.Unreal.Classes.TalkFile.TLKStringRef>();
+                StringRefs = new List<TalkFileME1.TLKStringRef>();
                 for (int i = 0; i < Header.MaleEntryCount + Header.FemaleEntryCount; i++)
                 {
-                    ME1Explorer.Unreal.Classes.TalkFile.TLKStringRef sref = new ME1Explorer.Unreal.Classes.TalkFile.TLKStringRef(r, false);
+                    TalkFileME1.TLKStringRef sref = new TalkFileME1.TLKStringRef(r, false);
                     sref.Index = i;
                     if (sref.BitOffset >= 0)
                     {
@@ -221,7 +221,7 @@ namespace MassEffectModManager.gamefileformats
 
                 xr.WriteStartDocument();
                 xr.WriteStartElement("tlkFile");
-                xr.WriteAttributeString("TLKToolVersion", App.GetVersion());
+                xr.WriteAttributeString("TLKToolVersion", "4.0.0.0");
 
                 xr.WriteComment("Male entries section begin");
 
@@ -321,7 +321,7 @@ namespace MassEffectModManager.gamefileformats
             }
 
             /* for sorting */
-            private static int CompareTlkStringRef(TLKStringRef strRef1, ME1Explorer.Unreal.Classes.TalkFile.TLKStringRef strRef2)
+            private static int CompareTlkStringRef(TalkFileME1.TLKStringRef strRef1, TalkFileME1.TLKStringRef strRef2)
             {
                 int result = strRef1.StringID.CompareTo(strRef2.StringID);
                 return result;

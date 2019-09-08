@@ -174,6 +174,7 @@ namespace MassEffectModManager
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
         internal static Dictionary<string, Dictionary<string, Dictionary<string, string>>> ThirdPartyIdentificationService;
+        internal static object BugReportURL;
 
         public static string AppVersionHR
         {
