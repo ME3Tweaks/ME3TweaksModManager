@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TlkFile name="DLC_MOD_%STARTKIT%/DLC_MOD_%STARTKIT%0.xml">
+    <Strings>
+        <String id="%INTERNALDISPLAYNAMEID%">%INTERNALDISPLAYNAME%</String>
+        <String id="%INTERNALDLCNAMEID%">%INTERNALDLCNAME%</String>
+        <String id="%LANGID%">%LANG%</String>
+        <String id="%MALEID%">Male</String>
+        <String id="%FEMALEID%">Female</String>
+    </Strings>
+</TlkFile>

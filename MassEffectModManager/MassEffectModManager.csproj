@@ -123,6 +123,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="gamefileformats\packages\CompressionHelper.cs" />
+    <Compile Include="gamefileformats\packages\ExportEntry.cs" />
+    <Compile Include="gamefileformats\packages\IEntry.cs" />
+    <Compile Include="gamefileformats\packages\IMEPackage.cs" />
+    <Compile Include="gamefileformats\packages\ImportEntry.cs" />
+    <Compile Include="gamefileformats\packages\MEPackage.cs" />
+    <Compile Include="gamefileformats\packages\MEPackageHandler.cs" />
+    <Compile Include="gamefileformats\packages\PackageExtensions.cs" />
+    <Compile Include="gamefileformats\packages\UDKPackage.cs" />
+    <Compile Include="gamefileformats\packages\UnrealPackageFile.cs" />
+    <Compile Include="gamefileformats\TalkFileME1.cs" />
+    <Compile Include="gamefileformats\TalkFileME2ME3.cs" />
     <Compile Include="modmanager\CLog.cs" />
     <Compile Include="modmanager\converters\GridLengthConverter.cs" />
     <Compile Include="modmanager\converters\StarterKitRowHeightConverter.cs" />
@@ -135,7 +147,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="modmanager\helpers\StreamIO.cs" />
-    <Compile Include="modmanager\helpers\UnknownEncodingException.cs" />
     <Compile Include="modmanager\helpers\WebUtils.cs" />
     <Compile Include="modmanager\me3tweaks\OnlineContent.cs" />
     <Compile Include="modmanager\medirectories\ME1Directory.cs" />
@@ -158,6 +169,7 @@
       <DependentUpon>StarterKitGeneratorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ui\Commands.cs" />
+    <Compile Include="ui\NotifyPropertyChangedBase.cs" />
     <Compile Include="ui\ObservableCollectionExtended.cs" />
     <Compile Include="Utilities.cs" />
     <Page Include="MainWindow.xaml">
@@ -209,6 +221,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.upk" />
+    <EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
+    <EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
+    <EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.asi" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -225,7 +241,6 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="modmanager\starterkit\" />
     <Folder Include="NewFolder1\" />
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +250,17 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\gameicons\Unknown_48.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="modmanager\binkw32\me1\binkw23.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me1\binkw32.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me2\binkw23.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me2\binkw32.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me3\binkw23.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me3\binkw32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="modmanager\starterkit\StarterKitTLK.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />

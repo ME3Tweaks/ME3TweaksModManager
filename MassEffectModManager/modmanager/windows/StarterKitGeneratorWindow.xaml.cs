@@ -92,7 +92,7 @@ namespace MassEffectModManager.modmanager.windows
             {
                 ModName = ModName,
                 ModDescription = ModDescription,
-                ModDeveloper =  ModDeveloper,
+                ModDeveloper = ModDeveloper,
                 ModDLCFolderName = ModDLCFolderName,
                 ModGame = Game,
                 ModInternalName = ModInternalName,
@@ -190,6 +190,48 @@ namespace MassEffectModManager.modmanager.windows
             {
                 var skOption = args.Argument as StarterKitOptions;
 
+                var dlcFolderName = $"DLC_MOD_{skOption.ModDLCFolderName}";
+                var modsDirectory = Utilities.GetModDirectoryForGame(skOption.ModGame);
+                var modPath = Directory.CreateDirectory(Path.Combine(modsDirectory, skOption.ModName)).FullName;
+
+                //Creating DLC directories
+                var contentDirectory = Directory.CreateDirectory(Path.Combine(modPath, dlcFolderName)).FullName;
+                var cookedDir = Directory.CreateDirectory(Path.Combine(contentDirectory, skOption.ModGame == Mod.MEGame.ME3 ? "CookedPCConsole" : "CookedPC")).FullName;
+                if (skOption.ModGame == Mod.MEGame.ME1)
+                {
+                    //AutoLoad.ini
+                    IniData autoload = new IniData();
+                    autoload["Packages"]["GlobalTalkTable1"] = $"{dlcFolderName}.GlobalTlk_tlk";
+
+                    autoload["ME1DLCMOUNT"]["ModName"] = skOption.ModName;
+                    autoload["ME1DLCMOUNT"]["ModMount"] = skOption.ModMountPriority.ToString();
+                    new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, "AutoLoad.ini"), autoload);
+
+                    //TLK
+                    var dialogdir = Directory.CreateDirectory(Path.Combine(cookedDir, "Packages", "Dialog")).FullName;
+                    var tlkGlobalFile = Path.Combine(dialogdir, $"{dlcFolderName}_GlobalTlk.upk");
+                    Utilities.ExtractInternalFile("MassEffectModManager.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
+                }
+                else
+                {
+                    //ME2, ME3
+                    MountFile mf = new MountFile();
+                    mf.IsME2 = skOption.ModGame == Mod.MEGame.ME2;
+                    mf.MountFlag = skOption.ModMountFlag;
+                    mf.ME2Only_DLCFolderName = dlcFolderName;
+                    mf.ME2Only_DLCHumanName = skOption.ModName;
+                    mf.MountPriority = (ushort)skOption.ModMountPriority;
+                    mf.TLKID = skOption.ModInternalTLKID;
+                    mf.WriteMountFile(Path.Combine(cookedDir, "Mount.dlc"));
+
+                    if (skOption.ModGame == Mod.MEGame.ME3)
+                    {
+                        //Extract Default.Sfar
+                        Utilities.ExtractInternalFile("MassEffectModManager.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir,"Default.sfar"), true);
+
+                    }
+                }
+
                 IniData ini = new IniData();
                 ini["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
                 ini["ModInfo"]["game"] = skOption.ModGame.ToString();
@@ -199,15 +241,14 @@ namespace MassEffectModManager.modmanager.windows
                 ini["ModInfo"]["modver"] = 1.0.ToString(CultureInfo.InvariantCulture);
                 ini["ModInfo"]["modsite"] = skOption.ModURL;
 
-                var modsDirectory = Utilities.GetModDirectoryForGame(skOption.ModGame);
-                var modPath = Directory.CreateDirectory(Path.Combine(modsDirectory, skOption.ModName)).FullName;
+
                 var modDescPath = Path.Combine(modPath, "moddesc.ini");
-                new FileIniDataParser().WriteFile(modDescPath,ini);
+                new FileIniDataParser().WriteFile(modDescPath, ini);
                 Mod m = new Mod(modDescPath, skOption.ModGame);
                 args.Result = m;
                 Thread.Sleep(5999);
             };
-            bw.RunWorkerCompleted += (a, b) => { FinishedCallback(b.Result as Mod);};
+            bw.RunWorkerCompleted += (a, b) => { FinishedCallback(b.Result as Mod); };
             bw.RunWorkerAsync(options);
         }
 

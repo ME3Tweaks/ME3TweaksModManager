@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManager.modmanager;
+using Serilog;
 
 namespace MassEffectModManager
 {
@@ -94,6 +95,33 @@ namespace MassEffectModManager
             var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
             Directory.CreateDirectory(folder);
             return folder;
+        }
+
+        public static Stream GetResourceStream(string assemblyResource)
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            return assembly.GetManifestResourceStream(assemblyResource);
+        }
+
+        internal static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite)
+        {
+            Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
+            if (!File.Exists(destination) || overwrite)
+            {
+                using (Stream stream = Utilities.GetResourceStream(internalResourceName))
+                {
+
+                    using (var file = new FileStream(destination, FileMode.Create, FileAccess.Write))
+                    {
+                        stream.CopyTo(file);
+                    }
+                }
+            }
+            else
+            {
+                Log.Warning("File already exists. Not overwriting file.");
+            }
+            return destination;
         }
 
     }
