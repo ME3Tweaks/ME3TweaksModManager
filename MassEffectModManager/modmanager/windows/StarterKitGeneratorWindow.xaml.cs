@@ -44,6 +44,7 @@ namespace MassEffectModManager.modmanager.windows
         public int ModMountPriority { get; set; }
         public int ModInternalTLKID { get; set; }
         public string ModURL { get; set; } = "";
+        public int ModDLCModuleNumber { get; set; }
         public EMountFileFlag ModMountFlag { get; set; }
         public ObservableCollectionExtended<UIMountFlag> DisplayedMountFlags { get; } = new ObservableCollectionExtended<UIMountFlag>();
         private readonly List<UIMountFlag> ME1MountFlags = new List<UIMountFlag>();
@@ -77,6 +78,7 @@ namespace MassEffectModManager.modmanager.windows
             ModInternalName = "StarterKit Mod";
             ModDLCFolderName = "StarterKitMod";
             ModMountPriority = 3678;
+            ModDLCModuleNumber = 150;
             ModURL = "https://example.com";
             ModInternalTLKID = 277346578;
             ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
@@ -105,7 +107,8 @@ namespace MassEffectModManager.modmanager.windows
                 ModInternalTLKID = ModInternalTLKID,
                 ModMountFlag = ModMountFlag,
                 ModMountPriority = ModMountPriority,
-                ModURL = ModURL
+                ModURL = ModURL,
+                ModModuleNumber = ModDLCModuleNumber
             };
             IsBusy = true;
             BusyText = "Generating mod";
@@ -266,7 +269,7 @@ namespace MassEffectModManager.modmanager.windows
                         //bioEngineIni["Engine.PackagesToAlwaysCook"]["!SeekFreePackage"] = "CLEAR";
 
                         //Todo: Find way to tell user what this is for and how to pick one. No idea what it's used for.
-                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = 61.ToString(); //Have to figure out what the point of this is.
+                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString(); //Have to figure out what the point of this is.
 
                         bioEngineIni["DLCInfo"]["Version"] = 0.ToString(); //unknown
                         bioEngineIni["DLCInfo"]["Flags"] = 2.ToString(); //unknown
@@ -275,6 +278,7 @@ namespace MassEffectModManager.modmanager.windows
                         new FileIniDataParser().WriteFile(Path.Combine(cookedDir, "BIOEngine.ini"), bioEngineIni);
                     }
 
+                    var tlkFilePrefix = skOption.ModGame == Mod.MEGame.ME3 ? dlcFolderName : $"DLC_{skOption.ModModuleNumber}";
                     var languages = skOption.ModGame == Mod.MEGame.ME2 ? me2languages : me3languages;
                     foreach (var lang in languages)
                     {
@@ -287,9 +291,9 @@ namespace MassEffectModManager.modmanager.windows
 
                         foreach (var str in strs)
                         {
-                            str.data = str.data.Replace("\r\n", "\n") + '\0';
+                            str.data += '\0';
                         }
-                        new HuffmanCompressionME2ME3().SaveToTlkFile(Path.Combine(cookedDir, $"{dlcFolderName}_{lang.filecode}.tlk"), strs);
+                        new HuffmanCompressionME2ME3().SaveToTlkFile(Path.Combine(cookedDir, $"{tlkFilePrefix}_{lang.filecode}.tlk"), strs);
                     }
                 }
 
@@ -325,6 +329,8 @@ namespace MassEffectModManager.modmanager.windows
             public string ModURL;
             public EMountFileFlag ModMountFlag;
             public Mod.MEGame ModGame;
+
+            public int ModModuleNumber;
         }
     }
 }

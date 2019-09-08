@@ -29,6 +29,8 @@
                 <RowDefinition Height="{Binding Game, Converter={StaticResource StarterKitRowHeightConverter}, ConverterParameter='Not_ME1'}"/>
                 <!-- Internal TLK ID -->
                 <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
+                <!-- DLC Module Number (ME2 Only) -->
+                <RowDefinition Height="{Binding Game, Converter={StaticResource StarterKitRowHeightConverter}, ConverterParameter='ME2'}"/>
                 <!-- Mount Priority -->
                 <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
                 <!-- Mount Flag-->
@@ -51,11 +53,12 @@
             <TextBlock VerticalAlignment="Center" Text="Mod Name" Grid.Row="1" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Mod Developer" Grid.Row="2" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Mod Website/Nexusmods page" Grid.Row="3" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Internal DLC Name" Grid.Row="4" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="DLC Folder Name Suffix" Grid.Row="4" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Internal Name" Grid.Row="5" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Internal Name TLK ID" Grid.Row="6" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Mount Priority" Grid.Row="7" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Mount Flag" Grid.Row="8" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="DLC Module Number" Grid.Row="7" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mount Priority" Grid.Row="8" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mount Flag" Grid.Row="9" Grid.Column="1"/>
 
             <xctk:WatermarkTextBox Grid.Row="1" Grid.Column="2" Watermark="Faster Legs" Text="{Binding ModName}"/>
             <xctk:WatermarkTextBox Grid.Row="2" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper}"/>
@@ -63,11 +66,12 @@
             <xctk:WatermarkTextBox Grid.Row="4" Grid.Column="2" Watermark="FasterLegs" Text="{Binding ModDLCFolderName}"/>
             <xctk:WatermarkTextBox Grid.Row="5" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName}"/>
             <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID}"/>
-            <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority}"/>
-            <xctk:WatermarkComboBox Grid.Row="8" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected"/>
+            <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber}"/>
+            <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority}"/>
+            <xctk:WatermarkComboBox Grid.Row="9" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected"/>
 
-            <xctk:WatermarkTextBox Watermark="{Binding DescriptionWatermarkText}" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription}"/>
-            <TextBlock Grid.Column="1" Grid.Row ="10" Text="Ensure you are using a unique mount priority for your mod." TextWrapping="Wrap"/>
+            <xctk:WatermarkTextBox Watermark="{Binding DescriptionWatermarkText}" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription}"/>
+            <TextBlock Grid.Column="1" Grid.Row ="11" Text="Ensure you are using a unique mount priority for your mod." TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="14">
                 <StackPanel.Resources>
                     <Style x:Key="GameIcon" TargetType="RadioButton">
