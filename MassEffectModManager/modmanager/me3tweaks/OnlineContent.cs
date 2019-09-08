@@ -10,10 +10,11 @@ using Serilog;
 
 namespace MassEffectModManager.modmanager.me3tweaks
 {
-    class OnlineContent
+    partial class OnlineContent
     {
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber;
         private static readonly string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/mods/dlc_mods/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
+        private static readonly string StaticFilesBaseURL = "https://raw.githubusercontent.com/ME3Tweaks/MassEffectModManager/master/MassEffectModManager/staticfiles/";
 
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
@@ -48,7 +49,6 @@ namespace MassEffectModManager.modmanager.me3tweaks
         public static bool EnsureStaticAssets()
         {
             string[] objectInfoFiles = {"ME1ObjectInfo.json", "ME2ObjectInfo.json", "ME3ObjectInfo.json"};
-            string baseURL = "https://raw.githubusercontent.com/ME3Tweaks/MassEffectModManager/master/MassEffectModManager/staticfiles/";
             string localBaseDir = Utilities.GetObjectInfoFolder();
             foreach (var info in objectInfoFiles)
             {
@@ -57,7 +57,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 {
                     using (var wc = new System.Net.WebClient())
                     {
-                        var fullURL = baseURL + info;
+                        var fullURL = StaticFilesBaseURL + "objectinfos/"+info;
                         Log.Information("Downloading static asset: "+fullURL);
                         wc.DownloadFile(fullURL, localPath);
                     }
