@@ -17,10 +17,12 @@ namespace MassEffectModManager.ui
         #region INotifyPropertyChanged
 
         protected override event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PublicPropertyChanged;
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PublicPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion INotifyPropertyChanged
@@ -145,12 +147,29 @@ namespace MassEffectModManager.ui
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
+        private int _bindableCount;
+        public int BindableCount
+        {
+            get { return Count; }
+            private set
+            {
+                if (_bindableCount != Count)
+                {
+                    _bindableCount = Count;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         #endregion // Sorting
 
         /// <summary> 
         /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class. 
         /// </summary> 
-        public ObservableCollectionExtended() { }
+        public ObservableCollectionExtended() : base()
+        {
+            CollectionChanged += (a, b) => { BindableCount = Count; };
+        }
 
         /// <summary> 
         /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class that contains elements copied from the specified collection. 
@@ -158,6 +177,9 @@ namespace MassEffectModManager.ui
         /// <param name="collection">collection: The collection from which the elements are copied.</param> 
         /// <exception cref="System.ArgumentNullException">The collection parameter cannot be null.</exception> 
         public ObservableCollectionExtended(IEnumerable<T> collection)
-            : base(collection) { }
+            : base(collection)
+        {
+            CollectionChanged += (a, b) => { BindableCount = Count; };
+        }
     }
 }

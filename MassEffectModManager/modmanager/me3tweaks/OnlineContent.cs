@@ -15,7 +15,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber;
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/mods/dlc_mods/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL = "https://raw.githubusercontent.com/ME3Tweaks/MassEffectModManager/master/MassEffectModManager/staticfiles/";
-
+        private static readonly string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
             string contents;
@@ -27,7 +27,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
 
             return null;
         }
-        public static Dictionary<string, Dictionary<string, Dictionary<string, string>>> FetchThirdPartyIdentificationManifest(bool overrideThrottling)
+        public static Dictionary<string, Dictionary<string, Dictionary<string, string>>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
@@ -40,15 +40,28 @@ namespace MassEffectModManager.modmanager.me3tweaks
                     return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json);
                 }
             }
-            else
+            return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+        }
+
+        public static List<string> FetchTipsService(bool overrideThrottling = false)
+        {
+            if (!File.Exists(Utilities.GetTipsServiceFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
-                return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+
+                string contents;
+                using (var wc = new System.Net.WebClient())
+                {
+                    string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
+                    File.WriteAllText(Utilities.GetTipsServiceFile(), json);
+                    return JsonConvert.DeserializeObject<List<string>>(json);
+                }
             }
+            return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
         }
 
         public static bool EnsureStaticAssets()
         {
-            string[] objectInfoFiles = {"ME1ObjectInfo.json", "ME2ObjectInfo.json", "ME3ObjectInfo.json"};
+            string[] objectInfoFiles = { "ME1ObjectInfo.json", "ME2ObjectInfo.json", "ME3ObjectInfo.json" };
             string localBaseDir = Utilities.GetObjectInfoFolder();
             foreach (var info in objectInfoFiles)
             {
@@ -57,8 +70,8 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 {
                     using (var wc = new System.Net.WebClient())
                     {
-                        var fullURL = StaticFilesBaseURL + "objectinfos/"+info;
-                        Log.Information("Downloading static asset: "+fullURL);
+                        var fullURL = StaticFilesBaseURL + "objectinfos/" + info;
+                        Log.Information("Downloading static asset: " + fullURL);
                         wc.DownloadFile(fullURL, localPath);
                     }
                 }

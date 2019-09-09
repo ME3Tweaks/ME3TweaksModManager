@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -756,6 +757,36 @@ namespace MassEffectModManager.modmanager.helpers
         {
             stream.WriteInt32(pcc.FindNameOrAdd(name.Name));
             stream.WriteInt32(name.Number);
+        }
+    }
+
+    public static class CollectionExtensions
+    {
+        private static Random rng = new Random();
+
+        public static T RandomElement<T>(this IList<T> list)
+        {
+            return list[rng.Next(list.Count)];
+        }
+
+        public static T RandomElement<T>(this T[] array)
+        {
+            return array[rng.Next(array.Length)];
+        }
+    }
+
+    public static class ListExtensions
+    {
+        /// <summary> 
+        /// Replaces all elements in existing list with the specified values. This does not call OnPropertyChanged.
+        /// </summary> 
+        public static void ReplaceAll<T>(this ICollection<T> collection, IEnumerable<T> newValues)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (newValues == null) throw new ArgumentNullException(nameof(newValues));
+
+            collection.Clear();
+            foreach (var i in newValues) collection.Add(i);
         }
     }
 }

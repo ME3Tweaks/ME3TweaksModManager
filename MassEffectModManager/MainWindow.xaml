@@ -229,9 +229,9 @@
                 </DockPanel>
 
                 <StackPanel Name="FailedModsPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
-                    <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
+                    <TextBlock ToolTip="Some mods failed to load, click to see why">
                         <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
-                            <TextBlock Text="{Binding Path=FailedMods.Count, StringFormat={}{0} mods failed to load, Mode=OneWay}"/>
+                            <TextBlock Text="{Binding FailedMods.BindableCount, StringFormat={}{0} mods failed to load, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
@@ -257,7 +257,14 @@
                     </TextBlock>
                 </StackPanel>
                 <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" 
-                         Text="{Binding SelectedMod.DisplayedModDescription, Mode=OneWay}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
+                    <TextBox.Text>
+                        <PriorityBinding>
+                            <Binding Path="SelectedMod.ModDescription" Mode="OneWay"/>
+                            <Binding Path="NoModSelectedText" Mode="OneWay"/>
+                        </PriorityBinding>
+                    </TextBox.Text>
+                </TextBox>
             </DockPanel>
         </Grid>
     </DockPanel>

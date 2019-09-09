@@ -19,7 +19,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
         private static readonly string LatestHelpFileLink = StaticFilesBaseURL + "dynamichelp/latesthelp.xml";
         internal static readonly string HelpResourcesBaseURL = StaticFilesBaseURL + "dynamichelp/resources";
 
-        public static List<SortableHelpElement> FetchLatestHelp(bool overrideThrottling)
+        public static List<SortableHelpElement> FetchLatestHelp(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetLocalHelpFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {

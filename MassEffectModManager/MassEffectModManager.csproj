@@ -259,6 +259,7 @@
     <None Include="staticfiles\objectinfos\ME1ObjectInfo.json" />
     <None Include="staticfiles\objectinfos\ME2ObjectInfo.json" />
     <None Include="staticfiles\objectinfos\ME3ObjectInfo.json" />
+    <None Include="staticfiles\tipsservice.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -84,6 +84,10 @@ namespace MassEffectModManager
             }
         }
 
+        internal static string GetTipsServiceFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
+        }
 
         internal static bool CanFetchContentThrottleCheck()
         {

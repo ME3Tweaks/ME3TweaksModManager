@@ -40,6 +40,23 @@ namespace MassEffectModManager
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
         public string StartGameButtonText { get; set; } = "Start Game";
+        private int lastHintIndex = -1;
+        private int oldFailedBindableCount = 0;
+        public string NoModSelectedText
+        {
+            get
+            {
+                var retvar = "Select a mod on the left to view it's description.";
+                //TODO: Implement Tips Service
+                if (LoadedTips.Count > 0)
+                {
+                    var randomTip = LoadedTips.RandomElement();
+                    retvar += $"\n\n---------------------------------------------\n{randomTip}";
+                }
+                return retvar;
+            }
+        }
+
         public Mod SelectedMod { get; set; }
         public ObservableCollectionExtended<Mod> LoadedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
@@ -53,6 +70,8 @@ namespace MassEffectModManager
             LoadCommands();
             PopulateTargets();
             InitializeComponent();
+            AttachListeners();
+
             //Must be done after UI has initialized
             if (InstallationTargets.Count > 0)
             {
@@ -80,6 +99,29 @@ namespace MassEffectModManager
             );
         }
 
+        private void AttachListeners()
+        {
+            FailedMods.PublicPropertyChanged += (a, b) =>
+            {
+                if (b.PropertyName == "BindableCount")
+                {
+                    bool isopening = FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
+                    bool isclosing = FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
+                    if (isclosing || isopening)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Storyboard sb = this.FindResource(isopening ? "OpenWebsitePanel" : "CloseWebsitePanel") as Storyboard;
+                            Storyboard.SetTarget(sb, FailedModsPanel);
+                            sb.Begin();
+                        });
+                    }
+
+                    oldFailedBindableCount = FailedMods.BindableCount;
+                }
+            };
+        }
+
         public ICommand ReloadModsCommand { get; set; }
         public ICommand ApplyModCommand { get; set; }
         public ICommand CheckForContentUpdatesCommand { get; set; }
@@ -99,6 +141,8 @@ namespace MassEffectModManager
         }
 
         public bool IsLoadingMods { get; set; }
+        public List<string> LoadedTips { get; } = new List<string>();
+
         private bool CanReloadMods()
         {
             return !IsLoadingMods;
@@ -136,11 +180,8 @@ namespace MassEffectModManager
             IsLoadingMods = true;
             LoadedMods.ClearEx();
             FailedMods.ClearEx();
-            {
-                Storyboard sb = this.FindResource("CloseWebsitePanel") as Storyboard;
-                Storyboard.SetTarget(sb, FailedModsPanel);
-                sb.Begin();
-            }
+
+
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ModLoaderThread");
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
@@ -165,13 +206,15 @@ namespace MassEffectModManager
                     }
                     else
                     {
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            FailedMods.Add(mod);
-                            Storyboard sb = this.FindResource("OpenWebsitePanel") as Storyboard;
-                            Storyboard.SetTarget(sb, FailedModsPanel);
-                            sb.Begin();
-                        });
+                        FailedMods.Add(mod);
+
+
+                        //Application.Current.Dispatcher.Invoke(delegate
+                        //{
+                        //    Storyboard sb = this.FindResource("OpenWebsitePanel") as Storyboard;
+                        //    Storyboard.SetTarget(sb, FailedModsPanel);
+                        //    sb.Begin();
+                        //});
                     }
                 }
                 if (modToHighlight != null)
@@ -309,7 +352,7 @@ namespace MassEffectModManager
                     //Clear old items out
                     for (int i = HelpMenuItem.Items.Count - 1; i > 0; i--)
                     {
-                        if (HelpMenuItem.Items[i]is MenuItem menuItem && menuItem.Tag is string str && str == "DynamicHelp")
+                        if (HelpMenuItem.Items[i] is MenuItem menuItem && menuItem.Tag is string str && str == "DynamicHelp")
                         {
                             Debug.WriteLine("Removing old dynamic item");
                             HelpMenuItem.Items.Remove(menuItem);
@@ -350,7 +393,14 @@ namespace MassEffectModManager
 
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
-                var helpItemsLoading = OnlineContent.FetchLatestHelp(true);
+                var helpItemsLoading = OnlineContent.FetchLatestHelp();
+                bw.ReportProgress(0, helpItemsLoading);
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadTipsService", "Loading tips service", "Loaded tips service");
+                LoadedTips.ReplaceAll(OnlineContent.FetchTipsService());
+                OnPropertyChanged(nameof(NoModSelectedText));
                 bw.ReportProgress(0, helpItemsLoading);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
