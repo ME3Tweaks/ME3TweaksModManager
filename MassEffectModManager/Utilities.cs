@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManager.modmanager;
@@ -25,6 +26,11 @@ namespace MassEffectModManager
             {
                 return Path.Combine(GetExecutableDirectory(), "mods");
             }
+        }
+
+        internal static string GetLocalHelpFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "cachedhelp.xml");
         }
 
         internal static string GetObjectInfoFolder()
@@ -51,6 +57,33 @@ namespace MassEffectModManager
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ME3TweaksServicesCache")).FullName;
         }
+
+        internal static string GetLocalHelpResourcesDirectory()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "HelpResources")).FullName;
+        }
+
+        public static string CalculateMD5(string filename)
+        {
+            try
+            {
+                using (var md5 = MD5.Create())
+                {
+                    using (var stream = File.OpenRead(filename))
+                    {
+                        var hash = md5.ComputeHash(stream);
+                        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                Log.Error("I/O ERROR CALCULATING CHECKSUM OF FILE: " + filename);
+                Log.Error(App.FlattenException(e));
+                return "";
+            }
+        }
+
 
         internal static bool CanFetchContentThrottleCheck()
         {

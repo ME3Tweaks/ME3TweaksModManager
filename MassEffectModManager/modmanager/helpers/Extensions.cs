@@ -48,6 +48,7 @@ namespace MassEffectModManager.modmanager.helpers
             return objArray;
         }
 
+
         /// <summary>
         /// Extracts a sub array from another array starting at offset and reading to end.
         /// </summary>

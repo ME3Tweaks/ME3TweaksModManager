@@ -59,7 +59,7 @@
                 <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click"/>
                 <MenuItem Header="Options" Click="OpenOptions_Clicked"/>
                 <Separator/>
-                <MenuItem Header="Check for content updates"></MenuItem>
+                <MenuItem Header="Check for content updates" Command="{Binding CheckForContentUpdatesCommand}"/>
                 <MenuItem Header="Reloads Mods" Command="{Binding ReloadModsCommand}"/>
                 <MenuItem Header="Exit" Click="ExitApplication_Click"/>
             </MenuItem>
@@ -137,7 +137,7 @@
             <MenuItem Header="Backup &amp; Restore" Padding="4">
 
             </MenuItem>
-            <MenuItem Header="Help" Padding="4">
+            <MenuItem Name="HelpMenuItem" Header="Help" Padding="4">
                 <MenuItem Name="DynamicHelp_MenuItem" Header="Dynamic Help" Style="{StaticResource MenuItemHeaderStyle}"/>
 
                 <Separator/>

@@ -178,6 +178,9 @@
     <Compile Include="modmanager\windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="modmanager\windows\DynamicHelpItemModalWindow.xaml.cs">
+      <DependentUpon>DynamicHelpItemModalWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="modmanager\windows\OptionsWindow.xaml.cs">
       <DependentUpon>OptionsWindow.xaml</DependentUpon>
     </Compile>
@@ -204,6 +207,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="modmanager\windows\AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="modmanager\windows\DynamicHelpItemModalWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

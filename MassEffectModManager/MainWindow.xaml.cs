@@ -82,10 +82,20 @@ namespace MassEffectModManager
 
         public ICommand ReloadModsCommand { get; set; }
         public ICommand ApplyModCommand { get; set; }
+        public ICommand CheckForContentUpdatesCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
             ApplyModCommand = new GenericCommand(ApplyMod, CanApplyMod);
+            CheckForContentUpdatesCommand = new GenericCommand(CheckForContentUpdates, NetworkThreadNotRunning);
+        }
+
+        public bool ContentCheckInProgress { get; set; }
+        private bool NetworkThreadNotRunning() => !ContentCheckInProgress;
+
+        private void CheckForContentUpdates()
+        {
+            PerformStartupNetworkFetches(false);
         }
 
         public bool IsLoadingMods { get; set; }
@@ -118,7 +128,7 @@ namespace MassEffectModManager
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
             LoadMods();
-            PerformStartupNetworkFetches();
+            PerformStartupNetworkFetches(true);
         }
 
         public void LoadMods(Mod modToHighlight = null)
@@ -146,10 +156,12 @@ namespace MassEffectModManager
                     var mod = new Mod(moddesc.path, moddesc.game);
                     if (mod.ValidMod)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
                             LoadedMods.Add(mod);
-                            
-                            LoadedMods.Sort(x => x.ModName); });
+
+                            LoadedMods.Sort(x => x.ModName);
+                        });
                     }
                     else
                     {
@@ -281,21 +293,53 @@ namespace MassEffectModManager
             Process.Start(Utilities.GetModsDirectory());
         }
 
-        public void PerformStartupNetworkFetches()
+        public void PerformStartupNetworkFetches(bool checkForModManagerUpdates)
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker("StartupNetworkThread");
+            bw.WorkerReportsProgress = true;
+            bw.ProgressChanged += (sender, args) =>
+            {
+                if (args.UserState is List<SortableHelpElement> sortableHelpItems)
+                {
+                    //Replacing the dynamic help menu
+                    //DynamicHelp_MenuItem.Items.RemoveAll(x=>x.Tag is string str && str == "DynamicHelp");
+
+                    var dynamicMenuItems = RecursiveBuildDynamicHelpMenuItems(sortableHelpItems);
+
+                    //Clear old items out
+                    for (int i = HelpMenuItem.Items.Count - 1; i > 0; i--)
+                    {
+                        if (HelpMenuItem.Items[i]is MenuItem menuItem && menuItem.Tag is string str && str == "DynamicHelp")
+                        {
+                            Debug.WriteLine("Removing old dynamic item");
+                            HelpMenuItem.Items.Remove(menuItem);
+                        }
+                    }
+
+                    dynamicMenuItems.Reverse(); //we are going to insert these in reverse order
+                    var dynamicHelpHeaderIndex = HelpMenuItem.Items.IndexOf(DynamicHelp_MenuItem) + 1;
+                    foreach (var v in dynamicMenuItems)
+                    {
+                        HelpMenuItem.Items.Insert(dynamicHelpHeaderIndex, v);
+                    }
+                }
+            };
             bw.DoWork += (a, b) =>
             {
-                Log.Information("Start of startup network thread");
-                var bgTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
-                var manifest = OnlineContent.FetchOnlineStartupManifest();
-                if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
+                Log.Information("Start of content check network thread");
+                if (checkForModManagerUpdates)
                 {
-                    //Todo: Update available
-                }
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
+                    var manifest = OnlineContent.FetchOnlineStartupManifest();
+                    if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
+                    {
+                        //Todo: Update available
+                    }
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob("ThirdPartyIdentificationServiceFetch", "Initializing Third Party Identification Service information", "Initialized Third Party Identification Service");
+                    backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
+                }
+
+                var bgTask = backgroundTaskEngine.SubmitBackgroundJob("ThirdPartyIdentificationServiceFetch", "Initializing Third Party Identification Service information", "Initialized Third Party Identification Service");
                 App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(false);
 
 
@@ -304,11 +348,59 @@ namespace MassEffectModManager
                 var success = OnlineContent.EnsureStaticAssets();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
+                var helpItemsLoading = OnlineContent.FetchLatestHelp(true);
+                bw.ReportProgress(0, helpItemsLoading);
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
                 Properties.Settings.Default.LastContentCheck = DateTime.Now;
                 Properties.Settings.Default.Save();
-                Log.Information("End of startup network thread");
+                Log.Information("End of content check network thread");
             };
+            bw.RunWorkerCompleted += (a, b) => { ContentCheckInProgress = false; };
+            ContentCheckInProgress = true;
             bw.RunWorkerAsync();
+        }
+
+        private List<MenuItem> RecursiveBuildDynamicHelpMenuItems(List<SortableHelpElement> sortableHelpItems)
+        {
+            List<MenuItem> dynamicMenuItems = new List<MenuItem>();
+            foreach (var item in sortableHelpItems)
+            {
+                MenuItem m = new MenuItem()
+                {
+                    Header = item.Title,
+                    ToolTip = item.ToolTip,
+                    Tag = "DynamicHelp"
+                };
+                if (!string.IsNullOrEmpty(item.URL))
+                {
+                    //URL HelpItem
+                    m.Click += (o, eventArgs) => Utilities.OpenWebpage(item.URL);
+                }
+                else if (!string.IsNullOrEmpty(item.ModalTitle))
+                {
+                    //Modal dialog
+                    item.ModalText = Utilities.ConvertBrToNewline(item.ModalText);
+                    m.Click += (o, eventArgs) =>
+                    {
+                        new DynamicHelpItemModalWindow(item) { Owner = this }.ShowDialog();
+                    };
+                }
+                dynamicMenuItems.Add(m);
+
+                if (item.Children.Count > 0)
+                {
+                    var children = RecursiveBuildDynamicHelpMenuItems(item.Children);
+                    foreach (var v in children)
+                    {
+                        m.Items.Add(v);
+                    }
+                }
+            }
+
+            return dynamicMenuItems;
         }
 
         private void GenerateStarterKit_Clicked(object sender, RoutedEventArgs e)
@@ -317,7 +409,7 @@ namespace MassEffectModManager
             if (sender == GenerateStarterKitME1_MenuItem) g = MEGame.ME1;
             if (sender == GenerateStarterKitME2_MenuItem) g = MEGame.ME2;
             if (sender == GenerateStarterKitME3_MenuItem) g = MEGame.ME3;
-            new StarterKitGeneratorWindow(g) {Owner = this}.ShowDialog();
+            new StarterKitGeneratorWindow(g) { Owner = this }.ShowDialog();
         }
     }
 }
