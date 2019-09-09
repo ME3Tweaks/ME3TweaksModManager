@@ -21,6 +21,7 @@ using MassEffectModManager.modmanager;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.me3tweaks;
 using MassEffectModManager.modmanager.objects;
+using MassEffectModManager.modmanager.usercontrols;
 using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
 using Serilog;
@@ -460,6 +461,15 @@ namespace MassEffectModManager
             if (sender == GenerateStarterKitME2_MenuItem) g = MEGame.ME2;
             if (sender == GenerateStarterKitME3_MenuItem) g = MEGame.ME3;
             new StarterKitGeneratorWindow(g) { Owner = this }.ShowDialog();
+        }
+
+        private void LaunchExternalTool_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (sender == ALOTInstaller_MenuItem)
+            {
+                var exLauncher = new ExternalToolLauncher(ExternalToolLauncher.ALOTInstaller);
+                //Todo: Update Busy UI Content
+            }
         }
     }
 }

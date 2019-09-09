@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="MassEffectModManager.modmanager.usercontrols.ExternalToolLauncher"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MassEffectModManager.modmanager.usercontrols"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        mc:Ignorable="d"
+        Background="CornflowerBlue" 
+        Height="200" Width="300">
+    <!-- Test color only -->
+    <StackPanel VerticalAlignment="Center">
+        <fa5:ImageAwesome Icon="Solid_Spinner" Spin="True" SpinDuration="15" Width="32" Height="32" Foreground="Black"/>
+        <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding PercentDownloaded, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
+        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Downloading ALOT Installer}"/>
+    </StackPanel>
+</UserControl>

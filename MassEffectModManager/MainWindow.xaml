@@ -128,11 +128,11 @@
 
                 <Separator/>
                 <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
-                <MenuItem Header="ALOT Installer"/>
-                <MenuItem Header="Mass Effect INI Modder"/>
-                <MenuItem Header="Mass Effect Modder"/>
-                <MenuItem Header="Mass Effect Randomizer"/>
-                <MenuItem Header="ME3Explorer - ME3Tweaks Fork"/>
+                <MenuItem Header="ALOT Installer" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked"/>
+                <MenuItem Header="Mass Effect INI Modder" Name="MassEffectIniModder_MenuItem" Click="LaunchExternalTool_Clicked"/>
+                <MenuItem Header="Mass Effect Modder" Name="MassEffectModder_MenuItem" Click="LaunchExternalTool_Clicked"/>
+                <MenuItem Header="Mass Effect Randomizer" Name="MassEffectRandomizer_MenuItem" Click="LaunchExternalTool_Clicked"/>
+                <MenuItem Header="ME3Explorer - ME3Tweaks Fork" Name="ME3Explorer_MenuItem" Click="LaunchExternalTool_Clicked"/>
             </MenuItem>
             <MenuItem Header="Backup &amp; Restore" Padding="4">
 

@@ -38,6 +38,11 @@ namespace MassEffectModManager
             return Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), "ObjectInfo")).FullName;
         }
 
+        internal static string GetDataDirectory()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetExecutableDirectory(), "data")).FullName;
+        }
+
         public static string GetModDirectoryForGame(Mod.MEGame game)
         {
             if (game == Mod.MEGame.ME1) return GetME1ModsDirectory();
