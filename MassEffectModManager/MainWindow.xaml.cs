@@ -478,10 +478,14 @@ namespace MassEffectModManager
             if (sender == MassEffectIniModder_MenuItem) tool = ExternalToolLauncher.MEIM;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
+            LaunchExternalTool(tool);
+        }
 
+        private void LaunchExternalTool(string tool, string arguments = null)
+        {
             if (tool != null)
             {
-                var exLauncher = new ExternalToolLauncher(tool);
+                var exLauncher = new ExternalToolLauncher(tool,arguments);
                 exLauncher.Close += (a, b) =>
                 {
                     IsBusy = false;
@@ -493,6 +497,11 @@ namespace MassEffectModManager
                 IsBusy = true;
                 exLauncher.StartLaunchingTool();
             }
+        }
+
+        private void ASIModManager_Click(object sender, RoutedEventArgs e)
+        {
+            LaunchExternalTool(ExternalToolLauncher.ME3Explorer, ExternalToolLauncher.ME3EXP_ASIMANAGER);
         }
     }
 }

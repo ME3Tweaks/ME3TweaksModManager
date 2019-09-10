@@ -29,16 +29,23 @@ namespace MassEffectModManager.modmanager.usercontrols
         public const string MEIM = "Mass Effect INI Modder";
         public const string MEM = "Mass Effect Modder";
         public const string MER = "Mass Effect Randomizer";
+        public const string ME3EXP_ASIMANAGER = "JUMPLIST_ASIMANAGER";
+        public const string ME3EXP_DLCUNPACKER = "JUMPLIST_DLCUNPACKER";
+        public const string ME3EXP_MOUNTEDITOR = "JUMPLIST_MOUNTEDITOR";
+        public const string ME3EXP_PACKAGEDUMPER = "JUMPLIST_PACKAGEDUMPER";
         private string tool;
+
+        private static List<string> ToolsCheckedForUpdatesInThisSession = new List<string>();
         public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
         private string localFolderName;
-
+        private string arguments;
         public string Action { get; set; }
         public int PercentDownloaded { get; set; }
-        public ExternalToolLauncher(string tool)
+        public ExternalToolLauncher(string tool, string arguments = null)
         {
             DataContext = this;
             this.tool = tool;
+            this.arguments = arguments;
             InitializeComponent();
         }
 
@@ -49,11 +56,18 @@ namespace MassEffectModManager.modmanager.usercontrols
             {
                 var toolName = tool.Replace(" ", "");
                 var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), "ExternalTools", toolName);
-                Action = "Checking for updates";
-                var latestRelease = await FetchProductFromGithubReleases();
                 var localExecutable = Path.Combine(localToolFolderName, toolName + ".exe");
-
                 bool needsDownloading = !File.Exists(localExecutable);
+
+                if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
+                {
+                    //Don't check for updates again.
+                    LaunchTool(localExecutable);
+                    return;
+                }
+                Action = "Checking for updates";
+                var latestRelease = await FetchLatestRelease();
+
 
                 //Failed to get release check
                 if (latestRelease == null)
@@ -114,6 +128,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                     {
                         DownloadTool(localToolFolderName, latestRelease, localExecutable);
                     }
+                    ToolsCheckedForUpdatesInThisSession.Add(tool);
                 }
             };
 
@@ -177,10 +192,10 @@ namespace MassEffectModManager.modmanager.usercontrols
             Action = "Launching " + tool;
             PercentVisibility = Visibility.Collapsed;
             PercentDownloaded = 0;
-            Process.Start(localExecutable);
+            Log.Information($"Launching: {localExecutable} {arguments}");
+            Process.Start(localExecutable, arguments);
             Thread.Sleep(2500);
             OnClosing(EventArgs.Empty);
-            //Need to somehow deal with args for ALOT Installer
         }
 
         public event EventHandler Close;
@@ -190,36 +205,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             handler?.Invoke(this, e);
         }
 
-        /*
-*  if (latest != null)
-           {
-               Log.Information("Latest available: " + latest.TagName);
-               Version releaseName = new Version(latest.TagName);
-               if (versInfo < releaseName && latest.Assets.Count > 0)
-               {
-
-                   
-                   updateprogresscontroller.Canceled += async (s, e) =>
-                   {
-                       if (downloadClient != null)
-                       {
-                           Log.Information("Application update was in progress but was canceled.");
-                           downloadClient.CancelAsync();
-                           await updateprogresscontroller.CloseAsync();
-                           FetchManifest();
-                       }
-                   };
-                   
-               }
-               else
-               {
-                   AddonFilesLabel.Text = "Application update declined";
-                   Log.Warning("Application update was declined");
-                   await this.ShowMessageAsync("Old versions are not supported", "Outdated versions of ALOT Installer are not supported and may stop working as the installer manifest and MEMNoGui are updated.");
-                   FetchManifest();
-               }
-*/
-        private async Task<Release> FetchProductFromGithubReleases()
+        private async Task<Release> FetchLatestRelease()
         {
             string toolGithubOwner = null;
             string toolGithubRepoName = null;

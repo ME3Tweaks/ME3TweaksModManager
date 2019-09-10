@@ -71,7 +71,7 @@
                         <MenuItem Header="Import already installed Custom DLC mod"/>
                     </MenuItem>
                     <MenuItem Header="Download ModMaker mod"/>
-                    <MenuItem Header="ASI Mod Manager"/>
+                    <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click"/>
                     <MenuItem Header="Custom DLC Conflict Detector"/>
                     <MenuItem Header="Batch Mod Installer"/>
                     <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click"/>
