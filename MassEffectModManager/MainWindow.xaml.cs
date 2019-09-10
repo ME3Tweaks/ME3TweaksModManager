@@ -36,6 +36,11 @@ namespace MassEffectModManager
     {
         public string CurrentOperationText { get; set; }
 
+        public bool IsBusy { get; set; }
+        /// <summary>
+        /// Content of the current Busy Indicator modal
+        /// </summary>
+        public object BusyContent { get; set; }
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = "Select a mod on the left to get started";
         public string ApplyModButtonText { get; set; } = "Apply Mod";
@@ -57,6 +62,8 @@ namespace MassEffectModManager
                 return retvar;
             }
         }
+
+        public Visibility BusyProgressVarVisibility { get; set; } = Visibility.Visible;
 
         public Mod SelectedMod { get; set; }
         public ObservableCollectionExtended<Mod> LoadedMods { get; } = new ObservableCollectionExtended<Mod>();
@@ -465,10 +472,21 @@ namespace MassEffectModManager
 
         private void LaunchExternalTool_Clicked(object sender, RoutedEventArgs e)
         {
-            if (sender == ALOTInstaller_MenuItem)
+            string tool = null;
+            if (sender == ALOTInstaller_MenuItem) tool = ExternalToolLauncher.ALOTInstaller;
+            if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
+            if (sender == MassEffectIniModder_MenuItem) tool = ExternalToolLauncher.MEIM;
+            if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
+            if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
+
+            if (tool != null)
             {
-                var exLauncher = new ExternalToolLauncher(ExternalToolLauncher.ALOTInstaller);
+                var exLauncher = new ExternalToolLauncher(tool);
                 //Todo: Update Busy UI Content
+                BusyProgressVarVisibility = Visibility.Collapsed;
+                BusyContent = exLauncher;
+                IsBusy = true;
+                exLauncher.StartLaunchingTool();
             }
         }
     }
