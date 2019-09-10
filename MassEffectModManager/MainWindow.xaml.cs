@@ -482,6 +482,11 @@ namespace MassEffectModManager
             if (tool != null)
             {
                 var exLauncher = new ExternalToolLauncher(tool);
+                exLauncher.Close += (a, b) =>
+                {
+                    IsBusy = false;
+                    BusyContent = null;
+                };
                 //Todo: Update Busy UI Content
                 BusyProgressVarVisibility = Visibility.Collapsed;
                 BusyContent = exLauncher;

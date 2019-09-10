@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +15,7 @@ using ByteSizeLib;
 using Microsoft.Win32;
 using Octokit;
 using Serilog;
+using SevenZipExtractor;
 
 namespace MassEffectModManager.modmanager.usercontrols
 {
@@ -66,6 +68,11 @@ namespace MassEffectModManager.modmanager.usercontrols
                         //Must run on UI thread
                         //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
                         Log.Error("Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
+                        Action = "Failed to download " + tool;
+                        PercentVisibility = Visibility.Collapsed;
+                        PercentDownloaded = 0;
+                        Thread.Sleep(5000);
+                        OnClosing(EventArgs.Empty);
                         return;
                     }
                 }
@@ -83,7 +90,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                     if (tool == MEM)
                     {
                         //Checks based on major
-                        int releaseVer = int.Parse(latestRelease.Name);
+                        int releaseVer = int.Parse(latestRelease.TagName);
                         if (releaseVer > fvi.ProductMajorPart)
                         {
                             needsUpdated = true;
@@ -91,7 +98,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                     }
                     else
                     {
-                        Version serverVersion = new Version(latestRelease.Name);
+                        Version serverVersion = new Version(latestRelease.TagName);
                         Version localVersion = new Version(string.Format("{0}.{1}.{2}.{3}", fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart));
                         if (serverVersion > localVersion)
                         {
@@ -136,6 +143,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             downloadClient.DownloadFileCompleted += (a, b) =>
             {
                 //Todo: Account for errors
+                var outputDiretory = Directory.CreateDirectory(Path.GetDirectoryName(executable)).FullName;
                 switch (extension)
                 {
                     case ".exe":
@@ -144,9 +152,20 @@ namespace MassEffectModManager.modmanager.usercontrols
                             File.Delete(executable);
                         }
 
-                        Directory.CreateDirectory(Path.GetDirectoryName(executable));
                         File.Move(downloadPath, executable);
                         LaunchTool(executable);
+                        break;
+                    case ".rar":
+                    case ".7z":
+                    case ".zip":
+                        using (ArchiveFile archiveFile = new ArchiveFile(downloadPath))
+                        {
+                            Action = "Extracting " + tool;
+                            PercentVisibility = Visibility.Collapsed;
+                            PercentDownloaded = 0;
+                            archiveFile.Extract(outputDiretory); // extract all
+                            LaunchTool(executable);
+                        }
                         break;
                 }
             };
@@ -159,7 +178,16 @@ namespace MassEffectModManager.modmanager.usercontrols
             PercentVisibility = Visibility.Collapsed;
             PercentDownloaded = 0;
             Process.Start(localExecutable);
+            Thread.Sleep(2500);
+            OnClosing(EventArgs.Empty);
             //Need to somehow deal with args for ALOT Installer
+        }
+
+        public event EventHandler Close;
+        protected virtual void OnClosing(EventArgs e)
+        {
+            EventHandler handler = Close;
+            handler?.Invoke(this, e);
         }
 
         /*
@@ -208,6 +236,14 @@ namespace MassEffectModManager.modmanager.usercontrols
                 case ME3Explorer:
                     toolGithubOwner = "ME3Tweaks";
                     toolGithubRepoName = "ME3Explorer";
+                    break;
+                case MEM:
+                    toolGithubOwner = "MassEffectModder";
+                    toolGithubRepoName = "MassEffectModderLegacy";
+                    break;
+                case MEIM:
+                    toolGithubOwner = "ME3Tweaks";
+                    toolGithubRepoName = "MassEffectIniModder";
                     break;
 
             }
