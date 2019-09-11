@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManager.modmanager;
+using MassEffectModManager.modmanager.objects;
 using Serilog;
 
 namespace MassEffectModManager
@@ -171,5 +172,48 @@ namespace MassEffectModManager
             return destination;
         }
 
+        internal static string GetCachedTargetsFile()
+        {
+            return Path.Combine(GetAppDataFolder(), "CachedGameTargets.txt");
+        }
+
+        internal static List<GameTarget> GetCachedTargets(Mod.MEGame game)
+        {
+            var cacheFile = Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
+            if (File.Exists(cacheFile))
+            {
+                List<GameTarget> targets = new List<GameTarget>();
+                foreach (var file in File.ReadAllLines(cacheFile))
+                {
+                    //Validate game directory
+                    GameTarget target = new GameTarget(game, file, false);
+                    if (ValidateGameTarget(target))
+                    {
+                        targets.Add(target);
+                    }
+                }
+
+                return targets;
+            }
+            else
+            {
+                return new List<GameTarget>();
+            }
+        }
+
+        /// <summary>
+        /// Validates a game directory by checking for multiple things that should be present in a working game.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private static bool ValidateGameTarget(GameTarget target)
+        {
+            string basePath = target.TargetPath;
+
+            switch (target.Game)
+            {
+
+            }
+        }
     }
 }

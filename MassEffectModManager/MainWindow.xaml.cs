@@ -16,6 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using IniParser;
+using IniParser.Parser;
 using MassEffectModManager.GameDirectories;
 using MassEffectModManager.modmanager;
 using MassEffectModManager.modmanager.helpers;
@@ -261,6 +263,11 @@ namespace MassEffectModManager
 
             // TODO: Read cached settings.
             // TODO: Read and import java version configuration
+
+            var otherTargetsFileME1 = Utilities.GetCachedTargetsME1();
+            var otherTargetsFileME2 = Utilities.GetCachedTargetsME2();
+            var otherTargetsFileME3 = Utilities.GetCachedTargetsME3();
+
         }
 
         private void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
