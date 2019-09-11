@@ -130,15 +130,15 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="gamefileformats\HuffmanCompressionME1.cs" />
-    <Compile Include="gamefileformats\packages\CompressionHelper.cs" />
-    <Compile Include="gamefileformats\packages\ExportEntry.cs" />
-    <Compile Include="gamefileformats\packages\IEntry.cs" />
-    <Compile Include="gamefileformats\packages\IMEPackage.cs" />
-    <Compile Include="gamefileformats\packages\ImportEntry.cs" />
-    <Compile Include="gamefileformats\packages\MEPackage.cs" />
-    <Compile Include="gamefileformats\packages\MEPackageHandler.cs" />
-    <Compile Include="gamefileformats\packages\PackageExtensions.cs" />
-    <Compile Include="gamefileformats\packages\UnrealPackageFile.cs" />
+    <Compile Include="gamefileformats\mepackages\CompressionHelper.cs" />
+    <Compile Include="gamefileformats\mepackages\ExportEntry.cs" />
+    <Compile Include="gamefileformats\mepackages\IEntry.cs" />
+    <Compile Include="gamefileformats\mepackages\IMEPackage.cs" />
+    <Compile Include="gamefileformats\mepackages\ImportEntry.cs" />
+    <Compile Include="gamefileformats\mepackages\MEPackage.cs" />
+    <Compile Include="gamefileformats\mepackages\MEPackageHandler.cs" />
+    <Compile Include="gamefileformats\mepackages\PackageExtensions.cs" />
+    <Compile Include="gamefileformats\mepackages\UnrealPackageFile.cs" />
     <Compile Include="gamefileformats\sfar\SFAR_Extract.cs" />
     <Compile Include="gamefileformats\TalkFileME1.cs" />
     <Compile Include="gamefileformats\TalkFileME2ME3.cs" />
