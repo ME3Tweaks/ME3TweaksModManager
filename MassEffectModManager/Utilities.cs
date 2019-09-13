@@ -150,6 +150,7 @@ namespace MassEffectModManager
         public static Stream GetResourceStream(string assemblyResource)
         {
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var res = assembly.GetManifestResourceNames();
             return assembly.GetManifestResourceStream(assemblyResource);
         }
 
@@ -158,6 +159,7 @@ namespace MassEffectModManager
             Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
             if (!File.Exists(destination) || overwrite)
             {
+
                 using (Stream stream = Utilities.GetResourceStream(internalResourceName))
                 {
 
@@ -172,6 +174,67 @@ namespace MassEffectModManager
                 Log.Warning("File already exists. Not overwriting file.");
             }
             return destination;
+        }
+
+        internal static bool InstallBinkBypass(GameTarget target)
+        {
+            if (target == null) return false;
+            var binkPath = GetBinkw32File(target);
+            if (target.Game == Mod.MEGame.ME1)
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
+            }
+            else if (target.Game == Mod.MEGame.ME2)
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
+
+            }
+            else if (target.Game == Mod.MEGame.ME3)
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
+            }
+            return true;
+        }
+
+        internal static string GetBinkw32File(GameTarget target)
+        {
+            if (target == null) return null;
+            if (target.Game == Mod.MEGame.ME1)return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == Mod.MEGame.ME2)return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
+            return null;
+        }
+
+        internal static bool UninstallBinkBypass(GameTarget target)
+        {
+            if (target == null) return false;
+            var binkPath = GetBinkw32File(target);
+            if (target.Game == Mod.MEGame.ME1)
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                File.Delete(obinkPath);
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
+            }
+            else if (target.Game == Mod.MEGame.ME2)
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                File.Delete(obinkPath);
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
+            }
+            else if (target.Game == Mod.MEGame.ME3)
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
+                File.Delete(obinkPath);
+
+                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
+            }
+            return true;
         }
 
         internal static string GetCachedTargetsFile(Mod.MEGame game)

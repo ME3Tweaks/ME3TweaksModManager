@@ -149,6 +149,7 @@ namespace MassEffectModManager
         public ICommand CheckForContentUpdatesCommand { get; set; }
         public ICommand AddTargetCommand { get; set; }
         public ICommand RunGameConfigToolCommand { get; set; }
+        public ICommand Binkw32Command { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -156,6 +157,50 @@ namespace MassEffectModManager
             CheckForContentUpdatesCommand = new GenericCommand(CheckForContentUpdates, NetworkThreadNotRunning);
             AddTargetCommand = new GenericCommand(AddTarget, () => ModsLoaded);
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
+            Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
+        }
+
+        private bool CanToggleBinkw32(object obj)
+        {
+            if (obj is string str && Enum.TryParse(str, out MEGame game))
+            {
+                var target = GetCurrentTarget(game);
+                return File.Exists(Utilities.GetBinkw32File(target));
+            }
+
+            return false;
+        }
+
+        private void ToggleBinkw32(object obj)
+        {
+            if (obj is string str && Enum.TryParse(str, out MEGame game))
+            {
+                var target = GetCurrentTarget(game);
+                bool install = false;
+                switch (game)
+                {
+                    case MEGame.ME1:
+                        install = !ME1ASILoaderInstalled;
+                        break;
+                    case MEGame.ME2:
+                        install = !ME2ASILoaderInstalled;
+                        break;
+                    case MEGame.ME3:
+                        install = !ME3ASILoaderInstalled;
+                        break;
+                }
+
+                if (install)
+                {
+                    Utilities.InstallBinkBypass(target);
+                }
+                else
+                {
+                    Utilities.UninstallBinkBypass(target);
+                }
+
+                UpdateBinkStatus(target.Game);
+            }
         }
 
         private void RunGameConfigTool(object obj)

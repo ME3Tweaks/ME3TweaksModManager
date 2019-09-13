@@ -7,6 +7,7 @@
         xmlns:p="clr-namespace:MassEffectModManager.Properties"
         xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
         mc:Ignorable="d"
+        Closing="OptionsWindow_Closing"
         WindowStartupLocation="CenterOwner"
         Title="Mod Manager Options" Height="450" Width="459">
     <Window.Resources>

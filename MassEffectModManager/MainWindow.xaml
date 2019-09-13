@@ -139,13 +139,13 @@
                     </MenuItem>
                     <MenuItem Header="Binkw32 Bypasses">
                         <MenuItem Header="Mass Effect" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="{Binding ME1ASILoaderText}" IsChecked="{Binding ME1ASILoaderInstalled}"/>
+                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME1" Header="{Binding ME1ASILoaderText}" IsChecked="{Binding ME1ASILoaderInstalled}" StaysOpenOnClick="True"/>
                         <Separator/>
                         <MenuItem Header="Mass Effect 2" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="{Binding ME2ASILoaderText}"  IsChecked="{Binding ME2ASILoaderInstalled}"/>
+                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME2" Header="{Binding ME2ASILoaderText}"  IsChecked="{Binding ME2ASILoaderInstalled}" StaysOpenOnClick="True"/>
                         <Separator/>
                         <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}"/>
+                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
                     </MenuItem>
                     <MenuItem Header="Grant write access to game directories"/>
 

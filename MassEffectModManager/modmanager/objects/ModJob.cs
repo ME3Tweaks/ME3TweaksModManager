@@ -66,6 +66,34 @@ namespace MassEffectModManager.modmanager
         /// </summary>
         Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         List<string> FilesToRemove = new List<string>();
+
+        internal static readonly JobHeader[] SupportedNonCustomDLCJobHeaders =
+        {
+            //Basegame is supported by all games so it will be parsed separately
+            //JobHeader.BASEGAME,
+            JobHeader.BALANCE_CHANGES,
+            JobHeader.RESURGENCE,
+            JobHeader.REBELLION,
+            JobHeader.EARTH,
+            JobHeader.RETALIATION,
+            JobHeader.RECKONING,
+            JobHeader.PATCH1,
+            JobHeader.PATCH2,
+            JobHeader.FROM_ASHES,
+            JobHeader.EXTENDED_CUT,
+            JobHeader.LEVIATHAN,
+            JobHeader.OMEGA,
+            JobHeader.CITADEL,
+            JobHeader.CITADEL_BASE,
+            JobHeader.APPEARANCE,
+            JobHeader.FIREFIGHT,
+            JobHeader.GROUNDSIDE,
+            JobHeader.GENESIS2,
+            JobHeader.COLLECTORS_EDITION,
+            JobHeader.TESTPATCH
+        };
+        
+
         /// <summary>
         /// ModDesc.ini Header that this mod job targets
         /// </summary>

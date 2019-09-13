@@ -36,9 +36,13 @@ namespace MassEffectModManager.modmanager.windows
             if (m.ShowDialog(this) == CommonFileDialogResult.Ok)
             {
                 Properties.Settings.Default.ModLibraryPath = m.FileName;
-                Properties.Settings.Default.Save();
                 //TODO: reload mods
             }
+        }
+
+        private void OptionsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Properties.Settings.Default.Save();
         }
     }
 }
