@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IniParser.Parser;
+using MassEffectModManager.modmanager.helpers;
 using Serilog;
 
 namespace MassEffectModManager.modmanager
@@ -230,16 +231,20 @@ namespace MassEffectModManager.modmanager
                         CLog.Information("Subdirectory (moddir): " + jobSubdirectory, LogModStartup);
                         string fullSubPath = Path.Combine(ModPath, jobSubdirectory);
 
-                        //Read replacement files (ModDesc 2.0)
-                        string replaceFilesSourceList = iniData[headerAsString]["newfiles"];
-                        string replaceFilesTargetList = iniData[headerAsString]["replacefiles"];
+                        //Replace files (ModDesc 2.0)
+                        string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
+                        string replaceFilesTargetList = iniData[headerAsString]["replacefiles"]; //Present in MM2. So this will always be read
 
                         //Add files (ModDesc 4.1)
-                        string addFilesSourceList = iniData[headerAsString]["addfiles"];
-                        string addFilesTargetList = iniData[headerAsString]["addfilestargets"];
+                        string addFilesSourceList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["addfiles"] : null;
+                        string addFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["addfilestargets"] : null;
+
+                        //Add files Read-Only (ModDesc 4.3)
+                        string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString]["addfilesreadonlytargets"] : null;
+
 
                         //Remove files (ModDesc 4.1)
-                        string removeFilesTargetList = iniData[headerAsString]["removefilestargets"];
+                        string removeFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["removefilestargets"] : null;
 
                         //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
                         bool taskDoesSomething = replaceFilesSourceList != null && replaceFilesTargetList != null;
@@ -270,6 +275,76 @@ namespace MassEffectModManager.modmanager
 
                             CLog.Information($"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", LogModStartup);
                         }
+
+                        List<string> addFilesSourceSplit = null;
+                        List<string> addFilesTargetSplit = null;
+                        if (addFilesSourceList != null && addFilesTargetList != null)
+                        {
+                            //Parse the addfiles and addfilestargets list and ensure they have the same number of elements in them.
+                            addFilesSourceSplit = addFilesSourceList.Split(';').ToList();
+                            addFilesTargetSplit = addFilesTargetList.Split(';').ToList();
+                            if (addFilesSourceSplit.Count != addFilesTargetSplit.Count)
+                            {
+                                //Mismatched source and target lists
+                                Log.Error($"Mod has job header ({headerAsString}) that has mismatched addfiles and addfilestargets descriptor lists. addfiles has {addFilesSourceSplit.Count} items, addfilestargets has {addFilesTargetSplit.Count} items. The number of items in each list must match.");
+                                LoadFailedReason = $"Job header ({headerAsString}) has mismatched addfiles and addfilestargets descriptor lists. addfiles has {addFilesSourceSplit.Count} items, addfilestargets has {addFilesTargetSplit.Count} items. The number of items in each list must match.";
+                                return;
+                            }
+
+                            CLog.Information($"Parsing addfiles/addfilestargets on {headerAsString}. Found {addFilesTargetSplit.Count} items in lists", LogModStartup);
+                        }
+
+                        //Add files read only targets
+                        List<string> addFilesReadOnlySplit = null;
+                        if (addFilesTargetReadOnlyList != null)
+                        {
+                            addFilesReadOnlySplit = addFilesTargetList.Split(';').ToList();
+
+                            //Ensure add targets list contains this list
+                            if (addFilesTargetSplit != null)
+                            {
+                                if (!addFilesTargetSplit.ContainsAll(addFilesReadOnlySplit, StringComparer.InvariantCultureIgnoreCase))
+                                {
+                                    //readonly list contains elements not contained in the targets list
+                                    Log.Error($"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however it contains items that are not part of the addfilestargets list. This is not allowed.");
+                                    LoadFailedReason = $"Job header ({headerAsString}) specifies the addfilesreadonlytargets descriptor, however it contains items that are not present in the addfilestargets list. This is not allowed.";
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                //readonly target specified but nothing in the addfilestargets list/unspecified
+                                Log.Error($"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however there is no addfilestargets specified.");
+                                LoadFailedReason = $"Job header ({headerAsString}) specifies the addfilesreadonlytargets descriptor, but the addfilestargets descriptor is not set.";
+                                return;
+                            }
+                            CLog.Information($"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", LogModStartup);
+                        }
+
+                        List<string> removeFilesSplit = new List<string>();
+
+                        if (removeFilesTargetList != null)
+                        {
+                            removeFilesSplit = removeFilesTargetList.Split(';').ToList();
+                            CLog.Information($"Parsing removefilestargets on {headerAsString}. Found {removeFilesSplit.Count} items in list", LogModStartup);
+
+                            if (removeFilesSplit.Any(x => x.Contains("..")))
+                            {
+                                //Security violation: Cannot use .. in filepath
+                                Log.Error($"Mod has job header ({headerAsString}) that has removefilestargets descriptor set, however at least one item in the list has a .. in it's listed file path. This is not allowed for security purposes.");
+                                LoadFailedReason = $"Job header ({headerAsString}) has removefilestargets descriptor set, however at least one item in the list has a .. in it's listed file path. This is not allowed for security purposes."";
+                                return;
+                            }
+                        }
+
+                        //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
+                        //In Java Mod Manager, this required 4.1 moddesc
+                        string jobRequirement = iniData[headerAsString]["jobdescription"];
+                        CLog.Information($"Read job requirement text: {jobRequirement}",LogModStartup && jobRequirement != null);
+
+
+
+
 
                     }
                 }

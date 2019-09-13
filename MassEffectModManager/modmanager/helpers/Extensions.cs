@@ -773,6 +773,11 @@ namespace MassEffectModManager.modmanager.helpers
         {
             return array[rng.Next(array.Length)];
         }
+
+        public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values, IEqualityComparer<T> comparer = null)
+        {
+            return values.All(value => source.Contains(value, comparer));
+        }
     }
 
     public static class ListExtensions
