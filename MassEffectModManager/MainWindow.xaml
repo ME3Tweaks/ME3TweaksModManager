@@ -104,27 +104,48 @@
                 </MenuItem>
                 <MenuItem Header="Tools" Padding="4">
                     <MenuItem Header="Run official game configuration tool">
-                        <MenuItem Header="Mass Effect"/>
-                        <MenuItem Header="Mass Effect 2"/>
-                        <MenuItem Header="Mass Effect 3"/>
+                        <MenuItem Header="Mass Effect" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME1">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME1_48.ico" Width="64" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Mass Effect 2" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME2">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME2_48.ico" Width="64" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Mass Effect 3" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME3">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME3_48.ico" Width="64"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Generate new mod (Starter Kit)">
-                        <MenuItem Name="GenerateStarterKitME1_MenuItem" Header="Mass Effect" Click="GenerateStarterKit_Clicked"/>
-                        <MenuItem Name="GenerateStarterKitME2_MenuItem"  Header="Mass Effect 2" Click="GenerateStarterKit_Clicked"/>
-                        <MenuItem Name="GenerateStarterKitME3_MenuItem"  Header="Mass Effect 3" Click="GenerateStarterKit_Clicked"/>
+                        <MenuItem Name="GenerateStarterKitME1_MenuItem" Header="Mass Effect" Click="GenerateStarterKit_Clicked">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME1_48.ico" Width="64" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Name="GenerateStarterKitME2_MenuItem"  Header="Mass Effect 2" Click="GenerateStarterKit_Clicked">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME2_48.ico" Width="64" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Name="GenerateStarterKitME3_MenuItem"  Header="Mass Effect 3" Click="GenerateStarterKit_Clicked">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME3_48.ico" Width="64"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Binkw32 Bypasses">
                         <MenuItem Header="Mass Effect" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="Binkw32 ASI Bypass is installed"/>
-                        <MenuItem Header="Uninstall bypass"/>
+                        <MenuItem Header="{Binding ME1ASILoaderText}" IsChecked="{Binding ME1ASILoaderInstalled}"/>
                         <Separator/>
                         <MenuItem Header="Mass Effect 2" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="Binkw32 ASI Bypass is installed"/>
-                        <MenuItem Header="Uninstall bypass"/>
+                        <MenuItem Header="{Binding ME2ASILoaderText}"  IsChecked="{Binding ME2ASILoaderInstalled}"/>
                         <Separator/>
                         <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="Binkw32 ASI Bypass is insstalled"/>
-                        <MenuItem Header="Uninstall bypass"/>
+                        <MenuItem Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}"/>
                     </MenuItem>
                     <MenuItem Header="Grant write access to game directories"/>
 
@@ -217,10 +238,11 @@
                     <ComboBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ComboBoxItem}">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="IsEnabled" Value="{Binding Selectable}" />
                         </Style>
                     </ComboBox.ItemContainerStyle>
                 </ComboBox>
-                <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Grid.Row="3" Grid.Column="4" Padding="5,0"/>
+                <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0"/>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
                 <DockPanel Grid.Row="5" Grid.Column="1">
                     <DockPanel DockPanel.Dock="Top">
@@ -262,7 +284,7 @@
                          TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
                         <TextBox.Text>
                             <PriorityBinding>
-                                <Binding Path="SelectedMod.ModDescription" Mode="OneWay"/>
+                                <Binding Path="SelectedMod.DisplayedModDescription" Mode="OneWay"/>
                                 <Binding Path="NoModSelectedText" Mode="OneWay"/>
                             </PriorityBinding>
                         </TextBox.Text>

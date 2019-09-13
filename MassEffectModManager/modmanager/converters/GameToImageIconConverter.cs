@@ -13,6 +13,7 @@ namespace MassEffectModManager.modmanager.converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var game = (Mod.MEGame) value;
+            if (game == Mod.MEGame.Unknown) { return null; }
             return "/images/gameicons/" + game.ToString() + "_48.ico";
         }
 

@@ -28,6 +28,7 @@ namespace MassEffectModManager.modmanager
         //Mod variables
         public bool ValidMod;
         private bool ignoreLoadErrors;
+        private List<ModJob> InstallationJobs = new List<ModJob>();
 
         //private List<ModJob> jobs;
 
@@ -56,6 +57,8 @@ namespace MassEffectModManager.modmanager
                 {
                     sb.AppendLine($"ModMaker code: {ModModMakerID}");
                 }
+
+                sb.AppendLine("Modifies: " + string.Join(", ", InstallationJobs.Select(x => x.jobHeader.ToString()).ToList()));
                 return sb.ToString();
             }
         }
@@ -77,7 +80,14 @@ namespace MassEffectModManager.modmanager
         {
             ModPath = Path.GetDirectoryName(filePath);
             Log.Information("Loading moddesc: " + filePath);
-            loadMod(File.ReadAllText(filePath), expectedGame);
+            try
+            {
+                loadMod(File.ReadAllText(filePath), expectedGame);
+            }
+            catch (Exception e)
+            {
+                LoadFailedReason = "Error occured parsing " + filePath + ": " + e.Message;
+            }
         }
 
         private void loadMod(string iniText, MEGame expectedGame)
@@ -156,16 +166,35 @@ namespace MassEffectModManager.modmanager
                 return;
             }
 
-            if (ModDescTargetVersion < 2)
+            if (ModDescTargetVersion < 2) //Mod Manager 1 (2012)
             {
                 //Ancient legacy mod that only supports ME3 basegame coalesced
                 ModDescTargetVersion = 1;
-                if (!ignoreLoadErrors && !File.Exists(Path.Combine(ModPath, "Coalesced.bin")))
+                var legacyCoalFile = Path.Combine(ModPath, "Coalesced.bin");
+                if (!ignoreLoadErrors && !File.Exists(legacyCoalFile))
                 {
                     Log.Error($"{ModName} is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.");
                     LoadFailedReason = $"This mod is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.";
                     return;
                 }
+                ModJob basegameJob = new ModJob(ModJob.JobHeader.BASEGAME);
+                basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", legacyCoalFile, ignoreLoadErrors);
+                InstallationJobs.Add(basegameJob);
+                ValidMod = true;
+                CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", Properties.Settings.Default.LogModStartup);
+            }
+            if (ModDescTargetVersion >= 2.0 && ModDescTargetVersion < 3) //Mod Manager 2 (2013)
+            {
+                ModDescTargetVersion = 2.0;
+            }
+            if (ModDescTargetVersion >= 3 || ModDescTargetVersion <= 3.1) //Mod Manager 3 (2014)
+            {
+                ModDescTargetVersion = 3.0;
+            }
+            //A few mods shipped as 3.2 moddesc, however the features they targeted are officially supported in 3.1
+            if (ModDescTargetVersion > 3.1 && ModDescTargetVersion < 4.0) //Mod Manager 3.1 (2014)
+            {
+                ModDescTargetVersion = 3.1;
             }
 
             //Thread.Sleep(500);
