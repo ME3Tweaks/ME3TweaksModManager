@@ -52,6 +52,7 @@
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
+        <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}">
         <DockPanel>
@@ -226,12 +227,13 @@
 
                 <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold"/>
                 <TextBlock Text="{Binding AppTitleText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
-                <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0">
+                <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel HorizontalAlignment="Stretch">
-                                <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0"/>
-                                <TextBlock Text="{Binding TargetPath}"/>
+                                <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
+                                <Image DockPanel.Dock="Left" Source="/images/origin.png" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
+                                <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0"/>
                             </DockPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>

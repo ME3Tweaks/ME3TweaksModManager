@@ -155,12 +155,14 @@
     <Compile Include="gamefileformats\unreal\TOCBinFile.cs" />
     <Compile Include="gamefileformats\unreal\UnrealFlags.cs" />
     <Compile Include="modmanager\CLog.cs" />
+    <Compile Include="modmanager\converters\OriginBootTargetVisibilityConverter.cs" />
     <Compile Include="modmanager\converters\GridLengthConverter.cs" />
     <Compile Include="modmanager\converters\StarterKitRowHeightConverter.cs" />
     <Compile Include="modmanager\converters\BoolEnabledConverter.cs" />
     <Compile Include="modmanager\converters\BoolVisibilityConverter.cs" />
     <Compile Include="modmanager\converters\GameToImageIconConverter.cs" />
     <Compile Include="modmanager\converters\NullEnabledConverter.cs" />
+    <Compile Include="modmanager\helpers\CopyDir.cs" />
     <Compile Include="modmanager\helpers\Extensions.cs" />
     <Compile Include="modmanager\helpers\LZO2Helper.cs" />
     <Compile Include="modmanager\helpers\NamedBackgroundWorker.cs">
@@ -185,6 +187,9 @@
     <Compile Include="modmanager\objects\ModJob.cs" />
     <Compile Include="modmanager\usercontrols\ExternalToolLauncher.xaml.cs">
       <DependentUpon>ExternalToolLauncher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="modmanager\usercontrols\ModInstaller.xaml.cs">
+      <DependentUpon>ModInstaller.xaml</DependentUpon>
     </Compile>
     <Compile Include="modmanager\windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
@@ -218,6 +223,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="modmanager\usercontrols\ExternalToolLauncher.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="modmanager\usercontrols\ModInstaller.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -320,7 +329,9 @@
   <ItemGroup>
     <None Include="staticfiles\dynamichelp\resources\DLC_AUTH_FAIL.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="images\origin.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -271,6 +271,7 @@ namespace MassEffectModManager
         public bool IsLoadingMods { get; set; }
         public List<string> LoadedTips { get; } = new List<string>();
         public bool ModsLoaded { get; private set; } = false;
+        public GameTarget SelectedGameTarget { get; private set; }
 
         private bool CanReloadMods()
         {
@@ -279,12 +280,24 @@ namespace MassEffectModManager
 
         private bool CanApplyMod()
         {
-            return false; //todo: Add checks for this.
+            return SelectedMod != null && InstallationTargets_ComboBox.SelectedItem is GameTarget gt && gt.Game == SelectedMod.Game;
         }
 
         private void ApplyMod()
         {
-            throw new NotImplementedException();
+            BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob("ModInstall", $"Installing {SelectedMod.ModName}", $"Installed {SelectedMod.ModName}");
+            var modInstaller = new ModInstaller(SelectedMod, SelectedGameTarget);
+            modInstaller.Close += (a, b) =>
+            {
+                IsBusy = false;
+                BusyContent = null;
+                backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+            };
+            //Todo: Update Busy UI Content
+            BusyProgressVarVisibility = Visibility.Collapsed;
+            BusyContent = modInstaller;
+            IsBusy = true;
+            modInstaller.BeginInstallingMod();
         }
 
         private void ReloadMods()
@@ -323,7 +336,7 @@ namespace MassEffectModManager
             }
         }
 
-        private GameTarget GetCurrentTarget(MEGame game) => InstallationTargets.FirstOrDefault(x => x.Game == game && x.Active);
+        private GameTarget GetCurrentTarget(MEGame game) => InstallationTargets.FirstOrDefault(x => x.Game == game && x.RegistryActive);
 
         public void LoadMods(Mod modToHighlight = null)
         {
@@ -426,7 +439,8 @@ namespace MassEffectModManager
                 if (failureReason == null)
                 {
                     InstallationTargets.Add(target);
-                } else
+                }
+                else
                 {
                     Log.Error("Current boot target for ME1 is invalid: " + failureReason);
                 }
@@ -458,7 +472,7 @@ namespace MassEffectModManager
             {
                 SelectedMod = (Mod)e.AddedItems[0];
                 SetWebsitePanelVisibility(SelectedMod.ModWebsite != DefaultWebsite);
-                var installTarget = InstallationTargets.FirstOrDefault(x => x.Active && x.Game == SelectedMod.Game);
+                var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == SelectedMod.Game);
                 if (installTarget != null)
                 {
                     InstallationTargets_ComboBox.SelectedItem = installTarget;
@@ -691,6 +705,11 @@ namespace MassEffectModManager
         private void ASIModManager_Click(object sender, RoutedEventArgs e)
         {
             LaunchExternalTool(ExternalToolLauncher.ME3Explorer, ExternalToolLauncher.ME3EXP_ASIMANAGER);
+        }
+
+        private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
         }
     }
 }

@@ -15,12 +15,12 @@ namespace MassEffectModManager.modmanager.objects
         private static readonly Color ME3BackgroundColor = Color.FromArgb(80, 196, 24, 24);
         public Mod.MEGame Game { get; }
         public string TargetPath { get; }
-        public bool Active { get; set; }
+        public bool RegistryActive { get; set; }
         public Brush BackgroundColor
         {
             get
             {
-                if (Active)
+                if (RegistryActive)
                 {
                     switch (Game)
                     {
@@ -38,10 +38,10 @@ namespace MassEffectModManager.modmanager.objects
 
         public bool Selectable { get; internal set; } = true;
 
-        public GameTarget(Mod.MEGame game, string target, bool currentActive)
+        public GameTarget(Mod.MEGame game, string target, bool currentRegistryActive)
         {
             this.Game = game;
-            this.Active = currentActive;
+            this.RegistryActive = currentRegistryActive;
             this.TargetPath = target.TrimEnd('\\');
         }
 

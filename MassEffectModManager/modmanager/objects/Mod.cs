@@ -30,7 +30,7 @@ namespace MassEffectModManager.modmanager
         //Mod variables
         public bool ValidMod;
         private bool ignoreLoadErrors;
-        private List<ModJob> InstallationJobs = new List<ModJob>();
+        public List<ModJob> InstallationJobs = new List<ModJob>();
 
         //private List<ModJob> jobs;
 
@@ -83,6 +83,9 @@ namespace MassEffectModManager.modmanager
         public int ModClassicUpdateCode { get; set; }
         public string LoadFailedReason { get; set; }
         public List<string> RequiredDLC = new List<string>();
+        private List<string> AdditionalDeploymentFolders;
+        private List<string> AdditionalDeploymentFiles;
+        private bool emptyModIsOK;
 
         public string ModPath { get; }
         public string ModDescPath => Path.Combine(ModPath, "moddesc.ini");
@@ -192,18 +195,11 @@ namespace MassEffectModManager.modmanager
             {
                 //Ancient legacy mod that only supports ME3 basegame coalesced
                 ModDescTargetVersion = 1;
-                var legacyCoalFile = Path.Combine(ModPath, "Coalesced.bin");
-                if (!ignoreLoadErrors && !File.Exists(legacyCoalFile))
+                if (CheckAndCreateLegacyCoalescedJob())
                 {
-                    Log.Error($"{ModName} is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.");
-                    LoadFailedReason = $"This mod is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.";
-                    return;
+                    ValidMod = true;
                 }
 
-                ModJob basegameJob = new ModJob(ModJob.JobHeader.BASEGAME);
-                basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", legacyCoalFile, ignoreLoadErrors);
-                InstallationJobs.Add(basegameJob);
-                ValidMod = true;
                 CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
             }
 
@@ -501,9 +497,131 @@ namespace MassEffectModManager.modmanager
                 }
             }
             #endregion
+            #region Additional Mod Items
+            //Required DLC (Mod Manager 5.0)
+            var requiredDLCText = iniData["ModInfo"]["requireddlc"];
+            if (requiredDLCText != null)
+            {
+                RequiredDLC = requiredDLCText.Split(';').ToList();
+                //Todo: Validate
+            }
+
+            //Additional Deployment Folders (Mod Manager 5.1)
+            var additonaldeploymentfoldersStr = ModDescTargetVersion >= 5.1 ? iniData["UPDATES"]["additionaldeploymentfolders"] : null;
+            if (additonaldeploymentfoldersStr != null)
+            {
+                var addlFolderSplit = additonaldeploymentfoldersStr.Split(';').ToList();
+                foreach (var addlFolder in addlFolderSplit)
+                {
+                    //Todo: Check to make sure this isn't contained by one of the jobs or alt files
+                    if (addlFolder.Contains("..") || addlFolder.Contains("/") || addlFolder.Contains("\\"))
+                    {
+                        //Security violation: Cannot use .. / or \ in filepath
+                        Log.Error($"UPDATES header additionaldeploymentfolders includes directory ({addlFolder}) that contains a .., \\ or /, which are not permitted.");
+                        LoadFailedReason = $"UPDATES header additionaldeploymentfolders includes directory ({addlFolder}) that contains a .., \\ or /, which are not permitted.";
+                        return;
+                    }
+                    //Check folder exists
+                    if (Directory.Exists(Path.Combine(ModPath, addlFolder)))
+                    {
+                        Log.Error($"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}");
+                        LoadFailedReason = $"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}";
+                        return;
+                    }
+
+                    AdditionalDeploymentFolders = addlFolderSplit;
+                }
+            }
+            //Additional Root Deployment Files (Mod Manager 6.0)
+            //Todo: Update documentation
+            var additonaldeploymentfilesStr = ModDescTargetVersion >= 6.0 ? iniData["UPDATES"]["additionaldeploymentfiles"] : null;
+            if (additonaldeploymentfilesStr != null)
+            {
+                var addlFileSplit = additonaldeploymentfilesStr.Split(';').ToList();
+                foreach (var addlFile in addlFileSplit)
+                {
+                    if (addlFile.Contains("..") || addlFile.Contains("/") || addlFile.Contains("\\"))
+                    {
+                        //Security violation: Cannot use .. / or \ in filepath
+                        Log.Error($"UPDATES header additionaldeploymentfiles includes file ({addlFile}) that contains a .., \\ or /, which are not permitted.");
+                        LoadFailedReason = $"UPDATES header additionaldeploymentfiles includes file ({addlFile}) that contains a .., \\ or /, which are not permitted.";
+                        return;
+                    }
+                    //Check folder exists
+                    if (!File.Exists(Path.Combine(ModPath, addlFile)))
+                    {
+                        Log.Error($"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}");
+                        LoadFailedReason = $"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}";
+                        return;
+                    }
+
+                    AdditionalDeploymentFiles = addlFileSplit;
+                }
+            }
+
+            #endregion
+
+            #region Backwards Compatibilty
+            //Mod Manager 2.0 supported "modcoal" flag that would replicate Mod Manager 1.0 functionality of coalesced swap since basegame jobs at the time
+            //were not yet supported
+
+            string modCoalFlag = ModDescTargetVersion == 2 ? iniData["ModInfo"]["modcoal"] : null;
+            //This check could be rewritten to simply check for non zero string. However, for backwards compatibility sake, we will keep the original
+            //method of checking in place.
+            if (modCoalFlag != null && int.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
+            {
+                CLog.Information("Mod targets ModDesc 2.0, found modcoal flag", LogModStartup);
+                if (!CheckAndCreateLegacyCoalescedJob())
+                {
+                    CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
+                    return;
+                }
+            }
+            #endregion
             //Thread.Sleep(500);
-            ValidMod = true;
+            if (InstallationJobs.Count > 0)
+            {
+                CLog.Information($"Finalizing: {InstallationJobs.Count} installation job(s) were found.", LogModStartup);
+                ValidMod = true;
+            }
+            else if (emptyModIsOK) //Empty Load OK is used by Mixins. This may be redone for MM6
+            {
+                CLog.Information($"Finalizing: No installation jobs were found, but empty mods are allowed in this loading session.", LogModStartup);
+                ValidMod = true;
+            }
+            else
+            {
+                Log.Error("No installation jobs were specified. This mod does nothing.");
+                LoadFailedReason = "No installation jobs were specified. This mod does nothing.";
+            }
             CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
+        }
+
+        private bool CheckAndCreateLegacyCoalescedJob()
+        {
+            var legacyCoalFile = Path.Combine(ModPath, "Coalesced.bin");
+            if (!ignoreLoadErrors && !File.Exists(legacyCoalFile))
+            {
+                if (ModDescTargetVersion == 1.0)
+                {
+                    //Mod Manager 1/1.1
+                    Log.Error($"{ModName} is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.");
+                    LoadFailedReason = $"This mod is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.";
+                }
+                else
+                {
+                    //Mod Manager 2
+                    Log.Error($"{ModName} specifies modcoal descriptor for cmmver 2.0, but the local Coalesced file doesn't exist: {legacyCoalFile}");
+                    LoadFailedReason = $"This mod specifies modcoal descriptor for cmmver 2.0, but the local Coalesced file doesn't exist: {legacyCoalFile}";
+                }
+
+                return false;
+            }
+
+            ModJob basegameJob = new ModJob(ModJob.JobHeader.BASEGAME);
+            basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", legacyCoalFile, ignoreLoadErrors);
+            InstallationJobs.Add(basegameJob);
+            return true;
         }
     }
 }

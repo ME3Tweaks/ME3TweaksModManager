@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MassEffectModManager.modmanager.objects;
 using static MassEffectModManager.modmanager.Mod;
 
 namespace MassEffectModManager.GameDirectories
@@ -67,6 +68,20 @@ namespace MassEffectModManager.GameDirectories
                     return ME3Directory.DLCPath;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(game), game, null);
+            }
+        }
+
+        public static string DLCPath(GameTarget target)
+        {
+            switch (target.Game)
+            {
+                case MEGame.ME1:
+                    return Path.Combine(target.TargetPath, "DLC");
+                case MEGame.ME2:
+                case MEGame.ME3:
+                    return Path.Combine(target.TargetPath, "BIOGame", "DLC");
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(target.Game), target.Game, null);
             }
         }
 

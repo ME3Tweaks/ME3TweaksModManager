@@ -301,17 +301,19 @@ namespace MassEffectModManager.modmanager.windows
                 ini["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
                 ini["ModInfo"]["game"] = skOption.ModGame.ToString();
                 ini["ModInfo"]["modname"] = skOption.ModName;
-                ini["ModInfo"]["moddev"] = skOption.ModName;
+                ini["ModInfo"]["moddev"] = skOption.ModDeveloper;
                 ini["ModInfo"]["moddesc"] = Utilities.ConvertNewlineToBr(skOption.ModDescription);
                 ini["ModInfo"]["modver"] = 1.0.ToString(CultureInfo.InvariantCulture);
                 ini["ModInfo"]["modsite"] = skOption.ModURL;
+
+                ini["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
+                ini["CUSTOMDLC"]["destdirs"] = dlcFolderName;
 
 
                 var modDescPath = Path.Combine(modPath, "moddesc.ini");
                 new FileIniDataParser().WriteFile(modDescPath, ini);
                 Mod m = new Mod(modDescPath, skOption.ModGame);
                 args.Result = m;
-                Thread.Sleep(2999);
             };
             bw.RunWorkerCompleted += (a, b) => { FinishedCallback(b.Result as Mod); };
             bw.RunWorkerAsync(options);

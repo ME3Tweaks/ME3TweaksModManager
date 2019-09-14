@@ -4,7 +4,7 @@ using System.IO;
 
 namespace MassEffectModManager.modmanager
 {
-    internal class ModJob
+    public class ModJob
     {
         public enum JobHeader
         {
@@ -61,7 +61,7 @@ namespace MassEffectModManager.modmanager
         /// <summary>
         /// Maps in-game relative paths to the file that will be used to install to that location
         /// </summary>
-        Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         /// <summary>
         /// List of files that will be removed from the game relative to this job's header directory.
         /// </summary>
@@ -69,15 +69,14 @@ namespace MassEffectModManager.modmanager
         /// <summary>
         /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game)
         /// </summary>
-        internal Dictionary<string,string> CustomDLCFolderMapping = new Dictionary<string, string>();
+        public Dictionary<string,string> CustomDLCFolderMapping = new Dictionary<string, string>();
 
         /// <summary>
         /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include BASEGAME or CUSTOMDLC.
         /// </summary>
         internal static readonly JobHeader[] SupportedNonCustomDLCJobHeaders =
         {
-            //Basegame is supported by all games so it will be parsed separately
-            //JobHeader.BASEGAME,
+            JobHeader.BASEGAME,
             JobHeader.BALANCE_CHANGES,
             JobHeader.RESURGENCE,
             JobHeader.REBELLION,
