@@ -72,12 +72,12 @@ namespace MassEffectModManager.modmanager
         public Dictionary<string, string> CustomDLCFolderMapping = new Dictionary<string, string>();
 
         /// <summary>
-        /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include BASEGAME or CUSTOMDLC.
+        /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include CUSTOMDLC or BALANCE_CHANGES, does include BASEGAME (which will work for ME1/ME2)
         /// </summary>
         internal static readonly JobHeader[] SupportedNonCustomDLCJobHeaders =
         {
             JobHeader.BASEGAME,
-            JobHeader.BALANCE_CHANGES,
+            //JobHeader.BALANCE_CHANGES, //Must be parsed separately
             JobHeader.RESURGENCE,
             JobHeader.REBELLION,
             JobHeader.EARTH,
@@ -184,8 +184,8 @@ namespace MassEffectModManager.modmanager
             [JobHeader.FIREFIGHT] = "DLC_CON_GUN01",
             [JobHeader.GROUNDSIDE] = "DLC_CON_GUN02",
             [JobHeader.APPEARANCE] = "DLC_CON_APP01",
-            [JobHeader.GENESIS2] = "DLC_CON_DH1"
-            //Testpatch not included here.
+            [JobHeader.GENESIS2] = "DLC_CON_DH1",
+            [JobHeader.TESTPATCH] = "DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
         public string RequirementText;
 

@@ -719,6 +719,11 @@ namespace ModManagerCommandLine
             fs.Close();
         }
 
+        /// <summary>
+        /// Appends data to the SFAR and points the specified file entry to the new data
+        /// </summary>
+        /// <param name="filein"></param>
+        /// <param name="Index"></param>
         public void ReplaceEntry(string filein, int Index)
         {
             byte[] FileIN = File.ReadAllBytes(filein);

@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using MassEffectModManager.GameDirectories;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
+using ModManagerCommandLine;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
 
@@ -28,6 +29,8 @@ namespace MassEffectModManager.modmanager.usercontrols
     /// </summary>
     public partial class ModInstaller : UserControl, INotifyPropertyChanged
     {
+        public bool InstallationSucceeded { get; private set; }
+        private const int PERCENT_REFRESH_COOLDOWN = 125;
         public ModInstaller(Mod mod, GameTarget gameTarget)
         {
             DataContext = this;
@@ -41,7 +44,8 @@ namespace MassEffectModManager.modmanager.usercontrols
         public Mod mod { get; }
         private GameTarget gameTarget;
         private DateTime lastPercentUpdateTime;
-        private readonly int INSTALL_FAILED_USER_CANCELED_MISSING_MODULES = 1;
+        private const int INSTALL_SUCCESSFUL = 1;
+        private const int INSTALL_FAILED_USER_CANCELED_MISSING_MODULES = 2;
 
         public string Action { get; set; }
         public int Percent { get; set; }
@@ -80,7 +84,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             var gamePath = gameTarget.TargetPath;
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
 
-            if (!PrecheckOfficialHeaders(gamePath, gameDLCPath, installationJobs))
+            if (!PrecheckOfficialHeaders(gameDLCPath, installationJobs))
             {
                 e.Result = INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
                 return;
@@ -103,25 +107,37 @@ namespace MassEffectModManager.modmanager.usercontrols
             Percent = 0;
 
             int numdone = 0;
+            void FileInstalledCallback()
+            {
+                numdone++;
+                var now = DateTime.Now;
+                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+                {
+                    //Don't update UI too often. Once per second is enough.
+                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
+                    lastPercentUpdateTime = now;
+                }
+            }
             foreach (var job in installationJobs)
             {
                 Log.Information($"Processing installation job: {job.Header}");
+
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
+                    #region Installation: CustomDLC
                     //Already have variable from before
                     void callback()
                     {
                         numdone++;
                         var now = DateTime.Now;
-                        Debug.WriteLine("Time delta: " + (now - lastPercentUpdateTime).Milliseconds);
-                        if ((now - lastPercentUpdateTime).Milliseconds > 250)
+                        //Debug.WriteLine("Time delta: " + (now - lastPercentUpdateTime).Milliseconds);
+                        if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
                         {
                             //Don't update UI too often. Once per second is enough.
                             Percent = (int)(numdone * 100.0 / numFilesToInstall);
                             lastPercentUpdateTime = now;
                         }
                     }
-
 
                     foreach (var mapping in customDLCMapping)
                     {
@@ -131,12 +147,160 @@ namespace MassEffectModManager.modmanager.usercontrols
                         CopyDir.CopyAll_ProgressBar(new DirectoryInfo(source), new DirectoryInfo(target), callback);
                         Log.Information($"Installed CustomDLC {mapping.Value}");
                     }
+                    #endregion
+                }
+                else if (job.Header == ModJob.JobHeader.BASEGAME)
+                {
+                    #region Installation: BASEGAME
+                    foreach (var entry in job.FilesToInstall)
+                    {
+                        var destPath = Path.GetFullPath(Path.Combine(gamePath, entry.Key.TrimStart('/', '\\')));
+                        Log.Information($"Installing BASEGAME file: {entry.Value} -> {destPath}");
+                        File.Copy(entry.Value, destPath, true);
+                        FileInstalledCallback();
+                    }
+                    #endregion
+                }
+                else if (mod.Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
+                {
+                    #region Installation: DLC (Unpacked and SFAR) - ME3 ONLY
+                    string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
+                    
+
+                    if (File.Exists(sfarPath))
+                    {
+                        if (new FileInfo(sfarPath).Length == 32)
+                        {
+                            //Unpacked
+                            foreach (var entry in job.FilesToInstall)
+                            {
+                                var destPath = Path.GetFullPath(Path.Combine(gamePath, entry.Key.TrimStart('/','\\')));
+                                Log.Information($"Installing (unpacked) file: {entry.Value} -> {destPath}");
+                                File.Copy(entry.Value, destPath, true);
+                                FileInstalledCallback();
+                            }
+                        }
+                        else
+                        {
+                            //Packed
+                            
+                            InstallIntoSFAR(job, sfarPath, FileInstalledCallback);
+                        }
+                    }
+                    else
+                    {
+                        Log.Warning($"SFAR doesn't exist {sfarPath}, skipping job: {job.Header}");
+                        numdone += job.FilesToInstall.Count;
+                    }
+                    #endregion
                 }
             }
-            Thread.Sleep(3000);
+            Percent = (int)(numdone * 100.0 / numFilesToInstall);
+            if (numFilesToInstall == numdone)
+            {
+                e.Result = INSTALL_SUCCESSFUL;
+            }
+            Thread.Sleep(1000);
         }
 
-        private bool PrecheckOfficialHeaders(string gamePath, string gameDLCPath, List<ModJob> installationJobs)
+        private bool InstallIntoSFAR(ModJob job, string sfarPath, Action FileInstalledCallback = null)
+        {
+
+            int numfiles = job.FilesToInstall.Count;
+
+
+            //Todo: Check all newfiles exist
+            //foreach (string str in diskFiles)
+            //{
+            //    if (!File.Exists(str))
+            //    {
+            //        Console.WriteLine("Source file on disk doesn't exist: " + str);
+            //        EndProgram(1);
+            //    }
+            //}
+
+            //Open SFAR
+            SFAR_Inject dlc = new SFAR_Inject(sfarPath);
+
+            //precheck
+            bool allfilesfound = true;
+            //if (options.ReplaceFiles)
+            //{
+            //    for (int i = 0; i < numfiles; i++)
+            //    {
+            //        int idx = dlc.FindFileEntry(sfarFiles[i]);
+            //        if (idx == -1)
+            //        {
+            //            Console.WriteLine("Specified file does not exist in the SFAR Archive: " + sfarFiles[i]);
+            //            allfilesfound = false;
+            //        }
+            //    }
+            //}
+
+            //Add or Replace
+            if (allfilesfound)
+            {
+                foreach (var entry in job.FilesToInstall)
+                {
+                    int index = dlc.FindFileEntry(entry.Key);
+                    if (index >= 0)
+                    {
+                        dlc.ReplaceEntry(entry.Value, index);
+                        Log.Information("Replaced file within SFAR: " + entry.Key);
+                    }
+                    else
+                    {
+                        dlc.AddFileQuick(entry.Value, entry.Key);
+                        Log.Information("Added SFAR file: " + entry.Key);
+                    }
+                    FileInstalledCallback?.Invoke();
+                }
+            }
+
+            //Todo: Support deleting files from sfar (I am unsure if this is actually ever used and I might remove this feature)
+            //if (options.DeleteFiles)
+            //{
+            //    DLCPackage dlc = new DLCPackage(options.SFARPath);
+            //    List<int> indexesToDelete = new List<int>();
+            //    foreach (string file in options.Files)
+            //    {
+            //        int idx = dlc.FindFileEntry(file);
+            //        if (idx == -1)
+            //        {
+            //            if (options.IgnoreDeletionErrors)
+            //            {
+            //                continue;
+            //            }
+            //            else
+            //            {
+            //                Console.WriteLine("File doesn't exist in archive: " + file);
+            //                EndProgram(1);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            indexesToDelete.Add(idx);
+            //        }
+            //    }
+            //    if (indexesToDelete.Count > 0)
+            //    {
+            //        dlc.DeleteEntries(indexesToDelete);
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("No files were found in the archive that matched the input list for --files.");
+            //    }
+            //}
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if DLC specified by the job installation headers exist and prompt user to continue or not if the DLC is not found. This is only used for ME3's headers such as CITADEL or RESURGENCE and not CUSTOMDLC or BASEGAME.'
+        /// </summary>
+        /// <param name="gameDLCPath">Game DLC path</param>
+        /// <param name="installationJobs">List of jobs to look through and validate</param>
+        /// <returns></returns>
+        private bool PrecheckOfficialHeaders(string gameDLCPath, List<ModJob> installationJobs)
         {
             if (mod.Game != MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
@@ -144,44 +308,36 @@ namespace MassEffectModManager.modmanager.usercontrols
                 if (job.Header == ModJob.JobHeader.BALANCE_CHANGES) continue; //Don't check balance changes
                 if (job.Header == ModJob.JobHeader.BASEGAME) continue; //Don't check basegame
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC) continue; //Don't check custom dlc
-                if (job.Header == ModJob.JobHeader.TESTPATCH)
+                string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
+                if (!File.Exists(sfarPath))
                 {
-                    //testpatch dlc
-                    string sfarPath = Utilities.GetTestPatchPath(gameTarget);
-                    if (!File.Exists(sfarPath))
+                    Log.Warning($"DLC not installed that mod is marked to modify: {job.Header}, prompting user.");
+                    //Prompt user
+                    bool cancel = false;
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        Log.Warning($"DLC not installed that mod is marked to modify: {job.Header}, prompting user.");
-                        //Prompt user
-                        bool cancel = false;
-                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        string message = $"{mod.ModName} installs files into the {ModJob.HeadersToDLCNamesMap[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]}) DLC, which is not installed.";
+                        if (job.RequirementText != null)
                         {
-                            string message = $"{mod.ModName} installs files into the {ModJob.HeadersToDLCNamesMap[job.Header]} DLC, which is not installed.";
-                            if (job.RequirementText != null)
-                            {
-                                message += $"\n{job.RequirementText}";
-                            }
-                            message += "\n\nContinue installing anyways?";
-                            MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(message, "DLC not installed", MessageBoxButton.YesNo, MessageBoxImage.Error);
-                            if (result == MessageBoxResult.No) { cancel = true; return; }
+                            message += $"\n{job.RequirementText}";
+                        }
+                        message += "\n\nThe mod might not function properly without this DLC installed first. Continue installing anyways?";
+                        MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(message, $"{ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]} DLC not installed", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                        if (result == MessageBoxResult.No) { cancel = true; return; }
 
-                        }));
-                        if (cancel) return false;
-                        Log.Warning($"User continuing installation anyways");
-
-                    }
+                    }));
+                    if (cancel) { Log.Error("User canceling installation"); return false; }
+                    Log.Warning($"User continuing installation anyways");
                 }
-                else
-                {
-                    //standard dlc
-                }
-
             }
             return true;
         }
 
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
-            {
-                OnClosing(EventArgs.Empty);
-            }
+        {
+
+            InstallationSucceeded = e.Result is int res && res == INSTALL_SUCCESSFUL;
+            OnClosing(new EventArgs());
         }
     }
+}

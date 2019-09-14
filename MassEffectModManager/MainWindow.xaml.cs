@@ -49,6 +49,7 @@ namespace MassEffectModManager
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
         public string StartGameButtonText { get; set; } = "Start Game";
+        public string InstallationTargetText { get; set; } = "Installation Target:";
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
         public bool ME3ASILoaderInstalled { get; set; }
@@ -291,6 +292,10 @@ namespace MassEffectModManager
             {
                 IsBusy = false;
                 BusyContent = null;
+                if (!modInstaller.InstallationSucceeded)
+                {
+                    modInstallTask.finishedUiText = $"Failed to install {SelectedMod.ModName}";
+                }
                 backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
             };
             //Todo: Update Busy UI Content
@@ -405,12 +410,14 @@ namespace MassEffectModManager
         private void PopulateTargets(GameTarget selectedTarget = null)
         {
             InstallationTargets.ClearEx();
+            Log.Information("Populating game targets");
             if (ME3Directory.gamePath != null)
             {
                 var target = new GameTarget(MEGame.ME3, ME3Directory.gamePath, true);
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
+                    Log.Information("Current boot target for ME3: " + target);
                     InstallationTargets.Add(target);
                 }
                 else
@@ -425,6 +432,7 @@ namespace MassEffectModManager
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
+                    Log.Information("Current boot target for ME2: " + target);
                     InstallationTargets.Add(target);
                 }
                 else
@@ -438,6 +446,7 @@ namespace MassEffectModManager
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
+                    Log.Information("Current boot target for ME1: " + target);
                     InstallationTargets.Add(target);
                 }
                 else
@@ -565,7 +574,6 @@ namespace MassEffectModManager
                     {
                         if (HelpMenuItem.Items[i] is MenuItem menuItem && menuItem.Tag is string str && str == "DynamicHelp")
                         {
-                            Debug.WriteLine("Removing old dynamic item");
                             HelpMenuItem.Items.Remove(menuItem);
                         }
                     }

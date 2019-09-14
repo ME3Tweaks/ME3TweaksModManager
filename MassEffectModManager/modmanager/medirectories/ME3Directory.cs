@@ -86,7 +86,9 @@ namespace MassEffectModManager.GameDirectories
             ["DLC_CON_MP5"] = "Reckoning",
             ["DLC_EXP_Pack003_Base"] = "Citadel - Part I",
             ["DLC_EXP_Pack003"] = "Citadel - Part II",
-            ["DLC_CON_DH1"] = "Genesis 2"
+            ["DLC_CON_DH1"] = "Genesis 2",
+            ["DLC_TestPatch"] = "TESTPATCH (Patch_001.sfar)"
+
         };
 
         public static List<string> OfficialDLC = new List<string>
