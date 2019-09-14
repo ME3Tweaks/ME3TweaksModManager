@@ -275,6 +275,7 @@
     <EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
     <EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
     <EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.asi" />
+    <None Include="modmanager\asi\ME3Logger_truncating-v1.asi" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

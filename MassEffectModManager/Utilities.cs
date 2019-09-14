@@ -176,6 +176,13 @@ namespace MassEffectModManager
             return destination;
         }
 
+        internal static string GetExecutableDirectory(GameTarget target)
+        {
+            if (target.Game == Mod.MEGame.ME1 || target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries");
+            if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32");
+            return null;
+        }
+
         internal static bool InstallBinkBypass(GameTarget target)
         {
             if (target == null) return false;
@@ -381,7 +388,7 @@ namespace MassEffectModManager
         /// <param name="dlcFolderName">DLC folder name (DLC_CON_MP2)</param>
         /// <param name="game">Game to test against</param>
         /// <returns>True if protected, false otherwise</returns>
-        internal static bool IsProtectedDLCFolder(string dlcFolderName, MEGame game) => dlcFolderName.Equals("__metadata",StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
+        internal static bool IsProtectedDLCFolder(string dlcFolderName, MEGame game) => dlcFolderName.Equals("__metadata", StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Gets the path to the testpatch DLC file for the specified game target

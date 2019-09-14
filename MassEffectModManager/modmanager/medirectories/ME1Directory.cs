@@ -33,6 +33,7 @@ namespace MassEffectModManager.GameDirectories
         public static string cookedPath => gamePath != null ? Path.Combine(gamePath, @"BioGame\CookedPC\") : "Not Found";
         public static string DLCPath => gamePath != null ? Path.Combine(gamePath, @"DLC\") : "Not Found";
 
+
         // "C:\...\MyDocuments\BioWare\Mass Effect\" folder
         public static string BioWareDocPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"\BioWare\Mass Effect\");
         public static string GamerSettingsIniFile => Path.Combine(BioWareDocPath, @"BIOGame\Config\GamerSettings.ini");

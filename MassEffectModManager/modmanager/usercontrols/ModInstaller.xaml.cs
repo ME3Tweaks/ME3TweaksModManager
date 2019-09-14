@@ -165,7 +165,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                 {
                     #region Installation: DLC (Unpacked and SFAR) - ME3 ONLY
                     string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
-                    
+
 
                     if (File.Exists(sfarPath))
                     {
@@ -174,7 +174,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                             //Unpacked
                             foreach (var entry in job.FilesToInstall)
                             {
-                                var destPath = Path.GetFullPath(Path.Combine(gamePath, entry.Key.TrimStart('/','\\')));
+                                var destPath = Path.GetFullPath(Path.Combine(gamePath, entry.Key.TrimStart('/', '\\')));
                                 Log.Information($"Installing (unpacked) file: {entry.Value} -> {destPath}");
                                 File.Copy(entry.Value, destPath, true);
                                 FileInstalledCallback();
@@ -183,7 +183,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                         else
                         {
                             //Packed
-                            
+
                             InstallIntoSFAR(job, sfarPath, FileInstalledCallback);
                         }
                     }
@@ -196,9 +196,42 @@ namespace MassEffectModManager.modmanager.usercontrols
                 }
             }
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
+
+            //Install supporting ASI files if necessary
+            if (mod.Game != MEGame.ME2)
+            {
+                Action = "Installing support files";
+                string asiFname = mod.Game == MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
+                string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
+
+                var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
+                bool higherVersionInstalled = false;
+                if (existingmatchingasis.Count > 0)
+                {
+                    foreach (var v in existingmatchingasis)
+                    {
+                        string shortName = Path.GetFileNameWithoutExtension(v);
+                        var asiName = shortName.Substring(shortName.LastIndexOf('-') + 2); //Todo: Try catch this as it might explode if for some reason filename is like ASIMod-.asi
+                        if (int.TryParse(asiName, out int version))
+                        {
+                            higherVersionInstalled = version > 1;
+                            Log.Information("A newer version of a supporting ASI is installed: " + shortName + ". Not installing ASI.");
+                            break;
+                        }
+                    }
+                }
+
+                if (!higherVersionInstalled)
+                {
+                    string asiPath = "MassEffectModManager.modmanager.asi." + asiFname + ".asi";
+                    Utilities.ExtractInternalFile(asiPath, Path.Combine(asiTargetDirectory, asiFname + ".asi"), true);
+                }
+            }
+
             if (numFilesToInstall == numdone)
             {
                 e.Result = INSTALL_SUCCESSFUL;
+                Action = "Installed";
             }
             Thread.Sleep(1000);
         }
