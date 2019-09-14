@@ -61,7 +61,17 @@ namespace MassEffectModManager.modmanager
                     sb.AppendLine($"ModMaker code: {ModModMakerID}");
                 }
 
-                sb.AppendLine("Modifies: " + string.Join(", ", InstallationJobs.Select(x => x.jobHeader.ToString()).ToList()));
+                var modifiesList = InstallationJobs.Where(x => x.jobHeader != ModJob.JobHeader.CUSTOMDLC).Select(x => x.jobHeader.ToString()).ToList();
+                if (modifiesList.Count > 0)
+                {
+                    sb.AppendLine("Modifies: " + string.Join(", ", modifiesList));
+                }
+                var customDLCJob = InstallationJobs.FirstOrDefault(x => x.jobHeader == ModJob.JobHeader.CUSTOMDLC);
+                if (customDLCJob != null)
+                {
+                    sb.AppendLine("Add Custom DLCs: " + string.Join(", ", customDLCJob.CustomDLCFolderMapping.Values));
+                }
+
                 return sb.ToString();
             }
         }
@@ -72,6 +82,7 @@ namespace MassEffectModManager.modmanager
         public double ModDescTargetVersion { get; set; }
         public int ModClassicUpdateCode { get; set; }
         public string LoadFailedReason { get; set; }
+        public List<string> RequiredDLC = new List<string>();
 
         public string ModPath { get; }
         public string ModDescPath => Path.Combine(ModPath, "moddesc.ini");
@@ -201,13 +212,13 @@ namespace MassEffectModManager.modmanager
                 ModDescTargetVersion = 2.0;
             }
 
-            if (ModDescTargetVersion >= 3 || ModDescTargetVersion <= 3.1) //Mod Manager 3 (2014)
+            if (ModDescTargetVersion >= 3 && ModDescTargetVersion < 3.1) //Mod Manager 3 (2014)
             {
                 ModDescTargetVersion = 3.0;
             }
 
             //A few mods shipped as 3.2 moddesc, however the features they targeted are officially supported in 3.1
-            if (ModDescTargetVersion > 3.1 && ModDescTargetVersion < 4.0) //Mod Manager 3.1 (2014)
+            if (ModDescTargetVersion >= 3.1 && ModDescTargetVersion < 4.0) //Mod Manager 3.1 (2014)
             {
                 ModDescTargetVersion = 3.1;
             }
@@ -215,14 +226,15 @@ namespace MassEffectModManager.modmanager
             //This was in Java version - I belevie this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
             CLog.Information("Parsing mod using moddesc target: " + ModDescTargetVersion, LogModStartup);
-
+            #region BASEGAME and OFFICIAL HEADERS
             if (Game == MEGame.ME3)
             {
                 //We must check against official headers
-                //ME1 and ME2 will not support these types of headers
-                var ME3SupportedIniHeaders = ModJob.SupportedNonCustomDLCJobHeaders;
-                foreach (var header in ME3SupportedIniHeaders)
+                //ME1 and ME2 only supports the BASEGAME header
+                var supportedOfficialHeaders = ModJob.SupportedNonCustomDLCJobHeaders;
+                foreach (var header in supportedOfficialHeaders)
                 {
+                    if (Game != MEGame.ME3 && header != ModJob.JobHeader.BASEGAME) continue; //Skip any non-basegame offical headers for ME1/ME2
                     var headerAsString = header.ToString();
                     var jobSubdirectory = iniData[headerAsString]["moddir"];
                     if (jobSubdirectory != null)
@@ -258,8 +270,8 @@ namespace MassEffectModManager.modmanager
                             return;
                         }
 
-                        List<string> replaceFilesSourceSplit;
-                        List<string> replaceFilesTargetSplit;
+                        List<string> replaceFilesSourceSplit = null;
+                        List<string> replaceFilesTargetSplit = null;
                         if (replaceFilesSourceList != null && replaceFilesTargetList != null)
                         {
                             //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
@@ -332,7 +344,7 @@ namespace MassEffectModManager.modmanager
                             {
                                 //Security violation: Cannot use .. in filepath
                                 Log.Error($"Mod has job header ({headerAsString}) that has removefilestargets descriptor set, however at least one item in the list has a .. in it's listed file path. This is not allowed for security purposes.");
-                                LoadFailedReason = $"Job header ({headerAsString}) has removefilestargets descriptor set, however at least one item in the list has a .. in it's listed file path. This is not allowed for security purposes."";
+                                LoadFailedReason = $"Job header ({headerAsString}) has removefilestargets descriptor set, however at least one item in the list has a .. in it's listed file path. This is not allowed for security purposes.";
                                 return;
                             }
                         }
@@ -340,16 +352,155 @@ namespace MassEffectModManager.modmanager
                         //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
                         //In Java Mod Manager, this required 4.1 moddesc
                         string jobRequirement = iniData[headerAsString]["jobdescription"];
-                        CLog.Information($"Read job requirement text: {jobRequirement}",LogModStartup && jobRequirement != null);
+                        CLog.Information($"Read job requirement text: {jobRequirement}", LogModStartup && jobRequirement != null);
 
+                        //TODO: Bini support
+                        //TODP: Basegame support
 
+                        //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
+                        if (ModDescTargetVersion < 3 && header == ModJob.JobHeader.TESTPATCH)
+                        {
+                            Log.Error($"Mod has job header ({headerAsString}) specified, but this header is only supported when targeting ModDesc 3 or higher.");
+                            LoadFailedReason = $"Job header ({headerAsString}) has been specified as part of the mod, but this header is only supported when targeting ModDesc 3 or higher.";
+                            return;
+                        }
+                        ModJob headerJob = new ModJob(header, this);
+                        headerJob.JobDirectory = jobSubdirectory;
 
+                        //Build replacements 
+                        if (replaceFilesSourceSplit != null)
+                        {
+                            for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
+                            {
+                                string sourceFile = Path.Combine(fullSubPath, replaceFilesSourceSplit[i]);
+                                string destFile = replaceFilesTargetSplit[i];
+                                CLog.Information($"Adding file to installation queue: {sourceFile} => {destFile}", LogModStartup);
+                                string failurereason = headerJob.AddFileToInstall(destFile, sourceFile, ignoreLoadErrors);
+                                if (failurereason != null)
+                                {
+                                    Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
+                                    LoadFailedReason = $"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}";
+                                    return;
+                                }
+                            }
+                        }
 
+                        //Build additions (vars will be null if these aren't supported by target version)
+                        if (addFilesSourceSplit != null)
+                        {
+                            for (int i = 0; i < addFilesSourceSplit.Count; i++)
+                            {
+                                string sourceFile = Path.Combine(fullSubPath, addFilesSourceSplit[i]);
+                                string destFile = addFilesTargetSplit[i];
+                                CLog.Information($"Adding file to installation queue (addition): {sourceFile} => {destFile}", LogModStartup);
+                                string failurereason = headerJob.AddAdditionalFileToInstall(destFile, sourceFile, ignoreLoadErrors); //add files are layered on top
+                                if (failurereason != null)
+                                {
+                                    Log.Error($"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
+                                    LoadFailedReason = $"Error occured while parsing the add files lists for {headerAsString}: {failurereason}";
+                                    return;
+                                }
+                            }
+                        }
 
+                        var removeFailureReason = headerJob.AddFilesToRemove(removeFilesSplit);
+                        if (removeFailureReason != null)
+                        {
+                            Log.Error($"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}");
+                            LoadFailedReason = $"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}";
+                            return;
+                        }
+
+                        if (ModDescTargetVersion >= 4.5)
+                        {
+                            //TODO: Parse AltFiles
+
+                        }
+                        CLog.Information($"Successfully made mod job for {headerAsString}", LogModStartup);
+                        InstallationJobs.Add(headerJob);
                     }
                 }
             }
+            #endregion
+            #region CUSTOMDLC
+            if (ModDescTargetVersion >= 3.1)
+            {
+                var customDLCSourceDirsStr = iniData["CUSTOMDLC"]["sourcedirs"];
+                var customDLCDestDirsStr = iniData["CUSTOMDLC"]["destdirs"];
 
+                if (customDLCSourceDirsStr != null && customDLCDestDirsStr != null)
+                {
+                    CLog.Information("Found CUSTOMDLC header", LogModStartup);
+
+                    var customDLCSourceSplit = customDLCSourceDirsStr.Split(';').ToList();
+                    var customDLCDestSplit = customDLCDestDirsStr.Split(';').ToList();
+
+                    //Verify lists are the same length
+                    if (customDLCSourceSplit.Count != customDLCDestSplit.Count)
+                    {
+                        //Mismatched source and target lists
+                        Log.Error($"Mod has job header (CUSTOMDLC) that has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.");
+                        LoadFailedReason = $"Job header (CUSTOMDLC) has mismatched newfiles and replacefiles descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.";
+                        return;
+                    }
+
+                    //Security check for ..
+                    if (customDLCSourceSplit.Any(x => x.Contains("..")) || customDLCDestSplit.Any(x => x.Contains("..")))
+                    {
+                        //Security violation: Cannot use .. in filepath
+                        Log.Error($"CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.");
+                        LoadFailedReason = $"CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.";
+                        return;
+                    }
+
+                    //Verify folders exists
+                    foreach (var f in customDLCSourceSplit)
+                    {
+                        if (!Directory.Exists(Path.Combine(ModPath, f)))
+                        {
+                            Log.Error($"Mod has job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}");
+                            LoadFailedReason = $"Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}";
+                            return;
+                        }
+
+
+                    }
+
+                    //Security check: Protected folders
+                    foreach (var f in customDLCDestSplit)
+                    {
+                        if (Utilities.IsProtectedDLCFolder(f, Game))
+                        {
+                            Log.Error($"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}");
+                            LoadFailedReason = $"Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}. Custom DLC cannot be installed to a folder named the same as an official DLC or metadata directory.";
+                            return;
+                        }
+
+                        if (!f.StartsWith("DLC_"))
+                        {
+                            Log.Error($"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.");
+                            LoadFailedReason = $"Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.";
+                            return;
+                        }
+                    }
+
+                    ModJob customDLCjob = new ModJob(ModJob.JobHeader.CUSTOMDLC, this);
+                    for (int i = 0; i < customDLCSourceSplit.Count; i++)
+                    {
+                        customDLCjob.CustomDLCFolderMapping[customDLCSourceSplit[i]] = customDLCDestSplit[i];
+                    }
+
+                    CLog.Information($"Successfully made mod job for CUSTOMDLC", LogModStartup);
+                    InstallationJobs.Add(customDLCjob);
+                }
+                else if ((customDLCSourceDirsStr != null) != (customDLCDestDirsStr != null))
+                {
+                    Log.Error($"{ModName} specifies only one of the two required lists for the CUSTOMDLC header. Both sourcedirs and destdirs descriptors must be set for CUSTOMDLC.");
+                    LoadFailedReason = $"This mod specifies only one of the two required lists for the CUSTOMDLC header. Both sourcedirs and destdirs descriptors must be set for CUSTOMDLC.";
+                    return;
+                }
+            }
+            #endregion
             //Thread.Sleep(500);
             ValidMod = true;
             CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);

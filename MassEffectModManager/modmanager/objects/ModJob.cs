@@ -57,16 +57,23 @@ namespace MassEffectModManager.modmanager
             { "DLC_OnlinePassHidCE", JobHeader.COLLECTORS_EDITION },
             { "DLC_CON_DH1", JobHeader.GENESIS2 }
         };
-
-
-
-
+                     
         /// <summary>
         /// Maps in-game relative paths to the file that will be used to install to that location
         /// </summary>
         Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        /// <summary>
+        /// List of files that will be removed from the game relative to this job's header directory.
+        /// </summary>
         List<string> FilesToRemove = new List<string>();
+        /// <summary>
+        /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game)
+        /// </summary>
+        internal Dictionary<string,string> CustomDLCFolderMapping = new Dictionary<string, string>();
 
+        /// <summary>
+        /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include BASEGAME or CUSTOMDLC.
+        /// </summary>
         internal static readonly JobHeader[] SupportedNonCustomDLCJobHeaders =
         {
             //Basegame is supported by all games so it will be parsed separately
@@ -92,32 +99,88 @@ namespace MassEffectModManager.modmanager
             JobHeader.COLLECTORS_EDITION,
             JobHeader.TESTPATCH
         };
-        
+
+        /// <summary>
+        /// Internal path used for resolving where files are for this job.
+        /// </summary>
+        private readonly string jobParentPath;
 
         /// <summary>
         /// ModDesc.ini Header that this mod job targets
         /// </summary>
         public JobHeader jobHeader { get; private set; }
+        /// <summary>
+        /// Subdirectory of the parent mod object that this job will pull files from. Note this is a relative path and not a full path.
+        /// </summary>
+        public string JobDirectory { get; internal set; }
 
-        public ModJob(JobHeader jobHeader)
+        /// <summary>
+        /// Creates a new ModJob for the specific header.
+        /// </summary>
+        /// <param name="jobHeader">Header this job is for</param>
+        /// <param name="mod">Mod object this job is for. This object is not saved and is only used to pull the path in and other necessary variables.</param>
+        public ModJob(JobHeader jobHeader, Mod mod = null)
         {
             this.jobHeader = jobHeader;
+            if (mod != null)
+            {
+                jobParentPath = mod.ModPath;
+            }
         }
 
         /// <summary>
         /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same.
         /// </summary>
-        /// <param name="relativePathToReplaceOrAdd">Relative in-game path (from game root) to install file to.</param>
-        /// <param name="newFileToInstall">Full path of new file to install</param>
+        /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
+        /// <param name="sourceFullPath">Full path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddFileToInstall(string relativePathToReplaceOrAdd, string newFileToInstall, bool ignoreLoadErrors)
+        internal string AddFileToInstall(string destRelativePath, string sourceFullPath, bool ignoreLoadErrors)
         {
-            if (!ignoreLoadErrors && !File.Exists(newFileToInstall))
+            if (!ignoreLoadErrors && !File.Exists(sourceFullPath))
             {
-                return "Failed to add file to mod job: {newFileToInstall} does not exist but is specified by the job";
+                return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
             }
-            FilesToInstall[@"BIOGame\CookedPCConsole\Coalesced.bin"] = newFileToInstall;
+            FilesToInstall[destRelativePath] = sourceFullPath;
+            return null;
+        }
+
+        /// <summary>
+        /// Adds a file to the add/replace list of files to install. This will not replace an existing file in the mapping if the destination path is the same, it will instead throw an error.
+        /// </summary>
+        /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
+        /// <param name="sourceFullPath">Full path of new file to install</param>
+        /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
+        /// <returns>string of failure reason. null if OK.</returns>
+        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceFullPath, bool ignoreLoadErrors)
+        {
+            if (!ignoreLoadErrors && !File.Exists(sourceFullPath))
+            {
+                return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
+            }
+            if (FilesToInstall.ContainsKey(destRelativePath))
+            {
+                return $"Failed to add file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.";
+            }
+            FilesToInstall[destRelativePath] = sourceFullPath;
+            return null;
+        }
+
+        /// <summary>
+        /// Adds a file to the removal sequence. Checks to make sure the installation lists don't include any files that are added.
+        /// </summary>
+        /// <param name="filesToRemove">List of files to remove (in-game relative path)</param>
+        /// <returns>Failure string if any, null otherwise</returns>
+        internal string AddFilesToRemove(List<string> filesToRemove)
+        {
+            foreach(var f in filesToRemove)
+            {
+                if (FilesToInstall.ContainsKey(f))
+                {
+                    return $"Failed to file removal task mod job {jobHeader}: {f} is marked for installation. A mod cannot specify both installation and removal of the same file.";
+                }
+                FilesToRemove.Add(f);
+            }
             return null;
         }
     }

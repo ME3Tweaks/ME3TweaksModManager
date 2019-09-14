@@ -205,8 +205,8 @@ namespace MassEffectModManager
         internal static string GetBinkw32File(GameTarget target)
         {
             if (target == null) return null;
-            if (target.Game == Mod.MEGame.ME1)return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-            if (target.Game == Mod.MEGame.ME2)return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == Mod.MEGame.ME1) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
             if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
             return null;
         }
@@ -366,5 +366,13 @@ namespace MassEffectModManager
 
             return null;
         }
+
+        /// <summary>
+        /// Checks if the specified DLC folder name is protected (official DLC names and __metadata)
+        /// </summary>
+        /// <param name="dlcFolderName">DLC folder name (DLC_CON_MP2)</param>
+        /// <param name="game">Game to test against</param>
+        /// <returns>True if protected, false otherwise</returns>
+        internal static bool IsProtectedDLCFolder(string dlcFolderName, MEGame game) => dlcFolderName.Equals("__metadata",StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
     }
 }

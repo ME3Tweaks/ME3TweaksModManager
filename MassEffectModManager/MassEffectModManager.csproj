@@ -180,6 +180,7 @@
     <Compile Include="modmanager\medirectories\MEDirectories.cs" />
     <Compile Include="modmanager\medirectories\MELoadedFiles.cs" />
     <Compile Include="modmanager\medirectories\MountFile.cs" />
+    <Compile Include="modmanager\objects\AlternateFile.cs" />
     <Compile Include="modmanager\objects\GameTarget.cs" />
     <Compile Include="modmanager\objects\ModJob.cs" />
     <Compile Include="modmanager\usercontrols\ExternalToolLauncher.xaml.cs">
