@@ -33,7 +33,7 @@ namespace MassEffectModManager.GameDirectories
         public static string BIOGamePath => gamePath != null ? gamePath.Contains("biogame", StringComparison.OrdinalIgnoreCase) ? gamePath : Path.Combine(gamePath, @"BIOGame\") : null;
         public static string tocFile => gamePath != null ? Path.Combine(gamePath, @"BIOGame\PCConsoleTOC.bin") : null;
         public static string cookedPath => gamePath != null ? Path.Combine(gamePath, @"BIOGame\CookedPCConsole\") : "Not Found";
-        public static string DLCPath => gamePath != null ? Path.Combine(gamePath , @"BIOGame\DLC\") : "Not Found";
+        public static string DLCPath => gamePath != null ? Path.Combine(gamePath, @"BIOGame\DLC\") : "Not Found";
 
         // "C:\...\MyDocuments\BioWare\Mass Effect 3\" folder
         public static string BioWareDocPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"\BioWare\Mass Effect 3\");
@@ -47,23 +47,23 @@ namespace MassEffectModManager.GameDirectories
             //}
             //else
             //{
-                string hkey32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
-                string hkey64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\";
-                string subkey = @"BioWare\Mass Effect 3";
+            string hkey32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
+            string hkey64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\";
+            string subkey = @"BioWare\Mass Effect 3";
 
-                string keyName = hkey32 + subkey;
-                string test = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null);
-                if (test != null)
-                {
-                    gamePath = test;
-                    return;
-                }
+            string keyName = hkey32 + subkey;
+            string test = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null);
+            if (test != null)
+            {
+                gamePath = test;
+                return;
+            }
 
-                /*if (gamePath != null)
-                    return;*/
+            /*if (gamePath != null)
+                return;*/
 
-                keyName = hkey64 + subkey;
-                gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null); 
+            keyName = hkey64 + subkey;
+            gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null);
             //}
         }
 
@@ -91,23 +91,23 @@ namespace MassEffectModManager.GameDirectories
 
         public static List<string> OfficialDLC = new List<string>
         {
-            "DLC_HEN_PR",
             "DLC_OnlinePassHidCE",
             "DLC_CON_MP1",
             "DLC_CON_MP2",
             "DLC_CON_MP3",
-            "DLC_CON_END",
-            "DLC_CON_GUN01",
-            "DLC_EXP_Pack001",
-            "DLC_UPD_Patch01",
             "DLC_CON_MP4",
-            "DLC_CON_GUN02",
-            "DLC_EXP_Pack002",
-            "DLC_CON_APP01",
-            "DLC_UPD_Patch02",
             "DLC_CON_MP5",
+            "DLC_UPD_Patch01",
+            "DLC_UPD_Patch02",
+            "DLC_HEN_PR",
+            "DLC_CON_END",
+            "DLC_EXP_Pack001",
+            "DLC_EXP_Pack002",
             "DLC_EXP_Pack003_Base",
             "DLC_EXP_Pack003",
+            "DLC_CON_GUN01",
+            "DLC_CON_GUN02",
+            "DLC_CON_APP01",
             "DLC_CON_DH1"
         };
     }

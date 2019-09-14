@@ -61,12 +61,12 @@ namespace MassEffectModManager.modmanager
                     sb.AppendLine($"ModMaker code: {ModModMakerID}");
                 }
 
-                var modifiesList = InstallationJobs.Where(x => x.jobHeader != ModJob.JobHeader.CUSTOMDLC).Select(x => x.jobHeader.ToString()).ToList();
+                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
                 {
                     sb.AppendLine("Modifies: " + string.Join(", ", modifiesList));
                 }
-                var customDLCJob = InstallationJobs.FirstOrDefault(x => x.jobHeader == ModJob.JobHeader.CUSTOMDLC);
+                var customDLCJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC);
                 if (customDLCJob != null)
                 {
                     sb.AppendLine("Add Custom DLCs: " + string.Join(", ", customDLCJob.CustomDLCFolderMapping.Values));
@@ -351,7 +351,7 @@ namespace MassEffectModManager.modmanager
                         CLog.Information($"Read job requirement text: {jobRequirement}", LogModStartup && jobRequirement != null);
 
                         //TODO: Bini support
-                        //TODP: Basegame support
+                        //TODO: Basegame support
 
                         //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
                         if (ModDescTargetVersion < 3 && header == ModJob.JobHeader.TESTPATCH)
@@ -362,7 +362,7 @@ namespace MassEffectModManager.modmanager
                         }
                         ModJob headerJob = new ModJob(header, this);
                         headerJob.JobDirectory = jobSubdirectory;
-
+                        headerJob.RequirementText = jobRequirement;
                         //Build replacements 
                         if (replaceFilesSourceSplit != null)
                         {

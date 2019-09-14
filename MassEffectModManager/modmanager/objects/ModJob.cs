@@ -57,7 +57,7 @@ namespace MassEffectModManager.modmanager
             { "DLC_OnlinePassHidCE", JobHeader.COLLECTORS_EDITION },
             { "DLC_CON_DH1", JobHeader.GENESIS2 }
         };
-                     
+
         /// <summary>
         /// Maps in-game relative paths to the file that will be used to install to that location
         /// </summary>
@@ -69,7 +69,7 @@ namespace MassEffectModManager.modmanager
         /// <summary>
         /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game)
         /// </summary>
-        public Dictionary<string,string> CustomDLCFolderMapping = new Dictionary<string, string>();
+        public Dictionary<string, string> CustomDLCFolderMapping = new Dictionary<string, string>();
 
         /// <summary>
         /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include BASEGAME or CUSTOMDLC.
@@ -107,7 +107,7 @@ namespace MassEffectModManager.modmanager
         /// <summary>
         /// ModDesc.ini Header that this mod job targets
         /// </summary>
-        public JobHeader jobHeader { get; private set; }
+        public JobHeader Header { get; private set; }
         /// <summary>
         /// Subdirectory of the parent mod object that this job will pull files from. Note this is a relative path and not a full path.
         /// </summary>
@@ -120,7 +120,7 @@ namespace MassEffectModManager.modmanager
         /// <param name="mod">Mod object this job is for. This object is not saved and is only used to pull the path in and other necessary variables.</param>
         public ModJob(JobHeader jobHeader, Mod mod = null)
         {
-            this.jobHeader = jobHeader;
+            this.Header = jobHeader;
             if (mod != null)
             {
                 jobParentPath = mod.ModPath;
@@ -165,6 +165,30 @@ namespace MassEffectModManager.modmanager
             return null;
         }
 
+        internal static IReadOnlyDictionary<JobHeader, string> HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        {
+            [JobHeader.COLLECTORS_EDITION] = "DLC_OnlinePassHidCE",
+            [JobHeader.RESURGENCE] = "DLC_CON_MP1",
+            [JobHeader.REBELLION] = "DLC_CON_MP2",
+            [JobHeader.EARTH] = "DLC_CON_MP3",
+            [JobHeader.RETALIATION] = "DLC_CON_MP4",
+            [JobHeader.RECKONING] = "DLC_CON_MP5",
+            [JobHeader.PATCH1] = "DLC_UPD_Patch01",
+            [JobHeader.PATCH2] = "DLC_UPD_Patch02",
+            [JobHeader.FROM_ASHES] = "DLC_HEN_PR",
+            [JobHeader.EXTENDED_CUT] = "DLC_CON_END",
+            [JobHeader.LEVIATHAN] = "DLC_EXP_Pack001",
+            [JobHeader.OMEGA] = "DLC_EXP_Pack002",
+            [JobHeader.CITADEL_BASE] = "DLC_EXP_Pack003_Base",
+            [JobHeader.CITADEL] = "DLC_EXP_Pack003",
+            [JobHeader.FIREFIGHT] = "DLC_CON_GUN01",
+            [JobHeader.GROUNDSIDE] = "DLC_CON_GUN02",
+            [JobHeader.APPEARANCE] = "DLC_CON_APP01",
+            [JobHeader.GENESIS2] = "DLC_CON_DH1"
+            //Testpatch not included here.
+        };
+        public string RequirementText;
+
         /// <summary>
         /// Adds a file to the removal sequence. Checks to make sure the installation lists don't include any files that are added.
         /// </summary>
@@ -172,11 +196,11 @@ namespace MassEffectModManager.modmanager
         /// <returns>Failure string if any, null otherwise</returns>
         internal string AddFilesToRemove(List<string> filesToRemove)
         {
-            foreach(var f in filesToRemove)
+            foreach (var f in filesToRemove)
             {
                 if (FilesToInstall.ContainsKey(f))
                 {
-                    return $"Failed to file removal task mod job {jobHeader}: {f} is marked for installation. A mod cannot specify both installation and removal of the same file.";
+                    return $"Failed to file removal task mod job {Header}: {f} is marked for installation. A mod cannot specify both installation and removal of the same file.";
                 }
                 FilesToRemove.Add(f);
             }

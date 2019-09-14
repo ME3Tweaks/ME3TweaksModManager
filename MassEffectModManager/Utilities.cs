@@ -382,5 +382,17 @@ namespace MassEffectModManager
         /// <param name="game">Game to test against</param>
         /// <returns>True if protected, false otherwise</returns>
         internal static bool IsProtectedDLCFolder(string dlcFolderName, MEGame game) => dlcFolderName.Equals("__metadata",StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
+
+        /// <summary>
+        /// Gets the path to the testpatch DLC file for the specified game target
+        /// </summary>
+        /// <param name="target">target to resolve path for</param>
+        /// <returns>Null if gametarget game is not ME3. Path where SFAR should be if ME3.</returns>
+        public static string GetTestPatchPath(GameTarget target)
+        {
+            if (target.Game != MEGame.ME3) return null;
+            return Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar");
+        }
+
     }
 }
