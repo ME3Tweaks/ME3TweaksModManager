@@ -719,5 +719,19 @@ namespace MassEffectModManager
         {
             SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
         }
+
+        private void UploadLog_Click(object sender, RoutedEventArgs e)
+        {
+            var exLauncher = new LogUploader((visibility => BusyProgressVarVisibility = visibility));
+            exLauncher.Close += (a, b) =>
+            {
+                IsBusy = false;
+                BusyContent = null;
+            };
+            //Todo: Update Busy UI Content
+            BusyProgressVarVisibility = Visibility.Collapsed;
+            BusyContent = exLauncher;
+            IsBusy = true;
+        }
     }
 }

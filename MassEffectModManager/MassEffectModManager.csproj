@@ -175,6 +175,7 @@
     <Compile Include="modmanager\helpers\ZlibBlock.cs" />
     <Compile Include="modmanager\helpers\ZlibHelper.cs" />
     <Compile Include="modmanager\me3tweaks\DynamicHelp.cs" />
+    <Compile Include="modmanager\me3tweaks\LogCollector.cs" />
     <Compile Include="modmanager\me3tweaks\OnlineContent.cs" />
     <Compile Include="modmanager\medirectories\ME1Directory.cs" />
     <Compile Include="modmanager\medirectories\ME2Directory.cs" />
@@ -187,6 +188,9 @@
     <Compile Include="modmanager\objects\ModJob.cs" />
     <Compile Include="modmanager\usercontrols\ExternalToolLauncher.xaml.cs">
       <DependentUpon>ExternalToolLauncher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="modmanager\usercontrols\LogUploader.xaml.cs">
+      <DependentUpon>LogUploader.xaml</DependentUpon>
     </Compile>
     <Compile Include="modmanager\usercontrols\ModInstaller.xaml.cs">
       <DependentUpon>ModInstaller.xaml</DependentUpon>
@@ -223,6 +227,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="modmanager\usercontrols\ExternalToolLauncher.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="modmanager\usercontrols\LogUploader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

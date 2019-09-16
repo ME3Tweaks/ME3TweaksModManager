@@ -27,7 +27,7 @@ namespace MassEffectModManager
         internal const string REGISTRY_KEY = @"Software\Mass Effect Mod Manager";
         internal const string REGISTRY_KEY_ME3CMM = @"Software\Mass Effect 3 Mod Manager";
         internal const string BACKUP_REGISTRY_KEY = @"Software\ALOTAddon"; //Shared. Do not change
-        public static string LogDir;
+        public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
         internal static readonly double HighestSupportedModDesc = 6.0;
@@ -56,7 +56,6 @@ namespace MassEffectModManager
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             string exePath = assembly.Location;
             string exeFolder = Directory.GetParent(exePath).ToString();
-            LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
             Log.Logger = new LoggerConfiguration().WriteTo.SizeRollingFile(Path.Combine(App.LogDir, "modmanagerlog.txt"),
                     retainedFileDurationLimit: TimeSpan.FromDays(14),
                     fileSizeLimitBytes: 1024 * 1024 * 10) // 10MB
@@ -174,7 +173,7 @@ namespace MassEffectModManager
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
         internal static Dictionary<string, Dictionary<string, Dictionary<string, string>>> ThirdPartyIdentificationService;
-        internal static object BugReportURL;
+        internal static string BugReportURL;
 
         public static string AppVersionHR
         {

@@ -166,8 +166,7 @@
 
                     <Separator/>
                     <MenuItem Header="Diagnostics" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="Mod Manager Logs"/>
-                    <MenuItem Header="Generate game diagnostic"/>
+                    <MenuItem Header="Mod Manager Logs &amp; Diagnostics" Click="UploadLog_Click"/>
                     <Separator/>
                     <MenuItem Header="About" Style="{StaticResource MenuItemHeaderStyle}"/>
                     <MenuItem Header="moddesc.ini file format specification"></MenuItem>
