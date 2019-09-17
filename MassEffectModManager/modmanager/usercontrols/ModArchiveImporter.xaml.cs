@@ -31,6 +31,9 @@ namespace MassEffectModManager.modmanager.usercontrols
         }
 
         public CompressedMod SelectedMod { get; private set; }
+
+        private string ArchiveFilePath;
+
         public string ScanningFile { get; private set; } = "Please wait";
         public string ActionText { get; private set; }
         public ObservableCollectionExtended<CompressedMod> CompressedMods { get; } = new ObservableCollectionExtended<CompressedMod>();
@@ -45,6 +48,7 @@ namespace MassEffectModManager.modmanager.usercontrols
 
         public void InspectArchiveFile(string filepath)
         {
+            ArchiveFilePath = filepath;
             ScanningFile = Path.GetFileName(filepath);
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ModArchiveInspector");
             bw.DoWork += InspectArchiveBackgroundThread;
@@ -125,6 +129,30 @@ namespace MassEffectModManager.modmanager.usercontrols
                 else
                 {
                     //Todo: Run unofficially supported scan
+                }
+            }
+        }
+
+        public void ExtractMods()
+        {
+            var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("ModExtractor");
+            bw.DoWork += ExtractModsBackgroundThread;
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+
+            };
+            bw.RunWorkerAsync(modsToExtract);
+        }
+
+        private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
+        {
+            List<CompressedMod> mods = (List<CompressedMod>)e.Argument;
+            using (var archiveFile = new SevenZipExtractor(ArchiveFilePath))
+            {
+                foreach (var mod in mods)
+                {
+                    //Todo: Extract files
                 }
             }
         }
