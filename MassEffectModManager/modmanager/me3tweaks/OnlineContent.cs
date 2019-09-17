@@ -16,6 +16,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber;
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/mods/dlc_mods/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL = "https://raw.githubusercontent.com/ME3Tweaks/MassEffectModManager/master/MassEffectModManager/staticfiles/";
+        private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/mods/dlc_mods/thirdpartyimportingservice?allgames=true";
         private static readonly string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
@@ -48,8 +49,6 @@ namespace MassEffectModManager.modmanager.me3tweaks
         {
             if (!File.Exists(Utilities.GetTipsServiceFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
-
-                string contents;
                 using (var wc = new System.Net.WebClient())
                 {
                     string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
@@ -58,6 +57,20 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 }
             }
             return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+        }
+
+        public static Dictionary<long,List<Dictionary<string,string>>> FetchThirdPartyImportingService(bool overrideThrottling = false)
+        {
+            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            {
+                using (var wc = new System.Net.WebClient())
+                {
+                    string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
+                    File.WriteAllText(Utilities.GetThirdPartyImportingCachedFile(), json);
+                    return JsonConvert.DeserializeObject<Dictionary<long, List<Dictionary<string, string>>>>(json);
+                }
+            }
+            return JsonConvert.DeserializeObject<Dictionary<long, List<Dictionary<string, string>>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
         }
 
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/mods/relayservice";

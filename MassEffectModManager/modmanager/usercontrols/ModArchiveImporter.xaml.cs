@@ -2,7 +2,6 @@
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.ui;
 using Serilog;
-using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using SevenZip;
 
 namespace MassEffectModManager.modmanager.usercontrols
 {
@@ -83,13 +83,13 @@ namespace MassEffectModManager.modmanager.usercontrols
             TaskRunning = true;
             string filepath = (string)e.Argument;
             ActionText = $"Opening {ScanningFile}";
-            using (ArchiveFile archiveFile = new ArchiveFile(filepath))
+            using (var archiveFile = new SevenZipExtractor(filepath))
             {
-                var moddesciniEntries = new List<Entry>();
-                foreach (var entry in archiveFile.Entries)
+                var moddesciniEntries = new List<ArchiveFileInfo>();
+                foreach (var entry in archiveFile.ArchiveFileData)
                 {
                     string fname = Path.GetFileName(entry.FileName);
-                    if (fname.Equals("moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
+                    if (!entry.IsDirectory && fname.Equals("moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
                     {
                         moddesciniEntries.Add(entry);
                     }
@@ -102,21 +102,23 @@ namespace MassEffectModManager.modmanager.usercontrols
                         ActionText = $"Reading {entry.FileName}";
 
                         MemoryStream ms = new MemoryStream();
-                        entry.Extract(ms);
-                        ms.Position = 0;
-                        StreamReader reader = new StreamReader(ms);
-                        try
+                        archiveFile.ExtractFile(entry.FileName, ms);
+                        Mod m = new Mod(ms, ignoreLoadErrors: true);
+                        if (m.ValidMod)
                         {
-                            Application.Current.Dispatcher.Invoke(delegate
+                            try
                             {
-                                CompressedMods.Add(new CompressedMod(new Mod(ms, ignoreLoadErrors: true)));
-                                CompressedMods.Sort(x => x.Mod.ModName);
-                            });
-                        }
-                        catch (Exception ex)
-                        {
-                            //Don't load
-                            Log.Warning("Unable to load compressed mod moddesc.ini: " + ex.Message);
+                                Application.Current.Dispatcher.Invoke(delegate
+                                {
+                                    CompressedMods.Add(new CompressedMod(m));
+                                    CompressedMods.Sort(x => x.Mod.ModName);
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                //Don't load
+                                Log.Warning("Unable to load compressed mod moddesc.ini: " + ex.Message);
+                            }
                         }
                     }
                 }

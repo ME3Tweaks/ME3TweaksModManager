@@ -97,6 +97,7 @@ namespace MassEffectModManager.modmanager
         /// <param name="ignoreLoadErrors">Will ignore load errors when reading from stream. This should almost always be used</param>
         public Mod(MemoryStream iniStream, bool ignoreLoadErrors = false)
         {
+            iniStream.Position = 0;
             this.ignoreLoadErrors = ignoreLoadErrors;
             string str = new StreamReader(iniStream).ReadToEnd();
             ModPath = Path.GetDirectoryName(Utilities.GetMMExecutableDirectory()); //compressed mods don't have a folder

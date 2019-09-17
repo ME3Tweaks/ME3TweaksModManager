@@ -21,6 +21,7 @@ using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.me3tweaks;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.ui;
+using SevenZip;
 
 namespace MassEffectModManager.modmanager.usercontrols
 {
@@ -90,11 +91,17 @@ namespace MassEffectModManager.modmanager.usercontrols
             bw.DoWork += (a, b) =>
             {
                 string logUploadText = LogCollector.CollectLogs();
+                MemoryStream outStream = new MemoryStream();
+                //I love libraries that have no documentation on how to use them
+                var lzmaEncoder = new LzmaEncodeStream();
+                var bytes = Encoding.UTF8.GetBytes(logUploadText);
+                lzmaEncoder.Write(bytes, 0, bytes.Length);
                 //This doesn't work. sevenziphelper doesn't seem to support compressing as LZMA
                 //var bytes = System.Text.Encoding.UTF8.GetBytes(logUploadText);
 
                 //var compressedBytes = SevenZipHelper.LZMA.Compress(bytes);
-                //File.WriteAllBytes(@"C:\users\public\test.lzma", compressedBytes);
+                //RIP
+                File.WriteAllBytes(@"C:\users\public\test.lzma", lzmaEncoder.ReadStreamFully());
                 Thread.Sleep(2000);
             };
             bw.RunWorkerCompleted += (a, b) =>

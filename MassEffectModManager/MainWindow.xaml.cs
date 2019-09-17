@@ -558,7 +558,7 @@ namespace MassEffectModManager
 
         public void PerformStartupNetworkFetches(bool checkForModManagerUpdates)
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("StartupNetworkThread");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("ContentCheckNetworkThread");
             bw.WorkerReportsProgress = true;
             bw.ProgressChanged += (sender, args) =>
             {
@@ -601,26 +601,30 @@ namespace MassEffectModManager
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
                 }
 
-                var bgTask = backgroundTaskEngine.SubmitBackgroundJob("ThirdPartyIdentificationServiceFetch", "Initializing Third Party Identification Service information", "Initialized Third Party Identification Service");
-                App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(false);
 
-
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
+                var bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
                 var success = OnlineContent.EnsureStaticAssets();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
-                var helpItemsLoading = OnlineContent.FetchLatestHelp();
+                var helpItemsLoading = OnlineContent.FetchLatestHelp(!checkForModManagerUpdates);
                 bw.ReportProgress(0, helpItemsLoading);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("ThirdPartyIdentificationServiceFetch", "Loading Third Party Identification Service", "Loaded Third Party Identification Service");
+                App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!checkForModManagerUpdates);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadTipsService", "Loading Third Party Importing Service", "Loaded Third Party Importing Service");
+                App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!checkForModManagerUpdates);
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadTipsService", "Loading tips service", "Loaded tips service");
-                LoadedTips.ReplaceAll(OnlineContent.FetchTipsService());
+                LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!checkForModManagerUpdates));
                 OnPropertyChanged(nameof(NoModSelectedText));
-                bw.ReportProgress(0, helpItemsLoading);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 Properties.Settings.Default.LastContentCheck = DateTime.Now;

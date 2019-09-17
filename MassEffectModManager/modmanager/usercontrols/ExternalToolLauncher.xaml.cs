@@ -15,7 +15,7 @@ using ByteSizeLib;
 using Microsoft.Win32;
 using Octokit;
 using Serilog;
-using SevenZipExtractor;
+using SevenZip;
 
 namespace MassEffectModManager.modmanager.usercontrols
 {
@@ -173,12 +173,12 @@ namespace MassEffectModManager.modmanager.usercontrols
                     case ".rar":
                     case ".7z":
                     case ".zip":
-                        using (ArchiveFile archiveFile = new ArchiveFile(downloadPath))
+                        using (var archiveFile = new SevenZipExtractor(downloadPath))
                         {
                             Action = "Extracting " + tool;
                             PercentVisibility = Visibility.Collapsed;
                             PercentDownloaded = 0;
-                            archiveFile.Extract(outputDiretory); // extract all
+                            archiveFile.ExtractArchive(outputDiretory); // extract all
                             LaunchTool(executable);
                         }
                         break;

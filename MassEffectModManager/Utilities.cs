@@ -97,6 +97,11 @@ namespace MassEffectModManager
             return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
         }
 
+        internal static string GetThirdPartyImportingCachedFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyimportingservice.json");
+        }
+
         internal static bool CanFetchContentThrottleCheck()
         {
             var lastContentCheck = Properties.Settings.Default.LastContentCheck;
