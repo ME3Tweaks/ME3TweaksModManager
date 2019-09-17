@@ -90,9 +90,18 @@ namespace MassEffectModManager.modmanager
         public string ModPath { get; }
         public string ModDescPath => Path.Combine(ModPath, "moddesc.ini");
 
-        public Mod(MemoryStream iniStream)
+        /// <summary>
+        /// Loads a moddesc from a stream. Used when reading data from an archive. 
+        /// </summary>
+        /// <param name="iniStream">Stream of ini file</param>
+        /// <param name="ignoreLoadErrors">Will ignore load errors when reading from stream. This should almost always be used</param>
+        public Mod(MemoryStream iniStream, bool ignoreLoadErrors = false)
         {
+            this.ignoreLoadErrors = ignoreLoadErrors;
+            string str = new StreamReader(iniStream).ReadToEnd();
+            ModPath = Path.GetDirectoryName(Utilities.GetMMExecutableDirectory()); //compressed mods don't have a folder
 
+            loadMod(str, MEGame.Unknown);
         }
 
         public Mod(string filePath, MEGame expectedGame)
@@ -174,7 +183,12 @@ namespace MassEffectModManager.modmanager
                     break;
                 default:
                     //Check if this is in ME3 game directory. If it's null, it might be a legacy mod
-                    if (game == null && Game != MEGame.ME3)
+                    if (game == null)
+                    {
+                        CLog.Warning("Game indicator is null. This may be mod from pre-Mod Manager 6, or developer did not specify the game. Defaulting to ME3", LogModStartup);
+                        Game = MEGame.ME3;
+                    }
+                    else
                     {
                         Log.Error($"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}");
                         LoadFailedReason = $"This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}";

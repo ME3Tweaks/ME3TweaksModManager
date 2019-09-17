@@ -11,6 +11,9 @@
         Closing="ModManagerWindow_Closing"
         ContentRendered="ModManager_ContentRendered"
         Style="{StaticResource WindowStyle}"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragOver="Window_DragOver"
         Title="Mass Effect Mod Manager" Height="600" Width="800">
     <Window.Resources>
         <Style x:Key="MenuItemHeaderStyle" TargetType="{x:Type MenuItem}">
@@ -282,7 +285,7 @@
                     </TextBlock>
                     </StackPanel>
                     <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" 
-                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
+                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AllowDrop="True" PreviewDragOver="Window_DragOver" Drop="Window_Drop" DragOver="Window_DragOver">
                         <TextBox.Text>
                             <PriorityBinding>
                                 <Binding Path="SelectedMod.DisplayedModDescription" Mode="OneWay"/>
@@ -296,6 +299,9 @@
         <xctk:BusyIndicator.ProgressBarStyle>
             <Style TargetType="ProgressBar">
                 <Setter Property="Visibility" Value="{Binding BusyProgressVarVisibility}"/>
+                <Setter Property="Height" Value="14"/>
+                <Setter Property="Margin" Value="5,0,5,5"/>
+                <Setter Property="IsIndeterminate" Value="True"/>
             </Style>
         </xctk:BusyIndicator.ProgressBarStyle>
     </xctk:BusyIndicator>

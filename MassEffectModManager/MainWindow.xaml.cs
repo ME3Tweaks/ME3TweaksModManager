@@ -46,6 +46,8 @@ namespace MassEffectModManager
         public object BusyContent { get; set; }
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = "Select a mod on the left to get started";
+        private readonly string[] SupportedDroppableExtensions = { ".rar", ".zip", ".7z" };
+
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
         public string StartGameButtonText { get; set; } = "Start Game";
@@ -732,6 +734,61 @@ namespace MassEffectModManager
             BusyProgressVarVisibility = Visibility.Collapsed;
             BusyContent = exLauncher;
             IsBusy = true;
+        }
+
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                string ext = Path.GetExtension(files[0]).ToLower();
+                switch (ext)
+                {
+                    case ".rar":
+                    case ".7z":
+                    case ".zip":
+                        OpenModImportUI(files[0]);
+                        break;
+                }
+            }
+        }
+
+        private void OpenModImportUI(string archiveFile = null)
+        {
+            var modInspector = new ModArchiveImporter();
+            modInspector.Close += (a, b) =>
+            {
+                IsBusy = false;
+                BusyContent = null;
+            };
+            //Todo: Update Busy UI Content
+            BusyContent = modInspector;
+            IsBusy = true;
+            if (archiveFile != null)
+            {
+                modInspector.InspectArchiveFile(archiveFile);
+            }
+        }
+
+        private void Window_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Note that you can have more than one file.
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                string ext = Path.GetExtension(files[0]).ToLower();
+                if (!SupportedDroppableExtensions.Contains(ext))
+                {
+                    e.Effects = DragDropEffects.None;
+                    e.Handled = true;
+                }
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+                e.Handled = true;
+            }
         }
     }
 }

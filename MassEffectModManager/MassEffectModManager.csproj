@@ -184,6 +184,7 @@
     <Compile Include="modmanager\medirectories\MELoadedFiles.cs" />
     <Compile Include="modmanager\medirectories\MountFile.cs" />
     <Compile Include="modmanager\objects\AlternateFile.cs" />
+    <Compile Include="modmanager\objects\CompressedMod.cs" />
     <Compile Include="modmanager\objects\GameTarget.cs" />
     <Compile Include="modmanager\objects\ModJob.cs" />
     <Compile Include="modmanager\usercontrols\ExternalToolLauncher.xaml.cs">
@@ -191,6 +192,9 @@
     </Compile>
     <Compile Include="modmanager\usercontrols\LogUploader.xaml.cs">
       <DependentUpon>LogUploader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="modmanager\usercontrols\ModArchiveImporter.xaml.cs">
+      <DependentUpon>ModArchiveImporter.xaml</DependentUpon>
     </Compile>
     <Compile Include="modmanager\usercontrols\ModInstaller.xaml.cs">
       <DependentUpon>ModInstaller.xaml</DependentUpon>
@@ -211,6 +215,7 @@
       <DependentUpon>StarterKitGeneratorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ui\Commands.cs" />
+    <Compile Include="ui\NoDragDropTextBox.cs" />
     <Compile Include="ui\NotifyPropertyChangedBase.cs" />
     <Compile Include="ui\ObservableCollectionExtended.cs" />
     <Compile Include="Utilities.cs" />
@@ -231,6 +236,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="modmanager\usercontrols\LogUploader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="modmanager\usercontrols\ModArchiveImporter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
