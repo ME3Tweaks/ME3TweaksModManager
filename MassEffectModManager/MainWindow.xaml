@@ -57,7 +57,7 @@
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
         <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
     </Window.Resources>
-    <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}">
+    <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
             <Menu DockPanel.Dock="Top" Style="{StaticResource MenuStyle}">
                 <MenuItem Header="Actions" Padding="4">
@@ -298,10 +298,12 @@
         </DockPanel>
         <xctk:BusyIndicator.ProgressBarStyle>
             <Style TargetType="ProgressBar">
-                <Setter Property="Visibility" Value="{Binding BusyProgressVarVisibility}"/>
+                <Setter Property="Visibility" Value="{Binding BusyProgressBarVisibility}"/>
+                <Setter Property="Maximum" Value="{Binding BusyProgressBarMaximum}"/>
+                <Setter Property="Value" Value="{Binding BusyProgressBarValue}"/>
+                <Setter Property="IsIndeterminate" Value="{Binding BusyProgressBarIndeterminate}"/>
                 <Setter Property="Height" Value="14"/>
                 <Setter Property="Margin" Value="5,0,5,5"/>
-                <Setter Property="IsIndeterminate" Value="True"/>
             </Style>
         </xctk:BusyIndicator.ProgressBarStyle>
     </xctk:BusyIndicator>

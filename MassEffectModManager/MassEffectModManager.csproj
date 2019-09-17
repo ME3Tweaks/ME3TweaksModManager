@@ -187,6 +187,8 @@
     <Compile Include="modmanager\objects\CompressedMod.cs" />
     <Compile Include="modmanager\objects\GameTarget.cs" />
     <Compile Include="modmanager\objects\ModJob.cs" />
+    <Compile Include="modmanager\objects\ProgressBarUpdate.cs" />
+    <Compile Include="modmanager\objects\RelayModInfo.cs" />
     <Compile Include="modmanager\usercontrols\ExternalToolLauncher.xaml.cs">
       <DependentUpon>ExternalToolLauncher.xaml</DependentUpon>
     </Compile>
@@ -292,7 +294,7 @@
     <EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
     <EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
     <EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.asi" />
-    <None Include="modmanager\asi\ME3Logger_truncating-v1.asi" />
+    <EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.asi" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

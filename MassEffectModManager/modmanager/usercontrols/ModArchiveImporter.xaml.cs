@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,6 +20,9 @@ namespace MassEffectModManager.modmanager.usercontrols
     /// </summary>
     public partial class ModArchiveImporter : UserControl, INotifyPropertyChanged
     {
+        private readonly Action<ProgressBarUpdate> progressBarCallback;
+        private bool TaskRunning;
+        public string NoModSelectedText { get; } = "Select a mod on the left to view its description";
         public event EventHandler Close;
         protected virtual void OnClosing(EventArgs e)
         {
@@ -27,31 +31,58 @@ namespace MassEffectModManager.modmanager.usercontrols
         }
 
         public CompressedMod SelectedMod { get; private set; }
-        public string Action { get; set; } = "Scanning archive";
+        public string ScanningFile { get; private set; } = "Please wait";
+        public string ActionText { get; private set; }
         public ObservableCollectionExtended<CompressedMod> CompressedMods { get; } = new ObservableCollectionExtended<CompressedMod>();
-        public ModArchiveImporter()
+        public ModArchiveImporter(Action<ProgressBarUpdate> progressBarCallback)
         {
+            this.progressBarCallback = progressBarCallback;
             DataContext = this;
             LoadCommands();
             InitializeComponent();
         }
 
+
         public void InspectArchiveFile(string filepath)
         {
+            ScanningFile = Path.GetFileName(filepath);
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ModArchiveInspector");
             bw.DoWork += InspectArchiveBackgroundThread;
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Visible));
+
             bw.RunWorkerCompleted += (a, b) =>
             {
-                Action = $"Scanned {Path.GetFileName(filepath)}";
+                if (CompressedMods.Count > 0)
+                {
+                    ActionText = $"Select mods to import into Mod Manager library";
+                }
+                else
+                {
+                    ActionText = "No compatible mods found in archive";
+                }
             };
-            Action = $"Scanning {Path.GetFileName(filepath)}";
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                if (CompressedMods.Count == 1)
+                {
+                    CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
+                }
+                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
+                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, false));
+                TaskRunning = false;
+            };
+            ActionText = $"Scanning {Path.GetFileName(filepath)}";
 
             bw.RunWorkerAsync(filepath);
         }
 
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
+            TaskRunning = true;
             string filepath = (string)e.Argument;
+            ActionText = $"Opening {ScanningFile}";
             using (ArchiveFile archiveFile = new ArchiveFile(filepath))
             {
                 var moddesciniEntries = new List<Entry>();
@@ -68,6 +99,8 @@ namespace MassEffectModManager.modmanager.usercontrols
                 {
                     foreach (var entry in moddesciniEntries)
                     {
+                        ActionText = $"Reading {entry.FileName}";
+
                         MemoryStream ms = new MemoryStream();
                         entry.Extract(ms);
                         ms.Position = 0;
@@ -112,11 +145,8 @@ namespace MassEffectModManager.modmanager.usercontrols
             return true;
         }
 
-        private bool CanImportMods()
-        {
-            //todo: hook this up
-            return false;
-        }
+        private bool CanImportMods() => TaskRunning && CompressedMods.Any(x => x.SelectedForImport);
+
 
         private void BeginImportingMods()
         {

@@ -12,13 +12,14 @@
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
     </UserControl.Resources>
-    <DockPanel Margin="10,0">
+    <DockPanel Margin="0,0">
         <TextBlock DockPanel.Dock="Top" Text="Import mods from archive file" FontSize="16" FontWeight="Bold" TextAlignment="Center"/>
-        <TextBlock DockPanel.Dock="Top" Text="{Binding Action, FallbackValue=Scanning BigMod.7z}" TextAlignment="Center"/>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
-            <Button Content="Cancel" Margin="5,0" Padding="3,2" Command="{Binding CancelCommand}"/>
-            <Button Content="Import mods" Padding="3,2" Command="{Binding ImportCommand}"/>
-        </StackPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding ScanningFile, FallbackValue=Placeholder.7z}" TextAlignment="Center"/>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0" LastChildFill="False">
+            <Button DockPanel.Dock="Right" Content="Import mods" Padding="8,3" Command="{Binding ImportModsCommand}"/>
+            <Button DockPanel.Dock="Right" Content="Cancel" Margin="5,0" Padding="8,3" Command="{Binding CancelCommand}"/>
+            <TextBlock DockPanel.Dock="Left" Text="{Binding ActionText, FallbackValue=Scanning archive....}" VerticalAlignment="Center"/>
+        </DockPanel>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -28,15 +29,22 @@
             <ListBox Name="CompressedMods_ListBox" Grid.Column="0" ItemsSource="{Binding CompressedMods}" SelectionChanged="SelectedMod_Changed">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox IsChecked="{Binding SelectedForImport}"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <CheckBox IsChecked="{Binding SelectedForImport}" VerticalContentAlignment="Center"/>
                             <Image Source="{Binding Mod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="5,0,5,0"/>
                             <TextBlock Text="{Binding Mod.ModName}"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <TextBox Grid.Column="2" Text="{Binding SelectedMod.Mod.DisplayedModDescription, Mode=OneWay}" TextWrapping="Wrap"/>
+            <TextBox Grid.Column="2" TextWrapping="Wrap">
+                <TextBox.Text>
+                    <PriorityBinding>
+                        <Binding Path="SelectedMod.Mod.DisplayedModDescription" Mode="OneWay"/>
+                        <Binding Path="NoModSelectedText" Mode="OneWay"/>
+                    </PriorityBinding>
+                </TextBox.Text>
+            </TextBox>
         </Grid>
     </DockPanel>
 

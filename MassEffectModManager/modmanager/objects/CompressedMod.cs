@@ -12,6 +12,7 @@ namespace MassEffectModManager.modmanager.objects
     public class CompressedMod
     {
         public Mod Mod { get; private set; } //this will fail to be valid because files don't exist on disk
+        public bool SelectedForImport { get; set; } = true; //Default check on
         public bool IsUnofficiallySupported;
         public int InArchiveFileIndex;
 

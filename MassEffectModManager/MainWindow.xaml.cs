@@ -80,7 +80,6 @@ namespace MassEffectModManager
             }
         }
 
-        public Visibility BusyProgressVarVisibility { get; set; } = Visibility.Visible;
 
         public Mod SelectedMod { get; set; }
         public ObservableCollectionExtended<Mod> LoadedMods { get; } = new ObservableCollectionExtended<Mod>();
@@ -300,8 +299,7 @@ namespace MassEffectModManager
                 }
                 backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
             };
-            //Todo: Update Busy UI Content
-            BusyProgressVarVisibility = Visibility.Collapsed;
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             BusyContent = modInstaller;
             IsBusy = true;
             modInstaller.BeginInstallingMod();
@@ -705,7 +703,7 @@ namespace MassEffectModManager
                     BusyContent = null;
                 };
                 //Todo: Update Busy UI Content
-                BusyProgressVarVisibility = Visibility.Collapsed;
+                UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
                 BusyContent = exLauncher;
                 IsBusy = true;
                 exLauncher.StartLaunchingTool();
@@ -724,16 +722,45 @@ namespace MassEffectModManager
 
         private void UploadLog_Click(object sender, RoutedEventArgs e)
         {
-            var exLauncher = new LogUploader((visibility => BusyProgressVarVisibility = visibility));
+            var exLauncher = new LogUploader(UpdateBusyProgressBarCallback);
             exLauncher.Close += (a, b) =>
             {
                 IsBusy = false;
                 BusyContent = null;
             };
             //Todo: Update Busy UI Content
-            BusyProgressVarVisibility = Visibility.Collapsed;
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Hidden));
             BusyContent = exLauncher;
             IsBusy = true;
+        }
+
+        public Visibility BusyProgressBarVisibility { get; set; } = Visibility.Visible;
+        public int BusyProgressBarMaximum { get; set; } = 100;
+        public int BusyProgressBarValue { get; set; } = 0;
+        public bool BusyProgressBarIndeterminate { get; set; } = true;
+
+        /// <summary>
+        /// Updates the progressbar that the user controls use
+        /// </summary>
+        /// <param name="update"></param>
+        private void UpdateBusyProgressBarCallback(ProgressBarUpdate update)
+        {
+            switch (update.UpdateType)
+            {
+                case ProgressBarUpdate.UpdateTypes.SET_VISIBILITY:
+                    BusyProgressBarVisibility = update.GetDataAsVisibility();
+                    break;
+                case ProgressBarUpdate.UpdateTypes.SET_MAX:
+                    BusyProgressBarMaximum = update.GetDataAsInt();
+                    break;
+                case ProgressBarUpdate.UpdateTypes.SET_VALUE:
+                    BusyProgressBarValue = update.GetDataAsInt();
+                    break;
+                case ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE:
+                    BusyProgressBarIndeterminate = update.GetDataAsBool();
+                    break;
+
+            }
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -756,7 +783,7 @@ namespace MassEffectModManager
 
         private void OpenModImportUI(string archiveFile = null)
         {
-            var modInspector = new ModArchiveImporter();
+            var modInspector = new ModArchiveImporter(UpdateBusyProgressBarCallback);
             modInspector.Close += (a, b) =>
             {
                 IsBusy = false;

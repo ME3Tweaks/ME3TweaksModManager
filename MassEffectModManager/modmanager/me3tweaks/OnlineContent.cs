@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManager.modmanager.helpers;
+using MassEffectModManager.modmanager.objects;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -57,6 +58,14 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 }
             }
             return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+        }
+
+        private const string ModInfoRelayEndpoint = "https://me3tweaks.com/mods/relayservice";
+        public static List<RelayModInfo> QueryModRelay(string md5)
+        {
+            //Todo: Implement relay service serverside
+            //Todo: Implement relay service locally
+            return null;
         }
 
         public static bool EnsureStaticAssets()

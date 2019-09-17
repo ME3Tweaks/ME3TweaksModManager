@@ -19,6 +19,7 @@ using ByteSizeLib;
 using MassEffectModManager.gamefileformats;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.me3tweaks;
+using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.ui;
 
 namespace MassEffectModManager.modmanager.usercontrols
@@ -28,15 +29,15 @@ namespace MassEffectModManager.modmanager.usercontrols
     /// </summary>
     public partial class LogUploader : UserControl, INotifyPropertyChanged
     {
-        private readonly Action<Visibility> progressBarVisibiiltyCallback;
+        private readonly Action<ProgressBarUpdate> progressBarUpdateCallback;
         private bool UploadingLog;
         private const string LogUploaderEndpoint = "https://me3tweaks.com/modmanager/loguploader";
         public string TopText { get; private set; } = "Select a log to view on log viewing service";
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
-        public LogUploader(Action<Visibility> progressBarVisibilityCallback)
+        public LogUploader(Action<ProgressBarUpdate> progressBarVisibilityCallback)
         {
             DataContext = this;
-            this.progressBarVisibiiltyCallback = progressBarVisibilityCallback;
+            this.progressBarUpdateCallback = progressBarVisibilityCallback;
             LoadCommands();
             InitializeComponent();
             InitLogUploaderUI();
@@ -84,7 +85,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         {
             UploadingLog = true;
             TopText = "Collecting log information";
-            progressBarVisibiiltyCallback?.Invoke(Visibility.Visible);
+            progressBarUpdateCallback?.Invoke(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Visible));
             NamedBackgroundWorker bw = new NamedBackgroundWorker("LogUpload");
             bw.DoWork += (a, b) =>
             {
