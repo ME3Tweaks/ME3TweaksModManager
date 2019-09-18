@@ -128,6 +128,12 @@ namespace MassEffectModManager
 
         public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
         public static string GetME2ModsDirectory() => Path.Combine(GetModsDirectory(), "ME2");
+
+        internal static string Get7zDllPath()
+        {
+            return Path.Combine(Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "libraries")).FullName, "7z.dll");
+        }
+
         public static string GetME1ModsDirectory() => Path.Combine(GetModsDirectory(), "ME1");
 
         public static void OpenWebpage(string uri)

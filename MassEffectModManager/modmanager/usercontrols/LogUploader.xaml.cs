@@ -16,11 +16,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ByteSizeLib;
+using Flurl.Http;
 using MassEffectModManager.gamefileformats;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.me3tweaks;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.ui;
+using Serilog;
 using SevenZip;
 
 namespace MassEffectModManager.modmanager.usercontrols
@@ -39,6 +41,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         {
             DataContext = this;
             this.progressBarUpdateCallback = progressBarVisibilityCallback;
+            progressBarUpdateCallback?.Invoke(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             LoadCommands();
             InitializeComponent();
             InitLogUploaderUI();
@@ -68,8 +71,13 @@ namespace MassEffectModManager.modmanager.usercontrols
 
         private void LoadCommands()
         {
-            UploadLogCommand = new GenericCommand(StartLogUpload, CanUploadLog);
+            UploadLogCommand = new GenericCommand(StartLogUploadManual, CanUploadLog);
             CancelUploadCommand = new GenericCommand(CancelUpload, CanCancelUpload);
+        }
+
+        private void StartLogUploadManual()
+        {
+            StartLogUpload();
         }
 
         private void CancelUpload()
@@ -82,32 +90,104 @@ namespace MassEffectModManager.modmanager.usercontrols
             return !UploadingLog;
         }
 
-        private void StartLogUpload()
+        private void StartLogUpload(bool isPreviousCrashLog = false)
         {
             UploadingLog = true;
             TopText = "Collecting log information";
             progressBarUpdateCallback?.Invoke(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Visible));
+            progressBarUpdateCallback?.Invoke(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
             NamedBackgroundWorker bw = new NamedBackgroundWorker("LogUpload");
             bw.DoWork += (a, b) =>
             {
                 string logUploadText = LogCollector.CollectLogs();
-                MemoryStream outStream = new MemoryStream();
-                //I love libraries that have no documentation on how to use them
-                var lzmaEncoder = new LzmaEncodeStream();
-                var bytes = Encoding.UTF8.GetBytes(logUploadText);
-                lzmaEncoder.Write(bytes, 0, bytes.Length);
-                //This doesn't work. sevenziphelper doesn't seem to support compressing as LZMA
-                //var bytes = System.Text.Encoding.UTF8.GetBytes(logUploadText);
+                using (var output = new MemoryStream())
+                {
+                    var encoder = new LzmaEncodeStream(output);
+                    using (var normalBytes = new MemoryStream(Encoding.UTF8.GetBytes(logUploadText)))
+                    {
+                        int bufSize = 24576, count;
+                        var buf = new byte[bufSize];
 
-                //var compressedBytes = SevenZipHelper.LZMA.Compress(bytes);
-                //RIP
-                File.WriteAllBytes(@"C:\users\public\test.lzma", lzmaEncoder.ReadStreamFully());
-                Thread.Sleep(2000);
+                        while ((count = normalBytes.Read(buf, 0, bufSize)) > 0)
+                        {
+                            encoder.Write(buf, 0, count);
+                        }
+                    }
+
+                    encoder.Close();
+
+                    //Upload log to ME3Tweaks
+
+                    var lzmalog = output.ToArray();
+                    try
+                    {
+                        //this doesn't need to technically be async, but library doesn't have non-async method.
+                        string responseString = "https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+                        Uri uriResult;
+                        bool result = Uri.TryCreate(responseString, UriKind.Absolute, out uriResult)
+                                      && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                        if (result)
+                        {
+                            //should be valid URL.
+                            //diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_Upload));
+                            //e.Result = responseString;
+                            Log.Information("Result from server for log upload: " + responseString);
+                            b.Result = responseString;
+                            return;
+                        }
+                        else
+                        {
+                            Log.Error("Error uploading log. The server responded with: " + responseString);
+                            b.Result = "The server rejected the upload. The response was: " + responseString;
+                        }
+                    }
+                    catch (AggregateException e)
+                    {
+                        Exception ex = e.InnerException;
+                        b.Result = "The log was unable to upload:\n" + ex.Message + ".\nPlease come to the ME3Tweaks Discord for assistance.";
+                    }
+                    catch (FlurlHttpTimeoutException)
+                    {
+                        // FlurlHttpTimeoutException derives from FlurlHttpException; catch here only
+                        // if you want to handle timeouts as a special case
+                        Log.Error("Request timed out while uploading log.");
+                        b.Result = "Request timed out while uploading log.";
+
+                    }
+                    catch (Exception ex)
+                    {
+                        // ex.Message contains rich details, inclulding the URL, verb, response status,
+                        // and request and response bodies (if available)
+                        Log.Error("Handled error uploading log: " + App.FlattenException(ex));
+                        string exmessage = ex.Message;
+                        var index = exmessage.IndexOf("Request body:");
+                        if (index > 0)
+                        {
+                            exmessage = exmessage.Substring(0, index);
+                        }
+
+                        b.Result = "The log was unable to upload. The error message is: " + exmessage + " Please come to the ME3Tweaks Discord for assistance.";
+                    }
+                }
+
             };
             bw.RunWorkerCompleted += (a, b) =>
-            {
-                OnClosing(EventArgs.Empty);
-            };
+                {
+                    if (b.Result is string response)
+                    {
+                        if (response.StartsWith("http"))
+                        {
+                            Utilities.OpenWebpage(response);
+                        }
+                        else
+                        {
+                            OnClosing(EventArgs.Empty);
+                            var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), response, $"Log upload failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                    }
+                    OnClosing(EventArgs.Empty);
+                };
             bw.RunWorkerAsync();
         }
 

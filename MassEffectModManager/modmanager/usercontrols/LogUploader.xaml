@@ -8,7 +8,7 @@
              xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d"
              Width="300">
-    <Grid Margin="5">
+    <Grid Margin="5,5,5,5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>

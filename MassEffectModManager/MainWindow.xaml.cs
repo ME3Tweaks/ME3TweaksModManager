@@ -556,6 +556,8 @@ namespace MassEffectModManager
             Process.Start(Utilities.GetModsDirectory());
         }
 
+        private const int STARTUP_FAIL_CRITICAL_FILES_MISSING = 1;
+
         public void PerformStartupNetworkFetches(bool checkForModManagerUpdates)
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ContentCheckNetworkThread");
@@ -589,8 +591,25 @@ namespace MassEffectModManager
             bw.DoWork += (a, b) =>
             {
                 Log.Information("Start of content check network thread");
+
+                BackgroundTask bgTask;
+                bool success;
+
                 if (checkForModManagerUpdates)
                 {
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading required files", "Required files downloaded");
+                    if (!OnlineContent.EnsureCriticalFiles())
+                    {
+                        //Critical files not loaded!
+
+                        b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
+                        bgTask.finishedUiText = "Failed to acquire required files";
+                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                        return;
+                    }
+
+                    backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
                     var manifest = OnlineContent.FetchOnlineStartupManifest();
                     if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
@@ -601,9 +620,14 @@ namespace MassEffectModManager
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
                 }
 
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
+                success = OnlineContent.EnsureStaticAssets();
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                var bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
-                var success = OnlineContent.EnsureStaticAssets();
+
+
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
+                success = OnlineContent.EnsureStaticAssets();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
@@ -630,8 +654,27 @@ namespace MassEffectModManager
                 Properties.Settings.Default.LastContentCheck = DateTime.Now;
                 Properties.Settings.Default.Save();
                 Log.Information("End of content check network thread");
+                b.Result = 0; //all good
             };
-            bw.RunWorkerCompleted += (a, b) => { ContentCheckInProgress = false; };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Result is int i)
+                {
+                    if (i != 0)
+                    {
+                        switch (i)
+                        {
+                            case STARTUP_FAIL_CRITICAL_FILES_MISSING:
+                                var res = Xceed.Wpf.Toolkit.MessageBox.Show($"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.", $"Required files unable to be downloaded", MessageBoxButton.OK, MessageBoxImage.Error);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        ContentCheckInProgress = false;
+                    }
+                }
+            };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
         }
@@ -726,15 +769,13 @@ namespace MassEffectModManager
 
         private void UploadLog_Click(object sender, RoutedEventArgs e)
         {
-            var exLauncher = new LogUploader(UpdateBusyProgressBarCallback);
-            exLauncher.Close += (a, b) =>
+            var logUploaderUI = new LogUploader(UpdateBusyProgressBarCallback);
+            logUploaderUI.Close += (a, b) =>
             {
                 IsBusy = false;
                 BusyContent = null;
             };
-            //Todo: Update Busy UI Content
-            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Hidden));
-            BusyContent = exLauncher;
+            BusyContent = logUploaderUI;
             IsBusy = true;
         }
 

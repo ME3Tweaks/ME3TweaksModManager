@@ -83,18 +83,36 @@ namespace MassEffectModManager.modmanager.me3tweaks
 
         public static bool EnsureCriticalFiles()
         {
-            string appDataDir = Utilities.GetAppDataFolder();
-
             //7-zip
-            string sevenZDLL = Path.Combine(Directory.CreateDirectory(Path.Combine(appDataDir, "libraries")).FullName, "7z.dll");
-            if (!File.Exists(sevenZDLL))
+            try
             {
-                using (var wc = new System.Net.WebClient())
+                string sevenZDLL = Utilities.Get7zDllPath();
+                if (!File.Exists(sevenZDLL))
                 {
-                    var fullURL = StaticFilesBaseURL + "7z.dll";
-                    Log.Information("Downloading 7z.dll: " + fullURL);
-                    wc.DownloadFile(fullURL, sevenZDLL);
+                    using (var wc = new System.Net.WebClient())
+                    {
+                        var fullURL = StaticFilesBaseURL + "7z.dll";
+                        Log.Information("Downloading 7z.dll: " + fullURL);
+                        wc.DownloadFile(fullURL, sevenZDLL);
+                    }
                 }
+
+                if (File.Exists(sevenZDLL))
+                {
+                    Log.Information("Setting 7z dll path: " + sevenZDLL);
+                    var p = Path.GetFullPath(sevenZDLL);
+                    SevenZip.SevenZipBase.SetLibraryPath(sevenZDLL);
+                }
+                else
+                {
+                    Log.Fatal("Unable to load 7z dll! File doesn't exist: " + sevenZDLL);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception ensuring critical files: " + App.FlattenException(e));
+                return false;
             }
 
             return true;
