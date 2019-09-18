@@ -352,7 +352,9 @@
   <ItemGroup>
     <Resource Include="images\origin.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="staticfiles\7z.dll" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="costura64\sevenzipwrapper.dll" />
   </ItemGroup>

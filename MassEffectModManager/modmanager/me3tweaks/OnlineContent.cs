@@ -59,7 +59,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
             return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
         }
 
-        public static Dictionary<long,List<Dictionary<string,string>>> FetchThirdPartyImportingService(bool overrideThrottling = false)
+        public static Dictionary<long, List<Dictionary<string, string>>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
@@ -81,6 +81,24 @@ namespace MassEffectModManager.modmanager.me3tweaks
             return null;
         }
 
+        public static bool EnsureCriticalFiles()
+        {
+            string appDataDir = Utilities.GetAppDataFolder();
+
+            //7-zip
+            string sevenZDLL = Path.Combine(Directory.CreateDirectory(Path.Combine(appDataDir, "libraries")).FullName, "7z.dll");
+            if (!File.Exists(sevenZDLL))
+            {
+                using (var wc = new System.Net.WebClient())
+                {
+                    var fullURL = StaticFilesBaseURL + "7z.dll";
+                    Log.Information("Downloading 7z.dll: " + fullURL);
+                    wc.DownloadFile(fullURL, sevenZDLL);
+                }
+            }
+
+            return true;
+        }
         public static bool EnsureStaticAssets()
         {
             string[] objectInfoFiles = { "ME1ObjectInfo.json", "ME2ObjectInfo.json", "ME3ObjectInfo.json" };
