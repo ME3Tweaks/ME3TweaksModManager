@@ -165,6 +165,7 @@
     <Compile Include="modmanager\converters\BoolVisibilityConverter.cs" />
     <Compile Include="modmanager\converters\GameToImageIconConverter.cs" />
     <Compile Include="modmanager\converters\NullEnabledConverter.cs" />
+    <Compile Include="modmanager\helpers\ArchivePathProxy.cs" />
     <Compile Include="modmanager\helpers\CopyDir.cs" />
     <Compile Include="modmanager\helpers\Extensions.cs" />
     <Compile Include="modmanager\helpers\LZO2Helper.cs" />

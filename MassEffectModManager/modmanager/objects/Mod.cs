@@ -87,24 +87,30 @@ namespace MassEffectModManager.modmanager
         private List<string> AdditionalDeploymentFiles;
         private bool emptyModIsOK;
 
-        public string ModPath { get; }
-        public string ModDescPath => Path.Combine(ModPath, "moddesc.ini");
+        public string ModPathJ { get; }
+        public string ModDescPath => ArchivePathProxy.Combine(ModPath, "moddesc.ini");
+
 
         /// <summary>
         /// Loads a moddesc from a stream. Used when reading data from an archive. 
         /// </summary>
         /// <param name="iniStream">Stream of ini file</param>
         /// <param name="ignoreLoadErrors">Will ignore load errors when reading from stream. This should almost always be used</param>
-        public Mod(MemoryStream iniStream, bool ignoreLoadErrors = false)
+        public Mod(MemoryStream iniStream, string inArchivePath, ArchiveFile archive, bool ignoreLoadErrors = false)
         {
             iniStream.Position = 0;
             this.ignoreLoadErrors = ignoreLoadErrors;
             string str = new StreamReader(iniStream).ReadToEnd();
-            ModPath = Path.GetDirectoryName(Utilities.GetMMExecutableDirectory()); //compressed mods don't have a folder
-
+            ModPath = inArchivePath;
+            IsInArchive = true;
             loadMod(str, MEGame.Unknown);
         }
 
+        /// <summary>
+        /// Initializes a mod from a moddesc.ini file
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="expectedGame"></param>
         public Mod(string filePath, MEGame expectedGame)
         {
             ModPath = Path.GetDirectoryName(filePath);
@@ -142,9 +148,9 @@ namespace MassEffectModManager.modmanager
             ModName = iniData["ModInfo"]["modname"];
             if (ModName == null || ModName == "")
             {
-                ModName = Path.GetFileName(ModPath);
-                Log.Error($"Moddesc.ini in {ModPath} does not set the modname descriptor.");
-                LoadFailedReason = $"The moddesc.ini file located at {ModPath} does not have a value set for modname. This value is required.";
+                ModName = ArchivePathProxy.GetFileName(ModPath);
+                Log.Error($"Moddesc.ini in {ArchivePathProxy.GetDisplayValue(ModPath)} does not set the modname descriptor.");
+                LoadFailedReason = $"The moddesc.ini file located at {ArchivePathProxy.GetDisplayValue(ModPath)} does not have a value set for modname. This value is required.";
                 return; //Won't set valid
             }
 
@@ -252,7 +258,7 @@ namespace MassEffectModManager.modmanager
                     {
                         CLog.Information("Found INI header with moddir specified: " + headerAsString, LogModStartup);
                         CLog.Information("Subdirectory (moddir): " + jobSubdirectory, LogModStartup);
-                        string fullSubPath = Path.Combine(ModPath, jobSubdirectory);
+                        string fullSubPath = ModPathProxy.Combine(ModPath, jobSubdirectory);
 
                         //Replace files (ModDesc 2.0)
                         string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
