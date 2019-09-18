@@ -34,7 +34,6 @@ namespace MassEffectModManager.modmanager.me3tweaks
             if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
 
-                string contents;
                 using (var wc = new System.Net.WebClient())
                 {
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyIdentificationServiceURL);
@@ -73,11 +72,17 @@ namespace MassEffectModManager.modmanager.me3tweaks
             return JsonConvert.DeserializeObject<Dictionary<long, List<Dictionary<string, string>>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
         }
 
-        private const string ModInfoRelayEndpoint = "https://me3tweaks.com/mods/relayservice";
-        public static List<RelayModInfo> QueryModRelay(string md5)
+        private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/relayservice/queryrelay";
+        public static object QueryModRelay(string md5)
         {
-            //Todo: Implement relay service serverside
-            //Todo: Implement relay service locally
+            //Todo: Finish implementing relay service
+            string finalRelayURL = $"{ModInfoRelayEndpoint}?ModManagerVersion={App.BuildNumber}&MD5={md5.ToLowerInvariant()}";
+            using (var wc = new System.Net.WebClient())
+            {
+                string json = wc.DownloadStringAwareOfEncoding(finalRelayURL);
+                //todo: Implement response format serverside
+                return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json);
+            }
             return null;
         }
 
