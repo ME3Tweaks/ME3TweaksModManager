@@ -59,7 +59,7 @@ namespace MassEffectModManager.modmanager
         };
 
         /// <summary>
-        /// Maps in-game relative paths to the file that will be used to install to that location
+        /// Maps in-game relative paths to the file that will be used to install to that location. The key is the target, the value is the source file that will be used.
         /// </summary>
         public Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         /// <summary>

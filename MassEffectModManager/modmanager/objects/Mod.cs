@@ -91,7 +91,7 @@ namespace MassEffectModManager.modmanager
         private List<string> AdditionalDeploymentFiles;
         private bool emptyModIsOK;
 
-        public string ModPath { get; }
+        public string ModPath { get; private set; }
 
         private SevenZipExtractor Archive;
 
@@ -142,6 +142,7 @@ namespace MassEffectModManager.modmanager
                 {
                     pathSb.Append(separator);
                 }
+
                 pathSb.Append(path);
                 removeLastSlash(pathSb);
             }
@@ -230,7 +231,7 @@ namespace MassEffectModManager.modmanager
             ModName = iniData["ModInfo"]["modname"];
             if (string.IsNullOrEmpty(ModName))
             {
-                ModName = ArchivePathProxy.GetFileName(ModPath);
+                ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
                 Log.Error($"Moddesc.ini in {ModPath} does not set the modname descriptor.");
                 LoadFailedReason = $"The moddesc.ini file located at {ModPath} does not have a value set for modname. This value is required.";
                 return; //Won't set valid
@@ -778,7 +779,7 @@ namespace MassEffectModManager.modmanager
             }
         }
 
-        public void ExtractFromArchive(string archivePath)
+        public void ExtractFromArchive(string archivePath, Action<ProgressEventArgs> extractingCallback = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
             var modDirectory = Utilities.GetModDirectoryForGame(Game);
@@ -786,11 +787,11 @@ namespace MassEffectModManager.modmanager
             if (Directory.Exists(sanitizedPath))
             {
                 //Will delete on import
+                //Todo: Delete directory/s
             }
-            else
-            {
-                Directory.CreateDirectory(sanitizedPath);
-            }
+
+            Directory.CreateDirectory(sanitizedPath);
+
 
             List<int> indexesToExtract = new List<int>();
             using (var archiveFile = new SevenZipExtractor(archivePath))
@@ -802,6 +803,7 @@ namespace MassEffectModManager.modmanager
                     //moddesc.ini
                     if (info.FileName == ModDescPath)
                     {
+                        Debug.WriteLine("Add file to extraction list: " + info.FileName);
                         fileIndicesToExtract.Add(info.Index);
                         continue;
                     }
@@ -816,7 +818,7 @@ namespace MassEffectModManager.modmanager
                             {
                                 if (info.FileName.StartsWith(PathCombine(ModPath, localCustomDLCFolder)))
                                 {
-                                    Debug.WriteLine("Extract file: " + info.FileName);
+                                    Debug.WriteLine("Add file to extraction list: " + info.FileName);
                                     fileIndicesToExtract.Add(info.Index);
                                     fileAdded = true;
                                     break;
@@ -827,11 +829,36 @@ namespace MassEffectModManager.modmanager
                         }
                         else
                         {
+                            foreach (var inSubDirFile in job.FilesToInstall.Values)
+                            {
+                                var inArchivePath = PathCombine(ModPath, inSubDirFile);
+                                if (info.FileName.Equals(inArchivePath, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    Debug.WriteLine("Add file to extraction list: " + info.FileName);
+                                    fileIndicesToExtract.Add(info.Index);
+                                    fileAdded = true;
+                                    break;
+                                }
 
+                                //Other DLC folders
+                                //if (job.FilesToInstall.Values.Any(x => ))
+                                //{
+                                //    Debug.WriteLine("Add file to extraction list: " + info.FileName);
+                                //    fileIndicesToExtract.Add(info.Index);
+                                //    fileAdded = true;
+                                //    break;
+                                //}
+                            }
+                            if (fileAdded) break;
                         }
                     }
                 }
+                archiveFile.Extracting += (sender, args) =>
+                {
+                    extractingCallback?.Invoke(args);
+                };
                 archiveFile.ExtractFiles(sanitizedPath, fileIndicesToExtract.ToArray());
+                ModPath = sanitizedPath;
             }
         }
     }

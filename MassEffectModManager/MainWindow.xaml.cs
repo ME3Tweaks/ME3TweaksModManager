@@ -820,19 +820,25 @@ namespace MassEffectModManager
                     case ".rar":
                     case ".7z":
                     case ".zip":
-                        OpenModImportUI(files[0]);
+                        openModImportUI(files[0]);
                         break;
+                        //TPF, .mod, .mem
+
                 }
             }
         }
 
-        private void OpenModImportUI(string archiveFile = null)
+        private void openModImportUI(string archiveFile = null)
         {
             var modInspector = new ModArchiveImporter(UpdateBusyProgressBarCallback);
             modInspector.Close += (a, b) =>
             {
                 IsBusy = false;
                 BusyContent = null;
+                if (b.Data is List<Mod> modsImported)
+                {
+                    LoadMods(modsImported.Count == 1 ? modsImported.First() : null);
+                }
             };
             //Todo: Update Busy UI Content
             BusyContent = modInspector;

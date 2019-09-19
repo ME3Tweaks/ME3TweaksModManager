@@ -220,6 +220,7 @@
       <DependentUpon>StarterKitGeneratorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ui\Commands.cs" />
+    <Compile Include="ui\DataEventArgs.cs" />
     <Compile Include="ui\NoDragDropTextBox.cs" />
     <Compile Include="ui\NotifyPropertyChangedBase.cs" />
     <Compile Include="ui\ObservableCollectionExtended.cs" />

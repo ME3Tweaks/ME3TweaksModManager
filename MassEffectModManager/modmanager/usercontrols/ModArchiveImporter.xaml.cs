@@ -23,10 +23,10 @@ namespace MassEffectModManager.modmanager.usercontrols
         private readonly Action<ProgressBarUpdate> progressBarCallback;
         private bool TaskRunning;
         public string NoModSelectedText { get; } = "Select a mod on the left to view its description";
-        public event EventHandler Close;
-        protected virtual void OnClosing(EventArgs e)
+        public event EventHandler<DataEventArgs> Close;
+        protected virtual void OnClosing(DataEventArgs e)
         {
-            EventHandler handler = Close;
+            EventHandler<DataEventArgs> handler = Close;
             handler?.Invoke(this, e);
         }
 
@@ -137,7 +137,12 @@ namespace MassEffectModManager.modmanager.usercontrols
             bw.DoWork += ExtractModsBackgroundThread;
             bw.RunWorkerCompleted += (a, b) =>
             {
-                OnClosing(EventArgs.Empty);
+                if (b.Result is List<Mod> modList)
+                {
+                    OnClosing(new DataEventArgs(modList));
+                    return;
+                }
+                OnClosing(DataEventArgs.Empty);
             };
             bw.RunWorkerAsync(modsToExtract);
         }
@@ -145,16 +150,27 @@ namespace MassEffectModManager.modmanager.usercontrols
         private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
         {
             List<CompressedMod> mods = (List<CompressedMod>)e.Argument;
-
+            List<Mod> extractedMods = new List<Mod>();
             foreach (var mod in mods)
             {
                 //Todo: Extract files
-                Log.Information("Extracting mod: "+mod.Mod.ModName);
+                Log.Information("Extracting mod: " + mod.Mod.ModName);
                 ActionText = $"Extracting {mod.Mod.ModName}";
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
-                mod.Mod.ExtractFromArchive(ArchiveFilePath);
+                mod.Mod.ExtractFromArchive(ArchiveFilePath, ExtractionProgressCallback);
+                extractedMods.Add(mod.Mod);
             }
+
+            e.Result = extractedMods;
+        }
+
+        private void ExtractionProgressCallback(ProgressEventArgs args)
+        {
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_MAX, 100));
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, (int)args.PercentDone));
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, false));
+
         }
 
         public ICommand ImportModsCommand { get; set; }
@@ -167,7 +183,7 @@ namespace MassEffectModManager.modmanager.usercontrols
 
         private void Cancel()
         {
-            OnClosing(EventArgs.Empty);
+            OnClosing(DataEventArgs.Empty);
         }
 
         private bool CanCancel()
