@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IniParser.Parser;
 using MassEffectModManager.modmanager.helpers;
+using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.Properties;
 using Serilog;
 using SevenZip;
@@ -515,11 +516,19 @@ namespace MassEffectModManager.modmanager
                             return;
                         }
 
-                        if (ModDescTargetVersion >= 4.5)
+                        //TODO: Parse AltFiles
+                        string altfilesStr = (ModDescTargetVersion >= 4.5 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString]["altfiles"] : null;
+                        if (!string.IsNullOrEmpty(altfilesStr))
                         {
-                            //TODO: Parse AltFiles
-
+                            var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
+                            foreach(var split in splits)
+                            {
+                                AlternateFile af = new AlternateFile(split);
+                                headerJob.AlternateFiles.Add(af);
+                            }
+                            Debug.WriteLine("hi");
                         }
+
 
                         CLog.Information($"Successfully made mod job for {headerAsString}", LogModStartup);
                         InstallationJobs.Add(headerJob);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MassEffectModManager.modmanager.objects;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -188,6 +189,8 @@ namespace MassEffectModManager.modmanager
             [JobHeader.TESTPATCH] = "DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
         public string RequirementText;
+        internal List<AlternateFile> AlternateFiles;
+        internal List<AlternateDLC> AlternateDLCs;
 
         /// <summary>
         /// Adds a file to the removal sequence. Checks to make sure the installation lists don't include any files that are added.
