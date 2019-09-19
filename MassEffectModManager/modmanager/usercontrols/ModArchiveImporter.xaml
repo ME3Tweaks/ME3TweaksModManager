@@ -37,7 +37,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <TextBox Grid.Column="2" TextWrapping="Wrap">
+            <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
                 <TextBox.Text>
                     <PriorityBinding>
                         <Binding Path="SelectedMod.Mod.DisplayedModDescription" Mode="OneWay"/>

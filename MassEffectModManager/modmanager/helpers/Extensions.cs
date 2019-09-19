@@ -656,6 +656,18 @@ namespace MassEffectModManager.modmanager.helpers
                 && (Math.Abs(a - b) < double.Epsilon);
         }
 
+        // Step 2: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
+        public static bool ContainsAnyInvalidCharacters(this string path)
+        {
+            return (!string.IsNullOrEmpty(path) && path.IndexOfAny(Path.GetInvalidPathChars()) >= 0);
+        }
+
+        //Step 3: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
+        public static string RemoveSpecialCharactersUsingFrameworkMethod(this string path)
+        {
+            return Path.GetInvalidFileNameChars().Aggregate(path, (current, c) => current.Replace(c.ToString(), string.Empty));
+        }
+
         //based on algorithm described here: http://www.codeproject.com/Articles/13525/Fast-memory-efficient-Levenshtein-algorithm
         public static int LevenshteinDistance(this string a, string b)
         {

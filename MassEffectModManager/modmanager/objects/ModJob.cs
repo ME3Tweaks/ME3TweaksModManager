@@ -134,9 +134,9 @@ namespace MassEffectModManager.modmanager
         /// <param name="sourceFullPath">Full path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddFileToInstall(string destRelativePath, string sourceFullPath, bool ignoreLoadErrors)
+        internal string AddFileToInstall(string destRelativePath, string sourceFullPath, Mod mod, bool ignoreLoadErrors)
         {
-            if (!ignoreLoadErrors && !File.Exists(sourceFullPath))
+            if (!ignoreLoadErrors && !mod.FileExists(sourceFullPath))
             {
                 return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
             }
@@ -151,9 +151,9 @@ namespace MassEffectModManager.modmanager
         /// <param name="sourceFullPath">Full path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceFullPath, bool ignoreLoadErrors)
+        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceFullPath, Mod mod, bool ignoreLoadErrors)
         {
-            if (!ignoreLoadErrors && !File.Exists(sourceFullPath))
+            if (!ignoreLoadErrors && !mod.FileExists(sourceFullPath))
             {
                 return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using IniParser.Parser;
 using MassEffectModManager.modmanager.helpers;
+using MassEffectModManager.Properties;
 using Serilog;
+using SevenZip;
 
 namespace MassEffectModManager.modmanager
 {
@@ -64,12 +67,13 @@ namespace MassEffectModManager.modmanager
                 var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
                 {
-                    sb.AppendLine("Modifies: " + string.Join(", ", modifiesList));
+                    sb.AppendLine("Modifies: " + String.Join(", ", modifiesList));
                 }
+
                 var customDLCJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC);
                 if (customDLCJob != null)
                 {
-                    sb.AppendLine("Add Custom DLCs: " + string.Join(", ", customDLCJob.CustomDLCFolderMapping.Values));
+                    sb.AppendLine("Add Custom DLCs: " + String.Join(", ", customDLCJob.CustomDLCFolderMapping.Values));
                 }
 
                 return sb.ToString();
@@ -87,23 +91,101 @@ namespace MassEffectModManager.modmanager
         private List<string> AdditionalDeploymentFiles;
         private bool emptyModIsOK;
 
-        public string ModPathJ { get; }
-        public string ModDescPath => ArchivePathProxy.Combine(ModPath, "moddesc.ini");
+        public string ModPath { get; }
 
+        private SevenZipExtractor Archive;
+
+        public string ModDescPath => PathCombine(ModPath, "moddesc.ini");
+
+        #region Archive/Filesystem interposer
+
+        /// <summary>
+        /// Combines paths and will attempt to keep the separator style
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        private string PathCombine(string pathBase, params string[] paths)
+        {
+            char separator = '\\'; // IsInArchive ? '/' : '\\';
+            if (paths == null || !paths.Any())
+                return pathBase;
+
+            if (IsInArchive)
+            {
+                pathBase = pathBase.TrimStart('\\', '/'); //archive paths don't start with a / or \
+            }
+
+            #region Remove path end slash
+
+            var slash = new[] { '/', '\\' };
+            Action<StringBuilder> removeLastSlash = null;
+            removeLastSlash = (sb) =>
+            {
+                if (sb.Length == 0) return;
+                if (!slash.Contains(sb[sb.Length - 1])) return;
+                sb.Remove(sb.Length - 1, 1);
+                removeLastSlash(sb);
+            };
+
+            #endregion Remove path end slash
+
+            #region Combine
+
+            var pathSb = new StringBuilder();
+            bool skipFirst = pathBase == ""; //If the base path is "", don't apply a separator.
+            bool skippedFirst = false;
+            pathSb.Append(pathBase);
+            removeLastSlash(pathSb);
+            foreach (var path in paths)
+            {
+                if (!skipFirst || skippedFirst)
+                {
+                    pathSb.Append(separator);
+                }
+                pathSb.Append(path);
+                removeLastSlash(pathSb);
+            }
+
+            #endregion Combine
+
+            #region Append slash if last path contains
+
+            if (slash.Contains(paths.Last().Last()))
+                pathSb.Append(separator);
+
+            #endregion Append slash if last path contains
+
+            return pathSb.ToString();
+        }
+
+        #endregion
+
+        public bool IsInArchive { get; }
 
         /// <summary>
         /// Loads a moddesc from a stream. Used when reading data from an archive. 
         /// </summary>
         /// <param name="iniStream">Stream of ini file</param>
+        /// <param name="archive">Archive to inspect for validation. Ensure this is set to null to prevent a reference from being heald.</param>
         /// <param name="ignoreLoadErrors">Will ignore load errors when reading from stream. This should almost always be used</param>
-        public Mod(MemoryStream iniStream, string inArchivePath, ArchiveFile archive, bool ignoreLoadErrors = false)
+        public Mod(ArchiveFileInfo moddescArchiveEntry, SevenZipExtractor archive)
         {
-            iniStream.Position = 0;
-            this.ignoreLoadErrors = ignoreLoadErrors;
-            string str = new StreamReader(iniStream).ReadToEnd();
-            ModPath = inArchivePath;
+            Log.Information($"Loading moddesc.ini from archive: {Path.GetFileName(archive.FileName)} => {moddescArchiveEntry.FileName}");
+            MemoryStream ms = new MemoryStream();
+            archive.ExtractFile(moddescArchiveEntry.FileName, ms);
+            ms.Position = 0;
+            string iniText = new StreamReader(ms).ReadToEnd();
+            ModPath = Path.GetDirectoryName(moddescArchiveEntry.FileName);
+            Archive = archive;
             IsInArchive = true;
-            loadMod(str, MEGame.Unknown);
+            try
+            {
+                loadMod(iniText, MEGame.Unknown);
+            }
+            catch (Exception e)
+            {
+                LoadFailedReason = "Error occured parsing archive moddesc " + moddescArchiveEntry.FileName + ": " + e.Message;
+            }
         }
 
         /// <summary>
@@ -128,7 +210,7 @@ namespace MassEffectModManager.modmanager
         /// <summary>
         /// This is used to make CLog statements shorter and easier to read
         /// </summary>
-        private static bool LogModStartup => Properties.Settings.Default.LogModStartup;
+        private static bool LogModStartup => Settings.Default.LogModStartup;
 
         private void loadMod(string iniText, MEGame expectedGame)
         {
@@ -146,26 +228,26 @@ namespace MassEffectModManager.modmanager
             }
 
             ModName = iniData["ModInfo"]["modname"];
-            if (ModName == null || ModName == "")
+            if (string.IsNullOrEmpty(ModName))
             {
                 ModName = ArchivePathProxy.GetFileName(ModPath);
-                Log.Error($"Moddesc.ini in {ArchivePathProxy.GetDisplayValue(ModPath)} does not set the modname descriptor.");
-                LoadFailedReason = $"The moddesc.ini file located at {ArchivePathProxy.GetDisplayValue(ModPath)} does not have a value set for modname. This value is required.";
+                Log.Error($"Moddesc.ini in {ModPath} does not set the modname descriptor.");
+                LoadFailedReason = $"The moddesc.ini file located at {ModPath} does not have a value set for modname. This value is required.";
                 return; //Won't set valid
             }
 
             ModDescription = Utilities.ConvertBrToNewline(iniData["ModInfo"]["moddesc"]);
             ModDeveloper = iniData["ModInfo"]["moddev"];
             ModVersionString = iniData["ModInfo"]["modver"];
-            double.TryParse(ModVersionString, out double parsedValue);
+            Double.TryParse(ModVersionString, out double parsedValue);
             ParsedModVersion = parsedValue;
 
             ModWebsite = iniData["ModInfo"]["modsite"] ?? DefaultWebsite;
 
-            int.TryParse(iniData["ModInfo"]["modid"], out int modmakerId);
+            Int32.TryParse(iniData["ModInfo"]["modid"], out int modmakerId);
             ModModMakerID = modmakerId;
 
-            int.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode);
+            Int32.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode);
             ModClassicUpdateCode = modupdatecode;
             CLog.Information($"Read modmaker update code (or used default): {ModClassicUpdateCode}", LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
@@ -243,7 +325,9 @@ namespace MassEffectModManager.modmanager
             //This was in Java version - I belevie this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
             CLog.Information("Parsing mod using moddesc target: " + ModDescTargetVersion, LogModStartup);
+
             #region BASEGAME and OFFICIAL HEADERS
+
             if (Game == MEGame.ME3)
             {
                 //We must check against official headers
@@ -258,7 +342,7 @@ namespace MassEffectModManager.modmanager
                     {
                         CLog.Information("Found INI header with moddir specified: " + headerAsString, LogModStartup);
                         CLog.Information("Subdirectory (moddir): " + jobSubdirectory, LogModStartup);
-                        string fullSubPath = ModPathProxy.Combine(ModPath, jobSubdirectory);
+                        string fullSubPath = PathCombine(ModPath, jobSubdirectory);
 
                         //Replace files (ModDesc 2.0)
                         string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
@@ -347,6 +431,7 @@ namespace MassEffectModManager.modmanager
                                 LoadFailedReason = $"Job header ({headerAsString}) specifies the addfilesreadonlytargets descriptor, but the addfilestargets descriptor is not set.";
                                 return;
                             }
+
                             CLog.Information($"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", LogModStartup);
                         }
 
@@ -381,6 +466,7 @@ namespace MassEffectModManager.modmanager
                             LoadFailedReason = $"Job header ({headerAsString}) has been specified as part of the mod, but this header is only supported when targeting ModDesc 3 or higher.";
                             return;
                         }
+
                         ModJob headerJob = new ModJob(header, this);
                         headerJob.JobDirectory = jobSubdirectory;
                         headerJob.RequirementText = jobRequirement;
@@ -389,10 +475,10 @@ namespace MassEffectModManager.modmanager
                         {
                             for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
                             {
-                                string sourceFile = Path.Combine(fullSubPath, replaceFilesSourceSplit[i]);
+                                string sourceFile = PathCombine(fullSubPath, replaceFilesSourceSplit[i]);
                                 string destFile = replaceFilesTargetSplit[i];
                                 CLog.Information($"Adding file to installation queue: {sourceFile} => {destFile}", LogModStartup);
-                                string failurereason = headerJob.AddFileToInstall(destFile, sourceFile, ignoreLoadErrors);
+                                string failurereason = headerJob.AddFileToInstall(destFile, sourceFile, this, ignoreLoadErrors);
                                 if (failurereason != null)
                                 {
                                     Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
@@ -407,10 +493,10 @@ namespace MassEffectModManager.modmanager
                         {
                             for (int i = 0; i < addFilesSourceSplit.Count; i++)
                             {
-                                string sourceFile = Path.Combine(fullSubPath, addFilesSourceSplit[i]);
+                                string sourceFile = PathCombine(fullSubPath, addFilesSourceSplit[i]);
                                 string destFile = addFilesTargetSplit[i];
                                 CLog.Information($"Adding file to installation queue (addition): {sourceFile} => {destFile}", LogModStartup);
-                                string failurereason = headerJob.AddAdditionalFileToInstall(destFile, sourceFile, ignoreLoadErrors); //add files are layered on top
+                                string failurereason = headerJob.AddAdditionalFileToInstall(destFile, sourceFile, this, ignoreLoadErrors); //add files are layered on top
                                 if (failurereason != null)
                                 {
                                     Log.Error($"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
@@ -433,13 +519,17 @@ namespace MassEffectModManager.modmanager
                             //TODO: Parse AltFiles
 
                         }
+
                         CLog.Information($"Successfully made mod job for {headerAsString}", LogModStartup);
                         InstallationJobs.Add(headerJob);
                     }
                 }
             }
+
             #endregion
+
             #region CUSTOMDLC
+
             if (ModDescTargetVersion >= 3.1)
             {
                 var customDLCSourceDirsStr = iniData["CUSTOMDLC"]["sourcedirs"];
@@ -473,7 +563,7 @@ namespace MassEffectModManager.modmanager
                     //Verify folders exists
                     foreach (var f in customDLCSourceSplit)
                     {
-                        if (!Directory.Exists(Path.Combine(ModPath, f)))
+                        if (!DirectoryExists(PathCombine(ModPath, f)))
                         {
                             Log.Error($"Mod has job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}");
                             LoadFailedReason = $"Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}";
@@ -517,8 +607,11 @@ namespace MassEffectModManager.modmanager
                     return;
                 }
             }
+
             #endregion
+
             #region Additional Mod Items
+
             //Required DLC (Mod Manager 5.0)
             var requiredDLCText = iniData["ModInfo"]["requireddlc"];
             if (requiredDLCText != null)
@@ -529,7 +622,7 @@ namespace MassEffectModManager.modmanager
 
             //Additional Deployment Folders (Mod Manager 5.1)
             var additonaldeploymentfoldersStr = ModDescTargetVersion >= 5.1 ? iniData["UPDATES"]["additionaldeploymentfolders"] : null;
-            if (additonaldeploymentfoldersStr != null)
+            if (!string.IsNullOrEmpty(additonaldeploymentfoldersStr))
             {
                 var addlFolderSplit = additonaldeploymentfoldersStr.Split(';').ToList();
                 foreach (var addlFolder in addlFolderSplit)
@@ -542,8 +635,9 @@ namespace MassEffectModManager.modmanager
                         LoadFailedReason = $"UPDATES header additionaldeploymentfolders includes directory ({addlFolder}) that contains a .., \\ or /, which are not permitted.";
                         return;
                     }
+
                     //Check folder exists
-                    if (Directory.Exists(Path.Combine(ModPath, addlFolder)))
+                    if (DirectoryExists(PathCombine(ModPath, addlFolder)))
                     {
                         Log.Error($"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}");
                         LoadFailedReason = $"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}";
@@ -553,10 +647,11 @@ namespace MassEffectModManager.modmanager
                     AdditionalDeploymentFolders = addlFolderSplit;
                 }
             }
+
             //Additional Root Deployment Files (Mod Manager 6.0)
             //Todo: Update documentation
             var additonaldeploymentfilesStr = ModDescTargetVersion >= 6.0 ? iniData["UPDATES"]["additionaldeploymentfiles"] : null;
-            if (additonaldeploymentfilesStr != null)
+            if (!string.IsNullOrEmpty(additonaldeploymentfilesStr))
             {
                 var addlFileSplit = additonaldeploymentfilesStr.Split(';').ToList();
                 foreach (var addlFile in addlFileSplit)
@@ -568,8 +663,9 @@ namespace MassEffectModManager.modmanager
                         LoadFailedReason = $"UPDATES header additionaldeploymentfiles includes file ({addlFile}) that contains a .., \\ or /, which are not permitted.";
                         return;
                     }
-                    //Check folder exists
-                    if (!File.Exists(Path.Combine(ModPath, addlFile)))
+
+                    //Check file exists
+                    if (!FileExists(PathCombine(ModPath, addlFile)))
                     {
                         Log.Error($"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}");
                         LoadFailedReason = $"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}";
@@ -583,13 +679,14 @@ namespace MassEffectModManager.modmanager
             #endregion
 
             #region Backwards Compatibilty
+
             //Mod Manager 2.0 supported "modcoal" flag that would replicate Mod Manager 1.0 functionality of coalesced swap since basegame jobs at the time
             //were not yet supported
 
             string modCoalFlag = ModDescTargetVersion == 2 ? iniData["ModInfo"]["modcoal"] : null;
             //This check could be rewritten to simply check for non zero string. However, for backwards compatibility sake, we will keep the original
             //method of checking in place.
-            if (modCoalFlag != null && int.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
+            if (modCoalFlag != null && Int32.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
             {
                 CLog.Information("Mod targets ModDesc 2.0, found modcoal flag", LogModStartup);
                 if (!CheckAndCreateLegacyCoalescedJob())
@@ -598,7 +695,9 @@ namespace MassEffectModManager.modmanager
                     return;
                 }
             }
+
             #endregion
+
             //Thread.Sleep(500);
             if (InstallationJobs.Count > 0)
             {
@@ -615,13 +714,28 @@ namespace MassEffectModManager.modmanager
                 Log.Error("No installation jobs were specified. This mod does nothing.");
                 LoadFailedReason = "No installation jobs were specified. This mod does nothing.";
             }
+
             CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
+        }
+
+        private bool DirectoryExists(string path)
+        {
+            if (IsInArchive)
+            {
+                path = path.TrimStart('\\', '/'); //archive paths don't start with a / \ but path combining will append one of these.
+                var entry = Archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
+                return !string.IsNullOrEmpty(entry.FileName) && entry.IsDirectory; //must check filename is populated as this is a struct
+            }
+            else
+            {
+                return Directory.Exists(path);
+            }
         }
 
         private bool CheckAndCreateLegacyCoalescedJob()
         {
-            var legacyCoalFile = Path.Combine(ModPath, "Coalesced.bin");
-            if (!ignoreLoadErrors && !File.Exists(legacyCoalFile))
+            var legacyCoalFile = PathCombine(ModPath, "Coalesced.bin");
+            if (!ignoreLoadErrors && !FileExists(legacyCoalFile))
             {
                 if (ModDescTargetVersion == 1.0)
                 {
@@ -640,9 +754,85 @@ namespace MassEffectModManager.modmanager
             }
 
             ModJob basegameJob = new ModJob(ModJob.JobHeader.BASEGAME);
-            basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", legacyCoalFile, ignoreLoadErrors);
+            basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", legacyCoalFile, this, ignoreLoadErrors);
             InstallationJobs.Add(basegameJob);
             return true;
+        }
+
+        /// <summary>
+        /// Checks if a file exists. This method will look in the mod's archive file if IsInArchive is true.
+        /// </summary>
+        /// <param name="path">Path of file to find</param>
+        /// <returns></returns>
+        internal bool FileExists(string path)
+        {
+            if (IsInArchive)
+            {
+                path = path.TrimStart('\\', '/'); //archive paths don't start with a / \ but path combining will append one of these.
+                var entry = Archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
+                return !string.IsNullOrEmpty(entry.FileName) && !entry.IsDirectory; //must check filename is populated as this is a struct
+            }
+            else
+            {
+                return File.Exists(path);
+            }
+        }
+
+        public void ExtractFromArchive(string archivePath)
+        {
+            if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
+            var modDirectory = Utilities.GetModDirectoryForGame(Game);
+            var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(ModName));
+            if (Directory.Exists(sanitizedPath))
+            {
+                //Will delete on import
+            }
+            else
+            {
+                Directory.CreateDirectory(sanitizedPath);
+            }
+
+            List<int> indexesToExtract = new List<int>();
+            using (var archiveFile = new SevenZipExtractor(archivePath))
+            {
+                var fileIndicesToExtract = new List<int>();
+                foreach (var info in archiveFile.ArchiveFileData)
+                {
+                    bool fileAdded = false;
+                    //moddesc.ini
+                    if (info.FileName == ModDescPath)
+                    {
+                        fileIndicesToExtract.Add(info.Index);
+                        continue;
+                    }
+
+                    //Check each job
+                    foreach (ModJob job in InstallationJobs)
+                    {
+                        //Custom DLC folders
+                        if (job.Header == ModJob.JobHeader.CUSTOMDLC)
+                        {
+                            foreach (var localCustomDLCFolder in job.CustomDLCFolderMapping.Keys)
+                            {
+                                if (info.FileName.StartsWith(PathCombine(ModPath, localCustomDLCFolder)))
+                                {
+                                    Debug.WriteLine("Extract file: " + info.FileName);
+                                    fileIndicesToExtract.Add(info.Index);
+                                    fileAdded = true;
+                                    break;
+                                }
+                            }
+
+                            if (fileAdded) break;
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                }
+                archiveFile.ExtractFiles(sanitizedPath, fileIndicesToExtract.ToArray());
+            }
         }
     }
 }

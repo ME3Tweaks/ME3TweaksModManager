@@ -104,10 +104,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                     foreach (var entry in moddesciniEntries)
                     {
                         ActionText = $"Reading {entry.FileName}";
-
-                        MemoryStream ms = new MemoryStream();
-                        archiveFile.ExtractFile(entry.FileName, ms);
-                        Mod m = new Mod(ms, ignoreLoadErrors: true);
+                        Mod m = new Mod(entry, archiveFile);
                         if (m.ValidMod)
                         {
                             try
@@ -133,14 +130,14 @@ namespace MassEffectModManager.modmanager.usercontrols
             }
         }
 
-        public void ExtractMods()
+        public void BeginImportingMods()
         {
             var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ModExtractor");
             bw.DoWork += ExtractModsBackgroundThread;
             bw.RunWorkerCompleted += (a, b) =>
             {
-
+                OnClosing(EventArgs.Empty);
             };
             bw.RunWorkerAsync(modsToExtract);
         }
@@ -148,12 +145,15 @@ namespace MassEffectModManager.modmanager.usercontrols
         private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
         {
             List<CompressedMod> mods = (List<CompressedMod>)e.Argument;
-            using (var archiveFile = new SevenZipExtractor(ArchiveFilePath))
+
+            foreach (var mod in mods)
             {
-                foreach (var mod in mods)
-                {
-                    //Todo: Extract files
-                }
+                //Todo: Extract files
+                Log.Information("Extracting mod: "+mod.Mod.ModName);
+                ActionText = $"Extracting {mod.Mod.ModName}";
+                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
+                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
+                mod.Mod.ExtractFromArchive(ArchiveFilePath);
             }
         }
 
@@ -175,13 +175,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             return true;
         }
 
-        private bool CanImportMods() => TaskRunning && CompressedMods.Any(x => x.SelectedForImport);
-
-
-        private void BeginImportingMods()
-        {
-            //Todo: Import mods
-        }
+        private bool CanImportMods() => !TaskRunning && CompressedMods.Any(x => x.SelectedForImport);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
