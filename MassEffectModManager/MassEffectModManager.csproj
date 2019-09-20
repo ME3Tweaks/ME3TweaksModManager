@@ -366,10 +366,10 @@
     <None Include="staticfiles\7z.dll" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="costura64\sevenzipwrapper.dll" />
+    <EmbeddedResource Include="costura64\sevenzipwrapper.dll" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="costura64\lzo2wrapper.dll" />
+    <EmbeddedResource Include="costura64\lzo2wrapper.dll" />
     <EmbeddedResource Include="costura64\zlibwrapper.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
