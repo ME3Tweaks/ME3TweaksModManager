@@ -523,7 +523,7 @@ namespace MassEffectModManager.modmanager
                             var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
                             foreach(var split in splits)
                             {
-                                AlternateFile af = new AlternateFile(split);
+                                AlternateFile af = new AlternateFile(split, this);
                                 headerJob.AlternateFiles.Add(af);
                             }
                             Debug.WriteLine("hi");
