@@ -15,6 +15,11 @@ namespace ME3Explorer.Packages
 {
     public static class CompressionHelper
     {
+        /// <summary>
+        /// Maximum size of a compressed chunk. This is not relevant for the table chunk or if an export is larger than the max chunk size
+        /// </summary>
+        public const int MAX_CHUNK_SIZE = 0x100000;
+
         public struct CompressedChunkBlock
         {
             public int cprSize;

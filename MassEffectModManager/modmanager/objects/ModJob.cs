@@ -1,10 +1,12 @@
 ﻿using MassEffectModManager.modmanager.objects;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace MassEffectModManager.modmanager
 {
+    [DebuggerDisplay("ModJob for {Header}")]
     public class ModJob
     {
         public enum JobHeader
@@ -189,8 +191,8 @@ namespace MassEffectModManager.modmanager
             [JobHeader.TESTPATCH] = "DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
         public string RequirementText;
-        internal List<AlternateFile> AlternateFiles;
-        internal List<AlternateDLC> AlternateDLCs;
+        internal List<AlternateFile> AlternateFiles = new List<AlternateFile>();
+        internal List<AlternateDLC> AlternateDLCs = new List<AlternateDLC>();
 
         /// <summary>
         /// Adds a file to the removal sequence. Checks to make sure the installation lists don't include any files that are added.

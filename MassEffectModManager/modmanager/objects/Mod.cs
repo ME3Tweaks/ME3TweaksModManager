@@ -105,7 +105,7 @@ namespace MassEffectModManager.modmanager
         /// </summary>
         /// <param name="paths"></param>
         /// <returns></returns>
-        private string PathCombine(string pathBase, params string[] paths)
+        internal string PathCombine(string pathBase, params string[] paths)
         {
             char separator = '\\'; // IsInArchive ? '/' : '\\';
             if (paths == null || !paths.Any())
@@ -524,7 +524,16 @@ namespace MassEffectModManager.modmanager
                             foreach(var split in splits)
                             {
                                 AlternateFile af = new AlternateFile(split, this);
-                                headerJob.AlternateFiles.Add(af);
+                                if (af.ValidAlternate)
+                                {
+                                    headerJob.AlternateFiles.Add(af);
+                                }
+                                else
+                                {
+                                    //Error is logged in constructor of AlternateFile
+                                    LoadFailedReason = af.LoadFailedReason;
+                                    return;
+                                }
                             }
                             Debug.WriteLine("hi");
                         }
@@ -728,7 +737,7 @@ namespace MassEffectModManager.modmanager
             CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
         }
 
-        private bool DirectoryExists(string path)
+        internal bool DirectoryExists(string path)
         {
             if (IsInArchive)
             {
@@ -778,7 +787,7 @@ namespace MassEffectModManager.modmanager
         {
             if (IsInArchive)
             {
-                path = path.TrimStart('\\', '/'); //archive paths don't start with a / \ but path combining will append one of these.
+                path = path.TrimStart('\\', '/').Replace('/','\\'); //archive paths don't start with a / \ but path combining will append one of these.
                 var entry = Archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
                 return !string.IsNullOrEmpty(entry.FileName) && !entry.IsDirectory; //must check filename is populated as this is a struct
             }
@@ -802,7 +811,6 @@ namespace MassEffectModManager.modmanager
             Directory.CreateDirectory(sanitizedPath);
 
 
-            List<int> indexesToExtract = new List<int>();
             using (var archiveFile = new SevenZipExtractor(archivePath))
             {
                 var fileIndicesToExtract = new List<int>();
@@ -835,6 +843,22 @@ namespace MassEffectModManager.modmanager
                             }
 
                             if (fileAdded) break;
+
+                            //Alternate files
+                            foreach (var alt in job.AlternateFiles)
+                            {
+                                if (alt.AltFile != null && info.FileName.Equals(PathCombine(ModPath,alt.AltFile),StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
+                                    fileIndicesToExtract.Add(info.Index);
+                                    fileAdded = true;
+                                    break;
+                                }
+                            }
+                            if (fileAdded) break;
+
+
+                            //Alternate DLC
                         }
                         else
                         {
@@ -849,16 +873,24 @@ namespace MassEffectModManager.modmanager
                                     break;
                                 }
 
-                                //Other DLC folders
-                                //if (job.FilesToInstall.Values.Any(x => ))
-                                //{
-                                //    Debug.WriteLine("Add file to extraction list: " + info.FileName);
-                                //    fileIndicesToExtract.Add(info.Index);
-                                //    fileAdded = true;
-                                //    break;
-                                //}
+                                
                             }
                             if (fileAdded) break;
+                            //Alternate files
+                            foreach (var alt in job.AlternateFiles)
+                            {
+                                if (alt.AltFile != null && info.FileName.Equals(PathCombine(ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
+                                    fileIndicesToExtract.Add(info.Index);
+                                    fileAdded = true;
+                                    break;
+                                }
+                            }
+                            if (fileAdded) break;
+
+                            //Alternate DLC
+
                         }
                     }
                 }
