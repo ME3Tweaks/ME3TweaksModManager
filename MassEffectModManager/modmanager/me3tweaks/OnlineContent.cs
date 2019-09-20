@@ -20,7 +20,6 @@ namespace MassEffectModManager.modmanager.me3tweaks
         private static readonly string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
-            string contents;
             using (var wc = new System.Net.WebClient())
             {
                 string json = wc.DownloadString(StartupManifestURL);

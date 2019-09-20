@@ -421,35 +421,49 @@ namespace ME3Explorer.Packages
                     //fairly certain this is wrong
                     chunk.uncompressedSize = FullHeaderSize - NameOffset;
                     chunk.uncompressedOffset = NameOffset;
-                    //chunks.Add(chunk); //header table can include export data if it fits.
+
+                    //Debug stuff
+                    string firstElement = "Tables";
+                    string lastElement = firstElement;
+
+                    MemoryStream m2 = new MemoryStream();
+                    long pos = uncompressedStream.Position;
+                    uncompressedStream.Position = NameOffset;
+                    m2.WriteFromStream(uncompressedStream, chunk.uncompressedSize);
+                    uncompressedStream.Position = pos;
+                    //end debug stuff
 
                     //Export data chunks
-                    chunk = new CompressionHelper.Chunk();
+                    //chunk = new CompressionHelper.Chunk();
+                    int chunkNum = 0;
                     foreach (ExportEntry e in Exports)
                     {
                         if (chunk.uncompressedSize + e.DataSize > CompressionHelper.MAX_CHUNK_SIZE)
                         {
                             //Rollover to the next chunk as this chunk would be too big if we tried to put this export into the chunk
                             chunks.Add(chunk);
+                            Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
+                            chunkNum++;
                             chunk = new CompressionHelper.Chunk
                             {
                                 uncompressedSize = e.DataSize,
                                 uncompressedOffset = e.DataOffset
                             };
+                            firstElement = lastElement = e.UIndex +" " +e.GetFullPath;
                         }
                         else
                         {
                             chunk.uncompressedSize += e.DataSize; //This chunk can fit this export
+                            lastElement = e.UIndex + " " + e.GetFullPath;
                         }
                     }
-
-                    //If maybe the package is empty or something or a perfect boundary alignment occured
-                    //this will ensure last chunk is added.
+                    Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
                     chunks.Add(chunk);
 
                     //Rewrite header with chunk table information so we can position the data blocks after table
                     compressedStream.Position = 0;
                     WriteHeader(compressedStream, compressionType, chunks);
+                    MemoryStream m1 = new MemoryStream();
 
                     for (int c = 0; c < chunks.Count; c++)
                     {
@@ -458,15 +472,18 @@ namespace ME3Explorer.Packages
                         chunk.compressedSize = 0; // filled later
 
                         int dataSizeRemainingToCompress = chunk.uncompressedSize;
-                        int newNumBlocks = (chunk.uncompressedSize + CompressionHelper.MAX_BLOCK_SIZE - 1) / CompressionHelper.MAX_BLOCK_SIZE;
-                        // skip blocks header and table - filled later
-                        compressedStream.Seek(CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.SIZE_OF_CHUNK_BLOCK_HEADER * newNumBlocks, SeekOrigin.Current);
+                        //weird way to do this
+                        //int newNumBlocks = (chunk.uncompressedSize / CompressionHelper.MAX_BLOCK_SIZE - 1) / CompressionHelper.MAX_BLOCK_SIZE;
+                        int numBlocksInChunk = (int) Math.Ceiling(chunk.uncompressedSize * 1.0 / CompressionHelper.MAX_BLOCK_SIZE);
+                        // skip chunk header and blocks table - filled later
+                        compressedStream.Seek(CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.SIZE_OF_CHUNK_BLOCK_HEADER * numBlocksInChunk, SeekOrigin.Current);
 
                         uncompressedStream.JumpTo(chunk.uncompressedOffset);
 
                         chunk.blocks = new List<CompressionHelper.Block>();
+
                         //Calculate blocks by splitting data into 128KB "block chunks".
-                        for (int b = 0; b < newNumBlocks; b++)
+                        for (int b = 0; b < numBlocksInChunk; b++)
                         {
                             CompressionHelper.Block block = new CompressionHelper.Block();
                             block.uncompressedsize = Math.Min(CompressionHelper.MAX_BLOCK_SIZE, dataSizeRemainingToCompress);
@@ -475,32 +492,46 @@ namespace ME3Explorer.Packages
                             chunk.blocks.Add(block);
                         }
 
+                        if (chunk.blocks.Count != numBlocksInChunk) throw new Exception("Number of blocks does not match expected amount");
+
                         //Compress blocks
                         Parallel.For(0, chunk.blocks.Count, b =>
                         {
                             CompressionHelper.Block block = chunk.blocks[b];
                             if (compressionType == CompressionType.LZO)
                                 block.compressedData = LZO2Helper.LZO2.Compress(block.uncompressedData);
-                            else if (compressionType == CompressionType.Zlib) //Todo: check this is accurate. I am pretty sure ME1 uses ZLib...
+                            else if (compressionType == CompressionType.Zlib)
                                 block.compressedData = ZlibHelper.Zlib.Compress(block.uncompressedData);
                             else
                                 throw new Exception("Internal error: Unsupported compression type for compressing blocks: " + compressionType);
                             if (block.compressedData.Length == 0)
-                                throw new Exception("Block compression failed! Compressor returned no bytes");
+                                throw new Exception("Internal error: Block compression failed! Compressor returned no bytes");
                             block.compressedsize = (int)block.compressedData.Length;
                             chunk.blocks[b] = block;
                         });
 
                         //Write compressed data to stream 
-                        for (int b = 0; b < newNumBlocks; b++)
+                        for (int b = 0; b < numBlocksInChunk; b++)
                         {
                             var block = chunk.blocks[b];
                             compressedStream.Write(block.compressedData, 0, (int)block.compressedsize);
+                            //DEBUG - HEAD ONLY
+                            if (c == 0)
+                            {
+                                m1.Write(block.compressedData, 0, (int)block.compressedsize);
+                            }
+                            //END DEBUG
                             chunk.compressedSize += block.compressedsize;
                         }
-
                         chunks[c] = chunk;
                     }
+                    File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-comp.bin", m1.ToArray());
+                    MemoryStream m3 = new MemoryStream();
+                    WriteHeader(m3);
+                    m2.Position = 0;
+                    m2.CopyTo(m3);
+                    File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-uncomp.bin", m3.ToArray());
+
 
                     //Update each chunk header with new information
                     for (int c = 0; c < chunks.Count; c++)
@@ -511,6 +542,8 @@ namespace ME3Explorer.Packages
                         compressedStream.WriteUInt32(CompressionHelper.MAX_BLOCK_SIZE);
                         compressedStream.WriteInt32(chunk.compressedSize);
                         compressedStream.WriteInt32(chunk.uncompressedSize);
+
+                        //write block header table
                         foreach (var block in chunk.blocks)
                         {
                             compressedStream.WriteInt32(block.compressedsize);
@@ -546,6 +579,7 @@ namespace ME3Explorer.Packages
         private void WriteHeader(Stream ms, CompressionType compressionType = CompressionType.None, List<CompressionHelper.Chunk> chunks = null)
         {
             if (chunks == null) chunks = new List<CompressionHelper.Chunk>();
+            if (ms.Position != 0) throw new Exception("Must position stream to zero when writing header data to stream");
             ms.WriteUInt32(packageTag);
             //version
             switch (Game)

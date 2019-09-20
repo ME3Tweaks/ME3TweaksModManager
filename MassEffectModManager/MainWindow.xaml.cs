@@ -628,12 +628,6 @@ namespace MassEffectModManager
                 success = OnlineContent.EnsureStaticAssets();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-
-
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
-                success = OnlineContent.EnsureStaticAssets();
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
                 var helpItemsLoading = OnlineContent.FetchLatestHelp(!checkForModManagerUpdates);
                 bw.ReportProgress(0, helpItemsLoading);
@@ -661,11 +655,21 @@ namespace MassEffectModManager
                 ME1UnrealObjectInfo.loadfromJSON();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("Test", "Running test", "Test completed");
 
-                string testfileu = @"C:\Users\Public\BioD_Lev004_100Surface.pcc";
+                string testfileu = @"C:\Users\Public\uncompressed.pcc";
                 string testfilec = @"C:\Users\Public\compressed.pcc";
                 var package = MEPackageHandler.OpenMEPackage(testfileu);
                 package.save(testfilec, true);
+
+                testfileu = @"C:\Users\Public\uncompressed.sfm";
+                if (File.Exists(testfileu))
+                {
+                    testfilec = @"C:\Users\Public\compressed.sfm";
+                    package = MEPackageHandler.OpenMEPackage(testfileu);
+                    package.save(testfilec, true);
+                }
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 Properties.Settings.Default.LastContentCheck = DateTime.Now;
                 Properties.Settings.Default.Save();
