@@ -18,14 +18,16 @@ namespace ME3Explorer.Packages
         /// <summary>
         /// Maximum size of a compressed chunk. This is not relevant for the table chunk or if an export is larger than the max chunk size
         /// </summary>
-        public const int MAX_CHUNK_SIZE = 0x100000;
+        public const int MAX_CHUNK_SIZE = 0x100000; //1 Mebibyte
 
-        public struct CompressedChunkBlock
-        {
-            public int cprSize;
-            public int uncSize;
-            public byte[] rawData;
-        }
+        /// <summary>
+        /// Maximum size of a block within a chunk
+        /// </summary>
+        public const int MAX_BLOCK_SIZE = 0x20000; //128 Kibibytes
+
+        public const int SIZE_OF_CHUNK_HEADER = 16;
+        public const int SIZE_OF_CHUNK_BLOCK_HEADER = 8;
+
 
         public struct Chunk
         {
@@ -51,6 +53,8 @@ namespace ME3Explorer.Packages
         {
             public int compressedsize;
             public int uncompressedsize;
+            public byte[] uncompressedData;
+            public byte[] compressedData;
         }
 
         #region Decompression
@@ -106,6 +110,7 @@ namespace ME3Explorer.Packages
             {
                 raw.Seek(4, SeekOrigin.Current);
             }
+
             CompressionType compressionType = (CompressionType)raw.ReadValueU32();
 
 
@@ -150,10 +155,8 @@ namespace ME3Explorer.Packages
                 //DebugOutput.PrintLn("Chunkheader read: Magic = " + h.magic + ", Blocksize = " + h.blocksize + ", Compressed Size = " + h.compressedsize + ", Uncompressed size = " + h.uncompressedsize);
                 pos = 16;
                 int blockCount = (h.uncompressedsize % h.blocksize == 0)
-                    ?
-                    h.uncompressedsize / h.blocksize
-                    :
-                    h.uncompressedsize / h.blocksize + 1;
+                    ? h.uncompressedsize / h.blocksize
+                    : h.uncompressedsize / h.blocksize + 1;
                 var BlockList = new List<Block>();
                 //DebugOutput.PrintLn("\t\t" + count + " Read Blockheaders...");
                 for (int j = 0; j < blockCount; j++)
@@ -167,6 +170,7 @@ namespace ME3Explorer.Packages
                     pos += 8;
                     BlockList.Add(b);
                 }
+
                 int outpos = 0;
                 //DebugOutput.PrintLn("\t\t" + count + " Read and decompress Blocks...");
                 foreach (Block b in BlockList)
@@ -180,25 +184,27 @@ namespace ME3Explorer.Packages
                     switch (compressionType)
                     {
                         case CompressionType.LZO:
-                        {
-                            if (
+                            {
+                                if (
                                     LZO2.Decompress(datain, (uint)datain.Length, dataout) != b.uncompressedsize)
-                                throw new Exception("LZO decompression failed!");
-                            break;
-                        }
+                                    throw new Exception("LZO decompression failed!");
+                                break;
+                            }
                         case CompressionType.Zlib:
-                        {
-                            if (ZlibHelper.Zlib.Decompress(datain, (uint)datain.Length, dataout) != b.uncompressedsize)
-                                throw new Exception("Zlib decompression failed!");
-                            break;
-                        }
+                            {
+                                if (ZlibHelper.Zlib.Decompress(datain, (uint)datain.Length, dataout) != b.uncompressedsize)
+                                    throw new Exception("Zlib decompression failed!");
+                                break;
+                            }
                         default:
                             throw new Exception("Unknown compression type for this package.");
                     }
+
                     for (int j = 0; j < b.uncompressedsize; j++)
                         c.Uncompressed[outpos + j] = dataout[j];
                     outpos += b.uncompressedsize;
                 }
+
                 c.header = h;
                 c.blocks = BlockList;
                 count++;
@@ -229,6 +235,7 @@ namespace ME3Explorer.Packages
             {
                 throw new FormatException("not a pcc file");
             }
+
             var endian = magic == 0x9E2A83C1 ? Endian.Little : Endian.Big;
 
             var versionLo = input.ReadValueU16(endian);
@@ -321,6 +328,7 @@ namespace ME3Explorer.Packages
 
                 tasks[i] = AmaroK86.MassEffect3.ZlibBlock.ZBlock.DecompressAsync(buff);
             }
+
             Task.WaitAll(tasks);
             for (int i = 0; i < blockCount; i++)
             {
@@ -333,9 +341,11 @@ namespace ME3Explorer.Packages
             //output.WriteValueU32(packageFlags & ~0x02000000u, endian); //Mark file as decompressed.
             return output;
         }
+
         #endregion
 
         #region Compression
+
         /// <summary>
         ///     compress an entire ME3 pcc into a byte array.
         /// </summary>
@@ -362,10 +372,9 @@ namespace ME3Explorer.Packages
             {
                 throw new FormatException("not a pcc package");
             }
-            var endian = magic == 0x9E2A83C1 ?
-                Endian.Little : Endian.Big;
-            var encoding = endian == Endian.Little ?
-                Encoding.Unicode : Encoding.BigEndianUnicode;
+
+            var endian = magic == 0x9E2A83C1 ? Endian.Little : Endian.Big;
+            var encoding = endian == Endian.Little ? Encoding.Unicode : Encoding.BigEndianUnicode;
 
             var versionLo = uncompressedPcc.ReadValueU16(endian);
             var versionHi = uncompressedPcc.ReadValueU16(endian);
@@ -483,6 +492,7 @@ namespace ME3Explorer.Packages
 
                 lastOffset = exportInfo.Key + exportInfo.Value;
             }
+
             blockSizes.Add(countSize);
 
             outputStream.WriteValueS32(blockSizes.Count);
@@ -547,6 +557,7 @@ namespace ME3Explorer.Packages
         {
             CompressAndSave(new MemoryStream(uncompressedPcc), pccFileName);
         }
+
         #endregion
     }
 }

@@ -26,6 +26,8 @@ using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.modmanager.usercontrols;
 using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
+using ME3Explorer.Packages;
+using ME3Explorer.Unreal;
 using Microsoft.Win32;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
@@ -592,6 +594,8 @@ namespace MassEffectModManager
             {
                 Log.Information("Start of content check network thread");
 
+
+
                 BackgroundTask bgTask;
                 bool success;
 
@@ -650,6 +654,18 @@ namespace MassEffectModManager
                 LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!checkForModManagerUpdates));
                 OnPropertyChanged(nameof(NoModSelectedText));
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadObjectInfo", "Loading package information database", "Loaded package information database");
+                ME3UnrealObjectInfo.loadfromJSON();
+                ME2UnrealObjectInfo.loadfromJSON();
+                ME1UnrealObjectInfo.loadfromJSON();
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+
+                string testfileu = @"C:\Users\Public\BioD_Lev004_100Surface.pcc";
+                string testfilec = @"C:\Users\Public\compressed.pcc";
+                var package = MEPackageHandler.OpenMEPackage(testfileu);
+                package.save(testfilec, true);
 
                 Properties.Settings.Default.LastContentCheck = DateTime.Now;
                 Properties.Settings.Default.Save();

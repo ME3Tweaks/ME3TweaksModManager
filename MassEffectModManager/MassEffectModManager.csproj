@@ -366,7 +366,11 @@
     <None Include="staticfiles\7z.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="costura64\sevenzipwrapper.dll" />
+    <None Include="costura64\sevenzipwrapper.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="costura64\lzo2wrapper.dll" />
+    <EmbeddedResource Include="costura64\zlibwrapper.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />

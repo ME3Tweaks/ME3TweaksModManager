@@ -174,8 +174,8 @@ namespace ME3Explorer.Packages
         void RemoveTrailingTrash();
 
         //saving
-        void save();
-        void save(string path);
+        void save(bool compress = false);
+        void save(string path, bool compress = false);
         byte[] getHeader();
         //ObservableCollection<GenericWindow> Tools { get; }
         //void RegisterTool(GenericWindow tool);

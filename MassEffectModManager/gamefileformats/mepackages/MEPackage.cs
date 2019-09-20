@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Media.Media3D;
 using Gammtek.Conduit.Extensions.IO;
 using MassEffectModManager;
@@ -74,6 +75,7 @@ namespace ME3Explorer.Packages
         private int Gen0NameCount;
         private int Gen0NetworkedObjectCount;
         private int ImportExportGuidsOffset;
+        private int ChunkTableOffset;
         //private int ImportGuidsCount;
         //private int ExportGuidsCount;
         //private int ThumbnailTableOffset;
@@ -196,6 +198,8 @@ namespace ME3Explorer.Packages
 
                 //skip compression type chunks. Decompressor will handle that
                 fs.SkipInt32();
+                //Todo: Move decompression of package code here maybe
+                //Todo: Refactor decompression code to single unified style
                 int numChunks = fs.ReadInt32();
                 fs.Skip(numChunks * 16);
 
@@ -266,9 +270,9 @@ namespace ME3Explorer.Packages
                 }
             }
         }
-        public void save()
+        public void save(bool compress = false)
         {
-            save(FilePath);
+            save(FilePath, compress);
         }
 
         public void save(string path, bool compress = false)
@@ -283,11 +287,13 @@ namespace ME3Explorer.Packages
                 Flags |= EPackageFlags.Compressed;
             }
 
+            CompressionType compressionType = compress ? (Game == Mod.MEGame.ME3 ? CompressionType.Zlib : CompressionType.LZO) : CompressionType.None;
+
             try
             {
                 if (CanReconstruct)
                 {
-                    saveByReconstructing(path, compress);
+                    saveByReconstructing(path, compressionType);
                 }
                 else
                 {
@@ -304,14 +310,14 @@ namespace ME3Explorer.Packages
             }
         }
 
-        private void saveByReconstructing(string path, bool compress = false)
+        private void saveByReconstructing(string path, CompressionType compressionType = CompressionType.None)
         {
             try
             {
                 var uncompressedStream = new MemoryStream();
 
                 //just for positioning. We write over this later when the header values have been updated
-                WriteHeader(uncompressedStream, compress);
+                WriteHeader(uncompressedStream);
 
                 //name table
                 NameOffset = (int)uncompressedStream.Position;
@@ -388,14 +394,14 @@ namespace ME3Explorer.Packages
                 uncompressedStream.JumpTo(0);
                 WriteHeader(uncompressedStream);
 
-                if (!compress)
+                if (compressionType == CompressionType.None)
                 {
                     File.WriteAllBytes(path, uncompressedStream.ToArray());
                 }
                 else
                 {
-                    MemoryStream fs = new MemoryStream();
-                    WriteHeader(fs, true); //for positioning
+                    MemoryStream compressedStream = new MemoryStream();
+                    WriteHeader(compressedStream); //for positioning
                     var chunks = new List<CompressionHelper.Chunk>();
 
                     //Compression format:
@@ -412,6 +418,7 @@ namespace ME3Explorer.Packages
 
                     CompressionHelper.Chunk chunk = new CompressionHelper.Chunk();
                     //Tables chunk
+                    //fairly certain this is wrong
                     chunk.uncompressedSize = FullHeaderSize - NameOffset;
                     chunk.uncompressedOffset = NameOffset;
                     //chunks.Add(chunk); //header table can include export data if it fits.
@@ -438,125 +445,93 @@ namespace ME3Explorer.Packages
 
                     //If maybe the package is empty or something or a perfect boundary alignment occured
                     //this will ensure last chunk is added.
-                    if (chunk.uncompressedSize > 0)
-                    {
-                        chunks.Add(chunk);
-                    }
+                    chunks.Add(chunk);
 
-                    //Rewrite header with chunk table information
-                    var compressionType = Game == Mod.MEGame.ME3 ? CompressionType.Zlib : CompressionType.LZO;
-                    uncompressedStream.WriteUInt32((uint)compressionType);
-                    uncompressedStream.WriteInt32(0);//numChunks 
-
-                    uncompressedStream.WriteUInt32(packageSource);
-
-                    if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
-                    {
-                        uncompressedStream.WriteInt32(0);
-                    }
-
-                    if (Game == Mod.MEGame.ME3 || Game == Mod.MEGame.ME2)
-                    {
-                        uncompressedStream.WriteInt32(0);//empty additionalPackagesToCook array
-                    }
-
-                    int compressionTypeOffset = 0;
-                    switch (Game)
-                    {
-                        case Mod.MEGame.ME1:
-                            compressionTypeOffset =
-                            break;
-                        case Mod.MEGame.ME2:
-
-                            break;
-                        case Mod.MEGame.ME3:
-                            compressionTypeOffset = 0x7E;
-                            break;
-                    }
-                    uncompressedStream.Position = NameOffset -
-                    fs.Write(packageHeader, 0, packageHeader.Length);
-                    fs.WriteUInt32((uint)targetCompression);
-                    fs.WriteUInt32((uint)chunks.Count);
-                    fs.Skip(SizeOfChunk * chunks.Count); // skip chunks table - filled later
-                    fs.WriteUInt32(someTag);
-                    if (version == packageFileVersionME2)
-                        fs.WriteUInt32(0); // const 0
-                    //saveExtraNames(fs);
+                    //Rewrite header with chunk table information so we can position the data blocks after table
+                    compressedStream.Position = 0;
+                    WriteHeader(compressedStream, compressionType, chunks);
 
                     for (int c = 0; c < chunks.Count; c++)
                     {
                         chunk = chunks[c];
-                        chunk.comprOffset = (uint)fs.Position;
-                        chunk.comprSize = 0; // filled later
+                        chunk.compressedOffset = (int)compressedStream.Position;
+                        chunk.compressedSize = 0; // filled later
 
-                        uint dataBlockLeft = chunk.uncomprSize;
-                        uint newNumBlocks = (chunk.uncomprSize + maxBlockSize - 1) / maxBlockSize;
+                        int dataSizeRemainingToCompress = chunk.uncompressedSize;
+                        int newNumBlocks = (chunk.uncompressedSize + CompressionHelper.MAX_BLOCK_SIZE - 1) / CompressionHelper.MAX_BLOCK_SIZE;
                         // skip blocks header and table - filled later
-                        fs.Seek(SizeOfChunk + SizeOfChunkBlock * newNumBlocks, SeekOrigin.Current);
+                        compressedStream.Seek(CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.SIZE_OF_CHUNK_BLOCK_HEADER * newNumBlocks, SeekOrigin.Current);
 
-                        tempOutput.JumpTo(chunk.uncomprOffset);
+                        uncompressedStream.JumpTo(chunk.uncompressedOffset);
 
-                        chunk.blocks = new List<ChunkBlock>();
+                        chunk.blocks = new List<CompressionHelper.Block>();
+                        //Calculate blocks by splitting data into 128KB "block chunks".
                         for (int b = 0; b < newNumBlocks; b++)
                         {
-                            ChunkBlock block = new ChunkBlock();
-                            block.uncomprSize = Math.Min(maxBlockSize, dataBlockLeft);
-                            dataBlockLeft -= block.uncomprSize;
-                            block.uncompressedBuffer = tempOutput.ReadToBuffer(block.uncomprSize);
+                            CompressionHelper.Block block = new CompressionHelper.Block();
+                            block.uncompressedsize = Math.Min(CompressionHelper.MAX_BLOCK_SIZE, dataSizeRemainingToCompress);
+                            dataSizeRemainingToCompress -= block.uncompressedsize;
+                            block.uncompressedData = uncompressedStream.ReadToBuffer(block.uncompressedsize);
                             chunk.blocks.Add(block);
                         }
 
+                        //Compress blocks
                         Parallel.For(0, chunk.blocks.Count, b =>
                         {
-                            ChunkBlock block = chunk.blocks[b];
-                            if (Game == Mod.MEGame.ME2)
-                                block.compressedBuffer = LZO2Helper.LZO2.Compress(block.uncompressedBuffer);
-                            else if (Game == Mod.MEGame.ME3 || Game == Mod.MEGame.ME1) //Todo: check this is accurate. I am pretty sure ME1 uses ZLib...
-                                block.compressedBuffer = ZlibHelper.Zlib.Compress(block.uncompressedBuffer);
+                            CompressionHelper.Block block = chunk.blocks[b];
+                            if (compressionType == CompressionType.LZO)
+                                block.compressedData = LZO2Helper.LZO2.Compress(block.uncompressedData);
+                            else if (compressionType == CompressionType.Zlib) //Todo: check this is accurate. I am pretty sure ME1 uses ZLib...
+                                block.compressedData = ZlibHelper.Zlib.Compress(block.uncompressedData);
                             else
-                                throw new Exception("Compression type not expected!");
-                            if (block.compressedBuffer.Length == 0)
-                                throw new Exception("Compression failed!");
-                            block.comprSize = (uint)block.compressedBuffer.Length;
+                                throw new Exception("Internal error: Unsupported compression type for compressing blocks: " + compressionType);
+                            if (block.compressedData.Length == 0)
+                                throw new Exception("Block compression failed! Compressor returned no bytes");
+                            block.compressedsize = (int)block.compressedData.Length;
                             chunk.blocks[b] = block;
                         });
 
+                        //Write compressed data to stream 
                         for (int b = 0; b < newNumBlocks; b++)
                         {
-                            ChunkBlock block = chunk.blocks[b];
-                            fs.Write(block.compressedBuffer, 0, (int)block.comprSize);
-                            chunk.comprSize += block.comprSize;
+                            var block = chunk.blocks[b];
+                            compressedStream.Write(block.compressedData, 0, (int)block.compressedsize);
+                            chunk.compressedSize += block.compressedsize;
                         }
+
                         chunks[c] = chunk;
                     }
 
+                    //Update each chunk header with new information
                     for (int c = 0; c < chunks.Count; c++)
                     {
                         chunk = chunks[c];
-                        fs.JumpTo(chunksTableOffset + c * SizeOfChunk); // jump to chunks table
-                        fs.WriteUInt32(chunk.uncomprOffset);
-                        fs.WriteUInt32(chunk.uncomprSize);
-                        fs.WriteUInt32(chunk.comprOffset);
-                        fs.WriteUInt32(chunk.comprSize + SizeOfChunk + SizeOfChunkBlock * (uint)chunk.blocks.Count);
-                        fs.JumpTo(chunk.comprOffset); // jump to blocks header
-                        fs.WriteUInt32(packageTag);
-                        fs.WriteUInt32(maxBlockSize);
-                        fs.WriteUInt32(chunk.comprSize);
-                        fs.WriteUInt32(chunk.uncomprSize);
-                        foreach (ChunkBlock block in chunk.blocks)
+                        compressedStream.JumpTo(chunk.compressedOffset); // jump to blocks header
+                        compressedStream.WriteUInt32(packageTag);
+                        compressedStream.WriteUInt32(CompressionHelper.MAX_BLOCK_SIZE);
+                        compressedStream.WriteInt32(chunk.compressedSize);
+                        compressedStream.WriteInt32(chunk.uncompressedSize);
+                        foreach (var block in chunk.blocks)
                         {
-                            fs.WriteUInt32(block.comprSize);
-                            fs.WriteUInt32(block.uncomprSize);
+                            compressedStream.WriteInt32(block.compressedsize);
+                            compressedStream.WriteInt32(block.uncompressedsize);
                         }
                     }
-                    for (int c = 0; c < chunks.Count; c++)
-                    {
-                        chunk = chunks[c];
-                        chunk.blocks.Clear();
-                        chunk.blocks = null;
-                    }
-                    chunks.Clear();
-                    chunks = null;
+                    //Write final header
+                    compressedStream.Position = 0;
+                    WriteHeader(compressedStream, compressionType, chunks);
+
+                    //for (int c = 0; c < chunks.Count; c++)
+                    //{
+                    //    chunk = chunks[c];
+                    //    chunk.blocks.Clear();
+                    //    chunk.blocks = null;
+                    //}
+                    //chunks.Clear();
+                    //chunks = null;
+
+                    File.WriteAllBytes(path, compressedStream.ToArray());
+
                 }
                 AfterSave();
             }
@@ -568,8 +543,9 @@ namespace ME3Explorer.Packages
             }
         }
 
-        private void WriteHeader(Stream ms, bool compress = false)
+        private void WriteHeader(Stream ms, CompressionType compressionType = CompressionType.None, List<CompressionHelper.Chunk> chunks = null)
         {
+            if (chunks == null) chunks = new List<CompressionHelper.Chunk>();
             ms.WriteUInt32(packageTag);
             //version
             switch (Game)
@@ -683,9 +659,25 @@ namespace ME3Explorer.Packages
                 ms.WriteInt32(-1);
             }
 
-            //TODO: Unsure if this code from MEM is correct, if I recall ZLib for ME2 had terrible performance, this should probably be LZO for ME2
-            ms.WriteUInt32((uint)(compress ? (Game == Mod.MEGame.ME2 ? CompressionType.LZO : CompressionType.Zlib) : CompressionType.None));
-            ms.WriteInt32(0);//numChunks 
+            ms.WriteUInt32((uint)compressionType);
+            //Chunks
+            if (compressionType != CompressionType.None && chunks.Count == 0) throw new Exception("Can't save with compression type if there are no compressed chunks in header!'");
+            ms.WriteInt32(chunks.Count);
+            foreach (var chunk in chunks)
+            {
+                ms.WriteInt32(chunk.uncompressedOffset);
+                ms.WriteInt32(chunk.uncompressedSize);
+                ms.WriteInt32(chunk.compressedOffset);
+                if (chunk.blocks != null)
+                {
+                    ms.WriteInt32(chunk.compressedSize + CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.MAX_BLOCK_SIZE * chunk.blocks.Count); //Size of compressed data + chunk header + block header * number of blocks in the chunk
+                }
+                else
+                {
+                    //list is null - might not be populated yet
+                    ms.WriteInt32(0); //write zero for now, we will call this method later with the compressedSize populated.
+                }
+            }
 
             ms.WriteUInt32(packageSource);
 
@@ -696,8 +688,11 @@ namespace ME3Explorer.Packages
 
             if (Game == Mod.MEGame.ME3 || Game == Mod.MEGame.ME2)
             {
+                //Todo: Implement this again
                 ms.WriteInt32(0);//empty additionalPackagesToCook array
             }
+
+            //Chunk data is written in package saving code
         }
 
         public List<TalkFileME1> LocalTalkFiles { get; } = new List<TalkFileME1>();

@@ -4,6 +4,8 @@
   <Costura IncludeDebugSymbols="false">
     <Unmanaged64Assemblies>
       sevenzipwrapper
+      zlibwrapper
+      lzo2wrapper
     </Unmanaged64Assemblies>
   </Costura>
 </Weavers>
