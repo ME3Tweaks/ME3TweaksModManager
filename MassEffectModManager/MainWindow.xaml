@@ -152,6 +152,7 @@
                         <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
                     </MenuItem>
                     <MenuItem Header="Grant write access to game directories"/>
+                    <MenuItem Header="Run AutoTOC on game (ME3)" Name="AutoTOC_MenuItem" Click="RunAutoTOC_Clicked"/>
 
                     <Separator/>
                     <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>

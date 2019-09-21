@@ -142,6 +142,7 @@
     <Compile Include="gamefileformats\mepackages\MEPackageHandler.cs" />
     <Compile Include="gamefileformats\mepackages\PackageExtensions.cs" />
     <Compile Include="gamefileformats\mepackages\UnrealPackageFile.cs" />
+    <Compile Include="gamefileformats\sfar\DLCPackage.cs" />
     <Compile Include="gamefileformats\sfar\SFAR_Extract.cs" />
     <Compile Include="gamefileformats\TalkFileME1.cs" />
     <Compile Include="gamefileformats\TalkFileME2ME3.cs" />
@@ -155,7 +156,7 @@
     <Compile Include="gamefileformats\unreal\PropertyReader.cs" />
     <Compile Include="gamefileformats\unreal\SerializingContainer.cs" />
     <Compile Include="gamefileformats\unreal\SerializingContainer2.cs" />
-    <Compile Include="gamefileformats\unreal\TOCBinFile.cs" />
+    <Compile Include="gamefileformats\unreal\TOCCreator.cs" />
     <Compile Include="gamefileformats\unreal\UnrealFlags.cs" />
     <Compile Include="modmanager\CLog.cs" />
     <Compile Include="modmanager\converters\OriginBootTargetVisibilityConverter.cs" />
@@ -194,6 +195,9 @@
     <Compile Include="modmanager\objects\ModJob.cs" />
     <Compile Include="modmanager\objects\ProgressBarUpdate.cs" />
     <Compile Include="modmanager\objects\RelayModInfo.cs" />
+    <Compile Include="modmanager\usercontrols\AutoTOC.xaml.cs">
+      <DependentUpon>AutoTOC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="modmanager\usercontrols\ExternalToolLauncher.xaml.cs">
       <DependentUpon>ExternalToolLauncher.xaml</DependentUpon>
     </Compile>
@@ -239,6 +243,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="modmanager\usercontrols\AutoTOC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="modmanager\usercontrols\ExternalToolLauncher.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
