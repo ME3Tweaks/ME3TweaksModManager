@@ -489,5 +489,12 @@ namespace MassEffectModManager
             }
             return path;
         }
+
+        internal static List<string> GetPackagesInDirectory(string path, bool subdirectories)
+        {
+            return Directory.EnumerateFiles(path, "*.*", subdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                .Where(s => s.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".sfm",StringComparison.InvariantCultureIgnoreCase) 
+                 || s.EndsWith(".u",StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
     }
 }

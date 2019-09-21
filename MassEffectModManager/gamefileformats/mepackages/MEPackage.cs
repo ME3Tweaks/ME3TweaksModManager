@@ -436,13 +436,14 @@ namespace ME3Explorer.Packages
                     //Export data chunks
                     //chunk = new CompressionHelper.Chunk();
                     int chunkNum = 0;
+                    Debug.WriteLine($"Exports start at {Exports[0].DataOffset}");
                     foreach (ExportEntry e in Exports)
                     {
                         if (chunk.uncompressedSize + e.DataSize > CompressionHelper.MAX_CHUNK_SIZE)
                         {
                             //Rollover to the next chunk as this chunk would be too big if we tried to put this export into the chunk
                             chunks.Add(chunk);
-                            Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
+                            Debug.WriteLine($"Chunk {chunkNum} ({chunk.uncompressedSize} bytes) contains {firstElement} to {lastElement} - 0x{chunk.uncompressedOffset:X6} to 0x{(chunk.uncompressedSize + chunk.uncompressedOffset):X6}");
                             chunkNum++;
                             chunk = new CompressionHelper.Chunk
                             {
@@ -564,7 +565,12 @@ namespace ME3Explorer.Packages
                     //chunks = null;
 
                     File.WriteAllBytes(path, compressedStream.ToArray());
-
+                    // validation
+                    var validatePackage = MEPackageHandler.OpenMEPackage(path);
+                    foreach (var export in Exports)
+                    {
+                        export.GetProperties();
+                    }
                 }
                 AfterSave();
             }

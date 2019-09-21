@@ -11,6 +11,7 @@ using IniParser.Parser;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.Properties;
+using ME3Explorer.Packages;
 using Serilog;
 using SevenZip;
 
@@ -521,7 +522,7 @@ namespace MassEffectModManager.modmanager
                         if (!string.IsNullOrEmpty(altfilesStr))
                         {
                             var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
-                            foreach(var split in splits)
+                            foreach (var split in splits)
                             {
                                 AlternateFile af = new AlternateFile(split, this);
                                 if (af.ValidAlternate)
@@ -787,7 +788,7 @@ namespace MassEffectModManager.modmanager
         {
             if (IsInArchive)
             {
-                path = path.TrimStart('\\', '/').Replace('/','\\'); //archive paths don't start with a / \ but path combining will append one of these.
+                path = path.TrimStart('\\', '/').Replace('/', '\\'); //archive paths don't start with a / \ but path combining will append one of these.
                 var entry = Archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
                 return !string.IsNullOrEmpty(entry.FileName) && !entry.IsDirectory; //must check filename is populated as this is a struct
             }
@@ -797,7 +798,7 @@ namespace MassEffectModManager.modmanager
             }
         }
 
-        public void ExtractFromArchive(string archivePath, Action<ProgressEventArgs> extractingCallback = null)
+        public void ExtractFromArchive(string archivePath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
             var modDirectory = Utilities.GetModDirectoryForGame(Game);
@@ -847,7 +848,7 @@ namespace MassEffectModManager.modmanager
                             //Alternate files
                             foreach (var alt in job.AlternateFiles)
                             {
-                                if (alt.AltFile != null && info.FileName.Equals(PathCombine(ModPath,alt.AltFile),StringComparison.InvariantCultureIgnoreCase))
+                                if (alt.AltFile != null && info.FileName.Equals(PathCombine(ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
                                     fileIndicesToExtract.Add(info.Index);
@@ -873,7 +874,7 @@ namespace MassEffectModManager.modmanager
                                     break;
                                 }
 
-                                
+
                             }
                             if (fileAdded) break;
                             //Alternate files
@@ -900,6 +901,22 @@ namespace MassEffectModManager.modmanager
                 };
                 archiveFile.ExtractFiles(sanitizedPath, fileIndicesToExtract.ToArray());
                 ModPath = sanitizedPath;
+
+                int packagesCompressed = 0;
+                if (compressPackages)
+                {
+                    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
+                    foreach (var package in packages)
+                    {
+                        updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
+                        Log.Information("Compressing package: " + package);
+                        var p = MEPackageHandler.OpenMEPackage(package);
+                        p.save(true);
+
+                        packagesCompressed++;
+                        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
+                    }
+                }
             }
         }
     }

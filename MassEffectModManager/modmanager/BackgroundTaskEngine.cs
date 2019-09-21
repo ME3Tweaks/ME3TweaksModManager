@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gammtek.Conduit.Extensions.Collections.Generic;
 using Microsoft.WindowsAPICodePack.ShellExtensions.Interop;
 
 namespace MassEffectModManager.modmanager
 {
     public class BackgroundTaskEngine
     {
-        private List<BackgroundTask> backgroundJobs = new List<BackgroundTask>();
+        //No real concurrent list so i guess we'll use a dictionary
+        private ConcurrentDictionary<int, BackgroundTask> backgroundJobs = new ConcurrentDictionary<int, BackgroundTask>();
         private Action<string> updateTextDelegate;
         private Action showIndicatorDelegate;
         private Action hideIndicatorDelegate;
@@ -29,7 +32,7 @@ namespace MassEffectModManager.modmanager
                 throw new Exception("Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
             }
             BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
-            backgroundJobs.Add(bt);
+            backgroundJobs[bt.jobID] = bt;
             if (uiText != null)
             {
                 updateTextDelegate(uiText);
@@ -41,7 +44,7 @@ namespace MassEffectModManager.modmanager
         public void SubmitJobCompletion(BackgroundTask task)
         {
 
-            var finishingJob = backgroundJobs.RemoveAll(x => x.jobID == task.jobID);
+            backgroundJobs.TryRemove(task.jobID, out BackgroundTask t);
             if (backgroundJobs.Count <= 0)
             {
                 hideIndicatorDelegate();
@@ -52,8 +55,8 @@ namespace MassEffectModManager.modmanager
             }
             else
             {
-                backgroundJobs[0].active = true;
-                updateTextDelegate(backgroundJobs[0].uiText);
+                backgroundJobs.First().Value.active = true;
+                updateTextDelegate(backgroundJobs.First().Value.uiText);
             }
         }
     }

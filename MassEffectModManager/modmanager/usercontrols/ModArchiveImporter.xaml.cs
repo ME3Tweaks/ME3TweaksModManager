@@ -24,6 +24,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         private bool TaskRunning;
         public string NoModSelectedText { get; } = "Select a mod on the left to view its description";
         public event EventHandler<DataEventArgs> Close;
+        public bool CompressPackages { get; set; }
         protected virtual void OnClosing(DataEventArgs e)
         {
             EventHandler<DataEventArgs> handler = Close;
@@ -151,6 +152,12 @@ namespace MassEffectModManager.modmanager.usercontrols
         {
             List<CompressedMod> mods = (List<CompressedMod>)e.Argument;
             List<Mod> extractedMods = new List<Mod>();
+
+            void TextUpdateCallback(string x)
+            {
+                ActionText = x;
+            }
+
             foreach (var mod in mods)
             {
                 //Todo: Extract files
@@ -158,7 +165,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                 ActionText = $"Extracting {mod.Mod.ModName}";
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
-                mod.Mod.ExtractFromArchive(ArchiveFilePath, ExtractionProgressCallback);
+                mod.Mod.ExtractFromArchive(ArchiveFilePath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback);
                 extractedMods.Add(mod.Mod);
             }
 
