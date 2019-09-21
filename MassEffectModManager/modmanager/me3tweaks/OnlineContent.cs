@@ -25,8 +25,6 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 string json = wc.DownloadString(StartupManifestURL);
                 return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             }
-
-            return null;
         }
         public static Dictionary<string, Dictionary<string, Dictionary<string, string>>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {

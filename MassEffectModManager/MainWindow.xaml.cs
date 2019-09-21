@@ -615,10 +615,19 @@ namespace MassEffectModManager
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
-                    var manifest = OnlineContent.FetchOnlineStartupManifest();
-                    if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
+                    try
                     {
-                        //Todo: Update available
+                        var manifest = OnlineContent.FetchOnlineStartupManifest();
+                        if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
+                        {
+                            //Todo: Update available
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        //Error checking for updates!
+                        Log.Error("Checking for updates failed: " + App.FlattenException(e));
+                        updateCheckTask.finishedUiText = "Failed to check for updates";
                     }
 
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
