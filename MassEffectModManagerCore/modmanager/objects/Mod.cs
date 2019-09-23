@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 using IniParser.Parser;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
-using MassEffectModManager.Properties;
-using ME3Explorer.Packages;
+using MassEffectModManagerCore.modmanager;
 using Serilog;
 using SevenZip;
 
@@ -213,7 +212,7 @@ namespace MassEffectModManager.modmanager
         /// <summary>
         /// This is used to make CLog statements shorter and easier to read
         /// </summary>
-        private static bool LogModStartup => Settings.Default.LogModStartup;
+        private static bool LogModStartup => Settings.LogModStartup;
 
         private void loadMod(string iniText, MEGame expectedGame)
         {
@@ -903,20 +902,20 @@ namespace MassEffectModManager.modmanager
                 ModPath = sanitizedPath;
 
                 int packagesCompressed = 0;
-                if (compressPackages)
-                {
-                    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
-                    foreach (var package in packages)
-                    {
-                        updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
-                        Log.Information("Compressing package: " + package);
-                        var p = MEPackageHandler.OpenMEPackage(package);
-                        p.save(true);
+                //if (compressPackages)
+                //{
+                //    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
+                //    foreach (var package in packages)
+                //    {
+                //        updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
+                //        Log.Information("Compressing package: " + package);
+                //        var p = MEPackageHandler.OpenMEPackage(package);
+                //        p.save(true);
 
-                        packagesCompressed++;
-                        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
-                    }
-                }
+                //        packagesCompressed++;
+                //        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
+                //    }
+                //}
             }
         }
     }

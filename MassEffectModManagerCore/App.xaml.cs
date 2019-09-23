@@ -16,8 +16,9 @@ using CommandLine;
 using System.Windows.Controls;
 using System.Diagnostics;
 using Serilog.Core;
+using MassEffectModManager;
 
-namespace MassEffectModManager
+namespace MassEffectModManagerCore
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -39,7 +40,6 @@ namespace MassEffectModManager
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             try
             {
-
                 System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
                 string exePath = assembly.Location;
                 string exeFolder = Directory.GetParent(exePath).ToString();
@@ -160,6 +160,7 @@ namespace MassEffectModManager
             catch (Exception e)
             {
                 OnFatalCrash(e);
+                throw e;
             }
         }
 

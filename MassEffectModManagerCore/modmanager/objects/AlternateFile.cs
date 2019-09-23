@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
+using MassEffectModManagerCore.modmanager;
 
 namespace MassEffectModManager.modmanager.objects
 {
@@ -93,7 +94,7 @@ namespace MassEffectModManager.modmanager.objects
                 }
             }
 
-            CLog.Information($"Alternate file loaded and validated: {FriendlyName}", Properties.Settings.Default.LogModStartup);
+            CLog.Information($"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;
         }
 

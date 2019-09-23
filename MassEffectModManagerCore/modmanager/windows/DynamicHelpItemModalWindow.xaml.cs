@@ -11,7 +11,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using FontAwesome;
 using FontAwesome.WPF;
 using MassEffectModManager.modmanager.me3tweaks;
 

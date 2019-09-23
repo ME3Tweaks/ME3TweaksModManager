@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MassEffectModManager"
+        xmlns:local="clr-namespace:MassEffectModManagerCore"
         xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -253,7 +253,7 @@
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">
                         <Button DockPanel.Dock="Right" Margin="0,0,5,0" Background="Transparent" BorderThickness="0" Command="{Binding ReloadModsCommand}">
-                            <fa:ImageAwesome  Icon="Solid_Redo" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="Gray"/>
+                            <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="Gray"/>
                         </Button>
                         <TextBlock Text="Available Mods" FontWeight="Bold"/>
                     </DockPanel>

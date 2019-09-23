@@ -18,7 +18,6 @@ using System.Windows.Navigation;
 using MassEffectModManager.GameDirectories;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
-using ModManagerCommandLine;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
 
@@ -240,7 +239,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         {
 
             int numfiles = job.FilesToInstall.Count;
-
+            /*
 
             //Todo: Check all newfiles exist
             //foreach (string str in diskFiles)
@@ -324,6 +323,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             //        Console.WriteLine("No files were found in the archive that matched the input list for --files.");
             //    }
             //}
+            */
             return true;
         }
 

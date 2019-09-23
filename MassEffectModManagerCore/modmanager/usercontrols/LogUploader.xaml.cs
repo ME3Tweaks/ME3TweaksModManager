@@ -17,11 +17,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ByteSizeLib;
 using Flurl.Http;
-using MassEffectModManager.gamefileformats;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.me3tweaks;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.ui;
+using MassEffectModManagerCore;
 using Serilog;
 using SevenZip;
 

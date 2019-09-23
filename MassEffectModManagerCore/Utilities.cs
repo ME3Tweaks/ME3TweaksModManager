@@ -10,6 +10,8 @@ using MassEffectModManager.GameDirectories;
 using MassEffectModManager.modmanager;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
+using MassEffectModManagerCore;
+using MassEffectModManagerCore.modmanager;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
 
@@ -21,7 +23,7 @@ namespace MassEffectModManager
 
         public static string GetModsDirectory()
         {
-            var libraryPath = Properties.Settings.Default.ModLibraryPath;
+            var libraryPath = Settings.ModLibraryPath;
             if (Directory.Exists(libraryPath))
             {
                 return libraryPath;
@@ -105,7 +107,7 @@ namespace MassEffectModManager
 
         internal static bool CanFetchContentThrottleCheck()
         {
-            var lastContentCheck = Properties.Settings.Default.LastContentCheck;
+            var lastContentCheck = Settings.LastContentCheck;
             var timeNow = DateTime.Now;
             return (timeNow - lastContentCheck).TotalDays > 1;
         }

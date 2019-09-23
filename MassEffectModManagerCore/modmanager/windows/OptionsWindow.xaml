@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManager.modmanager.windows"
-        xmlns:p="clr-namespace:MassEffectModManager.Properties"
         xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
         mc:Ignorable="d"
         Closing="OptionsWindow_Closing"
@@ -14,27 +13,27 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
     <StackPanel Margin="5">
-        <CheckBox Content="Use custom library location" IsChecked="{Binding UseCustomLibraryLocation, 
+        <!--<CheckBox Content="Use custom library location" IsChecked="{Binding UseCustomLibraryLocation, 
                 Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
+                Source={x:Static Settings}, 
                 UpdateSourceTrigger=PropertyChanged}"/>
         <StackPanel Visibility="{Binding UseCustomLibraryLocation, 
                 Mode=OneWay, 
-                Source={x:Static p:Settings.Default}, 
+                Source={x:Static Settings}, 
                 UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}">
             <Button Content="Change mod library location" Click="ChangeLibraryLocation_Click"/>
             <TextBlock Text="{Binding ModLibraryPath, 
                 Mode=OneWay, 
-                Source={x:Static p:Settings.Default}, 
+                Source={x:Static Settings}, 
                 UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
         <CheckBox Content="Log Mod Startup" IsChecked="{Binding LogModStartup, 
                 Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
+                Source={x:Static Settings}, 
                 UpdateSourceTrigger=PropertyChanged}"/>
         <CheckBox Content="Log MixinStartup Startup" IsChecked="{Binding LogMixinStartup, 
                 Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}"/>
+                Source={x:Static Settings}, 
+                UpdateSourceTrigger=PropertyChanged}"/>-->
     </StackPanel>
 </Window>

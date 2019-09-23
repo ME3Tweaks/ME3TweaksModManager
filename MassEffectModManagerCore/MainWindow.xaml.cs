@@ -16,8 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using IniParser;
-using IniParser.Parser;
+//using IniParser;
+//using IniParser.Parser;
 using MassEffectModManager.GameDirectories;
 using MassEffectModManager.modmanager;
 using MassEffectModManager.modmanager.helpers;
@@ -26,8 +26,10 @@ using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.modmanager.usercontrols;
 using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
-using ME3Explorer.Packages;
-using ME3Explorer.Unreal;
+using MassEffectModManagerCore;
+using MassEffectModManagerCore.modmanager;
+//using ME3Explorer.Packages;
+//using ME3Explorer.Unreal;
 using Microsoft.Win32;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
@@ -358,7 +360,7 @@ namespace MassEffectModManager
             {
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob("ModLoader", "Loading mods", "Loaded mods");
-                CLog.Information("Loading mods from mod library: " + Utilities.GetModsDirectory(), Properties.Settings.Default.LogModStartup);
+                CLog.Information("Loading mods from mod library: " + Utilities.GetModsDirectory(), Settings.LogModStartup);
                 var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
@@ -545,7 +547,7 @@ namespace MassEffectModManager
 
         private void ModManagerWindow_Closing(object sender, CancelEventArgs e)
         {
-            Properties.Settings.Default.Save();
+            Settings.Save();
         }
 
         private void FailedMods_LinkClick(object sender, RequestNavigateEventArgs e)
@@ -659,9 +661,11 @@ namespace MassEffectModManager
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadObjectInfo", "Loading package information database", "Loaded package information database");
-                ME3UnrealObjectInfo.loadfromJSON();
-                ME2UnrealObjectInfo.loadfromJSON();
-                ME1UnrealObjectInfo.loadfromJSON();
+                
+                //TODO: PORT UNREAL OBJECT INFO
+                //ME3UnrealObjectInfo.loadfromJSON();
+                //ME2UnrealObjectInfo.loadfromJSON();
+                //ME1UnrealObjectInfo.loadfromJSON();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 //bgTask = backgroundTaskEngine.SubmitBackgroundJob("Test", "Running test", "Test completed");
@@ -680,8 +684,9 @@ namespace MassEffectModManager
                 //}
                 //backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                Properties.Settings.Default.LastContentCheck = DateTime.Now;
-                Properties.Settings.Default.Save();
+                //TODO: FIX THIS FOR .NET CORE
+                //Properties.Settings.Default.LastContentCheck = DateTime.Now;
+                //Properties.Settings.Default.Save();
                 Log.Information("End of content check network thread");
                 b.Result = 0; //all good
             };

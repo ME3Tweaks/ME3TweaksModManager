@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
+using MassEffectModManagerCore;
 using Newtonsoft.Json;
 using Serilog;
 

@@ -14,8 +14,8 @@ using System.Windows.Documents;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using ME3Explorer.Packages;
-using ME3Explorer.Unreal;
+//using ME3Explorer.Packages;
+//using ME3Explorer.Unreal;
 
 namespace MassEffectModManager.modmanager.helpers
 {
@@ -760,16 +760,16 @@ namespace MassEffectModManager.modmanager.helpers
             }
         }
 
-        public static NameReference ReadNameReference(this Stream stream, IMEPackage pcc)
-        {
-            return new NameReference(pcc.getNameEntry(stream.ReadInt32()), stream.ReadInt32());
-        }
+        //public static NameReference ReadNameReference(this Stream stream, IMEPackage pcc)
+        //{
+        //    return new NameReference(pcc.getNameEntry(stream.ReadInt32()), stream.ReadInt32());
+        //}
 
-        public static void WriteNameReference(this Stream stream, NameReference name, IMEPackage pcc)
-        {
-            stream.WriteInt32(pcc.FindNameOrAdd(name.Name));
-            stream.WriteInt32(name.Number);
-        }
+        //public static void WriteNameReference(this Stream stream, NameReference name, IMEPackage pcc)
+        //{
+        //    stream.WriteInt32(pcc.FindNameOrAdd(name.Name));
+        //    stream.WriteInt32(name.Number);
+        //}
     }
 
     public static class CollectionExtensions
