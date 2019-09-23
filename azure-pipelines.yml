@@ -15,13 +15,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: UseDotNet@3
-  displayName: 'Use .NET Core 3 sdk'
-  inputs:
-    packageType: sdk
-    version: 3.x
-    installationPath: $(Agent.ToolsDirectory)/dotnet
 
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '3.x'
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
