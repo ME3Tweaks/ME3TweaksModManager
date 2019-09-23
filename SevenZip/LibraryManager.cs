@@ -35,10 +35,10 @@ namespace SevenZip
 
         private static string DetermineLibraryFilePath()
         {
-            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["7zLocation"]))
-            {
-                return ConfigurationManager.AppSettings["7zLocation"];
-            }
+            //if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["7zLocation"]))
+            //{
+            //    return ConfigurationManager.AppSettings["7zLocation"];
+            //}
 
             if (string.IsNullOrEmpty(Assembly.GetExecutingAssembly().Location)) return null;
             return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Environment.Is64BitProcess ? "7z64.dll" : "7z.dll");
@@ -330,8 +330,8 @@ namespace SevenZip
         /// <param name="format">Archive format</param>
         public static void FreeLibrary(object user, Enum format)
         {
-            var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-            sp.Demand();
+            //var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
+            //sp.Demand();
 
             lock (_syncRoot)
 			{
@@ -403,8 +403,8 @@ namespace SevenZip
             {
                 if (_inArchives[user][format] == null)
                 {
-                    var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-                    sp.Demand();
+                    //var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
+                    //sp.Demand();
 
                     if (_modulePtr == IntPtr.Zero)
                     {
@@ -458,8 +458,8 @@ namespace SevenZip
             {
                 if (_outArchives[user][format] == null)
                 {
-                    var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-                    sp.Demand();
+                    //var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
+                    //sp.Demand();
                     if (_modulePtr == IntPtr.Zero)
                     {
                         throw new SevenZipLibraryException();

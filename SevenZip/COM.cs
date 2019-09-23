@@ -93,8 +93,8 @@
         {
             get
             {
-                var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-                sp.Demand();
+                //var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
+                //sp.Demand();
 
                 switch (VarType)
                 {

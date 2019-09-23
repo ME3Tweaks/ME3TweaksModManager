@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="MassEffectModManager.modmanager.usercontrols.ModArchiveImporter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManager.modmanager.usercontrols"
+             xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
+             mc:Ignorable="d" 
+             Height="440" Width="650">
+    <UserControl.Resources>
+        <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
+        <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
+        <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
+    </UserControl.Resources>
+    <DockPanel Margin="0,0">
+        <TextBlock DockPanel.Dock="Top" Text="Import mods from archive file" FontSize="16" FontWeight="Bold" TextAlignment="Center"/>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding ScanningFile, FallbackValue=Placeholder.7z}" TextAlignment="Center"/>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0" LastChildFill="False">
+            <Button DockPanel.Dock="Right" Content="Import mods" Padding="8,3" Command="{Binding ImportModsCommand}"/>
+            <Button DockPanel.Dock="Right" Content="Cancel" Margin="5,0" Padding="8,3" Command="{Binding CancelCommand}"/>
+            <CheckBox DockPanel.Dock="Right" Content="Compress packages" VerticalContentAlignment="Center" Padding="8,3" IsChecked="{Binding CompressPackages}"/>
+            <TextBlock DockPanel.Dock="Left" Text="{Binding ActionText, FallbackValue=Scanning archive....}" VerticalAlignment="Center"/>
+        </DockPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <ListBox Name="CompressedMods_ListBox" Grid.Column="0" ItemsSource="{Binding CompressedMods}" SelectionChanged="SelectedMod_Changed">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <CheckBox IsChecked="{Binding SelectedForImport}" VerticalContentAlignment="Center"/>
+                            <Image Source="{Binding Mod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="5,0,5,0"/>
+                            <TextBlock Text="{Binding Mod.ModName}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
+                <TextBox.Text>
+                    <PriorityBinding>
+                        <Binding Path="SelectedMod.Mod.DisplayedModDescription" Mode="OneWay"/>
+                        <Binding Path="NoModSelectedText" Mode="OneWay"/>
+                    </PriorityBinding>
+                </TextBox.Text>
+            </TextBox>
+        </Grid>
+    </DockPanel>
+
+</UserControl>
