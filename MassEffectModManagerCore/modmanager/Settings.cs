@@ -16,10 +16,30 @@ namespace MassEffectModManagerCore.modmanager
 {
     public static class Settings
     {
-        public static event EventHandler SettingChanged = delegate { };
+        #region Static Property Changed
 
+        private static bool Loaded = false;
+        public static event PropertyChangedEventHandler StaticPropertyChanged;
+
+        /// <summary>
+        /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
+        /// Should be called in property setters.
+        /// </summary>
+        /// <typeparam name="T">Type of given property.</typeparam>
+        /// <param name="field">Backing field to update.</param>
+        /// <param name="value">New value of property.</param>
+        /// <param name="propertyName">Name of property.</param>
+        /// <returns>True if success, false if backing field and new value aren't compatible.</returns>
+        private static bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
+            if (Loaded) Save();
+            return true;
+        }
+        #endregion
         private static bool _logModStartup = false;
-
         public static bool LogModStartup
         {
             get => _logModStartup;
@@ -54,6 +74,7 @@ namespace MassEffectModManagerCore.modmanager
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
             ModLibraryPath = LoadSettingString(settingsIni, "ModLibrary", "LibraryPath", null);
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
+            Loaded = true;
         }
 
         private static bool LoadSettingBool(IniData ini, string section, string key, bool defaultValue)
@@ -136,24 +157,6 @@ namespace MassEffectModManagerCore.modmanager
         private static void SaveSettingDateTime(IniData settingsIni, string section, string key, DateTime value)
         {
             settingsIni[section][key] = value.ToBinary().ToString();
-        }
-
-        /// <summary>
-        /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
-        /// Should be called in property setters.
-        /// </summary>
-        /// <typeparam name="T">Type of given property.</typeparam>
-        /// <param name="field">Backing field to update.</param>
-        /// <param name="value">New value of property.</param>
-        /// <param name="propertyName">Name of property.</param>
-        /// <returns>True if success, false if backing field and new value aren't compatible.</returns>
-        private static bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            Debug.WriteLine("Setting changed...");
-            SettingChanged(null, EventArgs.Empty);
-            return true;
         }
     }
 }

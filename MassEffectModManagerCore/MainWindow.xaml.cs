@@ -157,7 +157,6 @@ namespace MassEffectModManager
         public ICommand AddTargetCommand { get; set; }
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
-        public ICommand SettingsChangeCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -166,38 +165,6 @@ namespace MassEffectModManager
             AddTargetCommand = new GenericCommand(AddTarget, () => ModsLoaded);
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
-            SettingsChangeCommand = new RelayCommand(ChangeSetting, (obj) => StartupCompleted);
-        }
-
-        private void ChangeSetting(object parameter)
-        {
-            if (parameter is string paramstr)
-            {
-                switch (paramstr)
-                {
-                    case "LogModStartup":
-                        Settings.LogModStartup = !LogModStartup_MenuItem.IsChecked; //flip
-                        break;
-                    case "LogMixinStartup":
-                        Settings.LogModStartup = !LogMixinStartup_MenuItem.IsChecked; //flip
-                        break;
-                    case "ChangeModLibDir":
-                        CommonOpenFileDialog m = new CommonOpenFileDialog
-                        {
-                            IsFolderPicker = true,
-                            EnsurePathExists = true,
-                            Title = "Select mod library folder"
-                        };
-                        if (m.ShowDialog(this) == CommonFileDialogResult.Ok)
-                        {
-                            Settings.ModLibraryPath = m.FileName;
-                            Utilities.EnsureModDirectories();
-                            LoadMods();
-                        }
-                        break;
-                }
-                Settings.Save();
-            }
         }
 
         private bool CanToggleBinkw32(object obj)
@@ -950,6 +917,41 @@ namespace MassEffectModManager
             BusyContent = autoTocUI;
             IsBusy = true;
             autoTocUI.RunAutoTOC();
+        }
+
+        private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
+        {
+            var callingMember = (MenuItem)sender;
+            //if (callingMember == LogModStartup_MenuItem)
+            //{
+            //    Settings.LogModStartup = !Settings.LogModStartup; //flip
+            //}
+            //else if (callingMember == LogMixinStartup_MenuItem)
+            //{
+            //    Settings.LogMixinStartup = !Settings.LogMixinStartup; //flip
+            //}
+            //else 
+            if (callingMember == SetModLibraryPath_MenuItem)
+            {
+                CommonOpenFileDialog m = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    EnsurePathExists = true,
+                    Title = "Select mod library folder"
+                };
+                if (m.ShowDialog(this) == CommonFileDialogResult.Ok)
+                {
+                    Settings.ModLibraryPath = m.FileName;
+                    Utilities.EnsureModDirectories();
+                    LoadMods();
+                }
+            }
+            else
+            {
+                //unknown caller
+                return;
+            }
+            Settings.Save();
         }
     }
 }

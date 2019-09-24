@@ -31,7 +31,7 @@ namespace MassEffectModManager.modmanager
                 throw new Exception("Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
             }
             BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
-            backgroundJobs[bt.jobID] = bt;
+            backgroundJobs.TryAdd(bt.jobID, bt);
             if (uiText != null)
             {
                 updateTextDelegate(uiText);
@@ -42,20 +42,22 @@ namespace MassEffectModManager.modmanager
 
         public void SubmitJobCompletion(BackgroundTask task)
         {
-
-            backgroundJobs.TryRemove(task.jobID, out BackgroundTask t);
-            if (backgroundJobs.Count <= 0)
+            if (backgroundJobs.TryRemove(task.jobID, out BackgroundTask t))
             {
-                hideIndicatorDelegate();
-                if (task.finishedUiText != null)
+                if (backgroundJobs.Count <= 0)
                 {
-                    updateTextDelegate(task.finishedUiText);
+                    hideIndicatorDelegate();
+                    if (task.finishedUiText != null)
+                    {
+                        updateTextDelegate(task.finishedUiText);
+                    }
+
+                    else
+                    {
+                        backgroundJobs.First().Value.active = true;
+                        updateTextDelegate(backgroundJobs.First().Value.uiText);
+                    }
                 }
-            }
-            else
-            {
-                backgroundJobs.First().Value.active = true;
-                updateTextDelegate(backgroundJobs.First().Value.uiText);
             }
         }
     }
