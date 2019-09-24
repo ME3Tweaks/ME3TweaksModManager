@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManager.GameDirectories;
+using MassEffectModManager.gamefileformats.sfar;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
 using Serilog;
@@ -220,9 +221,11 @@ namespace MassEffectModManager.modmanager.usercontrols
                     }
                 }
 
+                //Todo: Use ASI manifest to identify malformed names
+
                 if (!higherVersionInstalled)
                 {
-                    string asiPath = "MassEffectModManager.modmanager.asi." + asiFname + ".asi";
+                    string asiPath = "MassEffectModManagerCore.modmanager.asi." + asiFname + ".asi";
                     Utilities.ExtractInternalFile(asiPath, Path.Combine(asiTargetDirectory, asiFname + ".asi"), true);
                 }
             }
@@ -239,7 +242,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         {
 
             int numfiles = job.FilesToInstall.Count;
-            /*
+
 
             //Todo: Check all newfiles exist
             //foreach (string str in diskFiles)
@@ -252,7 +255,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             //}
 
             //Open SFAR
-            SFAR_Inject dlc = new SFAR_Inject(sfarPath);
+            DLCPackage dlc = new DLCPackage(sfarPath);
 
             //precheck
             bool allfilesfound = true;
@@ -323,7 +326,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             //        Console.WriteLine("No files were found in the archive that matched the input list for --files.");
             //    }
             //}
-            */
+
             return true;
         }
 

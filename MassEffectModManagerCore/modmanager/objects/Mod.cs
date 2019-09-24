@@ -151,10 +151,11 @@ namespace MassEffectModManager.modmanager
             #endregion Combine
 
             #region Append slash if last path contains
-
-            if (slash.Contains(paths.Last().Last()))
-                pathSb.Append(separator);
-
+            if (paths.Count() > 2)
+            {
+                if (slash.Contains(paths.Last().Last()))
+                    pathSb.Append(separator);
+            }
             #endregion Append slash if last path contains
 
             return pathSb.ToString();

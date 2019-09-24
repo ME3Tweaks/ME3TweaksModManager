@@ -68,7 +68,8 @@ namespace MassEffectModManager.modmanager.objects
             properties.TryGetValue("AltFile", out AltFile);
             properties.TryGetValue("SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
 
-            if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OPERATION_SUBSTITUTE)
+            //workaround for 4.5
+            if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OPERATION_SUBSTITUTE && AltFile == null && SubstituteFile != null)
             {
                 AltFile = SubstituteFile;
             }

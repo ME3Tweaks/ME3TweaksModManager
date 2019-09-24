@@ -20,6 +20,7 @@ using MassEffectModManager;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using System.Runtime.InteropServices;
 
 namespace MassEffectModManagerCore
 {
@@ -35,6 +36,8 @@ namespace MassEffectModManagerCore
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
         internal static readonly double HighestSupportedModDesc = 6.0;
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern bool SetDllDirectory(string lpPathName);
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -45,6 +48,12 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
+            var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
+            Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
+            Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
+            Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false);
+            SetDllDirectory(Utilities.GetDllDirectory());
+
             Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location));
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -176,7 +185,7 @@ namespace MassEffectModManagerCore
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
         internal static Dictionary<string, Dictionary<string, Dictionary<string, string>>> ThirdPartyIdentificationService;
-        internal static string BugReportURL;
+        internal static string BugReportURL = "https://github.com/ME3Tweaks/MassEffectModManager";
         internal static Dictionary<long, List<Dictionary<string, string>>> ThirdPartyImportingService;
 
         public static string AppVersionHR

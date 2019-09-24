@@ -57,6 +57,11 @@ namespace MassEffectModManager
             return null;
         }
 
+        internal static string GetDllDirectory()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "dlls")).FullName;
+        }
+
         internal static void EnsureDirectories()
         {
             Directory.CreateDirectory(GetME3ModsDirectory());
@@ -206,21 +211,21 @@ namespace MassEffectModManager
             if (target.Game == Mod.MEGame.ME1)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
             }
             else if (target.Game == Mod.MEGame.ME2)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
 
             }
             else if (target.Game == Mod.MEGame.ME3)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
             }
             else
             {

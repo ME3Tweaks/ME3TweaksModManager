@@ -17,21 +17,54 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="costura64\lzo2wrapper.dll" />
-    <None Remove="costura64\sevenzipwrapper.dll" />
-    <None Remove="costura64\zlibwrapper.dll" />
+    <None Remove="bundleddlls\lzo2wrapper.dll" />
+    <None Remove="bundleddlls\sevenzipwrapper.dll" />
+    <None Remove="bundleddlls\zlibwrapper.dll" />
     <None Remove="images\gameicons\ME1_48.ico" />
     <None Remove="images\gameicons\ME2_48.ico" />
     <None Remove="images\gameicons\ME3_48.ico" />
     <None Remove="images\gameicons\Unknown_48.ico" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\origin.png" />
+    <None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.asi" />
+    <None Remove="modmanager\asi\ME3Logger_truncating-v1.asi" />
+    <None Remove="modmanager\binkw32\me1\binkw23.dll" />
+    <None Remove="modmanager\binkw32\me1\binkw32.dll" />
+    <None Remove="modmanager\binkw32\me2\binkw23.dll" />
+    <None Remove="modmanager\binkw32\me2\binkw32.dll" />
+    <None Remove="modmanager\binkw32\me3\binkw23.dll" />
+    <None Remove="modmanager\binkw32\me3\binkw32.dll" />
+    <None Remove="modmanager\starterkit\BlankTlkFile.upk" />
+    <None Remove="modmanager\starterkit\Default.sfar" />
+    <None Remove="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
+    <None Remove="modmanager\starterkit\StarterKitTLK.xml" />
+    <None Remove="staticfiles\objectinfos\ME1ObjectInfo.json" />
+    <None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
+    <None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="costura64\lzo2wrapper.dll" />
-    <EmbeddedResource Include="costura64\sevenzipwrapper.dll" />
-    <EmbeddedResource Include="costura64\zlibwrapper.dll" />
+    <Content Include="modmanager\binkw32\me2\binkw32.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="bundleddlls\lzo2wrapper.dll" />
+    <EmbeddedResource Include="bundleddlls\sevenzipwrapper.dll" />
+    <EmbeddedResource Include="bundleddlls\zlibwrapper.dll" />
+    <EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.asi" />
+    <EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.asi" />
+    <EmbeddedResource Include="modmanager\binkw32\me1\binkw23.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me1\binkw32.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me2\binkw23.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me3\binkw23.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me3\binkw32.dll" />
+    <EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.upk" />
+    <EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
+    <EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
+    <EmbeddedResource Include="modmanager\starterkit\StarterKitTLK.xml" />
+    <EmbeddedResource Include="staticfiles\objectinfos\ME1ObjectInfo.json" />
+    <EmbeddedResource Include="staticfiles\objectinfos\ME2ObjectInfo.json" />
+    <EmbeddedResource Include="staticfiles\objectinfos\ME3ObjectInfo.json" />
   </ItemGroup>
 
   <ItemGroup>

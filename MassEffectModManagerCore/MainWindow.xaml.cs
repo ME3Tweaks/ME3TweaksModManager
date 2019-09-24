@@ -557,7 +557,7 @@ namespace MassEffectModManager
 
         private void OpenModsDirectory_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Utilities.GetModsDirectory());
+            Process.Start("explorer", Utilities.GetModsDirectory());
         }
 
         private const int STARTUP_FAIL_CRITICAL_FILES_MISSING = 1;

@@ -222,7 +222,7 @@ namespace MassEffectModManager.modmanager.windows
                     //TLK
                     var dialogdir = Directory.CreateDirectory(Path.Combine(cookedDir, "Packages", "Dialog")).FullName;
                     var tlkGlobalFile = Path.Combine(dialogdir, $"{dlcFolderName}_GlobalTlk.upk");
-                    Utilities.ExtractInternalFile("MassEffectModManager.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
                     var tlkFile = MEPackageHandler.OpenMEPackage(tlkGlobalFile);
                     var tlk1 = new TalkFileME1(tlkFile.getUExport(1));
                     var tlk2 = new TalkFileME1(tlkFile.getUExport(2));
@@ -258,7 +258,7 @@ namespace MassEffectModManager.modmanager.windows
                     if (skOption.ModGame == Mod.MEGame.ME3)
                     {
                         //Extract Default.Sfar
-                        Utilities.ExtractInternalFile("MassEffectModManager.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, "Default.sfar"), true);
+                        Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, "Default.sfar"), true);
                     }
                     else
                     {
