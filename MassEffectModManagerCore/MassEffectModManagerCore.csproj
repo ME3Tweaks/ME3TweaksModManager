@@ -13,15 +13,25 @@
     <Product>Mass Effect Mod Manager</Product>
     <Description>Mod Manager for the original Mass Effect Trilogy</Description>
     <Company>ME3Tweaks</Company>
+    <StartupObject>MassEffectModManagerCore.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="costura64\lzo2wrapper.dll" />
+    <None Remove="costura64\sevenzipwrapper.dll" />
+    <None Remove="costura64\zlibwrapper.dll" />
     <None Remove="images\gameicons\ME1_48.ico" />
     <None Remove="images\gameicons\ME2_48.ico" />
     <None Remove="images\gameicons\ME3_48.ico" />
     <None Remove="images\gameicons\Unknown_48.ico" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\origin.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="costura64\lzo2wrapper.dll" />
+    <EmbeddedResource Include="costura64\sevenzipwrapper.dll" />
+    <EmbeddedResource Include="costura64\zlibwrapper.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +45,9 @@
     </PackageReference>
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="ini-parser" Version="2.5.2" />
+    <PackageReference Include="Microsoft.AppCenter" Version="2.3.0-preview" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="2.3.0-preview" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="2.3.0-preview" />
     <PackageReference Include="MiqM.Xceed.Wpf.Toolkit.NETCore" Version="3.4.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Octokit" Version="0.34.0" />

@@ -17,6 +17,9 @@ using System.Windows.Controls;
 using System.Diagnostics;
 using Serilog.Core;
 using MassEffectModManager;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore
 {
@@ -32,6 +35,13 @@ namespace MassEffectModManagerCore
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
         internal static readonly double HighestSupportedModDesc = 6.0;
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            AppCenter.Start("ba2de0be-e01d-4001-bcfc-e28718574562",
+                               typeof(Analytics), typeof(Crashes));
+        }
 
         public App() : base()
         {

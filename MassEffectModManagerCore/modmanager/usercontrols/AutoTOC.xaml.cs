@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManager.GameDirectories;
+using MassEffectModManager.gamefileformats.sfar;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
 using ME3Explorer.Unreal;
@@ -94,7 +95,7 @@ namespace MassEffectModManager.modmanager.usercontrols
 
         private bool RunGameWideAutoTOC()
         {
-          /*  Debug.WriteLine("FULL AUTOTOC MODE - Updating Unpacked and SFAR TOCs");
+          Debug.WriteLine("FULL AUTOTOC MODE - Updating Unpacked and SFAR TOCs");
 
             //get toc target folders, ensuring we clean up the inputs a bit.
             string baseDir = Path.GetFullPath(Path.Combine(gameWideModeTarget.TargetPath, "BIOGame"));
@@ -180,7 +181,7 @@ namespace MassEffectModManager.modmanager.usercontrols
 
                 done++;
                 Percent = (int)Math.Floor(done * 100.0 / tocTargets.Count);
-            }*/
+            }
             return true;
         }
 
