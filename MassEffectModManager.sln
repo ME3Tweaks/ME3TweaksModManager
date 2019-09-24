@@ -3,20 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassEffectModManager", "MassEffectModManager\MassEffectModManager.csproj", "{9D002400-85DD-41A8-BE80-764EC9E3BA2C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9F364D6B-5046-4186-B684-968B52AFCB81} = {9F364D6B-5046-4186-B684-968B52AFCB81}
-		{B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5} = {B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5}
-		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A} = {047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbed.IO", "Gibbed.IO\Gibbed.IO.csproj", "{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gammtek.Conduit.Core", "Gammtek.Conduit.Core\Gammtek.Conduit.Core.csproj", "{9F364D6B-5046-4186-B684-968B52AFCB81}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZip", "SevenZip\SevenZip.csproj", "{B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassEffectModManagerCore", "MassEffectModManagerCore\MassEffectModManagerCore.csproj", "{728B680F-349C-4CC8-9344-600EF0BC47C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassEffectModManagerCore", "MassEffectModManagerCore\MassEffectModManagerCore.csproj", "{728B680F-349C-4CC8-9344-600EF0BC47C6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9F364D6B-5046-4186-B684-968B52AFCB81} = {9F364D6B-5046-4186-B684-968B52AFCB81}
 		{B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5} = {B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5}
@@ -29,10 +22,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9D002400-85DD-41A8-BE80-764EC9E3BA2C}.Debug|x64.ActiveCfg = Debug|x64
-		{9D002400-85DD-41A8-BE80-764EC9E3BA2C}.Debug|x64.Build.0 = Debug|x64
-		{9D002400-85DD-41A8-BE80-764EC9E3BA2C}.Release|x64.ActiveCfg = Release|x64
-		{9D002400-85DD-41A8-BE80-764EC9E3BA2C}.Release|x64.Build.0 = Release|x64
 		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}.Debug|x64.ActiveCfg = Debug|x64
 		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}.Debug|x64.Build.0 = Debug|x64
 		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}.Release|x64.ActiveCfg = Release|x64
