@@ -62,7 +62,7 @@ namespace MassEffectModManager
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "dlls")).FullName;
         }
 
-        internal static void EnsureDirectories()
+        internal static void EnsureModDirectories()
         {
             Directory.CreateDirectory(GetME3ModsDirectory());
             Directory.CreateDirectory(GetME2ModsDirectory());

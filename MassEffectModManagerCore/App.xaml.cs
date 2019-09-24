@@ -21,6 +21,7 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using System.Runtime.InteropServices;
+using MassEffectModManagerCore.modmanager;
 
 namespace MassEffectModManagerCore
 {
@@ -170,9 +171,11 @@ namespace MassEffectModManagerCore
                new FrameworkPropertyMetadata(true));
 
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
+                Log.Information("Loading settings");
+                Settings.Load();
                 Log.Information("Ensuring mod directories");
 
-                Utilities.EnsureDirectories();
+                Utilities.EnsureModDirectories();
 
                 Log.Information("Mod Manager pre-UI startup has completed");
             }

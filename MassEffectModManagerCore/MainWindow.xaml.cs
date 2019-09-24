@@ -31,6 +31,7 @@ using MassEffectModManagerCore.modmanager;
 //using ME3Explorer.Packages;
 //using ME3Explorer.Unreal;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
 
@@ -51,7 +52,7 @@ namespace MassEffectModManager
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = "Select a mod on the left to get started";
         private readonly string[] SupportedDroppableExtensions = { ".rar", ".zip", ".7z" };
-
+        private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
         public string StartGameButtonText { get; set; } = "Start Game";
@@ -156,6 +157,7 @@ namespace MassEffectModManager
         public ICommand AddTargetCommand { get; set; }
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
+        public ICommand SettingsChangeCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -164,6 +166,38 @@ namespace MassEffectModManager
             AddTargetCommand = new GenericCommand(AddTarget, () => ModsLoaded);
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
+            SettingsChangeCommand = new RelayCommand(ChangeSetting, (obj) => StartupCompleted);
+        }
+
+        private void ChangeSetting(object parameter)
+        {
+            if (parameter is string paramstr)
+            {
+                switch (paramstr)
+                {
+                    case "LogModStartup":
+                        Settings.LogModStartup = !LogModStartup_MenuItem.IsChecked; //flip
+                        break;
+                    case "LogMixinStartup":
+                        Settings.LogModStartup = !LogMixinStartup_MenuItem.IsChecked; //flip
+                        break;
+                    case "ChangeModLibDir":
+                        CommonOpenFileDialog m = new CommonOpenFileDialog
+                        {
+                            IsFolderPicker = true,
+                            EnsurePathExists = true,
+                            Title = "Select mod library folder"
+                        };
+                        if (m.ShowDialog(this) == CommonFileDialogResult.Ok)
+                        {
+                            Settings.ModLibraryPath = m.FileName;
+                            Utilities.EnsureModDirectories();
+                            LoadMods();
+                        }
+                        break;
+                }
+                Settings.Save();
+            }
         }
 
         private bool CanToggleBinkw32(object obj)
@@ -421,7 +455,7 @@ namespace MassEffectModManager
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
-                    Log.Information("Current boot target for ME3: " + target);
+                    Log.Information("Current boot target for ME3: " + target.TargetPath);
                     InstallationTargets.Add(target);
                 }
                 else
@@ -436,7 +470,7 @@ namespace MassEffectModManager
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
-                    Log.Information("Current boot target for ME2: " + target);
+                    Log.Information("Current boot target for ME2: " + target.TargetPath);
                     InstallationTargets.Add(target);
                 }
                 else
@@ -450,7 +484,7 @@ namespace MassEffectModManager
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
-                    Log.Information("Current boot target for ME1: " + target);
+                    Log.Information("Current boot target for ME1: " + target.TargetPath);
                     InstallationTargets.Add(target);
                 }
                 else
@@ -661,7 +695,7 @@ namespace MassEffectModManager
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadObjectInfo", "Loading package information database", "Loaded package information database");
-                
+
                 //TODO: PORT UNREAL OBJECT INFO
                 //ME3UnrealObjectInfo.loadfromJSON();
                 //ME2UnrealObjectInfo.loadfromJSON();
@@ -708,6 +742,8 @@ namespace MassEffectModManager
                         ContentCheckInProgress = false;
                     }
                 }
+                StartupCompleted = true;
+                CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
             };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();

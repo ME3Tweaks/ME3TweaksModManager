@@ -8,6 +8,7 @@
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
         mc:Ignorable="d"
         Closing="ModManagerWindow_Closing"
         ContentRendered="ModManager_ContentRendered"
@@ -64,7 +65,13 @@
                 <MenuItem Header="Actions" Padding="4">
                     <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
                     <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click"/>
-                    <MenuItem Header="Options" Click="OpenOptions_Clicked"/>
+                    <MenuItem Header="Options">
+                        <MenuItem Header="Mod Manager" Style="{StaticResource MenuItemHeaderStyle}"/>
+                        <MenuItem Name="SetModLibraryPath_MenuItem" Header="Set mod library path" StaysOpenOnClick="True" Command="{Binding SettingsChangeCommand}" CommandParameter="ChangeModLibDir" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}"/>
+                        <MenuItem Header="Logging" Style="{StaticResource MenuItemHeaderStyle}"/>
+                        <MenuItem Name="LogModStartup_MenuItem" Header="Log Mod Startup" StaysOpenOnClick="True" Command="{Binding SettingsChangeCommand}" CommandParameter="LogModStartup" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup), Mode=OneWay}"/>
+                        <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" Command="{Binding SettingsChangeCommand}" CommandParameter="LogMixinStartup" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup), Mode=OneWay}"/>
+                    </MenuItem>
                     <Separator/>
                     <MenuItem Header="Check for content updates" Command="{Binding CheckForContentUpdatesCommand}"/>
                     <MenuItem Header="Reloads Mods" Command="{Binding ReloadModsCommand}"/>
@@ -72,7 +79,7 @@
                 </MenuItem>
                 <MenuItem Header="Mod Management" Padding="4">
                     <MenuItem Header="Import Mod">
-                        <MenuItem Header="Import mod from .7z/.rar/.zip"/>
+                        <MenuItem Header="Import mod from .7z/.rar/.zip" Command="{Binding ImportArchiveCommand}"/>
                         <MenuItem Header="Import already installed Custom DLC mod"/>
                     </MenuItem>
                     <MenuItem Header="Download ModMaker mod"/>
