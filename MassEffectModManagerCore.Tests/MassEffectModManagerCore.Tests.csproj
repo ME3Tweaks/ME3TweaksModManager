@@ -21,4 +21,10 @@
     <Folder Include="testdata\fakegamedata\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="testdata**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
