@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /MassEffectModManagerCore/modmanager/APIKeys.cs
+/MassEffectModManagerCore/modmanager/APIKeysPrivate.cs

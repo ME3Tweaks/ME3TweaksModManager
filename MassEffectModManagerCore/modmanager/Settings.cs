@@ -111,7 +111,7 @@ namespace MassEffectModManagerCore.modmanager
                     return DateTime.FromBinary(dateLong);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
             return defaultValue;

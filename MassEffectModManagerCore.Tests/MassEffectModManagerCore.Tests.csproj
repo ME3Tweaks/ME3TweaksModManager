@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -17,14 +17,7 @@
     <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="testdata\fakegamedata\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="testdata**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /f /e /y &quot;$(ProjectDir)testdata&quot; &quot;$(ProjectDir)$(OutDir)testdata\\&quot;&#xD;&#xA;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)fr-CA&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)zh-CN&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)es&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)de&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)ru-RU&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)fr&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)hu&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)it&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)pt-BR&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)ro&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)ru&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)sv&quot;&#xD;&#xA;rmdir /s /q &quot;$(ProjectDir)$(OutDir)zh-Hans&quot;&#xD;&#xA;del /s &quot;$(TargetDir)*.xml&quot;&#xD;&#xA;" />
+  </Target>
 </Project>

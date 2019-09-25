@@ -43,12 +43,15 @@ namespace MassEffectModManagerCore
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            //If you are unable to build project because APIKeys does not exist,
-            //Comment out following lines. These are stored in a class that
-            //is distrubted in the source code. You will have to provide
-            //your own API key or disable using the API keys.
-            AppCenter.Start(APIKeys.AppCenter,
-                               typeof(Analytics), typeof(Crashes));
+            //API keys are not stored in the git repository for Mod Manager.
+            //You will need to provide your own keys for use by defining public properties
+            //in a partial APIKeys class.
+            var props = typeof(APIKeys).GetProperties();
+            if (APIKeys.HasAppCenterKey)
+            {
+                AppCenter.Start(APIKeys.AppCenterKey,
+                                   typeof(Analytics), typeof(Crashes));
+            }
         }
 
         public App() : base()
