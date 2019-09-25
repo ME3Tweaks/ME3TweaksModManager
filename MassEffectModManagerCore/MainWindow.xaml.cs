@@ -157,6 +157,8 @@ namespace MassEffectModManager
         public ICommand AddTargetCommand { get; set; }
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
+        public ICommand StartGameCommand { get; set; }
+
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -165,6 +167,19 @@ namespace MassEffectModManager
             AddTargetCommand = new GenericCommand(AddTarget, () => ModsLoaded);
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
+            StartGameCommand = new GenericCommand(StartGame, CanStartGame);
+        }
+
+        private void StartGame()
+        {
+            var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
+            Process.Start(exePath);
+        }
+
+        private bool CanStartGame()
+        {
+            //Todo: Check if this is origin game and if target will boot
+            return SelectedGameTarget != null && SelectedGameTarget.Selectable /*&& SelectedGameTarget.RegistryActive*/;
         }
 
         private bool CanToggleBinkw32(object obj)

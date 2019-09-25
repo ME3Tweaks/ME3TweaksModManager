@@ -38,6 +38,7 @@ namespace MassEffectModManager.GameDirectories
         // "C:\...\MyDocuments\BioWare\Mass Effect 2\" folder
         public static string BioWareDocPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"\BioWare\Mass Effect 2\");
         public static string GamerSettingsIniFile => BioWareDocPath + @"BIOGame\Config\GamerSettings.ini";
+        public static string ExecutablePath(string gameRoot) => Path.Combine(gameRoot, "Binaries", "MassEffect2.exe");
 
         static ME2Directory()
         {

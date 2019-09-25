@@ -56,6 +56,26 @@ namespace MassEffectModManager.GameDirectories
             }
         }
 
+        /// <summary>
+        /// Gets path to executable for the specified Game Target
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static string ExecutablePath(GameTarget game)
+        {
+            switch (game.Game)
+            {
+                case MEGame.ME1:
+                    return ME1Directory.ExecutablePath(game.TargetPath);
+                case MEGame.ME2:
+                    return ME2Directory.ExecutablePath(game.TargetPath);
+                case MEGame.ME3:
+                    return ME3Directory.ExecutablePath(game.TargetPath);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(game), game, null);
+            }
+        }
+
         public static string DLCPath(MEGame game)
         {
             switch (game)

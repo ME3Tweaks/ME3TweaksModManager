@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Gammtek.Conduit.Extensions.Collections.Generic;
 using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.gamefileformats;
 using ME3Explorer;
 using ME3Explorer.Unreal;
 
@@ -41,7 +42,7 @@ namespace MassEffectModManager.gamefileformats.sfar
                 if (Magic != 0x53464152 ||
                     Version != 0x00010000 ||
                     MaxBlockSize != 0x00010000)
-                    throw new Exception("Not supported DLC file!");
+                    throw new Exception("This DLC archive format is not supported.");
             }
         }
         public struct FileEntryStruct
@@ -544,7 +545,7 @@ namespace MassEffectModManager.gamefileformats.sfar
 
         public void AddFileQuick(string onDiskNewFile, string inArchivePath)
         {
-            FileStream fs = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            FileStream sfarStream = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             byte[] newFileBytes = File.ReadAllBytes(onDiskNewFile);
             //Create Entry
             List<FileEntryStruct> tmp = new List<FileEntryStruct>(Files);
@@ -564,32 +565,32 @@ namespace MassEffectModManager.gamefileformats.sfar
             int f = findTOCIndex();
             if (f == -1)
                 return;
-            MemoryStream m = DecompressEntry(f, fs);
+            MemoryStream tocMemory = DecompressEntry(f, sfarStream);
             //
             //No idea what most of the rest of this stuff is so i probably shouldn't change it
             //Update TOC
-            m.WriteStringASCII(inArchivePath);
-            m.WriteByte(0xD);
-            m.WriteByte(0xA);
+            tocMemory.WriteStringASCII(inArchivePath);
+            tocMemory.WriteByte(0xD);
+            tocMemory.WriteByte(0xA);
 
 
             //
             //Append new FileTable
             int count = (int)Header.FileCount + 1;
-            long oldsize = fs.Length;
+            long oldsize = sfarStream.Length;
             long offset = oldsize;
             Debug.WriteLine("File End Offset : 0x" + offset.ToString("X10"));
-            fs.Seek(oldsize, 0);
+            sfarStream.Seek(oldsize, 0);
             Header.EntryOffset = (uint)offset;
             for (int i = 0; i < count; i++)
             {
                 e = Files[i];
-                fs.Write(e.Hash, 0, 16);
-                fs.Write(BitConverter.GetBytes(e.BlockSizeIndex), 0, 4);
-                fs.Write(BitConverter.GetBytes(e.UncompressedSize), 0, 4);
-                fs.WriteByte(e.UncompressedSizeAdder);
-                fs.Write(BitConverter.GetBytes(e.DataOffset), 0, 4);
-                fs.WriteByte(e.DataOffsetAdder);
+                sfarStream.Write(e.Hash, 0, 16);
+                sfarStream.Write(BitConverter.GetBytes(e.BlockSizeIndex), 0, 4);
+                sfarStream.Write(BitConverter.GetBytes(e.UncompressedSize), 0, 4);
+                sfarStream.WriteByte(e.UncompressedSizeAdder);
+                sfarStream.Write(BitConverter.GetBytes(e.DataOffset), 0, 4);
+                sfarStream.WriteByte(e.DataOffsetAdder);
             }
             offset += count * 0x1E;
             Debug.WriteLine("Table End Offset : 0x" + offset.ToString("X10"));
@@ -601,67 +602,67 @@ namespace MassEffectModManager.gamefileformats.sfar
                 e = Files[i];
                 if (e.BlockSizeIndex != 0xFFFFFFFF && i != f)
                     foreach (ushort u in e.BlockSizes)
-                        fs.Write(BitConverter.GetBytes(u), 0, 2);
+                        sfarStream.Write(BitConverter.GetBytes(u), 0, 2);
             }
-            offset = fs.Length;
+            offset = sfarStream.Length;
             Debug.WriteLine("Block Table End Offset : 0x" + offset.ToString("X10"));
             long dataoffset = offset;
-            fs.Write(newFileBytes, 0, newFileBytes.Length);
+            sfarStream.Write(newFileBytes, 0, newFileBytes.Length);
             offset += newFileBytes.Length;
             Debug.WriteLine("New Data End Offset : 0x" + offset.ToString("X10"));
             //
             //Append TOC
             long tocoffset = offset;
-            fs.Write(m.ToArray(), 0, (int)m.Length);
-            offset = fs.Length;
+            sfarStream.Write(tocMemory.ToArray(), 0, (int)tocMemory.Length);
+            offset = sfarStream.Length;
             Debug.WriteLine("New TOC Data End Offset : 0x" + offset.ToString("X10"));
             //update filetable
-            fs.Seek(oldsize, 0);
+            sfarStream.Seek(oldsize, 0);
             uint blocksizeindex = 0;
             for (int i = 0; i < count; i++)
             {
                 e = Files[i];
-                fs.Write(e.Hash, 0, 16);
+                sfarStream.Write(e.Hash, 0, 16);
                 if (e.BlockSizeIndex == 0xFFFFFFFF || i == f)
-                    fs.Write(BitConverter.GetBytes(-1), 0, 4);
+                    sfarStream.Write(BitConverter.GetBytes(-1), 0, 4);
                 else
                 {
-                    fs.Write(BitConverter.GetBytes(blocksizeindex), 0, 4);
+                    sfarStream.Write(BitConverter.GetBytes(blocksizeindex), 0, 4);
                     e.BlockSizeIndex = blocksizeindex;
                     blocksizeindex += (uint)e.BlockSizes.Length;
                     Files[i] = e;
                 }
                 if (i == f)
                 {
-                    fs.Write(BitConverter.GetBytes(m.Length), 0, 4);
-                    fs.WriteByte(0);
-                    fs.Write(BitConverter.GetBytes(tocoffset), 0, 4);
+                    sfarStream.Write(BitConverter.GetBytes(tocMemory.Length), 0, 4);
+                    sfarStream.WriteByte(0);
+                    sfarStream.Write(BitConverter.GetBytes(tocoffset), 0, 4);
                     byte b = (byte)((tocoffset & 0xFF00000000) >> 32);
-                    fs.WriteByte(b);
+                    sfarStream.WriteByte(b);
                 }
                 else if (i == count - 1)
                 {
-                    fs.Write(BitConverter.GetBytes(e.UncompressedSize), 0, 4);
-                    fs.WriteByte(0);
-                    fs.Write(BitConverter.GetBytes(dataoffset), 0, 4);
+                    sfarStream.Write(BitConverter.GetBytes(e.UncompressedSize), 0, 4);
+                    sfarStream.WriteByte(0);
+                    sfarStream.Write(BitConverter.GetBytes(dataoffset), 0, 4);
                     byte b = (byte)((dataoffset & 0xFF00000000) >> 32);
-                    fs.WriteByte(b);
+                    sfarStream.WriteByte(b);
                 }
                 else
                 {
-                    fs.Write(BitConverter.GetBytes(e.UncompressedSize), 0, 4);
-                    fs.WriteByte(e.UncompressedSizeAdder);
-                    fs.Write(BitConverter.GetBytes(e.DataOffset), 0, 4);
-                    fs.WriteByte(e.DataOffsetAdder);
+                    sfarStream.Write(BitConverter.GetBytes(e.UncompressedSize), 0, 4);
+                    sfarStream.WriteByte(e.UncompressedSizeAdder);
+                    sfarStream.Write(BitConverter.GetBytes(e.DataOffset), 0, 4);
+                    sfarStream.WriteByte(e.DataOffsetAdder);
                 }
             }
             //Update Header
-            fs.Seek(0xC, 0);
-            fs.Write(BitConverter.GetBytes(Header.EntryOffset), 0, 4);
-            fs.Write(BitConverter.GetBytes(count), 0, 4);
-            fs.Write(BitConverter.GetBytes(Header.BlockTableOffset), 0, 4);
+            sfarStream.Seek(0xC, 0);
+            sfarStream.Write(BitConverter.GetBytes(Header.EntryOffset), 0, 4);
+            sfarStream.Write(BitConverter.GetBytes(count), 0, 4);
+            sfarStream.Write(BitConverter.GetBytes(Header.BlockTableOffset), 0, 4);
             //
-            fs.Close();
+            sfarStream.Close();
         }
 
 
@@ -724,30 +725,75 @@ namespace MassEffectModManager.gamefileformats.sfar
                 return DLCTOCUpdateResult.RESULT_ERROR_NO_TOC;
             }
 
-            var tocMemoryStream = DecompressEntry(archiveFileIndex);
-
-            var entries = new List<(string, int)>();
+            //Collect list of information from the SFAR Header of files and their sizes
+            var entries = new List<(string filepath, int size)>();
             foreach (var file in Files)
             {
                 if (file.FileName != UNKNOWN_FILENAME)
                 {
-                    entries.Add((file.FileName, (int) file.UncompressedSize));
-                }
-                else
-                {
-                    Debug.WriteLine("Unknown file: "+file.FileName);
+                    string consoleDirFilename = file.FileName.Substring(file.FileName.IndexOf("DLC_", StringComparison.InvariantCultureIgnoreCase));
+                    consoleDirFilename = consoleDirFilename.Substring(consoleDirFilename.IndexOf('/') + 1);
+                    entries.Add((consoleDirFilename.Replace('/', '\\'), (int)file.UncompressedSize));
                 }
             }
 
-            MemoryStream newTocStream = TOCCreator.CreateTOCForEntries(entries);
-            byte[] newmem = newTocStream.ToArray();
-            if (tocMemoryStream.ToArray().SequenceEqual(newTocStream.ToArray()))
+            //Substring out the dlc name
+
+
+            //Read the current TOC and see if an update is necessary.
+            bool tocNeedsUpdating = false;
+
+            var tocMemoryStream = DecompressEntry(archiveFileIndex);
+            TOCBinFile toc = new TOCBinFile(tocMemoryStream);
+
+            int actualTocEntries = toc.Entries.Count;
+            actualTocEntries -= toc.Entries.Count(x => x.name.EndsWith("PCConsoleTOC.txt", StringComparison.InvariantCultureIgnoreCase));
+            actualTocEntries -= toc.Entries.Count(x => x.name.EndsWith("GlobalPersistentCookerData.upk", StringComparison.InvariantCultureIgnoreCase));
+            if (actualTocEntries != entries.Count)
             {
-                //no update needed
-                return DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY;
+                tocNeedsUpdating = true;
+            }
+            else
+            {
+                //Check sizes to see if all of ours match.
+                foreach (var entry in toc.Entries)
+                {
+                    if (entry.name.EndsWith("PCConsoleTOC.txt", StringComparison.InvariantCultureIgnoreCase) || entry.name.EndsWith("GlobalPersistentCookerData.upk", StringComparison.InvariantCultureIgnoreCase)) continue; //These files don't actually exist in SFARs
+                    var matchingNewEntry = entries.FirstOrDefault(x => x.filepath.Equals(entry.name, StringComparison.InvariantCultureIgnoreCase));
+                    if (matchingNewEntry.filepath == null)
+                    {
+                        //same number of files but we could not find it in the list. A delete and add might have caused this.
+                        tocNeedsUpdating = true;
+                        break;
+                    }
+                    if (matchingNewEntry.size != entry.size)
+                    {
+                        //size is different.
+                        tocNeedsUpdating = true;
+                        break;
+                    }
+                }
             }
 
-            ReplaceEntry(newmem,archiveFileIndex);
+
+            if (tocNeedsUpdating)
+            {
+                MemoryStream newTocStream = TOCCreator.CreateTOCForEntries(entries);
+                byte[] newmem = newTocStream.ToArray();
+                //if (tocMemoryStream.ToArray().SequenceEqual(newTocStream.ToArray()))
+                //{
+                //    //no update needed
+                //    return DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY;
+                //}
+                ReplaceEntry(newmem, archiveFileIndex);
+
+            }
+            else
+            {
+                return DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY; // no update needed
+            }
+
+
 
             //int IndexTOC = archiveFileIndex;
             //byte[] originalTOCBinary = tocMemoryStream.ToArray();

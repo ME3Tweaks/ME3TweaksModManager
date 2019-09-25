@@ -40,33 +40,36 @@ namespace MassEffectModManager.GameDirectories
 
         static ME1Directory()
         {
-         //   if (!string.IsNullOrEmpty(Properties.Settings.Default.ME1Directory))
-         //   {
-         //       gamePath = Properties.Settings.Default.ME1Directory;
-         //   }
-         //   else
-	        //{
-                string hkey32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
-                string hkey64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\";
-                string subkey = @"BioWare\Mass Effect";
+            //   if (!string.IsNullOrEmpty(Properties.Settings.Default.ME1Directory))
+            //   {
+            //       gamePath = Properties.Settings.Default.ME1Directory;
+            //   }
+            //   else
+            //{
+            string hkey32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
+            string hkey64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\";
+            string subkey = @"BioWare\Mass Effect";
 
-                string keyName = hkey32 + subkey;
-                string test = (string)Microsoft.Win32.Registry.GetValue(keyName, "Path", null);
-                if (test != null)
-                {
-                    gamePath = test;
-                    return;
-                }
+            string keyName = hkey32 + subkey;
+            string test = (string)Microsoft.Win32.Registry.GetValue(keyName, "Path", null);
+            if (test != null)
+            {
+                gamePath = test;
+                return;
+            }
 
-                keyName = hkey64 + subkey;
-                gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Path", null);
-                if (gamePath != null)
-                {
-                    gamePath = gamePath + "\\";
-                    return;
-                } 
+            keyName = hkey64 + subkey;
+            gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Path", null);
+            if (gamePath != null)
+            {
+                gamePath = gamePath + "\\";
+                return;
+            }
             //}
         }
+
+        public static string ExecutablePath(string gameRoot) => Path.Combine(gameRoot, "Binaries", "MassEffect.exe");
+
 
         public static Dictionary<string, string> OfficialDLCNames = new Dictionary<string, string>
         {

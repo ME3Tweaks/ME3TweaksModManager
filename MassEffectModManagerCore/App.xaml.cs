@@ -43,7 +43,11 @@ namespace MassEffectModManagerCore
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            AppCenter.Start("ba2de0be-e01d-4001-bcfc-e28718574562",
+            //If you are unable to build project because APIKeys does not exist,
+            //Comment out following lines. These are stored in a class that
+            //is distrubted in the source code. You will have to provide
+            //your own API key or disable using the API keys.
+            AppCenter.Start(APIKeys.AppCenter,
                                typeof(Analytics), typeof(Crashes));
         }
 
