@@ -110,7 +110,7 @@ namespace MassEffectModManager.modmanager.helpers
                 if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')
                 {
                     //Debug.WriteLine(inputString);
-                    inputString = inputString.Substring(1, inputString.Length - 2);
+                    inputString = inputString.Substring(1, inputString.Length - 3);
                     //Debug.WriteLine(inputString);
                 }
             }
@@ -118,20 +118,29 @@ namespace MassEffectModManager.modmanager.helpers
             //Find matching parenthesis
             Stack<(char c, int pos)> parenthesisStack = new Stack<(char c, int pos)>();
             List<string> splits = new List<string>();
+            bool quoteOpen = false;
             for (int i = 0; i < inputString.Length; i++)
             {
+                //Debug.WriteLine(inputString[i]);
                 switch (inputString[i])
                 {
                     case '(':
                         parenthesisStack.Push((inputString[i], i));
                         break;
                     case ')':
+                        Debug.WriteLine($"Found ending ) at {i})");
                         var popped = parenthesisStack.Pop();
                         if (parenthesisStack.Count == 0)
                         {
                             //Matching brace found
-                            splits.Add(inputString.Substring(popped.pos, i + 1)); //This will include the ( )
+                            string splitval = inputString.Substring(popped.pos, i - popped.pos + 1);
+                            Debug.WriteLine(splitval);
+
+                            splits.Add(splitval); //This will include the ( )
                         }
+                        break;
+                    case '\"':
+                        quoteOpen = !quoteOpen;
                         break;
                     //todo: Ignore quoted items to avoid matching a ) on quotes
                     default:

@@ -62,11 +62,27 @@ namespace MassEffectModManager.modmanager.objects
             {
                 Debug.WriteLine(conditionalDlc);
             }
-            
+
             //Validation
+            if (string.IsNullOrWhiteSpace(AlternateDLCFolder))
+            {
+                Log.Error("Alternate DLC directory (ModAltDLC) not specified");
+                LoadFailedReason = $"Alternate DLC for AltDLC ({FriendlyName}) is specified, but source directory (ModAltDLC) was not specified.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(DestinationDLCFolder))
+            {
+                Log.Error("Destination DLC directory (ModDestDLC) not specified");
+                LoadFailedReason = $"Destination DLC for AltDLC ({FriendlyName}) is specified, but source directory (ModDestDLC) was not specified.";
+                return;
+            }
+
+            AlternateDLCFolder = AlternateDLCFolder.TrimStart('\\', '/').Replace('/', '\\');
 
             //Check ModAltDLC directory exists
-            if (!FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AlternateDLCFolder), modForValidating.Archive))
+            var localAltDlcDir = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AlternateDLCFolder);
+            if (!FilesystemInterposer.DirectoryExists(localAltDlcDir, modForValidating.Archive))
             {
                 Log.Error("Alternate DLC directory (ModAltDLC) does not exist: " + AlternateDLCFolder);
                 LoadFailedReason = $"Alternate DLC ({FriendlyName}) is specified, but source for alternate DLC directory does not exist: {AlternateDLCFolder}";

@@ -121,18 +121,18 @@ namespace SevenZip
 
         private static int GetUniqueID()
         {
-            lock(Identificators)
+            lock (Identificators)
             {
-                
-            int id;
-            var rnd = new Random(DateTime.Now.Millisecond);
-            do
-            {
-                id = rnd.Next(Int32.MaxValue);
-            }
-            while (Identificators.Contains(id));
-            Identificators.Add(id);
-            return id;
+
+                int id;
+                var rnd = new Random(DateTime.Now.Millisecond);
+                do
+                {
+                    id = rnd.Next(Int32.MaxValue);
+                }
+                while (Identificators.Contains(id));
+                Identificators.Add(id);
+                return id;
             }
         }
 
@@ -485,6 +485,11 @@ namespace SevenZip
         /// Gets or sets comment for the file.
         /// </summary>
         public string Comment { get; set; }
+
+        /// <summary>
+        /// Compression method for the file.
+        /// </summary>
+        public string Method { get; set; }
 
         /// <summary>
         /// Determines whether the specified System.Object is equal to the current ArchiveFileInfo.
