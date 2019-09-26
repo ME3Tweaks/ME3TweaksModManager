@@ -15,6 +15,12 @@ namespace MassEffectModManager.modmanager.helpers
             return null;
         }
 
+        public static List<string> GetSemicolonSplitList(string inputString)
+        {
+            inputString = inputString.Trim('(', ')');
+            return inputString.Split(';').ToList();
+        }
+
         public static Dictionary<string, string> GetCommaSplitValues(string inputString)
         {
             if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')

@@ -60,7 +60,30 @@ namespace MassEffectModManager.modmanager.objects
             properties.TryGetValue("ModDestDLC", out DestinationDLCFolder);
             if (properties.TryGetValue("ConditionalDLC", out string conditionalDlc))
             {
+                var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 Debug.WriteLine(conditionalDlc);
+                foreach (var dlc in conditionalList)
+                {
+                    if (modForValidating.Game == Mod.MEGame.ME3)
+                    {
+                        if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.HeadersToDLCNamesMap.TryGetValue(header, out var foldername))
+                        {
+                            ConditionalDLC.Add(foldername);
+                            continue;
+                        }
+                    }
+                    if (!dlc.StartsWith("DLC_"))
+                    {
+                        Log.Error("An item in Alternate DLC's ConditionalDLC doesn't start with DLC_");
+                        LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.";
+                        return;
+                    }
+                    else
+                    {
+                        ConditionalDLC.Add(dlc);
+                    }
+
+                }
             }
 
             //Validation
