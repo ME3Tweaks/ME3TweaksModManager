@@ -177,7 +177,16 @@ namespace MassEffectModManager.modmanager.usercontrols
                             }
                         }
 
-                        if (importingInfo.version == null && relayVersionResponse == "-1")
+                        if (importingInfo.version != null)
+                        {
+                            foreach (CompressedMod compressedMod in CompressedMods)
+                            {
+                                compressedMod.Mod.ModVersionString = importingInfo.version;
+                                Double.TryParse(importingInfo.version, out double parsedValue);
+                                compressedMod.Mod.ParsedModVersion = parsedValue;
+                            }
+                        }
+                        else if (relayVersionResponse == "-1")
                         {
                             //If no version information, check ME3Tweaks to see if it's been added recently
                             //see if server has information on version number
@@ -185,9 +194,9 @@ namespace MassEffectModManager.modmanager.usercontrols
                             Log.Information("Querying ME3Tweaks for additional information");
                             var modInfo = OnlineContent.QueryModRelay(md5, size);
                             //todo: make this work offline.
-                            if (modInfo.TryGetValue("version", out string value))
+                            if (modInfo != null && modInfo.TryGetValue("version", out string value))
                             {
-                                Log.Information("ME3Tweaks reports version number for this file is: "+value);
+                                Log.Information("ME3Tweaks reports version number for this file is: " + value);
                                 foreach (CompressedMod compressedMod in CompressedMods)
                                 {
                                     compressedMod.Mod.ModVersionString = value;
@@ -202,15 +211,14 @@ namespace MassEffectModManager.modmanager.usercontrols
                                 Log.Information("ME3Tweaks does not have additional version information for this file");
                             }
                         }
+                    } else
+                    {
+                        Log.Warning($"No importing information is available for file with hash {md5}");
                     }
-
-
-
-
                 }
                 else
                 {
-                    Log.Information("This archive does not appear to have any officially supported mods and does not contain any Default.sfar files, thus contains no mods.");
+                    Log.Information("This archive does not appear to have any officially supported mods and does not contain any dlc-required content files, thus contains no mods.");
                 }
             }
         }

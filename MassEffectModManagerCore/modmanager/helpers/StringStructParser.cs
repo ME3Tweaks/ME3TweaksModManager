@@ -109,9 +109,9 @@ namespace MassEffectModManager.modmanager.helpers
             {
                 if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')
                 {
-                    Debug.WriteLine(inputString);
+                    //Debug.WriteLine(inputString);
                     inputString = inputString.Substring(1, inputString.Length - 2);
-                    Debug.WriteLine(inputString);
+                    //Debug.WriteLine(inputString);
                 }
             }
 

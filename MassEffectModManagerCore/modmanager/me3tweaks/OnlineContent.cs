@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -86,11 +87,18 @@ namespace MassEffectModManager.modmanager.me3tweaks
         {
             //Todo: Finish implementing relay service
             string finalRelayURL = $"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
-            using (var wc = new System.Net.WebClient())
+            try
             {
-                string json = wc.DownloadStringAwareOfEncoding(finalRelayURL);
-                //todo: Implement response format serverside
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                using (var wc = new System.Net.WebClient())
+                {
+                    Debug.WriteLine(finalRelayURL);
+                    string json = wc.DownloadStringAwareOfEncoding(finalRelayURL);
+                    //todo: Implement response format serverside
+                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                }
+            } catch (Exception e)
+            {
+                Log.Error("Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
             }
             return null;
         }

@@ -482,8 +482,8 @@ namespace MassEffectModManager.modmanager
                             return;
                         }
 
-                        //TODO: Parse AltFiles
-                        string altfilesStr = (ModDescTargetVersion >= 4.5 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString]["altfiles"] : null;
+                        //Altfiles: Mod Manager 4.2
+                        string altfilesStr = (ModDescTargetVersion >= 4.2 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString]["altfiles"] : null;
                         if (!string.IsNullOrEmpty(altfilesStr))
                         {
                             var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
@@ -501,9 +501,7 @@ namespace MassEffectModManager.modmanager
                                     return;
                                 }
                             }
-                            Debug.WriteLine("hi");
                         }
-
 
                         CLog.Information($"Successfully made mod job for {headerAsString}", LogModStartup);
                         InstallationJobs.Add(headerJob);
@@ -580,6 +578,29 @@ namespace MassEffectModManager.modmanager
                     for (int i = 0; i < customDLCSourceSplit.Count; i++)
                     {
                         customDLCjob.CustomDLCFolderMapping[customDLCSourceSplit[i]] = customDLCDestSplit[i];
+                    }
+
+                    //Todo: Custom DLC AltFiles
+
+                    //AltDLC: Mod Manager 4.4
+                    string altdlcstr = (ModDescTargetVersion >= 4.4) ? iniData["CUSTOMDLC"]["altdlc"] : null;
+                    if (!string.IsNullOrEmpty(altdlcstr))
+                    {
+                        var splits = StringStructParser.GetParenthesisSplitValues(altdlcstr);
+                        foreach (var split in splits)
+                        {
+                            AlternateDLC af = new AlternateDLC(split, this);
+                            if (af.ValidAlternate)
+                            {
+                                customDLCjob.AlternateDLCs.Add(af);
+                            }
+                            else
+                            {
+                                //Error is logged in constructor of AlternateDLC
+                                LoadFailedReason = af.LoadFailedReason;
+                                return;
+                            }
+                        }
                     }
 
                     CLog.Information($"Successfully made mod job for CUSTOMDLC", LogModStartup);
