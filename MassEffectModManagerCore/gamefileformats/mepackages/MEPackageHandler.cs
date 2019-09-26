@@ -21,7 +21,6 @@ namespace ME3Explorer.Packages
                 MEConstructorDelegate = MEPackage.Initialize();
                 initialized = true;
             }
-            IMEPackage package;
             pathToFile = Path.GetFullPath(pathToFile); //STANDARDIZE INPUT
             ushort version;
             ushort licenseVersion;

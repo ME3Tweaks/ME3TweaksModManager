@@ -578,7 +578,7 @@ namespace ME3Explorer.Unreal
                                         ValueOffset = offset
                                     });
                                 }
-                                catch (Exception e)
+                                catch (Exception)
                                 {
                                     Debug.WriteLine("ERROR READING ARRAY PROP");
                                     return new ArrayProperty<StructProperty>(arrayOffset, props, name);
@@ -603,7 +603,7 @@ namespace ME3Explorer.Unreal
                                     });
 #if DEBUG
                                 }
-                                catch (Exception e)
+                                catch (Exception)
                                 {
                                     return new ArrayProperty<StructProperty>(arrayOffset, props, name);
                                 }

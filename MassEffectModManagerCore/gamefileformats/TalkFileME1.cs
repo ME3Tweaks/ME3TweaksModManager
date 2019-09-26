@@ -41,11 +41,6 @@ namespace MassEffectModManager.gamefileformats
         [DebuggerDisplay("TLKStringRef {StringID} {Data}")]
         public class TLKStringRef : INotifyPropertyChanged, IEquatable<TLKStringRef>
         {
-            private int _stringID;
-            private string _data;
-            private int _flags;
-            private int _index;
-
             public event PropertyChangedEventHandler PropertyChanged;
 
             public int StringID { get; set; }

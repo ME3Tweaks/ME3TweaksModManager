@@ -12,6 +12,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using SevenZip;
+using MassEffectModManager.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 
 namespace MassEffectModManager.modmanager.usercontrols
 {
@@ -127,6 +129,19 @@ namespace MassEffectModManager.modmanager.usercontrols
                 else
                 {
                     //Todo: Run unofficially supported scan
+                    var md5 = Utilities.CalculateMD5(filepath);
+                    long size = new FileInfo(filepath).Length;
+                    var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
+                    var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
+                    if (importingInfo != null)
+                    {
+                        if (importingInfo.version == null)
+                        {
+                            //see if server has information on version number
+                            ActionText = $"Getting additional information about file from ME3Tweaks";
+                            var modInfo = OnlineContent.QueryModRelay(md5);
+                        }
+                    }
                 }
             }
         }

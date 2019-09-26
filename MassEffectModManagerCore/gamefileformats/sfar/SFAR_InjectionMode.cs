@@ -493,7 +493,7 @@ namespace ModManagerCommandLine
                 ReBuild();
                 //DebugOutput.PrintLn("Done.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //DebugOutput.PrintLn("ERROR\n" + ex.Message);
             }
@@ -534,7 +534,7 @@ namespace ModManagerCommandLine
                 Files = l.ToArray();
                 ReBuild();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //DebugOutput.PrintLn("ERROR\n" + ex.Message);
             }

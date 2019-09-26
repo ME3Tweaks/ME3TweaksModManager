@@ -22,6 +22,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using System.Runtime.InteropServices;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 
 namespace MassEffectModManagerCore
 {
@@ -196,7 +197,7 @@ namespace MassEffectModManagerCore
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
         internal static Dictionary<string, Dictionary<string, Dictionary<string, string>>> ThirdPartyIdentificationService;
         internal static string BugReportURL = "https://github.com/ME3Tweaks/MassEffectModManager";
-        internal static Dictionary<long, List<Dictionary<string, string>>> ThirdPartyImportingService;
+        internal static Dictionary<long, List<ThirdPartyImportingInfo>> ThirdPartyImportingService;
 
         public static string AppVersionHR
         {

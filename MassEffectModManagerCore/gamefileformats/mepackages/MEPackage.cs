@@ -76,7 +76,6 @@ namespace ME3Explorer.Packages
         private int Gen0NameCount;
         private int Gen0NetworkedObjectCount;
         private int ImportExportGuidsOffset;
-        private int ChunkTableOffset;
         //private int ImportGuidsCount;
         //private int ExportGuidsCount;
         //private int ThumbnailTableOffset;

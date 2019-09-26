@@ -139,14 +139,19 @@ namespace MassEffectModManager
 
         internal static string Get7zDllPath()
         {
-            return Path.Combine(Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "libraries")).FullName, "7z.dll");
+            return Path.Combine(GetDllDirectory(), "7z.dll");
         }
 
         public static string GetME1ModsDirectory() => Path.Combine(GetModsDirectory(), "ME1");
 
         public static void OpenWebpage(string uri)
         {
-            Process.Start(uri);
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = uri,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
         }
 
         internal static string GetAppCrashHandledFile()

@@ -240,7 +240,6 @@ namespace MassEffectModManager.modmanager.usercontrols
             }
             return sfarSizeMap;
         }
-
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

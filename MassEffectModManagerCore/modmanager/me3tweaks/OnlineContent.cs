@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManagerCore;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -56,7 +57,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
             return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
         }
 
-        public static Dictionary<long, List<Dictionary<string, string>>> FetchThirdPartyImportingService(bool overrideThrottling = false)
+        public static Dictionary<long, List<ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
@@ -64,10 +65,10 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 {
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
                     File.WriteAllText(Utilities.GetThirdPartyImportingCachedFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<long, List<Dictionary<string, string>>>>(json);
+                    return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(json);
                 }
             }
-            return JsonConvert.DeserializeObject<Dictionary<long, List<Dictionary<string, string>>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
+            return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
         }
 
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/relayservice/queryrelay";
