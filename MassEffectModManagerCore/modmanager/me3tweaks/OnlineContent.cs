@@ -82,7 +82,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
             return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
         }
 
-        public static object QueryModRelay(string md5, long size)
+        public static Dictionary<string,string> QueryModRelay(string md5, long size)
         {
             //Todo: Finish implementing relay service
             string finalRelayURL = $"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";

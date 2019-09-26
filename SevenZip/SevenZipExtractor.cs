@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+
 namespace SevenZip
 {
     using System;
@@ -638,13 +640,14 @@ namespace SevenZip
         /// <param name="directory">The directory where extract the files</param>
         /// <param name="filesCount">The number of files to be extracted</param>
         /// <param name="actualIndexes">The list of actual indexes (solid archives support)</param>
+        /// <param name="outputMapping">Optional callback that will be called to determine the output filename path</param>
         /// <returns>The ArchiveExtractCallback callback</returns>
         private ArchiveExtractCallback GetArchiveExtractCallback(string directory, int filesCount,
-                                                                 List<uint> actualIndexes)
+                                                                 List<uint> actualIndexes, Func<string,string> outputMapping = null)
         {
             var aec = String.IsNullOrEmpty(Password)
-                      ? new ArchiveExtractCallback(_archive, directory, filesCount, PreserveDirectoryStructure, actualIndexes, this)
-                      : new ArchiveExtractCallback(_archive, directory, filesCount, PreserveDirectoryStructure, actualIndexes, Password, this);
+                      ? new ArchiveExtractCallback(_archive, directory, filesCount, PreserveDirectoryStructure, actualIndexes, this, outputMapping)
+                      : new ArchiveExtractCallback(_archive, directory, filesCount, PreserveDirectoryStructure, actualIndexes, Password, this, outputMapping);
             ArchiveExtractCallbackCommonInit(aec);
             return aec;
         }
@@ -1060,12 +1063,23 @@ namespace SevenZip
         #endregion
 
         #region ExtractFiles overloads
+
         /// <summary>
         /// Unpacks files by their indices to the specified directory.
         /// </summary>
         /// <param name="indexes">indexes of the files in the archive file table.</param>
         /// <param name="directory">Directory where the files are to be unpacked.</param>
         public void ExtractFiles(string directory, params int[] indexes)
+        {
+            ExtractFiles(directory, null, indexes);
+        }
+        /// <summary>
+        /// Unpacks files by their indices to the specified directory.
+        /// </summary>
+        /// <param name="indexes">indexes of the files in the archive file table.</param>
+        /// <param name="outputMappingCallback">Callback that will be called when output path of file is being determined</param>
+        /// <param name="directory">Directory where the files are to be unpacked.</param>
+        public void ExtractFiles(string directory, Func<string,string> outputMappingCallback, params int[] indexes)
         {
             DisposedCheck();
             ClearExceptions();
@@ -1119,7 +1133,7 @@ namespace SevenZip
                     }
                     try
                     {
-                        using (var aec = GetArchiveExtractCallback(directory, (int) _filesCount, origIndexes))
+                        using (var aec = GetArchiveExtractCallback(directory, (int) _filesCount, origIndexes, outputMappingCallback))
                         {
                             try
                             {

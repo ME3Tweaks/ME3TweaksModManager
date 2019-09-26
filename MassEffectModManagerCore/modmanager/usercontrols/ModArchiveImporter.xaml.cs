@@ -83,6 +83,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, false));
                 TaskRunning = false;
+                CommandManager.InvalidateRequerySuggested();
             };
             ActionText = $"Scanning {Path.GetFileName(filepath)}";
 
@@ -94,6 +95,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             TaskRunning = true;
             string filepath = (string)e.Argument;
             ActionText = $"Opening {ScanningFile}";
+            string relayVersionResponse = "-1";
             using (var archiveFile = new SevenZipExtractor(filepath))
             {
                 var moddesciniEntries = new List<ArchiveFileInfo>();
@@ -174,17 +176,37 @@ namespace MassEffectModManager.modmanager.usercontrols
                                 });
                             }
                         }
+
+                        if (importingInfo.version == null && relayVersionResponse == "-1")
+                        {
+                            //If no version information, check ME3Tweaks to see if it's been added recently
+                            //see if server has information on version number
+                            ActionText = $"Getting additional information about file from ME3Tweaks";
+                            Log.Information("Querying ME3Tweaks for additional information");
+                            var modInfo = OnlineContent.QueryModRelay(md5, size);
+                            //todo: make this work offline.
+                            if (modInfo.TryGetValue("version", out string value))
+                            {
+                                Log.Information("ME3Tweaks reports version number for this file is: "+value);
+                                foreach (CompressedMod compressedMod in CompressedMods)
+                                {
+                                    compressedMod.Mod.ModVersionString = value;
+                                    Double.TryParse(value, out double parsedValue);
+                                    compressedMod.Mod.ParsedModVersion = parsedValue;
+                                }
+
+                                relayVersionResponse = value;
+                            }
+                            else
+                            {
+                                Log.Information("ME3Tweaks does not have additional version information for this file");
+                            }
+                        }
                     }
 
 
 
-                    //If no version information, check ME3Tweaks to see if it's been added recently
-                    if (importingInfo.version == null)
-                    {
-                        //see if server has information on version number
-                        ActionText = $"Getting additional information about file from ME3Tweaks";
-                        var modInfo = OnlineContent.QueryModRelay(md5, size);
-                    }
+
                 }
                 else
                 {
@@ -230,7 +252,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                         virtualModDesc["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
                         virtualModDesc["CUSTOMDLC"]["destdirs"] = dlcFolderName;
 
-                        return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir,true), archive);
+                        return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
                     }
                 }
                 else

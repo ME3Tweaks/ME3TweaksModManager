@@ -36,6 +36,7 @@ namespace SevenZip
         private OutStreamWrapper _fileStream;
         private bool _directoryStructure;
         private int _currentIndex;
+        private Func<string, string> outputFilenameMapping;
         const int MEMORY_PRESSURE = 64 * 1024 * 1024; //64mb seems to be the maximum value
 
         #region Constructors
@@ -49,10 +50,11 @@ namespace SevenZip
         /// <param name="extractor">The owner of the callback</param>
         /// <param name="actualIndexes">The list of actual indexes (solid archives support)</param>
         /// <param name="directoryStructure">The value indicating whether to preserve directory structure of extracted files.</param>
+        /// <param name="outputmappingcallback">Optional callback that is used to determine the output filepath of the entry being extracted</param>
         public ArchiveExtractCallback(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, SevenZipExtractor extractor)
+            List<uint> actualIndexes, SevenZipExtractor extractor, Func<string,string>  outputmappingcallback = null)
         {
-            Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor);
+            Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor, outputmappingcallback);
         }
 
         /// <summary>
@@ -65,11 +67,12 @@ namespace SevenZip
         /// <param name="extractor">The owner of the callback</param>
         /// <param name="actualIndexes">The list of actual indexes (solid archives support)</param>
         /// <param name="directoryStructure">The value indicating whether to preserve directory structure of extracted files.</param>
+        /// <param name="outputmappingcallback">Optional callback that is used to determine the output filepath of the entry being extracted</param>
         public ArchiveExtractCallback(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, string password, SevenZipExtractor extractor)
+            List<uint> actualIndexes, string password, SevenZipExtractor extractor, Func<string,string> outputmappingcallback = null)
             : base(password)
         {
-            Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor);
+            Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor, outputmappingcallback);
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace SevenZip
         }
 
         private void Init(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, SevenZipExtractor extractor)
+            List<uint> actualIndexes, SevenZipExtractor extractor, Func<string, string> outputMappingCallback = null)
         {
             CommonInit(archive, filesCount, extractor);
             _directory = directory;
@@ -113,6 +116,7 @@ namespace SevenZip
             {
                 _directory += Path.DirectorySeparatorChar;
             }
+            this.outputFilenameMapping = outputMappingCallback;
         }
 
         private void Init(IInArchive archive, Stream stream, int filesCount, uint fileIndex, SevenZipExtractor extractor)
@@ -294,7 +298,15 @@ namespace SevenZip
                         #endregion
 
                         //ExtractionPath - TODO: Allow customization of where file is output to.
-                        fileName = Path.Combine(_directory, _directoryStructure? entryName : Path.GetFileName(entryName));
+                        if (outputFilenameMapping != null)
+                        {
+                            fileName = outputFilenameMapping.Invoke(entryName);
+                        }
+                        else
+                        {
+                            fileName = Path.Combine(_directory, _directoryStructure ? entryName : Path.GetFileName(entryName));
+                        }
+
                         _archive.GetProperty(index, ItemPropId.IsDirectory, ref data);
                         try
                         {

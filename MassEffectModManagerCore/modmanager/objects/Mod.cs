@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using IniParser;
 using IniParser.Parser;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
@@ -798,8 +799,8 @@ namespace MassEffectModManager.modmanager
                         {
                             foreach (var inSubDirFile in job.FilesToInstall.Values)
                             {
-                                var inArchivePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, inSubDirFile);
-                                if (info.FileName.Equals(inArchivePath, StringComparison.InvariantCultureIgnoreCase))
+                                //var inArchivePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, inSubDirFile);
+                                if (info.FileName.Equals(inSubDirFile, StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     Debug.WriteLine("Add file to extraction list: " + info.FileName);
                                     fileIndicesToExtract.Add(info.Index);
@@ -832,11 +833,22 @@ namespace MassEffectModManager.modmanager
                 {
                     extractingCallback?.Invoke(args);
                 };
-                archiveFile.ExtractFiles(sanitizedPath, fileIndicesToExtract.ToArray());
+
+                string outputFilePathMapping(string entryPath)
+                {
+                    //Archive path might start with a \. Substring may return value that start with a \
+                    var subModPath = entryPath/*.TrimStart('\\')*/.Substring(ModPath.Length).TrimStart('\\');
+                    var path = Path.Combine(sanitizedPath, subModPath);
+                    //Debug.WriteLine("remapping output: " + entryPath + " -> " + path);
+                    return path;
+                }
+                archiveFile.ExtractFiles(sanitizedPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
                 ModPath = sanitizedPath;
                 if (IsVirtualized)
                 {
-                    File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), VirtualizedIniText);
+                    var parser = new IniDataParser().Parse(VirtualizedIniText);
+                    parser["ModInfo"]["modver"] = ModVersionString; //In event relay service resolved this
+                    File.WriteAllText(Path.Combine(ModPath,"moddesc.ini"), parser.ToString());
                 }
 
                 int packagesCompressed = 0;
