@@ -11,8 +11,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using IniParser.Model;
+using IniParser.Parser;
 using SevenZip;
 using MassEffectModManager.modmanager.me3tweaks;
+using MassEffectModManagerCore;
+using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 
 namespace MassEffectModManager.modmanager.usercontrols
@@ -25,6 +29,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         private readonly Action<ProgressBarUpdate> progressBarCallback;
         private bool TaskRunning;
         public string NoModSelectedText { get; } = "Select a mod on the left to view its description";
+        public bool ArchiveScanned { get; set; }
         public event EventHandler<DataEventArgs> Close;
         public bool CompressPackages { get; set; }
         protected virtual void OnClosing(DataEventArgs e)
@@ -64,17 +69,16 @@ namespace MassEffectModManager.modmanager.usercontrols
                 if (CompressedMods.Count > 0)
                 {
                     ActionText = $"Select mods to import into Mod Manager library";
+                    if (CompressedMods.Count == 1)
+                    {
+                        CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
+                    }
+
+                    ArchiveScanned = true;
                 }
                 else
                 {
                     ActionText = "No compatible mods found in archive";
-                }
-            };
-            bw.RunWorkerCompleted += (a, b) =>
-            {
-                if (CompressedMods.Count == 1)
-                {
-                    CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                 }
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, false));
@@ -93,12 +97,24 @@ namespace MassEffectModManager.modmanager.usercontrols
             using (var archiveFile = new SevenZipExtractor(filepath))
             {
                 var moddesciniEntries = new List<ArchiveFileInfo>();
+                var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
+                var bioengineEntries = new List<ArchiveFileInfo>(); //ME2 DLC
                 foreach (var entry in archiveFile.ArchiveFileData)
                 {
                     string fname = Path.GetFileName(entry.FileName);
                     if (!entry.IsDirectory && fname.Equals("moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
                     {
                         moddesciniEntries.Add(entry);
+                    }
+                    else if (!entry.IsDirectory && fname.Equals("Default.sfar", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //for unofficial lookups
+                        sfarEntries.Add(entry);
+                    }
+                    else if (!entry.IsDirectory && fname.Equals("BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //for unofficial lookups
+                        bioengineEntries.Add(entry);
                     }
                 }
 
@@ -110,23 +126,15 @@ namespace MassEffectModManager.modmanager.usercontrols
                         Mod m = new Mod(entry, archiveFile);
                         if (m.ValidMod)
                         {
-                            try
+                            Application.Current.Dispatcher.Invoke(delegate
                             {
-                                Application.Current.Dispatcher.Invoke(delegate
-                                {
-                                    CompressedMods.Add(new CompressedMod(m));
-                                    CompressedMods.Sort(x => x.Mod.ModName);
-                                });
-                            }
-                            catch (Exception ex)
-                            {
-                                //Don't load
-                                Log.Warning("Unable to load compressed mod moddesc.ini: " + ex.Message);
-                            }
+                                CompressedMods.Add(new CompressedMod(m));
+                                CompressedMods.Sort(x => x.Mod.ModName);
+                            });
                         }
                     }
                 }
-                else
+                else if (sfarEntries.Count > 0)
                 {
                     //Todo: Run unofficially supported scan
                     var md5 = Utilities.CalculateMD5(filepath);
@@ -135,15 +143,103 @@ namespace MassEffectModManager.modmanager.usercontrols
                     var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
                     if (importingInfo != null)
                     {
-                        if (importingInfo.version == null)
+                        if (importingInfo.servermoddescname != null)
                         {
-                            //see if server has information on version number
-                            ActionText = $"Getting additional information about file from ME3Tweaks";
-                            var modInfo = OnlineContent.QueryModRelay(md5);
+                            //Partially supported unofficial third party mod
+                            //Mod has a custom written moddesc.ini stored on ME3Tweaks
+                            string custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
+                            Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virutal mod
+                            if (virutalCustomMod.ValidMod)
+                            {
+                                Application.Current.Dispatcher.Invoke(delegate
+                                {
+                                    CompressedMods.Add(new CompressedMod(virutalCustomMod));
+                                    CompressedMods.Sort(x => x.Mod.ModName);
+                                });
+                                return; //Don't do further parsing as this is custom written
+                            }
+                        }
+                        //Fully unofficial third party mod.
+
+                        //ME3
+                        foreach (var entry in sfarEntries)
+                        {
+                            var vMod = AttemptLoadVirtualMod(entry, archiveFile, Mod.MEGame.ME3);
+                            if (vMod.ValidMod)
+                            {
+                                Application.Current.Dispatcher.Invoke(delegate
+                                {
+                                    CompressedMods.Add(new CompressedMod(vMod));
+                                    CompressedMods.Sort(x => x.Mod.ModName);
+                                });
+                            }
                         }
                     }
+
+
+
+                    //If no version information, check ME3Tweaks to see if it's been added recently
+                    if (importingInfo.version == null)
+                    {
+                        //see if server has information on version number
+                        ActionText = $"Getting additional information about file from ME3Tweaks";
+                        var modInfo = OnlineContent.QueryModRelay(md5, size);
+                    }
+                }
+                else
+                {
+                    Log.Information("This archive does not appear to have any officially supported mods and does not contain any Default.sfar files, thus contains no mods.");
                 }
             }
+        }
+
+        private Mod AttemptLoadVirtualMod(ArchiveFileInfo entry, SevenZipExtractor archive, Mod.MEGame game)
+        {
+            var sfarPath = entry.FileName;
+            var cookedPath = FilesystemInterposer.DirectoryGetParent(sfarPath, true);
+            //Todo: Check if value is CookedPC/CookedPCConsole as further validation
+            if (!string.IsNullOrEmpty(FilesystemInterposer.DirectoryGetParent(cookedPath, true)))
+            {
+                var dlcDir = FilesystemInterposer.DirectoryGetParent(cookedPath, true);
+                var dlcFolderName = Path.GetFileName(dlcDir);
+                if (!string.IsNullOrEmpty(dlcFolderName))
+                {
+                    var thirdPartyInfo = ThirdPartyServices.GetThirdPartyModInfo(dlcFolderName, game);
+                    if (thirdPartyInfo != null)
+                    {
+                        Log.Information($"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
+
+                        //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build an feed it a virtual one.
+                        IniData virtualModDesc = new IniData();
+                        virtualModDesc["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
+                        virtualModDesc["ModInfo"]["modname"] = thirdPartyInfo.modname;
+                        virtualModDesc["ModInfo"]["moddev"] = thirdPartyInfo.moddev;
+                        virtualModDesc["ModInfo"]["modsite"] = thirdPartyInfo.modsite;
+                        virtualModDesc["ModInfo"]["moddesc"] = thirdPartyInfo.moddesc;
+                        virtualModDesc["ModInfo"]["unofficial"] = "true";
+                        if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
+                        {
+                            virtualModDesc["ModInfo"]["updatecode"] = updatecode.ToString();
+                            virtualModDesc["ModInfo"]["modver"] = 0.001.ToString(); //This will force mod to check for update after reload
+                        }
+                        else
+                        {
+                            virtualModDesc["ModInfo"]["modver"] = 0.0.ToString(); //Will attempt to look up later after mods have parsed.
+                        }
+
+                        virtualModDesc["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
+                        virtualModDesc["CUSTOMDLC"]["destdirs"] = dlcFolderName;
+
+                        return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir,true), archive);
+                    }
+                }
+                else
+                {
+                    Log.Information($"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
+                }
+            }
+
+            return null;
         }
 
         public void BeginImportingMods()

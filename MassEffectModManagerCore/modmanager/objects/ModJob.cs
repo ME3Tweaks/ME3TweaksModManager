@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using MassEffectModManagerCore.modmanager;
 
 namespace MassEffectModManager.modmanager
 {
@@ -139,7 +140,7 @@ namespace MassEffectModManager.modmanager
         /// <returns>string of failure reason. null if OK.</returns>
         internal string AddFileToInstall(string destRelativePath, string sourceFullPath, Mod mod, bool ignoreLoadErrors)
         {
-            if (!ignoreLoadErrors && !mod.FileExists(sourceFullPath))
+            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(sourceFullPath,mod.Archive))
             {
                 return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
             }
@@ -156,7 +157,7 @@ namespace MassEffectModManager.modmanager
         /// <returns>string of failure reason. null if OK.</returns>
         internal string AddAdditionalFileToInstall(string destRelativePath, string sourceFullPath, Mod mod, bool ignoreLoadErrors)
         {
-            if (!ignoreLoadErrors && !mod.FileExists(sourceFullPath))
+            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(sourceFullPath, mod.Archive))
             {
                 return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
             }

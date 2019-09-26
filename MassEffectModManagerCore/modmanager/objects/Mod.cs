@@ -94,83 +94,21 @@ namespace MassEffectModManager.modmanager
 
         public string ModPath { get; private set; }
 
-        private SevenZipExtractor Archive;
+        public SevenZipExtractor Archive;
 
-        public string ModDescPath => PathCombine(ModPath, "moddesc.ini");
+        public string ModDescPath => FilesystemInterposer.PathCombine(IsInArchive, ModPath, "moddesc.ini");
 
-        #region Archive/Filesystem interposer
-
-        /// <summary>
-        /// Combines paths and will attempt to keep the separator style
-        /// </summary>
-        /// <param name="paths"></param>
-        /// <returns></returns>
-        internal string PathCombine(string pathBase, params string[] paths)
-        {
-            char separator = '\\'; // IsInArchive ? '/' : '\\';
-            if (paths == null || !paths.Any())
-                return pathBase;
-
-            if (IsInArchive)
-            {
-                pathBase = pathBase.TrimStart('\\', '/'); //archive paths don't start with a / or \
-            }
-
-            #region Remove path end slash
-
-            var slash = new[] { '/', '\\' };
-            Action<StringBuilder> removeLastSlash = null;
-            removeLastSlash = (sb) =>
-            {
-                if (sb.Length == 0) return;
-                if (!slash.Contains(sb[sb.Length - 1])) return;
-                sb.Remove(sb.Length - 1, 1);
-                removeLastSlash(sb);
-            };
-
-            #endregion Remove path end slash
-
-            #region Combine
-
-            var pathSb = new StringBuilder();
-            bool skipFirst = pathBase == ""; //If the base path is "", don't apply a separator.
-            bool skippedFirst = false;
-            pathSb.Append(pathBase);
-            removeLastSlash(pathSb);
-            foreach (var path in paths)
-            {
-                if (!skipFirst || skippedFirst)
-                {
-                    pathSb.Append(separator);
-                }
-
-                pathSb.Append(path);
-                removeLastSlash(pathSb);
-            }
-
-            #endregion Combine
-
-            #region Append slash if last path contains
-            if (paths.Count() > 2)
-            {
-                if (slash.Contains(paths.Last().Last()))
-                    pathSb.Append(separator);
-            }
-            #endregion Append slash if last path contains
-
-            return pathSb.ToString();
-        }
-
-        #endregion
 
         public bool IsInArchive { get; }
+        public bool IsVirtualized { get; private set; }
+
+        private readonly string VirtualizedIniText;
 
         /// <summary>
         /// Loads a moddesc from a stream. Used when reading data from an archive. 
         /// </summary>
-        /// <param name="iniStream">Stream of ini file</param>
-        /// <param name="archive">Archive to inspect for validation. Ensure this is set to null to prevent a reference from being heald.</param>
-        /// <param name="ignoreLoadErrors">Will ignore load errors when reading from stream. This should almost always be used</param>
+        /// <param name="moddescArchiveEntry">File entry in archive for this moddesc.ini</param>
+        /// <param name="archive">Archive to inspect for</param>
         public Mod(ArchiveFileInfo moddescArchiveEntry, SevenZipExtractor archive)
         {
             Log.Information($"Loading moddesc.ini from archive: {Path.GetFileName(archive.FileName)} => {moddescArchiveEntry.FileName}");
@@ -187,8 +125,10 @@ namespace MassEffectModManager.modmanager
             }
             catch (Exception e)
             {
-                LoadFailedReason = "Error occured parsing archive moddesc " + moddescArchiveEntry.FileName + ": " + e.Message;
+                LoadFailedReason = "Error occured parsing archive moddesc.ini " + moddescArchiveEntry.FileName + ": " + e.Message;
             }
+
+            Archive = null; //dipose of the mod
         }
 
         /// <summary>
@@ -207,6 +147,30 @@ namespace MassEffectModManager.modmanager
             catch (Exception e)
             {
                 LoadFailedReason = "Error occured parsing " + filePath + ": " + e.Message;
+            }
+        }
+
+        /// <summary>
+        /// Loads a mod from a virtual moddesc.ini file, forcing the ini path. This is used to load a third party mod through a virtual moddesc.ini file.
+        /// </summary>
+        /// <param name="iniText">Virtual Ini text</param>
+        /// <param name="forcedModPath">Path where this moddesc.ini would be if it existed in the archive</param>
+        /// <param name="archive">Archive file to parse against</param>
+        public Mod(string iniText, string forcedModPath, SevenZipExtractor archive)
+        {
+            ModPath = forcedModPath;
+            Archive = archive;
+            IsInArchive = true;
+            IsVirtualized = true;
+            VirtualizedIniText = iniText;
+            Log.Information("Loading virutalized moddesc.ini");
+            try
+            {
+                loadMod(iniText, MEGame.Unknown);
+            }
+            catch (Exception e)
+            {
+                LoadFailedReason = "Error occured parsing virtualized moddesc.ini: " + e.Message;
             }
         }
 
@@ -345,7 +309,7 @@ namespace MassEffectModManager.modmanager
                     {
                         CLog.Information("Found INI header with moddir specified: " + headerAsString, LogModStartup);
                         CLog.Information("Subdirectory (moddir): " + jobSubdirectory, LogModStartup);
-                        string fullSubPath = PathCombine(ModPath, jobSubdirectory);
+                        string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
 
                         //Replace files (ModDesc 2.0)
                         string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
@@ -478,7 +442,7 @@ namespace MassEffectModManager.modmanager
                         {
                             for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
                             {
-                                string sourceFile = PathCombine(fullSubPath, replaceFilesSourceSplit[i]);
+                                string sourceFile = FilesystemInterposer.PathCombine(IsInArchive, fullSubPath, replaceFilesSourceSplit[i]);
                                 string destFile = replaceFilesTargetSplit[i];
                                 CLog.Information($"Adding file to installation queue: {sourceFile} => {destFile}", LogModStartup);
                                 string failurereason = headerJob.AddFileToInstall(destFile, sourceFile, this, ignoreLoadErrors);
@@ -496,7 +460,7 @@ namespace MassEffectModManager.modmanager
                         {
                             for (int i = 0; i < addFilesSourceSplit.Count; i++)
                             {
-                                string sourceFile = PathCombine(fullSubPath, addFilesSourceSplit[i]);
+                                string sourceFile = FilesystemInterposer.PathCombine(IsInArchive, fullSubPath, addFilesSourceSplit[i]);
                                 string destFile = addFilesTargetSplit[i];
                                 CLog.Information($"Adding file to installation queue (addition): {sourceFile} => {destFile}", LogModStartup);
                                 string failurereason = headerJob.AddAdditionalFileToInstall(destFile, sourceFile, this, ignoreLoadErrors); //add files are layered on top
@@ -583,7 +547,7 @@ namespace MassEffectModManager.modmanager
                     //Verify folders exists
                     foreach (var f in customDLCSourceSplit)
                     {
-                        if (!DirectoryExists(PathCombine(ModPath, f)))
+                        if (!FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, f), Archive))
                         {
                             Log.Error($"Mod has job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}");
                             LoadFailedReason = $"Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}";
@@ -657,7 +621,7 @@ namespace MassEffectModManager.modmanager
                     }
 
                     //Check folder exists
-                    if (DirectoryExists(PathCombine(ModPath, addlFolder)))
+                    if (FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, addlFolder), Archive))
                     {
                         Log.Error($"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}");
                         LoadFailedReason = $"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}";
@@ -685,7 +649,7 @@ namespace MassEffectModManager.modmanager
                     }
 
                     //Check file exists
-                    if (!FileExists(PathCombine(ModPath, addlFile)))
+                    if (!FilesystemInterposer.FileExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, addlFile), Archive))
                     {
                         Log.Error($"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}");
                         LoadFailedReason = $"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}";
@@ -738,24 +702,11 @@ namespace MassEffectModManager.modmanager
             CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
         }
 
-        internal bool DirectoryExists(string path)
-        {
-            if (IsInArchive)
-            {
-                path = path.TrimStart('\\', '/'); //archive paths don't start with a / \ but path combining will append one of these.
-                var entry = Archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
-                return !string.IsNullOrEmpty(entry.FileName) && entry.IsDirectory; //must check filename is populated as this is a struct
-            }
-            else
-            {
-                return Directory.Exists(path);
-            }
-        }
 
         private bool CheckAndCreateLegacyCoalescedJob()
         {
-            var legacyCoalFile = PathCombine(ModPath, "Coalesced.bin");
-            if (!ignoreLoadErrors && !FileExists(legacyCoalFile))
+            var legacyCoalFile = FilesystemInterposer.PathCombine(IsInArchive, ModPath, "Coalesced.bin");
+            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(legacyCoalFile, Archive))
             {
                 if (ModDescTargetVersion == 1.0)
                 {
@@ -777,25 +728,6 @@ namespace MassEffectModManager.modmanager
             basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", legacyCoalFile, this, ignoreLoadErrors);
             InstallationJobs.Add(basegameJob);
             return true;
-        }
-
-        /// <summary>
-        /// Checks if a file exists. This method will look in the mod's archive file if IsInArchive is true.
-        /// </summary>
-        /// <param name="path">Path of file to find</param>
-        /// <returns></returns>
-        internal bool FileExists(string path)
-        {
-            if (IsInArchive)
-            {
-                path = path.TrimStart('\\', '/').Replace('/', '\\'); //archive paths don't start with a / \ but path combining will append one of these.
-                var entry = Archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
-                return !string.IsNullOrEmpty(entry.FileName) && !entry.IsDirectory; //must check filename is populated as this is a struct
-            }
-            else
-            {
-                return File.Exists(path);
-            }
         }
 
         public void ExtractFromArchive(string archivePath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null)
@@ -834,7 +766,7 @@ namespace MassEffectModManager.modmanager
                         {
                             foreach (var localCustomDLCFolder in job.CustomDLCFolderMapping.Keys)
                             {
-                                if (info.FileName.StartsWith(PathCombine(ModPath, localCustomDLCFolder)))
+                                if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, localCustomDLCFolder)))
                                 {
                                     Debug.WriteLine("Add file to extraction list: " + info.FileName);
                                     fileIndicesToExtract.Add(info.Index);
@@ -848,7 +780,7 @@ namespace MassEffectModManager.modmanager
                             //Alternate files
                             foreach (var alt in job.AlternateFiles)
                             {
-                                if (alt.AltFile != null && info.FileName.Equals(PathCombine(ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
+                                if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
                                     fileIndicesToExtract.Add(info.Index);
@@ -860,12 +792,13 @@ namespace MassEffectModManager.modmanager
 
 
                             //Alternate DLC
+                            //Todo: Alternate DLC
                         }
                         else
                         {
                             foreach (var inSubDirFile in job.FilesToInstall.Values)
                             {
-                                var inArchivePath = PathCombine(ModPath, inSubDirFile);
+                                var inArchivePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, inSubDirFile);
                                 if (info.FileName.Equals(inArchivePath, StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     Debug.WriteLine("Add file to extraction list: " + info.FileName);
@@ -880,7 +813,7 @@ namespace MassEffectModManager.modmanager
                             //Alternate files
                             foreach (var alt in job.AlternateFiles)
                             {
-                                if (alt.AltFile != null && info.FileName.Equals(PathCombine(ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
+                                if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
                                     fileIndicesToExtract.Add(info.Index);
@@ -901,6 +834,10 @@ namespace MassEffectModManager.modmanager
                 };
                 archiveFile.ExtractFiles(sanitizedPath, fileIndicesToExtract.ToArray());
                 ModPath = sanitizedPath;
+                if (IsVirtualized)
+                {
+                    File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), VirtualizedIniText);
+                }
 
                 int packagesCompressed = 0;
                 //if (compressPackages)

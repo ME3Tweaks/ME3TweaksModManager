@@ -293,6 +293,7 @@ namespace SevenZip
 
                         #endregion
 
+                        //ExtractionPath - TODO: Allow customization of where file is output to.
                         fileName = Path.Combine(_directory, _directoryStructure? entryName : Path.GetFileName(entryName));
                         _archive.GetProperty(index, ItemPropId.IsDirectory, ref data);
                         try

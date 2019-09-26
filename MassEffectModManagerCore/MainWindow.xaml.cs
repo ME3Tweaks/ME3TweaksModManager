@@ -545,7 +545,7 @@ namespace MassEffectModManager
         {
             if (SelectedMod != null)
             {
-                Process.Start(SelectedMod.ModPath);
+                Utilities.OpenExplorer(SelectedMod.ModPath);
             }
         }
 
@@ -573,7 +573,7 @@ namespace MassEffectModManager
 
         private void OpenModsDirectory_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("explorer", Utilities.GetModsDirectory());
+            Utilities.OpenExplorer(Utilities.GetModsDirectory());
         }
 
         private const int STARTUP_FAIL_CRITICAL_FILES_MISSING = 1;

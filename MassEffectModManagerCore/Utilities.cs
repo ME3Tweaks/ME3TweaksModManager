@@ -487,6 +487,11 @@ namespace MassEffectModManager
             return expression;
         }
 
+        internal static void OpenExplorer(string path)
+        {
+            Process.Start("explorer", path);
+        }
+
         /// <summary>
         /// Sanitizes a path by removing disallowed characters
         /// </summary>

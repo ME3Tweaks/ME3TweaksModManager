@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManagerCore;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using Newtonsoft.Json;
 using Serilog;
@@ -16,9 +17,12 @@ namespace MassEffectModManager.modmanager.me3tweaks
     partial class OnlineContent
     {
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber;
-        private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/mods/dlc_mods/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
+        private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL = "https://raw.githubusercontent.com/ME3Tweaks/MassEffectModManager/master/MassEffectModManager/staticfiles/";
-        private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/mods/dlc_mods/thirdpartyimportingservice?allgames=true";
+        private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
+        private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
+        private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
+
         private static readonly string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
@@ -28,7 +32,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             }
         }
-        public static Dictionary<string, Dictionary<string, Dictionary<string, string>>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
+        public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
@@ -37,10 +41,17 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 {
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyIdentificationServiceURL);
                     File.WriteAllText(Utilities.GetThirdPartyIdentificationCachedFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json);
+                    return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(json);
                 }
             }
-            return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+            return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+        }
+
+        public static string FetchThirdPartyModdesc(string name)
+        {
+            using var wc = new System.Net.WebClient();
+            string moddesc = wc.DownloadStringAwareOfEncoding(ThirdPartyModDescURL + name);
+            return moddesc;
         }
 
         public static List<string> FetchTipsService(bool overrideThrottling = false)
@@ -57,7 +68,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
             return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
         }
 
-        public static Dictionary<long, List<ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
+        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
@@ -65,22 +76,21 @@ namespace MassEffectModManager.modmanager.me3tweaks
                 {
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
                     File.WriteAllText(Utilities.GetThirdPartyImportingCachedFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(json);
+                    return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(json);
                 }
             }
-            return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
+            return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
         }
 
-        private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/relayservice/queryrelay";
-        public static object QueryModRelay(string md5)
+        public static object QueryModRelay(string md5, long size)
         {
             //Todo: Finish implementing relay service
-            string finalRelayURL = $"{ModInfoRelayEndpoint}?ModManagerVersion={App.BuildNumber}&MD5={md5.ToLowerInvariant()}";
+            string finalRelayURL = $"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
             using (var wc = new System.Net.WebClient())
             {
                 string json = wc.DownloadStringAwareOfEncoding(finalRelayURL);
                 //todo: Implement response format serverside
-                return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json);
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             }
             return null;
         }

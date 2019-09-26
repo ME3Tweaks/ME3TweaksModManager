@@ -84,8 +84,8 @@ namespace MassEffectModManager.modmanager.objects
             if (Operation == AltFileOperation.OPERATION_INSTALL || Operation == AltFileOperation.OPERATION_SUBSTITUTE)
             {
                 //Validate file
-                var altPath = modForValidating.PathCombine(modForValidating.ModPath, AltFile);
-                var altFileSourceExists = modForValidating.FileExists(altPath);
+                var altPath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AltFile);
+                var altFileSourceExists = FilesystemInterposer.FileExists(altPath, modForValidating.Archive);
                 if (!altFileSourceExists)
                 {
                     Log.Error("Alternate file source (AltFile) does not exist: " + AltFile);

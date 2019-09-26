@@ -262,6 +262,7 @@ namespace MassEffectModManager.modmanager.windows
                     }
                     else
                     {
+                        //ME2
                         IniData bioEngineIni = new IniData();
                         bioEngineIni["Core.System"]["!CookPaths"] = "CLEAR";
                         bioEngineIni["Core.System"]["+SeekFreePCPaths"] = $@"..\BIOGame\DLC\{dlcFolderName}\CookedPC";
