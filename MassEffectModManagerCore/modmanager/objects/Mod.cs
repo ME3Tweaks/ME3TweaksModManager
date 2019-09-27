@@ -784,6 +784,7 @@ namespace MassEffectModManager.modmanager
                     foreach (ModJob job in InstallationJobs)
                     {
                         //Custom DLC folders
+                        #region Extract Custom DLC
                         if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                         {
                             foreach (var localCustomDLCFolder in job.CustomDLCFolderMapping.Keys)
@@ -812,12 +813,23 @@ namespace MassEffectModManager.modmanager
                             }
                             if (fileAdded) break;
 
-
                             //Alternate DLC
-                            //Todo: Alternate DLC
+                            foreach (var alt in job.AlternateDLCs)
+                            {
+                                if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AlternateDLCFolder), StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    Debug.WriteLine("Add alternate dlc file to extraction list: " + info.FileName);
+                                    fileIndicesToExtract.Add(info.Index);
+                                    fileAdded = true;
+                                    break;
+                                }
+                            }
+                            if (fileAdded) break;
+                            #endregion
                         }
                         else
                         {
+                            #region Official headers
                             foreach (var inSubDirFile in job.FilesToInstall.Values)
                             {
                                 //var inArchivePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, inSubDirFile);
@@ -845,8 +857,7 @@ namespace MassEffectModManager.modmanager
                             }
                             if (fileAdded) break;
 
-                            //Alternate DLC
-
+                            #endregion
                         }
                     }
                 }

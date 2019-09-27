@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MassEffectModManager.modmanager.objects
 {
-    [DebuggerDisplay("AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
+    [DebuggerDisplay("AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
     public class AlternateDLC
     {
         public enum AltDLCOperation
