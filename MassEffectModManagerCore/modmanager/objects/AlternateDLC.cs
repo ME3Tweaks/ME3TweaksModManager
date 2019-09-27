@@ -32,18 +32,19 @@ namespace MassEffectModManager.modmanager.objects
 
         public AltDLCCondition Condition;
         public AltDLCOperation Operation;
-        public string FriendlyName;
-        public string Description;
+        public bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
+        public string FriendlyName { get; private set; }
+        public string Description { get; private set; }
         public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
         /// Alternate DLC folder to process the operation from (as the source)
         /// </summary>
-        public string AlternateDLCFolder;
+        public string AlternateDLCFolder { get; private set; }
         /// <summary>
         /// In-mod path that the AlternateDLCFolder will apply to
         /// </summary>
-        public string DestinationDLCFolder;
+        public string DestinationDLCFolder { get; private set; }
 
         public bool ValidAlternate;
         public string LoadFailedReason;
@@ -51,13 +52,42 @@ namespace MassEffectModManager.modmanager.objects
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
             //todo: if statements to check these.
+            if (properties.TryGetValue("FriendlyName", out string friendlyName))
+            {
+                FriendlyName = friendlyName;
+            }
+
             Enum.TryParse(properties["Condition"], out Condition);
             Enum.TryParse(properties["ModOperation"], out Operation);
-            properties.TryGetValue("FriendlyName", out FriendlyName);
-            properties.TryGetValue("Description", out Description);
+            if (properties.TryGetValue("Description", out string description))
+            {
+                Description = description;
+            }
 
-            properties.TryGetValue("ModAltDLC", out AlternateDLCFolder);
-            properties.TryGetValue("ModDestDLC", out DestinationDLCFolder);
+            if (properties.TryGetValue("ModAltDLC", out string altDLCFolder))
+            {
+                AlternateDLCFolder = altDLCFolder;
+            }
+            else
+            {
+                Log.Error("Alternate DLC does not specify ModAltDLC but is required");
+                ValidAlternate = false;
+                LoadFailedReason = $"Alternate DLC {FriendlyName} does not declare ModAltDLC but it is required for all Alternate DLC.";
+                return;
+            }
+
+            if (properties.TryGetValue("ModDestDLC", out string destDLCFolder))
+            {
+                DestinationDLCFolder = destDLCFolder;
+            }
+            else
+            {
+                Log.Error("Alternate DLC does not specify ModDestDLC but is required");
+                ValidAlternate = false;
+                LoadFailedReason = $"Alternate DLC {FriendlyName} does not declare ModDestDLC but it is required for all Alternate DLC.";
+                return;
+            }
+
             if (properties.TryGetValue("ConditionalDLC", out string conditionalDlc))
             {
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
@@ -116,5 +146,24 @@ namespace MassEffectModManager.modmanager.objects
             ValidAlternate = true;
         }
 
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get
+            {
+                if (Condition == AltDLCCondition.COND_MANUAL) return _isSelected;
+                return AutoApplies;
+            }
+            set
+            {
+                if (Condition == AltDLCCondition.COND_MANUAL) _isSelected = value;
+            }
+        }
+
+        //Todo: This has to take a gametarget somehow. Maybe IsSelected and AutoApplies should be methods or something...
+        public bool AutoApplies
+        {
+            get { return true; }
+        }
     }
 }

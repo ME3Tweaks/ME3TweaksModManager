@@ -6,12 +6,52 @@
              xmlns:local="clr-namespace:MassEffectModManager.modmanager.usercontrols"
              xmlns:fa5="http://schemas.fontawesome.com/icons/"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
+             xmlns:objects="clr-namespace:MassEffectModManager.modmanager.objects"
+             xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
              mc:Ignorable="d" 
-             Height="Auto" MinHeight="200" Width="300">
+             Height="Auto" MinHeight="200" MinWidth="300" MaxWidth="480">
+    <UserControl.Resources>
+        <ui:ModInstaller_AlternateDataTemplateSelector x:Key="ModInstaller_AlternateDataTemplateSelector"/>
+
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
     <StackPanel VerticalAlignment="Center">
-        <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="Black" Margin="10"/>
-        <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
-        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Installing Mod}" TextWrapping="Wrap" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding mod.ModName, FallbackValue=SP Controller Support}" TextWrapping="Wrap" TextAlignment="Center"/>
+        <DockPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}" VerticalAlignment="Center">
+            <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Select installation options" Margin="0,5,0,0" DockPanel.Dock="Top" />
+            <TextBlock TextAlignment="Center" Text="{Binding Mod.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
+            <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,15,0,0">
+                <Button Content="Install" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click"/>
+                <Button Content="Cancel" DockPanel.Dock="Right" Padding="5" Margin="5,0" Click="InstallCancel_Click"/>
+            </DockPanel>
+            <ItemsControl ItemsSource="{Binding AlternateOptions}" >
+                <!-- ItemTemplateSelector="{StaticResource ModInstaller_AlternateDataTemplateSelector}"-->
+                <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type objects:AlternateDLC}">
+                        <DockPanel Margin="0,0,0,5">
+                            <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Description}" VerticalAlignment="Center" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="Gray" MaxWidth="350" FontSize="10"/>
+                        </DockPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type objects:AlternateFile}" x:Key="AlternateFileTemplate">
+                        <Grid Margin="0,0,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding FriendlyName}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.Resources>
+            </ItemsControl>
+        </DockPanel>
+
+        <StackPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center">
+            <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="Black" Margin="10"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Installing Mod}" TextWrapping="Wrap" TextAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding mod.ModName, FallbackValue=SP Controller Support}" TextWrapping="Wrap" TextAlignment="Center"/>
+        </StackPanel>
     </StackPanel>
 </UserControl>

@@ -15,6 +15,10 @@ namespace MassEffectModManager.modmanager.converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (parameter is string str && str == "Inverse")
+            {
+                return ((bool)value) ? Visibility.Collapsed : Visibility.Visible;
+            }
             return ((bool)value) ? Visibility.Visible : Visibility.Collapsed;
         }
 

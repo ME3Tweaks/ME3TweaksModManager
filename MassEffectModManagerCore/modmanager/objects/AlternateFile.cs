@@ -29,18 +29,20 @@ namespace MassEffectModManager.modmanager.objects
 
         public AltFileCondition Condition;
         public AltFileOperation Operation;
-        public string FriendlyName;
-        public string Description;
+        public bool IsManual => Condition == AltFileCondition.COND_MANUAL;
+
+        public string FriendlyName { get; private set; }
+        public string Description { get; private set; }
         public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
         /// Alternate file to use, if the operation uses an alternate file
         /// </summary>
-        public string AltFile;
+        public string AltFile { get; private set; }
         /// <summary>
         /// In-mod path that is operated on
         /// </summary>
-        public string ModFile;
+        public string ModFile { get; private set; }
 
         /// <summary>
         /// BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
@@ -59,13 +61,36 @@ namespace MassEffectModManager.modmanager.objects
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
             //todo: if statements to check these.
+            if (properties.TryGetValue("FriendlyName", out string friendlyName))
+            {
+                FriendlyName = friendlyName;
+            }
+
             Enum.TryParse(properties["Condition"], out Condition);
             Enum.TryParse(properties["ModOperation"], out Operation);
-            properties.TryGetValue("FriendlyName", out FriendlyName);
-            properties.TryGetValue("Description", out Description);
+            
 
-            properties.TryGetValue("ModFile", out ModFile);
-            properties.TryGetValue("AltFile", out AltFile);
+            if (properties.TryGetValue("Description", out string description))
+            {
+                Description = description;
+            }
+
+            if (properties.TryGetValue("ModFile", out string modfile))
+            {
+                ModFile = modfile;
+            }
+            else
+            {
+                Log.Error("Alternate file in-mod target (ModFile) required but not specified not exist: " + AltFile);
+                ValidAlternate = false;
+                LoadFailedReason = $"Alternate file {FriendlyName} does not declare ModFile but it is required for all Alternate Files.";
+                return;
+            }
+
+            if (properties.TryGetValue("AltFile", out string altfile))
+            {
+                AltFile = altfile;
+            }
             properties.TryGetValue("SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
 
             //workaround for 4.5

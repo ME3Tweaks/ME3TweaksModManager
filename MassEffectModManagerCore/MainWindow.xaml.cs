@@ -315,14 +315,21 @@ namespace MassEffectModManager
                 BusyContent = null;
                 if (!modInstaller.InstallationSucceeded)
                 {
-                    modInstallTask.finishedUiText = $"Failed to install {SelectedMod.ModName}";
+                    if (modInstaller.InstallationCancelled)
+                    {
+                        modInstallTask.finishedUiText = $"Installation aborted";
+                    }
+                    else
+                    {
+                        modInstallTask.finishedUiText = $"Failed to install {SelectedMod.ModName}";
+                    }
                 }
                 backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
             };
             UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             BusyContent = modInstaller;
             IsBusy = true;
-            modInstaller.BeginInstallingMod();
+            modInstaller.PrepareToInstallMod();
         }
 
         private void ReloadMods()

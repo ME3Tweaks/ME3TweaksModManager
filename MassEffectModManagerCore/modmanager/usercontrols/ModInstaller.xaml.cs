@@ -19,6 +19,7 @@ using MassEffectModManager.GameDirectories;
 using MassEffectModManager.gamefileformats.sfar;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
+using MassEffectModManager.ui;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
 
@@ -29,21 +30,26 @@ namespace MassEffectModManager.modmanager.usercontrols
     /// </summary>
     public partial class ModInstaller : UserControl, INotifyPropertyChanged
     {
+        public ObservableCollectionExtended<object> AlternateOptions { get; } = new ObservableCollectionExtended<object>();
+
         public bool InstallationSucceeded { get; private set; }
         private const int PERCENT_REFRESH_COOLDOWN = 125;
+        public bool ModIsInstalling { get; set; }
         public ModInstaller(Mod mod, GameTarget gameTarget)
         {
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
-            this.mod = mod;
+            this.Mod = mod;
             this.gameTarget = gameTarget;
             Action = $"Preparing to install";
             InitializeComponent();
         }
 
-        public Mod mod { get; }
+
+        public Mod Mod { get; }
         private GameTarget gameTarget;
         private DateTime lastPercentUpdateTime;
+        public bool InstallationCancelled;
         private const int INSTALL_SUCCESSFUL = 1;
         private const int INSTALL_FAILED_USER_CANCELED_MISSING_MODULES = 2;
 
@@ -61,26 +67,40 @@ namespace MassEffectModManager.modmanager.usercontrols
             handler?.Invoke(this, e);
         }
 
-        public void BeginInstallingMod()
+        public void PrepareToInstallMod()
         {
-            Log.Information($"BeginInstallingMod(): {mod.ModName}");
-            NamedBackgroundWorker bw = new NamedBackgroundWorker($"ModInstaller-{mod.ModName}");
+            //See if any alternate options are available and display them even if they are all autos
+            foreach (var job in Mod.InstallationJobs)
+            {
+                AlternateOptions.AddRange(job.AlternateDLCs);
+                AlternateOptions.AddRange(job.AlternateFiles);
+            }
+
+
+            if (AlternateOptions.Count == 0)
+            {
+                //Just start installing mod
+                BeginInstallingMod();
+            }
+        }
+
+        private void BeginInstallingMod()
+        {
+            ModIsInstalling = true;
+            Log.Information($"BeginInstallingMod(): {Mod.ModName}");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker($"ModInstaller-{Mod.ModName}");
             bw.WorkerReportsProgress = true;
             bw.DoWork += InstallModBackgroundThread;
             bw.RunWorkerCompleted += ModInstallationCompleted;
-            bw.ProgressChanged += ModProgressChanged;
+            //bw.ProgressChanged += ModProgressChanged;
             bw.RunWorkerAsync();
         }
 
-        private void ModProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-
-        }
 
         private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
         {
             Log.Information($"Mod Installer Background thread starting");
-            var installationJobs = mod.InstallationJobs;
+            var installationJobs = Mod.InstallationJobs;
             var gamePath = gameTarget.TargetPath;
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
 
@@ -98,7 +118,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             {
                 foreach (var mapping in customDLCMapping)
                 {
-                    numFilesToInstall += Directory.GetFiles(Path.Combine(mod.ModPath, mapping.Key), "*", SearchOption.AllDirectories).Length;
+                    numFilesToInstall += Directory.GetFiles(Path.Combine(Mod.ModPath, mapping.Key), "*", SearchOption.AllDirectories).Length;
                 }
             }
 
@@ -141,7 +161,7 @@ namespace MassEffectModManager.modmanager.usercontrols
 
                     foreach (var mapping in customDLCMapping)
                     {
-                        var source = Path.Combine(mod.ModPath, mapping.Key);
+                        var source = Path.Combine(Mod.ModPath, mapping.Key);
                         var target = Path.Combine(gameDLCPath, mapping.Value);
                         Log.Information($"Copying CustomDLC to target: {source} -> {target}");
                         CopyDir.CopyAll_ProgressBar(new DirectoryInfo(source), new DirectoryInfo(target), callback);
@@ -161,7 +181,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                     }
                     #endregion
                 }
-                else if (mod.Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
+                else if (Mod.Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
                 {
                     #region Installation: DLC (Unpacked and SFAR) - ME3 ONLY
                     string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
@@ -198,10 +218,10 @@ namespace MassEffectModManager.modmanager.usercontrols
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
 
             //Install supporting ASI files if necessary
-            if (mod.Game != MEGame.ME2)
+            if (Mod.Game != MEGame.ME2)
             {
                 Action = "Installing support files";
-                string asiFname = mod.Game == MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
+                string asiFname = Mod.Game == MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
                 string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
 
                 var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
@@ -338,7 +358,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         /// <returns></returns>
         private bool PrecheckOfficialHeaders(string gameDLCPath, List<ModJob> installationJobs)
         {
-            if (mod.Game != MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
+            if (Mod.Game != MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
             {
                 if (job.Header == ModJob.JobHeader.BALANCE_CHANGES) continue; //Don't check balance changes
@@ -352,7 +372,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                     bool cancel = false;
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        string message = $"{mod.ModName} installs files into the {ModJob.HeadersToDLCNamesMap[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]}) DLC, which is not installed.";
+                        string message = $"{Mod.ModName} installs files into the {ModJob.HeadersToDLCNamesMap[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]}) DLC, which is not installed.";
                         if (job.RequirementText != null)
                         {
                             message += $"\n{job.RequirementText}";
@@ -373,6 +393,18 @@ namespace MassEffectModManager.modmanager.usercontrols
         {
 
             InstallationSucceeded = e.Result is int res && res == INSTALL_SUCCESSFUL;
+            OnClosing(new EventArgs());
+        }
+
+        private void InstallStart_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void InstallCancel_Click(object sender, RoutedEventArgs e)
+        {
+            InstallationSucceeded = false;
+            InstallationCancelled = true;
             OnClosing(new EventArgs());
         }
     }
