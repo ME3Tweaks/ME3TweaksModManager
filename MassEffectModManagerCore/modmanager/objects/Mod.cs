@@ -294,6 +294,7 @@ namespace MassEffectModManager.modmanager
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
             CLog.Information("Parsing mod using moddesc target: " + ModDescTargetVersion, LogModStartup);
 
+            #region Header Loops
             #region BASEGAME and OFFICIAL HEADERS
 
             if (Game == MEGame.ME3)
@@ -616,14 +617,34 @@ namespace MassEffectModManager.modmanager
 
             #endregion
 
+            #endregion
             #region Additional Mod Items
 
             //Required DLC (Mod Manager 5.0)
-            var requiredDLCText = iniData["ModInfo"]["requireddlc"];
+            var requiredDLCText = ModDescTargetVersion >= 5.0 ? iniData["ModInfo"]["requireddlc"] : null;
             if (requiredDLCText != null)
             {
-                RequiredDLC = requiredDLCText.Split(';').ToList();
-                //Todo: Validate
+                var requiredDlcsSplit = requiredDLCText.Split(';').ToList();
+                foreach (var reqDLC in requiredDlcsSplit)
+                {
+                    if (Game == Mod.MEGame.ME3)
+                    {
+                        if (Enum.TryParse(reqDLC, out ModJob.JobHeader header) && ModJob.HeadersToDLCNamesMap.TryGetValue(header, out var foldername))
+                        {
+                            RequiredDLC.Add(foldername);
+                            continue;
+                        }
+                    } //Todo: Add support for ME1, ME2 human-readable headers. Maybe
+
+                    if (!reqDLC.StartsWith("DLC_"))
+                    {
+                        Log.Error("Required DLC does not match officially supported header or start with DLC_.");
+                        LoadFailedReason = $"This mod specifies required DLC but does not match a supported value or start with DLC_. The value that failed was: {reqDLC}";
+                        return;
+                    }
+                    CLog.Information("Adding DLC requirement to mod: " + reqDLC, Settings.LogModStartup);
+                    RequiredDLC.Add(reqDLC);
+                }
             }
 
             //Additional Deployment Folders (Mod Manager 5.1)
@@ -880,7 +901,7 @@ namespace MassEffectModManager.modmanager
                 {
                     var parser = new IniDataParser().Parse(VirtualizedIniText);
                     parser["ModInfo"]["modver"] = ModVersionString; //In event relay service resolved this
-                    File.WriteAllText(Path.Combine(ModPath,"moddesc.ini"), parser.ToString());
+                    File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), parser.ToString());
                 }
 
                 int packagesCompressed = 0;

@@ -8,12 +8,9 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:converters="clr-namespace:MassEffectModManager.modmanager.converters"
              xmlns:objects="clr-namespace:MassEffectModManager.modmanager.objects"
-             xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
              mc:Ignorable="d" 
              Height="Auto" MinHeight="200" MinWidth="300" MaxWidth="480">
     <UserControl.Resources>
-        <ui:ModInstaller_AlternateDataTemplateSelector x:Key="ModInstaller_AlternateDataTemplateSelector"/>
-
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
     <StackPanel VerticalAlignment="Center">
