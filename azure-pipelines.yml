@@ -31,6 +31,7 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArchitecture: 'x64'
 
 - task: DotNetCoreCLI@2
   inputs:
