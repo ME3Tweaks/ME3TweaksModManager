@@ -109,7 +109,7 @@ namespace MassEffectModManager.modmanager.me3tweaks
             try
             {
                 string sevenZDLL = Utilities.Get7zDllPath();
-                if (!File.Exists(sevenZDLL))
+                if (!File.Exists(sevenZDLL) || Utilities.CalculateMD5(sevenZDLL) != "72491c7b87a7c2dd350b727444f13bb4")
                 {
                     using (var wc = new System.Net.WebClient())
                     {

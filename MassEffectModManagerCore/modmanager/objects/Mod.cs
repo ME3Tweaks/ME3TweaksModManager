@@ -12,6 +12,7 @@ using IniParser.Parser;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManagerCore.modmanager;
+using ME3Explorer.Packages;
 using Serilog;
 using SevenZip;
 
@@ -955,20 +956,21 @@ namespace MassEffectModManager.modmanager
                 }
 
                 int packagesCompressed = 0;
-                //if (compressPackages)
-                //{
-                //    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
-                //    foreach (var package in packages)
-                //    {
-                //        updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
-                //        Log.Information("Compressing package: " + package);
-                //        var p = MEPackageHandler.OpenMEPackage(package);
-                //        p.save(true);
+                if (compressPackages)
+                {
+                    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
+                    extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
+                    foreach (var package in packages)
+                    {
+                        updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
+                        Log.Information("Compressing package: " + package);
+                        var p = MEPackageHandler.OpenMEPackage(package);
+                        p.save(true);
 
-                //        packagesCompressed++;
-                //        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
-                //    }
-                //}
+                        packagesCompressed++;
+                        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
+                    }
+                }
             }
         }
     }
