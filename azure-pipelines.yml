@@ -37,7 +37,7 @@ steps:
   inputs:
     command: 'test'
     projects: 'MassEffectModManagerCore.Tests\\MassEffectModManagerCore.Tests.csproj'
-    arguments: '/p:CollectCoverage=true /p:CoverletOputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)\TestResults\Coverage\'
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)\TestResults\Coverage\'
 
 - task: PublishCodeCoverageResults@1
   inputs:
