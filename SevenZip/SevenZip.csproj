@@ -42,7 +42,7 @@
     <DocumentationFile>..\Stage\$(Configuration)\SevenZip.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DefineConstants></DefineConstants>
+    <DefineConstants>TRACE;UNMANAGED</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
@@ -52,7 +52,7 @@
   <ItemGroup>
     <EmbeddedResource Include="sfx\Configs.xml" />
   </ItemGroup>
-  <ItemGroup>TRACE;UNMANAGED
+  <ItemGroup>
     <Content Include="7z64.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
