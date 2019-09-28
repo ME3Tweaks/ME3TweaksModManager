@@ -647,6 +647,26 @@ namespace MassEffectModManager.modmanager
                 }
             }
 
+            //Outdated DLC (Mod Manager 4.4)
+            var outdatedDLCText = ModDescTargetVersion >= 4.4 ? iniData["CUSTOMDLC"]["outdatedcustomdlc"] : null;
+            if (!string.IsNullOrEmpty(outdatedDLCText))
+            {
+
+            }
+            //Incompatible DLC (Mod Manager 6)
+            //Todo: Update documentation
+            var incompatibleDLCText = ModDescTargetVersion >= 6.0 ? iniData["CUSTOMDLC"]["incompatiblecustomdlc"] : null;
+            if (!string.IsNullOrEmpty(incompatibleDLCText))
+            {
+                var incompatibleDLCSplits = incompatibleDLCText.Split(';').ToList();
+                foreach(var incompat in incompatibleDLCSplits)
+                {
+                    //todo: check if official dlc header or official dlc name. no mod should be incompatible if official dlc is installed.
+                }
+                //incompatibleDLCText = incompatibleDLCSplits;
+            }
+
+
             //Additional Deployment Folders (Mod Manager 5.1)
             var additonaldeploymentfoldersStr = ModDescTargetVersion >= 5.1 ? iniData["UPDATES"]["additionaldeploymentfolders"] : null;
             if (!string.IsNullOrEmpty(additonaldeploymentfoldersStr))

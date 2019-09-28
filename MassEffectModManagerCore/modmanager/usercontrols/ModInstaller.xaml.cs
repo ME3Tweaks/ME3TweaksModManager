@@ -69,6 +69,12 @@ namespace MassEffectModManager.modmanager.usercontrols
 
         public void PrepareToInstallMod()
         {
+            //Detect incompatible DLC
+
+
+            //Detect outdated DLC
+
+
             //See if any alternate options are available and display them even if they are all autos
             foreach (var job in Mod.InstallationJobs)
             {
