@@ -23,7 +23,7 @@ namespace MassEffectModManagerCore.Tests
             //Force log startup on.
             Settings.LogModStartup = true;
 
-            Log.Logger = new LoggerConfiguration().WriteTo.Debug().CreateLogger();
+            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
 
             //Test cases
             Mod aceSlammer = new Mod(Path.Combine(testingDataPath, "Ace Slammer", "moddesc.ini"), Mod.MEGame.Unknown);
