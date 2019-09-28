@@ -45,10 +45,10 @@
     <DefineConstants>TRACE;UNMANAGED</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  <ItemGroup>
+<!--   <ItemGroup>
     <EmbeddedResource Include="sfx\7zS.sfx" />
     <EmbeddedResource Include="sfx\7zxSD_All.sfx" />
-  </ItemGroup>
+  </ItemGroup> -->
   <ItemGroup>
     <EmbeddedResource Include="sfx\Configs.xml" />
   </ItemGroup>
@@ -59,7 +59,7 @@
     <Content Include="arch\Test.txt" />
     <Content Include="sfx\Configs.xslt" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- <ItemGroup>
     <EmbeddedResource Include="sfx\7zSD.sfx" />
     <EmbeddedResource Include="sfx\7zxSD_Deflate.sfx" />
     <EmbeddedResource Include="sfx\7zxSD_LZMA.sfx" />
@@ -86,7 +86,7 @@
     <EmbeddedResource Include="sfx\7zxSD_LZMA2_x64.sfx" />
     <EmbeddedResource Include="sfx\7zxSD_LZMA_x64.sfx" />
     <EmbeddedResource Include="sfx\7zxSD_PPMd_x64.sfx" />
-  </ItemGroup>
+  </ItemGroup> -->
   <ItemGroup>
     <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
     <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Security.Permissions" Version="4.5.0" />
