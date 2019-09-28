@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MassEffectModManager.GameDirectories;
 
 namespace MassEffectModManager.modmanager.objects
 {
@@ -146,24 +147,29 @@ namespace MassEffectModManager.modmanager.objects
             ValidAlternate = true;
         }
 
-        private bool _isSelected;
-        public bool IsSelected
+        public bool IsSelected { get; set; }
+        public void SetupInitialSelection(GameTarget target)
         {
-            get
+            IsSelected = false; //Reset
+            if (Condition == AltDLCCondition.COND_MANUAL) return;
+            var installedDLC = MEDirectories.GetInstalledDLC(target);
+            switch (Condition)
             {
-                if (Condition == AltDLCCondition.COND_MANUAL) return _isSelected;
-                return AutoApplies;
+                case AltDLCCondition.COND_DLC_NOT_PRESENT:
+                case AltDLCCondition.COND_ANY_DLC_NOT_PRESENT:
+                    IsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    break;
+                case AltDLCCondition.COND_DLC_PRESENT:
+                case AltDLCCondition.COND_ANY_DLC_PRESENT:
+                    IsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    break;
+                case AltDLCCondition.COND_ALL_DLC_NOT_PRESENT:
+                    IsSelected = !ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    break;
+                case AltDLCCondition.COND_ALL_DLC_PRESENT:
+                    IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    break;
             }
-            set
-            {
-                if (Condition == AltDLCCondition.COND_MANUAL) _isSelected = value;
-            }
-        }
-
-        //Todo: This has to take a gametarget somehow. Maybe IsSelected and AutoApplies should be methods or something...
-        public bool AutoApplies
-        {
-            get { return true; }
         }
     }
 }

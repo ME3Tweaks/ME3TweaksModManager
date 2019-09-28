@@ -82,6 +82,17 @@ namespace MassEffectModManager.modmanager.usercontrols
                 AlternateOptions.AddRange(job.AlternateFiles);
             }
 
+            foreach (object o in AlternateOptions)
+            {
+                if (o is AlternateDLC altdlc)
+                {
+                    altdlc.SetupInitialSelection(gameTarget);
+                }
+                else if (o is AlternateFile altfile)
+                {
+
+                }
+            }
 
             if (AlternateOptions.Count == 0)
             {

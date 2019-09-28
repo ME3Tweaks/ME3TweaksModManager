@@ -165,5 +165,16 @@ namespace MassEffectModManager.GameDirectories
 
             return files.Where(t => predicate(t)).ToList();
         }
+
+        internal static List<string> GetInstalledDLC(GameTarget target)
+        {
+            var dlcDirectory = MEDirectories.DLCPath(target);
+            if (Directory.Exists(dlcDirectory))
+            {
+                return Directory.GetDirectories(dlcDirectory).Where(x => Path.GetFileName(x).StartsWith("DLC_")).Select(x => Path.GetFileName(x)).ToList();
+            }
+
+            return new List<string>();
+        }
     }
 }

@@ -26,9 +26,9 @@
                 <ItemsControl.Resources>
                     <DataTemplate DataType="{x:Type objects:AlternateDLC}">
                         <DockPanel Margin="0,0,0,5">
-                            <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
                             <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Description}" VerticalAlignment="Center" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="Gray" MaxWidth="350" FontSize="10"/>
+                            <TextBlock Text="{Binding Description}" VerticalAlignment="Center" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="Gray" MaxWidth="350" FontSize="10" Padding="3,0,20,0"/>
                         </DockPanel>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type objects:AlternateFile}" x:Key="AlternateFileTemplate">

@@ -488,6 +488,12 @@ namespace MassEffectModManager.modmanager
                         if (!string.IsNullOrEmpty(altfilesStr))
                         {
                             var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
+                            if (splits.Count == 0)
+                            {
+                                Log.Error("Alternate files was unable to be parsed, no items were parsed.");
+                                LoadFailedReason = $"Specified altfiles descriptor for header {headerAsString} did not successfully parse. Text is not empty, but no values were returned";
+                                return;
+                            }
                             foreach (var split in splits)
                             {
                                 AlternateFile af = new AlternateFile(split, this);
@@ -581,7 +587,7 @@ namespace MassEffectModManager.modmanager
                         customDLCjob.CustomDLCFolderMapping[customDLCSourceSplit[i]] = customDLCDestSplit[i];
                     }
 
-                    //Todo: Custom DLC AltFiles
+                    //Todo: Custom DLC AltFiles - is this supported?
 
                     //AltDLC: Mod Manager 4.4
                     string altdlcstr = (ModDescTargetVersion >= 4.4) ? iniData["CUSTOMDLC"]["altdlc"] : null;
@@ -659,7 +665,7 @@ namespace MassEffectModManager.modmanager
             if (!string.IsNullOrEmpty(incompatibleDLCText))
             {
                 var incompatibleDLCSplits = incompatibleDLCText.Split(';').ToList();
-                foreach(var incompat in incompatibleDLCSplits)
+                foreach (var incompat in incompatibleDLCSplits)
                 {
                     //todo: check if official dlc header or official dlc name. no mod should be incompatible if official dlc is installed.
                 }
