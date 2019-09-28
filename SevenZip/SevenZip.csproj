@@ -32,7 +32,7 @@
     <IntermediateOutputPath>..\Stage\obj\$(Configuration)\</IntermediateOutputPath>
     <OutputPath>..\Stage\$(Configuration)\</OutputPath>
     <RegisterForComInterop>false</RegisterForComInterop>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
@@ -42,7 +42,7 @@
     <DocumentationFile>..\Stage\$(Configuration)\SevenZip.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DefineConstants>TRACE;UNMANAGED</DefineConstants>
+    <DefineConstants></DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
@@ -52,7 +52,7 @@
   <ItemGroup>
     <EmbeddedResource Include="sfx\Configs.xml" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup>TRACE;UNMANAGED
     <Content Include="7z64.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
