@@ -35,12 +35,4 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/*Tests/*.csproj'
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)'
-    includeRootFolder: true
-    archiveType: '7z'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).7z'
-    replaceExistingArchive: true
+    projects: 'MassEffectModManagerCore.Tests\\MassEffectModManagerCore.Tests.csproj'
