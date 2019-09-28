@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MassEffectModManager.GameDirectories;
 using Serilog;
 using MassEffectModManagerCore.modmanager;
 
@@ -90,6 +91,9 @@ namespace MassEffectModManager.modmanager.objects
             if (properties.TryGetValue("AltFile", out string altfile))
             {
                 AltFile = altfile;
+            } else if (properties.TryGetValue("ModAltFile", out string maltfile))
+            {
+                AltFile = maltfile;
             }
             properties.TryGetValue("SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
 
@@ -124,5 +128,29 @@ namespace MassEffectModManager.modmanager.objects
             ValidAlternate = true;
         }
 
+        public bool IsSelected { get; set; }
+        public void SetupInitialSelection(GameTarget target)
+        {
+            IsSelected = false; //Reset
+            if (Condition == AltFileCondition.COND_MANUAL) return;
+            var installedDLC = MEDirectories.GetInstalledDLC(target);
+            switch (Condition)
+            {
+                case AltFileCondition.COND_DLC_NOT_PRESENT:
+                //case AltFileCondition.COND_ANY_DLC_NOT_PRESENT:
+                    IsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    break;
+                case AltFileCondition.COND_DLC_PRESENT:
+                //case AltFileCondition.COND_ANY_DLC_PRESENT:
+                    IsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    break;
+                //case AltFileCondition.COND_ALL_DLC_NOT_PRESENT:
+                //    IsSelected = !ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                //    break;
+                //case AltFileCondition.COND_ALL_DLC_PRESENT:
+                //    IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                //    break;
+            }
+        }
     }
 }

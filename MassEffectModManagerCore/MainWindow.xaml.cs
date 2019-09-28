@@ -28,6 +28,7 @@ using MassEffectModManager.modmanager.windows;
 using MassEffectModManager.ui;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.modmanager;
+using ME3Explorer.Unreal;
 //using ME3Explorer.Packages;
 //using ME3Explorer.Unreal;
 using Microsoft.Win32;
@@ -685,10 +686,9 @@ namespace MassEffectModManager
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadObjectInfo", "Loading package information database", "Loaded package information database");
 
-                //TODO: PORT UNREAL OBJECT INFO
-                //ME3UnrealObjectInfo.loadfromJSON();
-                //ME2UnrealObjectInfo.loadfromJSON();
-                //ME1UnrealObjectInfo.loadfromJSON();
+                ME3UnrealObjectInfo.loadfromJSON();
+                ME2UnrealObjectInfo.loadfromJSON();
+                ME1UnrealObjectInfo.loadfromJSON();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 //bgTask = backgroundTaskEngine.SubmitBackgroundJob("Test", "Running test", "Test completed");
