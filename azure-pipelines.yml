@@ -35,11 +35,10 @@ steps:
 - task: VSTest@2
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\*test*.dll
-      !**\*TestAdapter.dll
-      !**\obj\**
-    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testAssemblyVer2: '**\bin\$(BuildConfiguration)\**\*test*.dll'
+    searchFolder: 
+    platform: 'x64'
+    configuration: 'Release'
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.BinariesDirectory)'
