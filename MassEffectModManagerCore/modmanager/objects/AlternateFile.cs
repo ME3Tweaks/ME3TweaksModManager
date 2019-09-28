@@ -15,9 +15,9 @@ namespace MassEffectModManager.modmanager.objects
     {
         public enum AltFileOperation
         {
-            OPERATION_SUBSTITUTE,
-            OPERATION_NOINSTALL,
-            OPERATION_INSTALL
+            OP_SUBSTITUTE,
+            OP_NOINSTALL,
+            OP_INSTALL
         }
 
         public enum AltFileCondition
@@ -94,7 +94,7 @@ namespace MassEffectModManager.modmanager.objects
             properties.TryGetValue("SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
 
             //workaround for 4.5
-            if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OPERATION_SUBSTITUTE && SubstituteFile != null)
+            if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
             {
                 AltFile = SubstituteFile;
             }
@@ -106,7 +106,7 @@ namespace MassEffectModManager.modmanager.objects
             //This needs reworked from java's hack implementation
             //Need to identify mods using substitution features
 
-            if (Operation == AltFileOperation.OPERATION_INSTALL || Operation == AltFileOperation.OPERATION_SUBSTITUTE)
+            if (Operation == AltFileOperation.OP_INSTALL || Operation == AltFileOperation.OP_SUBSTITUTE)
             {
                 //Validate file
                 var altPath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AltFile);
