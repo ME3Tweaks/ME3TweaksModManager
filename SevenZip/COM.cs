@@ -8,7 +8,7 @@
     using System.Security.Permissions;
     using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
-#if UNMANAGED
+
 
     /// <summary>
     /// The structure to fix x64 and x32 variant size mismatch.
@@ -1080,5 +1080,5 @@
         /// <returns></returns>        
         int SetProperties(IntPtr names, IntPtr values, int numProperties);
     }
-#endif
+
 }

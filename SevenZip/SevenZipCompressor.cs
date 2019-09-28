@@ -19,11 +19,11 @@ namespace SevenZip
     /// compr.CompressDirectory(@"C:\Dir", @"C:\Archive.7z");
     /// </example>
     public sealed partial class SevenZipCompressor
-#if UNMANAGED
+
         : SevenZipBase
-#endif
+
     {
-#if UNMANAGED
+
 
         #region Fields
 
@@ -103,10 +103,10 @@ namespace SevenZip
 
         #endregion
 
-#endif
+
         private static volatile int _lzmaDictionarySize = 1 << 22;
 
-#if UNMANAGED
+
 
         private void CommonInit()
         {
@@ -159,7 +159,7 @@ namespace SevenZip
 
             CommonInit();
         }
-#endif
+
 
         /// <summary>
         /// Checks if the specified stream supports compression.
@@ -173,7 +173,7 @@ namespace SevenZip
             }
         }
 
-#if UNMANAGED
+
 
         #region Private functions
 
@@ -1745,7 +1745,7 @@ namespace SevenZip
 
         #endregion
 
-#endif
+
 
         /// <summary>
         /// Gets or sets the dictionary size for the managed LZMA algorithm.

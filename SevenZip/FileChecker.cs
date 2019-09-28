@@ -3,7 +3,7 @@
     using System;
     using System.IO;
 
-#if UNMANAGED
+
     /// <summary>
     /// The signature checker class. Original code by Siddharth Uppal, adapted by Markhor.
     /// </summary>
@@ -250,5 +250,5 @@
             }
         }
     }
-#endif
+
 }

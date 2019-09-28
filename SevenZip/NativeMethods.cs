@@ -3,7 +3,7 @@ namespace SevenZip
     using System;
     using System.Runtime.InteropServices;
 
-#if UNMANAGED
+
     internal static class NativeMethods
     {
         #region Delegates
@@ -44,5 +44,5 @@ namespace SevenZip
             return def;
         }
     }
-#endif
+
 }

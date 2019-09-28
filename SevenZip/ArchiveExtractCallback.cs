@@ -5,7 +5,7 @@ namespace SevenZip
     using System.Globalization;
     using System.IO;
 
-#if UNMANAGED
+
     /// <summary>
     /// Archive extraction callback to handle the process of unpacking files
     /// </summary>
@@ -586,5 +586,5 @@ namespace SevenZip
             return String.Join(new string(Path.DirectorySeparatorChar, 1), splittedFileName.ToArray());
         }
     }
-#endif
+
 }

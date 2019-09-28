@@ -6,7 +6,7 @@ namespace SevenZip
     using System.Globalization;
     using System.Threading;
 
-#if UNMANAGED
+
 
     /// <summary>
     /// The way of the event synchronization.
@@ -694,5 +694,5 @@ namespace SevenZip
 
         public List<ArchiveFileInfo> ArchiveFileData { get; set; }
     }
-#endif
+
 }

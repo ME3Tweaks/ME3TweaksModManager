@@ -22,11 +22,11 @@ namespace SevenZip
     /// }
     /// </example>
     public sealed partial class SevenZipExtractor
-#if UNMANAGED
+
         : SevenZipBase, IDisposable
-#endif
+
     {
-#if UNMANAGED
+
         private List<ArchiveFileInfo> _archiveFileData;
         private IInArchive _archive;
         private IInStream _archiveStream;
@@ -681,7 +681,7 @@ namespace SevenZip
             callback.FileExists -= FileExistsEventProxy;
         }
         #endregion        
-#endif
+
 
         /// <summary>
         /// Checks if the specified stream supports extraction.
@@ -703,7 +703,7 @@ namespace SevenZip
             }
         }
 
-#if UNMANAGED
+
 
         #region IDisposable Members
 
@@ -1350,7 +1350,7 @@ namespace SevenZip
 
         #endregion
 
-#endif
+
 
         #region LZMA SDK functions
 

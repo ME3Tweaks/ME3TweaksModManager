@@ -1,4 +1,4 @@
-﻿#if UNMANAGED
+﻿
 
 namespace SevenZip
 {
@@ -8,4 +8,4 @@ namespace SevenZip
     public delegate void ExtractFileCallback(ExtractFileCallbackArgs extractFileCallbackArgs);
 }
 
-#endif
+

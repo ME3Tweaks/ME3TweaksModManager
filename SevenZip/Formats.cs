@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
 
-#if UNMANAGED
+
     /// <summary>
     /// Readable archive format enumeration.
     /// </summary>
@@ -590,5 +590,5 @@
             return InExtensionFormats[extension];
         }
     }
-#endif
+
 }

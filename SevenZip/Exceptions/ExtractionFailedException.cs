@@ -1,4 +1,4 @@
-﻿#if UNMANAGED
+﻿
 
 namespace SevenZip
 {
@@ -45,4 +45,4 @@ namespace SevenZip
     }
 }
 
-#endif
+
