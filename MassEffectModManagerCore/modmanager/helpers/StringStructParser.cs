@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace MassEffectModManager.modmanager.helpers
 {
@@ -113,10 +114,10 @@ namespace MassEffectModManager.modmanager.helpers
             //Trim ends if this is a list as ( ) will encapsulte a list of ( ) values, e.g. ((hello),(there)) => (hello),(there)
             if (inputString.Length >= 4)
             {
-                if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')
+                if (inputString[0] == '(' && inputString[1] == '(' && inputString[^1] == ')' && inputString[^2] == ')')
                 {
                     //Debug.WriteLine(inputString);
-                    inputString = inputString.Substring(1, inputString.Length - 3);
+                    inputString = inputString.Substring(1, inputString.Length - 2);
                     //Debug.WriteLine(inputString);
                 }
             }
@@ -131,29 +132,43 @@ namespace MassEffectModManager.modmanager.helpers
                 switch (inputString[i])
                 {
                     case '(':
-                        parenthesisStack.Push((inputString[i], i));
+                        if (!quoteOpen)
+                        {
+                            parenthesisStack.Push((inputString[i], i));
+                        }
+
                         break;
                     case ')':
-                        Debug.WriteLine($"Found ending ) at {i})");
-                        var popped = parenthesisStack.Pop();
-                        if (parenthesisStack.Count == 0)
+                        if (!quoteOpen)
                         {
-                            //Matching brace found
-                            string splitval = inputString.Substring(popped.pos, i - popped.pos + 1);
-                            Debug.WriteLine(splitval);
+                            if (parenthesisStack.Count == 0)
+                            {
+                                Log.Error("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis.");
+                                return new List<string>();
+                            }
 
-                            splits.Add(splitval); //This will include the ( )
+                            var popped = parenthesisStack.Pop();
+                            if (parenthesisStack.Count == 0)
+                            {
+                                //Matching brace found
+                                string splitval = inputString.Substring(popped.pos, i - popped.pos + 1);
+                                Debug.WriteLine(splitval);
+
+                                splits.Add(splitval); //This will include the ( )
+                            }
                         }
+
                         break;
                     case '\"':
+                        //Used to ignore ( ) inside of a quoted string
                         quoteOpen = !quoteOpen;
                         break;
-                    //todo: Ignore quoted items to avoid matching a ) on quotes
-                    default:
-
-                        //do nothing
-                        break;
                 }
+            }
+            if (parenthesisStack.Count > 0)
+            {
+                Log.Error("Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
+                return new List<string>();
             }
             return splits;
         }
