@@ -38,12 +38,14 @@ namespace MassEffectModManagerCore.Tests
             Mod firefight = new Mod(Path.Combine(testingDataPath, "Firefight mod", "moddesc.ini"), Mod.MEGame.Unknown);
             Assert.IsTrue(firefight.ValidMod);
 
+            //SP Controller Support 2.31 - invalid cause missing ) on moddesc.ini altfiles in customdlc.
             Mod spcontroller = new Mod(Path.Combine(testingDataPath, "SP Controller Support", "moddesc.ini"), Mod.MEGame.Unknown);
-            Assert.IsTrue(spcontroller.ValidMod);
+            Assert.IsFalse(spcontroller.ValidMod);
 
             Mod zombiesupercoal = new Mod(Path.Combine(testingDataPath, "Zombie [SuperCoal]", "moddesc.ini"), Mod.MEGame.Unknown);
             Assert.IsTrue(zombiesupercoal.ValidMod);
 
+            // Can't find moddesc.ini
             Mod badPath = new Mod(Path.Combine(testingDataPath, "Not A Path", "moddesc.ini"), Mod.MEGame.Unknown);
             Assert.IsFalse(badPath.ValidMod);
         }

@@ -490,8 +490,8 @@ namespace MassEffectModManager.modmanager
                             var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
                             if (splits.Count == 0)
                             {
-                                Log.Error("Alternate files was unable to be parsed, no items were parsed.");
-                                LoadFailedReason = $"Specified altfiles descriptor for header {headerAsString} did not successfully parse. Text is not empty, but no values were returned";
+                                Log.Error("Alternate files list was unable to be parsed, no items were returned from parenthesis parser.");
+                                LoadFailedReason = $"Specified altfiles descriptor for header {headerAsString} did not successfully parse. Text is not empty, but no values were returned.";
                                 return;
                             }
                             foreach (var split in splits)
@@ -587,8 +587,32 @@ namespace MassEffectModManager.modmanager
                         customDLCjob.CustomDLCFolderMapping[customDLCSourceSplit[i]] = customDLCDestSplit[i];
                     }
 
-                    //Todo: Custom DLC AltFiles - is this supported?
-
+                    //Altfiles: Mod Manager 4.2
+                    string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData["CUSTOMDLC"]["altfiles"] : null;
+                    if (!string.IsNullOrEmpty(altfilesStr))
+                    {
+                        var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
+                        if (splits.Count == 0)
+                        {
+                            Log.Error("Alternate files list was unable to be parsed, no items were returned from parenthesis parser.");
+                            LoadFailedReason = $"Specified altfiles descriptor for header CUSTOMDLC did not successfully parse. Text is not empty, but no values were returned.";
+                            return;
+                        }
+                        foreach (var split in splits)
+                        {
+                            AlternateFile af = new AlternateFile(split, this);
+                            if (af.ValidAlternate)
+                            {
+                                customDLCjob.AlternateFiles.Add(af);
+                            }
+                            else
+                            {
+                                //Error is logged in constructor of AlternateFile
+                                LoadFailedReason = af.LoadFailedReason;
+                                return;
+                            }
+                        }
+                    }
                     //AltDLC: Mod Manager 4.4
                     string altdlcstr = (ModDescTargetVersion >= 4.4) ? iniData["CUSTOMDLC"]["altdlc"] : null;
                     if (!string.IsNullOrEmpty(altdlcstr))
