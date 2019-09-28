@@ -32,13 +32,11 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\bin\$(BuildConfiguration)\**\*test*.dll'
-    searchFolder: 
-    platform: 'x64'
-    configuration: 'Release'
+    command: 'test'
+    projects: '**/*Tests/*.csproj'
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.BinariesDirectory)'
