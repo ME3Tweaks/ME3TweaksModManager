@@ -54,6 +54,15 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logMixinStartup, value);
         }
 
+        private static bool _logModInstallation = false;
+        public static bool LogModInstallation
+        {
+            get => _logModInstallation;
+            set => SetProperty(ref _logModInstallation, value);
+        }
+
+        
+
         private static string _modLibraryPath;
         public static string ModLibraryPath
         {
@@ -73,6 +82,7 @@ namespace MassEffectModManagerCore.modmanager
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
+            LogModInstallation = LoadSettingBool(settingsIni, "Logging", "LogModInstallation", false);
             ModLibraryPath = LoadSettingString(settingsIni, "ModLibrary", "LibraryPath", null);
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             Loaded = true;
@@ -141,6 +151,7 @@ namespace MassEffectModManagerCore.modmanager
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
             SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
+            SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
             try

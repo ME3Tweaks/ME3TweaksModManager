@@ -72,6 +72,7 @@
                         <MenuItem Header="Logging" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Name="LogModStartup_MenuItem" Header="Log Mod Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True"/>
                         <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True"/>
+                        <MenuItem Name="LogModInstall_MenuItem" Header="Log Mod Installation" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True"/>
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Check for content updates" Command="{Binding CheckForContentUpdatesCommand}"/>
