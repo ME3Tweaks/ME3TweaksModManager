@@ -10,15 +10,13 @@ using Serilog;
 namespace MassEffectModManagerCore.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class ModValidationTests
     {
-        private string GetTestDirectory() => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private string GetTestDataDirectory() => Path.Combine(GetTestDirectory(), "testdata");
-        private string GetTestModsDirectory() => Path.Combine(GetTestDataDirectory(), "mods");
+
         [TestMethod]
         public void ValidateModLoading()
         {
-            var testingDataPath = GetTestModsDirectory();
+            var testingDataPath = GlobalTest.GetTestModsDirectory();
             Assert.IsTrue(Directory.Exists(testingDataPath), "Directory for testing doesn't exist.");
 
             //Force log startup on.
