@@ -38,8 +38,8 @@ namespace MassEffectModManagerCore.Tests
             var egmCustDLCJob = egm.GetJob(ModJob.JobHeader.CUSTOMDLC);
             Assert.IsNotNull(egmCustDLCJob, "Could not find EGM Custom DLC job!");
             Assert.AreEqual(egm.InstallationJobs.Count, 2, $"EGM: Wrong number of installation jobs for custom dlc! Should be 2, got: {egm.InstallationJobs.Count}");
-            Assert.AreEqual(egmCustDLCJob.AlternateDLCs.Count, 6, $"EGM: Wrong number of alternate DLC on CustomDLC job! Should be 6, got: {egmCustDLCJob.AlternateDLCs.Count,}");
-            Assert.AreEqual(egmCustDLCJob.AlternateFiles.Count, 6, $"EGM: Wrong number of alternate files on CustomDLC job! Should be 1, got: {egmCustDLCJob.AlternateFiles.Count,}");
+            Assert.AreEqual(egmCustDLCJob.AlternateDLCs.Count, 6, $"EGM: Wrong number of alternate DLC on CustomDLC job! Should be 6, got: {egmCustDLCJob.AlternateDLCs.Count}");
+            Assert.AreEqual(egmCustDLCJob.AlternateFiles.Count, 6, $"EGM: Wrong number of alternate files on CustomDLC job! Should be 1, got: {egmCustDLCJob.AlternateFiles.Count}");
             var egmBasegameJob = egm.GetJob(ModJob.JobHeader.BASEGAME);
             Assert.IsNotNull(egmBasegameJob, "EGM Basegame job is null when it should exist!");
             Assert.AreEqual(egmBasegameJob.FilesToInstall.Count, 23, $"EGM basegame job should install 23 files, but we see {egmBasegameJob.FilesToInstall.Count}");
