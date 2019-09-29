@@ -135,16 +135,26 @@ namespace MassEffectModManager.modmanager
         /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same.
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
-        /// <param name="sourceFullPath">Full path of new file to install</param>
+        /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddFileToInstall(string destRelativePath, string sourceFullPath, Mod mod, bool ignoreLoadErrors)
+        internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod, bool ignoreLoadErrors)
         {
-            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(sourceFullPath,mod.Archive))
+            string checkingSourceFile = null;
+            if (JobDirectory != null)
             {
-                return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
+                checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
             }
-            FilesToInstall[destRelativePath] = sourceFullPath;
+            else
+            {
+                //root (legacy)
+                checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, sourceRelativePath);
+            }
+            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
+            {
+                return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
+            }
+            FilesToInstall[destRelativePath] = sourceRelativePath;
             return null;
         }
 
@@ -152,20 +162,21 @@ namespace MassEffectModManager.modmanager
         /// Adds a file to the add/replace list of files to install. This will not replace an existing file in the mapping if the destination path is the same, it will instead throw an error.
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
-        /// <param name="sourceFullPath">Full path of new file to install</param>
+        /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceFullPath, Mod mod, bool ignoreLoadErrors)
+        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod, bool ignoreLoadErrors)
         {
-            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(sourceFullPath, mod.Archive))
+            var checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
+            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
             {
-                return $"Failed to add file to mod job: {sourceFullPath} does not exist but is specified by the job";
+                return $"Failed to add additional file to mod job: {checkingSourceFile} does not exist but is specified by the job";
             }
             if (FilesToInstall.ContainsKey(destRelativePath))
             {
-                return $"Failed to add file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.";
+                return $"Failed to add additional file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.";
             }
-            FilesToInstall[destRelativePath] = sourceFullPath;
+            FilesToInstall[destRelativePath] = sourceRelativePath;
             return null;
         }
 

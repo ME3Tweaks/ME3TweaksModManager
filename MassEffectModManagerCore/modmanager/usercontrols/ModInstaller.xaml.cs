@@ -20,6 +20,7 @@ using MassEffectModManager.gamefileformats.sfar;
 using MassEffectModManager.modmanager.helpers;
 using MassEffectModManager.modmanager.objects;
 using MassEffectModManager.ui;
+using MassEffectModManagerCore.modmanager;
 using Serilog;
 using static MassEffectModManager.modmanager.Mod;
 
@@ -35,18 +36,18 @@ namespace MassEffectModManager.modmanager.usercontrols
         public bool InstallationSucceeded { get; private set; }
         private const int PERCENT_REFRESH_COOLDOWN = 125;
         public bool ModIsInstalling { get; set; }
-        public ModInstaller(Mod mod, GameTarget gameTarget)
+        public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
-            this.Mod = mod;
+            this.ModBeingInstalled = modBeingInstalled;
             this.gameTarget = gameTarget;
             Action = $"Preparing to install";
             InitializeComponent();
         }
 
 
-        public Mod Mod { get; }
+        public Mod ModBeingInstalled { get; }
         private GameTarget gameTarget;
         private DateTime lastPercentUpdateTime;
         public bool InstallationCancelled;
@@ -76,7 +77,7 @@ namespace MassEffectModManager.modmanager.usercontrols
 
 
             //See if any alternate options are available and display them even if they are all autos
-            foreach (var job in Mod.InstallationJobs)
+            foreach (var job in ModBeingInstalled.InstallationJobs)
             {
                 AlternateOptions.AddRange(job.AlternateDLCs);
                 AlternateOptions.AddRange(job.AlternateFiles);
@@ -90,7 +91,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                 }
                 else if (o is AlternateFile altfile)
                 {
-
+                    altfile.SetupInitialSelection(gameTarget);
                 }
             }
 
@@ -104,8 +105,8 @@ namespace MassEffectModManager.modmanager.usercontrols
         private void BeginInstallingMod()
         {
             ModIsInstalling = true;
-            Log.Information($"BeginInstallingMod(): {Mod.ModName}");
-            NamedBackgroundWorker bw = new NamedBackgroundWorker($"ModInstaller-{Mod.ModName}");
+            Log.Information($"BeginInstallingMod(): {ModBeingInstalled.ModName}");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker($"ModInstaller-{ModBeingInstalled.ModName}");
             bw.WorkerReportsProgress = true;
             bw.DoWork += InstallModBackgroundThread;
             bw.RunWorkerCompleted += ModInstallationCompleted;
@@ -117,7 +118,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
         {
             Log.Information($"Mod Installer Background thread starting");
-            var installationJobs = Mod.InstallationJobs;
+            var installationJobs = ModBeingInstalled.InstallationJobs;
             var gamePath = gameTarget.TargetPath;
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
 
@@ -133,9 +134,10 @@ namespace MassEffectModManager.modmanager.usercontrols
             var customDLCMapping = installationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
             if (customDLCMapping != null)
             {
+                customDLCMapping = new Dictionary<string, string>(customDLCMapping); //prevent altering the source object
                 foreach (var mapping in customDLCMapping)
                 {
-                    numFilesToInstall += Directory.GetFiles(Path.Combine(Mod.ModPath, mapping.Key), "*", SearchOption.AllDirectories).Length;
+                    numFilesToInstall += Directory.GetFiles(Path.Combine(ModBeingInstalled.ModPath, mapping.Key), "*", SearchOption.AllDirectories).Length;
                 }
             }
 
@@ -155,50 +157,138 @@ namespace MassEffectModManager.modmanager.usercontrols
                     lastPercentUpdateTime = now;
                 }
             }
+            var unpackedJobInstallationMapping = new Dictionary<ModJob.JobHeader, Dictionary<string, string>>();
+
             foreach (var job in installationJobs)
             {
-                Log.Information($"Processing installation job: {job.Header}");
-                var alternateFiles = job.AlternateFiles;
-                var alternateDLC = job.AlternateDLCs;
+                Log.Information($"Preprocessing installation job: {job.Header}");
+                var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected).ToList();
+                var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     #region Installation: CustomDLC
-                    //Already have variable from before
+                    var installationMapping = new Dictionary<string, string>();
+                    unpackedJobInstallationMapping[job.Header] = installationMapping;
+                    foreach (var altdlc in alternateDLC)
+                    {
+                        if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
+                        {
+                            customDLCMapping[altdlc.AlternateDLCFolder] = altdlc.DestinationDLCFolder;
+                        }
+                    }
+
 
                     foreach (var mapping in customDLCMapping)
                     {
-                        var source = Path.Combine(Mod.ModPath, mapping.Key);
+                        //Mapping is done as DESTINATIONFILE = SOURCEFILE so you can override keys
+                        var source = Path.Combine(ModBeingInstalled.ModPath, mapping.Key);
                         var target = Path.Combine(gameDLCPath, mapping.Value);
 
-                        var allSourceDirFiles = Directory.GetFiles(source).Select(x => x.Substring(source.Length)).ToList();
+                        //get list of all normal files we will install
+                        var allSourceDirFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories).Select(x => x.Substring(ModBeingInstalled.ModPath.Length)).ToList();
+
+                        //loop over every file 
                         foreach (var sourceFile in allSourceDirFiles)
                         {
 
+                            bool altApplied = false;
                             foreach (var altFile in alternateFiles)
                             {
+                                //todo: Support wildcards if OP_NOINSTALL
+                                if (altFile.ModFile.Equals(sourceFile, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    //Alt applies to this file
+                                    switch (altFile.Operation)
+                                    {
+                                        case AlternateFile.AltFileOperation.OP_NOINSTALL:
+                                            CLog.Information($"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                            numFilesToInstall--;
+                                            altApplied = true;
+                                            break;
+                                        case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
+                                            CLog.Information($"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                            installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                            altApplied = true;
+                                            break;
+                                    }
+                                    break;
+                                }
+                            }
+
+                            if (altApplied) continue; //no further processing for file
+                            installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
+                        }
+
+                        foreach (var altdlc in alternateDLC)
+                        {
+                            if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC)
+                            {
+                                string alternatePathRoot = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, altdlc.AlternateDLCFolder);
+                                //Todo: Change to Filesystem Interposer to support installation from archives
+                                var filesToAdd = Directory.GetFiles(alternatePathRoot).Select(x => x.Substring(ModBeingInstalled.ModPath.Length).TrimStart('\\')).ToList();
+                                foreach (var fileToAdd in filesToAdd)
+                                {
+                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, Path.GetFileName(fileToAdd));
+                                    CLog.Information($"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
+
+                                    installationMapping[destFile] = fileToAdd;
+                                }
                             }
                         }
 
-                        Dictionary<string,string> installationMapping = new Dictionary<string, string>();
                         Log.Information($"Copying CustomDLC to target: {source} -> {target}");
                         CopyDir.CopyFiles_ProgressBar(installationMapping, FileInstalledCallback);
                         Log.Information($"Installed CustomDLC {mapping.Value}");
                     }
+
                     #endregion
                 }
                 else if (job.Header == ModJob.JobHeader.BASEGAME)
                 {
                     #region Installation: BASEGAME
+                    var installationMapping = new Dictionary<string, string>();
+                    unpackedJobInstallationMapping[job.Header] = installationMapping;
                     foreach (var entry in job.FilesToInstall)
                     {
-                        var destPath = Path.GetFullPath(Path.Combine(gamePath, entry.Key.TrimStart('/', '\\')));
-                        Log.Information($"Installing BASEGAME file: {entry.Value} -> {destPath}");
-                        File.Copy(entry.Value, destPath, true);
-                        FileInstalledCallback();
+                        //Key is destination, value is source file
+                        var destFile = entry.Key;
+                        var sourceFile = entry.Value;
+
+                        bool altApplied = false;
+                        foreach (var altFile in alternateFiles)
+                        {
+                            //todo: Support wildcards if OP_NOINSTALL
+                            if (altFile.ModFile.Equals(sourceFile, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                //Alt applies to this file
+                                switch (altFile.Operation)
+                                {
+                                    case AlternateFile.AltFileOperation.OP_NOINSTALL:
+                                        CLog.Information($"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                        numFilesToInstall--;
+                                        altApplied = true;
+                                        break;
+                                    case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
+                                        CLog.Information($"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                        installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                        altApplied = true;
+                                        break;
+                                }
+                                break;
+                            }
+                        }
+
+                        if (altApplied) continue; //no further processing for file
+                        installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
+
+
+                        installationMapping[destFile] = sourceFile;
+                        Log.Information($"Adding {job.Header} file to installation queue: {entry.Value} -> {destFile}");
+
                     }
                     #endregion
                 }
-                else if (Mod.Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
+                else if (ModBeingInstalled.Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
                 {
                     #region Installation: DLC (Unpacked and SFAR) - ME3 ONLY
                     string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
@@ -232,13 +322,19 @@ namespace MassEffectModManager.modmanager.usercontrols
                     #endregion
                 }
             }
+
+            //Perform unpacked installation
+            //Todo: Implement archive and unpacked support of mods
+
+
+
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
 
             //Install supporting ASI files if necessary
-            if (Mod.Game != MEGame.ME2)
+            if (ModBeingInstalled.Game != MEGame.ME2)
             {
                 Action = "Installing support files";
-                string asiFname = Mod.Game == MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
+                string asiFname = ModBeingInstalled.Game == MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
                 string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
 
                 var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
@@ -375,7 +471,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         /// <returns></returns>
         private bool PrecheckOfficialHeaders(string gameDLCPath, List<ModJob> installationJobs)
         {
-            if (Mod.Game != MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
+            if (ModBeingInstalled.Game != MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
             {
                 if (job.Header == ModJob.JobHeader.BALANCE_CHANGES) continue; //Don't check balance changes
@@ -389,7 +485,7 @@ namespace MassEffectModManager.modmanager.usercontrols
                     bool cancel = false;
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        string message = $"{Mod.ModName} installs files into the {ModJob.HeadersToDLCNamesMap[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]}) DLC, which is not installed.";
+                        string message = $"{ModBeingInstalled.ModName} installs files into the {ModJob.HeadersToDLCNamesMap[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]}) DLC, which is not installed.";
                         if (job.RequirementText != null)
                         {
                             message += $"\n{job.RequirementText}";
@@ -415,7 +511,7 @@ namespace MassEffectModManager.modmanager.usercontrols
 
         private void InstallStart_Click(object sender, RoutedEventArgs e)
         {
-
+            BeginInstallingMod();
         }
 
         private void InstallCancel_Click(object sender, RoutedEventArgs e)

@@ -69,7 +69,7 @@ namespace MassEffectModManager.modmanager.objects
 
             Enum.TryParse(properties["Condition"], out Condition);
             Enum.TryParse(properties["ModOperation"], out Operation);
-            
+
 
             if (properties.TryGetValue("Description", out string description))
             {
@@ -78,7 +78,7 @@ namespace MassEffectModManager.modmanager.objects
 
             if (properties.TryGetValue("ModFile", out string modfile))
             {
-                ModFile = modfile;
+                ModFile = modfile.TrimStart('\\', '/');
             }
             else
             {
@@ -91,7 +91,8 @@ namespace MassEffectModManager.modmanager.objects
             if (properties.TryGetValue("AltFile", out string altfile))
             {
                 AltFile = altfile;
-            } else if (properties.TryGetValue("ModAltFile", out string maltfile))
+            }
+            else if (properties.TryGetValue("ModAltFile", out string maltfile))
             {
                 AltFile = maltfile;
             }
@@ -137,19 +138,19 @@ namespace MassEffectModManager.modmanager.objects
             switch (Condition)
             {
                 case AltFileCondition.COND_DLC_NOT_PRESENT:
-                //case AltFileCondition.COND_ANY_DLC_NOT_PRESENT:
+                    //case AltFileCondition.COND_ANY_DLC_NOT_PRESENT:
                     IsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltFileCondition.COND_DLC_PRESENT:
-                //case AltFileCondition.COND_ANY_DLC_PRESENT:
+                    //case AltFileCondition.COND_ANY_DLC_PRESENT:
                     IsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
-                //case AltFileCondition.COND_ALL_DLC_NOT_PRESENT:
-                //    IsSelected = !ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
-                //    break;
-                //case AltFileCondition.COND_ALL_DLC_PRESENT:
-                //    IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
-                //    break;
+                    //case AltFileCondition.COND_ALL_DLC_NOT_PRESENT:
+                    //    IsSelected = !ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    //    break;
+                    //case AltFileCondition.COND_ALL_DLC_PRESENT:
+                    //    IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    //    break;
             }
         }
     }

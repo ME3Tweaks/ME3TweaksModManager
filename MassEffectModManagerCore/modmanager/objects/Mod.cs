@@ -185,11 +185,6 @@ namespace MassEffectModManager.modmanager
             }
         }
 
-        /// <summary>
-        /// This is used to make CLog statements shorter and easier to read
-        /// </summary>
-        private static bool LogModStartup => Settings.LogModStartup;
-
         private void loadMod(string iniText, MEGame expectedGame)
         {
             Game = expectedGame; //we will assign this later. This is for startup errors only
@@ -227,7 +222,7 @@ namespace MassEffectModManager.modmanager
 
             Int32.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode);
             ModClassicUpdateCode = modupdatecode;
-            CLog.Information($"Read modmaker update code (or used default): {ModClassicUpdateCode}", LogModStartup);
+            CLog.Information($"Read modmaker update code (or used default): {ModClassicUpdateCode}", Settings.LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
             {
                 Log.Error($"{ModName} has both an updater service update code and a modmaker code assigned. This is not allowed.");
@@ -252,7 +247,7 @@ namespace MassEffectModManager.modmanager
                     //Check if this is in ME3 game directory. If it's null, it might be a legacy mod
                     if (game == null)
                     {
-                        CLog.Warning("Game indicator is null. This may be mod from pre-Mod Manager 6, or developer did not specify the game. Defaulting to ME3", LogModStartup);
+                        CLog.Warning("Game indicator is null. This may be mod from pre-Mod Manager 6, or developer did not specify the game. Defaulting to ME3", Settings.LogModStartup);
                         Game = MEGame.ME3;
                     }
                     else
@@ -281,7 +276,8 @@ namespace MassEffectModManager.modmanager
                     ValidMod = true;
                 }
 
-                CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
+                CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
+                return;
             }
 
             if (ModDescTargetVersion >= 2.0 && ModDescTargetVersion < 3) //Mod Manager 2 (2013)
@@ -302,7 +298,7 @@ namespace MassEffectModManager.modmanager
 
             //This was in Java version - I belevie this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
-            CLog.Information("Parsing mod using moddesc target: " + ModDescTargetVersion, LogModStartup);
+            CLog.Information("Parsing mod using moddesc target: " + ModDescTargetVersion, Settings.LogModStartup);
 
             #region Header Loops
             #region BASEGAME and OFFICIAL HEADERS
@@ -319,9 +315,9 @@ namespace MassEffectModManager.modmanager
                     var jobSubdirectory = iniData[headerAsString]["moddir"];
                     if (jobSubdirectory != null)
                     {
-                        CLog.Information("Found INI header with moddir specified: " + headerAsString, LogModStartup);
-                        CLog.Information("Subdirectory (moddir): " + jobSubdirectory, LogModStartup);
-                        string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
+                        CLog.Information("Found INI header with moddir specified: " + headerAsString, Settings.LogModStartup);
+                        CLog.Information("Subdirectory (moddir): " + jobSubdirectory, Settings.LogModStartup);
+                        //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
 
                         //Replace files (ModDesc 2.0)
                         string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
@@ -365,7 +361,7 @@ namespace MassEffectModManager.modmanager
                                 return;
                             }
 
-                            CLog.Information($"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", LogModStartup);
+                            CLog.Information($"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                         }
 
                         List<string> addFilesSourceSplit = null;
@@ -383,7 +379,7 @@ namespace MassEffectModManager.modmanager
                                 return;
                             }
 
-                            CLog.Information($"Parsing addfiles/addfilestargets on {headerAsString}. Found {addFilesTargetSplit.Count} items in lists", LogModStartup);
+                            CLog.Information($"Parsing addfiles/addfilestargets on {headerAsString}. Found {addFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                         }
 
                         //Add files read only targets
@@ -411,7 +407,7 @@ namespace MassEffectModManager.modmanager
                                 return;
                             }
 
-                            CLog.Information($"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", LogModStartup);
+                            CLog.Information($"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
                         }
 
                         List<string> removeFilesSplit = new List<string>();
@@ -419,7 +415,7 @@ namespace MassEffectModManager.modmanager
                         if (removeFilesTargetList != null)
                         {
                             removeFilesSplit = removeFilesTargetList.Split(';').ToList();
-                            CLog.Information($"Parsing removefilestargets on {headerAsString}. Found {removeFilesSplit.Count} items in list", LogModStartup);
+                            CLog.Information($"Parsing removefilestargets on {headerAsString}. Found {removeFilesSplit.Count} items in list", Settings.LogModStartup);
 
                             if (removeFilesSplit.Any(x => x.Contains("..")))
                             {
@@ -433,7 +429,7 @@ namespace MassEffectModManager.modmanager
                         //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
                         //In Java Mod Manager, this required 4.1 moddesc
                         string jobRequirement = iniData[headerAsString]["jobdescription"];
-                        CLog.Information($"Read job requirement text: {jobRequirement}", LogModStartup && jobRequirement != null);
+                        CLog.Information($"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
 
                         //TODO: Bini support
                         //TODO: Basegame support
@@ -454,10 +450,9 @@ namespace MassEffectModManager.modmanager
                         {
                             for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
                             {
-                                string sourceFile = FilesystemInterposer.PathCombine(IsInArchive, fullSubPath, replaceFilesSourceSplit[i]);
                                 string destFile = replaceFilesTargetSplit[i];
-                                CLog.Information($"Adding file to installation queue: {sourceFile} => {destFile}", LogModStartup);
-                                string failurereason = headerJob.AddFileToInstall(destFile, sourceFile, this, ignoreLoadErrors);
+                                CLog.Information($"Adding file to job installation queue: {replaceFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                                string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this, ignoreLoadErrors);
                                 if (failurereason != null)
                                 {
                                     Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
@@ -472,10 +467,9 @@ namespace MassEffectModManager.modmanager
                         {
                             for (int i = 0; i < addFilesSourceSplit.Count; i++)
                             {
-                                string sourceFile = FilesystemInterposer.PathCombine(IsInArchive, fullSubPath, addFilesSourceSplit[i]);
                                 string destFile = addFilesTargetSplit[i];
-                                CLog.Information($"Adding file to installation queue (addition): {sourceFile} => {destFile}", LogModStartup);
-                                string failurereason = headerJob.AddAdditionalFileToInstall(destFile, sourceFile, this, ignoreLoadErrors); //add files are layered on top
+                                CLog.Information($"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                                string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this, ignoreLoadErrors); //add files are layered on top
                                 if (failurereason != null)
                                 {
                                     Log.Error($"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
@@ -520,7 +514,7 @@ namespace MassEffectModManager.modmanager
                             }
                         }
 
-                        CLog.Information($"Successfully made mod job for {headerAsString}", LogModStartup);
+                        CLog.Information($"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
                         InstallationJobs.Add(headerJob);
                     }
                 }
@@ -537,7 +531,7 @@ namespace MassEffectModManager.modmanager
 
                 if (customDLCSourceDirsStr != null && customDLCDestDirsStr != null)
                 {
-                    CLog.Information("Found CUSTOMDLC header", LogModStartup);
+                    CLog.Information("Found CUSTOMDLC header", Settings.LogModStartup);
 
                     var customDLCSourceSplit = customDLCSourceDirsStr.Split(';').ToList();
                     var customDLCDestSplit = customDLCDestDirsStr.Split(';').ToList();
@@ -644,7 +638,7 @@ namespace MassEffectModManager.modmanager
                         }
                     }
 
-                    CLog.Information($"Successfully made mod job for CUSTOMDLC", LogModStartup);
+                    CLog.Information($"Successfully made mod job for CUSTOMDLC", Settings.LogModStartup);
                     InstallationJobs.Add(customDLCjob);
                 }
                 else if ((customDLCSourceDirsStr != null) != (customDLCDestDirsStr != null))
@@ -768,17 +762,17 @@ namespace MassEffectModManager.modmanager
             #region Backwards Compatibilty
 
             //Mod Manager 2.0 supported "modcoal" flag that would replicate Mod Manager 1.0 functionality of coalesced swap since basegame jobs at the time
-            //were not yet supported
+            //were not yet supportedd
 
             string modCoalFlag = ModDescTargetVersion == 2 ? iniData["ModInfo"]["modcoal"] : null;
             //This check could be rewritten to simply check for non zero string. However, for backwards compatibility sake, we will keep the original
             //method of checking in place.
             if (modCoalFlag != null && Int32.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
             {
-                CLog.Information("Mod targets ModDesc 2.0, found modcoal flag", LogModStartup);
+                CLog.Information("Mod targets ModDesc 2.0, found modcoal flag", Settings.LogModStartup);
                 if (!CheckAndCreateLegacyCoalescedJob())
                 {
-                    CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
+                    CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
                     return;
                 }
             }
@@ -788,12 +782,12 @@ namespace MassEffectModManager.modmanager
             //Thread.Sleep(500);
             if (InstallationJobs.Count > 0)
             {
-                CLog.Information($"Finalizing: {InstallationJobs.Count} installation job(s) were found.", LogModStartup);
+                CLog.Information($"Finalizing: {InstallationJobs.Count} installation job(s) were found.", Settings.LogModStartup);
                 ValidMod = true;
             }
             else if (emptyModIsOK) //Empty Load OK is used by Mixins. This may be redone for MM6
             {
-                CLog.Information($"Finalizing: No installation jobs were found, but empty mods are allowed in this loading session.", LogModStartup);
+                CLog.Information($"Finalizing: No installation jobs were found, but empty mods are allowed in this loading session.", Settings.LogModStartup);
                 ValidMod = true;
             }
             else
@@ -802,7 +796,7 @@ namespace MassEffectModManager.modmanager
                 LoadFailedReason = "No installation jobs were specified. This mod does nothing.";
             }
 
-            CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", LogModStartup);
+            CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
         }
 
 
@@ -828,7 +822,13 @@ namespace MassEffectModManager.modmanager
             }
 
             ModJob basegameJob = new ModJob(ModJob.JobHeader.BASEGAME);
-            basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", legacyCoalFile, this, ignoreLoadErrors);
+            string failurereason = basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", "Coalesced.bin", this, ignoreLoadErrors);
+            if (failurereason != null)
+            {
+                Log.Error($"Error occured while creating basegame job for legacy 1.0 mod: {failurereason}");
+                LoadFailedReason = $"Error occured while creating basegame job for legacy 1.0 mod: {failurereason}";
+                return false;
+            }
             InstallationJobs.Add(basegameJob);
             return true;
         }
