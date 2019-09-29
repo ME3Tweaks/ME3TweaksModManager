@@ -143,7 +143,8 @@ namespace MassEffectModManager.modmanager.helpers
                         {
                             if (parenthesisStack.Count == 0)
                             {
-                                Log.Error("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis.");
+                                Log.Error("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
+                                throw new Exception("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
                                 return new List<string>();
                             }
 
