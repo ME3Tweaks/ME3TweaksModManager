@@ -11,6 +11,7 @@ using IniParser.Model;
 using IniParser.Parser;
 using MassEffectModManager;
 using Microsoft.VisualBasic;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -142,6 +143,14 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
+            try
+            {
+                File.WriteAllText(SettingsPath, settingsIni.ToString());
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error commiting settings: " + App.FlattenException(e));
+            }
         }
 
         private static void SaveSettingString(IniData settingsIni, string section, string key, string value)

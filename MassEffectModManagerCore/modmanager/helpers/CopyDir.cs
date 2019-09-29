@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MassEffectModManager.modmanager.helpers
@@ -50,6 +51,7 @@ namespace MassEffectModManager.modmanager.helpers
                 //    long length = new System.IO.FileInfo(fi.FullName).Length;
                 //    displayName += " (" + ByteSize.FromBytes(length) + ")";
                 //}
+
                 try
                 {
                     fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
@@ -59,6 +61,8 @@ namespace MassEffectModManager.modmanager.helpers
                     Log.Error("Error copying file: " + fi + " -> " + Path.Combine(target.FullName, fi.Name) + ": " + e.Message);
                     throw e;
                 }
+
+
                 // Log.Information(@"Copying {0}\{1}", target.FullName, fi.Name);
                 numdone++;
                 fileCopiedCallback?.Invoke();
@@ -70,6 +74,19 @@ namespace MassEffectModManager.modmanager.helpers
                 DirectoryInfo nextTargetSubDir =
                     target.CreateSubdirectory(diSourceSubDir.Name);
                 numdone = CopyAll_ProgressBar(diSourceSubDir, nextTargetSubDir, fileCopiedCallback, total, numdone);
+            }
+            return numdone;
+        }
+
+        public static int CopyFiles_ProgressBar(Dictionary<string, string> fileMapping, Action fileCopiedCallback = null)
+        {
+            int numdone = 0;
+            foreach (var singleMapping in fileMapping)
+            {
+                var source = singleMapping.Key;
+                var dest = singleMapping.Value;
+
+
             }
             return numdone;
         }

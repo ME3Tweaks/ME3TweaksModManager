@@ -67,6 +67,8 @@ namespace MassEffectModManager.modmanager
                     sb.AppendLine($"ModMaker code: {ModModMakerID}");
                 }
 
+                sb.AppendLine("-------Installation information--------");
+                sb.AppendLine("Targets ModDesc " + ModDescTargetVersion);
                 var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
                 {
@@ -82,6 +84,13 @@ namespace MassEffectModManager.modmanager
                 return sb.ToString();
             }
         }
+
+        /// <summary>
+        /// Get's the installation job associated with the header, or null if that job is not defined for this mod.
+        /// </summary>
+        /// <param name="header">Header to find job for</param>
+        /// <returns>Associated job with this header, null otherwise</returns>
+        public ModJob GetJob(ModJob.JobHeader header) => InstallationJobs.FirstOrDefault(x => x.Header == header);
 
         public string ModVersionString { get; set; }
         public double ParsedModVersion { get; set; }

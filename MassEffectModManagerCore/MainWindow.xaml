@@ -56,6 +56,7 @@
         </Storyboard>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
         <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
     </Window.Resources>
@@ -166,7 +167,7 @@
                     <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
                     <MenuItem Header="ALOT Installer" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked">
                         <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/alot_16.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
+                            <Image Source="/modmanager/toolicons/alot_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Mass Effect INI Modder" Name="MassEffectIniModder_MenuItem" Click="LaunchExternalTool_Clicked">
@@ -258,13 +259,17 @@
 
                 <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold"/>
                 <TextBlock Text="{Binding InstallationTargetText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
-                <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0">
+                <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,2,0" HorizontalContentAlignment="Stretch">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <DockPanel HorizontalAlignment="Stretch">
+                            <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
                                 <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
                                 <Image DockPanel.Dock="Left" Source="/images/origin.png" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
-                                <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0"/>
+                                <StackPanel ToolTip="This target has ALOT texture mod installed."  DockPanel.Dock="Right" Orientation="Horizontal"  Margin="3,0,0,0" Visibility="{Binding ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+                                    <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
+                                    <TextBlock Text="{Binding ALOTVersion}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
                             </DockPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>

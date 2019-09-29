@@ -39,7 +39,8 @@
     <None Remove="modmanager\starterkit\Default.sfar" />
     <None Remove="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
     <None Remove="modmanager\starterkit\StarterKitTLK.xml" />
-    <None Remove="modmanager\toolicons\alot_16.png" />
+    <None Remove="modmanager\toolicons\alot_32.png" />
+    <None Remove="modmanager\toolicons\alot_big.png" />
     <None Remove="modmanager\toolicons\masseffectinimodder_32.png" />
     <None Remove="modmanager\toolicons\masseffectinimodder_big.png" />
     <None Remove="modmanager\toolicons\masseffectmodder_32.png" />
@@ -47,6 +48,7 @@
     <None Remove="modmanager\toolicons\masseffectrandomizer_32.png" />
     <None Remove="modmanager\toolicons\masseffectrandomizer_big.png" />
     <None Remove="modmanager\toolicons\me3explorer_32.png" />
+    <None Remove="modmanager\toolicons\me3explorer_big.png" />
     <None Remove="staticfiles\objectinfos\ME1ObjectInfo.json" />
     <None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
     <None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
@@ -117,7 +119,8 @@
     <Resource Include="images\gameicons\Unknown_48.ico" />
     <Resource Include="images\loadingspinner.png" />
     <Resource Include="images\origin.png" />
-    <Resource Include="modmanager\toolicons\alot_16.png" />
+    <Resource Include="modmanager\toolicons\alot_32.png" />
+    <Resource Include="modmanager\toolicons\alot_big.png" />
     <Resource Include="modmanager\toolicons\masseffectinimodder_32.png" />
     <Resource Include="modmanager\toolicons\masseffectmodder_32.png" />
     <Resource Include="modmanager\toolicons\masseffectmodder_big.png" />
@@ -125,6 +128,7 @@
     <Resource Include="modmanager\toolicons\masseffectrandomizer_big.png" />
     <Resource Include="modmanager\toolicons\me3explorer_32.png" />
     <Resource Include="modmanager\toolicons\masseffectinimodder_big.png" />
+    <Resource Include="modmanager\toolicons\me3explorer_big.png" />
   </ItemGroup>
 
 </Project>

@@ -158,30 +158,30 @@ namespace MassEffectModManager.modmanager.usercontrols
             foreach (var job in installationJobs)
             {
                 Log.Information($"Processing installation job: {job.Header}");
-
+                var alternateFiles = job.AlternateFiles;
+                var alternateDLC = job.AlternateDLCs;
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     #region Installation: CustomDLC
                     //Already have variable from before
-                    void callback()
-                    {
-                        numdone++;
-                        var now = DateTime.Now;
-                        //Debug.WriteLine("Time delta: " + (now - lastPercentUpdateTime).Milliseconds);
-                        if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
-                        {
-                            //Don't update UI too often. Once per second is enough.
-                            Percent = (int)(numdone * 100.0 / numFilesToInstall);
-                            lastPercentUpdateTime = now;
-                        }
-                    }
 
                     foreach (var mapping in customDLCMapping)
                     {
                         var source = Path.Combine(Mod.ModPath, mapping.Key);
                         var target = Path.Combine(gameDLCPath, mapping.Value);
+
+                        var allSourceDirFiles = Directory.GetFiles(source).Select(x => x.Substring(source.Length)).ToList();
+                        foreach (var sourceFile in allSourceDirFiles)
+                        {
+
+                            foreach (var altFile in alternateFiles)
+                            {
+                            }
+                        }
+
+                        Dictionary<string,string> installationMapping = new Dictionary<string, string>();
                         Log.Information($"Copying CustomDLC to target: {source} -> {target}");
-                        CopyDir.CopyAll_ProgressBar(new DirectoryInfo(source), new DirectoryInfo(target), callback);
+                        CopyDir.CopyFiles_ProgressBar(installationMapping, FileInstalledCallback);
                         Log.Information($"Installed CustomDLC {mapping.Value}");
                     }
                     #endregion

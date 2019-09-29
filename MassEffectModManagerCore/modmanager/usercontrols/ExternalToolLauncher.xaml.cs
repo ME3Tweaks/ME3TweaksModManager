@@ -41,6 +41,29 @@ namespace MassEffectModManager.modmanager.usercontrols
         private string arguments;
         public string Action { get; set; }
         public int PercentDownloaded { get; set; }
+
+        public string ToolImageSource
+        {
+            get
+            {
+                switch (tool)
+                {
+                    case ALOTInstaller:
+                        return "/modmanager/toolicons/alot_big.png";
+                    case MER:
+                        return "/modmanager/toolicons/masseffectrandomizer_big.png";
+                    case ME3Explorer:
+                        return "/modmanager/toolicons/me3explorer_big.png";
+                    case MEM:
+                        return "/modmanager/toolicons/masseffectmodder_big.png";
+                    case MEIM:
+                        return "/modmanager/toolicons/masseffectinimodder_big.png";
+                    default:
+                        return null;
+                }
+            }
+        }
+
         public ExternalToolLauncher(string tool, string arguments = null)
         {
             DataContext = this;
