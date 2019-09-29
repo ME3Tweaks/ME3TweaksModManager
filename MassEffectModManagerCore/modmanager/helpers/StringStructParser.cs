@@ -121,7 +121,7 @@ namespace MassEffectModManager.modmanager.helpers
                     //Debug.WriteLine(inputString);
                 }
             }
-
+            //Debug.WriteLine(inputString);
             //Find matching parenthesis
             Stack<(char c, int pos)> parenthesisStack = new Stack<(char c, int pos)>();
             List<string> splits = new List<string>();
@@ -152,7 +152,7 @@ namespace MassEffectModManager.modmanager.helpers
                             {
                                 //Matching brace found
                                 string splitval = inputString.Substring(popped.pos, i - popped.pos + 1);
-                                Debug.WriteLine(splitval);
+                                //Debug.WriteLine(splitval);
 
                                 splits.Add(splitval); //This will include the ( )
                             }
