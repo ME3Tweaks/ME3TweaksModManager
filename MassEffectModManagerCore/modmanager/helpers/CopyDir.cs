@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace MassEffectModManager.modmanager.helpers
+namespace MassEffectModManagerCore.modmanager.helpers
 {
     /// <summary>
     /// Helper class for copying a directory with progress

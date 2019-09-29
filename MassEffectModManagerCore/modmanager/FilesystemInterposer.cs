@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using CommandLine;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager

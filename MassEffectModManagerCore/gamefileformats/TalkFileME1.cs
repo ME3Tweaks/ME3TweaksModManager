@@ -4,14 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using ME3Explorer.Packages;
 using System.Diagnostics;
-using MassEffectModManager.modmanager;
+using MassEffectModManagerCore.modmanager;
 
-namespace MassEffectModManager.gamefileformats
+namespace MassEffectModManagerCore.gamefileformats
 {
     public class TalkFileME1 : IEquatable<TalkFileME1>
     {

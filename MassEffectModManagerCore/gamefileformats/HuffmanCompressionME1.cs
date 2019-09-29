@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using MassEffectModManager.gamefileformats;
-using MassEffectModManager.modmanager;
+using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Packages;
 using ME3Explorer.Unreal;
 
-namespace MassEffectModManager.gamefileformats
+namespace MassEffectModManagerCore.gamefileformats
 {
     class HuffmanCompressionME1
     {

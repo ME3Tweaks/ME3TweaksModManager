@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.helpers;
 using Serilog;
 
-namespace MassEffectModManager.modmanager.objects
+namespace MassEffectModManagerCore.modmanager.objects
 {
 
     public class GameTarget : IEqualityComparer<GameTarget>, INotifyPropertyChanged

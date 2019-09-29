@@ -11,13 +11,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using ByteSizeLib;
-using Microsoft.Win32;
+using MassEffectModManager;
 using Octokit;
 using Serilog;
 using SevenZip;
 
-namespace MassEffectModManager.modmanager.usercontrols
+namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for Window1.xaml

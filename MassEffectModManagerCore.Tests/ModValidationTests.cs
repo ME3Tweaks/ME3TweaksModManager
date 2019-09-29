@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MassEffectModManager.modmanager;
 using MassEffectModManagerCore.modmanager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;

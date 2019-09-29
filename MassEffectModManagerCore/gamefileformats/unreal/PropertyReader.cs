@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using MassEffectModManager.modmanager;
-using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 using ME3Explorer.Packages;
 using Newtonsoft.Json;
 

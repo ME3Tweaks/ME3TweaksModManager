@@ -4,15 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Windows.Media.Media3D;
 using Gammtek.Conduit.Extensions.IO;
-using MassEffectModManager;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.gamefileformats;
-using MassEffectModManager.modmanager;
-using MassEffectModManager.modmanager.helpers;
 using MassEffectModManagerCore;
+using MassEffectModManagerCore.gamefileformats;
+using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 using ME3Explorer.Unreal;
 using static ME3Explorer.Unreal.UnrealFlags;
 

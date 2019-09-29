@@ -5,12 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Gammtek.Conduit.Extensions.Collections.Generic;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManagerCore.gamefileformats;
+using MassEffectModManagerCore.modmanager.helpers;
 using ME3Explorer;
 using ME3Explorer.Unreal;
 
-namespace MassEffectModManager.gamefileformats.sfar
+namespace MassEffectModManagerCore.gamefileformats.sfar
 {
     public class DLCPackage
     {

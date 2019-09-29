@@ -1,15 +1,12 @@
-﻿using MassEffectModManager.modmanager.helpers;
-using MassEffectModManagerCore.modmanager;
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MassEffectModManager.GameDirectories;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.helpers;
 
-namespace MassEffectModManager.modmanager.objects
+namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay("AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
     public class AlternateDLC

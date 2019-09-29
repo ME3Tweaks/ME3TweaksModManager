@@ -4,27 +4,19 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using IniParser;
 using IniParser.Model;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.gamefileformats;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.ui;
-using MassEffectModManagerCore;
+using MassEffectModManager;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.gamefileformats;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.ui;
 using ME3Explorer;
 using ME3Explorer.Packages;
 
-namespace MassEffectModManager.modmanager.windows
+namespace MassEffectModManagerCore.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for StarterKitGeneratorWindow.xaml

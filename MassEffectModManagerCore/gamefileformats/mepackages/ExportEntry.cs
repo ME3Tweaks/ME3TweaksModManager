@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Gammtek.Conduit.Extensions.IO;
-using MassEffectModManager.modmanager;
-using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 using ME3Explorer.Unreal;
 using static ME3Explorer.Unreal.UnrealFlags;
 

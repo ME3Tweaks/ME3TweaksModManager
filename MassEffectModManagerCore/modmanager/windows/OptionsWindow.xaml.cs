@@ -1,7 +1,6 @@
-﻿using MassEffectModManagerCore.modmanager;
-using System.Windows;
+﻿using System.Windows;
 
-namespace MassEffectModManager.modmanager.windows
+namespace MassEffectModManagerCore.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for OptionsWindow.xaml

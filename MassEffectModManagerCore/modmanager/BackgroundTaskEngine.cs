@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gammtek.Conduit.Extensions.Collections.Generic;
 
-namespace MassEffectModManager.modmanager
+namespace MassEffectModManagerCore.modmanager
 {
     public class BackgroundTaskEngine
     {

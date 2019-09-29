@@ -1,25 +1,21 @@
-﻿using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.modmanager.objects;
-using MassEffectModManager.ui;
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser.Model;
-using IniParser.Parser;
+using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.helpers;
 using SevenZip;
-using MassEffectModManager.modmanager.me3tweaks;
-using MassEffectModManagerCore;
-using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.ui;
 
-namespace MassEffectModManager.modmanager.usercontrols
+namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ModArchiveImporter.xaml

@@ -1,15 +1,12 @@
-﻿using MassEffectModManager.modmanager.helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MassEffectModManager.GameDirectories;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.helpers;
 using Serilog;
-using MassEffectModManagerCore.modmanager;
 
-namespace MassEffectModManager.modmanager.objects
+namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay("AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
     public class AlternateFile

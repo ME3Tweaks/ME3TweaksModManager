@@ -8,8 +8,8 @@ using Gibbed.IO;
 //using AmaroK86.MassEffect3.ZlibBlock;
 using System.Threading.Tasks;
 using LZO2Helper;
-using MassEffectModManager.modmanager.helpers;
 using static ME3Explorer.Packages.MEPackage;
+using MassEffectModManagerCore.modmanager.helpers;
 
 namespace ME3Explorer.Packages
 {

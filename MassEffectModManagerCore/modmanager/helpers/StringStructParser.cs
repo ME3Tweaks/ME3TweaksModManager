@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Serilog;
 
-namespace MassEffectModManager.modmanager.helpers
+namespace MassEffectModManagerCore.modmanager.helpers
 {
     public class StringStructParser
     {

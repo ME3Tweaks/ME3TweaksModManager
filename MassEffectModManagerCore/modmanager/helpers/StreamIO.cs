@@ -24,9 +24,8 @@
 using System;
 using System.IO;
 using System.Text;
-using static MassEffectModManager.modmanager.Mod;
 
-namespace MassEffectModManager.modmanager.helpers
+namespace MassEffectModManagerCore.modmanager.helpers
 {
     public static class StreamHelpers
     {
@@ -387,9 +386,9 @@ namespace MassEffectModManager.modmanager.helpers
             return length < 0 ? stream.ReadStringUnicodeNull(length * -2) : stream.ReadStringASCIINull(length);
         }
 
-        public static void WriteUnrealString(this Stream stream, string value, MEGame game)
+        public static void WriteUnrealString(this Stream stream, string value, Mod.MEGame game)
         {
-            if (game == MEGame.ME3)
+            if (game == Mod.MEGame.ME3)
             {
                 stream.WriteUnrealStringUnicode(value);
             }

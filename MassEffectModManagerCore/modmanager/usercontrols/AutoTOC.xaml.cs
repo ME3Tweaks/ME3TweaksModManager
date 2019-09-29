@@ -4,24 +4,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.gamefileformats.sfar;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.modmanager.objects;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.gamefileformats.sfar;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Unreal;
 using Serilog;
 
-namespace MassEffectModManager.modmanager.usercontrols
+namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// In-Window content container for AutoTOC. Most of this class was ported from Mod Manager Command Line Tools.

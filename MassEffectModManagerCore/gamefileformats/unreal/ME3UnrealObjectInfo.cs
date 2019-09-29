@@ -4,9 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using MassEffectModManager;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.modmanager;
-using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Packages;
 using Newtonsoft.Json;
 

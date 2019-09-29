@@ -1,9 +1,9 @@
-﻿using MassEffectModManager.modmanager.helpers;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using MassEffectModManager.modmanager;
+using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 
 namespace ME3Explorer.Packages
 {

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using IniParser.Parser;
-using MassEffectModManager.modmanager;
+using MassEffectModManagerCore.modmanager;
 
 
-namespace MassEffectModManager.GameDirectories
+namespace MassEffectModManagerCore.GameDirectories
 {
     public static class MELoadedFiles
     {

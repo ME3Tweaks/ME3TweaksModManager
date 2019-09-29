@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using ME3Explorer.Packages;
-using System.Collections.ObjectModel;
 using System.Collections;
 using System.Diagnostics;
 using System.Collections.Concurrent;
-using System.Reflection;
-using MassEffectModManager.modmanager;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.ui;
-
+using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.ui;
 using PropertyInfo = ME3Explorer.Packages.PropertyInfo;
 
 namespace ME3Explorer.Unreal

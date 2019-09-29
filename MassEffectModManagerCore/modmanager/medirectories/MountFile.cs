@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.helpers;
 
-namespace MassEffectModManager.GameDirectories
+namespace MassEffectModManagerCore.GameDirectories
 
 {
     public enum EMountFileFlag

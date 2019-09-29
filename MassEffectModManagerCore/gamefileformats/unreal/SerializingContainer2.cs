@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using Gammtek.Conduit.Extensions.IO;
-using MassEffectModManager.modmanager;
+using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Packages;
+using MassEffectModManagerCore.modmanager.helpers;
 using ME3Explorer.Unreal;
-using MassEffectModManager.modmanager.helpers;
 namespace ME3Explorer
 {
     public class SerializingContainer2

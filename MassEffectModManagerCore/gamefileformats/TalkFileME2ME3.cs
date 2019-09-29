@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-namespace MassEffectModManager.gamefileformats
+namespace MassEffectModManagerCore.gamefileformats
 {
 
         public class TalkFileME2ME3

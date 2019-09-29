@@ -5,36 +5,28 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 //using IniParser;
 //using IniParser.Parser;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.modmanager;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.modmanager.me3tweaks;
-using MassEffectModManager.modmanager.objects;
-using MassEffectModManager.modmanager.usercontrols;
-using MassEffectModManager.modmanager.windows;
-using MassEffectModManager.ui;
 using MassEffectModManagerCore;
+using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.usercontrols;
+using MassEffectModManagerCore.modmanager.windows;
+using MassEffectModManagerCore.ui;
 using ME3Explorer.Unreal;
 //using ME3Explorer.Packages;
 //using ME3Explorer.Unreal;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
-using static MassEffectModManager.modmanager.Mod;
 
 namespace MassEffectModManager
 {
@@ -185,7 +177,7 @@ namespace MassEffectModManager
 
         private bool CanToggleBinkw32(object obj)
         {
-            if (obj is string str && Enum.TryParse(str, out MEGame game))
+            if (obj is string str && Enum.TryParse(str, out Mod.MEGame game))
             {
                 var target = GetCurrentTarget(game);
                 return File.Exists(Utilities.GetBinkw32File(target));
@@ -196,19 +188,19 @@ namespace MassEffectModManager
 
         private void ToggleBinkw32(object obj)
         {
-            if (obj is string str && Enum.TryParse(str, out MEGame game))
+            if (obj is string str && Enum.TryParse(str, out Mod.MEGame game))
             {
                 var target = GetCurrentTarget(game);
                 bool install = false;
                 switch (game)
                 {
-                    case MEGame.ME1:
+                    case Mod.MEGame.ME1:
                         install = !ME1ASILoaderInstalled;
                         break;
-                    case MEGame.ME2:
+                    case Mod.MEGame.ME2:
                         install = !ME2ASILoaderInstalled;
                         break;
-                    case MEGame.ME3:
+                    case Mod.MEGame.ME3:
                         install = !ME3ASILoaderInstalled;
                         break;
                 }
@@ -228,7 +220,7 @@ namespace MassEffectModManager
 
         private void RunGameConfigTool(object obj)
         {
-            if (obj is string str && Enum.TryParse(str, out MEGame game))
+            if (obj is string str && Enum.TryParse(str, out Mod.MEGame game))
             {
                 var target = GetCurrentTarget(game);
                 var configTool = Utilities.GetGameConfigToolPath(target);
@@ -238,7 +230,7 @@ namespace MassEffectModManager
 
         private bool CanRunGameConfigTool(object obj)
         {
-            if (obj is string str && Enum.TryParse(str, out MEGame game))
+            if (obj is string str && Enum.TryParse(str, out Mod.MEGame game))
             {
                 var target = GetCurrentTarget(game);
                 var configTool = Utilities.GetGameConfigToolPath(target);
@@ -255,17 +247,17 @@ namespace MassEffectModManager
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
-                MEGame gameSelected = MEGame.Unknown;
+                Mod.MEGame gameSelected = Mod.MEGame.Unknown;
                 var filename = Path.GetFileName(ofd.FileName);
-                if (filename.Equals("MassEffect3.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME3;
-                if (filename.Equals("MassEffect2.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME2;
-                if (filename.Equals("MassEffect.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME1;
+                if (filename.Equals("MassEffect3.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = Mod.MEGame.ME3;
+                if (filename.Equals("MassEffect2.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = Mod.MEGame.ME2;
+                if (filename.Equals("MassEffect.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = Mod.MEGame.ME1;
 
-                if (gameSelected != MEGame.Unknown)
+                if (gameSelected != Mod.MEGame.Unknown)
                 {
                     string result = Path.GetDirectoryName(Path.GetDirectoryName(ofd.FileName));
 
-                    if (gameSelected == MEGame.ME3)
+                    if (gameSelected == Mod.MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32 directory.
                     var pendingTarget = new GameTarget(gameSelected, result, false);
                     string failureReason = Utilities.ValidateGameTarget(pendingTarget);
@@ -354,22 +346,22 @@ namespace MassEffectModManager
         {
             switch (game)
             {
-                case MEGame.ME1:
-                    ME1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(GetCurrentTarget(MEGame.ME1));
+                case Mod.MEGame.ME1:
+                    ME1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(GetCurrentTarget(Mod.MEGame.ME1));
                     ME1ASILoaderText = ME1ASILoaderInstalled ? binkME1InstalledText : binkME1NotInstalledText;
                     break;
-                case MEGame.ME2:
-                    ME2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(GetCurrentTarget(MEGame.ME2));
+                case Mod.MEGame.ME2:
+                    ME2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(GetCurrentTarget(Mod.MEGame.ME2));
                     ME2ASILoaderText = ME2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
-                case MEGame.ME3:
-                    ME3ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(GetCurrentTarget(MEGame.ME3));
+                case Mod.MEGame.ME3:
+                    ME3ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(GetCurrentTarget(Mod.MEGame.ME3));
                     ME3ASILoaderText = ME3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
             }
         }
 
-        private GameTarget GetCurrentTarget(MEGame game) => InstallationTargets.FirstOrDefault(x => x.Game == game && x.RegistryActive);
+        private GameTarget GetCurrentTarget(Mod.MEGame game) => InstallationTargets.FirstOrDefault(x => x.Game == game && x.RegistryActive);
 
         public void LoadMods(Mod modToHighlight = null)
         {
@@ -385,9 +377,9 @@ namespace MassEffectModManager
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob("ModLoader", "Loading mods", "Loaded mods");
                 CLog.Information("Loading mods from mod library: " + Utilities.GetModsDirectory(), Settings.LogModStartup);
-                var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: Mod.MEGame.ME3, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: Mod.MEGame.ME2, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: Mod.MEGame.ME1, path: Path.Combine(x, "moddesc.ini"))).Where(x => File.Exists(x.path));
                 var modDescsToLoad = me3modDescsToLoad.Concat(me2modDescsToLoad).Concat(me1modDescsToLoad);
                 foreach (var moddesc in modDescsToLoad)
                 {
@@ -418,9 +410,9 @@ namespace MassEffectModManager
                 {
                     args.Result = LoadedMods.FirstOrDefault(x => x.ModPath == modToHighlight.ModPath);
                 }
-                UpdateBinkStatus(MEGame.ME1);
-                UpdateBinkStatus(MEGame.ME2);
-                UpdateBinkStatus(MEGame.ME3);
+                UpdateBinkStatus(Mod.MEGame.ME1);
+                UpdateBinkStatus(Mod.MEGame.ME2);
+                UpdateBinkStatus(Mod.MEGame.ME3);
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
             };
             bw.RunWorkerCompleted += (a, b) =>
@@ -441,7 +433,7 @@ namespace MassEffectModManager
             Log.Information("Populating game targets");
             if (ME3Directory.gamePath != null)
             {
-                var target = new GameTarget(MEGame.ME3, ME3Directory.gamePath, true);
+                var target = new GameTarget(Mod.MEGame.ME3, ME3Directory.gamePath, true);
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
@@ -456,7 +448,7 @@ namespace MassEffectModManager
 
             if (ME2Directory.gamePath != null)
             {
-                var target = new GameTarget(MEGame.ME2, ME2Directory.gamePath, true);
+                var target = new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath, true);
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
@@ -470,7 +462,7 @@ namespace MassEffectModManager
             }
             if (ME1Directory.gamePath != null)
             {
-                var target = new GameTarget(MEGame.ME1, ME1Directory.gamePath, true);
+                var target = new GameTarget(Mod.MEGame.ME1, ME1Directory.gamePath, true);
                 var failureReason = Utilities.ValidateGameTarget(target);
                 if (failureReason == null)
                 {
@@ -485,13 +477,13 @@ namespace MassEffectModManager
 
             // TODO: Read and import java version configuration
 
-            var otherTargetsFileME1 = Utilities.GetCachedTargets(MEGame.ME1);
-            var otherTargetsFileME2 = Utilities.GetCachedTargets(MEGame.ME2);
-            var otherTargetsFileME3 = Utilities.GetCachedTargets(MEGame.ME3);
+            var otherTargetsFileME1 = Utilities.GetCachedTargets(Mod.MEGame.ME1);
+            var otherTargetsFileME2 = Utilities.GetCachedTargets(Mod.MEGame.ME2);
+            var otherTargetsFileME3 = Utilities.GetCachedTargets(Mod.MEGame.ME3);
 
             if (otherTargetsFileME1.Any() || otherTargetsFileME2.Any() || otherTargetsFileME3.Any())
             {
-                InstallationTargets.Add(new GameTarget(MEGame.Unknown, "===================Other saved targets===================", false) { Selectable = false });
+                InstallationTargets.Add(new GameTarget(Mod.MEGame.Unknown, "===================Other saved targets===================", false) { Selectable = false });
                 InstallationTargets.AddRange(otherTargetsFileME1);
                 InstallationTargets.AddRange(otherTargetsFileME2);
                 InstallationTargets.AddRange(otherTargetsFileME3);
@@ -508,7 +500,7 @@ namespace MassEffectModManager
             if (e.AddedItems.Count > 0)
             {
                 SelectedMod = (Mod)e.AddedItems[0];
-                SetWebsitePanelVisibility(SelectedMod.ModWebsite != DefaultWebsite);
+                SetWebsitePanelVisibility(SelectedMod.ModWebsite != Mod.DefaultWebsite);
                 var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == SelectedMod.Game);
                 if (installTarget != null)
                 {
@@ -780,10 +772,10 @@ namespace MassEffectModManager
 
         private void GenerateStarterKit_Clicked(object sender, RoutedEventArgs e)
         {
-            MEGame g = MEGame.Unknown;
-            if (sender == GenerateStarterKitME1_MenuItem) g = MEGame.ME1;
-            if (sender == GenerateStarterKitME2_MenuItem) g = MEGame.ME2;
-            if (sender == GenerateStarterKitME3_MenuItem) g = MEGame.ME3;
+            Mod.MEGame g = Mod.MEGame.Unknown;
+            if (sender == GenerateStarterKitME1_MenuItem) g = Mod.MEGame.ME1;
+            if (sender == GenerateStarterKitME2_MenuItem) g = Mod.MEGame.ME2;
+            if (sender == GenerateStarterKitME3_MenuItem) g = Mod.MEGame.ME3;
             new StarterKitGeneratorWindow(g) { Owner = this }.ShowDialog();
         }
 
@@ -930,7 +922,7 @@ namespace MassEffectModManager
 
         private void RunAutoTOC_Clicked(object sender, RoutedEventArgs e)
         {
-            var autoTocUI = new AutoTOC(GetCurrentTarget(MEGame.ME3));
+            var autoTocUI = new AutoTOC(GetCurrentTarget(Mod.MEGame.ME3));
             autoTocUI.Close += (a, b) =>
             {
                 IsBusy = false;

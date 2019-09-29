@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 using IniParser;
 using IniParser.Model;
-using IniParser.Parser;
 using MassEffectModManager;
-using Microsoft.VisualBasic;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager

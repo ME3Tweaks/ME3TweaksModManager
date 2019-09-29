@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Xml;
-using System.Xml.Linq;
-using MassEffectModManager.modmanager.helpers;
-using Newtonsoft.Json;
+using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.helpers;
 using Serilog;
 
-namespace MassEffectModManager.modmanager.me3tweaks
+namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     partial class OnlineContent
     {

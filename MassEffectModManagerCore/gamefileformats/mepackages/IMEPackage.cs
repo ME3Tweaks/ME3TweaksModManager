@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using MassEffectModManager.gamefileformats;
+using MassEffectModManagerCore.gamefileformats;
+using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Unreal;
-using static MassEffectModManager.modmanager.Mod;
 using static ME3Explorer.Unreal.UnrealFlags;
 
 namespace ME3Explorer.Packages
@@ -88,7 +87,7 @@ namespace ME3Explorer.Packages
         //0-based
         public int exportIndex;
 
-        public bool TryGetPropInfo(string name, MEGame game, out PropertyInfo propInfo) =>
+        public bool TryGetPropInfo(string name, Mod.MEGame game, out PropertyInfo propInfo) =>
             properties.TryGetValue(name, out propInfo) || (UnrealObjectInfo.GetClassOrStructInfo(game, baseClass)?.TryGetPropInfo(name, game, out propInfo) ?? false);
     }
 
@@ -108,7 +107,7 @@ namespace ME3Explorer.Packages
         IReadOnlyList<ExportEntry> Exports { get; }
         IReadOnlyList<ImportEntry> Imports { get; }
         IReadOnlyList<string> Names { get; }
-        MEGame Game { get; }
+        Mod.MEGame Game { get; }
         string FilePath { get; }
         DateTime LastSaved { get; }
         long FileSize { get; }

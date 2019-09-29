@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
-namespace MassEffectModManager.modmanager.objects
+namespace MassEffectModManagerCore.modmanager.objects
 {
     /// <summary>
     /// Used by the usercontrols to callback to the main window UI to tell it what to do with the progressbar

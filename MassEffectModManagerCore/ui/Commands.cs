@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace MassEffectModManager.ui
+namespace MassEffectModManagerCore.ui
 {
     public class RelayCommand : ICommand
     {

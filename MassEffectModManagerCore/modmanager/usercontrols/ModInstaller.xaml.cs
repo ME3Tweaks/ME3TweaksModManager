@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.gamefileformats.sfar;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.modmanager.objects;
-using MassEffectModManager.ui;
-using MassEffectModManagerCore.modmanager;
+using MassEffectModManager;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.gamefileformats.sfar;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.ui;
 using Serilog;
-using static MassEffectModManager.modmanager.Mod;
 
-namespace MassEffectModManager.modmanager.usercontrols
+namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ModInstaller.xaml
@@ -127,25 +117,23 @@ namespace MassEffectModManager.modmanager.usercontrols
                 e.Result = INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
                 return;
             }
+            //todo: If statment on this
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
-            //Calculate number of installation tasks beforehand
-            int numFilesToInstall = installationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.FilesToInstall.Count).Sum();
-            var customDLCMapping = installationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
-            if (customDLCMapping != null)
-            {
-                customDLCMapping = new Dictionary<string, string>(customDLCMapping); //prevent altering the source object
-                foreach (var mapping in customDLCMapping)
-                {
-                    numFilesToInstall += Directory.GetFiles(Path.Combine(ModBeingInstalled.ModPath, mapping.Key), "*", SearchOption.AllDirectories).Length;
-                }
-            }
+            //Prepare queues
+            (Dictionary<ModJob.JobHeader, Dictionary<string, string>> unpackedJobMappings, List<(ModJob job, string sfarPath)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
 
             Action = $"Installing";
             PercentVisibility = Visibility.Visible;
             Percent = 0;
 
             int numdone = 0;
+
+
+
+            //Calculate number of installation tasks beforehand
+            int numFilesToInstall = installationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.FilesToInstall.Count).Sum();
+
             void FileInstalledCallback()
             {
                 numdone++;
@@ -157,184 +145,27 @@ namespace MassEffectModManager.modmanager.usercontrols
                     lastPercentUpdateTime = now;
                 }
             }
-            var unpackedJobInstallationMapping = new Dictionary<ModJob.JobHeader, Dictionary<string, string>>();
 
-            foreach (var job in installationJobs)
+            //Stage: Unpacked file installation
+
+            //Stage: SFAR Installation
+            foreach (var sfarJob in installationQueues.sfarJobs)
             {
-                Log.Information($"Preprocessing installation job: {job.Header}");
-                var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected).ToList();
-                var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
-                if (job.Header == ModJob.JobHeader.CUSTOMDLC)
-                {
-                    #region Installation: CustomDLC
-                    var installationMapping = new Dictionary<string, string>();
-                    unpackedJobInstallationMapping[job.Header] = installationMapping;
-                    foreach (var altdlc in alternateDLC)
-                    {
-                        if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
-                        {
-                            customDLCMapping[altdlc.AlternateDLCFolder] = altdlc.DestinationDLCFolder;
-                        }
-                    }
-
-
-                    foreach (var mapping in customDLCMapping)
-                    {
-                        //Mapping is done as DESTINATIONFILE = SOURCEFILE so you can override keys
-                        var source = Path.Combine(ModBeingInstalled.ModPath, mapping.Key);
-                        var target = Path.Combine(gameDLCPath, mapping.Value);
-
-                        //get list of all normal files we will install
-                        var allSourceDirFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories).Select(x => x.Substring(ModBeingInstalled.ModPath.Length)).ToList();
-
-                        //loop over every file 
-                        foreach (var sourceFile in allSourceDirFiles)
-                        {
-
-                            bool altApplied = false;
-                            foreach (var altFile in alternateFiles)
-                            {
-                                //todo: Support wildcards if OP_NOINSTALL
-                                if (altFile.ModFile.Equals(sourceFile, StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    //Alt applies to this file
-                                    switch (altFile.Operation)
-                                    {
-                                        case AlternateFile.AltFileOperation.OP_NOINSTALL:
-                                            CLog.Information($"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
-                                            numFilesToInstall--;
-                                            altApplied = true;
-                                            break;
-                                        case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                                            CLog.Information($"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
-                                            installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
-                                            altApplied = true;
-                                            break;
-                                    }
-                                    break;
-                                }
-                            }
-
-                            if (altApplied) continue; //no further processing for file
-                            installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
-                        }
-
-                        foreach (var altdlc in alternateDLC)
-                        {
-                            if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC)
-                            {
-                                string alternatePathRoot = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, altdlc.AlternateDLCFolder);
-                                //Todo: Change to Filesystem Interposer to support installation from archives
-                                var filesToAdd = Directory.GetFiles(alternatePathRoot).Select(x => x.Substring(ModBeingInstalled.ModPath.Length).TrimStart('\\')).ToList();
-                                foreach (var fileToAdd in filesToAdd)
-                                {
-                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, Path.GetFileName(fileToAdd));
-                                    CLog.Information($"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
-
-                                    installationMapping[destFile] = fileToAdd;
-                                }
-                            }
-                        }
-
-                        Log.Information($"Copying CustomDLC to target: {source} -> {target}");
-                        CopyDir.CopyFiles_ProgressBar(installationMapping, FileInstalledCallback);
-                        Log.Information($"Installed CustomDLC {mapping.Value}");
-                    }
-
-                    #endregion
-                }
-                else if (job.Header == ModJob.JobHeader.BASEGAME)
-                {
-                    #region Installation: BASEGAME
-                    var installationMapping = new Dictionary<string, string>();
-                    unpackedJobInstallationMapping[job.Header] = installationMapping;
-                    foreach (var entry in job.FilesToInstall)
-                    {
-                        //Key is destination, value is source file
-                        var destFile = entry.Key;
-                        var sourceFile = entry.Value;
-
-                        bool altApplied = false;
-                        foreach (var altFile in alternateFiles)
-                        {
-                            //todo: Support wildcards if OP_NOINSTALL
-                            if (altFile.ModFile.Equals(sourceFile, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                //Alt applies to this file
-                                switch (altFile.Operation)
-                                {
-                                    case AlternateFile.AltFileOperation.OP_NOINSTALL:
-                                        CLog.Information($"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
-                                        numFilesToInstall--;
-                                        altApplied = true;
-                                        break;
-                                    case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                                        CLog.Information($"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
-                                        installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
-                                        altApplied = true;
-                                        break;
-                                }
-                                break;
-                            }
-                        }
-
-                        if (altApplied) continue; //no further processing for file
-                        installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
-
-
-                        installationMapping[destFile] = sourceFile;
-                        Log.Information($"Adding {job.Header} file to installation queue: {entry.Value} -> {destFile}");
-
-                    }
-                    #endregion
-                }
-                else if (ModBeingInstalled.Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
-                {
-                    #region Installation: DLC (Unpacked and SFAR) - ME3 ONLY
-                    string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
-
-
-                    if (File.Exists(sfarPath))
-                    {
-                        if (new FileInfo(sfarPath).Length == 32)
-                        {
-                            //Unpacked
-                            foreach (var entry in job.FilesToInstall)
-                            {
-                                var destPath = Path.GetFullPath(Path.Combine(gamePath, entry.Key.TrimStart('/', '\\')));
-                                Log.Information($"Installing (unpacked) file: {entry.Value} -> {destPath}");
-                                File.Copy(entry.Value, destPath, true);
-                                FileInstalledCallback();
-                            }
-                        }
-                        else
-                        {
-                            //Packed
-
-                            InstallIntoSFAR(job, sfarPath, FileInstalledCallback);
-                        }
-                    }
-                    else
-                    {
-                        Log.Warning($"SFAR doesn't exist {sfarPath}, skipping job: {job.Header}");
-                        numdone += job.FilesToInstall.Count;
-                    }
-                    #endregion
-                }
+                InstallIntoSFAR(sfarJob, FileInstalledCallback);
             }
 
-            //Perform unpacked installation
-            //Todo: Implement archive and unpacked support of mods
 
-
-
+            //Main installation step has completed
+            CLog.Information("Main stage of mod installation has completed", Settings.LogModInstallation);
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
 
             //Install supporting ASI files if necessary
-            if (ModBeingInstalled.Game != MEGame.ME2)
+            //Todo: Upgrade to version detection code from ME3EXP to prevent conflicts
+            if (ModBeingInstalled.Game != Mod.MEGame.ME2)
             {
                 Action = "Installing support files";
-                string asiFname = ModBeingInstalled.Game == MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
+                CLog.Information("Installing supporting ASI files", Settings.LogModInstallation);
+                string asiFname = ModBeingInstalled.Game == Mod.MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
                 string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
 
                 var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
@@ -371,10 +202,10 @@ namespace MassEffectModManager.modmanager.usercontrols
             Thread.Sleep(1000);
         }
 
-        private bool InstallIntoSFAR(ModJob job, string sfarPath, Action FileInstalledCallback = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath) sfarJob, Action FileInstalledCallback = null)
         {
 
-            int numfiles = job.FilesToInstall.Count;
+            int numfiles = sfarJob.job.FilesToInstall.Count;
 
 
             //Todo: Check all newfiles exist
@@ -388,7 +219,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             //}
 
             //Open SFAR
-            DLCPackage dlc = new DLCPackage(sfarPath);
+            DLCPackage dlc = new DLCPackage(sfarJob.sfarPath);
 
             //precheck
             bool allfilesfound = true;
@@ -408,7 +239,7 @@ namespace MassEffectModManager.modmanager.usercontrols
             //Add or Replace
             if (allfilesfound)
             {
-                foreach (var entry in job.FilesToInstall)
+                foreach (var entry in sfarJob.job.FilesToInstall)
                 {
                     int index = dlc.FindFileEntry(entry.Key);
                     if (index >= 0)
@@ -471,7 +302,7 @@ namespace MassEffectModManager.modmanager.usercontrols
         /// <returns></returns>
         private bool PrecheckOfficialHeaders(string gameDLCPath, List<ModJob> installationJobs)
         {
-            if (ModBeingInstalled.Game != MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
+            if (ModBeingInstalled.Game != Mod.MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
             {
                 if (job.Header == ModJob.JobHeader.BALANCE_CHANGES) continue; //Don't check balance changes

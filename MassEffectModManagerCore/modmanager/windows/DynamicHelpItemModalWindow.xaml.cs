@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using FontAwesome.WPF;
-using MassEffectModManager.modmanager.me3tweaks;
+using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 
-namespace MassEffectModManager.modmanager.windows
+namespace MassEffectModManagerCore.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for DynamicHelpItemModalWindow.xaml

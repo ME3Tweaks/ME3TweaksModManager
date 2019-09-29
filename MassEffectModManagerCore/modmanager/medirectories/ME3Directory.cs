@@ -1,12 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using MassEffectModManager.modmanager.helpers;
 
-namespace MassEffectModManager.GameDirectories
+namespace MassEffectModManagerCore.GameDirectories
 
 {
     public static class ME3Directory

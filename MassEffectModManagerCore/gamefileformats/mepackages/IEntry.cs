@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
-using MassEffectModManager.modmanager;
-using ME3Explorer.Unreal;
+using MassEffectModManagerCore.modmanager;
 
 namespace ME3Explorer.Packages
 {

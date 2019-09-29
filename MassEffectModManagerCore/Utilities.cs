@@ -4,16 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.modmanager;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.modmanager.objects;
 using MassEffectModManagerCore;
+using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
-using static MassEffectModManager.modmanager.Mod;
 
 namespace MassEffectModManager
 {
@@ -314,11 +310,11 @@ namespace MassEffectModManager
         {
             switch (target.Game)
             {
-                case MEGame.ME1:
+                case Mod.MEGame.ME1:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffectConfig.exe");
-                case MEGame.ME2:
+                case Mod.MEGame.ME2:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffect2Config.exe");
-                case MEGame.ME3:
+                case Mod.MEGame.ME3:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffect3Config.exe");
             }
             return null;
@@ -412,7 +408,7 @@ namespace MassEffectModManager
         /// <param name="dlcFolderName">DLC folder name (DLC_CON_MP2)</param>
         /// <param name="game">Game to test against</param>
         /// <returns>True if protected, false otherwise</returns>
-        internal static bool IsProtectedDLCFolder(string dlcFolderName, MEGame game) => dlcFolderName.Equals("__metadata", StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
+        internal static bool IsProtectedDLCFolder(string dlcFolderName, Mod.MEGame game) => dlcFolderName.Equals("__metadata", StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Gets the path to the testpatch DLC file for the specified game target
@@ -421,7 +417,7 @@ namespace MassEffectModManager
         /// <returns>Null if gametarget game is not ME3. Path where SFAR should be if ME3.</returns>
         public static string GetTestPatchPath(GameTarget target)
         {
-            if (target.Game != MEGame.ME3) return null;
+            if (target.Game != Mod.MEGame.ME3) return null;
             return Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar");
         }
 

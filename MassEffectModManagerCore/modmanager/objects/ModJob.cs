@@ -1,11 +1,9 @@
-﻿using MassEffectModManager.modmanager.objects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.objects;
 
-namespace MassEffectModManager.modmanager
+namespace MassEffectModManagerCore.modmanager
 {
     [DebuggerDisplay("ModJob for {Header}")]
     public class ModJob

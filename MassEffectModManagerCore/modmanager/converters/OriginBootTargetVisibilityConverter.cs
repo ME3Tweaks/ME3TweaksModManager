@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using MassEffectModManager.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects;
 
-namespace MassEffectModManager.modmanager.converters
+namespace MassEffectModManagerCore.modmanager.converters
 {
     public class OriginBootTargetVisibilityConverter : IValueConverter
     {

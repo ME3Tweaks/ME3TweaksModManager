@@ -1,31 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ByteSizeLib;
 using Flurl.Http;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.modmanager.me3tweaks;
-using MassEffectModManager.modmanager.objects;
-using MassEffectModManager.ui;
-using MassEffectModManagerCore;
+using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.ui;
 using Serilog;
 using SevenZip;
 
-namespace MassEffectModManager.modmanager.usercontrols
+namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for LogUploader.xaml

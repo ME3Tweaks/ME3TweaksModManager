@@ -2,16 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ME3Explorer.Packages;
-using ME3Explorer.Unreal;
-using System.Diagnostics;
 using MassEffectModManager;
-using ME3Explorer;
-using static MassEffectModManager.modmanager.Mod;
-using MassEffectModManager.GameDirectories;
-using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager;
 
 namespace ME3Explorer.Unreal
 {
@@ -252,7 +247,7 @@ namespace ME3Explorer.Unreal
 
         public static PropertyCollection getDefaultStructValue(string className, bool stripTransients)
         {
-            bool isImmutable = UnrealObjectInfo.IsImmutable(className, MEGame.ME1);
+            bool isImmutable = UnrealObjectInfo.IsImmutable(className, Mod.MEGame.ME1);
             if (Structs.ContainsKey(className))
             {
                 ClassInfo info = Structs[className];
@@ -324,7 +319,7 @@ namespace ME3Explorer.Unreal
                 case PropertyType.BoolProperty:
                     return new BoolProperty(false, propName);
                 case PropertyType.ByteProperty when propInfo.IsEnumProp():
-                    return new EnumProperty(propInfo.Reference, MEGame.ME1, propName);
+                    return new EnumProperty(propInfo.Reference, Mod.MEGame.ME1, propName);
                 case PropertyType.ByteProperty:
                     return new ByteProperty(0, propName);
                 case PropertyType.StrProperty:
@@ -358,7 +353,7 @@ namespace ME3Explorer.Unreal
                             return null;
                     }
                 case PropertyType.StructProperty:
-                    isImmutable = isImmutable || UnrealObjectInfo.IsImmutable(propInfo.Reference, MEGame.ME1);
+                    isImmutable = isImmutable || UnrealObjectInfo.IsImmutable(propInfo.Reference, Mod.MEGame.ME1);
                     return new StructProperty(propInfo.Reference, getDefaultStructValue(propInfo.Reference, stripTransients), propName, isImmutable);
                 case PropertyType.None:
                 case PropertyType.Unknown:

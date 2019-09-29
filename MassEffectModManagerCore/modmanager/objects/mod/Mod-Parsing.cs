@@ -5,20 +5,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using IniParser;
 using IniParser.Parser;
-using MassEffectModManager.modmanager.helpers;
-using MassEffectModManager.modmanager.objects;
-using MassEffectModManagerCore.modmanager;
+using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Packages;
 using Serilog;
 using SevenZip;
 
-namespace MassEffectModManager.modmanager
+namespace MassEffectModManagerCore.modmanager
 {
-    public class Mod : INotifyPropertyChanged
+    public partial class Mod : INotifyPropertyChanged
     {
         public enum MEGame
         {

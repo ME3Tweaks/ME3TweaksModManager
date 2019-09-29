@@ -27,7 +27,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.helpers;
 
 namespace ModManagerCommandLine
 {

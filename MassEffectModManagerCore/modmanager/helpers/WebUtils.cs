@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace MassEffectModManager.modmanager.helpers
+namespace MassEffectModManagerCore.modmanager.helpers
 {
     /// <summary>
     /// From https://stackoverflow.com/questions/4716470/webclient-downloadstring-returns-string-with-peculiar-characters

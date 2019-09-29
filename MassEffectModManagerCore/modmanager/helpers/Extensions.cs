@@ -3,7 +3,6 @@ using ME3Explorer.Unreal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,13 +12,12 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 //using ME3Explorer.Packages;
 //using ME3Explorer.Unreal;
 
-namespace MassEffectModManager.modmanager.helpers
+namespace MassEffectModManagerCore.modmanager.helpers
 {
     /// <summary>
     /// Extension methods for various things, both WPF and WinForms

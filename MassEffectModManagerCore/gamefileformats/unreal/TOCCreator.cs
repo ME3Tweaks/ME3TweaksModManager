@@ -2,10 +2,8 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
 using Gammtek.Conduit.Extensions.IO;
-using MassEffectModManager.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.helpers;
 
 namespace ME3Explorer.Unreal
 {
