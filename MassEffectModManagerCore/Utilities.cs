@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.GameDirectories;
@@ -43,6 +44,30 @@ namespace MassEffectModManager
         internal static string GetDataDirectory()
         {
             return Directory.CreateDirectory(Path.Combine(GetMMExecutableDirectory(), "data")).FullName;
+        }
+
+        internal static void InstallEmbeddedASI(string asiFname, double installingVersion, GameTarget gameTarget)
+        {
+            string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
+
+            var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
+            if (existingmatchingasis.Count > 0)
+            {
+                foreach (var v in existingmatchingasis)
+                {
+                    string shortName = Path.GetFileNameWithoutExtension(v);
+                    var asiVersion = shortName.Substring(shortName.LastIndexOf('-') + 2); //Todo: Try catch this as it might explode if for some reason filename is like ASIMod-.asi
+                    if (double.TryParse(asiVersion, out double version) && version > installingVersion)
+                    {
+                        Log.Information("A newer version of a supporting ASI is installed: " + shortName + ". Not installing ASI.");
+                        return;
+                    }
+                }
+            }
+
+            //Todo: Use ASI manifest to identify malformed names
+            string asiPath = "MassEffectModManagerCore.modmanager.asi." + asiFname + ".asi";
+            Utilities.ExtractInternalFile(asiPath, Path.Combine(asiTargetDirectory, asiFname + ".asi"), true);
         }
 
         public static string GetModDirectoryForGame(Mod.MEGame game)
@@ -177,7 +202,10 @@ namespace MassEffectModManager
         internal static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite)
         {
             Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
-            if (!File.Exists(destination) || overwrite)
+#if DEBUG
+            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+#endif
+            if (!File.Exists(destination) || overwrite || new FileInfo(destination).Length == 0)
             {
 
                 using (Stream stream = Utilities.GetResourceStream(internalResourceName))
@@ -506,8 +534,8 @@ namespace MassEffectModManager
         internal static List<string> GetPackagesInDirectory(string path, bool subdirectories)
         {
             return Directory.EnumerateFiles(path, "*.*", subdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                .Where(s => s.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".sfm",StringComparison.InvariantCultureIgnoreCase) 
-                 || s.EndsWith(".u",StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase)).ToList();
+                .Where(s => s.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".sfm", StringComparison.InvariantCultureIgnoreCase)
+                 || s.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
     }
 }

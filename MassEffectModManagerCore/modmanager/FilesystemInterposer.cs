@@ -55,6 +55,10 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     pathSb.Append(separator);
                 }
+                else
+                {
+                    skippedFirst = true;
+                }
 
                 pathSb.Append(path);
                 removeLastSlash(pathSb);

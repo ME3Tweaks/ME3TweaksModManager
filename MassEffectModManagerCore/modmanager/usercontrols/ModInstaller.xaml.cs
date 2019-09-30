@@ -147,11 +147,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Stage: Unpacked file installation
-
+            foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
+            {
+                //Todo: Implement unpacked copy queue
+                //CopyDir.CopyFiles_ProgressBar(unpackedQueue.)
+            }
             //Stage: SFAR Installation
             foreach (var sfarJob in installationQueues.sfarJobs)
             {
-                InstallIntoSFAR(sfarJob, FileInstalledCallback);
+                InstallIntoSFAR(sfarJob, ModBeingInstalled, FileInstalledCallback);
             }
 
 
@@ -161,38 +165,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Install supporting ASI files if necessary
             //Todo: Upgrade to version detection code from ME3EXP to prevent conflicts
-            if (ModBeingInstalled.Game != Mod.MEGame.ME2)
+
+            Action = "Installing support files";
+            CLog.Information("Installing supporting ASI files", Settings.LogModInstallation);
+            if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
-                Action = "Installing support files";
-                CLog.Information("Installing supporting ASI files", Settings.LogModInstallation);
-                string asiFname = ModBeingInstalled.Game == Mod.MEGame.ME1 ? "ME1-DLC-ModEnabler-v1" : "ME3Logger_truncating-v1";
-                string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
-
-                var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
-                bool higherVersionInstalled = false;
-                if (existingmatchingasis.Count > 0)
+                Utilities.InstallEmbeddedASI("ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget);
+            }
+            else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
+            {
+                //None right now
+            }
+            else
+            {
+                Utilities.InstallEmbeddedASI("ME3Logger_truncating-v1.0", 1.0, gameTarget);
+                if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    foreach (var v in existingmatchingasis)
-                    {
-                        string shortName = Path.GetFileNameWithoutExtension(v);
-                        var asiName = shortName.Substring(shortName.LastIndexOf('-') + 2); //Todo: Try catch this as it might explode if for some reason filename is like ASIMod-.asi
-                        if (int.TryParse(asiName, out int version))
-                        {
-                            higherVersionInstalled = version > 1;
-                            Log.Information("A newer version of a supporting ASI is installed: " + shortName + ". Not installing ASI.");
-                            break;
-                        }
-                    }
-                }
-
-                //Todo: Use ASI manifest to identify malformed names
-
-                if (!higherVersionInstalled)
-                {
-                    string asiPath = "MassEffectModManagerCore.modmanager.asi." + asiFname + ".asi";
-                    Utilities.ExtractInternalFile(asiPath, Path.Combine(asiTargetDirectory, asiFname + ".asi"), true);
+                    Utilities.InstallEmbeddedASI("BalanceChangesReplacer-v2.0", 2.0, gameTarget);
                 }
             }
+
 
             if (numFilesToInstall == numdone)
             {
@@ -202,12 +194,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Thread.Sleep(1000);
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath) sfarJob, Action FileInstalledCallback = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath) sfarJob, Mod mod, Action FileInstalledCallback = null)
         {
 
             int numfiles = sfarJob.job.FilesToInstall.Count;
-
-
             //Todo: Check all newfiles exist
             //foreach (string str in diskFiles)
             //{
@@ -242,15 +232,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 foreach (var entry in sfarJob.job.FilesToInstall)
                 {
                     int index = dlc.FindFileEntry(entry.Key);
+                    //Todo: For archive to immediate installation we will need to modify this ModPath value to point to some temporary directory
+                    //where we have extracted files destined for SFAR files as we cannot unpack solid archives to streams.
+                    var sourcePath = Path.Combine(mod.ModPath, sfarJob.job.JobDirectory, entry.Value);
                     if (index >= 0)
                     {
-                        dlc.ReplaceEntry(entry.Value, index);
+                        dlc.ReplaceEntry(sourcePath, index);
                         Log.Information("Replaced file within SFAR: " + entry.Key);
                     }
                     else
                     {
-                        dlc.AddFileQuick(entry.Value, entry.Key);
-                        Log.Information("Added SFAR file: " + entry.Key);
+                        dlc.AddFileQuick(sourcePath, entry.Key);
+                        Log.Information("Added new file to SFAR: " + entry.Key);
                     }
                     FileInstalledCallback?.Invoke();
                 }

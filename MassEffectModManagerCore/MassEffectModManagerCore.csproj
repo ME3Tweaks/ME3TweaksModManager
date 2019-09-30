@@ -27,8 +27,9 @@
     <None Remove="images\gameicons\Unknown_48.ico" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\origin.png" />
-    <None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.asi" />
-    <None Remove="modmanager\asi\ME3Logger_truncating-v1.asi" />
+    <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
+    <None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
+    <None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
     <None Remove="modmanager\binkw32\me1\binkw23.dll" />
     <None Remove="modmanager\binkw32\me1\binkw32.dll" />
     <None Remove="modmanager\binkw32\me2\binkw23.dll" />
@@ -55,6 +56,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="modmanager\binkw32\me2\binkw32.dll" />
   </ItemGroup>
 
@@ -62,8 +67,8 @@
     <EmbeddedResource Include="bundleddlls\lzo2wrapper.dll" />
     <EmbeddedResource Include="bundleddlls\sevenzipwrapper.dll" />
     <EmbeddedResource Include="bundleddlls\zlibwrapper.dll" />
-    <EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.asi" />
-    <EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.asi" />
+    <EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
+    <EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
     <EmbeddedResource Include="modmanager\binkw32\me1\binkw23.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me1\binkw32.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me2\binkw23.dll" />

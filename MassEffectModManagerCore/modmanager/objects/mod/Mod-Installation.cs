@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager
 
                     #endregion
                 }
-                else if (job.Header == ModJob.JobHeader.BASEGAME)
+                else if (job.Header == ModJob.JobHeader.BASEGAME || job.Header == ModJob.JobHeader.BALANCE_CHANGES)
                 {
                     #region Installation: BASEGAME
                     var installationMapping = new Dictionary<string, string>();
@@ -145,7 +145,7 @@ namespace MassEffectModManagerCore.modmanager
                 else
                 {
                     //BINI
-                    throw new Exception("Unsupported installation job header!");
+                    throw new Exception("Unsupported installation job header! " + job.Header);
                 }
             }
 

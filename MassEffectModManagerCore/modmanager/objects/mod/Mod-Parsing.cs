@@ -648,6 +648,49 @@ namespace MassEffectModManagerCore.modmanager
 
             #endregion
 
+            #region BALANCE_CHANGES (ME3 ONLY)
+
+            var balanceChangesDirectory = (Game == MEGame.ME3 && ModDescTargetVersion >= 4.3) ? iniData[ModJob.JobHeader.BALANCE_CHANGES.ToString()]["moddir"] : null;
+            if (balanceChangesDirectory != null)
+            {
+                CLog.Information("Found BALANCE_CHANGES header", Settings.LogModStartup);
+                CLog.Information("Subdirectory (moddir): " + balanceChangesDirectory, Settings.LogModStartup);
+                //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
+
+                //In MM5.1 or lower you would have to specify the target. In MM6 you can only specify a single source and it must be a .bin file.
+                string replaceFilesSourceList = iniData[ModJob.JobHeader.BALANCE_CHANGES.ToString()]["newfiles"];
+                if (replaceFilesSourceList != null)
+                {
+                    //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
+                    var replaceFilesSourceSplit = replaceFilesSourceList.Split(';').ToList();
+                    if (replaceFilesSourceSplit.Count == 1)
+                    {
+                        //Only 1 file is allowed here.
+                        string balanceFile = replaceFilesSourceSplit[0];
+                        if (!balanceFile.EndsWith(".bin"))
+                        {
+                            //Invalid file
+                            Log.Error("Balance changes file must be a .bin file.");
+                            LoadFailedReason = $"This mod specifies a balance changes file, but the provided file is not a .bin file.";
+                            return;
+                        }
+                        ModJob balanceJob = new ModJob(ModJob.JobHeader.BALANCE_CHANGES);
+                        balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceChangesDirectory + '\'' + balanceFile, this, false);
+                        CLog.Information($"Successfully made mod job for {balanceJob.Header}", Settings.LogModStartup);
+                        InstallationJobs.Add(balanceJob);
+                    }
+                    else
+                    {
+                        Log.Error($"Balance changes newfile descriptor only allows 1 entry in the list, but {replaceFilesSourceSplit.Count} were parsed.");
+                        LoadFailedReason = $"This mod specifies that balance changes will be modified, but provides an invalid amount of files to install. BALANCE_CHANGES only supports 1 item in it's newfiles descriptor, however {replaceFilesSourceSplit.Count} were parsed.";
+                        return;
+                    }
+
+                }
+            }
+
+
+            #endregion
             #endregion
             #region Additional Mod Items
 
@@ -828,156 +871,6 @@ namespace MassEffectModManagerCore.modmanager
             }
             InstallationJobs.Add(basegameJob);
             return true;
-        }
-
-        public void ExtractFromArchive(string archivePath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null)
-        {
-            if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
-            var modDirectory = Utilities.GetModDirectoryForGame(Game);
-            var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(ModName));
-            if (Directory.Exists(sanitizedPath))
-            {
-                //Will delete on import
-                //Todo: Delete directory/s
-            }
-
-            Directory.CreateDirectory(sanitizedPath);
-
-
-            using (var archiveFile = new SevenZipExtractor(archivePath))
-            {
-                var fileIndicesToExtract = new List<int>();
-                foreach (var info in archiveFile.ArchiveFileData)
-                {
-                    bool fileAdded = false;
-                    //moddesc.ini
-                    if (info.FileName == ModDescPath)
-                    {
-                        Debug.WriteLine("Add file to extraction list: " + info.FileName);
-                        fileIndicesToExtract.Add(info.Index);
-                        continue;
-                    }
-
-                    //Check each job
-                    foreach (ModJob job in InstallationJobs)
-                    {
-                        //Custom DLC folders
-                        #region Extract Custom DLC
-                        if (job.Header == ModJob.JobHeader.CUSTOMDLC)
-                        {
-                            foreach (var localCustomDLCFolder in job.CustomDLCFolderMapping.Keys)
-                            {
-                                if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, localCustomDLCFolder)))
-                                {
-                                    Debug.WriteLine("Add file to extraction list: " + info.FileName);
-                                    fileIndicesToExtract.Add(info.Index);
-                                    fileAdded = true;
-                                    break;
-                                }
-                            }
-
-                            if (fileAdded) break;
-
-                            //Alternate files
-                            foreach (var alt in job.AlternateFiles)
-                            {
-                                if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
-                                    fileIndicesToExtract.Add(info.Index);
-                                    fileAdded = true;
-                                    break;
-                                }
-                            }
-                            if (fileAdded) break;
-
-                            //Alternate DLC
-                            foreach (var alt in job.AlternateDLCs)
-                            {
-                                if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AlternateDLCFolder), StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    Debug.WriteLine("Add alternate dlc file to extraction list: " + info.FileName);
-                                    fileIndicesToExtract.Add(info.Index);
-                                    fileAdded = true;
-                                    break;
-                                }
-                            }
-                            if (fileAdded) break;
-                            #endregion
-                        }
-                        else
-                        {
-                            #region Official headers
-                            foreach (var inSubDirFile in job.FilesToInstall.Values)
-                            {
-                                //var inArchivePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, inSubDirFile);
-                                if (info.FileName.Equals(inSubDirFile, StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    Debug.WriteLine("Add file to extraction list: " + info.FileName);
-                                    fileIndicesToExtract.Add(info.Index);
-                                    fileAdded = true;
-                                    break;
-                                }
-
-
-                            }
-                            if (fileAdded) break;
-                            //Alternate files
-                            foreach (var alt in job.AlternateFiles)
-                            {
-                                if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
-                                    fileIndicesToExtract.Add(info.Index);
-                                    fileAdded = true;
-                                    break;
-                                }
-                            }
-                            if (fileAdded) break;
-
-                            #endregion
-                        }
-                    }
-                }
-                archiveFile.Extracting += (sender, args) =>
-                {
-                    extractingCallback?.Invoke(args);
-                };
-
-                string outputFilePathMapping(string entryPath)
-                {
-                    //Archive path might start with a \. Substring may return value that start with a \
-                    var subModPath = entryPath/*.TrimStart('\\')*/.Substring(ModPath.Length).TrimStart('\\');
-                    var path = Path.Combine(sanitizedPath, subModPath);
-                    //Debug.WriteLine("remapping output: " + entryPath + " -> " + path);
-                    return path;
-                }
-                archiveFile.ExtractFiles(sanitizedPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
-                ModPath = sanitizedPath;
-                if (IsVirtualized)
-                {
-                    var parser = new IniDataParser().Parse(VirtualizedIniText);
-                    parser["ModInfo"]["modver"] = ModVersionString; //In event relay service resolved this
-                    File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), parser.ToString());
-                }
-
-                int packagesCompressed = 0;
-                if (compressPackages)
-                {
-                    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
-                    extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
-                    foreach (var package in packages)
-                    {
-                        updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
-                        Log.Information("Compressing package: " + package);
-                        var p = MEPackageHandler.OpenMEPackage(package);
-                        p.save(true);
-
-                        packagesCompressed++;
-                        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
-                    }
-                }
-            }
         }
     }
 }
