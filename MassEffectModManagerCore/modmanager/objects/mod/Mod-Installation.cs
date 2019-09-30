@@ -13,7 +13,7 @@ namespace MassEffectModManagerCore.modmanager
 {
     public partial class Mod
     {
-        public (Dictionary<ModJob, Dictionary<string, string>>, List<(ModJob job, string sfarPath)>) GetInstallationQueues(GameTarget gameTarget)
+        public (Dictionary<ModJob, Dictionary<string, string>>, List<(ModJob job, string sfarPath, Dictionary<string,string>)>) GetInstallationQueues(GameTarget gameTarget)
         {
             if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);

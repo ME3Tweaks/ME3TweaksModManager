@@ -134,7 +134,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Calculate number of installation tasks beforehand - we won't know SFAR cou
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.Count).Sum();
-            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.job.FilesToInstall.Count).Sum();
+            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.job.FilesToInstall.Count).Sum() * 2; //*2 as we have to extract and install
 
             void FileInstalledCallback()
             {
@@ -212,6 +212,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
                 }
             }
+
+            if (ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0)
+            {
+                //Stage: Extract from 7zip to prepare for installation
+                string stagingDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), "SFARJobStaging")).FullName;
+                List<int> indexesToExtract = new List<int>();
+                var extractionToStagingMap = new Dictionary<string, string>();
+                foreach(var sfarJob in installationQueues.sfarJobs)
+                {
+                    foreach(var file in sfarJob.job.FilesToInstall)
+                    {
+
+                    }
+                }
+            }
+
             //Stage: SFAR Installation
             foreach (var sfarJob in installationQueues.sfarJobs)
             {
@@ -253,7 +269,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath) sfarJob, Mod mod, Action FileInstalledCallback = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath) sfarJob, Mod mod, Action FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
             int numfiles = sfarJob.job.FilesToInstall.Count;
@@ -270,44 +286,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Open SFAR
             DLCPackage dlc = new DLCPackage(sfarJob.sfarPath);
 
-            //precheck
-            bool allfilesfound = true;
-            //if (options.ReplaceFiles)
-            //{
-            //    for (int i = 0; i < numfiles; i++)
-            //    {
-            //        int idx = dlc.FindFileEntry(sfarFiles[i]);
-            //        if (idx == -1)
-            //        {
-            //            Console.WriteLine("Specified file does not exist in the SFAR Archive: " + sfarFiles[i]);
-            //            allfilesfound = false;
-            //        }
-            //    }
-            //}
-
-            //Add or Replace
-            if (allfilesfound)
+            //Add or Replace file install
+            foreach (var entry in sfarJob.job.FilesToInstall)
             {
-                foreach (var entry in sfarJob.job.FilesToInstall)
+                string entryPath = entry.Key.Replace('\\', '/');
+                if (!entryPath.StartsWith('/')) entryPath = '/' + entryPath; //Ensure path starts with /
+                int index = dlc.FindFileEntry(entryPath);
+                //Todo: For archive to immediate installation we will need to modify this ModPath value to point to some temporary directory
+                //where we have extracted files destined for SFAR files as we cannot unpack solid archives to streams.
+                var sourcePath = Path.Combine(ForcedSourcePath ?? mod.ModPath, sfarJob.job.JobDirectory, entry.Value);
+                if (index >= 0)
                 {
-                    string entryPath = entry.Key.Replace('\\', '/');
-                    if (!entryPath.StartsWith('/')) entryPath = '/' + entryPath; //Ensure path starts with /
-                    int index = dlc.FindFileEntry(entryPath);
-                    //Todo: For archive to immediate installation we will need to modify this ModPath value to point to some temporary directory
-                    //where we have extracted files destined for SFAR files as we cannot unpack solid archives to streams.
-                    var sourcePath = Path.Combine(mod.ModPath, sfarJob.job.JobDirectory, entry.Value);
-                    if (index >= 0)
-                    {
-                        dlc.ReplaceEntry(sourcePath, index);
-                        CLog.Information("Replaced file within SFAR: " + entry.Key, Settings.LogModInstallation);
-                    }
-                    else
-                    {
-                        dlc.AddFileQuick(sourcePath, entryPath);
-                        CLog.Information("Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
-                    }
-                    FileInstalledCallback?.Invoke();
+                    dlc.ReplaceEntry(sourcePath, index);
+                    CLog.Information("Replaced file within SFAR: " + entry.Key, Settings.LogModInstallation);
                 }
+                else
+                {
+                    dlc.AddFileQuick(sourcePath, entryPath);
+                    CLog.Information("Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
+                }
+                FileInstalledCallback?.Invoke();
             }
 
             //Todo: Support deleting files from sfar (I am unsure if this is actually ever used and I might remove this feature)

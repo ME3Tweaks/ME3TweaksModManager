@@ -265,6 +265,15 @@ namespace MassEffectModManager
             return true;
         }
 
+        /// <summary>
+        /// Gets scratch space directory
+        /// </summary>
+        /// <returns>AppData/Temp</returns>
+        internal static string GetTempPath()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "Temp")).FullName;
+        }
+
         internal static string GetBinkw32File(GameTarget target)
         {
             if (target == null) return null;
