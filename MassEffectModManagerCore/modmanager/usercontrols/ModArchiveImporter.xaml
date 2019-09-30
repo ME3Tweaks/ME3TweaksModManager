@@ -17,8 +17,9 @@
         <TextBlock DockPanel.Dock="Top" Text="Import mods from archive file" FontSize="16" FontWeight="Bold" TextAlignment="Center"/>
         <TextBlock DockPanel.Dock="Top" Text="{Binding ScanningFile, FallbackValue=Placeholder.7z}" TextAlignment="Center"/>
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0" LastChildFill="False">
-            <Button DockPanel.Dock="Right" Content="Import mods" Padding="8,3" Command="{Binding ImportModsCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"/>
-            <Button DockPanel.Dock="Right" Content="Cancel" Margin="5,0" Padding="8,3" Command="{Binding CancelCommand}"/>
+            <Button DockPanel.Dock="Right" Content="Install" Padding="8,3" Command="{Binding InstallModCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{Binding InstallModToolTip}"/>
+            <Button DockPanel.Dock="Right" Content="Import mods" Padding="8,3" Margin="5,0" Command="{Binding ImportModsCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <Button DockPanel.Dock="Right" Content="Cancel" Command="{Binding CancelCommand}"/>
             <CheckBox DockPanel.Dock="Right" Content="Compress packages" VerticalContentAlignment="Center" Padding="8,3" IsChecked="{Binding CompressPackages}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"/>
             <TextBlock DockPanel.Dock="Left" Text="{Binding ActionText, FallbackValue=Scanning archive....}" VerticalAlignment="Center"/>
         </DockPanel>

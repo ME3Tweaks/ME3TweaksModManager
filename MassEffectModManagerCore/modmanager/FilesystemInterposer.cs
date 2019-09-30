@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager
@@ -77,6 +79,29 @@ namespace MassEffectModManagerCore.modmanager
             return pathSb.ToString();
         }
 
+        internal static List<string> DirectoryGetFiles(string directoryPath, string searchPattern, SearchOption directorySearchOption, SevenZipExtractor archive = null)
+        {
+            if (archive == null) return Directory.GetFiles(directoryPath, searchPattern, directorySearchOption).ToList();
+            var fileList = new List<string>();
+            string internalSearchPattern = directoryPath.TrimEnd('\'').Replace('/', '\\') + '\''; //Directory\
+            int numSlashesInBasepath = internalSearchPattern.Count(f => f == '\\'); //used for same directory search
+            var compiledPattern = FindFilesPatternToRegex.Convert(searchPattern);
+
+            foreach (var entry in archive.ArchiveFileData)
+            {
+                string fname = entry.FileName;
+                if (!fname.StartsWith(directoryPath)) continue; //not in this directory.
+                if (directorySearchOption == SearchOption.TopDirectoryOnly && fname.Count(x => x == '\\') != numSlashesInBasepath) continue; //Skip if we are in a different subdirectory
+                string nameOnly = Path.GetFileName(fname);
+                if (compiledPattern.IsMatch(nameOnly))
+                {
+                    fileList.Add(entry.FileName);
+                }
+            }
+
+            return fileList;
+        }
+
         /// <summary>
         /// Checks if a directory exists. This method will look an archive file if one is specified.
         /// </summary>
@@ -142,5 +167,50 @@ namespace MassEffectModManagerCore.modmanager
         }
 
 
+
+        //From https://stackoverflow.com/questions/652037/how-do-i-check-if-a-filename-matches-a-wildcard-pattern
+        private static class FindFilesPatternToRegex
+        {
+            private static Regex HasQuestionMarkRegEx = new Regex(@"\?", RegexOptions.Compiled);
+            private static Regex IllegalCharactersRegex = new Regex("[" + @"\/:<>|" + "\"]", RegexOptions.Compiled);
+            private static Regex CatchExtentionRegex = new Regex(@"^\s*.+\.([^\.]+)\s*$", RegexOptions.Compiled);
+            private static string NonDotCharacters = @"[^.]*";
+            public static Regex Convert(string pattern)
+            {
+                if (pattern == null)
+                {
+                    throw new ArgumentNullException();
+                }
+                pattern = pattern.Trim();
+                if (pattern.Length == 0)
+                {
+                    throw new ArgumentException("Pattern is empty.");
+                }
+                if (IllegalCharactersRegex.IsMatch(pattern))
+                {
+                    throw new ArgumentException("Pattern contains illegal characters.");
+                }
+                bool hasExtension = CatchExtentionRegex.IsMatch(pattern);
+                bool matchExact = false;
+                if (HasQuestionMarkRegEx.IsMatch(pattern))
+                {
+                    matchExact = true;
+                }
+                else if (hasExtension)
+                {
+                    matchExact = CatchExtentionRegex.Match(pattern).Groups[1].Length != 3;
+                }
+                string regexString = Regex.Escape(pattern);
+                regexString = "^" + Regex.Replace(regexString, @"\\\*", ".*");
+                regexString = Regex.Replace(regexString, @"\\\?", ".");
+                if (!matchExact && hasExtension)
+                {
+                    regexString += NonDotCharacters;
+                }
+                regexString += "$";
+                Regex regex = new Regex(regexString, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                return regex;
+            }
+        }
     }
 }

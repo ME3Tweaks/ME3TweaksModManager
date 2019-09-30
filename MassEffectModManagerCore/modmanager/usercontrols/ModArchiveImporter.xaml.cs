@@ -207,7 +207,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 Log.Information("ME3Tweaks does not have additional version information for this file");
                             }
                         }
-                    } else
+                    }
+                    else
                     {
                         Log.Warning($"No importing information is available for file with hash {md5}");
                     }
@@ -319,10 +320,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ICommand ImportModsCommand { get; set; }
         public ICommand CancelCommand { get; set; }
+        public ICommand InstallModCommand { get; set; }
         private void LoadCommands()
         {
             ImportModsCommand = new GenericCommand(BeginImportingMods, CanImportMods);
             CancelCommand = new GenericCommand(Cancel, CanCancel);
+            InstallModCommand = new GenericCommand(InstallCompressedMod, CanInstallCompressedMod);
+        }
+
+        private static ModJob.JobHeader[] CurrentlyDirectInstallSupportedJobs = { ModJob.JobHeader.BASEGAME, ModJob.JobHeader.BALANCE_CHANGES, ModJob.JobHeader.CUSTOMDLC };
+        private bool CanInstallCompressedMod()
+        {
+            //This will have to pass some sort of validation code later.
+            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is CompressedMod cm && CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header));
+        }
+
+        private void InstallCompressedMod()
+        {
+            OnClosing(new DataEventArgs(((CompressedMod)CompressedMods_ListBox.SelectedItem).Mod));
         }
 
         private void Cancel()
@@ -330,10 +345,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        private bool CanCancel()
-        {
-            return true;
-        }
+        private bool CanCancel() => true;
 
         private bool CanImportMods() => !TaskRunning && CompressedMods.Any(x => x.SelectedForImport);
 

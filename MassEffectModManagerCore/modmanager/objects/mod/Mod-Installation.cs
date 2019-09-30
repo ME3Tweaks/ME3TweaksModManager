@@ -7,6 +7,7 @@ using MassEffectModManager;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
+using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -14,6 +15,7 @@ namespace MassEffectModManagerCore.modmanager
     {
         public (Dictionary<ModJob, Dictionary<string, string>>, List<(ModJob job, string sfarPath)>) GetInstallationQueues(GameTarget gameTarget)
         {
+            if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
             var customDLCMapping = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
             if (customDLCMapping != null)
@@ -46,11 +48,12 @@ namespace MassEffectModManagerCore.modmanager
                     foreach (var mapping in customDLCMapping)
                     {
                         //Mapping is done as DESTINATIONFILE = SOURCEFILE so you can override keys
-                        var source = Path.Combine(ModPath, mapping.Key);
+                        var source = FilesystemInterposer.PathCombine(IsInArchive, ModPath, mapping.Key);
                         var target = Path.Combine(gameDLCPath, mapping.Value);
 
                         //get list of all normal files we will install
-                        var allSourceDirFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length)).ToList();
+                        //var allSourceDirFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length)).ToList();
+                        var allSourceDirFiles = FilesystemInterposer.DirectoryGetFiles(source, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length)).ToList();
 
                         //loop over every file 
                         foreach (var sourceFile in allSourceDirFiles)

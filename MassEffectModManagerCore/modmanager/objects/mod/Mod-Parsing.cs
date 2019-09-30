@@ -111,6 +111,7 @@ namespace MassEffectModManagerCore.modmanager
         public bool IsVirtualized { get; private set; }
 
         private readonly string VirtualizedIniText;
+        private readonly string ArchivePath;
 
         /// <summary>
         /// Loads a moddesc from a stream. Used when reading data from an archive. 
@@ -126,6 +127,7 @@ namespace MassEffectModManagerCore.modmanager
             string iniText = new StreamReader(ms).ReadToEnd();
             ModPath = Path.GetDirectoryName(moddescArchiveEntry.FileName);
             Archive = archive;
+            ArchivePath = archive.FileName;
             IsInArchive = true;
             try
             {
@@ -136,7 +138,8 @@ namespace MassEffectModManagerCore.modmanager
                 LoadFailedReason = "Error occured parsing archive moddesc.ini " + moddescArchiveEntry.FileName + ": " + e.Message;
             }
 
-            Archive = null; //dipose of the mod
+            //Retain reference to archive as we might need this.
+            //Archive = null; //dipose of the mod
         }
 
         /// <summary>

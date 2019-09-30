@@ -155,12 +155,17 @@ namespace MassEffectModManager
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
-            ApplyModCommand = new GenericCommand(ApplyMod, CanApplyMod);
+            ApplyModCommand = new GenericCommand(CallApplyMod, CanApplyMod);
             CheckForContentUpdatesCommand = new GenericCommand(CheckForContentUpdates, NetworkThreadNotRunning);
             AddTargetCommand = new GenericCommand(AddTarget, () => ModsLoaded);
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
+        }
+
+        private void CallApplyMod()
+        {
+            ApplyMod(SelectedMod);
         }
 
         private void StartGame()
@@ -298,10 +303,10 @@ namespace MassEffectModManager
             return SelectedMod != null && InstallationTargets_ComboBox.SelectedItem is GameTarget gt && gt.Game == SelectedMod.Game;
         }
 
-        private void ApplyMod()
+        private void ApplyMod(Mod mod)
         {
-            BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob("ModInstall", $"Installing {SelectedMod.ModName}", $"Installed {SelectedMod.ModName}");
-            var modInstaller = new ModInstaller(SelectedMod, SelectedGameTarget);
+            BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob("ModInstall", $"Installing {mod.ModName}", $"Installed {mod.ModName}");
+            var modInstaller = new ModInstaller(mod, SelectedGameTarget);
             modInstaller.Close += (a, b) =>
             {
 
@@ -317,7 +322,7 @@ namespace MassEffectModManager
                     }
                     else
                     {
-                        modInstallTask.finishedUiText = $"Failed to install {SelectedMod.ModName}";
+                        modInstallTask.finishedUiText = $"Failed to install {mod.ModName}";
                     }
                 }
 
@@ -907,11 +912,21 @@ namespace MassEffectModManager
             var modInspector = new ModArchiveImporter(UpdateBusyProgressBarCallback);
             modInspector.Close += (a, b) =>
             {
-                IsBusy = false;
-                BusyContent = null;
+
                 if (b.Data is List<Mod> modsImported)
                 {
+                    IsBusy = false;
+                    BusyContent = null;
                     LoadMods(modsImported.Count == 1 ? modsImported.First() : null);
+                }
+                else if (b.Data is Mod compressedModToInstall)
+                {
+                    ApplyMod(compressedModToInstall);
+                }
+                else
+                {
+                    IsBusy = false;
+                    BusyContent = null;
                 }
             };
             //Todo: Update Busy UI Content

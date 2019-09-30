@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -131,8 +132,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
 
-            //Calculate number of installation tasks beforehand
-            int numFilesToInstall = installationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.FilesToInstall.Count).Sum();
+            //Calculate number of installation tasks beforehand - we won't know SFAR cou
+            int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.Count).Sum();
+            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.job.FilesToInstall.Count).Sum();
 
             void FileInstalledCallback()
             {
@@ -151,18 +153,64 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Todo: Implement unpacked copy queue
                 //CopyDir.CopyFiles_ProgressBar(unpackedQueue.)
-                Dictionary<string, string> fullPathMapping = new Dictionary<string, string>();
+                Dictionary<string, string> fullPathMappingDisk = new Dictionary<string, string>();
+                Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
                 foreach (var originalMapping in unpackedQueue.Value)
                 {
                     //always unpacked
                     //if (unpackedQueue.Key == ModJob.JobHeader.CUSTOMDLC || unpackedQueue.Key == ModJob.JobHeader.BALANCE_CHANGES || unpackedQueue.Key == ModJob.JobHeader.BASEGAME)
                     //{
-                    var sourceFile = Path.Combine(ModBeingInstalled.ModPath, unpackedQueue.Key.JobDirectory, originalMapping.Value);
-                    var destFile = Path.Combine(gameTarget.TargetPath, originalMapping.Key); //official
-                    fullPathMapping[sourceFile] = destFile;
+                    string sourceFile;
+                    //todo: maybe handle null parameters as nothing
+                    if (unpackedQueue.Key.JobDirectory == null)
+                    {
+                        sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, originalMapping.Value);
+                    }
+                    else
+                    {
+                        sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, unpackedQueue.Key.JobDirectory, originalMapping.Value);
+                    }
+
+                    var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? MEDirectories.DLCPath(gameTarget) : gameTarget.TargetPath, originalMapping.Key); //official
+                    if (ModBeingInstalled.IsInArchive)
+                    {
+                        int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
+                        fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
+                        fullPathMappingDisk[sourceFile] = destFile; //used for redirection
+                    }
+                    else
+                    {
+                        fullPathMappingDisk[sourceFile] = destFile;
+                    }
                     //}
                 }
-                CopyDir.CopyFiles_ProgressBar(fullPathMapping, FileInstalledCallback);
+
+                if (!ModBeingInstalled.IsInArchive)
+                {
+                    //Direct copy
+                    CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback);
+                }
+                else
+                {
+                    //Extraction to destination
+                    string installationRedirectCallback(string inArchivePath)
+                    {
+                        var redirectedPath = fullPathMappingDisk[inArchivePath];
+                        //Debug.WriteLine($"Redirecting {inArchivePath} to {redirectedPath}");
+                        return redirectedPath;
+                    }
+
+                    ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
+                    {
+                        CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                    };
+                    ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
+                    {
+                        FileInstalledCallback();
+                        //Debug.WriteLine(numdone);
+                    };
+                    ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
+                }
             }
             //Stage: SFAR Installation
             foreach (var sfarJob in installationQueues.sfarJobs)
