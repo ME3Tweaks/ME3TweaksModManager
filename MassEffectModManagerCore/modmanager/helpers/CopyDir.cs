@@ -78,17 +78,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return numdone;
         }
 
-        public static int CopyFiles_ProgressBar(Dictionary<string, string> fileMapping, Action fileCopiedCallback = null)
+        public static void CopyFiles_ProgressBar(Dictionary<string, string> fileMapping, Action fileCopiedCallback = null)
         {
-            int numdone = 0;
             foreach (var singleMapping in fileMapping)
             {
                 var source = singleMapping.Key;
                 var dest = singleMapping.Value;
-
-
+                File.Copy(source, dest, true);
+                fileCopiedCallback?.Invoke();
             }
-            return numdone;
         }
     }
 }

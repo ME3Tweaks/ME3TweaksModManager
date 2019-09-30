@@ -12,7 +12,7 @@ namespace MassEffectModManagerCore.modmanager
 {
     public partial class Mod
     {
-        public (Dictionary<ModJob.JobHeader, Dictionary<string, string>>, List<(ModJob job, string sfarPath)>) GetInstallationQueues(GameTarget gameTarget)
+        public (Dictionary<ModJob, Dictionary<string, string>>, List<(ModJob job, string sfarPath)>) GetInstallationQueues(GameTarget gameTarget)
         {
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
             var customDLCMapping = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager
                 customDLCMapping = new Dictionary<string, string>(customDLCMapping); //prevent altering the source object
             }
 
-            var unpackedJobInstallationMapping = new Dictionary<ModJob.JobHeader, Dictionary<string, string>>();
+            var unpackedJobInstallationMapping = new Dictionary<ModJob, Dictionary<string, string>>();
             var sfarInstallationJobs = new List<(ModJob job, string sfarPath)>();
             foreach (var job in InstallationJobs)
             {
@@ -33,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: CustomDLC
                     var installationMapping = new Dictionary<string, string>();
-                    unpackedJobInstallationMapping[job.Header] = installationMapping;
+                    unpackedJobInstallationMapping[job] = installationMapping;
                     foreach (var altdlc in alternateDLC)
                     {
                         if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
@@ -111,7 +111,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: BASEGAME
                     var installationMapping = new Dictionary<string, string>();
-                    unpackedJobInstallationMapping[job.Header] = installationMapping;
+                    unpackedJobInstallationMapping[job] = installationMapping;
                     buildUnpackedInstallationQueue(job, installationMapping);
                     #endregion
                 }
@@ -127,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager
                         {
                             //Unpacked
                             var installationMapping = new Dictionary<string, string>();
-                            unpackedJobInstallationMapping[job.Header] = installationMapping;
+                            unpackedJobInstallationMapping[job] = installationMapping;
                             buildUnpackedInstallationQueue(job, installationMapping);
                         }
                         else
@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
 
                 if (altApplied) continue; //no further processing for file
-                installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
+                //installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
 
 
                 installationMapping[destFile] = sourceFile;

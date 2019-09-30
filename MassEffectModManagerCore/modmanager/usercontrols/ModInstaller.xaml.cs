@@ -121,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
             //Prepare queues
-            (Dictionary<ModJob.JobHeader, Dictionary<string, string>> unpackedJobMappings, List<(ModJob job, string sfarPath)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
+            (Dictionary<ModJob, Dictionary<string, string>> unpackedJobMappings, List<(ModJob job, string sfarPath)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
 
             Action = $"Installing";
             PercentVisibility = Visibility.Visible;
@@ -151,6 +151,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Todo: Implement unpacked copy queue
                 //CopyDir.CopyFiles_ProgressBar(unpackedQueue.)
+                Dictionary<string, string> fullPathMapping = new Dictionary<string, string>();
+                foreach (var originalMapping in unpackedQueue.Value)
+                {
+                    //always unpacked
+                    //if (unpackedQueue.Key == ModJob.JobHeader.CUSTOMDLC || unpackedQueue.Key == ModJob.JobHeader.BALANCE_CHANGES || unpackedQueue.Key == ModJob.JobHeader.BASEGAME)
+                    //{
+                    var sourceFile = Path.Combine(ModBeingInstalled.ModPath, unpackedQueue.Key.JobDirectory, originalMapping.Value);
+                    var destFile = Path.Combine(gameTarget.TargetPath, originalMapping.Key); //official
+                    fullPathMapping[sourceFile] = destFile;
+                    //}
+                }
+                CopyDir.CopyFiles_ProgressBar(fullPathMapping, FileInstalledCallback);
             }
             //Stage: SFAR Installation
             foreach (var sfarJob in installationQueues.sfarJobs)
@@ -191,7 +203,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 e.Result = INSTALL_SUCCESSFUL;
                 Action = "Installed";
             }
-            Thread.Sleep(1000);
         }
 
         private bool InstallIntoSFAR((ModJob job, string sfarPath) sfarJob, Mod mod, Action FileInstalledCallback = null)
@@ -231,19 +242,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 foreach (var entry in sfarJob.job.FilesToInstall)
                 {
-                    int index = dlc.FindFileEntry(entry.Key);
+                    string entryPath = entry.Key.Replace('\\', '/');
+                    if (!entryPath.StartsWith('/')) entryPath = '/' + entryPath; //Ensure path starts with /
+                    int index = dlc.FindFileEntry(entryPath);
                     //Todo: For archive to immediate installation we will need to modify this ModPath value to point to some temporary directory
                     //where we have extracted files destined for SFAR files as we cannot unpack solid archives to streams.
                     var sourcePath = Path.Combine(mod.ModPath, sfarJob.job.JobDirectory, entry.Value);
                     if (index >= 0)
                     {
                         dlc.ReplaceEntry(sourcePath, index);
-                        Log.Information("Replaced file within SFAR: " + entry.Key);
+                        CLog.Information("Replaced file within SFAR: " + entry.Key, Settings.LogModInstallation);
                     }
                     else
                     {
-                        dlc.AddFileQuick(sourcePath, entry.Key);
-                        Log.Information("Added new file to SFAR: " + entry.Key);
+                        dlc.AddFileQuick(sourcePath, entryPath);
+                        CLog.Information("Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
                     }
                     FileInstalledCallback?.Invoke();
                 }

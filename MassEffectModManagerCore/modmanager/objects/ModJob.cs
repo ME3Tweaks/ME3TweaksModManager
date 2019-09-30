@@ -138,7 +138,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <returns>string of failure reason. null if OK.</returns>
         internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod, bool ignoreLoadErrors)
         {
-            string checkingSourceFile = null;
+            string checkingSourceFile;
             if (JobDirectory != null)
             {
                 checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
@@ -152,7 +152,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
             }
-            FilesToInstall[destRelativePath] = sourceRelativePath;
+            FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath;
             return null;
         }
 

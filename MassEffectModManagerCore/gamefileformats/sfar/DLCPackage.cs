@@ -44,6 +44,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                     throw new Exception("This DLC archive format is not supported.");
             }
         }
+        [DebuggerDisplay("SFAR FileEntryStruct | {FileName}")]
         public struct FileEntryStruct
         {
             public HeaderStruct Header;
@@ -578,7 +579,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
             int count = (int)Header.FileCount + 1;
             long oldsize = sfarStream.Length;
             long offset = oldsize;
-            Debug.WriteLine("File End Offset : 0x" + offset.ToString("X10"));
+            //Debug.WriteLine("File End Offset : 0x" + offset.ToString("X10"));
             sfarStream.Seek(oldsize, 0);
             Header.EntryOffset = (uint)offset;
             for (int i = 0; i < count; i++)
@@ -592,7 +593,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                 sfarStream.WriteByte(e.DataOffsetAdder);
             }
             offset += count * 0x1E;
-            Debug.WriteLine("Table End Offset : 0x" + offset.ToString("X10"));
+            //Debug.WriteLine("Table End Offset : 0x" + offset.ToString("X10"));
             Header.BlockTableOffset = (uint)offset;
             //
             //Append blocktable
@@ -604,17 +605,17 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                         sfarStream.Write(BitConverter.GetBytes(u), 0, 2);
             }
             offset = sfarStream.Length;
-            Debug.WriteLine("Block Table End Offset : 0x" + offset.ToString("X10"));
+            //Debug.WriteLine("Block Table End Offset : 0x" + offset.ToString("X10"));
             long dataoffset = offset;
             sfarStream.Write(newFileBytes, 0, newFileBytes.Length);
             offset += newFileBytes.Length;
-            Debug.WriteLine("New Data End Offset : 0x" + offset.ToString("X10"));
+            //Debug.WriteLine("New Data End Offset : 0x" + offset.ToString("X10"));
             //
             //Append TOC
             long tocoffset = offset;
             sfarStream.Write(tocMemory.ToArray(), 0, (int)tocMemory.Length);
             offset = sfarStream.Length;
-            Debug.WriteLine("New TOC Data End Offset : 0x" + offset.ToString("X10"));
+            //Debug.WriteLine("New TOC Data End Offset : 0x" + offset.ToString("X10"));
             //update filetable
             sfarStream.Seek(oldsize, 0);
             uint blocksizeindex = 0;
@@ -858,7 +859,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
         }
         public int FindFileEntry(string fileName)
         {
-            return Files.IndexOf(Files.FirstOrDefault(x => x.FileName.Contains(fileName)));
+            return Files.IndexOf(Files.FirstOrDefault(x => x.FileName.Contains(fileName, StringComparison.InvariantCultureIgnoreCase)));
         }
     }
 }

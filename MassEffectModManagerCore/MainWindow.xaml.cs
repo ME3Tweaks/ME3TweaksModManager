@@ -304,20 +304,43 @@ namespace MassEffectModManager
             var modInstaller = new ModInstaller(SelectedMod, SelectedGameTarget);
             modInstaller.Close += (a, b) =>
             {
-                IsBusy = false;
-                BusyContent = null;
+
                 if (!modInstaller.InstallationSucceeded)
                 {
                     if (modInstaller.InstallationCancelled)
                     {
                         modInstallTask.finishedUiText = $"Installation aborted";
+                        IsBusy = false;
+                        BusyContent = null;
+                        backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                        return;
                     }
                     else
                     {
                         modInstallTask.finishedUiText = $"Failed to install {SelectedMod.ModName}";
                     }
                 }
-                backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+
+                //Run AutoTOC if ME3
+                if (SelectedGameTarget.Game == Mod.MEGame.ME3)
+                {
+                    var autoTocUI = new AutoTOC(SelectedGameTarget);
+                    autoTocUI.Close += (a, b) =>
+                    {
+                        IsBusy = false;
+                        BusyContent = null;
+                        backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    };
+                    BusyContent = autoTocUI;
+                    IsBusy = true;
+                    autoTocUI.RunAutoTOC();
+                }
+                else
+                {
+                    BusyContent = null;
+                    IsBusy = false;
+                    backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                }
             };
             UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             BusyContent = modInstaller;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
+using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using Serilog;
 
