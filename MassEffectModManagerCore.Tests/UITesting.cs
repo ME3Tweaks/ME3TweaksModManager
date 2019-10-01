@@ -13,8 +13,30 @@ namespace MassEffectModManagerCore.Tests
         [TestMethod]
         public void InitialUILoadTest()
         {
-            App app = new App();
-            //Thread.Sleep(10000);
+            GlobalTest.Init();
+            App app = new App(); //Pre boot
+            //Thread thread = new Thread(() =>
+            //{
+            //    app.InitializeComponent();
+            //    app.Run();
+            //});
+            //thread.SetApartmentState(ApartmentState.STA);
+            //thread.Start();
+            //thread.Join();
+            //var shutdownTimer = new System.Timers.Timer();
+            //shutdownTimer.Interval = 15000;
+            //shutdownTimer.Elapsed += (o, e) =>
+            //{
+            //    app.Shutdown();
+            //    app = null;
+
+            //};
+
+            //shutdownTimer.Start();
+            //while (app != null)
+            //{
+            //    Thread.Sleep(1000);
+            //}
         }
     }
 }

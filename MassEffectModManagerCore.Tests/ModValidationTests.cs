@@ -15,13 +15,12 @@ namespace MassEffectModManagerCore.Tests
         [TestMethod]
         public void ValidateModLoading()
         {
+            GlobalTest.Init();
             var testingDataPath = GlobalTest.GetTestModsDirectory();
             Assert.IsTrue(Directory.Exists(testingDataPath), "Directory for testing doesn't exist.");
 
             //Force log startup on.
-            Settings.LogModStartup = true;
-
-            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+            
 
             //Test cases
             Mod aceSlammer = new Mod(Path.Combine(testingDataPath, "Ace Slammer", "moddesc.ini"), Mod.MEGame.Unknown);
