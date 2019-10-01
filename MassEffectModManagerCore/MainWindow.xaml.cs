@@ -265,7 +265,7 @@ namespace MassEffectModManager
                     if (gameSelected == Mod.MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32 directory.
                     var pendingTarget = new GameTarget(gameSelected, result, false);
-                    string failureReason = Utilities.ValidateGameTarget(pendingTarget);
+                    string failureReason = pendingTarget.ValidateTarget();
                     if (failureReason == null)
                     {
                         Utilities.AddCachedTarget(pendingTarget);
@@ -462,7 +462,7 @@ namespace MassEffectModManager
             if (ME3Directory.gamePath != null)
             {
                 var target = new GameTarget(Mod.MEGame.ME3, ME3Directory.gamePath, true);
-                var failureReason = Utilities.ValidateGameTarget(target);
+                var failureReason = target.ValidateTarget();
                 if (failureReason == null)
                 {
                     Log.Information("Current boot target for ME3: " + target.TargetPath);
@@ -477,7 +477,7 @@ namespace MassEffectModManager
             if (ME2Directory.gamePath != null)
             {
                 var target = new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath, true);
-                var failureReason = Utilities.ValidateGameTarget(target);
+                var failureReason = target.ValidateTarget();
                 if (failureReason == null)
                 {
                     Log.Information("Current boot target for ME2: " + target.TargetPath);
@@ -491,7 +491,7 @@ namespace MassEffectModManager
             if (ME1Directory.gamePath != null)
             {
                 var target = new GameTarget(Mod.MEGame.ME1, ME1Directory.gamePath, true);
-                var failureReason = Utilities.ValidateGameTarget(target);
+                var failureReason = target.ValidateTarget();
                 if (failureReason == null)
                 {
                     Log.Information("Current boot target for ME1: " + target.TargetPath);

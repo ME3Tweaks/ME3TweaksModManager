@@ -150,5 +150,49 @@ namespace MassEffectModManagerCore.modmanager.objects
                     throw new Exception("Unknown game to find ALOT marker for!");
             }
         }
+
+        public bool IsValid { get; set; }
+
+        /// <summary>
+        /// Validates a game directory by checking for multiple things that should be present in a working game.
+        /// </summary>
+        /// <param name="target">Game target to check</param>
+        /// <returns>String of failure reason, null if OK</returns>
+        public string ValidateTarget()
+        {
+            if (!Selectable)
+            {
+                return null;
+            }
+            IsValid = false; //set to invalid at first/s
+            switch (Game)
+            {
+                case Mod.MEGame.ME1:
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Maps", "EntryMenu.SFM"))) return "Invalid game directory: Entrymenu.sfm not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "BIOC_Base.u"))) return "Invalid game directory: BIOC_Base.u not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Packages", "Textures", "BIOA_GLO_00_A_Opening_FlyBy_T.upk"))) return "Invalid game directory: BIOA_GLO_00_A_Opening_FlyBy_T.upk not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Maps", "WAR", "LAY", "BIOA_WAR20_05_LAY.SFM"))) return "Invalid game directory: Entrymenu.sfm not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Movies", "MEvisionSEQ3.bik"))) return "Invalid game directory: MEvisionSEQ3.bik not found";
+                    break;
+                case Mod.MEGame.ME2:
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "BioA_BchLmL.pcc"))) return "Invalid game directory: BioA_BchLmL.pcc not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "Config", "PC", "Cooked", "Coalesced.ini"))) return "Invalid game directory: Coalesced.ini not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Wwise_Jack_Loy_Music.afc"))) return "Invalid game directory: Wwise_Jack_Loy_Music.afc not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "WwiseAudio.pcc"))) return "Invalid game directory: WwiseAudio.pcc not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "Movies", "Crit03_CollectArrive_Part2_1.bik"))) return "Invalid game directory: Crit03_CollectArrive_Part2_1.bik not found";
+                    break;
+                case Mod.MEGame.ME3:
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "Textures.tfc"))) return "Invalid game directory: Textures.tfc not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "Startup.pcc"))) return "Invalid game directory: Startup.pcc not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "Coalesced.bin"))) return "Invalid game directory: Coalesced.bin not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "Patches", "PCConsole", "Patch_001.sfar"))) return "Invalid game directory: Patch_001.sfar not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "Textures.tfc"))) return "Invalid game directory: Textures.tfc not found";
+                    if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "citwrd_rp1_bailey_m_D_Int.afc"))) return "Invalid game directory: citwrd_rp1_bailey_m_D_Int.afc not found";
+                    break;
+            }
+
+            IsValid = true;
+            return null;
+        }
     }
 }
