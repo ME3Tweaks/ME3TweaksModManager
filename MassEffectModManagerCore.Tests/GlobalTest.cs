@@ -10,13 +10,23 @@ namespace MassEffectModManagerCore.Tests
 {
     public static class GlobalTest
     {
-        public static string GetTestDirectory()
+        /// <summary>
+        /// Looks in parent folders for folder containing a folder named "testdata" as Azure DevOps seems to build project differently than on a VS installation
+        /// </summary>
+        /// <returns></returns>
+        public static string GetTestDataDirectory()
         {
-            var exeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            return Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(exeDirectory).FullName).FullName).FullName).FullName;
+            var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location);
+            while (Directory.GetParent(dir.FullName) != null)
+            {
+                dir = Directory.GetParent(dir.FullName);
+                var testDataPath = Path.Combine(dir.FullName, "testdata");
+                if (Directory.Exists(testDataPath)) return testDataPath;
+            }
+
+            throw new Exception("Could not find testdata directory!");
         }
 
-        public static string GetTestDataDirectory() => Path.Combine(GetTestDirectory(), "testdata");
         private static bool initialized;
         internal static void Init()
         {

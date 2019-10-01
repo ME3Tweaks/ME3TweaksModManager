@@ -16,6 +16,7 @@ namespace MassEffectModManagerCore.Tests
         public void ValidateModLoading()
         {
             GlobalTest.Init();
+            Console.WriteLine("Executing path: "+GlobalTest.GetTestModsDirectory());
             var testingDataPath = GlobalTest.GetTestModsDirectory();
             Assert.IsTrue(Directory.Exists(testingDataPath), "Directory for testing doesn't exist: " + testingDataPath);
 
