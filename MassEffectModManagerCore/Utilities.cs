@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Threading;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
@@ -45,6 +46,45 @@ namespace MassEffectModManager
         {
             return Directory.CreateDirectory(Path.Combine(GetMMExecutableDirectory(), "data")).FullName;
         }
+
+        public static bool DeleteFilesAndFoldersRecursively(string targetDirectory)
+        {
+            bool result = true;
+            foreach (string file in Directory.GetFiles(targetDirectory))
+            {
+                File.SetAttributes(file, FileAttributes.Normal); //remove read only
+                try
+                {
+                    //Debug.WriteLine("Deleting file: " + file);
+                    File.Delete(file);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to delete file: {file}. It may be open still: {e.Message}");
+                    return false;
+                }
+            }
+
+            foreach (string subDir in Directory.GetDirectories(targetDirectory))
+            {
+                result &= DeleteFilesAndFoldersRecursively(subDir);
+            }
+
+            Thread.Sleep(10); // This makes the difference between whether it works or not. Sleep(0) is not enough.
+            try
+            {
+                //Debug.WriteLine("Deleting directory: " + targetDirectory);
+
+                Directory.Delete(targetDirectory);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Unable to delete directory: {targetDirectory}. It may be open still or may not be actually empty: {e.Message}");
+                return false;
+            }
+            return result;
+        }
+
 
         internal static void InstallEmbeddedASI(string asiFname, double installingVersion, GameTarget gameTarget)
         {

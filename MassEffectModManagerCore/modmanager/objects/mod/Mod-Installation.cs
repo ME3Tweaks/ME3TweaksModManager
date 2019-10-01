@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using MassEffectModManager;
@@ -13,7 +14,7 @@ namespace MassEffectModManagerCore.modmanager
 {
     public partial class Mod
     {
-        public (Dictionary<ModJob, Dictionary<string, string>>, List<(ModJob job, string sfarPath, Dictionary<string,string>)>) GetInstallationQueues(GameTarget gameTarget)
+        public (Dictionary<ModJob, Dictionary<string, string>>, List<(ModJob job, string sfarPath, Dictionary<string, string>)>) GetInstallationQueues(GameTarget gameTarget)
         {
             if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
@@ -25,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             var unpackedJobInstallationMapping = new Dictionary<ModJob, Dictionary<string, string>>();
-            var sfarInstallationJobs = new List<(ModJob job, string sfarPath)>();
+            var sfarInstallationJobs = new List<(ModJob job, string sfarPath, Dictionary<string, string> installationMapping)>();
             foreach (var job in InstallationJobs)
             {
                 Log.Information($"Preprocessing installation job: {job.Header}");
@@ -92,7 +93,7 @@ namespace MassEffectModManagerCore.modmanager
                             {
                                 string alternatePathRoot = FilesystemInterposer.PathCombine(IsInArchive, ModPath, altdlc.AlternateDLCFolder);
                                 //Todo: Change to Filesystem Interposer to support installation from archives
-                                var filesToAdd = Directory.GetFiles(alternatePathRoot).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
+                                var filesToAdd = FilesystemInterposer.DirectoryGetFiles(alternatePathRoot, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
                                 foreach (var fileToAdd in filesToAdd)
                                 {
                                     var destFile = Path.Combine(altdlc.DestinationDLCFolder, Path.GetFileName(fileToAdd));
@@ -115,28 +116,31 @@ namespace MassEffectModManagerCore.modmanager
                     #region Installation: BASEGAME
                     var installationMapping = new Dictionary<string, string>();
                     unpackedJobInstallationMapping[job] = installationMapping;
-                    buildUnpackedInstallationQueue(job, installationMapping);
+                    buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
                 else if (Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
                 {
                     #region Installation: DLC (Unpacked and SFAR) - ME3 ONLY
+                    Debug.WriteLine("Building ME3 queue for header: " + job.Header);
                     string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
 
 
                     if (File.Exists(sfarPath))
                     {
+                        var installationMapping = new Dictionary<string, string>();
                         if (new FileInfo(sfarPath).Length == 32)
                         {
                             //Unpacked
-                            var installationMapping = new Dictionary<string, string>();
                             unpackedJobInstallationMapping[job] = installationMapping;
-                            buildUnpackedInstallationQueue(job, installationMapping);
+                            buildInstallationQueue(job, installationMapping, false);
                         }
                         else
                         {
                             //Packed
-                            sfarInstallationJobs.Add((job, sfarPath));
+                            //unpackedJobInstallationMapping[job] = installationMapping;
+                            buildInstallationQueue(job, installationMapping, true);
+                            sfarInstallationJobs.Add((job, sfarPath, installationMapping));
                         }
                     }
                     else
@@ -147,7 +151,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 else
                 {
-                    //BINI
+                    //?? Header
                     throw new Exception("Unsupported installation job header! " + job.Header);
                 }
             }
@@ -155,8 +159,9 @@ namespace MassEffectModManagerCore.modmanager
             return (unpackedJobInstallationMapping, sfarInstallationJobs);
         }
 
-        private void buildUnpackedInstallationQueue(ModJob job, Dictionary<string, string> installationMapping)
+        private void buildInstallationQueue(ModJob job, Dictionary<string, string> installationMapping, bool isSFAR)
         {
+            CLog.Information("Building installation queue for " + job.Header, Settings.LogModInstallation);
             foreach (var entry in job.FilesToInstall)
             {
                 //Key is destination, value is source file
@@ -167,7 +172,7 @@ namespace MassEffectModManagerCore.modmanager
                 foreach (var altFile in job.AlternateFiles)
                 {
                     //todo: Support wildcards if OP_NOINSTALL
-                    if (altFile.ModFile.Equals(sourceFile, StringComparison.InvariantCultureIgnoreCase))
+                    if (altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //Alt applies to this file
                         switch (altFile.Operation)
@@ -191,7 +196,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                 installationMapping[destFile] = sourceFile;
-                Log.Information($"Adding {job.Header} file to installation queue: {entry.Value} -> {destFile}");
+                CLog.Information($"Adding {job.Header} file to installation {(isSFAR ? "SFAR" : "unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation);
 
             }
         }

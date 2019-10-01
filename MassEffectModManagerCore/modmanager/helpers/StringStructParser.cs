@@ -167,6 +167,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (parenthesisStack.Count > 0)
             {
                 Log.Error("Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
+                throw new Exception("Unclosed opening parenthesis encountered while parsing parenthesis split list");
                 return new List<string>();
             }
             return splits;

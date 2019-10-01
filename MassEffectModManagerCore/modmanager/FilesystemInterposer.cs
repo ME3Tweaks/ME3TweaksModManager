@@ -79,11 +79,16 @@ namespace MassEffectModManagerCore.modmanager
             return pathSb.ToString();
         }
 
+        internal static List<string> DirectoryGetFiles(string directoryPath, SevenZipExtractor archive = null)
+        {
+            return DirectoryGetFiles(directoryPath, "*", SearchOption.TopDirectoryOnly, archive);
+        }
+
         internal static List<string> DirectoryGetFiles(string directoryPath, string searchPattern, SearchOption directorySearchOption, SevenZipExtractor archive = null)
         {
             if (archive == null) return Directory.GetFiles(directoryPath, searchPattern, directorySearchOption).ToList();
             var fileList = new List<string>();
-            string internalSearchPattern = directoryPath.TrimEnd('\'').Replace('/', '\\') + '\''; //Directory\
+            string internalSearchPattern = directoryPath.TrimEnd('\'').Replace('/', '\\') + '\\'; //ensures we are looking in directory itself
             int numSlashesInBasepath = internalSearchPattern.Count(f => f == '\\'); //used for same directory search
             var compiledPattern = FindFilesPatternToRegex.Convert(searchPattern);
 

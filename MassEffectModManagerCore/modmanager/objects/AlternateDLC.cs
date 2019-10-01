@@ -64,7 +64,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (properties.TryGetValue("ModAltDLC", out string altDLCFolder))
             {
-                AlternateDLCFolder = altDLCFolder;
+                AlternateDLCFolder = altDLCFolder.Replace('/', '\\');
             }
             else
             {
@@ -76,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (properties.TryGetValue("ModDestDLC", out string destDLCFolder))
             {
-                DestinationDLCFolder = destDLCFolder;
+                DestinationDLCFolder = destDLCFolder.Replace('/', '\\');
             }
             else
             {
@@ -85,6 +85,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 LoadFailedReason = $"Alternate DLC {FriendlyName} does not declare ModDestDLC but it is required for all Alternate DLC.";
                 return;
             }
+            //todo: Validate target in mod folder
 
             if (properties.TryGetValue("ConditionalDLC", out string conditionalDlc))
             {

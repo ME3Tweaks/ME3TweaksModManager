@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public string AltFile { get; private set; }
         /// <summary>
-        /// In-mod path that is operated on
+        /// In-game relative path that will be operated on according to the specified operation
         /// </summary>
         public string ModFile { get; private set; }
 

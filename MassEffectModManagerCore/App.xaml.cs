@@ -181,6 +181,8 @@ namespace MassEffectModManagerCore
 
                 Utilities.EnsureModDirectories();
 
+                Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+
                 Log.Information("Mod Manager pre-UI startup has completed");
             }
             catch (Exception e)

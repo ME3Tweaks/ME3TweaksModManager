@@ -332,7 +332,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is CompressedMod cm && CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header));
+            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is CompressedMod cm /*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
         }
 
         private void InstallCompressedMod()

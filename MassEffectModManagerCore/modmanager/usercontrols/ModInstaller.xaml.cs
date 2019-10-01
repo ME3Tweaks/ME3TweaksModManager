@@ -13,6 +13,7 @@ using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Microsoft.VisualBasic;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -122,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
             //Prepare queues
-            (Dictionary<ModJob, Dictionary<string, string>> unpackedJobMappings, List<(ModJob job, string sfarPath)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
+            (Dictionary<ModJob, Dictionary<string, string>> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
 
             Action = $"Installing";
             PercentVisibility = Visibility.Visible;
@@ -134,12 +135,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Calculate number of installation tasks beforehand - we won't know SFAR cou
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.Count).Sum();
-            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.job.FilesToInstall.Count).Sum() * 2; //*2 as we have to extract and install
-
+            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * 2; //*2 as we have to extract and install
+            Debug.WriteLine("Number of expected installation tasks: " + numFilesToInstall);
             void FileInstalledCallback()
             {
                 numdone++;
                 var now = DateTime.Now;
+                if (numdone > numFilesToInstall) Debug.WriteLine($"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
                 if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
                 {
                     //Don't update UI too often. Once per second is enough.
@@ -148,13 +150,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            //Stage: Unpacked file installation
+            //Stage: Unpacked files build map
+            Dictionary<string, string> fullPathMappingDisk = new Dictionary<string, string>();
+            Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
                 //Todo: Implement unpacked copy queue
                 //CopyDir.CopyFiles_ProgressBar(unpackedQueue.)
-                Dictionary<string, string> fullPathMappingDisk = new Dictionary<string, string>();
-                Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
+
                 foreach (var originalMapping in unpackedQueue.Value)
                 {
                     //always unpacked
@@ -184,54 +187,63 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     //}
                 }
+            }
 
-                if (!ModBeingInstalled.IsInArchive)
+            //Substage: Add SFAR staging targets
+            string sfarStagingDirectory = (ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), "SFARJobStaging")).FullName : null; //don't make directory if we don't need one
+            if (sfarStagingDirectory != null)
+            {
+                foreach (var sfarJob in installationQueues.sfarJobs)
                 {
-                    //Direct copy
-                    CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback);
-                }
-                else
-                {
-                    //Extraction to destination
-                    string installationRedirectCallback(string inArchivePath)
+                    foreach (var fileToInstall in sfarJob.sfarInstallationMapping)
                     {
-                        var redirectedPath = fullPathMappingDisk[inArchivePath];
-                        //Debug.WriteLine($"Redirecting {inArchivePath} to {redirectedPath}");
-                        return redirectedPath;
+                        string sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, sfarJob.job.JobDirectory, fileToInstall.Value);
+                        int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
+                        if (archiveIndex == -1)
+                        {
+                            Debugger.Break();
+                        }
+                        string destFile = Path.Combine(sfarStagingDirectory, sfarJob.job.JobDirectory, fileToInstall.Value);
+                        fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
+                        fullPathMappingDisk[sourceFile] = destFile; //used for redirection
+                        Debug.WriteLine($"SFAR Disk Staging: {fileToInstall.Key} => {destFile}");
                     }
-
-                    ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
-                    {
-                        CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
-                    };
-                    ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
-                    {
-                        FileInstalledCallback();
-                        //Debug.WriteLine(numdone);
-                    };
-                    ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
                 }
             }
 
-            if (ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0)
-            {
-                //Stage: Extract from 7zip to prepare for installation
-                string stagingDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), "SFARJobStaging")).FullName;
-                List<int> indexesToExtract = new List<int>();
-                var extractionToStagingMap = new Dictionary<string, string>();
-                foreach(var sfarJob in installationQueues.sfarJobs)
-                {
-                    foreach(var file in sfarJob.job.FilesToInstall)
-                    {
 
-                    }
+            //Stage: Unpacked files installation
+            if (!ModBeingInstalled.IsInArchive)
+            {
+                //Direct copy
+                CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback);
+            }
+            else
+            {
+                //Extraction to destination
+                string installationRedirectCallback(string inArchivePath)
+                {
+                    var redirectedPath = fullPathMappingDisk[inArchivePath];
+                    //Debug.WriteLine($"Redirecting {inArchivePath} to {redirectedPath}");
+                    return redirectedPath;
                 }
+
+                ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
+                {
+                    CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                };
+                ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
+                {
+                    FileInstalledCallback();
+                    //Debug.WriteLine(numdone);
+                };
+                ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
             }
 
             //Stage: SFAR Installation
             foreach (var sfarJob in installationQueues.sfarJobs)
             {
-                InstallIntoSFAR(sfarJob, ModBeingInstalled, FileInstalledCallback);
+                InstallIntoSFAR(sfarJob, ModBeingInstalled, FileInstalledCallback, ModBeingInstalled.IsInArchive ? sfarStagingDirectory : null);
             }
 
 
@@ -261,6 +273,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            if (sfarStagingDirectory != null)
+            {
+                Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+            }
 
             if (numFilesToInstall == numdone)
             {
@@ -269,10 +285,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath) sfarJob, Mod mod, Action FileInstalledCallback = null, string ForcedSourcePath = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
-            int numfiles = sfarJob.job.FilesToInstall.Count;
+            int numfiles = sfarJob.fileMapping.Count;
             //Todo: Check all newfiles exist
             //foreach (string str in diskFiles)
             //{
@@ -287,7 +303,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DLCPackage dlc = new DLCPackage(sfarJob.sfarPath);
 
             //Add or Replace file install
-            foreach (var entry in sfarJob.job.FilesToInstall)
+            foreach (var entry in sfarJob.fileMapping)
             {
                 string entryPath = entry.Key.Replace('\\', '/');
                 if (!entryPath.StartsWith('/')) entryPath = '/' + entryPath; //Ensure path starts with /
