@@ -17,10 +17,10 @@ namespace MassEffectModManagerCore.Tests
         {
             GlobalTest.Init();
             var testingDataPath = GlobalTest.GetTestModsDirectory();
-            Assert.IsTrue(Directory.Exists(testingDataPath), "Directory for testing doesn't exist.");
+            Assert.IsTrue(Directory.Exists(testingDataPath), "Directory for testing doesn't exist: " + testingDataPath);
 
             //Force log startup on.
-            
+
 
             //Test cases
             Mod aceSlammer = new Mod(Path.Combine(testingDataPath, "Ace Slammer", "moddesc.ini"), Mod.MEGame.Unknown);
