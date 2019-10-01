@@ -2,7 +2,7 @@
   "profiles": {
     "TestDirectoryGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "--inputdir \"Z:\\ME1-Backup\" --outputdir \"C:\\Users\\mgame\\source\\repos\\ME3Tweaks\\MassEffectModManager\\MassEffectModManagerCore.Tests\\testdata\\gamedirectories\\me1\\normal\""
+      "commandLineArgs": "--inputdir \"C:\\Users\\Mgamerz\\source\\repos\\ME3Tweaks\\MassEffectModManager\\MassEffectModManagerCore.Tests\\Same-Gender Romances for ME3\" --outputdir \"C:\\Users\\Mgamerz\\source\\repos\\ME3Tweaks\\MassEffectModManager\\MassEffectModManagerCore.Tests\\testdata\\mods\\Same-Gender Romances for ME3\""
     }
   }
 }
