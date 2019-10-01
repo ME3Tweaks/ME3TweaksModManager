@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestDirectoryGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "--inputdir \"Z:\\ME1-Backup\" --outputdir \"C:\\Users\\mgame\\source\\repos\\ME3Tweaks\\MassEffectModManager\\MassEffectModManagerCore.Tests\\testdata\\gamedirectories\\me1\\normal\""
+    }
+  }
+}
