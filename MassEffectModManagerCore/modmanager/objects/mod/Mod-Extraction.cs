@@ -12,6 +12,8 @@ namespace MassEffectModManagerCore.modmanager
 {
     public partial class Mod
     {
+        public bool SelectedForImport { get; set; } = true; //Default check on
+
         public void ExtractFromArchive(string archivePath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");

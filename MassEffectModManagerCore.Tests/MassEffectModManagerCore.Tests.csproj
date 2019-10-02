@@ -28,4 +28,10 @@
   <ItemGroup>
     <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="7z64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

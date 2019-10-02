@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 
@@ -16,7 +19,7 @@ namespace MassEffectModManagerCore.Tests
         public void ValidateModLoading()
         {
             GlobalTest.Init();
-            Console.WriteLine("Executing path: "+GlobalTest.GetTestModsDirectory());
+            Console.WriteLine("Executing path: " + GlobalTest.GetTestModsDirectory());
             var testingDataPath = GlobalTest.GetTestModsDirectory();
             Assert.IsTrue(Directory.Exists(testingDataPath), "Directory for testing doesn't exist: " + testingDataPath);
 
@@ -64,6 +67,48 @@ namespace MassEffectModManagerCore.Tests
             Assert.IsNotNull(sgCustDLCJob, "Could not find Same-Gender Romances Custom DLC job!");
             Assert.AreEqual(1, sameGender.InstallationJobs.Count, $"Same-gender romances: Wrong number of installation jobs! Should be 1, got: {sameGender.InstallationJobs.Count}");
 
+        }
+
+        [TestMethod]
+        public void ValidateArchiveModLoading()
+        {
+            GlobalTest.Init();
+
+            Console.WriteLine("Fetching third party services");
+            App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService();
+            App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest();
+
+            var compressedModsDirectory = Path.Combine(GlobalTest.GetTestDataDirectory(), "compressedmods");
+            List<Mod> modsFoundInArchive = new List<Mod>();
+
+            void addModCallback(Mod m)
+            {
+                Console.WriteLine($"Found mod in archive: {m.ModName}");
+                modsFoundInArchive.Add(m);
+            }
+
+            void logMessageCallback(string m)
+            {
+                Console.WriteLine(m);
+            }
+            foreach (var archive in Directory.GetFiles(compressedModsDirectory))
+            {
+                modsFoundInArchive.Clear();
+                var realArchiveInfo = parseRealArchiveAttributes(archive);
+                Console.WriteLine($"Inspecting archive: { archive}");
+                ModArchiveImporter.InspectArchive(archive, addModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
+                Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count, $"{archive} did not parse correct amount of mods.");
+            }
+        }
+
+        private (string md5, int size, int nummodsexpected) parseRealArchiveAttributes(string filename)
+        {
+            string fname = Path.GetFileNameWithoutExtension(filename);
+            string[] parts = fname.Split('-');
+            string md5 = parts.Last();
+            int size = int.Parse(parts[^2]);
+            int nummodsexpected = int.Parse(parts[^3]);
+            return (md5, size, nummodsexpected);
         }
     }
 }

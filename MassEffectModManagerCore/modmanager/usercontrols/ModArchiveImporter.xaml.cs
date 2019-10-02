@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,6 +15,7 @@ using SevenZip;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -34,13 +36,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             handler?.Invoke(this, e);
         }
 
-        public CompressedMod SelectedMod { get; private set; }
+        public Mod SelectedMod { get; private set; }
 
         private string ArchiveFilePath;
 
         public string ScanningFile { get; private set; } = "Please wait";
         public string ActionText { get; private set; }
-        public ObservableCollectionExtended<CompressedMod> CompressedMods { get; } = new ObservableCollectionExtended<CompressedMod>();
+        public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(Action<ProgressBarUpdate> progressBarCallback)
         {
             this.progressBarCallback = progressBarCallback;
@@ -89,9 +91,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
             TaskRunning = true;
-            string filepath = (string)e.Argument;
             ActionText = $"Opening {ScanningFile}";
+
+
+            void AddCompressedModCallback(Mod m)
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    CompressedMods.Add(m);
+                    CompressedMods.Sort(x => x.ModName);
+                });
+            }
+            void ActionTextUpdateCallback(string newText)
+            {
+                ActionText = newText;
+            }
+            InspectArchive(e.Argument as string, AddCompressedModCallback, ActionTextUpdateCallback);
+        }
+
+        //this should be private but no way to test it private for now...
+
+        /// <summary>
+        /// Inspects and loads compressed mods from an archive.
+        /// </summary>
+        /// <param name="filepath">Path of the archive</param>
+        /// <param name="addCompressedModCallback">Callback indicating that the mod should be added to the collection of found mods</param>
+        /// <param name="currentOperationTextCallback">Callback to tell caller what's going on'</param>
+        /// <param name="forcedOverrideData">Override data about archive. Used for testing only</param>
+        public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<string> currentOperationTextCallback = null, string forcedMD5 = null, int forcedSize = -1)
+        {
             string relayVersionResponse = "-1";
+            List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
             using (var archiveFile = new SevenZipExtractor(filepath))
             {
                 var moddesciniEntries = new List<ArchiveFileInfo>();
@@ -120,23 +150,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     foreach (var entry in moddesciniEntries)
                     {
-                        ActionText = $"Reading {entry.FileName}";
+                        currentOperationTextCallback?.Invoke($"Reading {entry.FileName}");
                         Mod m = new Mod(entry, archiveFile);
                         if (m.ValidMod)
                         {
-                            Application.Current.Dispatcher.Invoke(delegate
-                            {
-                                CompressedMods.Add(new CompressedMod(m));
-                                CompressedMods.Sort(x => x.Mod.ModName);
-                            });
+                            addCompressedModCallback?.Invoke(m);
+                            internalModList.Add(m);
                         }
                     }
                 }
                 else if (sfarEntries.Count > 0)
                 {
                     //Todo: Run unofficially supported scan
-                    var md5 = Utilities.CalculateMD5(filepath);
-                    long size = new FileInfo(filepath).Length;
+                    var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
+                    long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
                     var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
                     var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
                     if (importingInfo != null)
@@ -145,15 +172,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             //Partially supported unofficial third party mod
                             //Mod has a custom written moddesc.ini stored on ME3Tweaks
+                            Log.Information("Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
                             string custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
                             Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virutal mod
                             if (virutalCustomMod.ValidMod)
                             {
-                                Application.Current.Dispatcher.Invoke(delegate
-                                {
-                                    CompressedMods.Add(new CompressedMod(virutalCustomMod));
-                                    CompressedMods.Sort(x => x.Mod.ModName);
-                                });
+                                addCompressedModCallback?.Invoke(virutalCustomMod);
+                                internalModList.Add(virutalCustomMod);
                                 return; //Don't do further parsing as this is custom written
                             }
                         }
@@ -165,39 +190,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var vMod = AttemptLoadVirtualMod(entry, archiveFile, Mod.MEGame.ME3);
                             if (vMod.ValidMod)
                             {
-                                Application.Current.Dispatcher.Invoke(delegate
-                                {
-                                    CompressedMods.Add(new CompressedMod(vMod));
-                                    CompressedMods.Sort(x => x.Mod.ModName);
-                                });
+                                addCompressedModCallback?.Invoke(vMod);
+                                internalModList.Add(vMod);
                             }
                         }
 
                         if (importingInfo.version != null)
                         {
-                            foreach (CompressedMod compressedMod in CompressedMods)
+                            foreach (Mod compressedMod in internalModList)
                             {
-                                compressedMod.Mod.ModVersionString = importingInfo.version;
+                                compressedMod.ModVersionString = importingInfo.version;
                                 Double.TryParse(importingInfo.version, out double parsedValue);
-                                compressedMod.Mod.ParsedModVersion = parsedValue;
+                                compressedMod.ParsedModVersion = parsedValue;
                             }
                         }
                         else if (relayVersionResponse == "-1")
                         {
                             //If no version information, check ME3Tweaks to see if it's been added recently
                             //see if server has information on version number
-                            ActionText = $"Getting additional information about file from ME3Tweaks";
+                            currentOperationTextCallback?.Invoke($"Getting additional information about file from ME3Tweaks");
                             Log.Information("Querying ME3Tweaks for additional information");
                             var modInfo = OnlineContent.QueryModRelay(md5, size);
                             //todo: make this work offline.
                             if (modInfo != null && modInfo.TryGetValue("version", out string value))
                             {
                                 Log.Information("ME3Tweaks reports version number for this file is: " + value);
-                                foreach (CompressedMod compressedMod in CompressedMods)
+                                foreach (Mod compressedMod in internalModList)
                                 {
-                                    compressedMod.Mod.ModVersionString = value;
+                                    compressedMod.ModVersionString = value;
                                     Double.TryParse(value, out double parsedValue);
-                                    compressedMod.Mod.ParsedModVersion = parsedValue;
+                                    compressedMod.ParsedModVersion = parsedValue;
                                 }
 
                                 relayVersionResponse = value;
@@ -220,7 +242,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private Mod AttemptLoadVirtualMod(ArchiveFileInfo entry, SevenZipExtractor archive, Mod.MEGame game)
+        private static Mod AttemptLoadVirtualMod(ArchiveFileInfo entry, SevenZipExtractor archive, Mod.MEGame game)
         {
             var sfarPath = entry.FileName;
             var cookedPath = FilesystemInterposer.DirectoryGetParent(sfarPath, true);
@@ -288,7 +310,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
         {
-            List<CompressedMod> mods = (List<CompressedMod>)e.Argument;
+            List<Mod> mods = (List<Mod>)e.Argument;
             List<Mod> extractedMods = new List<Mod>();
 
             void TextUpdateCallback(string x)
@@ -299,12 +321,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var mod in mods)
             {
                 //Todo: Extract files
-                Log.Information("Extracting mod: " + mod.Mod.ModName);
-                ActionText = $"Extracting {mod.Mod.ModName}";
+                Log.Information("Extracting mod: " + mod.ModName);
+                ActionText = $"Extracting {mod.ModName}";
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
-                mod.Mod.ExtractFromArchive(ArchiveFilePath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback);
-                extractedMods.Add(mod.Mod);
+                mod.ExtractFromArchive(ArchiveFilePath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback);
+                extractedMods.Add(mod);
             }
 
             e.Result = extractedMods;
@@ -332,12 +354,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is CompressedMod cm /*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
+            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm /*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
         }
 
         private void InstallCompressedMod()
         {
-            OnClosing(new DataEventArgs(((CompressedMod)CompressedMods_ListBox.SelectedItem).Mod));
+            OnClosing(new DataEventArgs(CompressedMods_ListBox.SelectedItem));
         }
 
         private void Cancel()
@@ -353,7 +375,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {
-            SelectedMod = CompressedMods_ListBox.SelectedItem as CompressedMod;
+            SelectedMod = CompressedMods_ListBox.SelectedItem as Mod;
         }
     }
 }

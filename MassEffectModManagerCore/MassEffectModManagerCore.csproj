@@ -16,7 +16,11 @@
     <Company>ME3Tweaks</Company>
     <StartupObject>MassEffectModManagerCore.App</StartupObject>
   </PropertyGroup>
-
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
   <ItemGroup>
     <None Remove="bundleddlls\lzo2wrapper.dll" />
     <None Remove="bundleddlls\sevenzipwrapper.dll" />
