@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestDirectoryGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "--inputarchive \"C:\\Users\\Dev\\Downloads\\BOPatches_v1.0-412-Patch.zip\""
+    }
+  }
+}

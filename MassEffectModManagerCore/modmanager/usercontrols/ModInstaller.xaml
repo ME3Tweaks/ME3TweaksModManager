@@ -16,7 +16,7 @@
     <StackPanel VerticalAlignment="Center">
         <DockPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}" VerticalAlignment="Center">
             <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Select installation options" Margin="0,5,0,0" DockPanel.Dock="Top" />
-            <TextBlock TextAlignment="Center" Text="{Binding Mod.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
+            <TextBlock TextAlignment="Center" Text="{Binding ModBeingInstalled.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
             <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,15,0,0">
                 <Button Content="Install" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click"/>
                 <Button Content="Cancel" DockPanel.Dock="Right" Padding="5" Margin="5,0" Click="InstallCancel_Click"/>
