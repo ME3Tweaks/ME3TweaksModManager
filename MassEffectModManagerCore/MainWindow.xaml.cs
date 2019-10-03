@@ -151,6 +151,7 @@ namespace MassEffectModManager
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
         public ICommand StartGameCommand { get; set; }
+        public ICommand ShowinstallationInformationCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -161,6 +162,34 @@ namespace MassEffectModManager
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
+            ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
+        }
+
+        private void ShowInstallInfo()
+        {
+            var installationInformation = new InstallationInformation(InstallationTargets.ToList(), SelectedGameTarget);
+            installationInformation.Close += (a, b) =>
+            {
+                IsBusy = false;
+                BusyContent = null;
+                if (b.Data is string result)
+                {
+                    if (result == "ALOTInstaller")
+                    {
+                        LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
+                    }
+                }
+            };
+            //Todo: Update Busy UI Content
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+            BusyContent = installationInformation;
+            IsBusy = true;
+            //installationInformation.ShowInfo();
+        }
+
+        private bool CanShowInstallInfo()
+        {
+            return SelectedGameTarget != null && SelectedGameTarget.IsValid && SelectedGameTarget.Selectable;
         }
 
         private void CallApplyMod()

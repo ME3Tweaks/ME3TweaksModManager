@@ -193,6 +193,9 @@ namespace MassEffectModManagerCore
         }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
+        /// <summary>
+        /// Accesses the third party identification server. Key is the game enum as a string, results are dictionary of DLCName => Info.
+        /// </summary>
         internal static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
         internal static string BugReportURL = "https://github.com/ME3Tweaks/MassEffectModManager/issues";
         internal static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;

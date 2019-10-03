@@ -133,7 +133,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return null;
                 }
             }
-            return null;
+            // return null;
+            return new ALOTVersionInfo(9, 3, 0, 0); //MEMI tag but no info we know of
+
         }
 
         private string getALOTMarkerFilePath()

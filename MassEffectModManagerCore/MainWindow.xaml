@@ -283,7 +283,7 @@
                     </ComboBox.ItemContainerStyle>
                 </ComboBox>
                 <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"/>
-                <Button Content="{Binding ShowWhatsInstalledText, FallbackValue=What\'s Installed}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"/>
+                <Button Content="Target info" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"/>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">
