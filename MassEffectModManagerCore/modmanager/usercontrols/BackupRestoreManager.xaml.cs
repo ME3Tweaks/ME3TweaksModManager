@@ -34,6 +34,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<GameTarget> ME3InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<GameTarget> ME2InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<GameTarget> ME1InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public GenericCommand ME3BackupCommand { get; private set; }
+
         public BackupRestoreManager(List<GameTarget> targetsList, GameTarget selectedTarget)
         {
             DataContext = this;
@@ -47,7 +49,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadCommands()
         {
+            ME3BackupCommand = new GenericCommand(BackupME3, CanBackupME3);
+        }
 
+        private bool CanBackupME3()
+        {
+            //fix later
+            return true;
+        }
+
+        private void BackupME3()
+        {
+            VanillaDatabaseService.LoadDatabaseFor(Mod.MEGame.ME3);
         }
 
         public event EventHandler<DataEventArgs> Close;

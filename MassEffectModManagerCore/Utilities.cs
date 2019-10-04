@@ -33,6 +33,25 @@ namespace MassEffectModManager
             }
         }
 
+        internal static MemoryStream ExtractInternalFileToStream(string internalResourceName)
+        {
+            Log.Information("Extracting embedded file: " + internalResourceName + " to memory");
+#if DEBUG
+            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+#endif
+
+
+            using (Stream stream = Utilities.GetResourceStream(internalResourceName))
+            {
+                MemoryStream ms = new MemoryStream();
+                stream.CopyTo(ms);
+                ms.Position = 0;
+                return ms;
+            }
+
+            return null;
+        }
+
         internal static string GetLocalHelpFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "cachedhelp.xml");

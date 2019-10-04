@@ -71,7 +71,7 @@
                         </Style>
                     </ComboBox.ItemContainerStyle>
                 </xctk:WatermarkComboBox>
-                <Button Content="Back up" Padding="3,0" Visibility="{Binding ME3BackupVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Row="3" Grid.Column="3"/>
+                <Button Content="Back up" Padding="3,0" Visibility="{Binding ME3BackupVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding ME3BackupCommand}"  Grid.Row="3" Grid.Column="3"/>
             <ProgressBar Foreground="Green" IsIndeterminate="True" Visibility="{Binding ME3ProgressBarVisible, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="4" />
 
         </Grid>

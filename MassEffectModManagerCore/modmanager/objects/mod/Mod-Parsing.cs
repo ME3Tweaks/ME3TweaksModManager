@@ -109,6 +109,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public bool IsInArchive { get; }
         public bool IsVirtualized { get; private set; }
+        public string OriginalArchiveHash { get; private set; }
 
         private readonly string VirtualizedIniText;
         private readonly string ArchivePath;
@@ -799,6 +800,9 @@ namespace MassEffectModManagerCore.modmanager
                     AdditionalDeploymentFiles = addlFileSplit;
                 }
             }
+
+            //Archive file hash for update checks
+            OriginalArchiveHash = iniData["UPDATES"]["originalarchivehash"];
 
             #endregion
 
