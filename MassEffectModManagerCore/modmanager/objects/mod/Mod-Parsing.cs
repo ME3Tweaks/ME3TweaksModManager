@@ -63,6 +63,10 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     sb.AppendLine($"ModMaker code: {ModModMakerID}");
                 }
+                if (ModClassicUpdateCode > 0)
+                {
+                    sb.AppendLine($"Update code: {ModClassicUpdateCode}");
+                }
 
                 sb.AppendLine("-------Installation information--------");
                 sb.AppendLine("Targets ModDesc " + ModDescTargetVersion);
@@ -213,16 +217,19 @@ namespace MassEffectModManagerCore.modmanager
             ModDescription = Utilities.ConvertBrToNewline(iniData["ModInfo"]["moddesc"]);
             ModDeveloper = iniData["ModInfo"]["moddev"];
             ModVersionString = iniData["ModInfo"]["modver"];
-            Double.TryParse(ModVersionString, out double parsedValue);
+            double.TryParse(ModVersionString, out double parsedValue);
             ParsedModVersion = parsedValue;
 
             ModWebsite = iniData["ModInfo"]["modsite"] ?? DefaultWebsite;
 
-            Int32.TryParse(iniData["ModInfo"]["modid"], out int modmakerId);
+            //updates
+            int.TryParse(iniData["ModInfo"]["modid"], out int modmakerId);
             ModModMakerID = modmakerId;
 
-            Int32.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode);
+            int.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode);
             ModClassicUpdateCode = modupdatecode;
+
+
             CLog.Information($"Read modmaker update code (or used default): {ModClassicUpdateCode}", Settings.LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
             {

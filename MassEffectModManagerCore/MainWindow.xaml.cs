@@ -499,6 +499,12 @@ namespace MassEffectModManager
                 UpdateBinkStatus(Mod.MEGame.ME2);
                 UpdateBinkStatus(Mod.MEGame.ME3);
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
+
+                //DEBUG ONLY
+                BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
+                OnlineContent.CheckForModUpdates(LoadedMods.ToList());
+                OnPropertyChanged(nameof(NoModSelectedText));
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
