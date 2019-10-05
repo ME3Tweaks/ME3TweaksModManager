@@ -40,6 +40,10 @@
     <None Remove="modmanager\binkw32\me2\binkw32.dll" />
     <None Remove="modmanager\binkw32\me3\binkw23.dll" />
     <None Remove="modmanager\binkw32\me3\binkw32.dll" />
+    <None Remove="modmanager\gamemd5\me1.bin" />
+    <None Remove="modmanager\gamemd5\me1pl.bin" />
+    <None Remove="modmanager\gamemd5\me2.bin" />
+    <None Remove="modmanager\gamemd5\me3.bin" />
     <None Remove="modmanager\starterkit\BlankTlkFile.upk" />
     <None Remove="modmanager\starterkit\Default.sfar" />
     <None Remove="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
@@ -78,6 +82,10 @@
     <EmbeddedResource Include="modmanager\binkw32\me2\binkw23.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me3\binkw23.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me3\binkw32.dll" />
+    <EmbeddedResource Include="modmanager\gamemd5\me1.bin" />
+    <EmbeddedResource Include="modmanager\gamemd5\me1pl.bin" />
+    <EmbeddedResource Include="modmanager\gamemd5\me2.bin" />
+    <EmbeddedResource Include="modmanager\gamemd5\me3.bin" />
     <EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.upk" />
     <EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
     <EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />

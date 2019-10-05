@@ -27,13 +27,25 @@ namespace MassEffectModManagerCore
     /// </summary>
     public partial class App : Application
     {
-        internal const string REGISTRY_KEY = @"Software\Mass Effect Mod Manager";
-        internal const string REGISTRY_KEY_ME3CMM = @"Software\Mass Effect 3 Mod Manager";
-        internal const string BACKUP_REGISTRY_KEY = @"Software\ALOTAddon"; //Shared. Do not change
+        /// <summary>
+        /// Registry key for Mass Effect Mod Manager itself. This likely won't be used much
+        /// </summary>
+        internal const string REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\Mass Effect Mod Manager";
+        /// <summary>
+        /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
+        /// </summary>
+        internal const string REGISTRY_KEY_ME3CMM = @"HKEY_CURRENT_USER\Software\Mass Effect 3 Mod Manager";
+        /// <summary>
+        /// ALOT Addon Registry Key, used for ME1 and ME2 backups
+        /// </summary>
+        internal const string BACKUP_REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
-        internal static readonly double HighestSupportedModDesc = 6.0;
+        /// <summary>
+        /// The highest version of ModDesc that this version of Mod Manager can support.
+        /// </summary>
+        public const double HighestSupportedModDesc = 6.0;
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern bool SetDllDirectory(string lpPathName);
 
@@ -193,6 +205,9 @@ namespace MassEffectModManagerCore
         }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
+        /// <summary>
+        /// Accesses the third party identification server. Key is the game enum as a string, results are dictionary of DLCName => Info.
+        /// </summary>
         internal static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
         internal static string BugReportURL = "https://github.com/ME3Tweaks/MassEffectModManager/issues";
         internal static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;

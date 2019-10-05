@@ -187,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //ME3
                         foreach (var entry in sfarEntries)
                         {
-                            var vMod = AttemptLoadVirtualMod(entry, archiveFile, Mod.MEGame.ME3);
+                            var vMod = AttemptLoadVirtualMod(entry, archiveFile, Mod.MEGame.ME3, md5);
                             if (vMod.ValidMod)
                             {
                                 addCompressedModCallback?.Invoke(vMod);
@@ -242,7 +242,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private static Mod AttemptLoadVirtualMod(ArchiveFileInfo entry, SevenZipExtractor archive, Mod.MEGame game)
+        private static Mod AttemptLoadVirtualMod(ArchiveFileInfo entry, SevenZipExtractor archive, Mod.MEGame game, string md5)
         {
             var sfarPath = entry.FileName;
             var cookedPath = FilesystemInterposer.DirectoryGetParent(sfarPath, true);
@@ -278,6 +278,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         virtualModDesc["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
                         virtualModDesc["CUSTOMDLC"]["destdirs"] = dlcFolderName;
+                        virtualModDesc["UPDATES"]["originalarchivehash"] = md5;
 
                         return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
                     }
@@ -325,7 +326,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ActionText = $"Extracting {mod.ModName}";
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
-                mod.ExtractFromArchive(ArchiveFilePath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback);
+                //Ensure directory
+                var modDirectory = Utilities.GetModDirectoryForGame(mod.Game);
+                var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(mod.ModName));
+                if (Directory.Exists(sanitizedPath))
+                {
+                    //Will delete on import
+                    
+                }
+
+                Directory.CreateDirectory(sanitizedPath);
+
+                mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback);
                 extractedMods.Add(mod);
             }
 

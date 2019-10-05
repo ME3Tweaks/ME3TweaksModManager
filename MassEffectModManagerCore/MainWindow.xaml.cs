@@ -151,6 +151,8 @@ namespace MassEffectModManager
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
         public ICommand StartGameCommand { get; set; }
+        public ICommand ShowinstallationInformationCommand { get; set; }
+        public ICommand BackupCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -161,6 +163,61 @@ namespace MassEffectModManager
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
+            ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
+            BackupCommand = new GenericCommand(ShowBackupPane, CanShowBackupPane);
+        }
+
+        private bool CanShowBackupPane()
+        {
+            return !ContentCheckInProgress;
+        }
+
+        private void ShowBackupPane()
+        {
+            var backupRestoreManager = new BackupRestoreManager(InstallationTargets.ToList(), SelectedGameTarget, this);
+            backupRestoreManager.Close += (a, b) =>
+            {
+                IsBusy = false;
+                BusyContent = null;
+                if (b.Data is string result)
+                {
+                    if (result == "ALOTInstaller")
+                    {
+                        LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
+                    }
+                }
+            };
+            //Todo: Update Busy UI Content
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+            BusyContent = backupRestoreManager;
+            IsBusy = true;
+        }
+
+        private void ShowInstallInfo()
+        {
+            var installationInformation = new InstallationInformation(InstallationTargets.ToList(), SelectedGameTarget);
+            installationInformation.Close += (a, b) =>
+            {
+                IsBusy = false;
+                BusyContent = null;
+                if (b.Data is string result)
+                {
+                    if (result == "ALOTInstaller")
+                    {
+                        LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
+                    }
+                }
+            };
+            //Todo: Update Busy UI Content
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+            BusyContent = installationInformation;
+            IsBusy = true;
+            //installationInformation.ShowInfo();
+        }
+
+        private bool CanShowInstallInfo()
+        {
+            return SelectedGameTarget != null && SelectedGameTarget.IsValid && SelectedGameTarget.Selectable && !ContentCheckInProgress;
         }
 
         private void CallApplyMod()
@@ -280,7 +337,7 @@ namespace MassEffectModManager
             }
         }
 
-        public bool ContentCheckInProgress { get; set; }
+        public bool ContentCheckInProgress { get; set; } = true; //init is content check
         private bool NetworkThreadNotRunning() => !ContentCheckInProgress;
 
         private void CheckForContentUpdates()

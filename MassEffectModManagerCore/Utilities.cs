@@ -11,6 +11,7 @@ using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using Microsoft.Win32;
 using Serilog;
 
 namespace MassEffectModManager
@@ -30,6 +31,55 @@ namespace MassEffectModManager
             {
                 return Path.Combine(GetMMExecutableDirectory(), "mods");
             }
+        }
+
+        internal static void WriteRegistryKey(string subpath, string value, string data)
+        {
+            int i = 0;
+            List<string> subkeys = subpath.Split('\\').ToList();
+            RegistryKey subkey;
+            if (subkeys[0] == "HKEY_CURRENT_USER")
+            {
+                subkeys.RemoveAt(0);
+                subkey = Registry.CurrentUser;
+            }
+            else
+            {
+                throw new Exception("Currently only HKEY_CURRENT_USER keys are supported for writing.");
+            }
+
+            while (i < subkeys.Count)
+            {
+                subkey = subkey.CreateSubKey(subkeys[i]);
+                i++;
+            }
+            subkey.SetValue(value, data);
+        }
+
+        internal static MemoryStream ExtractInternalFileToStream(string internalResourceName)
+        {
+            Log.Information("Extracting embedded file: " + internalResourceName + " to memory");
+#if DEBUG
+            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+#endif
+
+
+            using (Stream stream = Utilities.GetResourceStream(internalResourceName))
+            {
+                MemoryStream ms = new MemoryStream();
+                stream.CopyTo(ms);
+                ms.Position = 0;
+                return ms;
+            }
+
+            return null;
+        }
+
+        internal static void HighlightInExplorer(string filePath)
+        {
+            string argument = "/select, \"" + filePath + "\"";
+
+            System.Diagnostics.Process.Start("explorer.exe", argument);
         }
 
         internal static string GetLocalHelpFile()
@@ -440,6 +490,47 @@ namespace MassEffectModManager
                 return CalculateMD5(binkPath) == expectedHash;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Gets a string value frmo the registry from the specified key and value name.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string GetRegistrySettingString(string key, string name)
+        {
+            return (string)Registry.GetValue(key, name, null);
+        }
+
+        public static string GetGameBackupPath(Mod.MEGame game)
+        {
+            string path;
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, "ME1VanillaBackupLocation");
+                    break;
+                case Mod.MEGame.ME2:
+                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, "ME2VanillaBackupLocation");
+                    break;
+                case Mod.MEGame.ME3:
+                    //Check for backup via registry - Use Mod Manager's game backup key to find backup.
+                    path = Utilities.GetRegistrySettingString(App.REGISTRY_KEY_ME3CMM, "VanillaCopyLocation");
+                    break;
+                default:
+                    return null;
+            }
+            if (path == null || !Directory.Exists(path))
+            {
+                return null;
+            }
+            //Super basic validation
+            if (!Directory.Exists(path + @"\BIOGame") || !Directory.Exists(path + @"\Binaries"))
+            {
+                return null;
+            }
+            return path;
         }
 
         /// <summary>

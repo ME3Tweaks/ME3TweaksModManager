@@ -14,20 +14,9 @@ namespace MassEffectModManagerCore.modmanager
     {
         public bool SelectedForImport { get; set; } = true; //Default check on
 
-        public void ExtractFromArchive(string archivePath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null)
+        public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
-            var modDirectory = Utilities.GetModDirectoryForGame(Game);
-            var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(ModName));
-            if (Directory.Exists(sanitizedPath))
-            {
-                //Will delete on import
-                //Todo: Delete directory/s
-            }
-
-            Directory.CreateDirectory(sanitizedPath);
-
-
             using (var archiveFile = new SevenZipExtractor(archivePath))
             {
                 var fileIndicesToExtract = new List<int>();
@@ -133,13 +122,13 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     //Archive path might start with a \. Substring may return value that start with a \
                     var subModPath = entryPath /*.TrimStart('\\')*/.Substring(ModPath.Length).TrimStart('\\');
-                    var path = Path.Combine(sanitizedPath, subModPath);
+                    var path = Path.Combine(outputFolderPath, subModPath);
                     //Debug.WriteLine("remapping output: " + entryPath + " -> " + path);
                     return path;
                 }
 
-                archiveFile.ExtractFiles(sanitizedPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
-                ModPath = sanitizedPath;
+                archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                ModPath = outputFolderPath;
                 if (IsVirtualized)
                 {
                     var parser = new IniDataParser().Parse(VirtualizedIniText);
