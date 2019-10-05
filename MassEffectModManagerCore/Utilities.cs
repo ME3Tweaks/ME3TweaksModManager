@@ -33,11 +33,22 @@ namespace MassEffectModManager
             }
         }
 
-        internal static void WriteRegistryKey(RegistryKey subkey, string subpath, string value, string data)
+        internal static void WriteRegistryKey(string subpath, string value, string data)
         {
             int i = 0;
-            string[] subkeys = subpath.Split('\\');
-            while (i < subkeys.Length)
+            List<string> subkeys = subpath.Split('\\').ToList();
+            RegistryKey subkey;
+            if (subkeys[0] == "HKEY_CURRENT_USER")
+            {
+                subkeys.RemoveAt(0);
+                subkey = Registry.CurrentUser;
+            }
+            else
+            {
+                throw new Exception("Currently only HKEY_CURRENT_USER keys are supported for writing.");
+            }
+
+            while (i < subkeys.Count)
             {
                 subkey = subkey.CreateSubKey(subkeys[i]);
                 i++;
@@ -62,6 +73,13 @@ namespace MassEffectModManager
             }
 
             return null;
+        }
+
+        internal static void HighlightInExplorer(string filePath)
+        {
+            string argument = "/select, \"" + filePath + "\"";
+
+            System.Diagnostics.Process.Start("explorer.exe", argument);
         }
 
         internal static string GetLocalHelpFile()

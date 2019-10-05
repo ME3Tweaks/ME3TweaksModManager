@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" MinWidth="400">
+             d:DesignHeight="450" d:DesignWidth="400" Width="400">
     <UserControl.Resources>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
@@ -19,65 +19,58 @@
         <StackPanel.Resources>
         </StackPanel.Resources>
         <TextBlock Text="Backup" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
-        <TextBlock Text="Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder." TextWrapping="Wrap" MaxWidth="300"/>
-        <DockPanel Margin="0,5,5,5">
-            <Image Source="/images/gameicons/ME1_48.ico" Width="48" Margin="0,2,5,2"/>
-            <TextBlock FontWeight="Bold" Text="Mass Effect" DockPanel.Dock="Top"/>
-            <TextBlock Text="{Binding ME1BackupStatus, FallbackValue=Not backed up}" DockPanel.Dock="Top"/>
-            <Button Content="Back up" Padding="4" Visibility="{Binding ME1BackupButtonVisibility}"/>
+        <TextBlock Text="Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder." TextWrapping="Wrap" MaxWidth="400"/>
+        <ItemsControl ItemsSource="{Binding GameBackups}">
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="FrameworkElement.DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,5,5,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="54"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource, FallbackValue=/images/gameicons/ME3_48.ico}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle, FallbackValue=ME3}"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus, FallbackValue=Not backed up}"/>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding BackupStatusLine2, FallbackValue=Z:\\Nothing}"/>
+                        <xctk:WatermarkComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Watermark="Select backup source installation" Name="InstallationTargetsME3_ComboBox" ItemsSource="{Binding AvailableBackupSources}" SelectedItem="{Binding BackupSourceTarget}" HorizontalContentAlignment="Stretch" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
+                                        <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
+                                        <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ComboBoxItem}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </xctk:WatermarkComboBox>
+                        <Button Content="Back up" Padding="3,0" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="3"/>
+                        <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding ProgressValue}" Height="10" Maximum="{Binding ProgressMax}" Visibility="{Binding ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="4" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
-            <ProgressBar Height="10" Visibility="{Binding ME1ProgressbarVisibility}"/>
-        </DockPanel>
-        <DockPanel Margin="0,5,5,5">
-            <Image Source="/images/gameicons/ME2_48.ico" Width="48" Margin="0,2,5,2"/>
-            <TextBlock FontWeight="Bold" Text="Mass Effect 2" DockPanel.Dock="Top"/>
-            <TextBlock Text="{Binding ME2BackupStatus, FallbackValue=Not backed up}" DockPanel.Dock="Top"/>
-            <Button Content="Back up" Padding="4" Visibility="{Binding ME2BackupButtonVisibility}"/>
-
-            <ProgressBar Height="10" Visibility="{Binding ME2ProgressbarVisibility}"/>
-
-        </DockPanel>
-        <Grid Margin="0,5,5,5" DataContext="{Binding ME3Backup}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="54"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="10"/>
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource, FallbackValue=/images/gameicons/ME3_48.ico}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
-            <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle, FallbackValue=ME3}"/>
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus, FallbackValue=Not backed up}"/>
-            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding BackupStatusLine2, FallbackValue=Z:\\Nothing}"/>
-            <xctk:WatermarkComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Watermark="Select backup source installation" Name="InstallationTargetsME3_ComboBox" ItemsSource="{Binding AvailableBackupSources}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" HorizontalContentAlignment="Stretch" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
-                                <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
-                                <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
-                            </DockPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                    <ComboBox.ItemContainerStyle>
-                        <Style TargetType="{x:Type ComboBoxItem}">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="IsEnabled" Value="{Binding Selectable}" />
-                        </Style>
-                    </ComboBox.ItemContainerStyle>
-                </xctk:WatermarkComboBox>
-                <Button Content="Back up" Padding="3,0" Visibility="{Binding ME3BackupVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="3"/>
-            <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding ProgressValue}" Maximum="{Binding ProgressMax}" Visibility="{Binding ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="4" />
-
-        </Grid>
         <TextBlock Text="Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer." TextWrapping="Wrap" MaxWidth="400" Margin="0,5"/>
         <TextBlock Text="Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported." TextWrapping="Wrap" MaxWidth="400" Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}"/>
-
         <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="4" Margin ="0,5,0,0"/>
     </StackPanel>
 </UserControl>

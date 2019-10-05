@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
+using MassEffectModManager;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using Serilog;
@@ -23,6 +24,8 @@ namespace MassEffectModManagerCore.modmanager.objects
         public Mod.MEGame Game { get; }
         public string TargetPath { get; }
         public bool RegistryActive { get; set; }
+        public string GameSource { get; }
+        public bool Supported => GameSource != null;
         public Brush BackgroundColor
         {
             get
@@ -59,7 +62,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                     ALOTInstalled = true;
                     ALOTVersion = alotInfo.ToString();
                 }
+                GameSource = VanillaDatabaseService.GetGameSource(this);
             }
+
+
         }
 
         public bool Equals(GameTarget x, GameTarget y)

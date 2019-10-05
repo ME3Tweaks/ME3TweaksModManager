@@ -174,7 +174,7 @@ namespace MassEffectModManager
 
         private void ShowBackupPane()
         {
-            var backupRestoreManager = new BackupRestoreManager(InstallationTargets.ToList(), SelectedGameTarget);
+            var backupRestoreManager = new BackupRestoreManager(InstallationTargets.ToList(), SelectedGameTarget, this);
             backupRestoreManager.Close += (a, b) =>
             {
                 IsBusy = false;

@@ -12,7 +12,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
     public static class CopyDir
     {
 
-        public static int CopyAll_ProgressBar(DirectoryInfo source, DirectoryInfo target, Action<int> totalItemsToCopyCallback = null, Action fileCopiedCallback = null, Action<string> aboutToCopyCallback = null, int total = -1, int done = 0, string[] ignoredExtensions = null)
+        public static int CopyAll_ProgressBar(DirectoryInfo source, DirectoryInfo target, Action<int> totalItemsToCopyCallback = null, Action fileCopiedCallback = null, Func<string, bool> aboutToCopyCallback = null, int total = -1, int done = 0, string[] ignoredExtensions = null)
         {
             if (total == -1)
             {
@@ -52,16 +52,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 //    long length = new System.IO.FileInfo(fi.FullName).Length;
                 //    displayName += " (" + ByteSize.FromBytes(length) + ")";
                 //}
-
-                aboutToCopyCallback?.Invoke(fi.FullName);
-                try
+                var shouldCopy = aboutToCopyCallback?.Invoke(fi.FullName);
+                if (shouldCopy.HasValue && shouldCopy.Value)
                 {
-                    fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
-                }
-                catch (Exception e)
-                {
-                    Log.Error("Error copying file: " + fi + " -> " + Path.Combine(target.FullName, fi.Name) + ": " + e.Message);
-                    throw e;
+                    try
+                    {
+                        fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("Error copying file: " + fi + " -> " + Path.Combine(target.FullName, fi.Name) + ": " + e.Message);
+                        throw e;
+                    }
                 }
 
 

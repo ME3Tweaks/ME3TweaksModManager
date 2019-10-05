@@ -53,6 +53,21 @@ namespace MassEffectModManagerCore.GameDirectories
             }
         }
 
+        public static Dictionary<string, string> OfficialDLCNames(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return ME1Directory.OfficialDLCNames;
+                case Mod.MEGame.ME2:
+                    return ME2Directory.OfficialDLCNames;
+                case Mod.MEGame.ME3:
+                    return ME3Directory.OfficialDLCNames;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(game), game, null);
+            }
+        }
+
         /// <summary>
         /// Gets path to executable for the specified Game Target
         /// </summary>
