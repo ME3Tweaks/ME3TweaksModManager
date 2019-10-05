@@ -45,6 +45,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool InstallationCancelled;
         private const int INSTALL_SUCCESSFUL = 1;
         private const int INSTALL_FAILED_USER_CANCELED_MISSING_MODULES = 2;
+        private const int INSTALL_FAILED_ALOT_BLOCKING = 3;
 
         public string Action { get; set; }
         public int Percent { get; set; }
@@ -125,6 +126,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Prepare queues
             (Dictionary<ModJob, Dictionary<string, string>> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
 
+            if (gameTarget.ALOTInstalled)
+            {
+                //Check if any packages are being installed. If there are, we will block this installation.
+                bool installsPackageFile = false;
+                foreach (var jobMappings in installationQueues.unpackedJobMappings)
+                {
+                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".sfm", StringComparison.InvariantCultureIgnoreCase));
+                }
+
+                foreach (var jobMappings in installationQueues.sfarJobs)
+                {
+                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(".sfm", StringComparison.InvariantCultureIgnoreCase));
+                }
+
+                if (installsPackageFile)
+                {
+                    //ALOT Installed, this is attempting to install a package file
+                    e.Result = INSTALL_FAILED_ALOT_BLOCKING;
+                    return;
+                }
+            }
             Action = $"Installing";
             PercentVisibility = Visibility.Visible;
             Percent = 0;
@@ -403,8 +431,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
-            InstallationSucceeded = e.Result is int res && res == INSTALL_SUCCESSFUL;
+            if (e.Result is int res)
+            {
+                InstallationSucceeded = res == INSTALL_SUCCESSFUL;
+                if (res == INSTALL_FAILED_ALOT_BLOCKING)
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show($"Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.", $"Installation blocked", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                throw new Exception("Mod installer did not have return code.");
+            }
             OnClosing(new EventArgs());
         }
 
