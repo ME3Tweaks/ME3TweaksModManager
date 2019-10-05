@@ -88,6 +88,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 var source = singleMapping.Key;
                 var dest = singleMapping.Value;
+                Directory.CreateDirectory(Directory.GetParent(dest).FullName);
                 File.Copy(source, dest, true);
                 fileCopiedCallback?.Invoke();
             }

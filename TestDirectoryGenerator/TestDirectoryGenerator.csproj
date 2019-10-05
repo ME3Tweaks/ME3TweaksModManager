@@ -8,6 +8,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+	<Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
 </Project>

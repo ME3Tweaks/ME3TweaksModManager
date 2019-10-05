@@ -54,7 +54,7 @@ namespace MassEffectModManagerCore.modmanager
 
                         //get list of all normal files we will install
                         //var allSourceDirFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length)).ToList();
-                        var allSourceDirFiles = FilesystemInterposer.DirectoryGetFiles(source, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length)).ToList();
+                        var allSourceDirFiles = FilesystemInterposer.DirectoryGetFiles(source, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
 
                         //loop over every file 
                         foreach (var sourceFile in allSourceDirFiles)
