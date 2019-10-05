@@ -33,6 +33,18 @@ namespace MassEffectModManager
             }
         }
 
+        internal static void WriteRegistryKey(RegistryKey subkey, string subpath, string value, string data)
+        {
+            int i = 0;
+            string[] subkeys = subpath.Split('\\');
+            while (i < subkeys.Length)
+            {
+                subkey = subkey.CreateSubKey(subkeys[i]);
+                i++;
+            }
+            subkey.SetValue(value, data);
+        }
+
         internal static MemoryStream ExtractInternalFileToStream(string internalResourceName)
         {
             Log.Information("Extracting embedded file: " + internalResourceName + " to memory");

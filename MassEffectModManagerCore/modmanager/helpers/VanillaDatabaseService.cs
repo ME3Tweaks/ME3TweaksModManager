@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Gammtek.Conduit.IO;
 using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -72,9 +74,68 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var index = table.ReadInt32();
                 string path = packageNames[index];
                 int size = table.ReadInt32();
-                string md5 = table.ReadStringASCII(32);
-                targetDictionary[path] = (size, md5);
+                byte[] md5bytes = table.ReadToBuffer(16);
+                StringBuilder sb = new StringBuilder();
+                foreach (var b in md5bytes)
+                {
+                    var c1 = (b & 0x0F);
+                    var c2 = (b & 0xF0) >> 4;
+                    //Debug.WriteLine(c1.ToString("x1"));
+                    //Debug.WriteLine(c2.ToString("x1"));
+
+                    //Reverse order
+                    sb.Append(c2.ToString("x1"));
+                    sb.Append(c1.ToString("x1"));
+                    //Debug.WriteLine(sb.ToString());
+                }
+                //var t = sb.ToString();
+                targetDictionary[path] = (size, sb.ToString());
             }
+        }
+
+
+        public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback)
+        {
+            bool isValid = true;
+            CaseInsensitiveDictionary<(int size, string md5)> vanillaDB = null;
+            switch (target.Game)
+            {
+                case Mod.MEGame.ME1:
+                    vanillaDB = ME1VanillaDatabase;
+                    break;
+                case Mod.MEGame.ME2:
+                    vanillaDB = ME2VanillaDatabase;
+                    break;
+                case Mod.MEGame.ME3:
+                    vanillaDB = ME3VanillaDatabase;
+                    break;
+                default:
+                    throw new Exception("Cannot vanilla check against game that is not ME1/ME2/ME3");
+            }
+            foreach (string file in Directory.EnumerateFiles(target.TargetPath, "*", SearchOption.AllDirectories))
+            {
+                var shortname = file.Substring(target.TargetPath.Length);
+                if (vanillaDB.TryGetValue(shortname, out var fileInfo))
+                {
+                    var finfo = new FileInfo(file);
+                    if (finfo.Length != fileInfo.size)
+                    {
+                        if (Path.GetFileName(shortname) != "Patch_001.sfar")
+                        {
+                            //ignore testpatch errors.
+
+                            failedValidationCallback?.Invoke(file);
+                            isValid = false;
+                        }
+                    }
+                }
+                else
+                {
+                    //Debug.WriteLine("File not in Vanilla DB: " + file);
+                }
+            }
+
+            return isValid;
         }
     }
 }

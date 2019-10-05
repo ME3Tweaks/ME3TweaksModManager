@@ -12,12 +12,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
     public static class CopyDir
     {
 
-        public static int CopyAll_ProgressBar(DirectoryInfo source, DirectoryInfo target, Action fileCopiedCallback = null, int total = -1, int done = 0, string[] ignoredExtensions = null)
+        public static int CopyAll_ProgressBar(DirectoryInfo source, DirectoryInfo target, Action<int> totalItemsToCopyCallback = null, Action fileCopiedCallback = null, Action<string> aboutToCopyCallback = null, int total = -1, int done = 0, string[] ignoredExtensions = null)
         {
             if (total == -1)
             {
                 //calculate number of files
                 total = Directory.GetFiles(source.FullName, "*.*", SearchOption.AllDirectories).Length;
+                totalItemsToCopyCallback?.Invoke(total);
             }
 
             int numdone = done;
@@ -52,6 +53,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 //    displayName += " (" + ByteSize.FromBytes(length) + ")";
                 //}
 
+                aboutToCopyCallback?.Invoke(fi.FullName);
                 try
                 {
                     fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
@@ -73,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 DirectoryInfo nextTargetSubDir =
                     target.CreateSubdirectory(diSourceSubDir.Name);
-                numdone = CopyAll_ProgressBar(diSourceSubDir, nextTargetSubDir, fileCopiedCallback, total, numdone);
+                numdone = CopyAll_ProgressBar(diSourceSubDir, nextTargetSubDir, totalItemsToCopyCallback, fileCopiedCallback, aboutToCopyCallback, total, numdone);
             }
             return numdone;
         }
