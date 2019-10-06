@@ -502,7 +502,7 @@ namespace MassEffectModManager
 
                 //DEBUG ONLY
                 BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
-                OnlineContent.CheckForModUpdates(LoadedMods.ToList());
+                OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true);
                 OnPropertyChanged(nameof(NoModSelectedText));
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
             };
