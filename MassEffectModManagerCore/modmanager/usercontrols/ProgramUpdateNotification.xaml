@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.ProgramUpdateNotification"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" MaxWidth="400">
+    <StackPanel>
+        <TextBlock Text="Update available" TextAlignment="Center" FontWeight="Bold" FontSize="20" Margin="10"/>
+        <TextBlock Text="An update to Mass Effect Mod Manager is available."/>
+        <Separator/>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Current version: "/>
+            <TextBlock Text="{Binding CurrentVersion}" FontWeight="Bold"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Update version: "/>
+            <TextBlock Text="{Binding LatestVersion}" FontWeight="Bold"/>
+        </StackPanel>
+        <Separator/>
+        <TextBlock Text="Release notes" FontWeight="Bold" />
+        <TextBlock Text="{Binding Changelog}" TextWrapping="Wrap"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="Not now" Padding="4" Margin="5,0" Command="{Binding NotNowCommand}"/>
+            <Button Content="Install update" Padding="4" Width="190" Command="{Binding InstallUpdateCommand}"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

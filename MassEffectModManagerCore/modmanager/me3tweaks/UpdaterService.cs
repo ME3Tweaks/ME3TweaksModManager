@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using MassEffectModManager;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -73,7 +74,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                                          hash = (string)f.Attribute("hash"),
                                                          size = (int)f.Attribute("size"),
                                                          lzmasize = (int)f.Attribute("lzmasize"),
-                                                         relativefilepath = f.Value
+                                                         relativefilepath = f.Value,
+                                                         timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
                                                      }).ToList(),
                                   }).ToList();
             foreach (var modUpdateInfo in modUpdateInfos)
@@ -108,11 +110,27 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             modUpdateInfo.applicableUpdates.Add(serverFile);
                         }
                     }
-                    //Todo: Implement removing files that are no longer part of the manifest.
+
+                    //Files to remove calculation
+                    var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories).Select(x => x.Substring(modBasepath.Length + 1).ToLowerInvariant()).ToList();
+                    modUpdateInfo.filesToDelete = modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath.ToLower())).ToList();
                 }
+
             }
 
+
             return modUpdateInfos;
+        }
+
+        public static bool UpdateMod(Mod mod, ModUpdateInfo updateInfo, Action<string> progressUpdateCallback)
+        {
+            string modPath = mod.ModPath;
+            Parallel.ForEach(updateInfo.applicableUpdates, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (sourcefile) =>
+               {
+
+               });
+
+            return true;
         }
 
         public class ModUpdateInfo
@@ -123,6 +141,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public int updatecode;
             public double version;
             public List<SourceFile> applicableUpdates = new List<SourceFile>();
+            public List<string> filesToDelete = new List<string>();
         }
 
         public class SourceFile
@@ -132,6 +151,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public int lzmasize;
             public int size;
             public string hash;
+            public Int64 timestamp;
             public SourceFile() { }
         }
     }

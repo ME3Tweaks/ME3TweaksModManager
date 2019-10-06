@@ -24,7 +24,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             using (var wc = new System.Net.WebClient())
             {
                 string json = wc.DownloadString(StartupManifestURL);
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                return App.ServerManifest;
             }
         }
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
@@ -77,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
         }
 
-        public static Dictionary<string,string> QueryModRelay(string md5, long size)
+        public static Dictionary<string, string> QueryModRelay(string md5, long size)
         {
             //Todo: Finish implementing relay service
             string finalRelayURL = $"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
@@ -90,7 +91,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     //todo: Implement response format serverside
                     return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error("Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
             }

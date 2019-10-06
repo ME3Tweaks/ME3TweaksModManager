@@ -204,6 +204,8 @@ namespace MassEffectModManagerCore
             }
         }
 
+        public static Dictionary<string, string> ServerManifest { get; set; }
+
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
         /// <summary>
         /// Accesses the third party identification server. Key is the game enum as a string, results are dictionary of DLCName => Info.
@@ -212,7 +214,7 @@ namespace MassEffectModManagerCore
         internal static string BugReportURL = "https://github.com/ME3Tweaks/MassEffectModManager/issues";
         internal static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
 
-        public static string AppVersionHR
+        public static string AppVersion
         {
             get
             {
@@ -223,6 +225,15 @@ namespace MassEffectModManagerCore
                     version += "." + assemblyVersion.Build;
                 }
 
+                return version;
+            }
+        }
+
+        public static string AppVersionHR
+        {
+            get
+            {
+                string version = AppVersion;
 #if DEBUG
                 version += " DEBUG";
 #else

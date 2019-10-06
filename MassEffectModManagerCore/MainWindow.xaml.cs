@@ -78,6 +78,11 @@ namespace MassEffectModManager
             }
         }
 
+        /// <summary>
+        /// User controls that are queued for displaying when the previous one has closed.
+        /// </summary>
+        private Queue<UserControl> queuedUserControls = new Queue<UserControl>();
+
 
         public Mod SelectedMod { get; set; }
         public ObservableCollectionExtended<Mod> LoadedMods { get; } = new ObservableCollectionExtended<Mod>();
@@ -172,13 +177,46 @@ namespace MassEffectModManager
             return !ContentCheckInProgress;
         }
 
+        /// <summary>
+        /// Shows or queues the specified control
+        /// </summary>
+        /// <param name="control">Control to show or queue</param>
+        private void ShowBusyControl(UserControl control)
+        {
+            if (queuedUserControls.Count == 0 && !IsBusy)
+            {
+                IsBusy = true;
+                BusyContent = control;
+            }
+            else
+            {
+                queuedUserControls.Enqueue(control);
+            }
+        }
+
+        /// <summary>
+        /// Shows or queues the specified control
+        /// </summary>
+        /// <param name="control">Control to show or queue</param>
+        private void ReleaseBusyControl()
+        {
+            if (queuedUserControls.Count == 0)
+            {
+                BusyContent = null;
+                IsBusy = false;
+            }
+            else
+            {
+                BusyContent = queuedUserControls.Dequeue();
+            }
+        }
+
         private void ShowBackupPane()
         {
             var backupRestoreManager = new BackupRestoreManager(InstallationTargets.ToList(), SelectedGameTarget, this);
             backupRestoreManager.Close += (a, b) =>
             {
-                IsBusy = false;
-                BusyContent = null;
+                ReleaseBusyControl();
                 if (b.Data is string result)
                 {
                     if (result == "ALOTInstaller")
@@ -187,10 +225,8 @@ namespace MassEffectModManager
                     }
                 }
             };
-            //Todo: Update Busy UI Content
             UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-            BusyContent = backupRestoreManager;
-            IsBusy = true;
+            ShowBusyControl(backupRestoreManager); //Todo: Support the progress bar updates in the queue
         }
 
         private void ShowInstallInfo()
@@ -198,8 +234,7 @@ namespace MassEffectModManager
             var installationInformation = new InstallationInformation(InstallationTargets.ToList(), SelectedGameTarget);
             installationInformation.Close += (a, b) =>
             {
-                IsBusy = false;
-                BusyContent = null;
+                ReleaseBusyControl();
                 if (b.Data is string result)
                 {
                     if (result == "ALOTInstaller")
@@ -208,10 +243,8 @@ namespace MassEffectModManager
                     }
                 }
             };
-            //Todo: Update Busy UI Content
             UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-            BusyContent = installationInformation;
-            IsBusy = true;
+            ShowBusyControl(installationInformation); //Todo: Support the progress bar updates in the queue
             //installationInformation.ShowInfo();
         }
 
@@ -372,8 +405,7 @@ namespace MassEffectModManager
                     if (modInstaller.InstallationCancelled)
                     {
                         modInstallTask.finishedUiText = $"Installation aborted";
-                        IsBusy = false;
-                        BusyContent = null;
+                        ReleaseBusyControl();
                         backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                         return;
                     }
@@ -389,24 +421,21 @@ namespace MassEffectModManager
                     var autoTocUI = new AutoTOC(SelectedGameTarget);
                     autoTocUI.Close += (a, b) =>
                     {
-                        IsBusy = false;
-                        BusyContent = null;
+                        ReleaseBusyControl();
                         backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                     };
-                    BusyContent = autoTocUI;
-                    IsBusy = true;
+                    ShowBusyControl(autoTocUI);
+                    ReleaseBusyControl();
                     autoTocUI.RunAutoTOC();
                 }
                 else
                 {
-                    BusyContent = null;
-                    IsBusy = false;
+                    ReleaseBusyControl();
                     backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                 }
             };
             UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-            BusyContent = modInstaller;
-            IsBusy = true;
+            ShowBusyControl(modInstaller);
             modInstaller.PrepareToInstallMod();
         }
 
@@ -500,9 +529,19 @@ namespace MassEffectModManager
                 UpdateBinkStatus(Mod.MEGame.ME3);
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
 
-                //DEBUG ONLY
+                //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
                 BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
-                OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true);
+                var updates = OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true).Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
+                if (updates.Count > 0)
+                {
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
+                        modUpdatesNotificationDialog.Close += (sender, args) => { ReleaseBusyControl(); };
+                        UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+                        ShowBusyControl(modUpdatesNotificationDialog);
+                    });
+                }
                 OnPropertyChanged(nameof(NoModSelectedText));
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
             };
@@ -729,7 +768,13 @@ namespace MassEffectModManager
                         var manifest = OnlineContent.FetchOnlineStartupManifest();
                         if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
                         {
-                            //Todo: Update available
+                            Application.Current.Dispatcher.Invoke(delegate
+                            {
+                                var updateAvailableDialog = new ProgramUpdateNotification();
+                                updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
+                                UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+                                ShowBusyControl(updateAvailableDialog);
+                            });
                         }
                     }
                     catch (Exception e)
@@ -888,13 +933,12 @@ namespace MassEffectModManager
                 var exLauncher = new ExternalToolLauncher(tool, arguments);
                 exLauncher.Close += (a, b) =>
                 {
-                    IsBusy = false;
-                    BusyContent = null;
+                    ReleaseBusyControl();
                 };
                 //Todo: Update Busy UI Content
                 UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-                BusyContent = exLauncher;
-                IsBusy = true;
+                ShowBusyControl(exLauncher);
+
                 exLauncher.StartLaunchingTool();
             }
         }
@@ -914,11 +958,9 @@ namespace MassEffectModManager
             var logUploaderUI = new LogUploader(UpdateBusyProgressBarCallback);
             logUploaderUI.Close += (a, b) =>
             {
-                IsBusy = false;
-                BusyContent = null;
+                ReleaseBusyControl();
             };
-            BusyContent = logUploaderUI;
-            IsBusy = true;
+            ShowBusyControl(logUploaderUI);
         }
 
         public Visibility BusyProgressBarVisibility { get; set; } = Visibility.Visible;
@@ -978,8 +1020,7 @@ namespace MassEffectModManager
 
                 if (b.Data is List<Mod> modsImported)
                 {
-                    IsBusy = false;
-                    BusyContent = null;
+                    ReleaseBusyControl();
                     LoadMods(modsImported.Count == 1 ? modsImported.First() : null);
                 }
                 else if (b.Data is Mod compressedModToInstall)
@@ -988,13 +1029,11 @@ namespace MassEffectModManager
                 }
                 else
                 {
-                    IsBusy = false;
-                    BusyContent = null;
+                    ReleaseBusyControl();
                 }
             };
-            //Todo: Update Busy UI Content
-            BusyContent = modInspector;
-            IsBusy = true;
+            ShowBusyControl(modInspector); //todo: Set progress bar params
+
             if (archiveFile != null)
             {
                 modInspector.InspectArchiveFile(archiveFile);
@@ -1026,11 +1065,9 @@ namespace MassEffectModManager
             var autoTocUI = new AutoTOC(GetCurrentTarget(Mod.MEGame.ME3));
             autoTocUI.Close += (a, b) =>
             {
-                IsBusy = false;
-                BusyContent = null;
+                ReleaseBusyControl();
             };
-            BusyContent = autoTocUI;
-            IsBusy = true;
+            ShowBusyControl(autoTocUI);
             autoTocUI.RunAutoTOC();
         }
 
