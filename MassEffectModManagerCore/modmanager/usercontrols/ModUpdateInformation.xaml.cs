@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public event EventHandler<DataEventArgs> Close;
         public event PropertyChangedEventHandler PropertyChanged;
-
+        private bool AnyModUpdated;
         protected virtual void OnClosing(DataEventArgs e)
         {
             EventHandler<DataEventArgs> handler = Close;
@@ -88,6 +88,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var modUpdated = OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
                     ui.UpdateInProgress = false;
                     ui.CanUpdate = !modUpdated;
+                    AnyModUpdated |= modUpdated;
                     ui.DownloadButtonText = ui.CanUpdate ? "Download update" : "Updated";
                     Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
                 };
@@ -106,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CloseDialog()
         {
-            OnClosing(new DataEventArgs(true));
+            OnClosing(new DataEventArgs(AnyModUpdated));
         }
     }
 }

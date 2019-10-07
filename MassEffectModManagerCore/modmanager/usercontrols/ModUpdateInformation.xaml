@@ -6,15 +6,24 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="500" MaxHeight="500" MinWidth="400" MaxWidth="600">
+             d:DesignHeight="500" d:DesignWidth="500" MaxHeight="500" MinWidth="420" MaxWidth="620">
     <UserControl.Resources>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
     </UserControl.Resources>
-    <StackPanel>
-        <TextBlock Text="{Binding TitleText, FallbackValue=Mod updates available}" FontWeight="Bold" TextAlignment="Center" FontSize="20"/>
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding TitleText, FallbackValue=Mod updates available}" FontWeight="Bold" TextAlignment="Center" FontSize="20"/>
+        <Button DockPanel.Dock="Bottom" Content="Close" Command="{Binding CloseCommand}" Padding="4" HorizontalAlignment="Right" Margin="5,5,0,5"/>
+
         <ItemsControl ItemsSource="{Binding UpdatableMods}">
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <ScrollViewer x:Name="ScrollViewer" Padding="{TemplateBinding Padding}" VerticalScrollBarVisibility="Visible">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
             <ItemsControl.ItemContainerStyle>
                 <Style>
                     <Setter Property="FrameworkElement.DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"/>
@@ -60,7 +69,7 @@
 
                         <Expander Header="{Binding FilesToDownloadUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDownload}">
 
-                            <TreeView ItemsSource="{Binding applicableUpdates}" DisplayMemberPath="relativefilepath" MaxHeight="300"/>
+                            <TreeView ItemsSource="{Binding applicableUpdates}" DisplayMemberPath="relativefilepath" MaxHeight="300" Background="Transparent" BorderThickness="0"/>
 
                         </Expander>
                         <Expander Header="{Binding FilesToDeleteUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDelete}">
@@ -72,8 +81,5 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
-        <Button Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="4"/>
-
-    </StackPanel>
+    </DockPanel>
 </UserControl>
