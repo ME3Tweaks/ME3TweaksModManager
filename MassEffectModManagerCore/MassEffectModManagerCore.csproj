@@ -2,7 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
+    <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
     <UserSecretsId>a466212e-477d-4822-b2f5-f65f287a7c7c</UserSecretsId>
