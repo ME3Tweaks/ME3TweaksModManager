@@ -8,9 +8,47 @@
              d:DesignHeight="500" d:DesignWidth="500" MaxHeight="500">
     <StackPanel>
         <TextBlock Text="{Binding TitleText, FallbackValue=Mod updates available}" FontWeight="Bold" TextAlignment="Center" FontSize="20"/>
+        <ItemsControl ItemsSource="{Binding UpdatableMods}">
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="FrameworkElement.DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="0,5,5,5">
+                        <!--<Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="54"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>-->
+                        <TextBlock Text="{Binding mod.ModName}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding mod.ParsedModVersion, StringFormat='Current version: {0}'}"/>
+                        <TextBlock Text="{Binding version, StringFormat='New version: {0}'}"/>
+                        <TextBlock Text="{Binding changelog}"/>
 
+                        <Expander Header="Files to download" Margin="5,3">
+                            <TreeView ItemsSource="{Binding applicableUpdates}"/>
+                        </Expander>
+                        <Expander Header="Files that will be deleted" Margin="5,3">
+                            <TreeView ItemsSource="{Binding filesToDelete}"/>
+                        </Expander>
+                        <!--<Button Content="Back up" Padding="3,0" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="3"/>
+                        <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding ProgressValue}" Height="10" Maximum="{Binding ProgressMax}" Visibility="{Binding ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="4" />-->
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
         <Button Content="Close" Command="{Binding CloseCommand}"/>
-            
+
     </StackPanel>
 </UserControl>

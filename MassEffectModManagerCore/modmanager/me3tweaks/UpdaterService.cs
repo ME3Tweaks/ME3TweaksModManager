@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using MassEffectModManager;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.ui;
 using Newtonsoft.Json;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -84,6 +85,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
                 if (matchingMod != null && (forceRecheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
                 {
+                    modUpdateInfo.mod = matchingMod;
                     string modBasepath = matchingMod.ModPath;
                     foreach (var serverFile in modUpdateInfo.sourceFiles)
                     {
@@ -113,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     //Files to remove calculation
                     var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories).Select(x => x.Substring(modBasepath.Length + 1).ToLowerInvariant()).ToList();
-                    modUpdateInfo.filesToDelete = modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath.ToLower())).ToList();
+                    modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath.ToLower())).ToList());
                 }
 
             }
@@ -135,23 +137,24 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public class ModUpdateInfo
         {
+            public Mod mod { get; set; }
             public List<SourceFile> sourceFiles;
-            public string changelog;
+            public string changelog { get; set; }
             public string serverfolder;
             public int updatecode;
-            public double version;
-            public List<SourceFile> applicableUpdates = new List<SourceFile>();
-            public List<string> filesToDelete = new List<string>();
+            public double version { get; set; }
+            public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
+            public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
         }
 
         public class SourceFile
         {
-            public string lzmahash;
-            public string relativefilepath;
-            public int lzmasize;
-            public int size;
-            public string hash;
-            public Int64 timestamp;
+            public string lzmahash { get; internal set; }
+            public string relativefilepath { get; internal set; }
+            public int lzmasize { get; internal set; }
+            public int size { get; internal set; }
+            public string hash { get; internal set; }
+            public Int64 timestamp { get; internal set; }
             public SourceFile() { }
         }
     }

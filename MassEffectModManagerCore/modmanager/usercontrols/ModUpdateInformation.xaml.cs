@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Gammtek.Conduit.Extensions.Collections.Generic;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 
@@ -31,12 +32,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             handler?.Invoke(this, e);
         }
 
-        public ObservableCollection<ModUpdateInformation> UpdatableMods { get; } = new ObservableCollection<ModUpdateInformation>();
+        public ObservableCollection<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollection<OnlineContent.ModUpdateInfo>();
 
         public ModUpdateInformation(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
             DataContext = this;
-
+            UpdatableMods.AddRange(modsWithUpdates);
             LoadCommands();
             InitializeComponent();
         }
