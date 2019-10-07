@@ -10,6 +10,7 @@ using MassEffectModManager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -131,7 +132,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                {
 
                });
+            foreach (var file in updateInfo.filesToDelete)
+            {
+                var fileToDelete = Path.Combine(modPath, file);
+                Log.Information("Deleting file for mod update: " + fileToDelete);
+                File.Delete(fileToDelete);
+            }
 
+            Utilities.DeleteEmptySubdirectories(modPath);
             return true;
         }
 
@@ -142,6 +150,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string changelog { get; set; }
             public string serverfolder;
             public int updatecode;
+            public bool HasFilesToDownload => applicableUpdates.Count > 0;
+            public bool HasFilesToDelete => filesToDelete.Count > 0;
+            public string FilesToDeleteUIString
+            {
+                get
+                {
+                    if (filesToDelete.Count != 1)
+                    {
+                        return filesToDelete.Count + " files will be deleted";
+                    }
+
+                    return "1 file will be deleted";
+                }
+            }
+
+            public string FilesToDownloadUIString
+            {
+                get
+                {
+                    if (applicableUpdates.Count != 1)
+                    {
+                        return applicableUpdates.Count + " files will be downloaded";
+                    }
+
+                    return "1 file will be downloaded";
+                }
+            }
             public double version { get; set; }
             public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
             public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();

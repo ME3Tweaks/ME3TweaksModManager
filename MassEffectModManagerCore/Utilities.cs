@@ -552,6 +552,23 @@ namespace MassEffectModManager
             return Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar");
         }
 
+        /// <summary>
+        /// Recursively deletes all empty subdirectories.
+        /// </summary>
+        /// <param name="startLocation"></param>
+        public static void DeleteEmptySubdirectories(string startLocation)
+        {
+            foreach (var directory in Directory.GetDirectories(startLocation))
+            {
+                DeleteEmptySubdirectories(directory);
+                if (!Directory.EnumerateFileSystemEntries(directory).Any())
+                {
+                    Log.Information("Deleting empty directory: " + directory);
+                    Directory.Delete(directory, false);
+                }
+            }
+        }
+
         //Step 1: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
         private static string RemoveSpecialCharactersUsingCustomMethod(this string expression, bool removeSpecialLettersHavingASign = true)
         {

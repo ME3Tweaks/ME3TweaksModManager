@@ -30,16 +30,28 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>-->
-                        <TextBlock Text="{Binding mod.ModName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding mod.ParsedModVersion, StringFormat='Current version: {0}'}"/>
-                        <TextBlock Text="{Binding version, StringFormat='New version: {0}'}"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding mod.ParsedModVersion, StringFormat='Current version: {0}'}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding version, StringFormat='New version: {0}'}"/>
+                            <Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" Command="{Binding ApplyUpdate}" Content="Download update" HorizontalAlignment="Right" Padding="4"/>
+                        </Grid>
                         <TextBlock Text="{Binding changelog}"/>
 
-                        <Expander Header="Files to download" Margin="5,3">
+                        <Expander Header="{Binding FilesToDownloadUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDownload}">
                             <TreeView ItemsSource="{Binding applicableUpdates}"/>
                         </Expander>
-                        <Expander Header="Files that will be deleted" Margin="5,3">
-                            <TreeView ItemsSource="{Binding filesToDelete}"/>
+                        <Expander Header="{Binding FilesToDeleteUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDelete}">
+                            <TreeView ItemsSource="{Binding filesToDelete}" Background="Transparent" BorderThickness="0"/>
                         </Expander>
                         <!--<Button Content="Back up" Padding="3,0" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="3"/>
                         <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding ProgressValue}" Height="10" Maximum="{Binding ProgressMax}" Visibility="{Binding ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="4" />-->
