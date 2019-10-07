@@ -1,26 +1,32 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Xml.Linq;
+using ByteSizeLib;
 using MassEffectModManager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 using Newtonsoft.Json;
 using Serilog;
+using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     public partial class OnlineContent
     {
-        private const string UpdaterEndpoint = "https://me3tweaks.com/mods/getlatest_batch";
-
+        private const string UpdateManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch";
+        private const string UpdateStorageRoot = "https://me3tweaks.com/mods/updates/";
         public static List<ModUpdateInfo> CheckForModUpdates(List<Mod> modsToCheck, bool forceRecheck)
         {
-            string updateFinalRequest = UpdaterEndpoint;
+            string updateFinalRequest = UpdateManifestEndpoint;
             bool first = true;
             foreach (var mod in modsToCheck)
             {
@@ -116,7 +122,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     //Files to remove calculation
                     var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories).Select(x => x.Substring(modBasepath.Length + 1).ToLowerInvariant()).ToList();
-                    modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath.ToLower())).ToList());
+                    modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath.ToLower())).ToList()); //Todo: Add security check here to prevent malicious values
+                    modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
                 }
 
             }
@@ -125,13 +132,86 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return modUpdateInfos;
         }
 
-        public static bool UpdateMod(Mod mod, ModUpdateInfo updateInfo, Action<string> progressUpdateCallback)
+        public static bool UpdateMod(ModUpdateInfo updateInfo, string stagingDirectory, Action<string> errorMessageCallback)
         {
-            string modPath = mod.ModPath;
+            string modPath = updateInfo.mod.ModPath;
+            string serverRoot = UpdateStorageRoot + updateInfo.serverfolder + '/';
+            bool cancelDownloading = false;
+            var stagedFileMapping = new ConcurrentDictionary<string, string>();
             Parallel.ForEach(updateInfo.applicableUpdates, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (sourcefile) =>
                {
+                   if (!cancelDownloading)
+                   {
+                       void downloadProgressCallback(long received, long totalToReceived)
+                       {
+                           sourcefile.AmountDownloaded = received;
+                           updateInfo.RecalculateAmountDownloaded();
+                       }
 
+                       string fullurl = serverRoot + sourcefile.relativefilepath.Replace('\\', '/') + ".lzma";
+                       var downloadedFile = OnlineContent.DownloadToMemory(fullurl, downloadProgressCallback, sourcefile.lzmahash);
+                       if (downloadedFile.errorMessage != null && !cancelDownloading)
+                       {
+                           errorMessageCallback?.Invoke(downloadedFile.errorMessage);
+                           cancelDownloading = true;
+                           return;
+                       }
+
+                       if (cancelDownloading)
+                       {
+                           return; //Concurrency for long running download to memory
+                       }
+                       //Hash OK
+                       string stagingFile = Path.Combine(stagingDirectory, sourcefile.relativefilepath);
+                       Directory.CreateDirectory(Directory.GetParent(stagingFile).FullName);
+
+                       //Decompress file
+                       MemoryStream decompressedStream = new MemoryStream();
+                       SevenZipExtractor.DecompressStream(downloadedFile.result, decompressedStream, null, null);
+
+                       //Hash check output
+                       if (decompressedStream.Length != sourcefile.size)
+                       {
+                           Log.Error($"Decompressed file ({sourcefile.relativefilepath}) is not of correct size. Expected: {sourcefile.size}, got: {decompressedStream.Length}");
+                           errorMessageCallback?.Invoke(downloadedFile.errorMessage);
+                           cancelDownloading = true;
+                           return;
+                       }
+
+                       var decompressedMD5 = Utilities.CalculateMD5(decompressedStream);
+                       if (decompressedMD5 != sourcefile.hash)
+                       {
+                           Log.Error($"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
+                           errorMessageCallback?.Invoke(downloadedFile.errorMessage);
+                           cancelDownloading = true;
+                           return;
+                       }
+
+                       File.WriteAllBytes(stagingFile, decompressedStream.ToArray());
+                       Log.Information("Wrote updater staged file: " + stagingFile);
+                       stagedFileMapping[stagingFile] = Path.Combine(modPath, sourcefile.relativefilepath);
+                   }
                });
+            if (cancelDownloading)
+            {
+                //callback already should have occured
+                return false;
+            }
+
+            //All files have been downloaded successfully.
+
+            //Apply update
+            if (stagedFileMapping.Count > 0)
+            {
+                Log.Information("Applying staged update to mod directory");
+                foreach (var file in stagedFileMapping)
+                {
+                    Log.Information($"Applying update file: {file.Key} => {file.Value}");
+                    File.Copy(file.Key, file.Value, true);
+                }
+            }
+
+            //Delete files no longer in manifest
             foreach (var file in updateInfo.filesToDelete)
             {
                 var fileToDelete = Path.Combine(modPath, file);
@@ -139,19 +219,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 File.Delete(fileToDelete);
             }
 
+            //Delete empty subdirectories
             Utilities.DeleteEmptySubdirectories(modPath);
+
+            //We're done!
             return true;
         }
 
-        public class ModUpdateInfo
+
+        public class ModUpdateInfo : INotifyPropertyChanged
         {
             public Mod mod { get; set; }
             public List<SourceFile> sourceFiles;
             public string changelog { get; set; }
             public string serverfolder;
             public int updatecode;
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public bool UpdateInProgress { get; set; }
+            public ICommand ApplyUpdateCommand { get; set; }
+            public long TotalBytesToDownload { get; set; }
+            public long CurrentBytesDownloaded { get; set; }
+            public bool Indeterminate { get; set; }
             public bool HasFilesToDownload => applicableUpdates.Count > 0;
             public bool HasFilesToDelete => filesToDelete.Count > 0;
+            public string DownloadButtonText { get; set; }
+            public void RecalculateAmountDownloaded() => CurrentBytesDownloaded = sourceFiles.Sum(x => x.AmountDownloaded);
             public string FilesToDeleteUIString
             {
                 get
@@ -180,6 +274,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public double version { get; set; }
             public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
             public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
+            public bool CanUpdate { get; internal set; } = true; //Default to true
+            public string TotalBytesHR => ByteSize.FromBytes(TotalBytesToDownload).ToString();
         }
 
         public class SourceFile
@@ -190,6 +286,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public int size { get; internal set; }
             public string hash { get; internal set; }
             public Int64 timestamp { get; internal set; }
+            public long AmountDownloaded;
             public SourceFile() { }
         }
     }

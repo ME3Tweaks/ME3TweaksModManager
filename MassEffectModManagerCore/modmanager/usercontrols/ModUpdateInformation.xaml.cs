@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,10 +13,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Gammtek.Conduit.Extensions.Collections.Generic;
+using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
+
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -23,12 +27,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ModUpdateInformation : UserControl, INotifyPropertyChanged
     {
-        public event EventHandler<EventArgs> Close;
+        public event EventHandler<DataEventArgs> Close;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnClosing(EventArgs e)
+        protected virtual void OnClosing(DataEventArgs e)
         {
-            EventHandler<EventArgs> handler = Close;
+            EventHandler<DataEventArgs> handler = Close;
             handler?.Invoke(this, e);
         }
 
@@ -37,14 +41,64 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ModUpdateInformation(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
             DataContext = this;
+            modsWithUpdates.ForEach(x =>
+            {
+                x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
+                x.DownloadButtonText = "Download update";
+            });
             UpdatableMods.AddRange(modsWithUpdates);
             LoadCommands();
             InitializeComponent();
         }
 
+        private bool CanApplyUpdateToMod(object obj)
+        {
+            if (obj is OnlineContent.ModUpdateInfo ui)
+            {
+                return !ui.UpdateInProgress && ui.CanUpdate;
+            }
+            return false;
+        }
+
+        private void ApplyUpdateToMod(object obj)
+        {
+            if (obj is OnlineContent.ModUpdateInfo ui)
+            {
+                NamedBackgroundWorker bw = new NamedBackgroundWorker("ModUpdaterThread-" + ui.mod.ModName);
+                bw.DoWork += (a, b) =>
+                {
+                    ui.UpdateInProgress = true;
+                    ui.Indeterminate = false;
+                    ui.DownloadButtonText = "Downloading";
+                    //void updateProgressCallback(long bytesReceived, long totalBytes)
+                    //{
+                    //    ui.By
+                    //}
+                    bool errorShown = false;
+                    void errorCallback(string message)
+                    {
+                        if (!errorShown)
+                        {
+                            errorShown = true;
+                            Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show($"Error occured while updating {ui.mod.ModName}:\n{message}", $"Error updating {ui.mod.ModName}", MessageBoxButton.OK, MessageBoxImage.Error); }
+                            );
+                        }
+                    }
+                    var stagingDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), Path.GetFileName(ui.mod.ModPath))).FullName;
+                    var modUpdated = OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
+                    ui.UpdateInProgress = false;
+                    ui.CanUpdate = !modUpdated;
+                    ui.DownloadButtonText = ui.CanUpdate ? "Download update" : "Updated";
+                    Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
+                };
+                bw.RunWorkerCompleted += (a, b) => { CommandManager.InvalidateRequerySuggested(); };
+                bw.RunWorkerAsync();
+            }
+        }
+
+
         public ICommand CloseCommand { get; set; }
-        private bool TaskRunning;
-        private bool TaskNotRunning() => !TaskRunning;
+        private bool TaskNotRunning() => UpdatableMods.All(x => !x.UpdateInProgress);
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(CloseDialog, TaskNotRunning);
@@ -52,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CloseDialog()
         {
-            OnClosing(EventArgs.Empty);
+            OnClosing(new DataEventArgs(true));
         }
     }
 }

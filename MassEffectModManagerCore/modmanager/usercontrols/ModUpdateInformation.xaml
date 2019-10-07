@@ -4,8 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="500" MaxHeight="500">
+             d:DesignHeight="500" d:DesignWidth="500" MaxHeight="500" MinWidth="400" MaxWidth="600">
+    <UserControl.Resources>
+        <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
+    </UserControl.Resources>
     <StackPanel>
         <TextBlock Text="{Binding TitleText, FallbackValue=Mod updates available}" FontWeight="Bold" TextAlignment="Center" FontSize="20"/>
         <ItemsControl ItemsSource="{Binding UpdatableMods}">
@@ -35,6 +41,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
@@ -43,12 +50,18 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding mod.ParsedModVersion, StringFormat='Current version: {0}'}"/>
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding version, StringFormat='New version: {0}'}"/>
-                            <Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" Command="{Binding ApplyUpdate}" Content="Download update" HorizontalAlignment="Right" Padding="4"/>
+                            <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" >
+                                <Button Command="{Binding ApplyUpdateCommand}" CommandParameter="{Binding}" Content="{Binding DownloadButtonText}" HorizontalAlignment="Right" Padding="4"/>
+                                <TextBlock Text="{Binding TotalBytesHR, FallbackValue=32MB}" TextAlignment="Center" Foreground="Gray"/>
+                            </StackPanel>
+                            <ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="3" Height="12" Maximum="{Binding TotalBytesToDownload}" Value="{Binding CurrentBytesDownloaded}" IsIndeterminate="{Binding Indeterminate}" />
                         </Grid>
                         <TextBlock Text="{Binding changelog}"/>
 
                         <Expander Header="{Binding FilesToDownloadUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDownload}">
-                            <TreeView ItemsSource="{Binding applicableUpdates}"/>
+
+                            <TreeView ItemsSource="{Binding applicableUpdates}" DisplayMemberPath="relativefilepath" MaxHeight="300"/>
+
                         </Expander>
                         <Expander Header="{Binding FilesToDeleteUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDelete}">
                             <TreeView ItemsSource="{Binding filesToDelete}" Background="Transparent" BorderThickness="0"/>
@@ -60,7 +73,7 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <Button Content="Close" Command="{Binding CloseCommand}"/>
+        <Button Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="4"/>
 
     </StackPanel>
 </UserControl>

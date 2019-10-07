@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
+using System.Threading;
 using MassEffectModManager;
 using MassEffectModManagerCore.modmanager.helpers;
 using Newtonsoft.Json;
@@ -19,6 +21,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
 
         private static readonly string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
+
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
             using (var wc = new System.Net.WebClient())
@@ -28,6 +31,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 return App.ServerManifest;
             }
         }
+
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
@@ -40,6 +44,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(json);
                 }
             }
+
             return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
         }
 
@@ -61,6 +66,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     return JsonConvert.DeserializeObject<List<string>>(json);
                 }
             }
+
             return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
         }
 
@@ -75,6 +81,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(json);
                 }
             }
+
             return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
         }
 
@@ -96,6 +103,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 Log.Error("Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
             }
+
             return null;
         }
 
@@ -135,6 +143,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             return true;
         }
+
         public static bool EnsureStaticAssets()
         {
             string[] objectInfoFiles = { "ME1ObjectInfo.json", "ME2ObjectInfo.json", "ME3ObjectInfo.json" };
@@ -154,6 +163,47 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             return true;
+        }
+
+        public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null)
+        {
+            using var wc = new System.Net.WebClient();
+            string downloadError = null;
+            MemoryStream responseStream = null;
+            wc.DownloadProgressChanged += (a, args) => { progressCallback?.Invoke(args.BytesReceived, args.TotalBytesToReceive); };
+            wc.DownloadDataCompleted += (a, args) =>
+            {
+                downloadError = args.Error?.Message;
+                if (downloadError == null)
+                {
+                    responseStream = new MemoryStream(args.Result);
+                    if (hash != null)
+                    {
+                        var md5 = Utilities.CalculateMD5(responseStream);
+                        responseStream.Position = 0;
+                        if (md5 != hash)
+                        {
+                            responseStream = null;
+                            downloadError = $"Hash of downloaded item ({url}) does not match expected hash. Expected: {hash}, got: {md5}";
+                        }
+                    }
+                }
+                lock (args.UserState)
+                {
+                    //releases blocked thread
+                    Monitor.Pulse(args.UserState);
+                }
+            };
+            var syncObject = new Object();
+            lock (syncObject)
+            {
+                Debug.WriteLine("Download file to memory: " + url);
+                wc.DownloadDataAsync(new Uri(url), syncObject);
+                //This will block the thread until download completes
+                Monitor.Wait(syncObject);
+            }
+
+            return (responseStream, downloadError);
         }
     }
 }

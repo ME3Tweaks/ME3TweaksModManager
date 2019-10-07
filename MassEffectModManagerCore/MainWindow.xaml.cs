@@ -537,7 +537,15 @@ namespace MassEffectModManager
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
-                        modUpdatesNotificationDialog.Close += (sender, args) => { ReleaseBusyControl(); };
+                        modUpdatesNotificationDialog.Close += (sender, args) =>
+                        {
+                            ReleaseBusyControl();
+                            if (args.Data is bool reloadMods && reloadMods)
+                            {
+                                LoadMods(updates.Count == 1 ? updates[0].mod : null);
+                            }
+
+                        };
                         UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
                         ShowBusyControl(modUpdatesNotificationDialog);
                     });
