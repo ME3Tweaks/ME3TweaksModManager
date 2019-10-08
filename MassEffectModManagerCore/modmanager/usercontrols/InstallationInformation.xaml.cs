@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Serilog;
+using MassEffectModManager;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -59,8 +60,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (e.AddedItems.Count > 0)
             {
                 SelectedTarget = e.AddedItems[0] as GameTarget;
-                SelectedTarget.PopulateDLCMods();
-                SelectedTarget.PopulateModifiedBasegameFiles();
+                PopulateUI();
             }
             else
             {
@@ -68,9 +68,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        public class InstalledDLCMod
+        private void PopulateUI()
+        {
+            bool deleteConfirmationCallback(InstalledDLCMod mod)
+            {
+                if (SelectedTarget.ALOTInstalled)
+                {
+                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Deleting {mod.ModName} while ALOT is installed will not cause the game to become broken, however you will not be able to install updates to ALOT without a full reinstallation (unsupported configuration).\n\nAre you sure you want to delete the DLC mod?", $"Deleting will put ALOT in unsupported configuration", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                    return res == MessageBoxResult.Yes;
+                }
+                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Remove {mod.ModName} from the game installation?", $"Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+            }
+            void notifyDeleted()
+            {
+                PopulateUI();
+            }
+            SelectedTarget.PopulateDLCMods(deleteConfirmationCallback, notifyDeleted);
+            SelectedTarget.PopulateModifiedBasegameFiles();
+        }
+
+        public class InstalledDLCMod : INotifyPropertyChanged
         {
             private string dlcFolderPath;
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
             public string ModName { get; }
             public string DLCFolderName { get; }
             public string DLCFolderNameString { get; }
@@ -79,7 +101,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string InstallerInstanceGUID { get; }
             public string InstallerInstanceBuild { get; }
 
-            public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game)
+            public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted)
             {
                 this.dlcFolderPath = dlcFolderPath;
                 DLCFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
@@ -130,8 +152,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     InstalledBy = "Not installed by Mod Manager";
                 }
+                this.deleteConfirmationCallback = deleteConfirmationCallback;
+                this.notifyDeleted = notifyDeleted;
+                DeleteCommand = new RelayCommand(DeleteDLCMod, CanDeleteDLCMod);
+
+            }
+
+            private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
+            private Action notifyDeleted;
+
+            public ICommand DeleteCommand { get; set; }
+
+            private bool CanDeleteDLCMod(object obj) => true;
+
+            private void DeleteDLCMod(object obj)
+            {
+                if (obj is GameTarget gt)
+                {
+                    var confirmDelete = deleteConfirmationCallback?.Invoke(this);
+                    if (confirmDelete.HasValue && confirmDelete.Value)
+                    {
+                        Log.Information("Deleting DLC mod from target: " + dlcFolderPath);
+                        Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
+                        notifyDeleted?.Invoke();
+                    }
+                }
             }
         }
+
 
         private void OpenALOTInstaller_Click(object sender, RequestNavigateEventArgs e)
         {

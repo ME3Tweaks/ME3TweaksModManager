@@ -10,6 +10,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using Serilog;
+using static MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -182,15 +183,17 @@ namespace MassEffectModManagerCore.modmanager.objects
             VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
         }
 
-        public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> InstalledDLCMods { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
+        public ObservableCollectionExtended<InstalledDLCMod> InstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
 
-        public void PopulateDLCMods()
+        public void PopulateDLCMods(Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted)
         {
             InstalledDLCMods.ClearEx();
             var dlcDir = MEDirectories.DLCPath(this);
-            var installedMods = MEDirectories.GetInstalledDLC(this).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game)).ToList();
+            var installedMods = MEDirectories.GetInstalledDLC(this).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted)).ToList();
             InstalledDLCMods.AddRange(installedMods);
         }
+
+
 
         public string ALOTStatusString
         {

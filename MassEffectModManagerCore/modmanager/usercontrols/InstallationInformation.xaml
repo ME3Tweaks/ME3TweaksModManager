@@ -80,7 +80,8 @@
                                         </TextBlock>
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DLCFolderNameString}" TextAlignment="Left" Foreground="Gray" FontSize="10"/>
                                         <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding InstalledBy}" TextAlignment="Right" Foreground="Gray" FontSize="10"/>
-                                        <Button Grid.Row="0" Grid.Column="1" Content="Delete" HorizontalAlignment="Right" Padding ="3,0"/>
+                                        <Button Grid.Row="0" Grid.Column="1" Content="Delete" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding ="3,0"/>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
