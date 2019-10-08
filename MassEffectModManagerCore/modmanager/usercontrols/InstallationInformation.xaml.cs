@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -58,18 +59,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (e.AddedItems.Count > 0)
             {
                 SelectedTarget = e.AddedItems[0] as GameTarget;
-                if (SelectedTarget.ALOTInstalled)
-                {
-                    ALOTStatusString = "A Lot Of Textures (ALOT) is installed\nVersion " + SelectedTarget.ALOTVersion;
-                }
-                else
-                {
-                    ALOTStatusString = "A Lot Of Textures (ALOT) is not installed";
-                }
-                var dlcDir = MEDirectories.DLCPath(SelectedTarget);
-                var installedMods = MEDirectories.GetInstalledDLC(SelectedTarget).Where(x => !MEDirectories.OfficialDLC(SelectedTarget.Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), SelectedTarget.Game)).ToList();
-                DLCModsInstalled.AddRange(installedMods);
-            } else
+                SelectedTarget.PopulateDLCMods();
+                SelectedTarget.PopulateModifiedBasegameFiles();
+            }
+            else
             {
                 SelectedTarget = null;
             }
@@ -80,30 +73,62 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private string dlcFolderPath;
             public string ModName { get; }
             public string DLCFolderName { get; }
+            public string DLCFolderNameString { get; }
             public string InstalledBy { get; }
             public string Version { get; }
+            public string InstallerInstanceGUID { get; }
+            public string InstallerInstanceBuild { get; }
 
             public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game)
             {
                 this.dlcFolderPath = dlcFolderPath;
-                DLCFolderName = Path.GetFileName(dlcFolderPath);
+                DLCFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
                 if (App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(DLCFolderName, out var tpmi))
                 {
                     ModName = tpmi.modname;
-                    var metaFile = Path.Combine(dlcFolderPath, "_metacmm.txt");
-                    if (File.Exists(metaFile))
-                    {
-
-                        InstalledBy = "Installed by Mod Manager";
-                    }
-                    else
-                    {
-                        InstalledBy = "Not installed by Mod Manager";
-                    }
                 }
                 else
                 {
                     ModName = DLCFolderName;
+                }
+                var metaFile = Path.Combine(dlcFolderPath, "_metacmm.txt");
+                if (File.Exists(metaFile))
+                {
+                    InstalledBy = "Installed by Mod Manager";
+                    //Parse MetaCMM
+                    var lines = File.ReadAllLines(metaFile).ToList();
+                    int i = 0;
+                    //This is a weird way of doing it but it helps ensure backwards compatiblity and forwards compatibility.
+                    foreach (var line in lines)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                if (line != ModName)
+                                {
+                                    DLCFolderNameString += $" ({ModName})";
+                                    ModName = line;
+                                }
+                                break;
+                            case 1:
+                                Version = line;
+                                break;
+                            case 2:
+                                InstallerInstanceBuild = line;
+                                break;
+                            case 3:
+                                InstallerInstanceGUID = line;
+                                break;
+                            default:
+                                Log.Error("Unsupported line number in _metacmm.txt: " + i);
+                                break;
+                        }
+                        i++;
+                    }
+                }
+                else
+                {
+                    InstalledBy = "Not installed by Mod Manager";
                 }
             }
         }

@@ -328,8 +328,11 @@ namespace MassEffectModManager
             if (obj is string str && Enum.TryParse(str, out Mod.MEGame game))
             {
                 var target = GetCurrentTarget(game);
-                var configTool = Utilities.GetGameConfigToolPath(target);
-                return File.Exists(configTool);
+                if (target != null)
+                {
+                    var configTool = Utilities.GetGameConfigToolPath(target);
+                    return File.Exists(configTool);
+                }
             }
             return false;
         }
@@ -530,28 +533,31 @@ namespace MassEffectModManager
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
 
                 //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
-                BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
-                var updates = OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true).Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
-                if (updates.Count > 0)
+                if (LoadedMods.Count > 0)
                 {
-                    Application.Current.Dispatcher.Invoke(delegate
+                    BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
+                    var updates = OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true).Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
+                    if (updates.Count > 0)
                     {
-                        var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
-                        modUpdatesNotificationDialog.Close += (sender, args) =>
+                        Application.Current.Dispatcher.Invoke(delegate
                         {
-                            ReleaseBusyControl();
-                            if (args.Data is bool reloadMods && reloadMods)
+                            var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
+                            modUpdatesNotificationDialog.Close += (sender, args) =>
                             {
-                                LoadMods(updates.Count == 1 ? updates[0].mod : null);
-                            }
+                                ReleaseBusyControl();
+                                if (args.Data is bool reloadMods && reloadMods)
+                                {
+                                    LoadMods(updates.Count == 1 ? updates[0].mod : null);
+                                }
 
-                        };
-                        UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-                        ShowBusyControl(modUpdatesNotificationDialog);
-                    });
+                            };
+                            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+                            ShowBusyControl(modUpdatesNotificationDialog);
+                        });
+                    }
+                    backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }
                 OnPropertyChanged(nameof(NoModSelectedText));
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
             };
             bw.RunWorkerCompleted += (a, b) =>
             {

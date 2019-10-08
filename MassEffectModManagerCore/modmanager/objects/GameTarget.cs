@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Media;
 using MassEffectModManager;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.usercontrols;
+using MassEffectModManagerCore.ui;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -159,6 +162,51 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
+        public ObservableCollectionExtended<string> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<string>();
+        public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
+
+        public void PopulateModifiedBasegameFiles()
+        {
+            ModifiedBasegameFiles.ClearEx();
+            ModifiedSFARFiles.ClearEx();
+            void failedCallback(string file)
+            {
+                //todo: Filter out SFARs?
+                if (file.EndsWith(".sfar"))
+                {
+                    ModifiedSFARFiles.Add(new SFARObject(file, this));
+                    return;
+                }
+                ModifiedBasegameFiles.Add(file.Substring(TargetPath.Length + 1));
+            }
+            VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
+        }
+
+        public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> InstalledDLCMods { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
+
+        public void PopulateDLCMods()
+        {
+            InstalledDLCMods.ClearEx();
+            var dlcDir = MEDirectories.DLCPath(this);
+            var installedMods = MEDirectories.GetInstalledDLC(this).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game)).ToList();
+            InstalledDLCMods.AddRange(installedMods);
+        }
+
+        public string ALOTStatusString
+        {
+            get
+            {
+                if (ALOTInstalled)
+                {
+                    return "A Lot Of Textures (ALOT) is installed\nVersion " + ALOTVersion;
+                }
+                else
+                {
+                    return "A Lot Of Textures (ALOT) is not installed";
+                }
+            }
+        }
+
         public bool IsValid { get; set; }
 
         /// <summary>
@@ -201,6 +249,26 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             IsValid = true;
             return null;
+        }
+
+        public class SFARObject
+        {
+            public SFARObject(string file, GameTarget target)
+            {
+                FilePath = file.Substring(target.TargetPath.Length + 1);
+                if (Path.GetFileName(file) == "Patch_001.sfar")
+                {
+                    UIString = "TestPatch";
+                }
+                else
+                {
+                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(Directory.GetParent(Directory.GetParent(file).FullName).FullName), out var name);
+                    UIString = name;
+                }
+            }
+
+            public string FilePath { get; }
+            public string UIString { get; }
         }
     }
 }

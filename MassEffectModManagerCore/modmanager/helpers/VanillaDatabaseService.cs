@@ -111,12 +111,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
             switch (target.Game)
             {
                 case Mod.MEGame.ME1:
+                    if (ME1VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME1); //Have tofigure out how to load PL
                     vanillaDB = ME1VanillaDatabase;
                     break;
                 case Mod.MEGame.ME2:
+                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME2); 
                     vanillaDB = ME2VanillaDatabase;
                     break;
                 case Mod.MEGame.ME3:
+                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME3); 
                     vanillaDB = ME3VanillaDatabase;
                     break;
                 default:

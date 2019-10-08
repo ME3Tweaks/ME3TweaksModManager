@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              mc:Ignorable="d" 
-             MinWidth="450"
+             MinWidth="550"
              MaxHeight="500"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -15,8 +15,9 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
         <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
+        <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter"/>
     </UserControl.Resources>
-    <StackPanel>
+    <StackPanel MaxHeight="520">
         <StackPanel.Resources>
             <Style TargetType="ListBoxItem">
                 <Style.Triggers>
@@ -52,33 +53,91 @@
                 </Style>
             </ComboBox.ItemContainerStyle>
         </ComboBox>
-        <ListBox ItemsSource="{Binding DLCModsInstalled}" MinHeight="200" MaxHeight="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type local:InstallationInformation+InstalledDLCMod}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding ModName}"/>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DLCFolderName}" TextAlignment="Left" Foreground="Gray" FontSize="10"/>
-                        <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding InstalledBy}" TextAlignment="Right" Foreground="Gray" FontSize="10"/>
-                    </Grid>
-                    
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <TabControl DataContext="{Binding SelectedTarget}">
+            <TabItem Header="Installed DLC mods">
+                <DockPanel>
+                    <ScrollViewer>
+                        <ItemsControl ItemsSource="{Binding InstalledDLCMods}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:InstallationInformation+InstalledDLCMod}">
+                                    <Grid Margin="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" FontSize="13">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} {1}">
+                                                    <Binding Path="ModName" />
+                                                    <Binding Path="Version" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DLCFolderNameString}" TextAlignment="Left" Foreground="Gray" FontSize="10"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding InstalledBy}" TextAlignment="Right" Foreground="Gray" FontSize="10"/>
+                                        <Button Grid.Row="0" Grid.Column="1" Content="Delete" HorizontalAlignment="Right" Padding ="3,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="Modified basegame files">
+                <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding}"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </TabItem>
+            <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">
+                <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding UIString}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" Foreground="Gray" Text="{Binding FilePath}"/>
+                                <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="Restore" HorizontalAlignment="Right" Padding ="3,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </TabItem>
+        </TabControl>
+
+
         <DockPanel>
             <Image Source="/modmanager/toolicons/alot_big.png" DockPanel.Dock="Left" Width="32" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
             <Button DockPanel.Dock="Right" Content="Close" Padding="4" VerticalAlignment="Bottom" Click="Close_Click"/>
 
             <StackPanel Margin="5">
-                <TextBlock Text="{Binding ALOTStatusString}"/>
+                <TextBlock Text="{Binding SelectedTarget.ALOTStatusString}"/>
                 <TextBlock ToolTip="Click to open ALOT Installer">
                         <Hyperlink RequestNavigate="OpenALOTInstaller_Click" NavigateUri="internal://trigger" Foreground="Red">
                             <TextBlock Text="Manage textures with ALOT Installer"/>
