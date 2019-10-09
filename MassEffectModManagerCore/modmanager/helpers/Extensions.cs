@@ -668,6 +668,16 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return Path.GetInvalidFileNameChars().Aggregate(path, (current, c) => current.Replace(c.ToString(), string.Empty));
         }
 
+        public static bool RepresentsPackageFilePath(this string path)
+        {
+            string extension = Path.GetExtension(path);
+            if (extension.Equals(".pcc", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".sfm", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".u", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".upk", StringComparison.InvariantCultureIgnoreCase)) return true;
+            return false;
+        }
+
         //based on algorithm described here: http://www.codeproject.com/Articles/13525/Fast-memory-efficient-Levenshtein-algorithm
         public static int LevenshteinDistance(this string a, string b)
         {
