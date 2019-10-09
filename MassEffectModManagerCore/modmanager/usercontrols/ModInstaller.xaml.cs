@@ -430,13 +430,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <returns></returns>
         private bool PrecheckOfficialHeaders(string gameDLCPath, List<ModJob> installationJobs)
         {
-            if (ModBeingInstalled.Game != Mod.MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
+            //if (ModBeingInstalled.Game != Mod.MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
             {
                 if (job.Header == ModJob.JobHeader.BALANCE_CHANGES) continue; //Don't check balance changes
                 if (job.Header == ModJob.JobHeader.BASEGAME) continue; //Don't check basegame
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC) continue; //Don't check custom dlc
-                string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
+                string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header], "CookedPCConsole", "Default.sfar");
                 if (!File.Exists(sfarPath))
                 {
                     Log.Warning($"DLC not installed that mod is marked to modify: {job.Header}, prompting user.");
@@ -444,13 +444,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     bool cancel = false;
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        string message = $"{ModBeingInstalled.ModName} installs files into the {ModJob.HeadersToDLCNamesMap[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]}) DLC, which is not installed.";
+                        string message = $"{ModBeingInstalled.ModName} installs files into the {ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]]}) DLC, which is not installed.";
                         if (job.RequirementText != null)
                         {
                             message += $"\n{job.RequirementText}";
                         }
                         message += "\n\nThe mod might not function properly without this DLC installed first. Continue installing anyways?";
-                        MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(message, $"{ME3Directory.OfficialDLCNames[ModJob.HeadersToDLCNamesMap[job.Header]]} DLC not installed", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                        MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(message, $"{ME3Directory.OfficialDLCNames[ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]]} DLC not installed", MessageBoxButton.YesNo, MessageBoxImage.Error);
                         if (result == MessageBoxResult.No) { cancel = true; return; }
 
                     }));

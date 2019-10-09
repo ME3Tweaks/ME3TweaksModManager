@@ -13,7 +13,36 @@ namespace MassEffectModManagerCore.modmanager
             BASEGAME,
             CUSTOMDLC,
 
-            //The following are ME3 only.
+            //ME1 ONLY
+            BRING_DOWN_THE_SKY,
+            PINNACLE_STATION,
+
+            //ME2
+            AEGIS_PACK,
+            APPEARANCE_PACK_1,
+            APPEARANCE_PACK_2,
+            ARC_PROJECTOR,
+            ARRIVAL,
+            BLOOD_DRAGON_ARMOR,
+            CERBERUS_WEAPON_ARMOR,
+            COLLECTORS_WEAPON_ARMOR,
+            EQUALIZER_PACK,
+            FIREPOWER_PACK,
+            FIREWALKER,
+            GENESIS,
+            INCISOR,
+            INFERNO_ARMOR,
+            KASUMI,
+            LAIR_OF_THE_SHADOWBROKER,
+            NORMANDY_CRASH_SITE,
+            OVERLORD,
+            RECON_HOOD,
+            SENTRY_INTERFACE,
+            TERMINUS_WEAPON_ARMOR,
+            UMBRA_VISOR,
+            ZAEED,
+
+            //ME3 ONLY
             BALANCE_CHANGES,
             COALESCED,
             RESURGENCE,
@@ -76,7 +105,18 @@ namespace MassEffectModManagerCore.modmanager
         /// <summary>
         /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include CUSTOMDLC or BALANCE_CHANGES, does include BASEGAME (which will work for ME1/ME2)
         /// </summary>
-        internal static readonly JobHeader[] SupportedNonCustomDLCJobHeaders =
+        internal static readonly JobHeader[] ME1SupportedNonCustomDLCJobHeaders =
+        {
+            JobHeader.BASEGAME,
+            //JobHeader.BALANCE_CHANGES, //Must be parsed separately
+            JobHeader.BRING_DOWN_THE_SKY,
+            JobHeader.PINNACLE_STATION
+        };
+
+        /// <summary>
+        /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include CUSTOMDLC or BALANCE_CHANGES, does include BASEGAME (which will work for ME1/ME2)
+        /// </summary>
+        internal static readonly JobHeader[] ME3SupportedNonCustomDLCJobHeaders =
         {
             JobHeader.BASEGAME,
             //JobHeader.BALANCE_CHANGES, //Must be parsed separately
@@ -100,6 +140,8 @@ namespace MassEffectModManagerCore.modmanager
             JobHeader.COLLECTORS_EDITION,
             JobHeader.TESTPATCH
         };
+
+
 
         /// <summary>
         /// Internal path used for resolving where files are for this job.
@@ -178,7 +220,41 @@ namespace MassEffectModManagerCore.modmanager
             return null;
         }
 
-        internal static IReadOnlyDictionary<JobHeader, string> HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+
+        internal static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        {
+            [JobHeader.BRING_DOWN_THE_SKY] = "DLC_UNC",
+            [JobHeader.PINNACLE_STATION] = "DLC_PRC"
+        };
+
+        internal static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        {
+            [JobHeader.AEGIS_PACK] = "DLC_CER_02",
+            [JobHeader.APPEARANCE_PACK_1] = "DLC_CON_Pack01",
+            [JobHeader.APPEARANCE_PACK_2] = "DLC_CON_Pack02",
+            [JobHeader.ARC_PROJECTOR] = "DLC_CER_Arc",
+            [JobHeader.ARRIVAL] = "DLC_EXP_Part02",
+            [JobHeader.BLOOD_DRAGON_ARMOR] = "DLC_PRE_DA",
+            [JobHeader.CERBERUS_WEAPON_ARMOR] = "DLC_PRE_Cerberus",
+            [JobHeader.COLLECTORS_WEAPON_ARMOR] = "DLC_PRE_Collectors",
+            [JobHeader.EQUALIZER_PACK] = "DLC_MCR_03",
+            [JobHeader.FIREPOWER_PACK] = "DLC_MCR_01",
+            [JobHeader.FIREWALKER] = "DLC_UNC_Hammer01",
+            [JobHeader.GENESIS] = "DLC_DHME1",
+            [JobHeader.INCISOR] = "DLC_PRE_Incisor",
+            [JobHeader.INFERNO_ARMOR] = "DLC_PRE_General",
+            [JobHeader.KASUMI] = "DLC_HEN_MT",
+            [JobHeader.LAIR_OF_THE_SHADOWBROKER] = "DLC_EXP_Part01",
+            [JobHeader.NORMANDY_CRASH_SITE] = "DLC_UNC_Moment01",
+            [JobHeader.OVERLORD] = "DLC_UNC_Pack01",
+            [JobHeader.RECON_HOOD] = "DLC_PRO_Pepper02",
+            [JobHeader.SENTRY_INTERFACE] = "DLC_PRO_Gulp01",
+            [JobHeader.TERMINUS_WEAPON_ARMOR] = "DLC_PRE_Gamestop",
+            [JobHeader.UMBRA_VISOR] = "DLC_PRO_Pepper01",
+            [JobHeader.ZAEED] = "DLC_HEN_VT"
+        };
+
+        internal static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
             [JobHeader.COLLECTORS_EDITION] = "DLC_OnlinePassHidCE",
             [JobHeader.RESURGENCE] = "DLC_CON_MP1",
@@ -200,6 +276,21 @@ namespace MassEffectModManagerCore.modmanager
             [JobHeader.GENESIS2] = "DLC_CON_DH1",
             [JobHeader.TESTPATCH] = "DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
+
+        internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return ME1HeadersToDLCNamesMap;
+                case Mod.MEGame.ME2:
+                    return ME2HeadersToDLCNamesMap;
+                case Mod.MEGame.ME3:
+                    return ME3HeadersToDLCNamesMap;
+                default:
+                    throw new Exception("Can't get supported list of headers for unknown game type.");
+            }
+        }
         public string RequirementText;
         public List<AlternateFile> AlternateFiles = new List<AlternateFile>();
         public List<AlternateDLC> AlternateDLCs = new List<AlternateDLC>();
@@ -220,6 +311,21 @@ namespace MassEffectModManagerCore.modmanager
                 FilesToRemove.Add(f);
             }
             return null;
+        }
+
+        internal static JobHeader[] GetSupportedNonCustomDLCHeaders(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return ME1SupportedNonCustomDLCJobHeaders;
+                case Mod.MEGame.ME2:
+                    return new JobHeader[] { JobHeader.BASEGAME };
+                case Mod.MEGame.ME3:
+                    return ME3SupportedNonCustomDLCJobHeaders;
+                default:
+                    throw new Exception("Can't get supported list of headers for unknown game type.");
+            }
         }
     }
 }

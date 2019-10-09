@@ -93,14 +93,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                 Debug.WriteLine(conditionalDlc);
                 foreach (var dlc in conditionalList)
                 {
-                    if (modForValidating.Game == Mod.MEGame.ME3)
-                    {
-                        if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.HeadersToDLCNamesMap.TryGetValue(header, out var foldername))
+                    //if (modForValidating.Game == Mod.MEGame.ME3)
+                    //{
+                        if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
                         {
                             ConditionalDLC.Add(foldername);
                             continue;
                         }
-                    }
+                    //}
                     if (!dlc.StartsWith("DLC_"))
                     {
                         Log.Error("An item in Alternate DLC's ConditionalDLC doesn't start with DLC_");

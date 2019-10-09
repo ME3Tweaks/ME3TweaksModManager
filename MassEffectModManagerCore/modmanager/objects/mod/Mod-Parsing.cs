@@ -311,69 +311,74 @@ namespace MassEffectModManagerCore.modmanager
             #region Header Loops
             #region BASEGAME and OFFICIAL HEADERS
 
-            if (Game == MEGame.ME3)
+            var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
+
+
+            //We must check against official headers
+            //ME2 doesn't support anything but basegame.
+            foreach (var header in supportedOfficialHeaders)
             {
-                //We must check against official headers
-                //ME1 and ME2 only supports the BASEGAME header
-                var supportedOfficialHeaders = ModJob.SupportedNonCustomDLCJobHeaders;
-                foreach (var header in supportedOfficialHeaders)
+                //if (Game != MEGame.ME3 && header != ModJob.JobHeader.BASEGAME) continue; //Skip any non-basegame offical headers for ME1/ME2
+                var headerAsString = header.ToString();
+                var jobSubdirectory = iniData[headerAsString]["moddir"];
+                if (jobSubdirectory != null)
                 {
-                    if (Game != MEGame.ME3 && header != ModJob.JobHeader.BASEGAME) continue; //Skip any non-basegame offical headers for ME1/ME2
-                    var headerAsString = header.ToString();
-                    var jobSubdirectory = iniData[headerAsString]["moddir"];
-                    if (jobSubdirectory != null)
+                    CLog.Information("Found INI header with moddir specified: " + headerAsString, Settings.LogModStartup);
+                    CLog.Information("Subdirectory (moddir): " + jobSubdirectory, Settings.LogModStartup);
+                    //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
+
+                    //Replace files (ModDesc 2.0)
+                    string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
+                    string replaceFilesTargetList = iniData[headerAsString]["replacefiles"]; //Present in MM2. So this will always be read
+
+                    //Add files (ModDesc 4.1)
+                    string addFilesSourceList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["addfiles"] : null;
+                    string addFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["addfilestargets"] : null;
+
+                    //Add files Read-Only (ModDesc 4.3)
+                    string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString]["addfilesreadonlytargets"] : null;
+
+
+                    //Remove files (ModDesc 4.1)
+                    string removeFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["removefilestargets"] : null;
+
+                    //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
+                    bool taskDoesSomething = replaceFilesSourceList != null && replaceFilesTargetList != null;
+                    if (addFilesSourceList != null && addFilesTargetList != null) taskDoesSomething = true;
+                    if (removeFilesTargetList != null) taskDoesSomething = true;
+
+                    if (!taskDoesSomething)
                     {
-                        CLog.Information("Found INI header with moddir specified: " + headerAsString, Settings.LogModStartup);
-                        CLog.Information("Subdirectory (moddir): " + jobSubdirectory, Settings.LogModStartup);
-                        //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
+                        Log.Error($"Mod has job header ({headerAsString}) with no tasks in add, replace, or remove lists. This header does effectively nothing. Marking mod as invalid");
+                        LoadFailedReason = $"This mod has a job header ({headerAsString}) in it's moddesc.ini that no values in add, replace, or remove descriptors. This header does effectively nothing and must be removed from the mod.";
+                        return;
+                    }
 
-                        //Replace files (ModDesc 2.0)
-                        string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
-                        string replaceFilesTargetList = iniData[headerAsString]["replacefiles"]; //Present in MM2. So this will always be read
-
-                        //Add files (ModDesc 4.1)
-                        string addFilesSourceList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["addfiles"] : null;
-                        string addFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["addfilestargets"] : null;
-
-                        //Add files Read-Only (ModDesc 4.3)
-                        string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString]["addfilesreadonlytargets"] : null;
-
-
-                        //Remove files (ModDesc 4.1)
-                        string removeFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["removefilestargets"] : null;
-
-                        //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
-                        bool taskDoesSomething = replaceFilesSourceList != null && replaceFilesTargetList != null;
-                        if (addFilesSourceList != null && addFilesTargetList != null) taskDoesSomething = true;
-                        if (removeFilesTargetList != null) taskDoesSomething = true;
-
-                        if (!taskDoesSomething)
+                    List<string> replaceFilesSourceSplit = null;
+                    List<string> replaceFilesTargetSplit = null;
+                    if (replaceFilesSourceList != null && replaceFilesTargetList != null)
+                    {
+                        //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
+                        replaceFilesSourceSplit = replaceFilesSourceList.Split(';').ToList();
+                        replaceFilesTargetSplit = replaceFilesTargetList.Split(';').ToList();
+                        if (replaceFilesSourceSplit.Count != replaceFilesTargetSplit.Count)
                         {
-                            Log.Error($"Mod has job header ({headerAsString}) with no tasks in add, replace, or remove lists. This header does effectively nothing. Marking mod as invalid");
-                            LoadFailedReason = $"This mod has a job header ({headerAsString}) in it's moddesc.ini that no values in add, replace, or remove descriptors. This header does effectively nothing and must be removed from the mod.";
+                            //Mismatched source and target lists
+                            Log.Error($"Mod has job header ({headerAsString}) that has mismatched newfiles and replacefiles descriptor lists. newfiles has {replaceFilesSourceSplit.Count} items, replacefiles has {replaceFilesTargetSplit.Count} items. The number of items in each list must match.");
+                            LoadFailedReason = $"Job header ({headerAsString}) has mismatched newfiles and replacefiles descriptor lists. newfiles has {replaceFilesSourceSplit.Count} items, replacefiles has {replaceFilesTargetSplit.Count} items. The number of items in each list must match.";
                             return;
                         }
 
-                        List<string> replaceFilesSourceSplit = null;
-                        List<string> replaceFilesTargetSplit = null;
-                        if (replaceFilesSourceList != null && replaceFilesTargetList != null)
-                        {
-                            //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
-                            replaceFilesSourceSplit = replaceFilesSourceList.Split(';').ToList();
-                            replaceFilesTargetSplit = replaceFilesTargetList.Split(';').ToList();
-                            if (replaceFilesSourceSplit.Count != replaceFilesTargetSplit.Count)
-                            {
-                                //Mismatched source and target lists
-                                Log.Error($"Mod has job header ({headerAsString}) that has mismatched newfiles and replacefiles descriptor lists. newfiles has {replaceFilesSourceSplit.Count} items, replacefiles has {replaceFilesTargetSplit.Count} items. The number of items in each list must match.");
-                                LoadFailedReason = $"Job header ({headerAsString}) has mismatched newfiles and replacefiles descriptor lists. newfiles has {replaceFilesSourceSplit.Count} items, replacefiles has {replaceFilesTargetSplit.Count} items. The number of items in each list must match.";
-                                return;
-                            }
+                        CLog.Information($"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
+                    }
 
-                            CLog.Information($"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
-                        }
+                    //Don't support add/remove files on anything except ME3, unless basegame.
+                    List<string> addFilesSourceSplit = null;
+                    List<string> addFilesTargetSplit = null;
+                    List<string> removeFilesSplit = new List<string>();
+                    if (Game == Mod.MEGame.ME3 || header == ModJob.JobHeader.BASEGAME)
+                    {
 
-                        List<string> addFilesSourceSplit = null;
-                        List<string> addFilesTargetSplit = null;
                         if (addFilesSourceList != null && addFilesTargetList != null)
                         {
                             //Parse the addfiles and addfilestargets list and ensure they have the same number of elements in them.
@@ -418,8 +423,6 @@ namespace MassEffectModManagerCore.modmanager
                             CLog.Information($"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
                         }
 
-                        List<string> removeFilesSplit = new List<string>();
-
                         if (removeFilesTargetList != null)
                         {
                             removeFilesSplit = removeFilesTargetList.Split(';').ToList();
@@ -434,97 +437,99 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
 
-                        //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
-                        //In Java Mod Manager, this required 4.1 moddesc
-                        string jobRequirement = iniData[headerAsString]["jobdescription"];
-                        CLog.Information($"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
 
                         //TODO: Bini support
                         //TODO: Basegame support
 
                         //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
+                        //ME3 only
                         if (ModDescTargetVersion < 3 && header == ModJob.JobHeader.TESTPATCH)
                         {
                             Log.Error($"Mod has job header ({headerAsString}) specified, but this header is only supported when targeting ModDesc 3 or higher.");
                             LoadFailedReason = $"Job header ({headerAsString}) has been specified as part of the mod, but this header is only supported when targeting ModDesc 3 or higher.";
                             return;
                         }
+                    }
 
-                        ModJob headerJob = new ModJob(header, this);
-                        headerJob.JobDirectory = jobSubdirectory;
-                        headerJob.RequirementText = jobRequirement;
-                        //Build replacements 
-                        if (replaceFilesSourceSplit != null)
+                    //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
+                    //In Java Mod Manager, this required 4.1 moddesc
+                    string jobRequirement = iniData[headerAsString]["jobdescription"];
+                    CLog.Information($"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
+
+                    ModJob headerJob = new ModJob(header, this);
+                    headerJob.JobDirectory = jobSubdirectory;
+                    headerJob.RequirementText = jobRequirement;
+                    //Build replacements 
+                    if (replaceFilesSourceSplit != null)
+                    {
+                        for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
                         {
-                            for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
+                            string destFile = replaceFilesTargetSplit[i];
+                            CLog.Information($"Adding file to job installation queue: {replaceFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                            string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this, ignoreLoadErrors);
+                            if (failurereason != null)
                             {
-                                string destFile = replaceFilesTargetSplit[i];
-                                CLog.Information($"Adding file to job installation queue: {replaceFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
-                                string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this, ignoreLoadErrors);
-                                if (failurereason != null)
-                                {
-                                    Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
-                                    LoadFailedReason = $"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}";
-                                    return;
-                                }
-                            }
-                        }
-
-                        //Build additions (vars will be null if these aren't supported by target version)
-                        if (addFilesSourceSplit != null)
-                        {
-                            for (int i = 0; i < addFilesSourceSplit.Count; i++)
-                            {
-                                string destFile = addFilesTargetSplit[i];
-                                CLog.Information($"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
-                                string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this, ignoreLoadErrors); //add files are layered on top
-                                if (failurereason != null)
-                                {
-                                    Log.Error($"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
-                                    LoadFailedReason = $"Error occured while parsing the add files lists for {headerAsString}: {failurereason}";
-                                    return;
-                                }
-                            }
-                        }
-
-                        var removeFailureReason = headerJob.AddFilesToRemove(removeFilesSplit);
-                        if (removeFailureReason != null)
-                        {
-                            Log.Error($"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}");
-                            LoadFailedReason = $"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}";
-                            return;
-                        }
-
-                        //Altfiles: Mod Manager 4.2
-                        string altfilesStr = (ModDescTargetVersion >= 4.2 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString]["altfiles"] : null;
-                        if (!string.IsNullOrEmpty(altfilesStr))
-                        {
-                            var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
-                            if (splits.Count == 0)
-                            {
-                                Log.Error("Alternate files list was unable to be parsed, no items were returned from parenthesis parser.");
-                                LoadFailedReason = $"Specified altfiles descriptor for header {headerAsString} did not successfully parse. Text is not empty, but no values were returned.";
+                                Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
+                                LoadFailedReason = $"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}";
                                 return;
                             }
-                            foreach (var split in splits)
+                        }
+                    }
+
+                    //Build additions (vars will be null if these aren't supported by target version)
+                    if (addFilesSourceSplit != null)
+                    {
+                        for (int i = 0; i < addFilesSourceSplit.Count; i++)
+                        {
+                            string destFile = addFilesTargetSplit[i];
+                            CLog.Information($"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                            string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this, ignoreLoadErrors); //add files are layered on top
+                            if (failurereason != null)
                             {
-                                AlternateFile af = new AlternateFile(split, this);
-                                if (af.ValidAlternate)
-                                {
-                                    headerJob.AlternateFiles.Add(af);
-                                }
-                                else
-                                {
-                                    //Error is logged in constructor of AlternateFile
-                                    LoadFailedReason = af.LoadFailedReason;
-                                    return;
-                                }
+                                Log.Error($"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
+                                LoadFailedReason = $"Error occured while parsing the add files lists for {headerAsString}: {failurereason}";
+                                return;
                             }
                         }
-
-                        CLog.Information($"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
-                        InstallationJobs.Add(headerJob);
                     }
+
+                    var removeFailureReason = headerJob.AddFilesToRemove(removeFilesSplit);
+                    if (removeFailureReason != null)
+                    {
+                        Log.Error($"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}");
+                        LoadFailedReason = $"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}";
+                        return;
+                    }
+
+                    //Altfiles: Mod Manager 4.2
+                    string altfilesStr = (ModDescTargetVersion >= 4.2 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString]["altfiles"] : null;
+                    if (!string.IsNullOrEmpty(altfilesStr))
+                    {
+                        var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
+                        if (splits.Count == 0)
+                        {
+                            Log.Error("Alternate files list was unable to be parsed, no items were returned from parenthesis parser.");
+                            LoadFailedReason = $"Specified altfiles descriptor for header {headerAsString} did not successfully parse. Text is not empty, but no values were returned.";
+                            return;
+                        }
+                        foreach (var split in splits)
+                        {
+                            AlternateFile af = new AlternateFile(split, this);
+                            if (af.ValidAlternate)
+                            {
+                                headerJob.AlternateFiles.Add(af);
+                            }
+                            else
+                            {
+                                //Error is logged in constructor of AlternateFile
+                                LoadFailedReason = af.LoadFailedReason;
+                                return;
+                            }
+                        }
+                    }
+
+                    CLog.Information($"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
+                    InstallationJobs.Add(headerJob);
                 }
             }
 
@@ -712,14 +717,33 @@ namespace MassEffectModManagerCore.modmanager
                 var requiredDlcsSplit = requiredDLCText.Split(';').ToList();
                 foreach (var reqDLC in requiredDlcsSplit)
                 {
-                    if (Game == Mod.MEGame.ME3)
+                    switch (Game)
                     {
-                        if (Enum.TryParse(reqDLC, out ModJob.JobHeader header) && ModJob.HeadersToDLCNamesMap.TryGetValue(header, out var foldername))
-                        {
-                            RequiredDLC.Add(foldername);
-                            continue;
-                        }
-                    } //Todo: Add support for ME1, ME2 human-readable headers. Maybe
+                        case MEGame.ME1:
+                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header1) && ModJob.ME3HeadersToDLCNamesMap.TryGetValue(header1, out var foldername1))
+                            {
+                                RequiredDLC.Add(foldername1);
+                                CLog.Information("Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
+                                continue;
+                            }
+                            break;
+                        case MEGame.ME2:
+                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header2) && ModJob.ME3HeadersToDLCNamesMap.TryGetValue(header2, out var foldername2))
+                            {
+                                RequiredDLC.Add(foldername2);
+                                CLog.Information("Adding DLC requirement to mod: " + foldername2, Settings.LogModStartup);
+                                continue;
+                            }
+                            break;
+                        case MEGame.ME3:
+                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header3) && ModJob.ME3HeadersToDLCNamesMap.TryGetValue(header3, out var foldername3))
+                            {
+                                RequiredDLC.Add(foldername3);
+                                CLog.Information("Adding DLC requirement to mod: " + foldername3, Settings.LogModStartup);
+                                continue;
+                            }
+                            break;
+                    }
 
                     if (!reqDLC.StartsWith("DLC_"))
                     {

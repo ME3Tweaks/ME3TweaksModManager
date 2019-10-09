@@ -91,22 +91,29 @@
             </TabItem>
 
             <TabItem Header="Modified basegame files">
-                <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding}"/>
-                                <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
+                    <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding}"/>
+                                    <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <ScrollViewer x:Name="ScrollViewer" Padding="2">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
                 </ItemsControl>
             </TabItem>
             <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">

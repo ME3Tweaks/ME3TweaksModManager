@@ -123,11 +123,11 @@ namespace MassEffectModManagerCore.modmanager
                     buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
-                else if (Game == MEGame.ME3 && ModJob.SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
+                else if (Game == MEGame.ME3 && ModJob.ME3SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
                 {
-                    #region Installation: DLC (Unpacked and SFAR) - ME3 ONLY
-                    Debug.WriteLine("Building ME3 queue for header: " + job.Header);
-                    string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
+                    #region Installation: DLC Unpacked and SFAR (ME3 ONLY)
+                    Debug.WriteLine("Building installation queue for header: " + job.Header);
+                    string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.ME3HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
 
 
                     if (File.Exists(sfarPath))
@@ -151,6 +151,15 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         Log.Warning($"SFAR doesn't exist {sfarPath}, skipping job: {job.Header}");
                     }
+                    #endregion
+                }
+                else if (Game == MEGame.ME2 || Game == MEGame.ME1)
+                {
+                    #region Installation: DLC Unpacked (ME1/ME2 ONLY)
+                    //Unpacked
+                    var installationMapping = new Dictionary<string, string>();
+                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
+                    buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
                 else
