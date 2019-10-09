@@ -69,6 +69,7 @@
                     <MenuItem Header="Options">
                         <MenuItem Header="Mod Manager" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Name="SetModLibraryPath_MenuItem" Header="Set mod library path" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}"/>
+                        <MenuItem Name="DeveloperMode_MenuItem" Header="Developer mode" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="Enable developer-oriented features" IsCheckable="True"/>
                         <MenuItem Header="Logging" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Name="LogModStartup_MenuItem" Header="Log Mod Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True"/>
                         <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True"/>

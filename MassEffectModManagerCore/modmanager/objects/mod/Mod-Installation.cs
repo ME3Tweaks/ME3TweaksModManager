@@ -14,7 +14,7 @@ namespace MassEffectModManagerCore.modmanager
 {
     public partial class Mod
     {
-        public (Dictionary<ModJob, Dictionary<string, string>>, List<(ModJob job, string sfarPath, Dictionary<string, string>)>) GetInstallationQueues(GameTarget gameTarget)
+        public (Dictionary<ModJob, (Dictionary<string, string> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, string>)>) GetInstallationQueues(GameTarget gameTarget)
         {
             if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
@@ -25,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager
                 customDLCMapping = new Dictionary<string, string>(customDLCMapping); //prevent altering the source object
             }
 
-            var unpackedJobInstallationMapping = new Dictionary<ModJob, Dictionary<string, string>>();
+            var unpackedJobInstallationMapping = new Dictionary<ModJob, (Dictionary<string, string> mapping, List<string> dlcFoldersBeingInstalled)>();
             var sfarInstallationJobs = new List<(ModJob job, string sfarPath, Dictionary<string, string> installationMapping)>();
             foreach (var job in InstallationJobs)
             {
@@ -36,7 +36,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: CustomDLC
                     var installationMapping = new Dictionary<string, string>();
-                    unpackedJobInstallationMapping[job] = installationMapping;
+                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     foreach (var altdlc in alternateDLC)
                     {
                         if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager
                         //get list of all normal files we will install
                         //var allSourceDirFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length)).ToList();
                         var allSourceDirFiles = FilesystemInterposer.DirectoryGetFiles(source, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
-
+                        unpackedJobInstallationMapping[job].dlcFoldersBeingInstalled.Add(target);
                         //loop over every file 
                         foreach (var sourceFile in allSourceDirFiles)
                         {
@@ -102,6 +102,10 @@ namespace MassEffectModManagerCore.modmanager
                                     installationMapping[destFile] = fileToAdd;
                                 }
                             }
+                            else
+                            {
+                                Debugger.Break();
+                            }
                         }
 
                         //Log.Information($"Copying CustomDLC to target: {source} -> {target}");
@@ -115,7 +119,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: BASEGAME
                     var installationMapping = new Dictionary<string, string>();
-                    unpackedJobInstallationMapping[job] = installationMapping;
+                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
@@ -132,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager
                         if (new FileInfo(sfarPath).Length == 32)
                         {
                             //Unpacked
-                            unpackedJobInstallationMapping[job] = installationMapping;
+                            unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                             buildInstallationQueue(job, installationMapping, false);
                         }
                         else

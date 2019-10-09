@@ -56,7 +56,12 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModInstallation, value);
         }
 
-        
+        private static bool _developerMode;
+        public static bool DeveloperMode
+        {
+            get => _developerMode;
+            set => SetProperty(ref _developerMode, value);
+        }
 
         private static string _modLibraryPath;
         public static string ModLibraryPath
@@ -79,6 +84,7 @@ namespace MassEffectModManagerCore.modmanager
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
             LogModInstallation = LoadSettingBool(settingsIni, "Logging", "LogModInstallation", false);
             ModLibraryPath = LoadSettingString(settingsIni, "ModLibrary", "LibraryPath", null);
+            DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             Loaded = true;
         }
@@ -146,6 +152,7 @@ namespace MassEffectModManagerCore.modmanager
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
             SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
+            SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
             SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);

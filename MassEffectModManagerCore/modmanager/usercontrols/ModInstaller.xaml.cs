@@ -124,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
             //Prepare queues
-            (Dictionary<ModJob, Dictionary<string, string>> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
+            (Dictionary<ModJob, (Dictionary<string, string> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
 
             if (gameTarget.ALOTInstalled)
             {
@@ -132,10 +132,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bool installsPackageFile = false;
                 foreach (var jobMappings in installationQueues.unpackedJobMappings)
                 {
-                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.Value.Keys.Any(x => x.EndsWith(".sfm", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(".sfm", StringComparison.InvariantCultureIgnoreCase));
                 }
 
                 foreach (var jobMappings in installationQueues.sfarJobs)
@@ -148,9 +148,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (installsPackageFile)
                 {
-                    //ALOT Installed, this is attempting to install a package file
-                    e.Result = INSTALL_FAILED_ALOT_BLOCKING;
-                    return;
+                    if (Settings.DeveloperMode)
+                    {
+                        Log.Warning("ALOT is installed and user is attemping to install a mod (in developer mode). Prompting user to cancel installation");
+
+                        bool cancel = false;
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {ModBeingInstalled.ModName}? You have been warned.", $"Broken textures warning", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                            cancel = res == MessageBoxResult.No;
+                        });
+                        if (cancel)
+                        {
+                            return;
+                        }
+                        Log.Warning("User installing mod anyways even with ALOT installed");
+                    }
+                    else
+                    {
+                        Log.Error("ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
+                        //ALOT Installed, this is attempting to install a package file
+                        e.Result = INSTALL_FAILED_ALOT_BLOCKING;
+                        return;
+                    }
                 }
             }
             Action = $"Installing";
@@ -159,10 +179,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             int numdone = 0;
 
-
-
             //Calculate number of installation tasks beforehand - we won't know SFAR cou
-            int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.Count).Sum();
+            int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
             numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * 2; //*2 as we have to extract and install
             Debug.WriteLine("Number of expected installation tasks: " + numFilesToInstall);
             void FileInstalledCallback()
@@ -181,12 +199,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Stage: Unpacked files build map
             Dictionary<string, string> fullPathMappingDisk = new Dictionary<string, string>();
             Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
+
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
                 //Todo: Implement unpacked copy queue
                 //CopyDir.CopyFiles_ProgressBar(unpackedQueue.)
 
-                foreach (var originalMapping in unpackedQueue.Value)
+                foreach (var originalMapping in unpackedQueue.Value.fileMapping)
                 {
                     //always unpacked
                     //if (unpackedQueue.Key == ModJob.JobHeader.CUSTOMDLC || unpackedQueue.Key == ModJob.JobHeader.BALANCE_CHANGES || unpackedQueue.Key == ModJob.JobHeader.BASEGAME)
@@ -266,6 +285,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Debug.WriteLine(numdone);
                 };
                 ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
+            }
+
+            //Write MetaCMM
+            List<string> addedDLCFolders = new List<string>();
+            foreach (var v in installationQueues.unpackedJobMappings)
+            {
+                addedDLCFolders.AddRange(v.Value.dlcFoldersBeingInstalled);
+            }
+            foreach (var addedDLCFolder in addedDLCFolders)
+            {
+                var metacmm = Path.Combine(addedDLCFolder, "_metacmm.txt");
+                string contents = $"{ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}"; //Todo: Assign guid. guid might not even be necessary here.
+                File.WriteAllText(metacmm, contents);
             }
 
             //Stage: SFAR Installation
