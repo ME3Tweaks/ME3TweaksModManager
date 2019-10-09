@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Serilog;
 using MassEffectModManager;
+using MassEffectModManagerCore.modmanager.helpers;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -84,7 +85,51 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 PopulateUI();
             }
             SelectedTarget.PopulateDLCMods(deleteConfirmationCallback, notifyDeleted);
-            SelectedTarget.PopulateModifiedBasegameFiles();
+
+            bool restoreBasegamefileConfirmationCallback(string filepath)
+            {
+                if (SelectedTarget.ALOTInstalled && filepath.RepresentsPackageFilePath())
+                {
+                    if (!Settings.DeveloperMode)
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring {Path.GetFileName(filepath)} while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore package files", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+                    else
+                    {
+                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring {Path.GetFileName(filepath)} while ALOT is installed will very likely introduce invalid texture pointers into the installation, which may cause black textures or game crashes due to empty mips. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        return res == MessageBoxResult.Yes;
+
+                    }
+                }
+                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore {Path.GetFileName(filepath)}?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+            }
+
+            bool restoreSfarConfirmationCallback(string sfarPath)
+            {
+                if (SelectedTarget.ALOTInstalled)
+                {
+                    if (!Settings.DeveloperMode)
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore SFAR files", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+                    else
+                    {
+                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        return res == MessageBoxResult.Yes;
+
+                    }
+                }
+                //Todo: warn of unpacked file deletion
+                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore {sfarPath}?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+            }
+
+            void notifyRestoredCallback()
+            {
+                PopulateUI();
+            }
+            SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback, restoreSfarConfirmationCallback, notifyRestoredCallback);
         }
 
         public class InstalledDLCMod : INotifyPropertyChanged

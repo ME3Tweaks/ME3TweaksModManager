@@ -79,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             else
             {
-                Log.Error("Alternate file in-mod target (ModFile) required but not specified not exist: " + AltFile);
+                Log.Error("Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files");
                 ValidAlternate = false;
                 LoadFailedReason = $"Alternate file {FriendlyName} does not declare ModFile but it is required for all Alternate Files.";
                 return;
@@ -89,7 +89,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 AltFile = altfile;
             }
-            else if (properties.TryGetValue("ModAltFile", out string maltfile))
+            else if (AltFile == null && properties.TryGetValue("ModAltFile", out string maltfile))
             {
                 AltFile = maltfile;
             }
@@ -120,7 +120,26 @@ namespace MassEffectModManagerCore.modmanager.objects
                     LoadFailedReason = $"Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}";
                     return;
                 }
+
+                //Ensure it is not part of  DLC directory itself.
+                var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
+                //Todo
             }
+            //Todo: Pass through job so we can lookup targets for add/replace files.
+            //else if (Operation == AltFileOperation.OP_NOINSTALL)
+            //{
+            //    //Validate noinstall file exists
+            //    var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
+            //    var modFileExists = FilesystemInterposer.FileExists(modFile, modForValidating.Archive);
+
+            //    if (!modFileExists)
+            //    {
+            //        Log.Error("Alternate file target (ModFile) to be operated on does not exist: " + ModFile);
+            //        ValidAlternate = false;
+            //        LoadFailedReason = $"Alternate file is specified with operation {Operation}, but targeted file doesn't exist: {ModFile}";
+            //        return;
+            //    }
+            //}
 
             CLog.Information($"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;

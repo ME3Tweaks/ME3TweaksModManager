@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Windows.Input;
 using System.Windows.Media;
 using MassEffectModManager;
 using MassEffectModManagerCore.GameDirectories;
@@ -163,10 +164,10 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public ObservableCollectionExtended<string> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<string>();
+        public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
         public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
 
-        public void PopulateModifiedBasegameFiles()
+        public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback, Func<string, bool> restoreSfarConfirmationCallback, Action notifyRestoredCallback)
         {
             ModifiedBasegameFiles.ClearEx();
             ModifiedSFARFiles.ClearEx();
@@ -175,10 +176,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                 //todo: Filter out SFARs?
                 if (file.EndsWith(".sfar"))
                 {
-                    ModifiedSFARFiles.Add(new SFARObject(file, this));
+                    ModifiedSFARFiles.Add(new SFARObject(file, this, restoreSfarConfirmationCallback));
                     return;
                 }
-                ModifiedBasegameFiles.Add(file.Substring(TargetPath.Length + 1));
+                ModifiedBasegameFiles.Add(new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this, restoreBasegamefileConfirmationCallback, notifyRestoredCallback));
             }
             VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
         }
@@ -256,8 +257,9 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public class SFARObject
         {
-            public SFARObject(string file, GameTarget target)
+            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback)
             {
+                RestoreConfirmationCallback = restoreSFARCallback;
                 FilePath = file.Substring(target.TargetPath.Length + 1);
                 if (Path.GetFileName(file) == "Patch_001.sfar")
                 {
@@ -270,8 +272,51 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
+            private Func<string, bool> RestoreConfirmationCallback;
+
             public string FilePath { get; }
             public string UIString { get; }
+        }
+
+        public class ModifiedFileObject
+        {
+            private bool canRestoreFile;
+            private bool checkedForBackupFile;
+            public string FilePath { get; }
+            private GameTarget gameTarget;
+            private Action notifyRestoredCallback;
+            private Func<string, bool> restoreBasegamefileConfirmationCallback;
+            public ICommand RestoreCommand { get; }
+
+            public ModifiedFileObject(string filePath, GameTarget gameTarget, Func<string, bool> restoreBasegamefileConfirmationCallback, Action notifyRestoredCallback)
+            {
+                this.FilePath = filePath;
+                this.gameTarget = gameTarget;
+                this.notifyRestoredCallback = notifyRestoredCallback;
+                this.restoreBasegamefileConfirmationCallback = restoreBasegamefileConfirmationCallback;
+                RestoreCommand = new GenericCommand(RestoreFile, CanRestoreFile);
+            }
+
+            private void RestoreFile()
+            {
+                bool? restore = restoreBasegamefileConfirmationCallback?.Invoke(FilePath);
+                if (restore.HasValue && restore.Value)
+                {
+                    //Todo: Background thread this maybe?
+                    var backupFile = Path.Combine(Utilities.GetGameBackupPath(gameTarget.Game), FilePath);
+                    var targetFile = Path.Combine(gameTarget.TargetPath, FilePath);
+                    File.Copy(backupFile, targetFile, true);
+                    notifyRestoredCallback?.Invoke();
+                }
+            }
+
+            private bool CanRestoreFile()
+            {
+                if (checkedForBackupFile) return canRestoreFile;
+                canRestoreFile = File.Exists(Path.Combine(Utilities.GetGameBackupPath(gameTarget.Game), FilePath));
+                checkedForBackupFile = true;
+                return canRestoreFile;
+            }
         }
     }
 }

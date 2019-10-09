@@ -103,7 +103,7 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding}"/>
-                                    <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0"/>
+                                    <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
