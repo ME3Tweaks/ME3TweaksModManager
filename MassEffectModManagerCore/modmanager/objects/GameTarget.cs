@@ -69,8 +69,6 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 GameSource = VanillaDatabaseService.GetGameSource(this);
             }
-
-
         }
 
         public bool Equals(GameTarget x, GameTarget y)
@@ -144,8 +142,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return null;
                 }
             }
-            // return null;
-            return new ALOTVersionInfo(9, 3, 0, 0); //MEMI tag but no info we know of
+            return null;
+            //Debug. Force ALOT always on
+            //return new ALOTVersionInfo(9, 0, 0, 0); //MEMI tag but no info we know of
 
         }
 
@@ -176,7 +175,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 //todo: Filter out SFARs?
                 if (file.EndsWith(".sfar"))
                 {
-                    ModifiedSFARFiles.Add(new SFARObject(file, this, restoreSfarConfirmationCallback));
+                    ModifiedSFARFiles.Add(new SFARObject(file, this, restoreSfarConfirmationCallback, notifyRestoredCallback));
                     return;
                 }
                 ModifiedBasegameFiles.Add(new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this, restoreBasegamefileConfirmationCallback, notifyRestoredCallback));
@@ -193,8 +192,6 @@ namespace MassEffectModManagerCore.modmanager.objects
             var installedMods = MEDirectories.GetInstalledDLC(this).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted)).ToList();
             InstalledDLCMods.AddRange(installedMods);
         }
-
-
 
         public string ALOTStatusString
         {
@@ -255,11 +252,13 @@ namespace MassEffectModManagerCore.modmanager.objects
             return null;
         }
 
-        public class SFARObject
+        public class SFARObject : INotifyPropertyChanged
         {
-            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback)
+            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action restoreCompletedCallback)
             {
                 RestoreConfirmationCallback = restoreSFARCallback;
+                this.restoreCompletedCallback = restoreCompletedCallback;
+                this.target = target;
                 FilePath = file.Substring(target.TargetPath.Length + 1);
                 if (Path.GetFileName(file) == "Patch_001.sfar")
                 {
@@ -270,9 +269,57 @@ namespace MassEffectModManagerCore.modmanager.objects
                     ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(Directory.GetParent(Directory.GetParent(file).FullName).FullName), out var name);
                     UIString = name;
                 }
+                RestoreCommand = new GenericCommand(RestoreSFAR, CanRestoreSFAR);
+            }
+
+            private void RestoreSFAR()
+            {
+                bool? restore = RestoreConfirmationCallback?.Invoke(FilePath);
+                if (restore.HasValue && restore.Value)
+                {
+                    //Todo: Background thread this maybe?
+                    NamedBackgroundWorker bw = new NamedBackgroundWorker("RestoreSFARThread");
+                    bw.DoWork += (a, b) =>
+                    {
+                        var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
+                        var targetFile = Path.Combine(target.TargetPath, FilePath);
+                        restoring = true;
+                        XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = $"Restoring {pce.ProgressPercentage}%"; });
+                    };
+                    bw.RunWorkerCompleted += (a, b) =>
+                    {
+                        //File.Copy(backupFile, targetFile, true);
+                        restoreCompletedCallback?.Invoke();
+                        restoring = false;
+                    };
+                    bw.RunWorkerAsync();
+                }
+            }
+
+            private bool checkedForBackupFile;
+            private bool canRestoreSfar;
+            private bool restoring;
+
+            private bool CanRestoreSFAR()
+            {
+                if (restoring) return false;
+                if (checkedForBackupFile) return canRestoreSfar;
+                var backupPath = Utilities.GetGameBackupPath(target.Game);
+                canRestoreSfar = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
+                checkedForBackupFile = true;
+                return canRestoreSfar;
             }
 
             private Func<string, bool> RestoreConfirmationCallback;
+
+            public string RestoreButtonContent { get; set; } = "Restore";
+
+            private Action restoreCompletedCallback;
+            private readonly GameTarget target;
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public ICommand RestoreCommand { get; }
 
             public string FilePath { get; }
             public string UIString { get; }
@@ -283,15 +330,15 @@ namespace MassEffectModManagerCore.modmanager.objects
             private bool canRestoreFile;
             private bool checkedForBackupFile;
             public string FilePath { get; }
-            private GameTarget gameTarget;
+            private GameTarget target;
             private Action notifyRestoredCallback;
             private Func<string, bool> restoreBasegamefileConfirmationCallback;
             public ICommand RestoreCommand { get; }
 
-            public ModifiedFileObject(string filePath, GameTarget gameTarget, Func<string, bool> restoreBasegamefileConfirmationCallback, Action notifyRestoredCallback)
+            public ModifiedFileObject(string filePath, GameTarget target, Func<string, bool> restoreBasegamefileConfirmationCallback, Action notifyRestoredCallback)
             {
                 this.FilePath = filePath;
-                this.gameTarget = gameTarget;
+                this.target = target;
                 this.notifyRestoredCallback = notifyRestoredCallback;
                 this.restoreBasegamefileConfirmationCallback = restoreBasegamefileConfirmationCallback;
                 RestoreCommand = new GenericCommand(RestoreFile, CanRestoreFile);
@@ -303,8 +350,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (restore.HasValue && restore.Value)
                 {
                     //Todo: Background thread this maybe?
-                    var backupFile = Path.Combine(Utilities.GetGameBackupPath(gameTarget.Game), FilePath);
-                    var targetFile = Path.Combine(gameTarget.TargetPath, FilePath);
+                    var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
+                    var targetFile = Path.Combine(target.TargetPath, FilePath);
                     File.Copy(backupFile, targetFile, true);
                     notifyRestoredCallback?.Invoke();
                 }
@@ -313,7 +360,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             private bool CanRestoreFile()
             {
                 if (checkedForBackupFile) return canRestoreFile;
-                canRestoreFile = File.Exists(Path.Combine(Utilities.GetGameBackupPath(gameTarget.Game), FilePath));
+                var backupPath = Utilities.GetGameBackupPath(target.Game);
+                canRestoreFile = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
                 checkedForBackupFile = true;
                 return canRestoreFile;
             }

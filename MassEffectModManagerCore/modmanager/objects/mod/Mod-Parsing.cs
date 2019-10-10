@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager
 
         //private List<ModJob> jobs;
 
-
+        public Dictionary<string, string> HumanReadableCustomDLCNames = new Dictionary<string, string>();
         public MEGame Game { get; set; }
         public string ModName { get; set; }
         public string ModDeveloper { get; set; }
@@ -608,7 +608,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    
+
 
                     //Altfiles: Mod Manager 4.2
                     string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData["CUSTOMDLC"]["altfiles"] : null;
@@ -655,6 +655,9 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
                     }
+
+                    //Custom DLC names: Mod Manager 6 (but can be part of any spec as it's only cosmetic)
+                    HumanReadableCustomDLCNames = iniData["CUSTOMDLC"].Where(x => x.KeyName.StartsWith("DLC_")).ToDictionary(mc => mc.KeyName, mc => mc.Value);
 
                     CLog.Information($"Successfully made mod job for CUSTOMDLC", Settings.LogModStartup);
                     InstallationJobs.Add(customDLCjob);

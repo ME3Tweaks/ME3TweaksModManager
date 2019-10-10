@@ -28,6 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public string ALOTStatusString { get; set; }
         public GameTarget SelectedTarget { get; set; }
+        public string BackupLocationString { get; set; }
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<InstalledDLCMod> DLCModsInstalled { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
         public InstallationInformation(List<GameTarget> targetsList, GameTarget selectedTarget)
@@ -62,10 +63,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 SelectedTarget = e.AddedItems[0] as GameTarget;
                 PopulateUI();
+                var backupLoc = Utilities.GetGameBackupPath(SelectedTarget.Game);
+                if (backupLoc != null)
+                {
+                    BackupLocationString = "Backup at " + backupLoc;
+                }
+                else
+                {
+                    BackupLocationString = "No backup for this game";
+                }
             }
             else
             {
                 SelectedTarget = null;
+                BackupLocationString = null;
             }
         }
 

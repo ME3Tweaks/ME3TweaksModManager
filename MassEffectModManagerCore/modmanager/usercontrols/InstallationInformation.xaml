@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              MinWidth="550"
              MaxHeight="500"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="550" d:DesignWidth="800">
     <UserControl.Resources>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
@@ -131,7 +131,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding UIString}"/>
                                 <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" Foreground="Gray" Text="{Binding FilePath}"/>
-                                <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="Restore" HorizontalAlignment="Right" Padding ="3,0"/>
+                                <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{Binding RestoreButtonContent}" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -142,9 +142,13 @@
 
         <DockPanel>
             <Image Source="/modmanager/toolicons/alot_big.png" DockPanel.Dock="Left" Width="32" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
-            <Button DockPanel.Dock="Right" Content="Close" Padding="4" Margin="3,0,0,0" VerticalAlignment="Bottom" Click="Close_Click" HorizontalAlignment="Right"/>
-            <Button DockPanel.Dock="Right" Content="Open in Explorer" Padding="4" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right"/>
-
+            <DockPanel Dock="Right" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+                    <Button Content="Open in Explorer" Padding="4" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right"/>
+                    <Button  Content="Close" Padding="4" Margin="3,0,0,0" VerticalAlignment="Bottom" Click="Close_Click" HorizontalAlignment="Right"/>
+                </StackPanel>
+                <TextBlock Text="{Binding BackupLocationString}" DockPanel.Dock="Top" HorizontalAlignment="Right" TextAlignment="Right" Foreground="Gray" VerticalAlignment="Center"/>
+            </DockPanel>
             <StackPanel Margin="5">
                 <TextBlock Text="{Binding SelectedTarget.ALOTStatusString}"/>
                 <TextBlock ToolTip="Click to open ALOT Installer">
