@@ -541,68 +541,74 @@ namespace MassEffectModManagerCore.modmanager
             {
                 var customDLCSourceDirsStr = iniData["CUSTOMDLC"]["sourcedirs"];
                 var customDLCDestDirsStr = iniData["CUSTOMDLC"]["destdirs"];
+                //ALT DLC: Mod Manager 4.4
+                //This behavior changed in Mod Manager 6 to allow no sourcedirs/destdirs if a custom dlc will only be added on a condition
+                string altdlcstr = (ModDescTargetVersion >= 4.4) ? iniData["CUSTOMDLC"]["altdlc"] : null;
 
-                if (customDLCSourceDirsStr != null && customDLCDestDirsStr != null)
+
+                if ((customDLCSourceDirsStr != null && customDLCDestDirsStr != null) || !string.IsNullOrEmpty(altdlcstr))
                 {
                     CLog.Information("Found CUSTOMDLC header", Settings.LogModStartup);
-
-                    var customDLCSourceSplit = customDLCSourceDirsStr.Split(';').ToList();
-                    var customDLCDestSplit = customDLCDestDirsStr.Split(';').ToList();
-
-                    //Verify lists are the same length
-                    if (customDLCSourceSplit.Count != customDLCDestSplit.Count)
-                    {
-                        //Mismatched source and target lists
-                        Log.Error($"Mod has job header (CUSTOMDLC) that has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.");
-                        LoadFailedReason = $"Job header (CUSTOMDLC) has mismatched newfiles and replacefiles descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.";
-                        return;
-                    }
-
-                    //Security check for ..
-                    if (customDLCSourceSplit.Any(x => x.Contains("..")) || customDLCDestSplit.Any(x => x.Contains("..")))
-                    {
-                        //Security violation: Cannot use .. in filepath
-                        Log.Error($"CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.");
-                        LoadFailedReason = $"CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.";
-                        return;
-                    }
-
-                    //Verify folders exists
-                    foreach (var f in customDLCSourceSplit)
-                    {
-                        if (!FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, f), Archive))
-                        {
-                            Log.Error($"Mod has job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}");
-                            LoadFailedReason = $"Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}";
-                            return;
-                        }
-
-
-                    }
-
-                    //Security check: Protected folders
-                    foreach (var f in customDLCDestSplit)
-                    {
-                        if (Utilities.IsProtectedDLCFolder(f, Game))
-                        {
-                            Log.Error($"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}");
-                            LoadFailedReason = $"Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}. Custom DLC cannot be installed to a folder named the same as an official DLC or metadata directory.";
-                            return;
-                        }
-
-                        if (!f.StartsWith("DLC_"))
-                        {
-                            Log.Error($"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.");
-                            LoadFailedReason = $"Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.";
-                            return;
-                        }
-                    }
-
                     ModJob customDLCjob = new ModJob(ModJob.JobHeader.CUSTOMDLC, this);
-                    for (int i = 0; i < customDLCSourceSplit.Count; i++)
+
+                    if (customDLCSourceDirsStr != null && customDLCDestDirsStr != null)
                     {
-                        customDLCjob.CustomDLCFolderMapping[customDLCSourceSplit[i]] = customDLCDestSplit[i];
+                        var customDLCSourceSplit = customDLCSourceDirsStr.Split(';').ToList();
+                        var customDLCDestSplit = customDLCDestDirsStr.Split(';').ToList();
+
+                        //Verify lists are the same length
+                        if (customDLCSourceSplit.Count != customDLCDestSplit.Count)
+                        {
+                            //Mismatched source and target lists
+                            Log.Error($"Mod has job header (CUSTOMDLC) that has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.");
+                            LoadFailedReason = $"Job header (CUSTOMDLC) has mismatched newfiles and replacefiles descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.";
+                            return;
+                        }
+
+                        //Security check for ..
+                        if (customDLCSourceSplit.Any(x => x.Contains("..")) || customDLCDestSplit.Any(x => x.Contains("..")))
+                        {
+                            //Security violation: Cannot use .. in filepath
+                            Log.Error($"CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.");
+                            LoadFailedReason = $"CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.";
+                            return;
+                        }
+
+                        //Verify folders exists
+                        foreach (var f in customDLCSourceSplit)
+                        {
+                            if (!FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, f), Archive))
+                            {
+                                Log.Error($"Mod has job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}");
+                                LoadFailedReason = $"Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}";
+                                return;
+                            }
+                        }
+
+                        //Security check: Protected folders
+                        foreach (var f in customDLCDestSplit)
+                        {
+                            if (Utilities.IsProtectedDLCFolder(f, Game))
+                            {
+                                Log.Error($"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}");
+                                LoadFailedReason = $"Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}. Custom DLC cannot be installed to a folder named the same as an official DLC or metadata directory.";
+                                return;
+                            }
+
+                            if (!f.StartsWith("DLC_"))
+                            {
+                                Log.Error($"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.");
+                                LoadFailedReason = $"Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.";
+                                return;
+                            }
+                        }
+                        for (int i = 0; i < customDLCSourceSplit.Count; i++)
+                        {
+                            customDLCjob.CustomDLCFolderMapping[customDLCSourceSplit[i]] = customDLCDestSplit[i];
+                        }
                     }
+
+                    
 
                     //Altfiles: Mod Manager 4.2
                     string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData["CUSTOMDLC"]["altfiles"] : null;
@@ -631,7 +637,6 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
                     //AltDLC: Mod Manager 4.4
-                    string altdlcstr = (ModDescTargetVersion >= 4.4) ? iniData["CUSTOMDLC"]["altdlc"] : null;
                     if (!string.IsNullOrEmpty(altdlcstr))
                     {
                         var splits = StringStructParser.GetParenthesisSplitValues(altdlcstr);

@@ -46,6 +46,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private const int INSTALL_SUCCESSFUL = 1;
         private const int INSTALL_FAILED_USER_CANCELED_MISSING_MODULES = 2;
         private const int INSTALL_FAILED_ALOT_BLOCKING = 3;
+        private const int USER_CANCELED_INSTALLATION = 4;
 
         public string Action { get; set; }
         public int Percent { get; set; }
@@ -160,6 +161,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         });
                         if (cancel)
                         {
+                            e.Result = USER_CANCELED_INSTALLATION;
                             return;
                         }
                         Log.Warning("User installing mod anyways even with ALOT installed");

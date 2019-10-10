@@ -235,5 +235,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             OnClosing(new DataEventArgs());
         }
+
+        private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.OpenExplorer(SelectedTarget.TargetPath);
+        }
     }
 }

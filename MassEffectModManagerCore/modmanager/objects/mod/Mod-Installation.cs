@@ -102,10 +102,6 @@ namespace MassEffectModManagerCore.modmanager
                                     installationMapping[destFile] = fileToAdd;
                                 }
                             }
-                            else
-                            {
-                                Debugger.Break();
-                            }
                         }
 
                         //Log.Information($"Copying CustomDLC to target: {source} -> {target}");

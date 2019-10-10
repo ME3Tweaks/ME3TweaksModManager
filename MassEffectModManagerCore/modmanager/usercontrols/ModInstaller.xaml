@@ -9,7 +9,7 @@
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
              mc:Ignorable="d" 
-             Height="Auto" MinHeight="200" MinWidth="300" MaxWidth="480">
+             Height="Auto" MinWidth="300" MaxWidth="480">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>

@@ -102,7 +102,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}"/>
                                     <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
                                 </Grid>
                             </DataTemplate>
@@ -142,7 +142,8 @@
 
         <DockPanel>
             <Image Source="/modmanager/toolicons/alot_big.png" DockPanel.Dock="Left" Width="32" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
-            <Button DockPanel.Dock="Right" Content="Close" Padding="4" VerticalAlignment="Bottom" Click="Close_Click"/>
+            <Button DockPanel.Dock="Right" Content="Close" Padding="4" Margin="3,0,0,0" VerticalAlignment="Bottom" Click="Close_Click" HorizontalAlignment="Right"/>
+            <Button DockPanel.Dock="Right" Content="Open in Explorer" Padding="4" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right"/>
 
             <StackPanel Margin="5">
                 <TextBlock Text="{Binding SelectedTarget.ALOTStatusString}"/>
