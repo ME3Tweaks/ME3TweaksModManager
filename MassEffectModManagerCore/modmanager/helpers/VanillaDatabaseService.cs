@@ -132,7 +132,14 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (vanillaDB.TryGetValue(shortname, out var fileInfo))
                 {
                     var localFileInfo = new FileInfo(file);
-                    if (fileInfo.Any(x => x.size == localFileInfo.Length)) continue; //OK
+                    bool sfar = Path.GetExtension(file) == ".sfar";
+                    bool correctSize = fileInfo.Any(x => x.size == localFileInfo.Length);
+                    if (correctSize && !sfar) continue; //OK
+                    if (sfar && correctSize)
+                    {
+                        //Inconsistency check
+                        if (!GameTarget.SFARObject.HasUnpackedFiles(file)) continue; //Consistent
+                    }
                     failedValidationCallback?.Invoke(file);
                     isValid = false;
                 }

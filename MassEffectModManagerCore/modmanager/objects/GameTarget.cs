@@ -259,6 +259,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 RestoreConfirmationCallback = restoreSFARCallback;
                 this.restoreCompletedCallback = restoreCompletedCallback;
                 this.target = target;
+                Unpacked = new FileInfo(file).Length == 32;
+                DLCDirectory = Directory.GetParent(Directory.GetParent(file).FullName).FullName;
                 FilePath = file.Substring(target.TargetPath.Length + 1);
                 if (Path.GetFileName(file) == "Patch_001.sfar")
                 {
@@ -268,6 +270,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(Directory.GetParent(Directory.GetParent(file).FullName).FullName), out var name);
                     UIString = name;
+                    if (Unpacked)
+                    {
+                        UIString += " - Unpacked";
+                    }
+                    var unpackedFiles = Directory.GetFiles(DLCDirectory, "*", SearchOption.AllDirectories);
+                    if (unpackedFiles.Any(x => Path.GetExtension(x) == ".bin") && !Unpacked) Inconsistent = true;
                 }
                 RestoreCommand = new GenericCommand(RestoreSFAR, CanRestoreSFAR);
             }
@@ -284,7 +292,19 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
                         restoring = true;
+                        Log.Information("Restoring SFAR from backup: " + backupFile + " => " + targetFile);
                         XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = $"Restoring {pce.ProgressPercentage}%"; });
+                        var unpackedFiles = Directory.GetFiles(DLCDirectory, "*", SearchOption.AllDirectories);
+                        RestoreButtonContent = $"Cleaning up";
+                        foreach (var file in unpackedFiles)
+                        {
+                            if (!file.EndsWith(".sfar"))
+                            {
+                                Log.Information("Deleting unpacked file: " + file);
+                                File.Delete(file);
+                            }
+                        }
+                        Utilities.DeleteEmptySubdirectories(DLCDirectory);
                     };
                     bw.RunWorkerCompleted += (a, b) =>
                     {
@@ -296,6 +316,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
+
+            public static bool HasUnpackedFiles(string sfarFile)
+            {
+                var unpackedFiles = Directory.GetFiles(Directory.GetParent(Directory.GetParent(sfarFile).FullName).FullName, "*", SearchOption.AllDirectories);
+                return (unpackedFiles.Any(x => Path.GetExtension(x) == ".bin"));
+            }
             private bool checkedForBackupFile;
             private bool canRestoreSfar;
             private bool restoring;
@@ -316,6 +342,9 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             private Action restoreCompletedCallback;
             private readonly GameTarget target;
+            private readonly bool Unpacked;
+
+            public string DLCDirectory { get; }
 
             public event PropertyChangedEventHandler PropertyChanged;
 
@@ -323,6 +352,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public string FilePath { get; }
             public string UIString { get; }
+            public bool Inconsistent { get; }
         }
 
         public class ModifiedFileObject

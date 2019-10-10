@@ -91,22 +91,22 @@
             </TabItem>
 
             <TabItem Header="Modified basegame files">
-                    <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}"/>
-                                    <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+                <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
                     <ItemsControl.Template>
                         <ControlTemplate>
                             <ScrollViewer x:Name="ScrollViewer" Padding="2">
@@ -129,12 +129,22 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding UIString}"/>
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" >
+                                    <TextBlock FontSize="12" Text="{Binding UIString}"/>
+                                    <TextBlock Margin="5,0" FontWeight="Bold" Text="Inconsistency detected" FontSize="12" Foreground="Red" Visibility="{Binding Inconsistent, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </StackPanel>
                                 <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" Foreground="Gray" Text="{Binding FilePath}"/>
                                 <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{Binding RestoreButtonContent}" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <ScrollViewer x:Name="ScrollViewer" Padding="2">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
                 </ItemsControl>
             </TabItem>
         </TabControl>
@@ -143,7 +153,7 @@
         <DockPanel>
             <Image Source="/modmanager/toolicons/alot_big.png" DockPanel.Dock="Left" Width="32" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
             <DockPanel Dock="Right" HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
                     <Button Content="Open in Explorer" Padding="4" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right"/>
                     <Button  Content="Close" Padding="4" Margin="3,0,0,0" VerticalAlignment="Bottom" Click="Close_Click" HorizontalAlignment="Right"/>
                 </StackPanel>
