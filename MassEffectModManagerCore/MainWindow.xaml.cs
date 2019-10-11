@@ -158,6 +158,7 @@ namespace MassEffectModManager
         public ICommand StartGameCommand { get; set; }
         public ICommand ShowinstallationInformationCommand { get; set; }
         public ICommand BackupCommand { get; set; }
+        public ICommand DeployModCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -170,6 +171,30 @@ namespace MassEffectModManager
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
             ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
             BackupCommand = new GenericCommand(ShowBackupPane, CanShowBackupPane);
+            DeployModCommand = new GenericCommand(ShowDeploymentPane, CanShowDeploymentPane);
+        }
+
+        private void ShowDeploymentPane()
+        {
+            var archiveDeploymentPane = new ArchiveDeployment(SelectedMod, this);
+            archiveDeploymentPane.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is string result)
+                {
+                    if (result == "ALOTInstaller")
+                    {
+                        LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
+                    }
+                }
+            };
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+            ShowBusyControl(archiveDeploymentPane); //Todo: Support the progress bar updates in the queue
+        }
+
+        private bool CanShowDeploymentPane()
+        {
+            return SelectedMod != null && Settings.DeveloperMode;
         }
 
         private bool CanShowBackupPane()
@@ -986,7 +1011,7 @@ namespace MassEffectModManager
         /// Updates the progressbar that the user controls use
         /// </summary>
         /// <param name="update"></param>
-        private void UpdateBusyProgressBarCallback(ProgressBarUpdate update)
+        internal void UpdateBusyProgressBarCallback(ProgressBarUpdate update)
         {
             switch (update.UpdateType)
             {

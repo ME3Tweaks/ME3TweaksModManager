@@ -109,7 +109,7 @@
                     <MenuItem Header="Install custom keybinds into this mod"/>
                     <MenuItem Header="Developer options">
                         <MenuItem Header="Metadata editor"/>
-                        <MenuItem Header="Deploy mod to 7z file for distribution"/>
+                        <MenuItem Header="Deploy mod to 7z file for distribution" Command="{Binding DeployModCommand}"/>
                         <MenuItem Header="Prepare for updater service"/>
                         <MenuItem Header="Mount.dlc files"/>
                     </MenuItem>

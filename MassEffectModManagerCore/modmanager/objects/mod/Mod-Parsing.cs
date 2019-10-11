@@ -100,8 +100,8 @@ namespace MassEffectModManagerCore.modmanager
         public int ModClassicUpdateCode { get; set; }
         public string LoadFailedReason { get; set; }
         public List<string> RequiredDLC = new List<string>();
-        private List<string> AdditionalDeploymentFolders;
-        private List<string> AdditionalDeploymentFiles;
+        private List<string> AdditionalDeploymentFolders = new List<string>();
+        private List<string> AdditionalDeploymentFiles = new List<string>();
         private bool emptyModIsOK;
 
         public string ModPath { get; private set; }
