@@ -91,7 +91,8 @@
             </TabItem>
 
             <TabItem Header="Modified basegame files">
-                <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+                              AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,1">
@@ -114,6 +115,11 @@
                             </ScrollViewer>
                         </ControlTemplate>
                     </ItemsControl.Template>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </TabItem>
             <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">

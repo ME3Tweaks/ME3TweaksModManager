@@ -172,7 +172,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var metaFile = Path.Combine(dlcFolderPath, "_metacmm.txt");
                 if (File.Exists(metaFile))
                 {
-                    InstalledBy = "Installed by Mod Manager";
+                    InstalledBy = "Installed by Mod Manager"; //Default value when finding metacmm.
                     //Parse MetaCMM
                     var lines = File.ReadAllLines(metaFile).ToList();
                     int i = 0;
@@ -193,6 +193,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 break;
                             case 2:
                                 InstallerInstanceBuild = line;
+                                if (int.TryParse(InstallerInstanceBuild, out var mmver))
+                                {
+                                    InstalledBy = "Installed by Mod Manager";
+                                }
+                                else
+                                {
+                                    InstalledBy = "Installed by " + InstallerInstanceBuild;
+                                }
                                 break;
                             case 3:
                                 InstallerInstanceGUID = line;

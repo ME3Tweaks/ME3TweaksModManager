@@ -1,3 +1,5 @@
+using SevenZip.EventArguments;
+
 namespace SevenZip
 {
     using System;
@@ -692,6 +694,7 @@ namespace SevenZip
         {
             auc.FileCompressionStarted += FileCompressionStartedEventProxy;
             auc.Compressing += CompressingEventProxy;
+            auc.Progressing += ProgressingEventProxy;
             auc.FileCompressionFinished += FileCompressionFinishedEventProxy;
             auc.DefaultItemName = DefaultItemName;
             auc.FastCompression = FastCompression;
@@ -974,6 +977,12 @@ namespace SevenZip
         public event EventHandler<ProgressEventArgs> Compressing;
 
         /// <summary>
+        /// Occurs when the 7z library indicates work has been done
+        /// </summary>
+        /// <remarks>Use this event for your own handling of progress. (TEST REMARK: THIS SEEMS MORE ACCURATE THAN COMPRESSING)</remarks>
+        public event EventHandler<DetailedProgressEventArgs> Progressing;
+
+        /// <summary>
         /// Occurs when all files information was determined and SevenZipCompressor is about to start to compress them.
         /// </summary>
         /// <remarks>The incoming int value indicates the number of scanned files.</remarks>
@@ -1014,6 +1023,16 @@ namespace SevenZip
         private void CompressingEventProxy(object sender, ProgressEventArgs e)
         {
             OnEvent(Compressing, e, false);
+        }
+
+        /// <summary>
+        /// Event proxy for Progressing.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event arguments.</param>
+        private void ProgressingEventProxy(object sender, DetailedProgressEventArgs e)
+        {
+            OnEvent(Progressing, e, false);
         }
 
         /// <summary>

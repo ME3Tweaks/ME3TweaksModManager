@@ -58,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ScanningFile = Path.GetFileName(filepath);
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ModArchiveInspector");
             bw.DoWork += InspectArchiveBackgroundThread;
-            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0ul));
             progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
             progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Visible));
 
@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     ActionText = "No compatible mods found in archive";
                 }
-                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
+                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0ul));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, false));
                 TaskRunning = false;
                 CommandManager.InvalidateRequerySuggested();
@@ -324,7 +324,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Todo: Extract files
                 Log.Information("Extracting mod: " + mod.ModName);
                 ActionText = $"Extracting {mod.ModName}";
-                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0));
+                progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, 0ul));
                 progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
                 //Ensure directory
                 var modDirectory = Utilities.GetModDirectoryForGame(mod.Game);
@@ -347,7 +347,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ExtractionProgressCallback(ProgressEventArgs args)
         {
             progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_MAX, 100));
-            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, (int)args.PercentDone));
+            progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, args.PercentDone));
             progressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, false));
 
         }

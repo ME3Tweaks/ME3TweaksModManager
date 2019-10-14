@@ -55,12 +55,14 @@ namespace MassEffectModManagerCore
             //API keys are not stored in the git repository for Mod Manager.
             //You will need to provide your own keys for use by defining public properties
             //in a partial APIKeys class.
+#if !DEBUG
             var props = typeof(APIKeys).GetProperties();
             if (APIKeys.HasAppCenterKey)
             {
                 AppCenter.Start(APIKeys.AppCenterKey,
                                    typeof(Analytics), typeof(Crashes));
             }
+#endif
         }
 
         public App() : base()

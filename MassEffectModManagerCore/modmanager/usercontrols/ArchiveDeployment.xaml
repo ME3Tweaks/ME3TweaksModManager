@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
@@ -12,13 +13,32 @@
         <TextBlock Text="{Binding ModBeingDeployed.ParsedModVersion, StringFormat='Version {0}'}" HorizontalAlignment="Center"/>
 
         <TextBlock Text="Deployment Checklist" FontSize="14" FontWeight="Bold"/>
-        <TextBlock Text="Set correct mod version?"/>
-        <TextBlock Text="Set the modsite URL?"/>
-        <TextBlock Text="Ensured description accuracy?"/>
-        <TextBlock Text="Compacted TFCs with TFC Compactor in ME3Explorer?"/>
-        <TextBlock Text="Compacted AFCs with AFC Compactor in ME3Explorer?"/>
-
-        <Button Content="Deploy" Command="{Binding DeployCommand}"/>
-        <Button Content="Close" Click="Close_Clicked"/>
+        <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+                      AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Margin="2" ToolTip="{Binding ToolTip}">
+                        <fa:ImageAwesome Icon="{Binding Icon}" Foreground="{Binding Foreground}" Spin="{Binding Spinning}" SpinDuration="1.2" Width="16"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding ItemText}" Margin="5,0" VerticalAlignment="Center"/>
+                        <!--<Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>-->
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <ScrollViewer x:Name="ScrollViewer" Padding="2">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        <ProgressBar Height="16" IsIndeterminate="True"/>
+        <Button Content="Deploy" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="4"/>
+        <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="4"/>
     </StackPanel>
 </UserControl>

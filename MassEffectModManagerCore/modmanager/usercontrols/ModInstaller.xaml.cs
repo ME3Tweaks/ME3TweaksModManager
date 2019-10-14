@@ -299,7 +299,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var metacmm = Path.Combine(addedDLCFolder, "_metacmm.txt");
                 ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
-                string contents = $"{assignedDLCName ?? ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}"; //Todo: Assign guid. guid might not even be necessary here.
+                string contents = $"{assignedDLCName ?? ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}";
                 File.WriteAllText(metacmm, contents);
             }
 

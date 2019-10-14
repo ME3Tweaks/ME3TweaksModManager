@@ -8,6 +8,8 @@ using Gammtek.Conduit.IO;
 using MassEffectModManager;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.objects;
+using ME3Explorer.Unreal;
+using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -49,11 +51,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
 
             //Decompress
-            byte[] decompressedBuffer = new byte[stream.ReadInt32()];
-            var compressedSize = stream.Length - stream.Position;
-            byte[] compressedBuffer = stream.ReadToBuffer(compressedSize);
-            var bytesCompressed = ZlibHelper.Zlib.Decompress(compressedBuffer, (uint)compressedBuffer.Length, decompressedBuffer);
-            if (bytesCompressed != decompressedBuffer.Length)
+            var decompressedSize = stream.ReadInt32();
+            //var compressedSize = stream.Length - stream.Position;
+
+            var compressedBuffer = stream.ReadToBuffer(stream.Length - stream.Position);
+            var decompressedBuffer = SevenZipHelper.LZMA.Decompress(compressedBuffer, (uint)decompressedSize);
+            if (decompressedBuffer.Length != decompressedSize)
             {
                 throw new Exception("Vanilla database failed to decompress");
             }
@@ -67,7 +70,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             for (int i = 0; i < numEntries; i++)
             {
                 //Read entry
-                packageNames.Add(table.ReadStringASCIINull());
+                packageNames.Add(table.ReadStringASCIINull().Replace('/', '\\'));
             }
 
             numEntries = table.ReadInt32(); //Not sure how this could be different from names list?
@@ -104,6 +107,24 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
         }
 
+        private readonly static string[] BasegameTFCs = { "CharTextures", "Movies", "Textures", "Lighting" };
+        internal static bool IsBasegameTFCName(string tfcName, Mod.MEGame game)
+        {
+            if (BasegameTFCs.Contains(tfcName)) return true;
+            //Might be DLC.
+            var dlcs = MEDirectories.OfficialDLC(game);
+            foreach (var dlc in dlcs)
+            {
+                string dlcTfcName = "Textures_" + dlc;
+                if (dlcTfcName == tfcName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback)
         {
             bool isValid = true;
@@ -111,15 +132,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
             switch (target.Game)
             {
                 case Mod.MEGame.ME1:
-                    if (ME1VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME1); //Have tofigure out how to load PL
+                    if (ME1VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME1, target.IsPolishME1);
                     vanillaDB = ME1VanillaDatabase;
                     break;
                 case Mod.MEGame.ME2:
-                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME2); 
+                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME2);
                     vanillaDB = ME2VanillaDatabase;
                     break;
                 case Mod.MEGame.ME3:
-                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME3); 
+                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME3);
                     vanillaDB = ME3VanillaDatabase;
                     break;
                 default:

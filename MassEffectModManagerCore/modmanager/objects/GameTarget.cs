@@ -31,6 +31,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool RegistryActive { get; set; }
         public string GameSource { get; }
         public bool Supported => GameSource != null;
+        public bool IsPolishME1 { get; }
         public Brush BackgroundColor
         {
             get
@@ -68,6 +69,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                     ALOTVersion = alotInfo.ToString();
                 }
                 GameSource = VanillaDatabaseService.GetGameSource(this);
+
+                IsPolishME1 = game == Mod.MEGame.ME1 && File.Exists(Path.Combine(target, "BioGame", "CookedPC", "Movies", "niebieska_pl.bik"));
             }
         }
 

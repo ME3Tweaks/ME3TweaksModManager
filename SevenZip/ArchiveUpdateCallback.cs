@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using SevenZip.EventArguments;
+
 namespace SevenZip
 {
     using System;
@@ -73,7 +76,7 @@ namespace SevenZip
         /// <summary>
         /// Gets or sets the value indicating whether to compress as fast as possible, without calling events.
         /// </summary>
-        public bool FastCompression { private get; set; } 
+        public bool FastCompression { private get; set; }
 
         private int _memoryPressure;
 
@@ -183,7 +186,7 @@ namespace SevenZip
             }
             _updateData = updateData;
             _directoryStructure = directoryStructure;
-            DefaultItemName = "default";            
+            DefaultItemName = "default";
         }
 
         private void Init(
@@ -282,7 +285,7 @@ namespace SevenZip
                     _fileStream.BytesRead += IntEventArgsHandler;
                 }
                 _doneRate += 1.0f / _actualFilesCount;
-                var fiea = new FileNameEventArgs(_files != null? _files[index].Name : _entries[index],
+                var fiea = new FileNameEventArgs(_files != null ? _files[index].Name : _entries[index],
                                                  PercentDoneEventArgs.ProducePercentDone(_doneRate));
                 OnFileCompression(fiea);
                 if (fiea.Cancel)
@@ -308,6 +311,12 @@ namespace SevenZip
         public event EventHandler<ProgressEventArgs> Compressing;
 
         /// <summary>
+        /// Occurs when 7z library has made progress on an operation
+        /// </summary>
+        public event EventHandler<DetailedProgressEventArgs> Progressing;
+
+
+        /// <summary>
         /// Occurs when the current file was compressed.
         /// </summary>
         public event EventHandler FileCompressionFinished;
@@ -328,6 +337,14 @@ namespace SevenZip
             }
         }
 
+        public void OnProgressing(DetailedProgressEventArgs e)
+        {
+            if (Progressing != null)
+            {
+                Progressing(this, e);
+            }
+        }
+
         private void OnFileCompressionFinished(EventArgs e)
         {
             if (FileCompressionFinished != null)
@@ -340,9 +357,18 @@ namespace SevenZip
 
         #region IArchiveUpdateCallback Members
 
-        public void SetTotal(ulong total) {}
+        private ulong _total;
+        public void SetTotal(ulong total)
+        {
+            _total = total;
+            Debug.WriteLine("TOTAL: " + total);
+        }
 
-        public void SetCompleted(ref ulong completeValue) {}
+        public void SetCompleted(ref ulong completeValue)
+        {
+            //Debug.WriteLine("SetCompleted: " + completeValue);
+            OnProgressing(new DetailedProgressEventArgs(completeValue, _total));
+        }
 
         public int GetUpdateItemInfo(uint index, ref int newData, ref int newProperties, ref uint indexInArchive)
         {
@@ -442,7 +468,7 @@ namespace SevenZip
                         }
                         else
                         {
-                            val = _updateData.FileNamesToModify[(int) index];
+                            val = _updateData.FileNamesToModify[(int)index];
                         }
                         value.Value = Marshal.StringToBSTR(val);
                         #endregion
@@ -469,7 +495,7 @@ namespace SevenZip
                         }
                         else
                         {
-                            value.UInt64Value = Convert.ToUInt64(_updateData.ArchiveFileData[(int) index].IsDirectory);
+                            value.UInt64Value = Convert.ToUInt64(_updateData.ArchiveFileData[(int)index].IsDirectory);
                         }
                         break;
                     case ItemPropId.Size:
@@ -483,23 +509,23 @@ namespace SevenZip
                             {
                                 if (_streams == null)
                                 {
-                                    size = _bytesCount > 0 ? (ulong) _bytesCount : 0;
+                                    size = _bytesCount > 0 ? (ulong)_bytesCount : 0;
                                 }
                                 else
                                 {
-                                    size = (ulong) (_streams[index] == null? 0 : _streams[index].Length);
+                                    size = (ulong)(_streams[index] == null ? 0 : _streams[index].Length);
                                 }
                             }
                             else
                             {
                                 size = (_files[index].Attributes & FileAttributes.Directory) == 0
-                                           ? (ulong) _files[index].Length
+                                           ? (ulong)_files[index].Length
                                            : 0;
                             }
                         }
                         else
                         {
-                            size = _updateData.ArchiveFileData[(int) index].Size;
+                            size = _updateData.ArchiveFileData[(int)index].Size;
                         }
                         value.UInt64Value = size;
 
@@ -522,12 +548,12 @@ namespace SevenZip
                             }
                             else
                             {
-                                value.UInt32Value = (uint) _files[index].Attributes;
+                                value.UInt32Value = (uint)_files[index].Attributes;
                             }
                         }
                         else
                         {
-                            value.UInt32Value = _updateData.ArchiveFileData[(int) index].Attributes;
+                            value.UInt32Value = _updateData.ArchiveFileData[(int)index].Attributes;
                         }
                         break;
                     #region Times
@@ -541,7 +567,7 @@ namespace SevenZip
                         }
                         else
                         {
-                            value.Int64Value = _updateData.ArchiveFileData[(int) index].CreationTime.ToFileTime();
+                            value.Int64Value = _updateData.ArchiveFileData[(int)index].CreationTime.ToFileTime();
                         }
                         break;
                     case ItemPropId.LastAccessTime:
@@ -554,7 +580,7 @@ namespace SevenZip
                         }
                         else
                         {
-                            value.Int64Value = _updateData.ArchiveFileData[(int) index].LastAccessTime.ToFileTime();
+                            value.Int64Value = _updateData.ArchiveFileData[(int)index].LastAccessTime.ToFileTime();
                         }
                         break;
                     case ItemPropId.LastWriteTime:
@@ -567,7 +593,7 @@ namespace SevenZip
                         }
                         else
                         {
-                            value.Int64Value = _updateData.ArchiveFileData[(int) index].LastWriteTime.ToFileTime();
+                            value.Int64Value = _updateData.ArchiveFileData[(int)index].LastWriteTime.ToFileTime();
                         }
                         break;
                     #endregion
@@ -593,7 +619,7 @@ namespace SevenZip
                         }
                         else
                         {
-                            val = Path.GetExtension(_updateData.ArchiveFileData[(int) index].FileName);
+                            val = Path.GetExtension(_updateData.ArchiveFileData[(int)index].FileName);
                             value.Value = Marshal.StringToBSTR(val);
                         }
 
@@ -690,21 +716,21 @@ namespace SevenZip
             }
             if (_fileStream != null)
             {
-                
-                    _fileStream.BytesRead -= IntEventArgsHandler;
-                    //Specific Zip implementation - can not Dispose files for Zip.
-                    if (_compressor.ArchiveFormat != OutArchiveFormat.Zip)
+
+                _fileStream.BytesRead -= IntEventArgsHandler;
+                //Specific Zip implementation - can not Dispose files for Zip.
+                if (_compressor.ArchiveFormat != OutArchiveFormat.Zip)
+                {
+                    try
                     {
-                        try
-                        {
-                            _fileStream.Dispose();                            
-                        }
-                        catch (ObjectDisposedException) {}
+                        _fileStream.Dispose();
                     }
-                    else
-                    {
-                        _wrappersToDispose.Add(_fileStream);
-                    }                                
+                    catch (ObjectDisposedException) { }
+                }
+                else
+                {
+                    _wrappersToDispose.Add(_fileStream);
+                }
                 _fileStream = null;
                 GC.Collect();
                 // Issue #6987
@@ -738,7 +764,7 @@ namespace SevenZip
                 {
                     _fileStream.Dispose();
                 }
-                catch (ObjectDisposedException) {}
+                catch (ObjectDisposedException) { }
             }
 
             if (_wrappersToDispose != null)
@@ -749,7 +775,7 @@ namespace SevenZip
                     {
                         wrapper.Dispose();
                     }
-                    catch (ObjectDisposedException) {}
+                    catch (ObjectDisposedException) { }
                 }
             }
 
@@ -760,11 +786,11 @@ namespace SevenZip
 
         private void IntEventArgsHandler(object sender, IntEventArgs e)
         {
-            var lockObject = ((object) _files ?? _streams) ?? _fileStream;
+            var lockObject = ((object)_files ?? _streams) ?? _fileStream;
 
             lock (lockObject)
             {
-                var pold = (byte) (_bytesWrittenOld*100/_bytesCount);
+                var pold = (byte)(_bytesWrittenOld * 100 / _bytesCount);
                 _bytesWritten += e.Value;
                 byte pnow;
 
@@ -774,13 +800,16 @@ namespace SevenZip
                 }
                 else
                 {
+                    Debug.WriteLine("Bytes written: " + _bytesWritten + " / " + _bytesCount);
                     pnow = (byte)((_bytesWritten * 100) / _bytesCount);
                 }
 
                 if (pnow > pold)
                 {
+                    //This appears to be only for amount of source file bytes written into 7z dll buffer and not actual
+                    //progress.
                     _bytesWrittenOld = _bytesWritten;
-                    OnCompressing(new ProgressEventArgs(pnow, (byte) (pnow - pold)));
+                    OnCompressing(new ProgressEventArgs(pnow, (byte)(pnow - pold)));
                 }
             }
         }

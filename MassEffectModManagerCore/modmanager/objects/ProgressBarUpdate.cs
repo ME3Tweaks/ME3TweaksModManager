@@ -17,12 +17,32 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public object Data;
         public UpdateTypes UpdateType;
-        public ProgressBarUpdate(UpdateTypes type, object data)
+
+        public ProgressBarUpdate(UpdateTypes type, ulong data)
         {
             this.UpdateType = type;
             this.Data = data;
         }
-        public int GetDataAsInt() => (int)Data;
+
+        public ProgressBarUpdate(UpdateTypes type, byte data)
+        {
+            this.UpdateType = type;
+            this.Data = (ulong)data;
+        }
+
+        public ProgressBarUpdate(UpdateTypes type, bool boolean)
+        {
+            this.UpdateType = type;
+            this.Data = boolean;
+        }
+
+        public ProgressBarUpdate(UpdateTypes type, Visibility visibility)
+        {
+            this.UpdateType = type;
+            this.Data = visibility;
+        }
+
+        public ulong GetDataAsULong() => (ulong)Data;
         public Visibility GetDataAsVisibility() => (Visibility)Data;
         public bool GetDataAsBool() => (bool)Data;
     }

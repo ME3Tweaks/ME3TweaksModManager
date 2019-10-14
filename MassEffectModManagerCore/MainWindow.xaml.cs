@@ -1003,8 +1003,8 @@ namespace MassEffectModManager
         }
 
         public Visibility BusyProgressBarVisibility { get; set; } = Visibility.Visible;
-        public int BusyProgressBarMaximum { get; set; } = 100;
-        public int BusyProgressBarValue { get; set; } = 0;
+        public ulong BusyProgressBarMaximum { get; set; } = 100;
+        public ulong BusyProgressBarValue { get; set; } = 0;
         public bool BusyProgressBarIndeterminate { get; set; } = true;
 
         /// <summary>
@@ -1019,10 +1019,10 @@ namespace MassEffectModManager
                     BusyProgressBarVisibility = update.GetDataAsVisibility();
                     break;
                 case ProgressBarUpdate.UpdateTypes.SET_MAX:
-                    BusyProgressBarMaximum = update.GetDataAsInt();
+                    BusyProgressBarMaximum = update.GetDataAsULong();
                     break;
                 case ProgressBarUpdate.UpdateTypes.SET_VALUE:
-                    BusyProgressBarValue = update.GetDataAsInt();
+                    BusyProgressBarValue = update.GetDataAsULong();
                     break;
                 case ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE:
                     BusyProgressBarIndeterminate = update.GetDataAsBool();
