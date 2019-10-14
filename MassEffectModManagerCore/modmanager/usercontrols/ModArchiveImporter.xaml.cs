@@ -257,7 +257,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (thirdPartyInfo != null)
                     {
                         Log.Information($"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
-
                         //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build an feed it a virtual one.
                         IniData virtualModDesc = new IniData();
                         virtualModDesc["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
@@ -279,6 +278,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         virtualModDesc["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
                         virtualModDesc["CUSTOMDLC"]["destdirs"] = dlcFolderName;
                         virtualModDesc["UPDATES"]["originalarchivehash"] = md5;
+
+                        var archiveSize = new FileInfo(archive.FileName).Length;
+                        var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+                        if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
+                        {
+                            OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
+                            virtualModDesc["ModInfo"]["requireddlc"] = importingInfos[0].requireddlc;
+                        }
 
                         return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
                     }
@@ -332,7 +339,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Directory.Exists(sanitizedPath))
                 {
                     //Will delete on import
-                    
+
                 }
 
                 Directory.CreateDirectory(sanitizedPath);

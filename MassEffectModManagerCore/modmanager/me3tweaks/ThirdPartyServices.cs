@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -50,6 +51,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string servermoddescname { get; set; }
             public Mod.MEGame game { get; set; }
             public string version { get; set; }
+            public string requireddlc { get; set; }
+
+            public List<string> GetParsedRequiredDLC()
+            {
+                if (requireddlc != null)
+                {
+                    return requireddlc.Split(';').ToList();
+                }
+                else
+                {
+                    return new List<string>();
+                }
+            }
         }
 
 

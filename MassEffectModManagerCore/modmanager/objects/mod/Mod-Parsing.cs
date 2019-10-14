@@ -8,6 +8,7 @@ using System.Text;
 using IniParser.Parser;
 using MassEffectModManager;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Packages;
 using Serilog;
@@ -80,6 +81,16 @@ namespace MassEffectModManagerCore.modmanager
                 if (customDLCJob != null)
                 {
                     sb.AppendLine("Add Custom DLCs: " + String.Join(", ", customDLCJob.CustomDLCFolderMapping.Values));
+                }
+
+                if (RequiredDLC.Count > 0)
+                {
+                    sb.AppendLine("Requires the following DLC to install: ");
+                    foreach (var reqDLC in RequiredDLC)
+                    {
+                        string name = ThirdPartyServices.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
+                        sb.AppendLine($" - {name}");
+                    }
                 }
 
                 return sb.ToString();
