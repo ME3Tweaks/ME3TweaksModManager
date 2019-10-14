@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         public int ModInternalTLKID { get; set; }
         public string ModURL { get; set; } = "";
         public int ModDLCModuleNumber { get; set; }
-        public EMountFileFlag ModMountFlag { get; set; }
+        public UIMountFlag ModMountFlag { get; set; }
         public ObservableCollectionExtended<UIMountFlag> DisplayedMountFlags { get; } = new ObservableCollectionExtended<UIMountFlag>();
         private readonly List<UIMountFlag> ME1MountFlags = new List<UIMountFlag>();
         private readonly List<UIMountFlag> ME2MountFlags = new List<UIMountFlag>();
@@ -98,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 ModGame = Game,
                 ModInternalName = ModInternalName,
                 ModInternalTLKID = ModInternalTLKID,
-                ModMountFlag = ModMountFlag,
+                ModMountFlag = ModMountFlag.Flag,
                 ModMountPriority = ModMountPriority,
                 ModURL = ModURL,
                 ModModuleNumber = ModDLCModuleNumber
@@ -183,6 +183,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             public EMountFileFlag Flag { get; }
             public string DisplayString { get; }
+            public bool Selected { get; set; }
         }
 
         public static void CreateStarterKitMod(StarterKitOptions options, Action<string> UITextCallback, Action<Mod> FinishedCallback)

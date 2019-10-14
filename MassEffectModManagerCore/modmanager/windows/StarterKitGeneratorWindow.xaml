@@ -68,7 +68,7 @@
             <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID}"/>
             <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber}"/>
             <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority}"/>
-            <xctk:WatermarkComboBox Grid.Row="9" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected"/>
+            <xctk:WatermarkComboBox Grid.Row="9" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag}"/>
 
             <xctk:WatermarkTextBox Watermark="{Binding DescriptionWatermarkText}" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription}"/>
             <TextBlock Grid.Column="1" Grid.Row ="11" Text="Ensure you are using a unique mount priority for your mod." TextWrapping="Wrap"/>
