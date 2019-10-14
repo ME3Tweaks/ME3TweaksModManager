@@ -7,7 +7,8 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             MinWidth="400">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
@@ -17,7 +18,7 @@
         <TextBlock Text="{Binding ModBeingDeployed.ParsedModVersion, StringFormat='Version {0}'}" HorizontalAlignment="Center"/>
 
         <TextBlock Text="Deployment Checklist" FontSize="14" FontWeight="Bold"/>
-        <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+        <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                       AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -47,7 +48,10 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
         <ProgressBar Height="16" IsIndeterminate="True"/>
-        <Button Content="Deploy" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="4"/>
-        <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="4"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4">
+            <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="4" Margin="4,0"/>
+            <Button Content="Deploy" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="4"/>
+
+        </StackPanel>
     </StackPanel>
 </UserControl>

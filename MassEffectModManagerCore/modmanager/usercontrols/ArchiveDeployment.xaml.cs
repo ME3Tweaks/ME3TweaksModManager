@@ -19,10 +19,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FontAwesome.WPF;
+using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3Explorer.Packages;
 using ME3Explorer.Unreal;
+using Microsoft.AppCenter.Analytics;
 using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
 using UserControl = System.Windows.Controls.UserControl;
@@ -40,6 +42,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ArchiveDeployment(Mod mod, MainWindow mainWindow)
         {
+            Analytics.TrackEvent("Started deployment for mod", new Dictionary<string, string>()
+            {
+                { "Mod name" , mod.ModName + " " + mod.ParsedModVersion}
+            });
             DataContext = this;
             this.mainWindow = mainWindow;
             ModBeingDeployed = mod;
@@ -54,9 +60,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
-                ItemText = "Compact AFCs with AFC Compactor to reduce mod size",
+                ItemText = "Audio check",
                 ModToValidateAgainst = mod,
-                ValidationFunction = CheckModForAFCCompactability
+                ValidationFunction = CheckModForAFCCompactability,
+                ErrorsMessage = "The audio check detected errors while attempting to verify all referenced audio will be usable by end users. Review these issues and fix them if applicable before deployment.",
+                ErrorsTitle = "Audio issues detected in mod"
             });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
@@ -88,17 +96,157 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CheckModForAFCCompactability(DeploymentChecklistItem item)
         {
-            Debug.WriteLine("aFC check");
+            bool hasError = false;
+            item.HasError = false;
+            item.ItemText = "Checking audio references in mod";
+            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+            int numChecked = 0;
+            GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
+            List<string> gameFiles = MEDirectories.EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
 
-            Thread.Sleep(1000);
-            item.Foreground = Brushes.Green;
-            item.Icon = FontAwesomeIcon.CheckCircle;
-            Debug.WriteLine("aFC done");
+            var errors = new List<string>();
+            Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
+
+            foreach (var f in referencedFiles)
+            {
+                numChecked++;
+                item.ItemText = $"Checking audio references in mod [{numChecked}/{referencedFiles.Count}]";
+                if (f.RepresentsPackageFilePath())
+                {
+                    var package = MEPackageHandler.OpenMEPackage(f);
+                    var wwiseStreams = package.Exports.Where(x => x.ClassName == "WwiseStream" && !x.IsDefaultObject).ToList();
+                    foreach (var wwisestream in wwiseStreams)
+                    {
+                        //Check each reference.
+                        var afcNameProp = wwisestream.GetProperty<NameProperty>("Filename");
+                        if (afcNameProp != null)
+                        {
+                            string afcNameWithExtension = afcNameProp + ".afc";
+                            int audioSize = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 8);
+                            int audioOffset = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 4);
+
+                            string afcPath = null;
+                            Stream audioStream = null;
+                            var localDirectoryAFCPath = Path.Combine(Path.GetDirectoryName(wwisestream.FileRef.FilePath), afcNameWithExtension);
+                            bool isInOfficialArea = false;
+                            if (File.Exists(localDirectoryAFCPath))
+                            {
+                                //local afc
+                                afcPath = localDirectoryAFCPath;
+
+                            }
+                            else
+                            {
+                                //Check game
+                                var fullPath = gameFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase));
+                                if (fullPath != null)
+                                {
+                                    afcPath = fullPath;
+                                    isInOfficialArea = MEDirectories.IsInBasegame(afcPath, validationTarget) || MEDirectories.IsInOfficialDLC(afcPath, validationTarget);
+                                }
+                                else if (cachedAudio.TryGetValue(afcNameProp.Value.Name, out var cachedAudioStream))
+                                {
+                                    audioStream = cachedAudioStream;
+                                    isInOfficialArea = true;
+                                }
+                                else if (MEDirectories.OfficialDLC(validationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
+                                {
+                                    var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase));
+                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(validationTarget, dlcName, afcNameWithExtension);
+                                    if (audio != null)
+                                    {
+                                        cachedAudio[afcNameProp.Value.Name] = audio;
+                                    }
+
+                                    audioStream = audio;
+                                    isInOfficialArea = true;
+                                    continue;
+                                }
+                                else
+                                {
+                                    hasError = true;
+                                    item.Icon = FontAwesomeIcon.TimesCircle;
+                                    item.Foreground = Brushes.Red;
+                                    item.Spinning = false;
+                                    errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Could not find referenced audio file cache: {afcNameProp}");
+                                    continue;
+                                }
+                            }
+
+                            if (afcPath != null)
+                            {
+                                audioStream = new FileStream(afcPath, FileMode.Open);
+                            }
+
+                            try
+                            {
+                                audioStream.Seek(audioOffset, SeekOrigin.Begin);
+                                if (audioStream.ReadStringASCIINull(4) != "RIFF")
+                                {
+                                    hasError = true;
+                                    item.Icon = FontAwesomeIcon.TimesCircle;
+                                    item.Foreground = Brushes.Red;
+                                    item.Spinning = false;
+                                    errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Invalid audio pointer, does not point to RIFF header");
+                                    if (audioStream is FileStream) audioStream.Close();
+                                    continue;
+                                }
+
+                                //attempt to seek audio length.
+                                audioStream.Seek(audioSize + 4, SeekOrigin.Current);
+
+                                //Check if this file is in basegame
+                                if (isInOfficialArea)
+                                {
+                                    //Verify offset is not greater than vanilla size
+                                    //TODO: Awaiting vanilla database update from Mass Effect Modder
+                                    int vanillaSize = 1000000000;
+                                    if (audioOffset >= vanillaSize)
+                                    {
+                                        hasError = true;
+                                        item.Icon = FontAwesomeIcon.TimesCircle;
+                                        item.Foreground = Brushes.Red;
+                                        item.Spinning = false;
+                                        errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.");
+                                    }
+                                }
+                                if (audioStream is FileStream) audioStream.Close();
+                            }
+                            catch (Exception e)
+                            {
+                                hasError = true;
+                                item.Icon = FontAwesomeIcon.TimesCircle;
+                                item.Foreground = Brushes.Red;
+                                item.Spinning = false;
+                                errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Error validating audio reference: {e.Message}");
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            if (!hasError)
+            {
+                item.Foreground = Brushes.Green;
+                item.Icon = FontAwesomeIcon.CheckCircle;
+                item.ItemText = "No audio issues were detected";
+                item.ToolTip = "Validation passed";
+            }
+            else
+            {
+                item.Errors = errors;
+                item.ItemText = "Audio issues were detected";
+                item.ToolTip = "Validation failed";
+            }
+            item.HasError = hasError;
+            cachedAudio.Clear();
         }
 
         private void CheckModForTFCCompactability(DeploymentChecklistItem item)
         {
-            if (ModBeingDeployed.Game == Mod.MEGame.ME3)
+            if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
             {
                 bool hasError = false;
                 item.HasError = false;
@@ -122,13 +270,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
                                 {
-                                    Debug.WriteLine(cache.Value);
                                     var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
                                     Texture2D tex = new Texture2D(texture);
                                     try
                                     {
-                                        var imageBytes = tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false); //use active target
-                                        Debug.WriteLine("Texture OK: " + texture.GetInstancedFullPath);
+                                        tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false); //use active target
                                     }
                                     catch (Exception e)
                                     {
@@ -144,18 +290,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                item.HasError = hasError;
-                if (!item.HasError)
+                if (!hasError)
                 {
                     item.Foreground = Brushes.Green;
                     item.Icon = FontAwesomeIcon.CheckCircle;
                     item.ItemText = "No broken textures were found";
+                    item.ToolTip = "Validation passed";
                 }
                 else
                 {
                     item.Errors = errors;
                     item.ItemText = "Texture issues were detected";
+                    item.ToolTip = "Validation failed";
                 }
+                item.HasError = hasError;
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
 
@@ -29,6 +30,9 @@ namespace MassEffectModManagerCore.GameDirectories
 
         public static string BioGamePath => gamePath != null ? gamePath.Contains("biogame", StringComparison.OrdinalIgnoreCase) ? gamePath : Path.Combine(gamePath, @"BioGame\") : null;
         public static string cookedPath => gamePath != null ? Path.Combine(gamePath,  @"BioGame\CookedPC\") : "Not Found";
+        public static string CookedPath(GameTarget target) => Path.Combine(target.TargetPath, @"BioGame\CookedPC");
+
+
         public static string DLCPath => gamePath != null ? Path.Combine(gamePath, @"BioGame\DLC\") : "Not Found";
 
         // "C:\...\MyDocuments\BioWare\Mass Effect 2\" folder

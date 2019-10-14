@@ -24,6 +24,20 @@ namespace MassEffectModManagerCore.GameDirectories
                     throw new ArgumentOutOfRangeException(nameof(game), game, null);
             }
         }
+        public static string CookedPath(GameTarget target)
+        {
+            switch (target.Game)
+            {
+                case Mod.MEGame.ME1:
+                    return ME1Directory.CookedPath(target);
+                case Mod.MEGame.ME2:
+                    return ME2Directory.CookedPath(target);
+                case Mod.MEGame.ME3:
+                    return ME3Directory.CookedPath(target);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(target.Game), target.Game, null);
+            }
+        }
         public static string GamePath(Mod.MEGame game)
         {
             switch (game)
@@ -136,6 +150,8 @@ namespace MassEffectModManagerCore.GameDirectories
 
         public static bool IsInBasegame(string path, Mod.MEGame game) => path.StartsWith(CookedPath(game));
 
+        public static bool IsInBasegame(string path, GameTarget target) => path.StartsWith(CookedPath(target));
+
         //public static bool IsInOfficialDLC(this IMEPackage pcc) => IsInOfficialDLC(pcc.FilePath, pcc.Game);
 
         public static bool IsInOfficialDLC(string path, Mod.MEGame game)
@@ -147,6 +163,17 @@ namespace MassEffectModManagerCore.GameDirectories
             string dlcPath = DLCPath(game);
 
             return OfficialDLC(game).Any(dlcFolder => path.StartsWith(Path.Combine(dlcPath, dlcFolder)));
+        }
+
+        public static bool IsInOfficialDLC(string path, GameTarget target)
+        {
+            if (target.Game == Mod.MEGame.Unknown)
+            {
+                return false;
+            }
+            string dlcPath = DLCPath(target);
+
+            return OfficialDLC(target.Game).Any(dlcFolder => path.StartsWith(Path.Combine(dlcPath, dlcFolder)));
         }
 
         public static List<string> EnumerateGameFiles(Mod.MEGame GameVersion, string searchPath, bool recurse = true, Predicate<string> predicate = null)
@@ -170,7 +197,7 @@ namespace MassEffectModManagerCore.GameDirectories
                         break;
                     case Mod.MEGame.ME2:
                     case Mod.MEGame.ME3:
-                        predicate = s => s.ToLowerInvariant().EndsWith(".pcc", true, null) || s.ToLowerInvariant().EndsWith(".tfc", true, null);
+                        predicate = s => s.ToLowerInvariant().EndsWith(".pcc", true, null) || s.ToLowerInvariant().EndsWith(".tfc", true, null) || s.ToLowerInvariant().EndsWith(".afc", true, null);
                         break;
                 }
             }

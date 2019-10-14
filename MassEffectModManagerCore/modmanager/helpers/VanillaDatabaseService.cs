@@ -7,19 +7,23 @@ using System.Text;
 using Gammtek.Conduit.IO;
 using MassEffectModManager;
 using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Unreal;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
+    /// <summary>
+    /// Class for querying information about game and fetching vanilla files.
+    /// </summary>
     public class VanillaDatabaseService
     {
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME1VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME2VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME3VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
 
-        public static void LoadDatabaseFor(Mod.MEGame game, bool isMe1PL = false)
+        public static CaseInsensitiveDictionary<List<(int size, string md5)>> LoadDatabaseFor(Mod.MEGame game, bool isMe1PL = false)
         {
             string assetPrefix = "MassEffectModManagerCore.modmanager.gamemd5.me";
             switch (game)
@@ -28,19 +32,39 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     ME1VanillaDatabase.Clear();
                     var me1stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}1{(isMe1PL ? "pl" : "")}.bin");
                     ParseDatabase(me1stream, ME1VanillaDatabase);
-                    break;
+                    return ME1VanillaDatabase;
                 case Mod.MEGame.ME2:
-                    if (ME2VanillaDatabase.Count > 0) return;
+                    if (ME2VanillaDatabase.Count > 0) return ME2VanillaDatabase;
                     var me2stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}3.bin");
                     ParseDatabase(me2stream, ME2VanillaDatabase);
-
-                    break;
+                    return ME2VanillaDatabase;
                 case Mod.MEGame.ME3:
-                    if (ME3VanillaDatabase.Count > 0) return;
+                    if (ME3VanillaDatabase.Count > 0) return ME3VanillaDatabase;
                     var me3stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}3.bin");
                     ParseDatabase(me3stream, ME3VanillaDatabase);
-                    break;
+                    return ME3VanillaDatabase;
             }
+
+            return null;
+        }
+
+        public static MemoryStream FetchFileFromVanillaSFAR(GameTarget target, string dlcName, string filename)
+        {
+            var dlcDir = MEDirectories.DLCPath(target);
+            //Todo: Testpatch
+
+            var sfar = Path.Combine(dlcDir, dlcName, "CookedPCConsole", "Default.sfar");
+            if (File.Exists(sfar) && IsFileVanilla(target, sfar, false))
+            {
+                var dlc = new DLCPackage(sfar);
+                var dlcEntry = dlc.FindFileEntry(filename);
+                if (dlcEntry >= 0)
+                {
+                    return dlc.DecompressEntry(dlcEntry);
+                }
+            }
+
+            return null;
         }
 
         private static void ParseDatabase(MemoryStream stream, Dictionary<string, List<(int size, string md5)>> targetDictionary)
@@ -70,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             for (int i = 0; i < numEntries; i++)
             {
                 //Read entry
-                packageNames.Add(table.ReadStringASCIINull().Replace('/', '\\'));
+                packageNames.Add(table.ReadStringASCIINull().Replace('/', '\\').TrimStart('\\'));
             }
 
             numEntries = table.ReadInt32(); //Not sure how this could be different from names list?
@@ -105,6 +129,30 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 list.Add((size, sb.ToString()));
             }
+        }
+
+        public static bool IsFileVanilla(GameTarget target, string file, bool md5check = false)
+        {
+            var database = LoadDatabaseFor(target.Game, target.IsPolishME1);
+            var relativePath = file.Substring(target.TargetPath.Length + 1);
+            if (database.TryGetValue(relativePath, out var info))
+            {
+                FileInfo f = new FileInfo(file);
+                bool hasSameSize = info.Any(x => x.size == f.Length);
+                if (!hasSameSize)
+                {
+                    return false;
+                }
+
+                if (md5check)
+                {
+                    var md5 = Utilities.CalculateMD5(file);
+                    return info.Any(x => x.md5 == md5);
+                }
+                return true;
+            }
+
+            return false;
         }
 
         private readonly static string[] BasegameTFCs = { "CharTextures", "Movies", "Textures", "Lighting" };
