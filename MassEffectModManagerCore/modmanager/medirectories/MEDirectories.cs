@@ -150,7 +150,7 @@ namespace MassEffectModManagerCore.GameDirectories
 
         public static bool IsInBasegame(string path, Mod.MEGame game) => path.StartsWith(CookedPath(game));
 
-        public static bool IsInBasegame(string path, GameTarget target) => path.StartsWith(CookedPath(target));
+        public static bool IsInBasegame(string path, GameTarget target) => path.StartsWith(CookedPath(target), StringComparison.InvariantCultureIgnoreCase);
 
         //public static bool IsInOfficialDLC(this IMEPackage pcc) => IsInOfficialDLC(pcc.FilePath, pcc.Game);
 
@@ -173,7 +173,7 @@ namespace MassEffectModManagerCore.GameDirectories
             }
             string dlcPath = DLCPath(target);
 
-            return OfficialDLC(target.Game).Any(dlcFolder => path.StartsWith(Path.Combine(dlcPath, dlcFolder)));
+            return OfficialDLC(target.Game).Any(dlcFolder => path.StartsWith(Path.Combine(dlcPath, dlcFolder), StringComparison.CurrentCultureIgnoreCase));
         }
 
         public static List<string> EnumerateGameFiles(Mod.MEGame GameVersion, string searchPath, bool recurse = true, Predicate<string> predicate = null)

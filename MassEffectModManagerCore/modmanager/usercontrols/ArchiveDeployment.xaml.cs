@@ -14,7 +14,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -25,9 +24,11 @@ using MassEffectModManagerCore.modmanager.windows;
 using ME3Explorer.Packages;
 using ME3Explorer.Unreal;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
 using UserControl = System.Windows.Controls.UserControl;
+using Microsoft.Win32;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -60,6 +61,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
+                ItemText = "SFAR files check",
+                ModToValidateAgainst = mod,
+                ErrorsMessage = "The following SFAR files are not 32 bytes, which is the only supported SFAR size in modding tools for Custom DLC mods.",
+                ErrorsTitle = "Wrong SFAR sizes found errors in mod",
+                ValidationFunction = CheckModSFARs
+            });
+            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+            {
                 ItemText = "Audio check",
                 ModToValidateAgainst = mod,
                 ValidationFunction = CheckModForAFCCompactability,
@@ -84,7 +93,71 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         checkItem.ExecuteValidationFunction();
                     }
                 };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                PrecheckCompleted = true;
+                CommandManager.InvalidateRequerySuggested();
+            };
             bw.RunWorkerAsync();
+        }
+
+        private void CheckModSFARs(DeploymentChecklistItem item)
+        {
+            bool hasError = false;
+            item.HasError = false;
+            item.ItemText = "Checking SFAR files sizes";
+            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+            int numChecked = 0;
+            GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
+            List<string> gameFiles = MEDirectories.EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
+
+            var errors = new List<string>();
+            Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
+
+            bool hasSFARs = false;
+            foreach (var f in referencedFiles)
+            {
+                if (Path.GetExtension(f) == ".sfar")
+                {
+                    hasSFARs = true;
+                    if (new FileInfo(f).Length != 32)
+                    {
+                        {
+                            hasError = true;
+                            item.Icon = FontAwesomeIcon.TimesCircle;
+                            item.Foreground = Brushes.Red;
+                            item.Spinning = false;
+                            errors.Add(f);
+                        }
+                    }
+                }
+            }
+
+            if (!hasSFARs)
+            {
+                item.Foreground = Brushes.Green;
+                item.Icon = FontAwesomeIcon.CheckCircle;
+                item.ItemText = "Mod does not use SFARs";
+                item.ToolTip = "Validation passed";
+            }
+            else
+            {
+                if (!hasError)
+                {
+                    item.Foreground = Brushes.Green;
+                    item.Icon = FontAwesomeIcon.CheckCircle;
+                    item.ItemText = "No SFAR size issues were detected";
+                    item.ToolTip = "Validation passed";
+                }
+                else
+                {
+                    item.Errors = errors;
+                    item.ItemText = "Some SFAR files are the incorrect size";
+                    item.ToolTip = "Validation failed";
+                }
+
+                item.HasError = hasError;
+            }
         }
 
         private void ManualValidation(DeploymentChecklistItem item)
@@ -147,7 +220,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 else if (cachedAudio.TryGetValue(afcNameProp.Value.Name, out var cachedAudioStream))
                                 {
                                     audioStream = cachedAudioStream;
-                                    isInOfficialArea = true;
+                                    //isInOfficialArea = true; //cached from vanilla SFAR
                                 }
                                 else if (MEDirectories.OfficialDLC(validationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
                                 {
@@ -159,7 +232,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
 
                                     audioStream = audio;
-                                    isInOfficialArea = true;
+                                    //isInOfficialArea = true; as this is in a vanilla SFAR we don't test against this since it will be correct.
                                     continue;
                                 }
                                 else
@@ -199,9 +272,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (isInOfficialArea)
                                 {
                                     //Verify offset is not greater than vanilla size
-                                    //TODO: Awaiting vanilla database update from Mass Effect Modder
-                                    int vanillaSize = 1000000000;
-                                    if (audioOffset >= vanillaSize)
+                                    var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(validationTarget, afcPath.Substring(validationTarget.TargetPath.Length + 1));
+                                    if (vanillaInfo == null)
+                                    {
+                                        Crashes.TrackError(new Exception("Vanilla information was null when performing vanilla file check for " + afcPath.Substring(validationTarget.TargetPath.Length + 1)));
+                                    }
+                                    if (audioOffset >= vanillaInfo[0].size)
                                     {
                                         hasError = true;
                                         item.Icon = FontAwesomeIcon.TimesCircle;
@@ -315,19 +391,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartDeployment()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("ModDeploymentThread");
-            bw.DoWork += Deployment_BackgroundThread;
-            bw.RunWorkerAsync();
-            mainWindow.UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Visible));
-            mainWindow.UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, false));
-            mainWindow.UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_MAX, 100));
+            SaveFileDialog d = new SaveFileDialog
+            {
+                Filter = "PCConsoleTOC.bin|PCConsoleTOC.bin",
+                FileName = "PCConsoleTOC.bin"
+            };
+            var result = d.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                NamedBackgroundWorker bw = new NamedBackgroundWorker("ModDeploymentThread");
+                bw.DoWork += Deployment_BackgroundThread;
+                bw.RunWorkerCompleted += (a, b) => { DeploymentInProgress = false; };
+                bw.RunWorkerAsync();
+                DeploymentInProgress = true;
+            }
         }
 
         private void Deployment_BackgroundThread(object sender, DoWorkEventArgs e)
         {
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
 
-            string archivePath = @"C:\users\public\deploytest.7z";
+            string archivePath = e.Argument as string;
             //Key is in-archive path, value is on disk path
             var archiveMapping = new Dictionary<string, string>();
             SortedSet<string> directories = new SortedSet<string>();
@@ -350,8 +434,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //compressor.CustomParameters.Add("s", "on");
             compressor.Progressing += (a, b) =>
             {
-                mainWindow.UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_MAX, b.TotalAmount));
-                mainWindow.UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VALUE, b.AmountCompleted));
+                ProgressMax = b.TotalAmount;
+                ProgressValue = b.AmountCompleted;
             };
             compressor.FileCompressionStarted += (a, b) => { Debug.WriteLine(b.FileName); };
             compressor.CompressFileDictionary(archiveMapping, archivePath);
@@ -367,7 +451,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanDeploy()
         {
-            return true;
+            return PrecheckCompleted && !DeploymentInProgress;
         }
 
 
@@ -387,6 +471,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         #endregion
 
         public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
+        public bool PrecheckCompleted { get; private set; }
+        public bool DeploymentInProgress { get; private set; }
+        public ulong ProgressMax { get; set; }
+        public ulong ProgressValue { get; set; }
 
         public class DeploymentChecklistItem : INotifyPropertyChanged
         {

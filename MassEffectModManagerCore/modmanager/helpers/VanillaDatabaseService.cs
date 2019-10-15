@@ -86,7 +86,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
 
             //Read
-            File.WriteAllBytes(@"C:\users\public\db.bin", decompressedBuffer);
             MemoryStream table = new MemoryStream(decompressedBuffer);
             int numEntries = table.ReadInt32();
             var packageNames = new List<string>(numEntries);
@@ -197,7 +196,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             foreach (string file in Directory.EnumerateFiles(target.TargetPath, "*", SearchOption.AllDirectories))
             {
-                var shortname = file.Substring(target.TargetPath.Length);
+                var shortname = file.Substring(target.TargetPath.Length + 1);
                 if (vanillaDB.TryGetValue(shortname, out var fileInfo))
                 {
                     var localFileInfo = new FileInfo(file);
@@ -267,6 +266,34 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             return allConsistent;
 
+        }
+
+        public static List<(int size, string md5)> GetVanillaFileInfo(GameTarget target, string filepath)
+        {
+            CaseInsensitiveDictionary<List<(int size, string md5)>> vanillaDB = null;
+            switch (target.Game)
+            {
+                case Mod.MEGame.ME1:
+                    if (ME1VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME1, target.IsPolishME1);
+                    vanillaDB = ME1VanillaDatabase;
+                    break;
+                case Mod.MEGame.ME2:
+                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME2);
+                    vanillaDB = ME2VanillaDatabase;
+                    break;
+                case Mod.MEGame.ME3:
+                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(Mod.MEGame.ME3);
+                    vanillaDB = ME3VanillaDatabase;
+                    break;
+                default:
+                    throw new Exception("Cannot vanilla check against game that is not ME1/ME2/ME3");
+            }
+            if (vanillaDB.TryGetValue(filepath, out var info))
+            {
+                return info;
+            }
+
+            return null;
         }
 
         /// <summary>
