@@ -26,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<object> AlternateOptions { get; } = new ObservableCollectionExtended<object>();
 
         public bool InstallationSucceeded { get; private set; }
-        private const int PERCENT_REFRESH_COOLDOWN = 125;
+        public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
         public bool ModIsInstalling { get; set; }
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {

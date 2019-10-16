@@ -59,22 +59,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ValidationFunction = ManualValidation
 
             });
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+            if (mod.Game == Mod.MEGame.ME3)
             {
-                ItemText = "SFAR files check",
-                ModToValidateAgainst = mod,
-                ErrorsMessage = "The following SFAR files are not 32 bytes, which is the only supported SFAR size in modding tools for Custom DLC mods.",
-                ErrorsTitle = "Wrong SFAR sizes found errors in mod",
-                ValidationFunction = CheckModSFARs
-            });
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                {
+                    ItemText = "SFAR files check",
+                    ModToValidateAgainst = mod,
+                    ErrorsMessage = "The following SFAR files are not 32 bytes, which is the only supported SFAR size in modding tools for Custom DLC mods.",
+                    ErrorsTitle = "Wrong SFAR sizes found errors in mod",
+                    ValidationFunction = CheckModSFARs
+                });
+            }
+            if (mod.Game >= Mod.MEGame.ME2)
             {
-                ItemText = "Audio check",
-                ModToValidateAgainst = mod,
-                ValidationFunction = CheckModForAFCCompactability,
-                ErrorsMessage = "The audio check detected errors while attempting to verify all referenced audio will be usable by end users. Review these issues and fix them if applicable before deployment.",
-                ErrorsTitle = "Audio issues detected in mod"
-            });
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                {
+                    ItemText = "Audio check",
+                    ModToValidateAgainst = mod,
+                    ValidationFunction = CheckModForAFCCompactability,
+                    ErrorsMessage = "The audio check detected errors while attempting to verify all referenced audio will be usable by end users. Review these issues and fix them if applicable before deployment.",
+                    ErrorsTitle = "Audio issues detected in mod"
+                });
+            }
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
                 ItemText = "Textures check",
@@ -85,6 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             LoadCommands();
             InitializeComponent();
+            lastPercentUpdateTime = DateTime.Now;
             NamedBackgroundWorker bw = new NamedBackgroundWorker("DeploymentValidation");
             bw.DoWork += (a, b) =>
                 {
@@ -322,65 +329,72 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CheckModForTFCCompactability(DeploymentChecklistItem item)
         {
-            if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
+            // if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
+            //{
+            bool hasError = false;
+            item.HasError = false;
+            item.ItemText = "Checking textures in mod";
+            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+            int numChecked = 0;
+            GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
+            var errors = new List<string>();
+            foreach (var f in referencedFiles)
             {
-                bool hasError = false;
-                item.HasError = false;
-                item.ItemText = "Checking textures in mod";
-                var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
-                int numChecked = 0;
-                GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
-                var errors = new List<string>();
-                foreach (var f in referencedFiles)
+                numChecked++;
+                item.ItemText = $"Checking textures in mod [{numChecked}/{referencedFiles.Count}]";
+                if (f.RepresentsPackageFilePath())
                 {
-                    numChecked++;
-                    item.ItemText = $"Checking textures in mod [{numChecked}/{referencedFiles.Count}]";
-                    if (f.RepresentsPackageFilePath())
+                    var package = MEPackageHandler.OpenMEPackage(f);
+                    var textures = package.Exports.Where(x => x.IsTexture()).ToList();
+                    foreach (var texture in textures)
                     {
-                        var package = MEPackageHandler.OpenMEPackage(f);
-                        var textures = package.Exports.Where(x => x.IsTexture()).ToList();
-                        foreach (var texture in textures)
+                        var cache = texture.GetProperty<NameProperty>("TextureFileCacheName");
+                        if (cache != null)
                         {
-                            var cache = texture.GetProperty<NameProperty>("TextureFileCacheName");
-                            if (cache != null)
+                            if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
                             {
-                                if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
+                                var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
+                                Texture2D tex = new Texture2D(texture);
+                                try
                                 {
-                                    var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
-                                    Texture2D tex = new Texture2D(texture);
-                                    try
-                                    {
-                                        tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false); //use active target
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        hasError = true;
-                                        item.Icon = FontAwesomeIcon.TimesCircle;
-                                        item.Foreground = Brushes.Red;
-                                        item.Spinning = false;
-                                        errors.Add($"{texture.FileRef.FilePath} - {texture.GetInstancedFullPath}: Could not load texture data: {e.Message}");
-                                    }
+                                    tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false); //use active target
+                                }
+                                catch (Exception e)
+                                {
+                                    hasError = true;
+                                    item.Icon = FontAwesomeIcon.TimesCircle;
+                                    item.Foreground = Brushes.Red;
+                                    item.Spinning = false;
+                                    errors.Add($"{texture.FileRef.FilePath} - {texture.GetInstancedFullPath}: Could not load texture data: {e.Message}");
                                 }
                             }
                         }
                     }
                 }
-
-                if (!hasError)
-                {
-                    item.Foreground = Brushes.Green;
-                    item.Icon = FontAwesomeIcon.CheckCircle;
-                    item.ItemText = "No broken textures were found";
-                    item.ToolTip = "Validation passed";
-                }
-                else
-                {
-                    item.Errors = errors;
-                    item.ItemText = "Texture issues were detected";
-                    item.ToolTip = "Validation failed";
-                }
-                item.HasError = hasError;
             }
+
+            if (!hasError)
+            {
+                item.Foreground = Brushes.Green;
+                item.Icon = FontAwesomeIcon.CheckCircle;
+                item.ItemText = "No broken textures were found";
+                item.ToolTip = "Validation passed";
+            }
+            else
+            {
+                item.Errors = errors;
+                item.ItemText = "Texture issues were detected";
+                item.ToolTip = "Validation failed";
+            }
+            item.HasError = hasError;
+            //}
+            //} else
+            //{
+            //    item.Foreground = Brushes.Green;
+            //    item.Icon = FontAwesomeIcon.CheckCircle;
+            //    item.ItemText = "Textures are not ";
+            //    item.ToolTip = "Validation passed";
+            //}
         }
 
         public ICommand DeployCommand { get; set; }
@@ -393,8 +407,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             SaveFileDialog d = new SaveFileDialog
             {
-                Filter = "PCConsoleTOC.bin|PCConsoleTOC.bin",
-                FileName = "PCConsoleTOC.bin"
+                Filter = "7-zip archive file|*.7z",
+                FileName = Utilities.SanitizePath($"{ModBeingDeployed.ModName}_{ModBeingDeployed.ModVersionString}".Replace(" ", ""), true)
             };
             var result = d.ShowDialog();
             if (result.HasValue && result.Value)
@@ -402,7 +416,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 NamedBackgroundWorker bw = new NamedBackgroundWorker("ModDeploymentThread");
                 bw.DoWork += Deployment_BackgroundThread;
                 bw.RunWorkerCompleted += (a, b) => { DeploymentInProgress = false; };
-                bw.RunWorkerAsync();
+                bw.RunWorkerAsync(d.FileName);
                 DeploymentInProgress = true;
             }
         }
@@ -434,8 +448,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //compressor.CustomParameters.Add("s", "on");
             compressor.Progressing += (a, b) =>
             {
+                //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
                 ProgressMax = b.TotalAmount;
                 ProgressValue = b.AmountCompleted;
+                var now = DateTime.Now;
+                if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
+                {
+                    //Don't update UI too often. Once per second is enough.
+                    string percent = (ProgressValue * 100.0 / ProgressMax).ToString("0.00");
+                    OperationText = $"Deployment in progress... {percent}%"; 
+                    lastPercentUpdateTime = now;
+                }
+                //Debug.WriteLine(ProgressValue + "/" + ProgressMax);
             };
             compressor.FileCompressionStarted += (a, b) => { Debug.WriteLine(b.FileName); };
             compressor.CompressFileDictionary(archiveMapping, archivePath);
@@ -475,6 +499,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool DeploymentInProgress { get; private set; }
         public ulong ProgressMax { get; set; }
         public ulong ProgressValue { get; set; }
+        public string OperationText { get; set; } = "Verify above items before deployment";
+
+        private DateTime lastPercentUpdateTime;
 
         public class DeploymentChecklistItem : INotifyPropertyChanged
         {

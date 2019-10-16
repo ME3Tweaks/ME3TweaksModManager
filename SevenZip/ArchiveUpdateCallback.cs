@@ -800,7 +800,7 @@ namespace SevenZip
                 }
                 else
                 {
-                    Debug.WriteLine("Bytes written: " + _bytesWritten + " / " + _bytesCount);
+                    //Debug.WriteLine("Bytes written: " + _bytesWritten + " / " + _bytesCount);
                     pnow = (byte)((_bytesWritten * 100) / _bytesCount);
                 }
 

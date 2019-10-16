@@ -583,7 +583,7 @@ namespace MassEffectModManager
         }
 
         //Step 1: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
-        private static string RemoveSpecialCharactersUsingCustomMethod(this string expression, bool removeSpecialLettersHavingASign = true)
+        private static string RemoveSpecialCharactersUsingCustomMethod(this string expression, bool removeSpecialLettersHavingASign = true, bool allowPeriod = false)
         {
             var newCharacterWithSpace = " ";
             var newCharacter = "";
@@ -625,7 +625,10 @@ namespace MassEffectModManager
             // period or dot : allowed but the last occurrence will be interpreted to be the extension separator in VMS, MS-DOS and Windows. 
             // In other OSes, usually considered as part of the filename, and more than one period (full stop) may be allowed. 
             // In Unix, a leading period means the file or folder is normally hidden.
-            expression = expression.Replace(@".", newCharacter);
+            if (!allowPeriod)
+            {
+                expression = expression.Replace(@".", newCharacter);
+            }
             // space : allowed (apart MS-DOS) but the space is also used as a parameter separator in command line applications. 
             // This can be solved by quoting, but typing quotes around the name every time is inconvenient.
             //expression = expression.Replace(@"%", " ");
@@ -654,9 +657,9 @@ namespace MassEffectModManager
         /// </summary>
         /// <param name="path">Path string</param>
         /// <returns>Sanitized path string</returns>
-        public static string SanitizePath(string path)
+        public static string SanitizePath(string path, bool allowPeriod = false)
         {
-            path = path.RemoveSpecialCharactersUsingCustomMethod();
+            path = path.RemoveSpecialCharactersUsingCustomMethod(allowPeriod: allowPeriod);
             if (path.ContainsAnyInvalidCharacters())
             {
                 path = path.RemoveSpecialCharactersUsingFrameworkMethod();

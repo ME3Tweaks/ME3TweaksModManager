@@ -19,7 +19,7 @@
         <StackPanel.Resources>
         </StackPanel.Resources>
         <TextBlock Text="Backup" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
-        <TextBlock Text="Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder." TextWrapping="Wrap" MaxWidth="400"/>
+        <TextBlock Text="Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder. To restore from backup, use the Target Info button from the main window." TextWrapping="Wrap" MaxWidth="400"/>
         <ItemsControl ItemsSource="{Binding GameBackups}">
             <ItemsControl.ItemContainerStyle>
                 <Style>
@@ -31,7 +31,6 @@
                     <Grid Margin="0,5,5,5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="54"/>
-                            <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
