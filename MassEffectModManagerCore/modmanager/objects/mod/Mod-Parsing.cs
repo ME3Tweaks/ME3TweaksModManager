@@ -64,13 +64,16 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     sb.AppendLine($"ModMaker code: {ModModMakerID}");
                 }
-                if (ModClassicUpdateCode > 0)
+                if (ModClassicUpdateCode > 0 && Settings.DeveloperMode)
                 {
                     sb.AppendLine($"Update code: {ModClassicUpdateCode}");
                 }
 
                 sb.AppendLine("-------Installation information--------");
-                sb.AppendLine("Targets ModDesc " + ModDescTargetVersion);
+                if (Settings.DeveloperMode)
+                {
+                    sb.AppendLine("Targets ModDesc " + ModDescTargetVersion);
+                }
                 var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
                 {

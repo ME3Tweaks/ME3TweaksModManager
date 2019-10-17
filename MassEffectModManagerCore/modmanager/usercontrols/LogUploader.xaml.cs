@@ -90,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker("LogUpload");
             bw.DoWork += (a, b) =>
             {
-                string logUploadText = LogCollector.CollectLogs();
+                string logUploadText = LogCollector.CollectLogs((LogSelector_ComboBox.SelectedItem as LogItem).filepath);
                 using (var output = new MemoryStream())
                 {
                     var encoder = new LzmaEncodeStream(output);

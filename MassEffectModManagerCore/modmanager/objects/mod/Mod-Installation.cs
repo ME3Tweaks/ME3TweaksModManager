@@ -209,5 +209,29 @@ namespace MassEffectModManagerCore.modmanager
 
             }
         }
+
+        /// <summary>
+        /// Validates this mod can install against a game target with respect to the list of RequiredDLC. 
+        /// </summary>
+        /// <param name="gameTarget">Target to validate against</param>
+        /// <returns>List of missing DLC modules, or an empty list if none</returns>
+        internal List<string> ValidateRequiredModulesAreInstalled(GameTarget gameTarget)
+        {
+            if (gameTarget.Game != Game)
+            {
+                throw new Exception("Cannot validate a mod against a gametarget that is not for its game");
+            }
+
+            var requiredDLC = RequiredDLC.Select(x =>
+            {
+                if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game).TryGetValue(parsedHeader, out var dlcname))
+                {
+                    return dlcname;
+                }
+                return x;
+            });
+            var installedDLC = MEDirectories.GetInstalledDLC(gameTarget);
+            return requiredDLC.Except(installedDLC).ToList();
+        }
     }
 }

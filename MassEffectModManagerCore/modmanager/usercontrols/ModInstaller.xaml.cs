@@ -11,6 +11,7 @@ using MassEffectModManager;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.VisualBasic;
@@ -43,10 +44,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private GameTarget gameTarget;
         private DateTime lastPercentUpdateTime;
         public bool InstallationCancelled;
-        private const int INSTALL_SUCCESSFUL = 1;
-        private const int INSTALL_FAILED_USER_CANCELED_MISSING_MODULES = 2;
-        private const int INSTALL_FAILED_ALOT_BLOCKING = 3;
-        private const int USER_CANCELED_INSTALLATION = 4;
+
+        public enum ModInstallCompletedStatus
+        {
+            INSTALL_SUCCESSFUL,
+            USER_CANCELED_INSTALLATION,
+            INSTALL_FAILED_USER_CANCELED_MISSING_MODULES,
+            INSTALL_FAILED_ALOT_BLOCKING,
+            INSTALL_FAILED_REQUIRED_DLC_MISSING
+        }
+
+
 
         public string Action { get; set; }
         public int Percent { get; set; }
@@ -116,11 +124,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var gamePath = gameTarget.TargetPath;
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
 
-            if (!PrecheckOfficialHeaders(gameDLCPath, installationJobs))
+            //Check we can install
+            var missingRequiredDLC = ModBeingInstalled.ValidateRequiredModulesAreInstalled(gameTarget);
+            if (missingRequiredDLC.Count > 0)
             {
-                e.Result = INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
+                e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING, missingRequiredDLC);
                 return;
             }
+
+            //Check/warn on official headers
+            if (!PrecheckOfficialHeaders(gameDLCPath, installationJobs))
+            {
+                e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES, (string)null);
+                return;
+            }
+            
             //todo: If statment on this
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
@@ -161,7 +179,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         });
                         if (cancel)
                         {
-                            e.Result = USER_CANCELED_INSTALLATION;
+                            e.Result = ModInstallCompletedStatus.USER_CANCELED_INSTALLATION;
                             return;
                         }
                         Log.Warning("User installing mod anyways even with ALOT installed");
@@ -170,7 +188,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Error("ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
                         //ALOT Installed, this is attempting to install a package file
-                        e.Result = INSTALL_FAILED_ALOT_BLOCKING;
+                        e.Result = ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING;
                         return;
                     }
                 }
@@ -343,9 +361,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             if (numFilesToInstall == numdone)
             {
-                e.Result = INSTALL_SUCCESSFUL;
+                e.Result = ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
                 Action = "Installed";
             }
+        }
+
+        private bool PrecheckRequiredDLC(string gameDLCPath)
+        {
+            foreach (var reqdlc in ModBeingInstalled.RequiredDLC)
+            {
+
+            }
+            return true;
+
         }
 
         private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action FileInstalledCallback = null, string ForcedSourcePath = null)
@@ -466,17 +494,45 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Result is int res)
+
+            if (e.Result is ModInstallCompletedStatus mcis)
             {
-                InstallationSucceeded = res == INSTALL_SUCCESSFUL;
-                if (res == INSTALL_FAILED_ALOT_BLOCKING)
+                //Success, canceled (generic and handled), ALOT canceled
+                InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
+                if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
                 {
+                    InstallationCancelled = true;
                     Xceed.Wpf.Toolkit.MessageBox.Show($"Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.", $"Installation blocked", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
+            {
+                //Failures with results
+                Log.Warning("Installation failed with status " + result.ToString());
+                switch (result)
+                {
+                    case ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING:
+                        string dlcText = "";
+                        foreach (var dlc in items)
+                        {
+                            var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
+                            if (info != null)
+                            {
+                                dlcText += $"\n - {info.modname} ({dlc})";
+                            }
+                            else
+                            {
+                                dlcText += $"\n - {dlc}";
+                            }
+                        }
+                        InstallationCancelled = true;
+                        Xceed.Wpf.Toolkit.MessageBox.Show($"This mod requires the following DLC/mods to be installed prior to installation:{dlcText}", $"Required content missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
                 }
             }
             else
             {
-                throw new Exception("Mod installer did not have return code.");
+                throw new Exception("Mod installer did not have return code. This should be caught and handled, but it wasn't.");
             }
             OnClosing(new EventArgs());
         }

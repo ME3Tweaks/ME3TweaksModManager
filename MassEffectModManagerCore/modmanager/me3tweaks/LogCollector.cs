@@ -1,10 +1,12 @@
-﻿namespace MassEffectModManagerCore.modmanager.me3tweaks
+﻿using MassEffectModManager;
+
+namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     class LogCollector
     {
-        public static string CollectLogs()
+        public static string CollectLogs(string logfile)
         {
-            string log = "This is a test message.";
+            string log = Utilities.ReadLockedTextFile(logfile);
             return log;
         }
     }

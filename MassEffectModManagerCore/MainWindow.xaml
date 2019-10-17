@@ -71,7 +71,7 @@
                         <MenuItem Name="DeveloperMode_MenuItem" Header="Developer mode" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="Enable developer-oriented features" IsCheckable="True"/>
                         <MenuItem Header="Logging" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Name="LogModStartup_MenuItem" Header="Log Mod Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True"/>
-                        <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True"/>
+                        <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True"/>
                         <MenuItem Name="LogModInstall_MenuItem" Header="Log Mod Installation" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True"/>
                     </MenuItem>
                     <Separator/>
@@ -84,33 +84,27 @@
                         <MenuItem Header="Import mod from .7z/.rar/.zip" Command="{Binding ImportArchiveCommand}"/>
                         <MenuItem Header="Import already installed Custom DLC mod"/>
                     </MenuItem>
-                    <MenuItem Header="Download ModMaker mod"/>
+                    <MenuItem Header="Download ModMaker mod" IsEnabled="False"/>
                     <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click"/>
                     <MenuItem Header="Custom DLC Conflict Detector"/>
-                    <MenuItem Header="Batch Mod Installer"/>
+                    <MenuItem Header="Batch Mod Installer" IsEnabled="False"/>
                     <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click"/>
-                    <MenuItem Header="Mixins (for ME3)">
+                    <MenuItem Header="Mixins (for ME3)" IsEnabled="False">
                         <MenuItem Header="MixIn Library"/>
                         <MenuItem Header="Clear Mixin Cache"/>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Mod Utils" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
-                    <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False"/>
+                    <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold"/>
                     <MenuItem Header="Check for updates"/>
                     <MenuItem Header="Restore mod from ME3Tweaks"/>
                     <Separator/>
-                    <MenuItem Header="Customize mod" Style="{StaticResource MenuItemHeaderStyle}"/>
-
-
-                    <MenuItem Header="Variants (Deprecated)"/>
-                    <MenuItem Header="Alternate installation options"/>
-                    <Separator/>
-                    <MenuItem Header="Install custom keybinds into this mod"/>
-                    <MenuItem Header="Developer options">
-                        <MenuItem Header="Metadata editor"/>
+                    <MenuItem Header="Install custom keybinds into this mod" IsEnabled="False"/>
+                    <MenuItem Header="Developer options" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
+                        <MenuItem Header="Metadata editor" IsEnabled="False"/>
                         <MenuItem Header="Deploy mod to 7z file for distribution" Command="{Binding DeployModCommand}"/>
                         <MenuItem Header="Prepare for updater service"/>
-                        <MenuItem Header="Mount.dlc files"/>
+                        <MenuItem Header="Mount.dlc files" IsEnabled="False"/>
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Open mod folder" Click="OpenModFolder_Click"/>

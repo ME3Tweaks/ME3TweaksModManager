@@ -97,6 +97,28 @@ namespace MassEffectModManager
             return Directory.CreateDirectory(Path.Combine(GetMMExecutableDirectory(), "data")).FullName;
         }
 
+        public static string ReadLockedTextFile(string file)
+        {
+            try
+            {
+                using (FileStream fileStream = new FileStream(
+                    file,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.ReadWrite))
+                {
+                    using (StreamReader streamReader = new StreamReader(fileStream))
+                    {
+                        return streamReader.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public static bool DeleteFilesAndFoldersRecursively(string targetDirectory)
         {
             bool result = true;
