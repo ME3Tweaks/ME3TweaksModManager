@@ -17,6 +17,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Flurl.Util;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.unreal;
@@ -41,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private MainWindow mainWindow;
 
         public Mod ModBeingDeployed { get; }
-
+        public string Header { get; set; } = "Prepare mod for distribution";
         public ArchiveDeployment(Mod mod, MainWindow mainWindow)
         {
             Analytics.TrackEvent("Started deployment for mod", new Dictionary<string, string>()
@@ -52,8 +53,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.mainWindow = mainWindow;
             ModBeingDeployed = mod;
 
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = "Verify mod version is correct: " + mod.ParsedModVersion, ValidationFunction = ManualValidation });
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = "Verify URL is correct: " + mod.ModWebsite, ValidationFunction = ManualValidation });
+            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = "Verify mod version is correct: " + mod.ParsedModVersion.ToString("0.0####"), ValidationFunction = ManualValidation });
+            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+            {
+                ItemText = "Verify URL is correct: " + mod.ModWebsite,
+                ValidationFunction = URLValidation,
+                ErrorsMessage = "Validation failed when attempting to validate the mod URL. A mod URL makes it easy for users to find your mod after importing it in the event they need assistance or want to endorse your mod.",
+                ErrorsTitle = "Mod URL errors were found",
+            });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
                 ItemText = "Verify mod description accuracy",
@@ -131,6 +138,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.RunWorkerAsync();
         }
 
+        private void URLValidation(DeploymentChecklistItem obj)
+        {
+            bool OK = Uri.TryCreate(ModBeingDeployed.ModWebsite, UriKind.Absolute, out var uriResult)
+                      && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            if (!OK)
+            {
+                obj.HasError = true;
+                obj.Icon = FontAwesomeIcon.TimesCircle;
+                obj.Foreground = Brushes.Red;
+                obj.Errors = new List<string>(new[] { $"The URL ({ModBeingDeployed.ModWebsite ?? "null"}) is not a valid URL. Update the modsite descriptor in moddesc.ini to point to your mod's page so users can easily find your mod after import." });
+                obj.ItemText = "Empty or invalid mod URL";
+                obj.ToolTip = "Validation failed";
+
+            }
+            else
+            {
+                obj.Icon = FontAwesomeIcon.CheckCircle;
+                obj.Foreground = Brushes.Green;
+                obj.ItemText = "Mod URL OK: " + ModBeingDeployed.ModWebsite;
+                obj.ToolTip = "Validation OK";
+            }
+        }
+
         private void CheckLocalizationsME3(DeploymentChecklistItem obj)
         {
             var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
@@ -138,6 +168,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
             var languages = StarterKitGeneratorWindow.me3languages;
             List<string> errors = new List<string>();
+            obj.ItemText = "Language check in progress";
             foreach (var customDLC in customDLCFolders)
             {
                 var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, "CookedPCConsole", customDLC);
@@ -159,6 +190,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 if (tlkMappings.Count > 1)
                 {
+                    //find TLK with most entries
+                    //var tlkCounts = tlkMappings.Select(x => (x.Key, x.Value.Count));
+                    double numLoops = Math.Pow(tlkMappings.Count - 1, tlkMappings.Count - 1);
+                    int numDone = 0;
+                    foreach (var mapping1 in tlkMappings)
+                    {
+                        foreach (var mapping2 in tlkMappings)
+                        {
+                            if (mapping1.Equals(mapping2))
+                            {
+                                continue;
+                            }
+
+                            var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
+                            foreach (var difference in differences)
+                            {
+                                var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? "<error finding string>";
+                                errors.Add($"TLKStringID {difference} is present in {mapping1.Key}  but is not present in {mapping2.Key}. Even if this mod is not truly localized to another language, the strings should be copied into other language TLK files to ensure users of that language will see strings instead of string references.\n{str}");
+                            }
+
+                            numDone++;
+                            double percent = (numDone * 100.0) / numLoops;
+                            obj.ItemText = $"Language check in progress {percent:0.00}%";
+                        }
+                    }
                     //use INT as master. Not sure if any mods are not-english based
                     //TODO
                 }
@@ -170,6 +226,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 obj.Foreground = Brushes.Orange;
                 obj.Errors = errors;
                 obj.ItemText = "Language check detected issues";
+                obj.ToolTip = "Validation failed";
 
             }
             else
@@ -177,6 +234,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 obj.Icon = FontAwesomeIcon.CheckCircle;
                 obj.Foreground = Brushes.Green;
                 obj.ItemText = "No language issues detected";
+                obj.ToolTip = "Validation OK";
             }
         }
 
@@ -285,7 +343,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 //local afc
                                 afcPath = localDirectoryAFCPath;
-
                             }
                             else
                             {
@@ -518,6 +575,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var compressor = new SevenZip.SevenZipCompressor();
             compressor.CompressionLevel = CompressionLevel.Ultra;
             //compressor.CustomParameters.Add("s", "on");
+            string currentDeploymentStep = "Mod";
             compressor.Progressing += (a, b) =>
             {
                 //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
@@ -528,7 +586,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Don't update UI too often. Once per second is enough.
                     string percent = (ProgressValue * 100.0 / ProgressMax).ToString("0.00");
-                    OperationText = $"Deployment in progress... {percent}%";
+                    OperationText = $"[{currentDeploymentStep}] Deployment in progress... {percent}%";
                     lastPercentUpdateTime = now;
                 }
                 //Debug.WriteLine(ProgressValue + "/" + ProgressMax);
@@ -538,10 +596,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Debug.WriteLine("Now compressing moddesc.ini...");
             compressor.CompressionMode = CompressionMode.Append;
             compressor.CompressionLevel = CompressionLevel.None;
+            currentDeploymentStep = "moddesc.ini";
             compressor.CompressFiles(archivePath, new string[]
             {
                 Path.Combine(ModBeingDeployed.ModPath, "moddesc.ini")
             });
+            OperationText = "Deployment succeeded";
             Utilities.HighlightInExplorer(archivePath);
         }
 
@@ -569,8 +629,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
         public bool PrecheckCompleted { get; private set; }
         public bool DeploymentInProgress { get; private set; }
-        public ulong ProgressMax { get; set; }
-        public ulong ProgressValue { get; set; }
+        public ulong ProgressMax { get; set; } = 100;
+        public ulong ProgressValue { get; set; } = 0;
         public string OperationText { get; set; } = "Verify above items before deployment";
 
         private DateTime lastPercentUpdateTime;
