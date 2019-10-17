@@ -29,6 +29,7 @@ using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
 using UserControl = System.Windows.Controls.UserControl;
 using Microsoft.Win32;
+using MassEffectModManagerCore.gamefileformats;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -70,6 +71,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ValidationFunction = CheckModSFARs
                 });
             }
+            var customDLCJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+            if (customDLCJob != null)
+            {
+                //Todo: Implement this for ME1, ME2
+                if (mod.Game == Mod.MEGame.ME3)
+                {
+                    var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
+                    customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
+
+                    if (customDLCFolders.Count > 0)
+                    {
+                        DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                        {
+                            ItemText = "Language support check",
+                            ModToValidateAgainst = mod,
+                            ValidationFunction = CheckLocalizationsME3,
+                            ErrorsMessage = "The language support check detected the following issues. Review these issues and fix them if applicable before deployment.",
+                            ErrorsTitle = "Language support issues detected in mod"
+                        });
+                    }
+                }
+            }
             if (mod.Game >= Mod.MEGame.ME2)
             {
                 DeploymentChecklistItems.Add(new DeploymentChecklistItem()
@@ -106,6 +129,55 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CommandManager.InvalidateRequerySuggested();
             };
             bw.RunWorkerAsync();
+        }
+
+        private void CheckLocalizationsME3(DeploymentChecklistItem obj)
+        {
+            var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
+            var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
+            customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
+            var languages = StarterKitGeneratorWindow.me3languages;
+            List<string> errors = new List<string>();
+            foreach (var customDLC in customDLCFolders)
+            {
+                var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, "CookedPCConsole", customDLC);
+                Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
+                foreach (var language in languages)
+                {
+                    var tlkLangPath = tlkBasePath + "_" + language.filecode + ".tlk";
+                    if (File.Exists(tlkLangPath))
+                    {
+                        //inspect
+                        TalkFileME2ME3 tf = new TalkFileME2ME3();
+                        tf.LoadTlkData(tlkLangPath);
+                        tlkMappings[language.filecode] = tf.StringRefs;
+                    }
+                    else
+                    {
+                        errors.Add(customDLC + " is missing a localized TLK for language " + language.filecode + ". This DLC will not load if the user's game language is set to this. Some versions of the game cannot have their language changed, so this will effectively lock the user out from using this mod.");
+                    }
+                }
+                if (tlkMappings.Count > 1)
+                {
+                    //use INT as master. Not sure if any mods are not-english based
+                    //TODO
+                }
+            }
+            if (errors.Count > 0)
+            {
+                obj.HasError = true;
+                obj.Icon = FontAwesomeIcon.Warning;
+                obj.Foreground = Brushes.Orange;
+                obj.Errors = errors;
+                obj.ItemText = "Language check detected issues";
+
+            }
+            else
+            {
+                obj.Icon = FontAwesomeIcon.CheckCircle;
+                obj.Foreground = Brushes.Green;
+                obj.ItemText = "No language issues detected";
+            }
         }
 
         private void CheckModSFARs(DeploymentChecklistItem item)
@@ -456,7 +528,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Don't update UI too often. Once per second is enough.
                     string percent = (ProgressValue * 100.0 / ProgressMax).ToString("0.00");
-                    OperationText = $"Deployment in progress... {percent}%"; 
+                    OperationText = $"Deployment in progress... {percent}%";
                     lastPercentUpdateTime = now;
                 }
                 //Debug.WriteLine(ProgressValue + "/" + ProgressMax);

@@ -23,8 +23,8 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class StarterKitGeneratorWindow : Window, INotifyPropertyChanged
     {
-        private static (string filecode, string langcode)[] me3languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("JPN", "jp-jp") };
-        private static (string filecode, string langcode)[] me2languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("HUN", "hu-hu"), ("CZE", "cs-cz") };
+        public static (string filecode, string langcode)[] me3languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("JPN", "jp-jp") };
+        public static (string filecode, string langcode)[] me2languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("HUN", "hu-hu"), ("CZE", "cs-cz") };
 
         public static GridLength VisibleRowHeight { get; } = new GridLength(25);
         public string BusyText { get; set; }

@@ -79,6 +79,7 @@ namespace MassEffectModManagerCore.gamefileformats
                     handler(percentProgress);
             }
 
+
             /// <summary>
             /// Loads a TLK file into memory.
             /// </summary>
