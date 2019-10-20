@@ -169,7 +169,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
         public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
 
-        public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback, Func<string, bool> restoreSfarConfirmationCallback, Action notifyRestoredCallback)
+        public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback, Func<string, bool> restoreSfarConfirmationCallback, Action notifySFARRestoringCallback, Action notifyRestoredCallback)
         {
             ModifiedBasegameFiles.ClearEx();
             ModifiedSFARFiles.ClearEx();
@@ -178,7 +178,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 //todo: Filter out SFARs?
                 if (file.EndsWith(".sfar"))
                 {
-                    ModifiedSFARFiles.Add(new SFARObject(file, this, restoreSfarConfirmationCallback, notifyRestoredCallback));
+                    ModifiedSFARFiles.Add(new SFARObject(file, this, restoreSfarConfirmationCallback, notifySFARRestoringCallback, notifyRestoredCallback));
                     return;
                 }
                 ModifiedBasegameFiles.Add(new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this, restoreBasegamefileConfirmationCallback, notifyRestoredCallback));
@@ -212,6 +212,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         public bool IsValid { get; set; }
+
+        public void NotifySFARBeingRestored()
+        {
+            foreach (var sfar in ModifiedSFARFiles)
+            {
+                sfar.OtherSFARBeingRestored = true;
+            }
+        }
 
         /// <summary>
         /// Validates a game directory by checking for multiple things that should be present in a working game.
@@ -257,9 +265,10 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public class SFARObject : INotifyPropertyChanged
         {
-            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action restoreCompletedCallback)
+            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action startingRestoreCallback, Action restoreCompletedCallback)
             {
                 RestoreConfirmationCallback = restoreSFARCallback;
+                this.startingRestoreCallback = startingRestoreCallback;
                 this.restoreCompletedCallback = restoreCompletedCallback;
                 this.target = target;
                 Unpacked = new FileInfo(file).Length == 32;
@@ -315,6 +324,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         restoreCompletedCallback?.Invoke();
                         restoring = false;
                     };
+                    startingRestoreCallback?.Invoke();
                     bw.RunWorkerAsync();
                 }
             }
@@ -328,10 +338,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             private bool checkedForBackupFile;
             private bool canRestoreSfar;
             private bool restoring;
-
+            public bool OtherSFARBeingRestored { get; set; }
             private bool CanRestoreSFAR()
             {
                 if (restoring) return false;
+                if (OtherSFARBeingRestored) return false;
                 if (checkedForBackupFile) return canRestoreSfar;
                 var backupPath = Utilities.GetGameBackupPath(target.Game);
                 canRestoreSfar = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
@@ -343,7 +354,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public string RestoreButtonContent { get; set; } = "Restore";
 
-            private Action restoreCompletedCallback;
+            private Action restoreCompletedCallback, startingRestoreCallback;
             private readonly GameTarget target;
             private readonly bool Unpacked;
 

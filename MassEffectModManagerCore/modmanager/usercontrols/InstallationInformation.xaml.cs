@@ -31,6 +31,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string BackupLocationString { get; set; }
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<InstalledDLCMod> DLCModsInstalled { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
+        public bool SFARBeingRestored { get; private set; }
+
         public InstallationInformation(List<GameTarget> targetsList, GameTarget selectedTarget)
         {
             DataContext = this;
@@ -79,6 +81,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 BackupLocationString = null;
             }
         }
+
+        
 
         private void PopulateUI()
         {
@@ -136,11 +140,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore {sfarPath}?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
+            void notifyStartingSfarRestoreCallback()
+            {
+                SFARBeingRestored = true;
+                SelectedTarget.NotifySFARBeingRestored();
+            }
+
             void notifyRestoredCallback()
             {
                 PopulateUI();
+
             }
-            SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback, restoreSfarConfirmationCallback, notifyRestoredCallback);
+            SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback, restoreSfarConfirmationCallback, notifyStartingSfarRestoreCallback, notifyRestoredCallback);
+            SFARBeingRestored = false;
         }
 
         public class InstalledDLCMod : INotifyPropertyChanged
@@ -226,7 +238,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private Action notifyDeleted;
 
             public ICommand DeleteCommand { get; set; }
-
             private bool CanDeleteDLCMod(object obj) => true;
 
             private void DeleteDLCMod(object obj)

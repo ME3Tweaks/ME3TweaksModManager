@@ -32,7 +32,7 @@
         </StackPanel.Resources>
         <TextBlock Text="Installation Information" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
         <TextBlock Text="Files installed into the basegame or official DLC directories cannot be tracked" TextAlignment="Center"/>
-        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Margin="0,5" Grid.Column="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch">
+        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Margin="0,5" Grid.Column="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
@@ -53,7 +53,7 @@
                 </Style>
             </ComboBox.ItemContainerStyle>
         </ComboBox>
-        <TabControl DataContext="{Binding SelectedTarget}">
+        <TabControl DataContext="{Binding SelectedTarget}" Padding="0">
             <TabItem Header="Installed DLC mods">
                 <DockPanel>
                     <ScrollViewer>
@@ -123,7 +123,11 @@
                 </ItemsControl>
             </TabItem>
             <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">
-                <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                <DockPanel Height="300">
+                    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="#f0f0f0">
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified SFARs" Command="{Binding RestoreAllModifiedSFARs}"/>
+                    </DockPanel>
+                <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,1">
@@ -152,6 +156,8 @@
                         </ControlTemplate>
                     </ItemsControl.Template>
                 </ItemsControl>
+                </DockPanel>
+
             </TabItem>
         </TabControl>
 
@@ -161,7 +167,7 @@
             <DockPanel Dock="Right" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
                     <Button Content="Open in Explorer" Padding="4" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right"/>
-                    <Button  Content="Close" Padding="4" Margin="3,0,0,0" VerticalAlignment="Bottom" Click="Close_Click" HorizontalAlignment="Right"/>
+                    <Button  Content="Close" Padding="4" Margin="3,0,0,0" VerticalAlignment="Bottom" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Click="Close_Click" HorizontalAlignment="Right"/>
                 </StackPanel>
                 <TextBlock Text="{Binding BackupLocationString}" DockPanel.Dock="Top" HorizontalAlignment="Right" TextAlignment="Right" Foreground="Gray" VerticalAlignment="Center"/>
             </DockPanel>
