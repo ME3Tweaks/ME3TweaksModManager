@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using IniParser;
@@ -257,6 +258,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     {
                         //ME2
                         IniData bioEngineIni = new IniData();
+                        bioEngineIni.Configuration.AssigmentSpacer = ""; //no spacer.
                         bioEngineIni["Core.System"]["!CookPaths"] = "CLEAR";
                         bioEngineIni["Core.System"]["+SeekFreePCPaths"] = $@"..\BIOGame\DLC\{dlcFolderName}\CookedPC";
 
@@ -267,10 +269,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                         bioEngineIni["Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString(); //Have to figure out what the point of this is.
 
                         bioEngineIni["DLCInfo"]["Version"] = 0.ToString(); //unknown
-                        bioEngineIni["DLCInfo"]["Flags"] = 2.ToString(); //unknown
+                        bioEngineIni["DLCInfo"]["Flags"] = ((int)skOption.ModMountFlag).ToString(); //unknown
                         bioEngineIni["DLCInfo"]["Name"] = skOption.ModInternalTLKID.ToString();
 
-                        new FileIniDataParser().WriteFile(Path.Combine(cookedDir, "BIOEngine.ini"), bioEngineIni);
+                        new FileIniDataParser().WriteFile(Path.Combine(cookedDir, "BIOEngine.ini"), bioEngineIni, new UTF8Encoding(false));
                     }
 
                     var tlkFilePrefix = skOption.ModGame == Mod.MEGame.ME3 ? dlcFolderName : $"DLC_{skOption.ModModuleNumber}";
@@ -279,10 +281,18 @@ namespace MassEffectModManagerCore.modmanager.windows
                     {
                         List<HuffmanCompressionME2ME3.TLKEntry> strs = new List<HuffmanCompressionME2ME3.TLKEntry>();
                         strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
-                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, skOption.ModDLCFolderName));
+                        if (skOption.ModGame == Mod.MEGame.ME2)
+                        {
+                            strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, "DLC_" + skOption.ModModuleNumber));
+                        }
+                        else
+                        {
+                            strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, skOption.ModDLCFolderName));
+                        }
+
                         strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 2, 2, lang.langcode));
                         strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 3, 3, "Male"));
-                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 4, 4, "Female"));
+                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 3, 4, "Female"));
 
                         foreach (var str in strs)
                         {
