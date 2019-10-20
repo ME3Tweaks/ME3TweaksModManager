@@ -30,7 +30,7 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// Registry key for Mass Effect Mod Manager itself. This likely won't be used much
         /// </summary>
-        internal const string REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\Mass Effect Mod Manager";
+        internal const string REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ME3Tweaks Mod Manager";
         /// <summary>
         /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
         /// </summary>
@@ -140,7 +140,7 @@ namespace MassEffectModManagerCore
                 Log.Information("===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
                 string version = fvi.FileVersion;
-                Log.Information("Mass Effect Mod Manager " + version);
+                Log.Information("ME3Tweaks Mod Manager " + version);
                 Log.Information("Application boot: " + DateTime.UtcNow.ToString());
                 Log.Information("Executable location: " + System.Reflection.Assembly.GetEntryAssembly().Location);
 
@@ -212,9 +212,9 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// Accesses the third party identification server. Key is the game enum as a string, results are dictionary of DLCName => Info.
         /// </summary>
-        internal static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
-        internal static string BugReportURL = "https://github.com/ME3Tweaks/MassEffectModManager/issues";
-        internal static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
+        public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
+        internal static string BugReportURL = "https://github.com/ME3Tweaks/ME3TweaksModManager/issues";
+        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
 
         public static string AppVersion
         {
@@ -266,7 +266,7 @@ namespace MassEffectModManagerCore
         /// <param name="e">Exception to process</param>
         static void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            string errorMessage = string.Format("Mass Effect Mod Manager has crashed! This is the exception that caused the crash:");
+            string errorMessage = string.Format("ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:");
             string st = FlattenException(e.Exception);
             Log.Fatal(errorMessage);
             Log.Fatal(st);
@@ -283,7 +283,7 @@ namespace MassEffectModManagerCore
         {
             if (!POST_STARTUP)
             {
-                string errorMessage = string.Format("Mass Effect Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
+                string errorMessage = string.Format("ME3Tweaks Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
                 File.WriteAllText(Path.Combine(Utilities.GetAppDataFolder(), "FATAL_STARTUP_CRASH.txt"), errorMessage);
             }
         }
@@ -312,11 +312,11 @@ namespace MassEffectModManagerCore
     class Options
     {
         [Option('u', "update-dest-path",
-            HelpText = "Indicates where this booting instance of Mass Effect Mod Manager should attempt to copy itself and reboot to")]
+            HelpText = "Indicates where this booting instance of ME3Tweaks Mod Manager should attempt to copy itself and reboot to")]
         public string UpdateDest { get; set; }
 
         [Option('c', "completing-update",
-            HelpText = "Indicates that we are booting a new copy of Mass Effect Mod Manager that has just been upgraded")]
+            HelpText = "Indicates that we are booting a new copy of ME3Tweaks Mod Manager that has just been upgraded")]
         public bool BootingNewUpdate { get; set; }
     }
 }
