@@ -36,6 +36,7 @@
     <None Remove="images\gameicons\Unknown_48.ico" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\origin.png" />
+    <None Remove="images\windowicon.png" />
     <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
     <None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
     <None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
@@ -67,13 +68,16 @@
     <None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
     <None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\windowicon.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="modmanager\binkw32\me2\binkw32.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me2\binkw32.dll" />
   </ItemGroup>
 
   <ItemGroup>

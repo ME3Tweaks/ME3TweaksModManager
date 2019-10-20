@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using MassEffectModManagerCore;
 using Newtonsoft.Json;
 using ME3Explorer.Packages;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 

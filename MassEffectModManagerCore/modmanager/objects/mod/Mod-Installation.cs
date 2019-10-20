@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.objects;
 using Serilog;

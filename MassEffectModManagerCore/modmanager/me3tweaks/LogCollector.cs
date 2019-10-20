@@ -1,4 +1,4 @@
-﻿using MassEffectModManager;
+﻿
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {

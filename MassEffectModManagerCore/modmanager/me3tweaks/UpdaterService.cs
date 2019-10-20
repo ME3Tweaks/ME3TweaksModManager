@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Linq;
 using ByteSizeLib;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 using Newtonsoft.Json;

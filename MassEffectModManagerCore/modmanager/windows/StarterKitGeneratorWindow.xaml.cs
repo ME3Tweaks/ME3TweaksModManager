@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using IniParser;
 using IniParser.Model;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.helpers;

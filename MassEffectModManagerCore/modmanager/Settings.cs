@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using IniParser;
 using IniParser.Model;
-using MassEffectModManager;
+
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager

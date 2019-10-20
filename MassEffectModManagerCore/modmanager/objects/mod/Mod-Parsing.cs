@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using IniParser.Parser;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;

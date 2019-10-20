@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using System.Windows.Input;
 using System.Diagnostics;

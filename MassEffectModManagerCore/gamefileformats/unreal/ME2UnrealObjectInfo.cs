@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using MassEffectModManager;
+using MassEffectModManagerCore;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Packages;

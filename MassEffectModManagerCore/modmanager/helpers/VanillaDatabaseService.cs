@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Gammtek.Conduit.IO;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.objects;

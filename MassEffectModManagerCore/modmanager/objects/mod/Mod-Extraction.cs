@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using IniParser.Parser;
-using MassEffectModManager;
+
 using ME3Explorer.Packages;
 using Serilog;
 using SevenZip;

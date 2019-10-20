@@ -30,7 +30,7 @@
                 </Style.Triggers>
             </Style>
         </StackPanel.Resources>
-        <TextBlock Text="What's installed" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
+        <TextBlock Text="Installation Information" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
         <TextBlock Text="Files installed into the basegame or official DLC directories cannot be tracked" TextAlignment="Center"/>
         <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Margin="0,5" Grid.Column="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch">
             <ComboBox.ItemTemplate>

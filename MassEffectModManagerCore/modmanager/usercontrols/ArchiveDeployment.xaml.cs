@@ -1,4 +1,4 @@
-﻿using MassEffectModManager;
+﻿
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;

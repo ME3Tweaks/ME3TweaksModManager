@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using Newtonsoft.Json;
 using Serilog;

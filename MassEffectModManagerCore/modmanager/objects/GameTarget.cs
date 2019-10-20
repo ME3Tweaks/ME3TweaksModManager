@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.usercontrols;

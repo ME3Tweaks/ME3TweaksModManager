@@ -14,7 +14,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using Microsoft.Win32;
 using Serilog;
 
-namespace MassEffectModManager
+namespace MassEffectModManagerCore
 {
     public static class Utilities
     {

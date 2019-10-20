@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ByteSizeLib;
 using Flurl.Http;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
@@ -59,6 +59,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
         public ICommand UploadLogCommand { get; set; }
         public ICommand CancelUploadCommand { get; set; }
+        public LogItem SelectedLog { get; set; }
 
         private void LoadCommands()
         {
@@ -90,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker("LogUpload");
             bw.DoWork += (a, b) =>
             {
-                string logUploadText = LogCollector.CollectLogs((LogSelector_ComboBox.SelectedItem as LogItem).filepath);
+                string logUploadText = LogCollector.CollectLogs(SelectedLog.filepath);
                 using (var output = new MemoryStream())
                 {
                     var encoder = new LzmaEncodeStream(output);

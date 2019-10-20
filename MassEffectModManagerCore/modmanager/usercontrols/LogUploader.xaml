@@ -21,7 +21,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding TopText, FallbackValue=Select a log to view on log viewing service}" TextAlignment="Center"></TextBlock>
-        <xctk:WatermarkComboBox Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="2" Name="LogSelector_ComboBox" ItemsSource="{Binding AvailableLogs}" Watermark="Select a log" Margin="0,5"/>
+        <xctk:WatermarkComboBox Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="2" Name="LogSelector_ComboBox" SelectedItem="{Binding SelectedLog}" ItemsSource="{Binding AvailableLogs}" Watermark="Select a log" Margin="0,5"/>
         <Button Grid.Row="3" Grid.Column="1" Content="Upload to log viewer" Command="{Binding UploadLogCommand}" Width="170"/>
         <Button Grid.Row="3" Grid.Column="0" Content="Cancel" Command="{Binding CancelUploadCommand}" Width="100" />
     </Grid>

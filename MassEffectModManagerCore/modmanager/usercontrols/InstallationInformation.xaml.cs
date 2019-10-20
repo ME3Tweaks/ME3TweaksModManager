@@ -16,7 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Serilog;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.helpers;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

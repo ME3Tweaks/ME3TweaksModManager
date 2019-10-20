@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser.Model;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using SevenZip;
 using MassEffectModManagerCore.modmanager.me3tweaks;

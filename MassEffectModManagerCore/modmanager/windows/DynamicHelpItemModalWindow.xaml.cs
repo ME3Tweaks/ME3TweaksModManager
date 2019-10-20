@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using FontAwesome.WPF;
-using MassEffectModManager;
+
 using MassEffectModManagerCore.modmanager.me3tweaks;
 
 namespace MassEffectModManagerCore.modmanager.windows

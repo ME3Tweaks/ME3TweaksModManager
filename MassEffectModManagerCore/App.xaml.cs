@@ -11,7 +11,7 @@ using System.Windows;
 using CommandLine;
 using System.Windows.Controls;
 using System.Diagnostics;
-using MassEffectModManager;
+
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;

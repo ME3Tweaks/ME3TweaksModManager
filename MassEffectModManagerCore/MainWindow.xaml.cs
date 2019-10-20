@@ -12,7 +12,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 //using IniParser;
 //using IniParser.Parser;
-using MassEffectModManagerCore;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -28,7 +27,7 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 
-namespace MassEffectModManager
+namespace MassEffectModManagerCore
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
