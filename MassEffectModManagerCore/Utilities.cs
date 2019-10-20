@@ -416,20 +416,20 @@ namespace MassEffectModManagerCore
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
             }
             else if (target.Game == Mod.MEGame.ME2)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
             }
             else if (target.Game == Mod.MEGame.ME3)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
                 File.Delete(obinkPath);
 
-                Utilities.ExtractInternalFile("MassEffectModManager.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
             }
             return true;
         }
