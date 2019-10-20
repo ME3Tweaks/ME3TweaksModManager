@@ -13,10 +13,10 @@
         ContentRendered="ModManager_ContentRendered"
         Style="{StaticResource WindowStyle}"
         AllowDrop="True"
-        Icon="/images/windowicon.png"
+        Icon="appicon.ico"
         Drop="Window_Drop"
         DragOver="Window_DragOver"
-        Title="Mass Effect Mod Manager" Height="600" Width="800" MinHeight="600" MinWidth="600">
+        Title="ME3Tweaks Mod Manager" Height="600" Width="800" MinHeight="600" MinWidth="600">
     <Window.Resources>
         <Style x:Key="MenuItemHeaderStyle" TargetType="{x:Type MenuItem}">
             <Setter Property="FontSize"
@@ -200,7 +200,7 @@
                     <Separator/>
                     <MenuItem Header="About" Style="{StaticResource MenuItemHeaderStyle}"/>
                     <MenuItem Header="moddesc.ini file format specification"></MenuItem>
-                    <MenuItem Header="About Mass Effect Mod Manager" Click="About_Click"/>
+                    <MenuItem Header="About ME3Tweaks Mod Manager" Click="About_Click"/>
                 </MenuItem>
             </Menu>
             <StatusBar DockPanel.Dock="Bottom" Padding="5,0" Background="Transparent">
@@ -339,5 +339,10 @@
                 <Setter Property="Margin" Value="5,0,5,5"/>
             </Style>
         </xctk:BusyIndicator.ProgressBarStyle>
+        <xctk:BusyIndicator.OverlayStyle>
+            <Style TargetType="Rectangle">
+                <Setter Property="Fill" Value="#88333333"/>
+            </Style>
+        </xctk:BusyIndicator.OverlayStyle>
     </xctk:BusyIndicator>
 </Window>

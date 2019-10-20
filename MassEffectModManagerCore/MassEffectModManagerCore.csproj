@@ -20,6 +20,8 @@
     <Description>Mod Manager for the original Mass Effect Trilogy</Description>
     <Company>ME3Tweaks</Company>
     <StartupObject>MassEffectModManagerCore.App</StartupObject>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
+    <AssemblyName>ME3TweaksModManager</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
@@ -27,6 +29,7 @@
     </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>
+    <None Remove="appicon.ico" />
     <None Remove="bundleddlls\lzo2wrapper.dll" />
     <None Remove="bundleddlls\sevenzipwrapper.dll" />
     <None Remove="bundleddlls\zlibwrapper.dll" />
@@ -35,6 +38,7 @@
     <None Remove="images\gameicons\ME3_48.ico" />
     <None Remove="images\gameicons\Unknown_48.ico" />
     <None Remove="images\loadingspinner.png" />
+    <None Remove="images\me3tweaks.png" />
     <None Remove="images\origin.png" />
     <None Remove="images\windowicon.png" />
     <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
@@ -69,6 +73,8 @@
     <None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="appicon.ico" />
+    <Resource Include="images\me3tweaks.png" />
     <Resource Include="images\windowicon.png" />
   </ItemGroup>
 

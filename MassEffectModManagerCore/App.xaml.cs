@@ -231,6 +231,20 @@ namespace MassEffectModManagerCore
             }
         }
 
+        public static string AppVersionAbout
+        {
+            get
+            {
+                string version = AppVersion;
+#if DEBUG
+                version += " DEBUG";
+#else
+                version += "TEST BUILD";
+#endif
+                return $"{version}, Build {BuildNumber}";
+            }
+        }
+
         public static string AppVersionHR
         {
             get
@@ -241,7 +255,7 @@ namespace MassEffectModManagerCore
 #else
                 version += "TEST BUILD";
 #endif
-                return $"Mass Effect Mod Manager {version} (Build {BuildNumber})";
+                return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
         }
 

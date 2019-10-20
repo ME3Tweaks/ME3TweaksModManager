@@ -724,9 +724,13 @@ namespace MassEffectModManagerCore
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            var o = new AboutWindow();
-            o.Owner = this;
-            o.ShowDialog();
+            var aboutWindow = new AboutPanel();
+            aboutWindow.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+            ShowBusyControl(aboutWindow); 
         }
 
         private void ModManagerWindow_Closing(object sender, CancelEventArgs e)
