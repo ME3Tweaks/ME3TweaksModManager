@@ -84,7 +84,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressMax = total;
                 ProgressText = $"Downloading update {ByteSize.FromBytes(done)} / {ByteSize.FromBytes(total)}";
             }
-            var updateFile = OnlineContent.DownloadToMemory(PrimaryDownloadLink, pCallback);
+            //debug
+            var downloadLinks = new { PrimaryDownloadLink, BackupDownloadLink };
+            string l = "https://github.com/ME3Tweaks/ME3TweaksModManager/releases/download/0.0.0.1/updatetest.7z";
+            var updateFile = OnlineContent.DownloadToMemory(l, pCallback);
             ProgressText = "Preparing to apply update";
             ProgressIndeterminate = true;
             if (updateFile.errorMessage == null) ApplyUpdateFromStream(updateFile.result);
@@ -104,10 +107,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressText = "Restarting Mod Manager";
                 Thread.Sleep(2000);
 
-                string args = $"--update-dest-path \"{Directory.GetParent(System.Reflection.Assembly.GetEntryAssembly().Location)}\"";
+                string args = $"--update-from {App.BuildNumber} --update-dest-path \"{System.Reflection.Assembly.GetExecutingAssembly().Location}\"";
                 Log.Information("Running update process: " + updateExecutablePath + " " + args);
                 Process.Start(updateExecutablePath, args);
-                Log.Information("Stopping Mod Manager for updates.");
+                Log.Information("Stopping Mod Manager to apply update");
                 Log.CloseAndFlush();
                 Environment.Exit(0);
             }
@@ -116,7 +119,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Error("Could not find ME3TweaksModManager.exe! Update will be aborted.");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Unable to apply update: ME3TweaksModManager.exe was not found in the archive.","Error applying update",MessageBoxButton.OK,MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Unable to apply update: ME3TweaksModManager.exe was not found in the archive.", "Error applying update", MessageBoxButton.OK, MessageBoxImage.Error);
                     OnClosing(EventArgs.Empty);
                 });
             }

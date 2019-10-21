@@ -91,40 +91,44 @@ namespace MassEffectModManagerCore
 
 
                 string[] args = Environment.GetCommandLineArgs();
-                Parsed<Options> parsedCommandLineArgs = null;
+                //Parsed<Options> parsedCommandLineArgs = null;
                 string updateDestinationPath = null;
 
-                #region Update boot
+                #region Command line
                 if (args.Length > 1)
                 {
                     var result = Parser.Default.ParseArguments<Options>(args);
-                    if (result.GetType() == typeof(Parsed<Options>))
+                    if (result is Parsed<Options> parsedCommandLineArgs)
                     {
-                        //Parsing succeeded - have to do update check to keep logs in order...
-                        parsedCommandLineArgs = (Parsed<Options>)result;
+                        //Parsing completed
                         if (parsedCommandLineArgs.Value.UpdateDest != null)
                         {
                             if (File.Exists(parsedCommandLineArgs.Value.UpdateDest))
                             {
                                 updateDestinationPath = parsedCommandLineArgs.Value.UpdateDest;
                             }
-                            if (parsedCommandLineArgs.Value.BootingNewUpdate)
-                            {
-                                Thread.Sleep(1000); //Delay boot to ensure update executable finishes
-                                try
-                                {
-                                    string updateFile = Path.Combine(exeFolder, "MassEffectModManager-Update.exe");
-                                    if (File.Exists(updateFile))
-                                    {
-                                        File.Delete(updateFile);
-                                        Log.Information("Deleted staged update");
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    Log.Warning("Unable to delete staged update: " + e.ToString());
-                                }
-                            }
+                            //if (parsedCommandLineArgs.Value.BootingNewUpdate)
+                            //{
+                            //    Thread.Sleep(1000); //Delay boot to ensure update executable finishes
+                            //    try
+                            //    {
+                            //        string updateFile = Path.Combine(exeFolder, "ME3TweaksModManager-Update.exe");
+                            //        if (File.Exists(updateFile))
+                            //        {
+                            //            File.Delete(updateFile);
+                            //            Log.Information("Deleted staged update");
+                            //        }
+                            //    }
+                            //    catch (Exception e)
+                            //    {
+                            //        Log.Warning("Unable to delete staged update: " + e.ToString());
+                            //    }
+                            //}
+                        }
+
+                        if (parsedCommandLineArgs.Value.UpdateFromBuild != 0)
+                        {
+                            App.UpdatedFrom = parsedCommandLineArgs.Value.UpdateFromBuild;
                         }
                     }
                 }
@@ -155,7 +159,7 @@ namespace MassEffectModManagerCore
                         i++;
                         try
                         {
-                            Log.Information("Applying update");
+                            Log.Information($"Applying update: {assembly.Location} -> {updateDestinationPath}");
                             File.Copy(assembly.Location, updateDestinationPath, true);
                             Log.Information("Update applied, restarting...");
                             break;
@@ -176,10 +180,15 @@ namespace MassEffectModManagerCore
                             }
                         }
                     }
-                    Log.Information("Rebooting into normal mode to complete update");
                     ProcessStartInfo psi = new ProcessStartInfo(updateDestinationPath);
-                    psi.WorkingDirectory = updateDestinationPath;
+                    psi.WorkingDirectory = Directory.GetParent(updateDestinationPath).FullName;
                     psi.Arguments = "--completing-update";
+                    if (App.UpdatedFrom > 0)
+                    {
+                        psi.Arguments += " --update-from " + App.UpdatedFrom;
+                    }
+                    Log.Information($"Booting new update: {updateDestinationPath} {psi.Arguments}");
+
                     Process.Start(psi);
                     Environment.Exit(0);
                     Current.Shutdown();
@@ -215,6 +224,8 @@ namespace MassEffectModManagerCore
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
         internal static string BugReportURL = "https://github.com/ME3Tweaks/ME3TweaksModManager/issues";
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
+        public static bool BootingUpdate;
+        public static int UpdatedFrom = 0;
 
         public static string AppVersion
         {
@@ -311,12 +322,14 @@ namespace MassEffectModManagerCore
 
     class Options
     {
-        [Option('u', "update-dest-path",
-            HelpText = "Indicates where this booting instance of ME3Tweaks Mod Manager should attempt to copy itself and reboot to")]
         public string UpdateDest { get; set; }
 
         [Option('c', "completing-update",
-            HelpText = "Indicates that we are booting a new copy of ME3Tweaks Mod Manager that has just been upgraded")]
-        public bool BootingNewUpdate { get; set; }
+            HelpText = "Indicates that we are booting a new copy of ME3Tweaks Mod Manager that has just been upgraded. --update-from should be included when calling this parameter.")]
+        public int BootingNewUpdate { get; set; }
+
+        [Option("update-from",
+            HelpText = "Indicates what build of Mod Manager we are upgrading from.")]
+        public int UpdateFromBuild { get; set; }
     }
 }

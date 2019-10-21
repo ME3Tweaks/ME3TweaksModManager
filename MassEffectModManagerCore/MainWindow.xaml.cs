@@ -191,6 +191,17 @@ namespace MassEffectModManagerCore
             ShowBusyControl(archiveDeploymentPane); //Todo: Support the progress bar updates in the queue
         }
 
+        private void ShowUpdateCompletedPane()
+        {
+            var archiveDeploymentPane = new UpdateCompletedPanel("Test message", "testtitle");
+            archiveDeploymentPane.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+            ShowBusyControl(archiveDeploymentPane);
+        }
+
         private bool CanShowDeploymentPane()
         {
             return SelectedMod != null && Settings.DeveloperMode;
@@ -479,6 +490,10 @@ namespace MassEffectModManagerCore
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
+            if (App.BootingUpdate)
+            {
+                ShowUpdateCompletedPane();
+            }
             LoadMods();
             PerformStartupNetworkFetches(true);
         }
@@ -730,7 +745,7 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
             };
             UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-            ShowBusyControl(aboutWindow); 
+            ShowBusyControl(aboutWindow);
         }
 
         private void ModManagerWindow_Closing(object sender, CancelEventArgs e)
@@ -808,7 +823,7 @@ namespace MassEffectModManagerCore
                     try
                     {
                         var manifest = OnlineContent.FetchOnlineStartupManifest();
-#if DEBUG
+#if !DEBUG
                         if (int.Parse(manifest["latest_build_number"]) > 0)
 #else
                         if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
