@@ -2,7 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using Gammtek.Conduit.Extensions.IO;
 using MassEffectModManagerCore.modmanager.helpers;
 
 namespace ME3Explorer.Unreal
@@ -94,26 +93,26 @@ namespace ME3Explorer.Unreal
                 byte[] SHA1 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 MemoryStream fs = new MemoryStream();
 
-                StreamExtensions.WriteInt32(fs, 0x3AB70C13);
-                StreamExtensions.WriteInt32(fs, 0x0);
-                StreamExtensions.WriteInt32(fs, 0x1);
-                StreamExtensions.WriteInt32(fs, 0x8);
-                StreamExtensions.WriteInt32(fs, filesystemInfo.Count);
+                fs.WriteInt32(0x3AB70C13);
+                fs.WriteInt32(0x0);
+                fs.WriteInt32(0x1);
+                fs.WriteInt32(0x8);
+                fs.WriteInt32(filesystemInfo.Count);
                 for (int i = 0; i < filesystemInfo.Count; i++)
                 {
                     (string file, int size) entry = filesystemInfo[i];
                     if (i == filesystemInfo.Count - 1) //Entry Size - is last item?
-                        StreamExtensions.WriteUInt16(fs, 0);
+                        fs.WriteUInt16(0);
                     else
-                        StreamExtensions.WriteUInt16(fs, (ushort)(0x1D + entry.file.Length));
-                    StreamExtensions.WriteUInt16(fs, 0); //Flags
+                        fs.WriteUInt16((ushort)(0x1D + entry.file.Length));
+                    fs.WriteUInt16(0); //Flags
                     if (Path.GetFileName(entry.file).ToLower() != "pcconsoletoc.bin")
                     {
-                        StreamExtensions.WriteInt32(fs, entry.size); //Filesize
+                        fs.WriteInt32(entry.size); //Filesize
                     }
                     else
                     {
-                        StreamExtensions.WriteInt32(fs, 0); //Filesize
+                        fs.WriteInt32(0); //Filesize
                     }
 
                     fs.Write(SHA1, 0, 20);

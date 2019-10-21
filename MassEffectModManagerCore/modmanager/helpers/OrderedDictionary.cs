@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gammtek.Conduit.Extensions.Collections.Generic;
+using MassEffectModManagerCore.modmanager.helpers;
 using Newtonsoft.Json;
 
 namespace ME3Explorer

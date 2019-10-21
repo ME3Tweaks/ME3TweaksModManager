@@ -780,6 +780,93 @@ namespace MassEffectModManagerCore.modmanager.helpers
             stream.WriteInt32(pcc.FindNameOrAdd(name.Name));
             stream.WriteInt32(name.Number);
         }
+
+        public static int IndexOf<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer = null)
+        {
+            return IndexOf(source, value, 0, comparer);
+        }
+
+        public static int IndexOf<TSource>(this IEnumerable<TSource> source, TSource value, int startIndex, IEqualityComparer<TSource> comparer = null)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(startIndex));
+            }
+
+            var collection = source as ICollection<TSource> ?? source.ToList();
+
+            if ((uint)startIndex >= (uint)collection.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            }
+
+            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            var idx = startIndex;
+
+            foreach (var item in collection.Skip(startIndex))
+            {
+                if (comparer.Equals(item, value))
+                {
+                    return idx;
+                }
+
+                idx++;
+            }
+
+            return -1;
+        }
+
+        public static void WriteGuid(this Stream stream, Guid value)
+        {
+            var data = value.ToByteArray();
+
+            Debug.Assert(data.Length == 16);
+
+            stream.WriteInt32(BitConverter.ToInt32(data, 0));
+            stream.WriteInt16(BitConverter.ToInt16(data, 4));
+            stream.WriteInt16(BitConverter.ToInt16(data, 6));
+            stream.Write(data, 8, 8);
+        }
+
+        public static Guid ReadGuid(this Stream stream)
+        {
+            var a = stream.ReadInt32();
+            var b = stream.ReadInt16();
+            var c = stream.ReadInt16();
+            var d = stream.ReadBytesFromStream(8);
+
+            return new Guid(a, b, c, d);
+        }
+
+        public static int IndexOf<TSource>(this IEnumerable<TSource> source, TSource value, int startIndex, int count, IEqualityComparer<TSource> comparer = null)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(startIndex));
+            }
+
+            var collection = source as ICollection<TSource> ?? source.ToList();
+
+            if ((uint)startIndex >= (uint)collection.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            }
+
+            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            var idx = startIndex;
+
+            foreach (var item in collection.Skip(startIndex).TakeWhile((item, index) => index < count))
+            {
+                if (comparer.Equals(item, value))
+                {
+                    return idx;
+                }
+
+                idx++;
+            }
+
+            return -1;
+        }
     }
 
     public static class CollectionExtensions

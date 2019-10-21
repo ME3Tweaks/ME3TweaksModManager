@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Gammtek.Conduit.IO;
-
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.objects;
@@ -304,7 +302,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
         internal static string GetGameSource(GameTarget target)
         {
             var md5 = Utilities.CalculateMD5(MEDirectories.ExecutablePath(target));
-            Dictionary<string, string> lookupDict = null;
             switch (target.Game)
             {
                 case Mod.MEGame.ME1:

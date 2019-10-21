@@ -4,17 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using Gammtek.Conduit.Extensions.Collections.Generic;
-
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
@@ -36,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             handler?.Invoke(this, e);
         }
 
-        public ObservableCollection<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollection<OnlineContent.ModUpdateInfo>();
+        public ObservableCollectionExtended<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<OnlineContent.ModUpdateInfo>();
 
         public ModUpdateInformation(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
         {

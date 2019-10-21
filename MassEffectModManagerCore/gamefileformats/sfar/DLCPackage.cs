@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Gammtek.Conduit.Extensions.Collections.Generic;
 using MassEffectModManagerCore.modmanager.helpers;
 using ME3Explorer;
 using ME3Explorer.Unreal;

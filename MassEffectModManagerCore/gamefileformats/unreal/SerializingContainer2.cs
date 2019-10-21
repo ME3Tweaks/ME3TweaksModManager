@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Gammtek.Conduit.Extensions.IO;
 using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.helpers;

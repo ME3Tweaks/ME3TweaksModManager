@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Gammtek.Conduit.Extensions.IO;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager;
