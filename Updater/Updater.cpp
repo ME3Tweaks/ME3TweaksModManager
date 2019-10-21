@@ -3,6 +3,8 @@
 #include <cstring>
 #include <Windows.h>
 #include <string>
+#include <chrono>
+#include <thread>
 
 void RunProcessWithArgs(LPCSTR lpApplicationName, LPSTR commandLine)
 {
@@ -101,8 +103,8 @@ int main(int argc, char* argv[])
 		catch (const std::exception & e)
 		{
 			std::cout << "Could not copy file to destination: " << e.what() << '\n';
-
 		}
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	if (!updateInstalled) {
 		std::cerr << "ERROR: Unable to copy file to the destination after 10 attempts. We are giving up.";
@@ -111,7 +113,7 @@ int main(int argc, char* argv[])
 	//Update OK
 	std::string rebootArgs = "--completing-update";
 	if (updatingFrom) {
-		rebootArgs += "--update from " + std::string(updatingFrom);
+		rebootArgs += " --update from " + std::string(updatingFrom);
 	}
 
 	std::cout << "Booting update: " << updateDestination << " " << rebootArgs;
