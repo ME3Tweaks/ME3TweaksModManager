@@ -125,7 +125,8 @@
             <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">
                 <DockPanel Height="300">
                     <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="#f0f0f0">
-                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified SFARs" Command="{Binding RestoreAllModifiedSFARs}"/>
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified SFARs" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedSFARs}"/>
                     </DockPanel>
                 <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
                     <ItemsControl.ItemTemplate>

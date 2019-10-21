@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -169,7 +170,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
         public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
 
-        public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback, Func<string, bool> restoreSfarConfirmationCallback, Action notifySFARRestoringCallback, Action notifyRestoredCallback)
+        public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback, Func<string, bool> restoreSfarConfirmationCallback, Action notifySFARRestoringCallback, Action<object> notifyRestoredCallback)
         {
             ModifiedBasegameFiles.ClearEx();
             ModifiedSFARFiles.ClearEx();
@@ -215,10 +216,10 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void NotifySFARBeingRestored()
         {
-            foreach (var sfar in ModifiedSFARFiles)
-            {
-                sfar.OtherSFARBeingRestored = true;
-            }
+            //foreach (var sfar in ModifiedSFARFiles)
+            //{
+            //    sfar.OtherSFARBeingRestored = true;
+            //}
         }
 
         /// <summary>
@@ -265,11 +266,12 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public class SFARObject : INotifyPropertyChanged
         {
-            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action startingRestoreCallback, Action restoreCompletedCallback)
+            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action startingRestoreCallback, Action<object> notifyNoLongerModifiedCallback)
             {
                 RestoreConfirmationCallback = restoreSFARCallback;
+                IsModified = true;
                 this.startingRestoreCallback = startingRestoreCallback;
-                this.restoreCompletedCallback = restoreCompletedCallback;
+                this.notifyNoLongerModified = notifyNoLongerModifiedCallback;
                 this.target = target;
                 Unpacked = new FileInfo(file).Length == 32;
                 DLCDirectory = Directory.GetParent(Directory.GetParent(file).FullName).FullName;
@@ -289,12 +291,33 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var unpackedFiles = Directory.GetFiles(DLCDirectory, "*", SearchOption.AllDirectories);
                     if (unpackedFiles.Any(x => Path.GetExtension(x) == ".bin") && !Unpacked) Inconsistent = true;
                 }
-                RestoreCommand = new GenericCommand(RestoreSFAR, CanRestoreSFAR);
+                RestoreCommand = new GenericCommand(RestoreSFARWrapper, CanRestoreSFAR);
             }
 
-            private void RestoreSFAR()
+            public bool RevalidateIsModified(bool notify = true)
             {
-                bool? restore = RestoreConfirmationCallback?.Invoke(FilePath);
+                bool _isModified = IsModified;
+                IsModified = !VanillaDatabaseService.IsFileVanilla(target, Path.Combine(target.TargetPath, FilePath));
+                if (!IsModified && _isModified && notify)
+                {
+                    Debug.WriteLine("Notifying that " + FilePath + " is no longer modified.");
+                    notifyNoLongerModified?.Invoke(this);
+                }
+                return IsModified;
+            }
+            public bool IsModified { get; set; }
+
+            private Action<object> notifyNoLongerModified;
+
+            private void RestoreSFARWrapper()
+            {
+                RestoreSFAR(false);
+            }
+
+            public void RestoreSFAR(bool batchRestore)
+            {
+                bool? restore = batchRestore;
+                if (!restore.Value) restore = RestoreConfirmationCallback?.Invoke(FilePath);
                 if (restore.HasValue && restore.Value)
                 {
                     //Todo: Background thread this maybe?
@@ -303,7 +326,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
-                        restoring = true;
+                        Restoring = true;
                         Log.Information("Restoring SFAR from backup: " + backupFile + " => " + targetFile);
                         XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = $"Restoring {pce.ProgressPercentage}%"; });
                         var unpackedFiles = Directory.GetFiles(DLCDirectory, "*", SearchOption.AllDirectories);
@@ -317,12 +340,17 @@ namespace MassEffectModManagerCore.modmanager.objects
                             }
                         }
                         Utilities.DeleteEmptySubdirectories(DLCDirectory);
+                        RestoreButtonContent = "Restored";
                     };
                     bw.RunWorkerCompleted += (a, b) =>
                     {
                         //File.Copy(backupFile, targetFile, true);
-                        restoreCompletedCallback?.Invoke();
-                        restoring = false;
+                        //if (!batchRestore)
+                        //{
+                        RevalidateIsModified();
+                        //restoreCompletedCallback?.Invoke();
+                        //}
+                        Restoring = false;
                     };
                     startingRestoreCallback?.Invoke();
                     bw.RunWorkerAsync();
@@ -337,11 +365,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             private bool checkedForBackupFile;
             private bool canRestoreSfar;
-            private bool restoring;
+            public bool Restoring { get; set; }
             public bool OtherSFARBeingRestored { get; set; }
             private bool CanRestoreSFAR()
             {
-                if (restoring) return false;
+                if (Restoring) return false;
                 if (OtherSFARBeingRestored) return false;
                 if (checkedForBackupFile) return canRestoreSfar;
                 var backupPath = Utilities.GetGameBackupPath(target.Game);
@@ -375,11 +403,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             private bool checkedForBackupFile;
             public string FilePath { get; }
             private GameTarget target;
-            private Action notifyRestoredCallback;
+            private Action<object> notifyRestoredCallback;
             private Func<string, bool> restoreBasegamefileConfirmationCallback;
             public ICommand RestoreCommand { get; }
 
-            public ModifiedFileObject(string filePath, GameTarget target, Func<string, bool> restoreBasegamefileConfirmationCallback, Action notifyRestoredCallback)
+            public ModifiedFileObject(string filePath, GameTarget target, Func<string, bool> restoreBasegamefileConfirmationCallback, Action<object> notifyRestoredCallback)
             {
                 this.FilePath = filePath;
                 this.target = target;
@@ -397,7 +425,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
                     var targetFile = Path.Combine(target.TargetPath, FilePath);
                     File.Copy(backupFile, targetFile, true);
-                    notifyRestoredCallback?.Invoke();
+                    notifyRestoredCallback?.Invoke(this);
                 }
             }
 

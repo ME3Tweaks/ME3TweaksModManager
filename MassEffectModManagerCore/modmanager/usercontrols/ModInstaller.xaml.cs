@@ -51,7 +51,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             USER_CANCELED_INSTALLATION,
             INSTALL_FAILED_USER_CANCELED_MISSING_MODULES,
             INSTALL_FAILED_ALOT_BLOCKING,
-            INSTALL_FAILED_REQUIRED_DLC_MISSING
+            INSTALL_FAILED_REQUIRED_DLC_MISSING,
+            INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS
         }
 
 
@@ -138,7 +139,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES, (string)null);
                 return;
             }
-            
+
             //todo: If statment on this
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
@@ -201,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Calculate number of installation tasks beforehand - we won't know SFAR cou
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
-            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * 2; //*2 as we have to extract and install
+            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * (ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
             Debug.WriteLine("Number of expected installation tasks: " + numFilesToInstall);
             void FileInstalledCallback()
             {
@@ -283,6 +284,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (!ModBeingInstalled.IsInArchive)
             {
                 //Direct copy
+                Log.Information($"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
                 CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback);
             }
             else
@@ -364,13 +366,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 e.Result = ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
                 Action = "Installed";
             }
+            else
+            {
+                e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
+            }
         }
 
         private bool PrecheckRequiredDLC(string gameDLCPath)
         {
             foreach (var reqdlc in ModBeingInstalled.RequiredDLC)
             {
-
+                //todo
             }
             return true;
 
@@ -391,6 +397,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //}
 
             //Open SFAR
+            Log.Information($"Installing {sfarJob.fileMapping.Count} files into {sfarJob.sfarPath}");
             DLCPackage dlc = new DLCPackage(sfarJob.sfarPath);
 
             //Add or Replace file install
@@ -494,7 +501,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
+            if (e.Error != null)
+            {
+                Log.Error("An error occured during mod installation.\n" + App.FlattenException(e.Error));
+            }
             if (e.Result is ModInstallCompletedStatus mcis)
             {
                 //Success, canceled (generic and handled), ALOT canceled
@@ -503,6 +513,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     InstallationCancelled = true;
                     Xceed.Wpf.Toolkit.MessageBox.Show($"Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.", $"Installation blocked", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show($"Mod was installed but did not pass installation count verification. This is likely a bug in Mod Maanger, please report this to Mgamerz on Discord.", $"Installation suceeded, maybe", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             else if (e.Result is (ModInstallCompletedStatus result, List<string> items))

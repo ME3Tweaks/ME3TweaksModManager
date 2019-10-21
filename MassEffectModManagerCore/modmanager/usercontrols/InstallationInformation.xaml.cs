@@ -41,10 +41,46 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
             InstallationTargets_ComboBox.SelectedItem = selectedTarget;
         }
-
+        public ICommand RestoreAllModifiedSFARs { get; set; }
         private void LoadCommands()
         {
+            RestoreAllModifiedSFARs = new GenericCommand(RestoreAllSFARs, CanRestoreAllSFARs);
+        }
 
+        private void RestoreAllSFARs()
+        {
+            bool restore = false;
+            if (SelectedTarget.ALOTInstalled)
+            {
+                if (!Settings.DeveloperMode)
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore SFAR files", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                else
+                {
+                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    restore = res == MessageBoxResult.Yes;
+
+                }
+            }
+            else
+            {
+                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore all modified SFARs?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+
+            }
+            if (restore)
+            {
+                foreach (var v in SelectedTarget.ModifiedSFARFiles)
+                {
+                    v.RestoreSFAR(true);
+                }
+            }
+        }
+
+        private bool CanRestoreAllSFARs()
+        {
+            return SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
         public event EventHandler<DataEventArgs> Close;
@@ -82,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        
+
 
         private void PopulateUI()
         {
@@ -146,10 +182,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SelectedTarget.NotifySFARBeingRestored();
             }
 
-            void notifyRestoredCallback()
+            void notifyRestoredCallback(object itemRestored)
             {
-                PopulateUI();
-
+                if (itemRestored is GameTarget.ModifiedFileObject mf)
+                {
+                    SelectedTarget.ModifiedBasegameFiles.Remove(mf);
+                }
+                else if (itemRestored is GameTarget.SFARObject ms)
+                {
+                    if (!ms.IsModified)
+                    {
+                        SelectedTarget.ModifiedSFARFiles.Remove(ms);
+                    }
+                    bool resetSfarsBeingRestored = SelectedTarget.ModifiedSFARFiles.Count == 0;
+                    if (!resetSfarsBeingRestored)
+                    {
+                        resetSfarsBeingRestored = !SelectedTarget.ModifiedSFARFiles.Any(x => x.Restoring);
+                    }
+                    if (resetSfarsBeingRestored)
+                    {
+                        SFARBeingRestored = false;
+                    }
+                }
             }
             SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback, restoreSfarConfirmationCallback, notifyStartingSfarRestoreCallback, notifyRestoredCallback);
             SFARBeingRestored = false;
