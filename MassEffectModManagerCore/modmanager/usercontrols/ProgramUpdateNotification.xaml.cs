@@ -20,6 +20,7 @@ using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
 using Path = System.IO.Path;
@@ -90,26 +91,46 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var updateFile = OnlineContent.DownloadToMemory(l, pCallback);
             ProgressText = "Preparing to apply update";
             ProgressIndeterminate = true;
-            if (updateFile.errorMessage == null) ApplyUpdateFromStream(updateFile.result);
-
+            if (updateFile.errorMessage == null) { ApplyUpdateFromStream(updateFile.result); }
+            else
+            {
+                Log.Error("Error downloading update: " + updateFile.errorMessage);
+                Analytics.TrackEvent("Error downloading update", new Dictionary<string, string>() { { "Error message", updateFile.errorMessage } });
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), updateFile.errorMessage, "Error downloading update", MessageBoxButton.OK, MessageBoxImage.Error);
+                    OnClosing(EventArgs.Empty);
+                });
+            }
         }
 
         private void ApplyUpdateFromStream(MemoryStream updatearchive)
         {
+            Log.Information("Extracting update from memory");
             SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
             var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), "Update")).FullName;
             sve.ExtractArchive(outDirectory);
-
+            var updaterExe = Path.Combine(outDirectory, "ME3TweaksUpdater.exe");
+            Utilities.ExtractInternalFile("MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
             var updateExecutablePath = Path.Combine(outDirectory, "ME3TweaksModManager.exe");
-            if (File.Exists(updateExecutablePath))
+            if (File.Exists(updateExecutablePath) && File.Exists(updaterExe))
             {
 
                 ProgressText = "Restarting Mod Manager";
                 Thread.Sleep(2000);
 
-                string args = $"--update-from {App.BuildNumber} --update-dest-path \"{System.Reflection.Assembly.GetExecutingAssembly().Location}\"";
-                Log.Information("Running update process: " + updateExecutablePath + " " + args);
-                Process.Start(updateExecutablePath, args);
+                string args = $"--update-from {App.BuildNumber} --update-source-path \"{updateExecutablePath}\" --update-dest-path \"{App.ExecutableLocation}\"";
+                Log.Information("Running updater: " + updaterExe + " " + args);
+
+                Process process = new Process();
+                // Stop the process from opening a new window
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+
+                // Setup executable and parameters
+                process.StartInfo.FileName = updaterExe;
+                process.StartInfo.Arguments = args;
+                process.Start();
                 Log.Information("Stopping Mod Manager to apply update");
                 Log.CloseAndFlush();
                 Environment.Exit(0);

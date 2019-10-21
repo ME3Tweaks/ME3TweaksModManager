@@ -67,7 +67,8 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
-            var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
+           // var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
+            ExecutableLocation = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false);
@@ -78,9 +79,7 @@ namespace MassEffectModManagerCore
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             try
             {
-                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                string exePath = assembly.Location;
-                string exeFolder = Directory.GetParent(exePath).ToString();
+                string exeFolder = Directory.GetParent(ExecutableLocation).ToString();
                 Log.Logger = new LoggerConfiguration().WriteTo.SizeRollingFile(Path.Combine(App.LogDir, "modmanagerlog.txt"),
                         retainedFileDurationLimit: TimeSpan.FromDays(14),
                         fileSizeLimitBytes: 1024 * 1024 * 10) // 10MB
@@ -142,11 +141,11 @@ namespace MassEffectModManagerCore
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
                 Log.Information("===========================================================================");
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;
                 Log.Information("ME3Tweaks Mod Manager " + version);
                 Log.Information("Application boot: " + DateTime.UtcNow.ToString());
-                Log.Information("Executable location: " + System.Reflection.Assembly.GetEntryAssembly().Location);
+                Log.Information("Executable location: " + ExecutableLocation);
 
                 #region Update mode boot
                 if (updateDestinationPath != null)
@@ -159,8 +158,8 @@ namespace MassEffectModManagerCore
                         i++;
                         try
                         {
-                            Log.Information($"Applying update: {assembly.Location} -> {updateDestinationPath}");
-                            File.Copy(assembly.Location, updateDestinationPath, true);
+                            Log.Information($"Applying update: {ExecutableLocation} -> {updateDestinationPath}");
+                            File.Copy(ExecutableLocation, updateDestinationPath, true);
                             Log.Information("Update applied, restarting...");
                             break;
                         }
@@ -269,6 +268,8 @@ namespace MassEffectModManagerCore
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
         }
+
+        public static string ExecutableLocation { get; private set; }
 
         /// <summary>
         /// Called when an unhandled exception occurs. This method can only be invoked after startup has completed. 

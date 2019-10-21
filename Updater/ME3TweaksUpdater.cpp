@@ -38,6 +38,7 @@ void RunProcessWithArgs(LPCSTR lpApplicationName, LPSTR commandLine)
 
 int main(int argc, char* argv[])
 {
+
 	char* updatingFrom = NULL;
 	char* updateDestination = NULL;
 	char* updateSource = NULL;
@@ -51,23 +52,23 @@ int main(int argc, char* argv[])
 				std::cout << "Updating from " << updatingFrom << '\n';
 			}
 			else {
-				std::cerr << "ERROR: No argument for --update-from.";
+				std::cout << "ERROR: No argument for --update-from.";
 				return 1;
 			}
 		}
-		else if (strcmp(argv[i], "--update-source") == 0) {
+		else if (strcmp(argv[i], "--update-source-path") == 0) {
 			if (argc >= i + 1) {
 				updateSource = argv[i + 1];
 				i++;
 				std::cout << "Update source " << updateSource << '\n';
 
 				if (!std::filesystem::exists(updateSource)) {
-					std::cerr << "ERROR: --update-source file does not exist.";
+					std::cout << "ERROR: --update-source-path file does not exist.";
 					return 1;
 				}
 			}
 			else {
-				std::cerr << "ERROR: No argument for --update-source.";
+				std::cout << "ERROR: No argument for --update-source-path.";
 				return 1;
 			}
 		}
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
 				std::cout << "Update destination: " << updateDestination << '\n';
 			}
 			else {
-				std::cerr << "ERROR: No argument for --update-source.";
+				std::cout << "ERROR: No argument for --update-dest-path.";
 				return 1;
 			}
 		}
@@ -87,7 +88,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	if (!updateSource || !updateDestination) {
-		std::cerr << "ERROR: --update-source and --update-destination are required.";
+		std::cout << "ERROR: --update-source-path and --update-dest-path are required.";
 		return 1;
 	}
 
@@ -107,7 +108,7 @@ int main(int argc, char* argv[])
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	if (!updateInstalled) {
-		std::cerr << "ERROR: Unable to copy file to the destination after 10 attempts. We are giving up.";
+		std::cout << "ERROR: Unable to copy file to the destination after 10 attempts. We are giving up.";
 		return 1;
 	}
 	//Update OK

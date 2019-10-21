@@ -18,7 +18,7 @@ namespace MassEffectModManagerCore
 {
     public static class Utilities
     {
-        public static string GetMMExecutableDirectory() => Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        public static string GetMMExecutableDirectory() => Path.GetDirectoryName(App.ExecutableLocation);
 
         public static string GetModsDirectory()
         {
