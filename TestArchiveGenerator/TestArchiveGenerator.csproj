@@ -6,7 +6,8 @@
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier><Platforms>AnyCPU;x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,10 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using Gibbed.IO;
 //using AmaroK86.MassEffect3.ZlibBlock;
 using System.Threading.Tasks;
 using LZO2Helper;
@@ -69,8 +67,8 @@ namespace ME3Explorer.Packages
             using (FileStream input = File.OpenRead(pccFileName))
             {
                 input.Seek(4, SeekOrigin.Begin); //skip package tag
-                ushort versionLo = input.ReadValueU16();
-                ushort versionHi = input.ReadValueU16();
+                ushort versionLo = input.ReadUInt16();
+                ushort versionHi = input.ReadUInt16();
 
                 //ME3
                 if (versionLo == 684 && versionHi == 194)
@@ -97,12 +95,12 @@ namespace ME3Explorer.Packages
         public static MemoryStream DecompressME1orME2(Stream raw)
         {
             raw.Seek(4, SeekOrigin.Begin);
-            ushort versionLo = raw.ReadValueU16();
-            ushort versionHi = raw.ReadValueU16();
+            ushort versionLo = raw.ReadUInt16();
+            ushort versionHi = raw.ReadUInt16();
             raw.Seek(12, SeekOrigin.Begin);
-            int tempNameSize = raw.ReadValueS32();
+            int tempNameSize = raw.ReadInt32();
             raw.Seek(64 + tempNameSize, SeekOrigin.Begin);
-            int tempGenerations = raw.ReadValueS32();
+            int tempGenerations = raw.ReadInt32();
             raw.Seek(32 + tempGenerations * 12, SeekOrigin.Current);
 
             //if ME1
@@ -111,11 +109,11 @@ namespace ME3Explorer.Packages
                 raw.Seek(4, SeekOrigin.Current);
             }
 
-            CompressionType compressionType = (CompressionType)raw.ReadValueU32();
+            CompressionType compressionType = (CompressionType)raw.ReadUInt32();
 
 
             int pos = 4;
-            int NumChunks = raw.ReadValueS32();
+            int NumChunks = raw.ReadInt32();
             var Chunks = new List<Chunk>();
 
             //DebugOutput.PrintLn("Reading chunk headers...");
@@ -123,10 +121,10 @@ namespace ME3Explorer.Packages
             {
                 Chunk c = new Chunk
                 {
-                    uncompressedOffset = raw.ReadValueS32(),
-                    uncompressedSize = raw.ReadValueS32(),
-                    compressedOffset = raw.ReadValueS32(),
-                    compressedSize = raw.ReadValueS32()
+                    uncompressedOffset = raw.ReadInt32(),
+                    uncompressedSize = raw.ReadInt32(),
+                    compressedOffset = raw.ReadInt32(),
+                    compressedSize = raw.ReadInt32()
                 };
                 c.Compressed = new byte[c.compressedSize];
                 c.Uncompressed = new byte[c.uncompressedSize];
@@ -141,7 +139,7 @@ namespace ME3Explorer.Packages
             {
                 Chunk c = Chunks[i];
                 raw.Seek(c.compressedOffset, SeekOrigin.Begin);
-                c.Compressed = raw.ReadBytes(c.compressedSize);
+                c.Compressed = raw.ReadToBuffer(c.compressedSize);
 
                 ChunkHeader h = new ChunkHeader
                 {
@@ -215,7 +213,7 @@ namespace ME3Explorer.Packages
             foreach (Chunk c in Chunks)
             {
                 result.Seek(c.uncompressedOffset, SeekOrigin.Begin);
-                result.WriteBytes(c.Uncompressed);
+                result.Write(c.Uncompressed);
             }
 
             return result;
@@ -229,17 +227,15 @@ namespace ME3Explorer.Packages
         public static MemoryStream DecompressME3(Stream input)
         {
             input.Seek(0, SeekOrigin.Begin);
-            var magic = input.ReadValueU32(Endian.Little);
-            if (magic != 0x9E2A83C1 &&
-                magic.Swap() != 0x9E2A83C1)
+            var magic = input.ReadUInt32();
+            if (magic != 0x9E2A83C1)
             {
                 throw new FormatException("not a pcc file");
             }
 
-            var endian = magic == 0x9E2A83C1 ? Endian.Little : Endian.Big;
 
-            var versionLo = input.ReadValueU16(endian);
-            var versionHi = input.ReadValueU16(endian);
+            var versionLo = input.ReadUInt16();
+            var versionHi = input.ReadUInt16();
 
             if (versionLo != 684 &&
                 versionHi != 194)
@@ -252,7 +248,7 @@ namespace ME3Explorer.Packages
             input.Seek(4, SeekOrigin.Current);
             headerSize += 4;
 
-            var folderNameLength = input.ReadValueS32(endian);
+            var folderNameLength = input.ReadInt32();
             headerSize += 4;
 
             var folderNameByteLength =
@@ -261,7 +257,7 @@ namespace ME3Explorer.Packages
             headerSize += folderNameByteLength;
 
             var packageFlagsOffset = input.Position;
-            var packageFlags = input.ReadValueU32(endian);
+            var packageFlags = input.ReadUInt32();
             headerSize += 4;
 
             if ((packageFlags & 0x02000000u) == 0)
@@ -275,20 +271,20 @@ namespace ME3Explorer.Packages
                 headerSize += 4;
             }
 
-            uint nameCount = input.ReadValueU32(endian);
-            uint nameOffset = input.ReadValueU32(endian);
+            uint nameCount = input.ReadUInt32();
+            uint nameOffset = input.ReadUInt32();
 
             input.Seek(52, SeekOrigin.Current);
             headerSize += 60;
 
-            var generationsCount = input.ReadValueU32(endian);
+            var generationsCount = input.ReadUInt32();
             input.Seek(generationsCount * 12, SeekOrigin.Current);
             headerSize += generationsCount * 12;
 
             input.Seek(20, SeekOrigin.Current);
             headerSize += 24;
 
-            var blockCount = input.ReadValueU32(endian);
+            var blockCount = input.ReadUInt32();
             int headBlockOff = (int)input.Position;
             var afterBlockTableOffset = headBlockOff + (blockCount * 16);
             var indataOffset = afterBlockTableOffset + 8;
@@ -298,7 +294,7 @@ namespace ME3Explorer.Packages
             output.Seek(0, SeekOrigin.Begin);
 
             output.WriteFromStream(input, headerSize);
-            output.WriteValueU32(0, endian); // block count
+            output.WriteUInt32(0); // block count
 
             input.Seek(afterBlockTableOffset, SeekOrigin.Begin);
             output.WriteFromStream(input, 8);
@@ -316,10 +312,10 @@ namespace ME3Explorer.Packages
             for (int i = 0; i < blockCount; i++)
             {
                 input.Seek(headBlockOff, SeekOrigin.Begin);
-                uncompressedOffsets[i] = input.ReadValueU32(endian);
-                var uncompressedSize = input.ReadValueU32(endian);
-                var compressedOffset = input.ReadValueU32(endian);
-                var compressedSize = input.ReadValueU32(endian);
+                uncompressedOffsets[i] = input.ReadUInt32();
+                var uncompressedSize = input.ReadUInt32();
+                var compressedOffset = input.ReadUInt32();
+                var compressedSize = input.ReadUInt32();
                 headBlockOff = (int)input.Position;
 
                 var buff = new byte[compressedSize];
@@ -333,229 +329,13 @@ namespace ME3Explorer.Packages
             for (int i = 0; i < blockCount; i++)
             {
                 output.Seek(uncompressedOffsets[i], SeekOrigin.Begin);
-                output.WriteBytes(tasks[i].Result);
+                output.Write(tasks[i].Result);
             }
 
             //Do not change the IsCompressed bit as it will not accurately reflect the state of the file on disk.
             //output.Seek(packageFlagsOffset, SeekOrigin.Begin);
             //output.WriteValueU32(packageFlags & ~0x02000000u, endian); //Mark file as decompressed.
             return output;
-        }
-
-        #endregion
-
-        #region Compression
-
-        /// <summary>
-        ///     compress an entire ME3 pcc into a byte array.
-        /// </summary>
-        /// <param name="uncompressedPcc">uncompressed pcc file stored in a byte array.</param>
-        /// <returns>a compressed array of bytes.</returns>
-        public static byte[] Compress(byte[] uncompressedPcc)
-        {
-            MemoryStream uncPccStream = new MemoryStream(uncompressedPcc);
-            return ((MemoryStream)Compress(uncPccStream)).ToArray();
-        }
-
-        /// <summary>
-        ///     compress an entire ME3 pcc into a stream.
-        /// </summary>
-        /// <param name="uncompressedPcc">uncompressed pcc stream.</param>
-        /// <returns>compressed pcc stream</returns>
-        public static Stream Compress(Stream uncompressedPcc)
-        {
-            uncompressedPcc.Position = 0;
-
-            var magic = uncompressedPcc.ReadValueU32(Endian.Little);
-            if (magic != 0x9E2A83C1 &&
-                magic.Swap() != 0x9E2A83C1)
-            {
-                throw new FormatException("not a pcc package");
-            }
-
-            var endian = magic == 0x9E2A83C1 ? Endian.Little : Endian.Big;
-            var encoding = endian == Endian.Little ? Encoding.Unicode : Encoding.BigEndianUnicode;
-
-            var versionLo = uncompressedPcc.ReadValueU16(endian);
-            var versionHi = uncompressedPcc.ReadValueU16(endian);
-
-            if (versionLo != 684 &&
-                versionHi != 194)
-            {
-                throw new FormatException("unsupported version");
-            }
-
-            uncompressedPcc.Seek(4, SeekOrigin.Current);
-
-            var folderNameLength = uncompressedPcc.ReadValueS32(endian);
-            var folderNameByteLength =
-                folderNameLength >= 0 ? folderNameLength : (-folderNameLength * 2);
-            uncompressedPcc.Seek(folderNameByteLength, SeekOrigin.Current);
-
-            var packageFlagsOffset = uncompressedPcc.Position;
-            var packageFlags = uncompressedPcc.ReadValueU32(endian);
-
-            if ((packageFlags & 8) != 0)
-            {
-                uncompressedPcc.Seek(4, SeekOrigin.Current);
-            }
-
-            var nameCount = uncompressedPcc.ReadValueU32(endian);
-            var namesOffset = uncompressedPcc.ReadValueU32(endian);
-            var exportCount = uncompressedPcc.ReadValueU32(endian);
-            var exportInfosOffset = uncompressedPcc.ReadValueU32(endian);
-            var exportDataOffsets = new SortedDictionary<uint, uint>();
-
-            Stream data;
-            if ((packageFlags & 0x02000000) == 0)
-            {
-                data = uncompressedPcc;
-            }
-            else
-            {
-                throw new FormatException("pcc data is compressed");
-            }
-
-            // get info about export data, sizes and offsets
-            data.Seek(exportInfosOffset, SeekOrigin.Begin);
-            for (uint i = 0; i < exportCount; i++)
-            {
-                var classIndex = data.ReadValueS32(endian);
-                data.Seek(4, SeekOrigin.Current);
-                var outerIndex = data.ReadValueS32(endian);
-                var objectNameIndex = data.ReadValueS32(endian);
-                data.Seek(16, SeekOrigin.Current);
-
-                uint exportDataSize = data.ReadValueU32(endian);
-                uint exportDataOffset = data.ReadValueU32(endian);
-                exportDataOffsets.Add(exportDataOffset, exportDataSize);
-
-                data.Seek(4, SeekOrigin.Current);
-                var count = data.ReadValueU32(endian);
-                data.Seek(count * 4, SeekOrigin.Current);
-                data.Seek(20, SeekOrigin.Current);
-            }
-
-            const uint maxBlockSize = 0x100000;
-            Stream outputStream = new MemoryStream();
-            // copying pcc header
-            byte[] buffer = new byte[130];
-            uncompressedPcc.Seek(0, SeekOrigin.Begin);
-            uncompressedPcc.Read(buffer, 0, 130);
-            outputStream.Write(buffer, 0, buffer.Length);
-
-            //add compressed pcc flag
-            uncompressedPcc.Seek(12, SeekOrigin.Begin);
-            folderNameLength = uncompressedPcc.ReadValueS32();
-            folderNameByteLength =
-                folderNameLength >= 0 ? folderNameLength : (-folderNameLength * 2);
-            uncompressedPcc.Seek(folderNameByteLength, SeekOrigin.Current);
-            outputStream.Seek(uncompressedPcc.Position, SeekOrigin.Begin);
-
-            packageFlags = uncompressedPcc.ReadValueU32();
-            packageFlags |= 0x02000000; // add compression flag
-            outputStream.WriteValueU32(packageFlags);
-
-            outputStream.Seek(buffer.Length, SeekOrigin.Begin);
-
-            long inOffsetData = namesOffset;
-            var blockSizes = new List<int>();
-            int countSize = (int)(exportDataOffsets.Min(obj => obj.Key) - namesOffset);
-
-            //count the number of blocks and relative sizes
-            uint lastOffset = exportDataOffsets.Min(obj => obj.Key);
-            foreach (KeyValuePair<uint, uint> exportInfo in exportDataOffsets)
-            {
-                // part that adds empty spaces (leaved when editing export data and moved to the end of pcc) into the count
-                if (exportInfo.Key != lastOffset)
-                {
-                    int emptySpace = (int)(exportInfo.Key - lastOffset);
-                    if (countSize + emptySpace > maxBlockSize)
-                    {
-                        blockSizes.Add(countSize);
-                        countSize = 0;
-                    }
-                    else
-                        countSize += emptySpace;
-                }
-
-                // adds export data into the count
-                if (countSize + exportInfo.Value > maxBlockSize)
-                {
-                    blockSizes.Add(countSize);
-                    countSize = (int)exportInfo.Value;
-                }
-                else
-                {
-                    countSize += (int)exportInfo.Value;
-                }
-
-                lastOffset = exportInfo.Key + exportInfo.Value;
-            }
-
-            blockSizes.Add(countSize);
-
-            outputStream.WriteValueS32(blockSizes.Count);
-            long outOffsetBlockInfo = outputStream.Position;
-            long outOffsetData = namesOffset + (blockSizes.Count * 16);
-
-            uncompressedPcc.Seek(namesOffset, SeekOrigin.Begin);
-            //divide the block in segments
-            foreach (int currentUncBlockSize in blockSizes)
-            {
-                outputStream.Seek(outOffsetBlockInfo, SeekOrigin.Begin);
-                outputStream.WriteValueU32((uint)uncompressedPcc.Position);
-                outputStream.WriteValueS32(currentUncBlockSize);
-                outputStream.WriteValueU32((uint)outOffsetData);
-
-                byte[] inputBlock = new byte[currentUncBlockSize];
-                uncompressedPcc.Read(inputBlock, 0, currentUncBlockSize);
-                byte[] compressedBlock = AmaroK86.MassEffect3.ZlibBlock.ZBlock.Compress(inputBlock);
-
-                outputStream.WriteValueS32(compressedBlock.Length);
-                outOffsetBlockInfo = outputStream.Position;
-
-                outputStream.Seek(outOffsetData, SeekOrigin.Begin);
-                outputStream.Write(compressedBlock, 0, compressedBlock.Length);
-                outOffsetData = outputStream.Position;
-            }
-
-            //copying some unknown values + extra names list
-            int bufferSize = (int)namesOffset - 0x86;
-            buffer = new byte[bufferSize];
-            uncompressedPcc.Seek(0x86, SeekOrigin.Begin);
-            uncompressedPcc.Read(buffer, 0, buffer.Length);
-            outputStream.Seek(outOffsetBlockInfo, SeekOrigin.Begin);
-            outputStream.Write(buffer, 0, buffer.Length);
-
-            outputStream.Seek(0, SeekOrigin.Begin);
-
-            return outputStream;
-        }
-
-        /// <summary>
-        ///     compress an entire ME3 pcc into a file.
-        /// </summary>
-        /// <param name="uncompressedPcc">uncompressed pcc stream.</param>
-        /// <param name="pccFileName">pcc file name to save.</param>
-        /// <returns>a compressed pcc file.</returns>
-        public static void CompressAndSave(Stream uncompressedPcc, string pccFileName)
-        {
-            using (FileStream outputStream = new FileStream(pccFileName, FileMode.Create, FileAccess.Write))
-            {
-                Compress(uncompressedPcc).CopyTo(outputStream);
-            }
-        }
-
-        /// <summary>
-        ///     compress an entire ME3 pcc into a file.
-        /// </summary>
-        /// <param name="uncompressedPcc">uncompressed pcc file stored in a byte array.</param>
-        /// <param name="pccFileName">pcc file name to save.</param>
-        /// <returns>a compressed pcc file.</returns>
-        public static void CompressAndSave(byte[] uncompressedPcc, string pccFileName)
-        {
-            CompressAndSave(new MemoryStream(uncompressedPcc), pccFileName);
         }
 
         #endregion

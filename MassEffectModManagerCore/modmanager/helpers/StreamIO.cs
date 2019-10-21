@@ -131,6 +131,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
             stream.WriteStringUnicode(str + "\0");
         }
 
+        public static void WriteValueGuid(this Stream stream, Guid value)
+        {
+            var data = value.ToByteArray();
+            stream.WriteInt32(BitConverter.ToInt32(data, 0));
+            stream.WriteInt16(BitConverter.ToInt16(data, 4));
+            stream.WriteInt16(BitConverter.ToInt16(data, 6));
+            stream.Write(data, 8, 8);
+        }
+
         public static ulong ReadUInt64(this Stream stream)
         {
             var buffer = new byte[sizeof(ulong)];

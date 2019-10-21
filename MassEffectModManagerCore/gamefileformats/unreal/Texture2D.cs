@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using ME3Explorer.Unreal;
 using ME3Explorer.Packages;
-using Gibbed.IO;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -74,17 +73,17 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             }
 
             var mips = new List<Texture2DMipInfo>();
-            int numMipMaps = ms.ReadValueS32();
+            int numMipMaps = ms.ReadInt32();
             for (int l = 0; l < numMipMaps; l++)
             {
                 Texture2DMipInfo mip = new Texture2DMipInfo
                 {
                     Export = exportEntry,
                     index = l,
-                    storageType = (StorageTypes)ms.ReadValueS32(),
-                    uncompressedSize = ms.ReadValueS32(),
-                    compressedSize = ms.ReadValueS32(),
-                    externalOffset = ms.ReadValueS32(),
+                    storageType = (StorageTypes)ms.ReadInt32(),
+                    uncompressedSize = ms.ReadInt32(),
+                    compressedSize = ms.ReadInt32(),
+                    externalOffset = ms.ReadInt32(),
                     localExportOffset = (int)ms.Position,
                     TextureCacheName = cacheName //If this is ME1, this will simply be ignored in the setter
                 };
@@ -99,8 +98,8 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                         break;
                 }
 
-                mip.width = ms.ReadValueS32();
-                mip.height = ms.ReadValueS32();
+                mip.width = ms.ReadInt32();
+                mip.height = ms.ReadInt32();
                 if (mip.width == 4 && mips.Exists(m => m.width == mip.width))
                     mip.width = mips.Last().width / 2;
                 if (mip.height == 4 && mips.Exists(m => m.height == mip.height))
@@ -157,23 +156,23 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                     ms.WriteByte(0); //position in the package. will be updated later
             }
 
-            ms.WriteValueS32(Mips.Count);
+            ms.WriteInt32(Mips.Count);
             foreach (var mip in Mips)
             {
-                ms.WriteValueU32((uint)mip.storageType);
-                ms.WriteValueS32(mip.uncompressedSize);
-                ms.WriteValueS32(mip.compressedSize);
-                ms.WriteValueS32(mip.externalOffset);
+                ms.WriteUInt32((uint)mip.storageType);
+                ms.WriteInt32(mip.uncompressedSize);
+                ms.WriteInt32(mip.compressedSize);
+                ms.WriteInt32(mip.externalOffset);
                 if (mip.storageType == StorageTypes.pccUnc ||
                     mip.storageType == StorageTypes.pccLZO ||
                     mip.storageType == StorageTypes.pccZlib)
                 {
                     ms.Write(mip.newDataForSerializing, 0, mip.newDataForSerializing.Length);
                 }
-                ms.WriteValueS32(mip.width);
-                ms.WriteValueS32(mip.height);
+                ms.WriteInt32(mip.width);
+                ms.WriteInt32(mip.height);
             }
-            ms.WriteValueS32(0);
+            ms.WriteInt32(0);
             if (Export.Game != Mod.MEGame.ME1)
             {
                 ms.WriteValueGuid(TextureGuid);
@@ -269,7 +268,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                             {
                                 if (decompress)
                                 {
-                                    using (MemoryStream tmpStream = new MemoryStream(fs.ReadBytes(mipToLoad.compressedSize)))
+                                    using (MemoryStream tmpStream = new MemoryStream(fs.ReadToBuffer(mipToLoad.compressedSize)))
                                     {
                                         try
                                         {

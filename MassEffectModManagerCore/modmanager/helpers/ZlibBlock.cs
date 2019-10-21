@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MassEffectModManagerCore.modmanager.helpers;
+using System;
 using System.IO;
-using Gibbed.IO;
 using System.Threading.Tasks;
 using ZlibHelper;
 
@@ -33,10 +33,10 @@ namespace AmaroK86.MassEffect3.ZlibBlock
 
             int numSeg = (int)Math.Ceiling(buffer.Length / (double)maxSegmentSize);
 
-            headBlock.WriteValueU32(magic);
-            headBlock.WriteValueU32(maxSegmentSize);
-            headBlock.WriteValueU32(0x0);            //total compressed size, still to calculate
-            headBlock.WriteValueS32(buffer.Length);          //total uncompressed size
+            headBlock.WriteUInt32(magic);
+            headBlock.WriteUInt32(maxSegmentSize);
+            headBlock.WriteUInt32(0x0);            //total compressed size, still to calculate
+            headBlock.WriteInt32(buffer.Length);          //total uncompressed size
 
             int offset = 0;
             for (int i = buffer.Length; i > 0; i -= (int)maxSegmentSize)
@@ -49,15 +49,15 @@ namespace AmaroK86.MassEffect3.ZlibBlock
                 if (dst.Length == 0)
                     throw new Exception("Zlib compression failed!");
 
-                dataBlock.WriteBytes(dst);
+                dataBlock.Write(dst);
                 offset += dst.Length;
-                headBlock.WriteValueU32((uint)dst.Length); //compressed segment size
-                headBlock.WriteValueS32(copyBytes); //uncompressed segment size
+                headBlock.WriteUInt32((uint)dst.Length); //compressed segment size
+                headBlock.WriteInt32(copyBytes); //uncompressed segment size
                 //Console.WriteLine("  Segment size: {0}, total read: {1}, compr size: {2}", maxSegmentSize, copyBytes, (uint)dataBlock.Length - precCompSize);
             }
 
             headBlock.Seek(8, SeekOrigin.Begin);
-            headBlock.WriteValueS32((int)dataBlock.Length); // total compressed size
+            headBlock.WriteInt32((int)dataBlock.Length); // total compressed size
 
             byte[] finalBlock = new byte[headBlock.Length + dataBlock.Length];
             Buffer.BlockCopy(headBlock.ToArray(), 0, finalBlock, 0, (int)headBlock.Length);
@@ -109,20 +109,20 @@ namespace AmaroK86.MassEffect3.ZlibBlock
 
             using (MemoryStream buffStream = new MemoryStream(buffer))
             {
-                uint magicStream = buffStream.ReadValueU32();
-                if (magicStream != magic && magicStream.Swap() != magic)
+                uint magicStream = buffStream.ReadUInt32();
+                if (magicStream != magic)
                 {
                     throw new InvalidDataException("found an invalid zlib block");
                 }
 
-                uint buffMaxSegmentSize = buffStream.ReadValueU32();
+                uint buffMaxSegmentSize = buffStream.ReadUInt32();
                 if (buffMaxSegmentSize != maxSegmentSize)
                 {
                     throw new FormatException();
                 }
 
-                uint totComprSize = buffStream.ReadValueU32();
-                uint totUncomprSize = buffStream.ReadValueU32();
+                uint totComprSize = buffStream.ReadUInt32();
+                uint totUncomprSize = buffStream.ReadUInt32();
 
                 byte[] outputBuffer = new byte[totUncomprSize];
                 int numOfSegm = (int)Math.Ceiling(totUncomprSize / (double)maxSegmentSize);
@@ -133,13 +133,13 @@ namespace AmaroK86.MassEffect3.ZlibBlock
                 for (int i = 0; i < numOfSegm; i++)
                 {
                     buffStream.Seek(headSegm, SeekOrigin.Begin);
-                    int comprSegm = buffStream.ReadValueS32();
-                    int uncomprSegm = buffStream.ReadValueS32();
+                    int comprSegm = buffStream.ReadInt32();
+                    int uncomprSegm = buffStream.ReadInt32();
                     headSegm = (int)buffStream.Position;
 
                     buffStream.Seek(dataSegm, SeekOrigin.Begin);
                     //Console.WriteLine("compr size: {0}, uncompr size: {1}, data offset: 0x{2:X8}", comprSegm, uncomprSegm, dataSegm);
-                    byte[] src = buffStream.ReadBytes(comprSegm);
+                    byte[] src = buffStream.ReadToBuffer(comprSegm);
                     byte[] dst = new byte[uncomprSegm];
                     if (Zlib.Decompress(src, (uint)src.Length, dst) != uncomprSegm)
                         throw new Exception("Zlib decompression failed!");
