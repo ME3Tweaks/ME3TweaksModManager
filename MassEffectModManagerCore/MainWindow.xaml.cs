@@ -845,7 +845,7 @@ namespace MassEffectModManagerCore
                     try
                     {
                         var manifest = OnlineContent.FetchOnlineStartupManifest();
-#if !DEBUG
+#if DEBUG
                         if (int.Parse(manifest["latest_build_number"]) > 0)
 #else
                         if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)

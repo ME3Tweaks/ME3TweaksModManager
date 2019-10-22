@@ -13,7 +13,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     partial class OnlineContent
     {
-        private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber;
+        private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
