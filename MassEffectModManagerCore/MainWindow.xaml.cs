@@ -495,6 +495,7 @@ namespace MassEffectModManagerCore
                 ShowUpdateCompletedPane();
             }
             LoadMods();
+            MessageBox.Show("This is a test message");
             PerformStartupNetworkFetches(true);
         }
 

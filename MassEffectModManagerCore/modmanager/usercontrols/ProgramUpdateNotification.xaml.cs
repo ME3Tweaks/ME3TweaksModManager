@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             //debug
             var downloadLinks = new { PrimaryDownloadLink, BackupDownloadLink };
-            string l = "https://github.com/ME3Tweaks/ME3TweaksModManager/releases/download/0.0.0.1/updatetest.7z";
+            string l = "https://github.com/ME3Tweaks/ME3TweaksModManager/releases/download/0.0.0.1/UpdateTest2.7z";
             var updateFile = OnlineContent.DownloadToMemory(l, pCallback);
             ProgressText = "Preparing to apply update";
             ProgressIndeterminate = true;
@@ -115,14 +115,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var updateExecutablePath = Path.Combine(outDirectory, "ME3TweaksModManager.exe");
             if (File.Exists(updateExecutablePath) && File.Exists(updaterExe))
             {
+                ProgressText = "Applying update";
+                string args = $"--update-boot";
+                Log.Information("Running new mod manager in update mode: " + updateExecutablePath + " " + args);
+
+                Process process = new Process();
+                // Stop the process from opening a new window
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+
+                // Setup executable and parameters
+                process.StartInfo.FileName = updateExecutablePath;
+                process.StartInfo.Arguments = args;
+                process.Start();
+                process.WaitForExit();
 
                 ProgressText = "Restarting Mod Manager";
                 Thread.Sleep(2000);
 
-                string args = $"--update-from {App.BuildNumber} --update-source-path \"{updateExecutablePath}\" --update-dest-path \"{App.ExecutableLocation}\"";
+                args = $"--update-from {App.BuildNumber} --update-source-path \"{updateExecutablePath}\" --update-dest-path \"{App.ExecutableLocation}\"";
                 Log.Information("Running updater: " + updaterExe + " " + args);
 
-                Process process = new Process();
+                process = new Process();
                 // Stop the process from opening a new window
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.CreateNoWindow = true;

@@ -100,6 +100,11 @@ namespace MassEffectModManagerCore
                     if (result is Parsed<Options> parsedCommandLineArgs)
                     {
                         //Parsing completed
+                        if (parsedCommandLineArgs.Value.UpdateBoot)
+                        {
+                            //Update unpacked and process was run.
+                            Environment.Exit(0);
+                        }
                         if (parsedCommandLineArgs.Value.UpdateDest != null)
                         {
                             if (File.Exists(parsedCommandLineArgs.Value.UpdateDest))
@@ -332,5 +337,9 @@ namespace MassEffectModManagerCore
         [Option("update-from",
             HelpText = "Indicates what build of Mod Manager we are upgrading from.")]
         public int UpdateFromBuild { get; set; }
+
+        [Option("update-boot",
+            HelpText = "Indicates that this is process is running in update mode. The process will exit upon starting because the extraction process will have completed.")]
+        public bool UpdateBoot { get; set; }
     }
 }
