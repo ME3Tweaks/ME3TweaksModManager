@@ -21,6 +21,7 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using ME3Explorer.Unreal;
+using Microsoft.AppCenter.Crashes;
 //using ME3Explorer.Packages;
 //using ME3Explorer.Unreal;
 using Microsoft.Win32;
@@ -495,7 +496,6 @@ namespace MassEffectModManagerCore
                 ShowUpdateCompletedPane();
             }
             LoadMods();
-            MessageBox.Show("This is a test message");
             PerformStartupNetworkFetches(true);
         }
 
@@ -522,6 +522,27 @@ namespace MassEffectModManagerCore
 
         public void LoadMods(Mod modToHighlight = null)
         {
+            try
+            {
+                Utilities.EnsureModDirectories();
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to ensure mod directories: " + e.Message);
+                Crashes.TrackError(e);
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to create mod library directory: " + e.Message + ".\nChoose a mod directory that you have write permissions to.", "Error creating mod library", MessageBoxButton.OK, MessageBoxImage.Error);
+                var folderPicked = ChooseModLibraryPath(false);
+                if (folderPicked)
+                {
+                    LoadMods();
+                }
+                else
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to create mod library. Mod Manager will now close.");
+                    Environment.Exit(1);
+                }
+                return;
+            }
             IsLoadingMods = true;
             LoadedMods.ClearEx();
             FailedMods.ClearEx();
@@ -1148,18 +1169,7 @@ namespace MassEffectModManagerCore
             //else 
             if (callingMember == SetModLibraryPath_MenuItem)
             {
-                CommonOpenFileDialog m = new CommonOpenFileDialog
-                {
-                    IsFolderPicker = true,
-                    EnsurePathExists = true,
-                    Title = "Select mod library folder"
-                };
-                if (m.ShowDialog(this) == CommonFileDialogResult.Ok)
-                {
-                    Settings.ModLibraryPath = m.FileName;
-                    Utilities.EnsureModDirectories();
-                    LoadMods();
-                }
+                ChooseModLibraryPath(true);
             }
             else
             {
@@ -1167,6 +1177,29 @@ namespace MassEffectModManagerCore
                 return;
             }
             Settings.Save();
+        }
+
+        private bool ChooseModLibraryPath(bool loadModsAfterSelecting)
+        {
+            CommonOpenFileDialog m = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                EnsurePathExists = true,
+                Title = "Select mod library folder"
+            };
+            if (m.ShowDialog(this) == CommonFileDialogResult.Ok)
+            {
+                Settings.ModLibraryPath = m.FileName;
+                if (loadModsAfterSelecting)
+                {
+                    LoadMods();
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

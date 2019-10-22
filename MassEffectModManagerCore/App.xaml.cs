@@ -67,7 +67,7 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
-           // var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
+            // var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
             ExecutableLocation = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
@@ -205,9 +205,6 @@ namespace MassEffectModManagerCore
                 Log.Information("Loading settings");
                 Settings.Load();
                 Log.Information("Ensuring mod directories");
-
-                Utilities.EnsureModDirectories();
-
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
 
                 Log.Information("Mod Manager pre-UI startup has completed");

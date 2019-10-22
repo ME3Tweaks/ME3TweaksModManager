@@ -197,6 +197,7 @@ namespace MassEffectModManagerCore
 
         internal static void EnsureModDirectories()
         {
+            //Todo: Ensure these are not under any game targets.
             Directory.CreateDirectory(GetME3ModsDirectory());
             Directory.CreateDirectory(GetME2ModsDirectory());
             Directory.CreateDirectory(GetME1ModsDirectory());

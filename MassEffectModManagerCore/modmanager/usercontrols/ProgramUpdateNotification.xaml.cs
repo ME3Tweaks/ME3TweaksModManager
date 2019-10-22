@@ -86,22 +86,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressText = $"Downloading update {ByteSize.FromBytes(done)} / {ByteSize.FromBytes(total)}";
             }
             //debug
-            var downloadLinks = new { PrimaryDownloadLink, BackupDownloadLink };
-            string l = "https://github.com/ME3Tweaks/ME3TweaksModManager/releases/download/0.0.0.1/UpdateTest2.7z";
-            var updateFile = OnlineContent.DownloadToMemory(l, pCallback);
-            ProgressText = "Preparing to apply update";
-            ProgressIndeterminate = true;
-            if (updateFile.errorMessage == null) { ApplyUpdateFromStream(updateFile.result); }
-            else
+            var downloadLinks = new string[] { PrimaryDownloadLink, BackupDownloadLink };
+            // string l = "https://github.com/ME3Tweaks/ME3TweaksModManager/releases/download/0.0.0.1/UpdateTest2.7z";
+            string errorMessage = null;
+            foreach (var downloadLink in downloadLinks)
             {
-                Log.Error("Error downloading update: " + updateFile.errorMessage);
-                Analytics.TrackEvent("Error downloading update", new Dictionary<string, string>() { { "Error message", updateFile.errorMessage } });
-                Application.Current.Dispatcher.Invoke(delegate
+                var updateFile = OnlineContent.DownloadToMemory(downloadLink, pCallback);
+                ProgressText = "Preparing to apply update";
+                ProgressIndeterminate = true;
+                if (updateFile.errorMessage == null)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), updateFile.errorMessage, "Error downloading update", MessageBoxButton.OK, MessageBoxImage.Error);
-                    OnClosing(EventArgs.Empty);
-                });
+                    ApplyUpdateFromStream(updateFile.result);
+                    return; //do not loop.
+                }
+                else
+                {
+                    Log.Error("Error downloading update: " + updateFile.errorMessage);
+                    Analytics.TrackEvent("Error downloading update", new Dictionary<string, string>() { { "Error message", updateFile.errorMessage } });
+                    errorMessage = updateFile.errorMessage;
+                }
             }
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), errorMessage, "Error downloading update", MessageBoxButton.OK, MessageBoxImage.Error);
+                OnClosing(EventArgs.Empty);
+            });
         }
 
         private void ApplyUpdateFromStream(MemoryStream updatearchive)
@@ -115,6 +124,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var updateExecutablePath = Path.Combine(outDirectory, "ME3TweaksModManager.exe");
             if (File.Exists(updateExecutablePath) && File.Exists(updaterExe))
             {
+                ProgressText = "Verifying update";
+                var isTrusted = AuthenticodeHelper.IsTrusted(updateExecutablePath);
+                if (!isTrusted)
+                {
+                    Log.Error("The update file is not signed. Update will be aborted.");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Unable to apply update: ME3TweaksModManager.exe in the update archive is not signed and is therefore not trusted.", "Error applying update", MessageBoxButton.OK, MessageBoxImage.Error);
+                        OnClosing(EventArgs.Empty);
+                    });
+                    return;
+                }
                 ProgressText = "Applying update";
                 string args = $"--update-boot";
                 Log.Information("Running new mod manager in update mode: " + updateExecutablePath + " " + args);
