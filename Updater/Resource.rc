@@ -69,7 +69,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "ME3Tweaks"
-            VALUE "FileDescription", "Updater intermediaryfor ME3Tweaks software"
+            VALUE "FileDescription", "Updater intermediary for ME3Tweaks software"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "ME3TweaksUpdater.exe"
             VALUE "LegalCopyright", "Copyright (C) 2019 ME3Tweaks"
