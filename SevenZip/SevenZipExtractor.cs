@@ -924,7 +924,7 @@ namespace SevenZip
             try
             {
                 InitArchiveFileData(false);
-                var archiveStream = GetArchiveStream(true);
+                var archiveStream = GetArchiveStream(!(_inStream is ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream));
                 var openCallback = GetArchiveOpenCallback();
                 if (!OpenArchive(archiveStream, openCallback))
                 {

@@ -1,4 +1,6 @@
-﻿namespace SevenZip
+﻿using System.Diagnostics;
+
+namespace SevenZip
 {
     using System;
     using System.IO;
@@ -11,7 +13,7 @@
     internal static class FileChecker
     {
         private const int SIGNATURE_SIZE = 16;
-        private const int SFX_SCAN_LENGTH = 256 * 1024;
+        private const int SFX_SCAN_LENGTH = 1024 * 1024; //1MB
 
         private static bool SpecialDetect(Stream stream, int offset, InArchiveFormat expectedFormat)
         {
@@ -92,10 +94,12 @@
 
             foreach (var expectedSignature in Formats.InSignatureFormats.Keys)
             {
+                Debug.WriteLine(expectedSignature);
                 if (actualSignature.StartsWith(expectedSignature, StringComparison.OrdinalIgnoreCase) ||
                     actualSignature.Substring(6).StartsWith(expectedSignature, StringComparison.OrdinalIgnoreCase) &&
                     Formats.InSignatureFormats[expectedSignature] == InArchiveFormat.Lzh)
                 {
+
                     if (Formats.InSignatureFormats[expectedSignature] == InArchiveFormat.PE)
                     {
                         suspectedFormat = InArchiveFormat.PE;

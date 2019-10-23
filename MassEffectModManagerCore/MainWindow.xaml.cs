@@ -10,8 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-//using IniParser;
-//using IniParser.Parser;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -22,11 +20,10 @@ using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using ME3Explorer.Unreal;
 using Microsoft.AppCenter.Crashes;
-//using ME3Explorer.Packages;
-//using ME3Explorer.Unreal;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
+using SevenZip;
 
 namespace MassEffectModManagerCore
 {
@@ -945,6 +942,11 @@ namespace MassEffectModManagerCore
                 }
                 StartupCompleted = true;
                 CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
+
+                //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
+                //MemoryStream ms = new MemoryStream(bytes);
+                //SevenZipExtractor sve = new SevenZipExtractor(ms);
+                //sve.ExtractArchive(@"C:\users\public\documents");
             };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
