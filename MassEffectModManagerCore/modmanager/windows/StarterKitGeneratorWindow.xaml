@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         Style="{StaticResource WindowStyle}"
-        Title="DLC Mod Starter Kit Generator" SizeToContent="Height" Width="525">
+        Title="DLC Mod Starter Kit Generator" SizeToContent="Height" Width="875">
     <Window.Resources>
         <converters:StarterKitRowHeightConverter x:Key="StarterKitRowHeightConverter"/>
     </Window.Resources>
@@ -17,6 +17,8 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="5"/>
+                <RowDefinition Height="17"/>
+
                 <!-- Mod Site -->
                 <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
                 <!-- Mod Developer -->
@@ -35,7 +37,7 @@
                 <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
                 <!-- Mount Flag-->
                 <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
-                <RowDefinition Height="200"/>
+                <RowDefinition Height="*" MinHeight="300"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -49,29 +51,32 @@
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="5"/>
             </Grid.ColumnDefinitions>
-            <TextBlock VerticalAlignment="Center" Text="Mod Name" Grid.Row="1" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Mod Developer" Grid.Row="2" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Mod Website/Nexusmods page" Grid.Row="3" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="DLC Folder Name Suffix" Grid.Row="4" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Internal Name" Grid.Row="5" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Internal Name TLK ID" Grid.Row="6" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="DLC Module Number" Grid.Row="7" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Mount Priority" Grid.Row="8" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="Mount Flag" Grid.Row="9" Grid.Column="1"/>
+            <TextBlock Text="New DLC mod information" FontWeight="Bold" DockPanel.Dock="Top" Grid.Row="1" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mod Name" Grid.Row="2" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mod Developer" Grid.Row="3" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mod Website/Nexusmods page" Grid.Row="4" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="DLC Folder Name Suffix" Grid.Row="5" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Internal Name" Grid.Row="6" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Internal Name TLK ID" Grid.Row="7" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="DLC Module Number" Grid.Row="8" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mount Priority" Grid.Row="9" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="Mount Flag" Grid.Row="10" Grid.Column="1"/>
 
-            <xctk:WatermarkTextBox Grid.Row="1" Grid.Column="2" Watermark="Faster Legs" Text="{Binding ModName}"/>
-            <xctk:WatermarkTextBox Grid.Row="2" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper}"/>
-            <xctk:WatermarkTextBox Grid.Row="3" Grid.Column="2" Watermark="https://nexusmods.com/masseffect2/..." Text="{Binding ModURL}"/>
-            <xctk:WatermarkTextBox Grid.Row="4" Grid.Column="2" Watermark="FasterLegs" Text="{Binding ModDLCFolderName}"/>
-            <xctk:WatermarkTextBox Grid.Row="5" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName}"/>
-            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID}"/>
-            <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber}"/>
-            <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority}"/>
-            <xctk:WatermarkComboBox Grid.Row="9" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag}"/>
+            <xctk:WatermarkTextBox Grid.Row="2" Grid.Column="2" Watermark="Faster Legs" Text="{Binding ModName}"/>
+            <xctk:WatermarkTextBox Grid.Row="3" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper}"/>
+            <xctk:WatermarkTextBox Grid.Row="4" Grid.Column="2" Watermark="https://nexusmods.com/masseffect2/..." Text="{Binding ModURL}"/>
+            <xctk:WatermarkTextBox Grid.Row="5" Grid.Column="2" Watermark="FasterLegs" Text="{Binding ModDLCFolderName}"/>
+            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName}"/>
+            <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID}"/>
+            <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber}"/>
+            <xctk:WatermarkTextBox Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority}"/>
+            <xctk:WatermarkComboBox Grid.Row="10" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag}"/>
 
-            <xctk:WatermarkTextBox Watermark="{Binding DescriptionWatermarkText}" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription}"/>
-            <TextBlock Grid.Column="1" Grid.Row ="11" Text="Ensure you are using a unique mount priority for your mod." TextWrapping="Wrap"/>
+            <xctk:WatermarkTextBox Watermark="{Binding DescriptionWatermarkText}" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription}"/>
+            <TextBlock Grid.Column="1" Grid.ColumnSpan="2" Grid.Row ="12" Text="Ensure you are using a unique mount priority for your mod." TextWrapping="Wrap" Margin="0,3"/>
             <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="14">
                 <StackPanel.Resources>
                     <Style x:Key="GameIcon" TargetType="RadioButton">
@@ -97,6 +102,13 @@
                 <RadioButton Name="ME2_RadioButton" Click="RadioButton_Click" Content="/images/gameicons/ME2_48.ico" Style="{StaticResource GameIcon}" BorderBrush="Orange" Width="24" Height="24" Margin="5,0"/>
                 <RadioButton Name="ME3_RadioButton" Click="RadioButton_Click" Content="/images/gameicons/ME3_48.ico" Style="{StaticResource GameIcon}" BorderBrush="Green" Width="24" Height="24"/>
             </StackPanel>
+            <TextBlock Text="Existing known DLC" FontWeight="Bold" DockPanel.Dock="Top" Grid.Row="1" Grid.Column="4"/>
+
+            <DockPanel Grid.Column="4" Grid.RowSpan="15" Grid.Row="2" MinWidth="300" MaxHeight="600">
+                <ListBox ItemsSource="{Binding CustomDLCMountsForGame}" SelectedItem="{Binding SelectedItem}" DisplayMemberPath="StarterKitString">
+            </ListBox>
+            </DockPanel>
+
             <Button Content="Generate Starter Kit" Grid.Column="2" Grid.Row="14" Command="{Binding GenerateStarterKitCommand}"/>
         </Grid>
     </xctk:BusyIndicator>

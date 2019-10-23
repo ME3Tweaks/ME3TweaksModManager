@@ -76,6 +76,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string mountpriority { get; set; }
             public string preventimport { get; set; }
             public string updatecode { get; set; } //has to be string I guess
+
+            public int MountPriorityInt => int.Parse(mountpriority);
+            public string StarterKitString => $"{MountPriorityInt} - {modname}";
         }
 
     }

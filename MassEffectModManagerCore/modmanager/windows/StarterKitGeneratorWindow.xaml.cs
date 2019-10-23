@@ -16,6 +16,8 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 using ME3Explorer;
 using ME3Explorer.Packages;
+using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
+using static MassEffectModManagerCore.modmanager.Mod;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -44,6 +46,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         private readonly List<UIMountFlag> ME1MountFlags = new List<UIMountFlag>();
         private readonly List<UIMountFlag> ME2MountFlags = new List<UIMountFlag>();
         private readonly List<UIMountFlag> ME3MountFlags = new List<UIMountFlag>();
+        public ObservableCollectionExtended<ThirdPartyModInfo> CustomDLCMountsForGame { get; } = new ObservableCollectionExtended<ThirdPartyModInfo>();
         public string DescriptionWatermarkText
         {
             get { return "Mod Manager description that user will see when they select your mod in Mod Manager"; }
@@ -158,18 +161,21 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (Game == Mod.MEGame.ME1)
             {
                 DisplayedMountFlags.ReplaceAll(ME1MountFlags);
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values.OrderByDescending(x=>x.MountPriorityInt));
                 ME1_RadioButton.IsChecked = true;
             }
 
             if (Game == Mod.MEGame.ME2)
             {
                 DisplayedMountFlags.ReplaceAll(ME2MountFlags);
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values.OrderByDescending(x => x.MountPriorityInt));
                 ME2_RadioButton.IsChecked = true;
             }
 
             if (Game == Mod.MEGame.ME3)
             {
                 DisplayedMountFlags.ReplaceAll(ME3MountFlags);
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values.OrderByDescending(x => x.MountPriorityInt));
                 ME3_RadioButton.IsChecked = true;
             }
         }

@@ -736,13 +736,6 @@ namespace MassEffectModManagerCore
             Environment.Exit(0);
         }
 
-        private void OpenOptions_Clicked(object sender, RoutedEventArgs e)
-        {
-            var o = new OptionsWindow();
-            o.Owner = this;
-            o.ShowDialog();
-        }
-
         private void OpenModFolder_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedMod != null)
