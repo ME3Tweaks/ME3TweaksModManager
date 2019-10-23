@@ -734,7 +734,7 @@ namespace MassEffectModManagerCore.modmanager
 
             //Required DLC (Mod Manager 5.0)
             var requiredDLCText = ModDescTargetVersion >= 5.0 ? iniData["ModInfo"]["requireddlc"] : null;
-            if (requiredDLCText != null)
+            if (!string.IsNullOrWhiteSpace(requiredDLCText))
             {
                 var requiredDlcsSplit = requiredDLCText.Split(';').ToList();
                 foreach (var reqDLC in requiredDlcsSplit)

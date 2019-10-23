@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             public List<string> GetParsedRequiredDLC()
             {
-                if (requireddlc != null)
+                if (!string.IsNullOrWhiteSpace(requireddlc))
                 {
                     return requireddlc.Split(';').ToList();
                 }

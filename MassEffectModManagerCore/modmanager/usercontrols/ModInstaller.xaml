@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             xmlns:fa5="http://schemas.fontawesome.com/icons/"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"

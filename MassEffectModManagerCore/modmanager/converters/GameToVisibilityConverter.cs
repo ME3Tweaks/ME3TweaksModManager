@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
@@ -13,14 +14,19 @@ namespace MassEffectModManagerCore.modmanager.converters
         {
             if (parameter is string gameStr)
             {
-                var game = (Mod.MEGame) value;
-                string gameStrValue = game.ToString();
-                return gameStrValue == gameStr ? Visibility.Visible : Visibility.Collapsed;
+                bool inverted = false;
+                if (gameStr.IndexOf('_') > 0)
+                {
+                    var splitparms = gameStr.Split('_');
+                    inverted = splitparms.Any(x => x == "Not");
+                    gameStr = splitparms.Last();
+                }
+                if (Enum.TryParse(gameStr, out Mod.MEGame parameterGame))
+                {
+                    if (inverted ^ parameterGame == (Mod.MEGame)value) return Visibility.Visible;
+                }
             }
-            else
-            {
-                return Visibility.Collapsed;
-            }
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

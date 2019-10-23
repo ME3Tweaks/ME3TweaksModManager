@@ -12,6 +12,7 @@
         Title="DLC Mod Starter Kit Generator" SizeToContent="Height" Width="875">
     <Window.Resources>
         <converters:StarterKitRowHeightConverter x:Key="StarterKitRowHeightConverter"/>
+        <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter"/>
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyText}">
         <Grid>
@@ -69,9 +70,9 @@
             <xctk:WatermarkTextBox Grid.Row="3" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper}"/>
             <xctk:WatermarkTextBox Grid.Row="4" Grid.Column="2" Watermark="https://nexusmods.com/masseffect2/..." Text="{Binding ModURL}"/>
             <xctk:WatermarkTextBox Grid.Row="5" Grid.Column="2" Watermark="FasterLegs" Text="{Binding ModDLCFolderName}"/>
-            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName}"/>
+            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"/>
             <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID}"/>
-            <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber}"/>
+            <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"/>
             <xctk:WatermarkTextBox Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority}"/>
             <xctk:WatermarkComboBox Grid.Row="10" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag}"/>
 
