@@ -17,16 +17,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ModUpdateInformation.xaml
     /// </summary>
-    public partial class ModUpdateInformation : UserControl, INotifyPropertyChanged
+    public partial class ModUpdateInformation : MMBusyPanelBase
     {
-        public event EventHandler<DataEventArgs> Close;
-        public event PropertyChangedEventHandler PropertyChanged;
         private bool AnyModUpdated;
-        protected virtual void OnClosing(DataEventArgs e)
-        {
-            EventHandler<DataEventArgs> handler = Close;
-            handler?.Invoke(this, e);
-        }
 
         public ObservableCollectionExtended<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<OnlineContent.ModUpdateInfo>();
 
@@ -100,6 +93,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void CloseDialog()
         {
             OnClosing(new DataEventArgs(AnyModUpdated));
+        }
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && TaskNotRunning())
+            {
+                e.Handled = true;
+                CloseDialog();
+            }
         }
     }
 }

@@ -31,15 +31,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ProgramUpdateNotification.xaml
     /// </summary>
-    public partial class ProgramUpdateNotification : UserControl, INotifyPropertyChanged
+    public partial class ProgramUpdateNotification : MMBusyPanelBase
     {
-        public event EventHandler<EventArgs> Close;
-        protected virtual void OnClosing(EventArgs e)
-        {
-            EventHandler<EventArgs> handler = Close;
-            handler?.Invoke(this, e);
-        }
-
         public string CurrentVersion => $"{App.AppVersion} Build {App.BuildNumber}";
         public string LatestVersion { get; set; }
         public string Changelog { get; set; }
@@ -110,19 +103,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Application.Current.Dispatcher.Invoke(delegate
             {
                 Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), errorMessage, "Error downloading update", MessageBoxButton.OK, MessageBoxImage.Error);
-                OnClosing(EventArgs.Empty);
+                OnClosing(DataEventArgs.Empty);
             });
         }
+
 
         private void ApplyUpdateFromStream(MemoryStream updatearchive)
         {
             Log.Information("Extracting update from memory");
-            ;SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
+            ; SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
             var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), "Update")).FullName;
             sve.ExtractArchive(outDirectory);
             var updaterExe = Path.Combine(outDirectory, "ME3TweaksUpdater.exe");
             Utilities.ExtractInternalFile("MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
-            var updateExecutablePath = Directory.GetFiles(outDirectory, "ME3TweaksModManager.exe",SearchOption.AllDirectories).FirstOrDefault();
+            var updateExecutablePath = Directory.GetFiles(outDirectory, "ME3TweaksModManager.exe", SearchOption.AllDirectories).FirstOrDefault();
             if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updaterExe))
             {
                 ProgressText = "Verifying update";
@@ -133,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Unable to apply update: ME3TweaksModManager.exe in the update archive is not signed and is therefore not trusted.", "Error applying update", MessageBoxButton.OK, MessageBoxImage.Error);
-                        OnClosing(EventArgs.Empty);
+                        OnClosing(DataEventArgs.Empty);
                     });
                     return;
                 }
@@ -177,7 +171,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Unable to apply update: ME3TweaksModManager.exe was not found in the archive.", "Error applying update", MessageBoxButton.OK, MessageBoxImage.Error);
-                    OnClosing(EventArgs.Empty);
+                    OnClosing(DataEventArgs.Empty);
                 });
             }
         }
@@ -188,11 +182,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         private bool TaskRunning;
+        private Window window;
+
         private bool TaskNotRunning() => !TaskRunning;
 
         private void CloseDialog()
         {
-            OnClosing(EventArgs.Empty);
+            OnClosing(DataEventArgs.Empty);
         }
 
         /// <summary>
@@ -212,6 +208,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return htmlString;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && !UpdateInProgress)
+            {
+                e.Handled = true;
+                OnClosing(DataEventArgs.Empty);
+            }
+        }
     }
 }

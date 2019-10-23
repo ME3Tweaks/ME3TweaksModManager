@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.ProgramUpdateNotification"
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ProgramUpdateNotification"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,9 +7,9 @@
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" MaxWidth="400">
-    <UserControl.Resources>
+    <local:MMBusyPanelBase.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    </UserControl.Resources>
+    </local:MMBusyPanelBase.Resources>
         <StackPanel>
         <TextBlock Text="Update available" TextAlignment="Center" FontWeight="Bold" FontSize="20" Margin="10"/>
         <TextBlock Text="An update to ME3Tweaks Mod Manager is available."/>
@@ -38,4 +38,4 @@
             <Button Content="Install update" Padding="4" Width="190" Command="{Binding StartUpdateCommand}"/>
         </StackPanel>
     </StackPanel>
-</UserControl>
+</local:MMBusyPanelBase>

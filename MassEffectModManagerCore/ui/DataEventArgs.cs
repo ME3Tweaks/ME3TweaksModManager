@@ -15,6 +15,6 @@ namespace MassEffectModManagerCore.ui
 
         }
 
-        public static DataEventArgs Empty  => new DataEventArgs();
+        public new static DataEventArgs Empty  => new DataEventArgs();
     }
 }

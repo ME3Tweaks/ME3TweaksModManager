@@ -71,8 +71,6 @@ namespace MassEffectModManagerCore
                 ms.Position = 0;
                 return ms;
             }
-
-            return null;
         }
 
         internal static void HighlightInExplorer(string filePath)

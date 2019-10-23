@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Windows.Input;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ModInstaller.xaml
     /// </summary>
-    public partial class ModInstaller : UserControl, INotifyPropertyChanged
+    public partial class ModInstaller : MMBusyPanelBase
     {
         public ObservableCollectionExtended<object> AlternateOptions { get; } = new ObservableCollectionExtended<object>();
 
@@ -60,16 +60,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string Action { get; set; }
         public int Percent { get; set; }
         public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
-
-
-        public event EventHandler Close;
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnClosing(EventArgs e)
-        {
-            EventHandler handler = Close;
-            handler?.Invoke(this, e);
-        }
 
         public void PrepareToInstallMod()
         {
@@ -548,7 +538,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 throw new Exception("Mod installer did not have return code. This should be caught and handled, but it wasn't.");
             }
-            OnClosing(new EventArgs());
+            OnClosing(DataEventArgs.Empty);
         }
 
         private void InstallStart_Click(object sender, RoutedEventArgs e)
@@ -560,7 +550,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             InstallationSucceeded = false;
             InstallationCancelled = true;
-            OnClosing(new EventArgs());
+            OnClosing(DataEventArgs.Empty);
+        }
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

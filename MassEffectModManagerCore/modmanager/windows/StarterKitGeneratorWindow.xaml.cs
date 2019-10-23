@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using IniParser;
@@ -16,6 +19,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 using ME3Explorer;
 using ME3Explorer.Packages;
+using MvvmValidation;
 using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
 using static MassEffectModManagerCore.modmanager.Mod;
 
@@ -24,23 +28,60 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// <summary>
     /// Interaction logic for StarterKitGeneratorWindow.xaml
     /// </summary>
-    public partial class StarterKitGeneratorWindow : Window, INotifyPropertyChanged
+    public partial class StarterKitGeneratorWindow : ValidatableWindowBase
     {
         public static (string filecode, string langcode)[] me3languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("JPN", "jp-jp") };
         public static (string filecode, string langcode)[] me2languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("HUN", "hu-hu"), ("CZE", "cs-cz") };
 
+        public int MaxMountForGame
+        {
+            get
+            {
+                switch (Game)
+                {
+                    case MEGame.ME3:
+                        return 4800;
+                    case MEGame.ME2:
+                        return 2000; //sensible?
+                    case MEGame.ME1:
+                        return 500; //sensible?
+                }
+                return 500;
+            }
+        }
         public static GridLength VisibleRowHeight { get; } = new GridLength(25);
         public string BusyText { get; set; }
         public bool IsBusy { get; set; }
         public string ModDescription { get; set; } = "";
         public string ModDeveloper { get; set; } = "";
-        public string ModName { get; set; } = "";
+
+        private string _modName;
+        public string ModName
+        {
+            get => _modName; 
+            set
+            {
+                SetProperty(ref _modName, value);
+                Validator.Validate(nameof(ModName));
+            }
+        }
         public string ModInternalName { get; set; } = "";
         public string ModDLCFolderName { get; set; } = "";
         public int ModMountPriority { get; set; }
         public int ModInternalTLKID { get; set; }
         public string ModURL { get; set; } = "";
-        public int ModDLCModuleNumber { get; set; }
+
+        private int _modDLCModuleNumber;
+        public int ModDLCModuleNumber
+        {
+            get { return _modDLCModuleNumber; }
+            set
+            {
+                SetProperty(ref _modDLCModuleNumber, value);
+                Validator.Validate(nameof(ModDLCModuleNumber));
+            }
+        }
+
         public UIMountFlag ModMountFlag { get; set; }
         public ObservableCollectionExtended<UIMountFlag> DisplayedMountFlags { get; } = new ObservableCollectionExtended<UIMountFlag>();
         private readonly List<UIMountFlag> ME1MountFlags = new List<UIMountFlag>();
@@ -51,7 +92,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         {
             get { return "Mod Manager description that user will see when they select your mod in Mod Manager"; }
         }
-        public StarterKitGeneratorWindow(Mod.MEGame Game)
+        public StarterKitGeneratorWindow(Mod.MEGame Game) : base()
         {
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "No save file dependency on DLC"));
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, "Save file dependency on DLC"));
@@ -68,6 +109,8 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             DisplayedMountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "Loading placeholder"));
             DataContext = this;
+            SetupValidation();
+
             LoadCommands();
 #if DEBUG
             ModName = "Debug Test Mod";
@@ -82,6 +125,44 @@ namespace MassEffectModManagerCore.modmanager.windows
 #endif
             InitializeComponent();
             SetGame(Game);
+        }
+
+        private void SetupValidation()
+        {
+            #region Validation
+
+            Validator.AddRule(nameof(ModName), () =>
+            {
+                if (string.IsNullOrWhiteSpace(ModName)) return RuleResult.Invalid("Mod name cannot be empty");
+                var r = new Regex("[A-Z,a-z,0-9,\\-,',., ,|,\",]+");
+                if (!r.IsMatch(ModName))
+                {
+                    return RuleResult.Invalid("Mod name can only contain numbers, letters, apostrophe or hyphens");
+                }
+                var sanitized = Utilities.SanitizePath(ModName, true);
+                if (sanitized.Length == 0)
+                {
+                    return RuleResult.Invalid("Mod name will not resolve to a usable filesystem path.\nPlease enter some alphanumeric values.");
+                }
+                if (sanitized.Contains(".."))
+                {
+                    return RuleResult.Invalid("Mod name cannot contain double dots when path is sanitized");
+                }
+                Debug.WriteLine("Validation OK");
+                return RuleResult.Valid();
+            });
+
+            Validator.AddRule(nameof(ModDLCModuleNumber), () =>
+            {
+                if (Game != MEGame.ME2) return RuleResult.Valid();
+                if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
+                {
+                    return RuleResult.Invalid("Value must be between 0 and " + ushort.MaxValue);
+                }
+                return RuleResult.Valid();
+            });
+
+            #endregion        
         }
 
         public ICommand GenerateStarterKitCommand { get; set; }
@@ -135,7 +216,6 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         public Mod.MEGame Game { get; private set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
@@ -161,7 +241,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (Game == Mod.MEGame.ME1)
             {
                 DisplayedMountFlags.ReplaceAll(ME1MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values.OrderByDescending(x=>x.MountPriorityInt));
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values.OrderByDescending(x => x.MountPriorityInt));
                 ME1_RadioButton.IsChecked = true;
             }
 
