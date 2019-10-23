@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -121,8 +122,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             sve.ExtractArchive(outDirectory);
             var updaterExe = Path.Combine(outDirectory, "ME3TweaksUpdater.exe");
             Utilities.ExtractInternalFile("MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
-            var updateExecutablePath = Path.Combine(outDirectory, "ME3TweaksModManager.exe");
-            if (File.Exists(updateExecutablePath) && File.Exists(updaterExe))
+            var updateExecutablePath = Directory.GetFiles(outDirectory, "ME3TweaksModManager.exe",SearchOption.AllDirectories).FirstOrDefault();
+            if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updaterExe))
             {
                 ProgressText = "Verifying update";
                 var isTrusted = AuthenticodeHelper.IsTrusted(updateExecutablePath);
