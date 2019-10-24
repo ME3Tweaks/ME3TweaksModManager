@@ -7,6 +7,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
         xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
+        xmlns:me3tweaks="clr-namespace:MassEffectModManagerCore.modmanager.me3tweaks"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         Style="{StaticResource WindowStyle}"
@@ -137,10 +138,16 @@
             <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
             <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber, Mode=TwoWay, ValidatesOnDataErrors=True}" 
                                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"/>
-            <xctk:WatermarkTextBox Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
-            <xctk:WatermarkComboBox Grid.Row="10" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag}"/>
+            <xctk:WatermarkTextBox Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="MountPriority_TextChanged" Name="ModMountPriority_TextBox"/>
+            <xctk:WatermarkComboBox Grid.Row="10" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" 
+                                    DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag, Mode=TwoWay}"
+                                    IsSynchronizedWithCurrentItem="True"/>
 
-            <xctk:WatermarkTextBox Watermark="{Binding DescriptionWatermarkText}" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
+            <xctk:WatermarkTextBox Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription, Mode=TwoWay, ValidatesOnDataErrors=True}">
+                <xctk:WatermarkTextBox.Watermark>
+                    <TextBlock Text="Mod Manager description that users will see when they select your mod in Mod Manager. You can edit this later to more accurately describe your mod to users." TextWrapping="Wrap"/>
+                </xctk:WatermarkTextBox.Watermark>
+            </xctk:WatermarkTextBox>
             <TextBlock Grid.Column="1" Grid.ColumnSpan="2" Grid.Row ="12" Text="Ensure you are using a unique mount priority for your mod." TextWrapping="Wrap" Margin="0,3"/>
             <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="14">
                 <StackPanel.Resources>
@@ -170,7 +177,33 @@
             <TextBlock Text="Existing known DLC" FontWeight="Bold" DockPanel.Dock="Top" Grid.Row="1" Grid.Column="4"/>
 
             <DockPanel Grid.Column="4" Grid.RowSpan="15" Grid.Row="2" MinWidth="300" MaxHeight="600">
-                <ListBox ItemsSource="{Binding CustomDLCMountsForGame}" SelectedItem="{Binding SelectedModMount}" DisplayMemberPath="StarterKitString">
+                <ListBox Name="CustomDLCMountsListBox" ItemsSource="{Binding CustomDLCMountsForGame}" SelectedItem="{Binding SelectedModMount, Mode=TwoWay}" SelectedValuePath="IsSelected" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="me3tweaks:ThirdPartyServices+ThirdPartyModInfo">
+                            <TextBlock Text="{Binding StarterKitString}"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Stretch" Padding="2">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPreview}" Value="True" >
+                                                <Setter Property="Foreground" Value="DarkRed" />
+                                                <Setter Property="Background" Value="Orange" />
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
             </DockPanel>
 

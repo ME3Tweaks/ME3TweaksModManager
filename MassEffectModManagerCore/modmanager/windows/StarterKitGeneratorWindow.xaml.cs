@@ -49,27 +49,96 @@ namespace MassEffectModManagerCore.modmanager.windows
                 return 500;
             }
         }
+
+        public ThirdPartyModInfo PreviewTPMI { get; } = new ThirdPartyModInfo();
         public static GridLength VisibleRowHeight { get; } = new GridLength(25);
         public string BusyText { get; set; }
         public bool IsBusy { get; set; }
         public string ModDescription { get; set; } = "";
-        public string ModDeveloper { get; set; } = "";
+
+        private string _modDeveloper;
+
+        public string ModDeveloper
+        {
+            get => _modDeveloper;
+            set
+            {
+                SetProperty(ref _modDeveloper, value);
+                Validator.Validate(nameof(ModDeveloper));
+            }
+        }
 
         private string _modName;
         public string ModName
         {
-            get => _modName; 
+            get => _modName;
             set
             {
                 SetProperty(ref _modName, value);
+                PreviewTPMI.modname = _modName;
                 Validator.Validate(nameof(ModName));
             }
         }
-        public string ModInternalName { get; set; } = "";
-        public string ModDLCFolderName { get; set; } = "";
-        public int ModMountPriority { get; set; }
-        public int ModInternalTLKID { get; set; }
-        public string ModURL { get; set; } = "";
+
+        private string _modInternalName;
+        public string ModInternalName
+        {
+            get => _modInternalName;
+            set
+            {
+                SetProperty(ref _modInternalName, value);
+                Validator.Validate(nameof(ModInternalName));
+            }
+        }
+
+        private string _modDLCFolderName;
+        public string ModDLCFolderName
+        {
+            get => _modDLCFolderName;
+            set
+            {
+                SetProperty(ref _modDLCFolderName, value);
+                Validator.Validate(nameof(ModDLCFolderName));
+            }
+        }
+
+        private int _modMountPriority;
+        public int ModMountPriority
+        {
+            get => _modMountPriority;
+            set
+            {
+                SetProperty(ref _modMountPriority, value);
+                var res = Validator.Validate(nameof(ModMountPriority));
+                if (res.IsValid)
+                {
+                    PreviewTPMI.mountpriority = value.ToString();
+                    CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
+                    CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
+                }
+            }
+        }
+        private int _modInternalTLKID;
+        public int ModInternalTLKID
+        {
+            get => _modInternalTLKID;
+            set
+            {
+                SetProperty(ref _modInternalTLKID, value);
+                Validator.Validate(nameof(ModInternalTLKID));
+            }
+        }
+        private string _modURL;
+
+        public string ModURL
+        {
+            get => _modURL;
+            set
+            {
+                SetProperty(ref _modURL, value);
+                Validator.Validate(nameof(ModURL));
+            }
+        }
 
         private int _modDLCModuleNumber;
         public int ModDLCModuleNumber
@@ -88,12 +157,10 @@ namespace MassEffectModManagerCore.modmanager.windows
         private readonly List<UIMountFlag> ME2MountFlags = new List<UIMountFlag>();
         private readonly List<UIMountFlag> ME3MountFlags = new List<UIMountFlag>();
         public ObservableCollectionExtended<ThirdPartyModInfo> CustomDLCMountsForGame { get; } = new ObservableCollectionExtended<ThirdPartyModInfo>();
-        public string DescriptionWatermarkText
-        {
-            get { return "Mod Manager description that user will see when they select your mod in Mod Manager"; }
-        }
+
         public StarterKitGeneratorWindow(Mod.MEGame Game) : base()
         {
+            DataContext = this;
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "No save file dependency on DLC"));
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, "Save file dependency on DLC"));
 
@@ -106,12 +173,13 @@ namespace MassEffectModManagerCore.modmanager.windows
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_Patch, "0x0C - MP only | Loads in MP (PATCH)"));
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_2, "0x14 - MP only | Loads in MP"));
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_2, "0x34 - MP only | Loads in MP"));
-
+            PreviewTPMI.IsPreview = true;
             DisplayedMountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "Loading placeholder"));
-            DataContext = this;
             SetupValidation();
 
             LoadCommands();
+            InitializeComponent();
+
 #if DEBUG
             ModName = "Debug Test Mod";
             ModDeveloper = "Developer";
@@ -123,7 +191,6 @@ namespace MassEffectModManagerCore.modmanager.windows
             ModInternalTLKID = 277346578;
             ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
 #endif
-            InitializeComponent();
             SetGame(Game);
         }
 
@@ -152,6 +219,21 @@ namespace MassEffectModManagerCore.modmanager.windows
                 return RuleResult.Valid();
             });
 
+            Validator.AddRequiredRule(() => ModDeveloper, "Mod developer name is required");
+            Validator.AddRequiredRule(() => ModDescription, "Mod description is required");
+            Validator.AddRule(nameof(ModURL), () =>
+            {
+                if (string.IsNullOrWhiteSpace(ModURL)) return RuleResult.Valid(); //Empty URL is OK. Discouraged, but OK
+                //Check is http or https
+                Uri uriResult;
+                bool result = Uri.TryCreate(ModURL, UriKind.Absolute, out uriResult)
+                              && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                if (result)
+                {
+                    return RuleResult.Valid();
+                }
+                return RuleResult.Invalid("URL must be of protocol type http or https://");
+            });
             Validator.AddRule(nameof(ModDLCModuleNumber), () =>
             {
                 if (Game != MEGame.ME2) return RuleResult.Valid();
@@ -241,23 +323,27 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (Game == Mod.MEGame.ME1)
             {
                 DisplayedMountFlags.ReplaceAll(ME1MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values.OrderByDescending(x => x.MountPriorityInt));
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values);
                 ME1_RadioButton.IsChecked = true;
             }
 
             if (Game == Mod.MEGame.ME2)
             {
                 DisplayedMountFlags.ReplaceAll(ME2MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values.OrderByDescending(x => x.MountPriorityInt));
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values);
                 ME2_RadioButton.IsChecked = true;
             }
 
             if (Game == Mod.MEGame.ME3)
             {
                 DisplayedMountFlags.ReplaceAll(ME3MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values.OrderByDescending(x => x.MountPriorityInt));
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values);
                 ME3_RadioButton.IsChecked = true;
             }
+            CustomDLCMountsForGame.Insert(0, PreviewTPMI);
+            DisplayedMountFlags[0].Selected = true;
+            CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
+            CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
         }
 
         public class UIMountFlag
@@ -351,8 +437,8 @@ namespace MassEffectModManagerCore.modmanager.windows
                         //bioEngineIni["Engine.PackagesToAlwaysCook"]["!Package"] = "CLEAR";
                         //bioEngineIni["Engine.PackagesToAlwaysCook"]["!SeekFreePackage"] = "CLEAR";
 
-                        //Todo: Find way to tell user what this is for and how to pick one. No idea what it's used for.
-                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString(); //Have to figure out what the point of this is.
+                        //Todo: Find way to tell user what this is for and how to pick one. Used to determine TLK filename
+                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString(); 
 
                         bioEngineIni["DLCInfo"]["Version"] = 0.ToString(); //unknown
                         bioEngineIni["DLCInfo"]["Flags"] = ((int)skOption.ModMountFlag).ToString(); //unknown
@@ -424,6 +510,16 @@ namespace MassEffectModManagerCore.modmanager.windows
             public Mod.MEGame ModGame;
 
             public int ModModuleNumber;
+        }
+
+        private void MountPriority_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > 0 && val < 4800)
+            {
+                PreviewTPMI.mountpriority = val.ToString();
+                CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
+                CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
+            }
         }
     }
 }

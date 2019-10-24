@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -67,18 +68,29 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
 
-        public class ThirdPartyModInfo
+        public class ThirdPartyModInfo : INotifyPropertyChanged
         {
+            /// <summary>
+            /// Denotes that this TPMI object represents a preview object (such as in Starter Kit)
+            /// </summary>
+            public bool IsPreview { get; internal set; }
+            /// <summary>
+            /// Denotes this TPMI object is selected in a listbox. (UI only)
+            /// </summary>
+            public bool IsSelected { get; set; }
             public string modname { get; set; }
             public string moddev { get; set; }
             public string modsite { get; set; }
             public string moddesc { get; set; }
             public string mountpriority { get; set; }
+            public string modulenumber { get; set; } //ME2 only
             public string preventimport { get; set; }
             public string updatecode { get; set; } //has to be string I guess
 
             public int MountPriorityInt => int.Parse(mountpriority);
-            public string StarterKitString => $"{MountPriorityInt} - {modname}";
+            public string StarterKitString => $"{MountPriorityInt} - {modname}{(modulenumber != null ? " - Module # " + modulenumber : "")}";
+
+            public event PropertyChangedEventHandler PropertyChanged;
         }
 
     }
