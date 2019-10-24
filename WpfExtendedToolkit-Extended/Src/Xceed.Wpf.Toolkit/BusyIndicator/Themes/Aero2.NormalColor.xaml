@@ -19,7 +19,8 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes"
                     xmlns:conv="clr-namespace:Xceed.Wpf.Toolkit.Converters"
-                    xmlns:local="clr-namespace:Xceed.Wpf.Toolkit">
+                    xmlns:local="clr-namespace:Xceed.Wpf.Toolkit"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../../Themes/Aero2/Common.xaml" />
@@ -134,7 +135,7 @@
                     BorderBrush="{DynamicResource {x:Static themes:ResourceKeys.ControlNormalBorderKey}}"
                     CornerRadius="0">
               <Border Margin="1"
-                      Background="{TemplateBinding Background}"
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
                       CornerRadius="0">
                 <Grid x:Name="_grid"
                       MinWidth="150">

@@ -198,8 +198,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         using (var archiveFile = new SevenZipExtractor(downloadPath))
                         {
                             Action = "Extracting " + tool;
-                            PercentVisibility = Visibility.Collapsed;
                             PercentDownloaded = 0;
+                            void progressCallback(object sender, ProgressEventArgs progress)
+                            {
+                                PercentDownloaded = (int) progress.PercentDone;
+                            };
+                            archiveFile.Extracting += progressCallback;
                             archiveFile.ExtractArchive(outputDiretory); // extract all
                             LaunchTool(executable);
                         }

@@ -6,17 +6,22 @@
         xmlns:local="clr-namespace:MassEffectModManagerCore"
         xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
         mc:Ignorable="d"
         Closing="ModManagerWindow_Closing"
         ContentRendered="ModManager_ContentRendered"
-        Style="{StaticResource WindowStyle}"
         AllowDrop="True"
         Icon="appicon.ico"
         Drop="Window_Drop"
         DragOver="Window_DragOver"
         Title="ME3Tweaks Mod Manager" Height="600" Width="800" MinHeight="600" MinWidth="600">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
     <Window.Resources>
         <Style x:Key="MenuItemHeaderStyle" TargetType="{x:Type MenuItem}">
             <Setter Property="FontSize"
@@ -27,6 +32,8 @@
                     Value="14" />
             <Setter Property="IsEnabled"
                     Value="False" />
+            <Setter Property="Foreground"
+                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
         </Style>
         <Storyboard x:Key="OpenLoadingSpinner" Storyboard.TargetProperty="(FrameworkElement.Width)">
             <DoubleAnimation To="32" Duration="0:0:0.25"/>
@@ -62,7 +69,7 @@
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
-            <Menu DockPanel.Dock="Top" Style="{StaticResource MenuStyle}">
+            <Menu DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" >
                 <MenuItem Header="Actions" Padding="4">
                     <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
                     <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click"/>
@@ -70,6 +77,7 @@
                         <MenuItem Header="Mod Manager" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Name="SetModLibraryPath_MenuItem" Header="Set mod library path" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}"/>
                         <MenuItem Name="DeveloperMode_MenuItem" Header="Developer mode" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="Enable developer-oriented features" IsCheckable="True"/>
+                        <MenuItem Name="DarkMode_MenuItem" Header="Dark theme" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}" ToolTip="Switch UI to dark theme" IsCheckable="True"/>
                         <MenuItem Header="Logging" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Name="LogModStartup_MenuItem" Header="Log Mod Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True"/>
                         <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True"/>
@@ -115,34 +123,34 @@
                     <MenuItem Header="Run official game configuration tool">
                         <MenuItem Header="Mass Effect" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME1">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME1_48.ico" Width="64" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Image Source="/images/gameicons/ME1_48.ico" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Mass Effect 2" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME2">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME2_48.ico" Width="64" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Image Source="/images/gameicons/ME2_48.ico" Width="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Mass Effect 3" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME3">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME3_48.ico" Width="64"/>
+                                <Image Source="/images/gameicons/ME3_48.ico" Width="16"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Generate new mod (Starter Kit)">
                         <MenuItem Name="GenerateStarterKitME1_MenuItem" Header="Mass Effect" Click="GenerateStarterKit_Clicked">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME1_48.ico" Width="64" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Image Source="/images/gameicons/ME1_48.ico"  Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Name="GenerateStarterKitME2_MenuItem"  Header="Mass Effect 2" Click="GenerateStarterKit_Clicked">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME2_48.ico" Width="64" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Image Source="/images/gameicons/ME2_48.ico"  Width="16" Height="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Name="GenerateStarterKitME3_MenuItem"  Header="Mass Effect 3" Click="GenerateStarterKit_Clicked">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME3_48.ico" Width="64"/>
+                                <Image Source="/images/gameicons/ME3_48.ico" Width="16" Height="16"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
@@ -170,6 +178,7 @@
                         <MenuItem.Icon>
                             <Image Source="/modmanager/toolicons/masseffectinimodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
                         </MenuItem.Icon>
+
                     </MenuItem>
                     <MenuItem Header="Mass Effect Modder" Name="MassEffectModder_MenuItem" Click="LaunchExternalTool_Clicked">
                         <MenuItem.Icon>
@@ -203,9 +212,9 @@
                     <MenuItem Header="About ME3Tweaks Mod Manager" Click="About_Click"/>
                 </MenuItem>
             </Menu>
-            <StatusBar DockPanel.Dock="Bottom" Padding="5,0" Background="Transparent">
+            <StatusBar DockPanel.Dock="Bottom" Padding="5,0">
                 <StatusBarItem HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Name="LoadingSpinnerContainer" Width="Auto" Height="36" Padding="0">
-                    <StatusBarItem.Resources>
+                    <!--<StatusBarItem.Resources>
                         <Storyboard x:Key="imageRotationStoryboard" Storyboard.TargetName="LoadingSpinner_Image" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)">
                             <DoubleAnimation From="0" To="360" BeginTime="0:0:0" Duration="0:0:0.75" RepeatBehavior="Forever" />
                         </Storyboard>
@@ -221,7 +230,13 @@
                         <Image.RenderTransform>
                             <RotateTransform Angle="0" />
                         </Image.RenderTransform>
-                    </Image>
+                    </Image>-->
+                    <ContentControl  x:Name="LoadingSpinner_Image" Focusable="False"
+                                        ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                        Width="32"
+                                    
+                                        Height="32"/>
                 </StatusBarItem>
                 <StatusBarItem>
                     <TextBlock Text="{Binding CurrentOperationText, FallbackValue=Welcome To Mod Manager}"/>
@@ -229,18 +244,19 @@
                 <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                     <StackPanel Orientation="Horizontal" >
                         <Image Name="BottomBarGameID_Image" Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0"/>
-                        <Button MinWidth="70" Padding="4" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"/>
-                        <Button MinWidth="70" Padding="4" Content="{Binding StartGameButtonText, FallbackValue=Start Game}" Command="{Binding StartGameCommand}" Margin="5,0,0,0"/>
+                        <Button MinWidth="70" Padding="10,7" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
+                        <Button MinWidth="70" Padding="10,7" Content="{Binding StartGameButtonText, FallbackValue=Start Game}" Command="{Binding StartGameCommand}" Margin="5,0,0,0"
+                                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
                     </StackPanel>
                 </StatusBarItem>
             </StatusBar>
-            <Grid>
+            <Grid Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="7"/>
                     <ColumnDefinition Width="250"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                   <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="7"/>
                 </Grid.ColumnDefinitions>
@@ -257,7 +273,9 @@
 
                 <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold"/>
                 <TextBlock Text="{Binding InstallationTargetText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
-                <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch">
+                <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged"
+                          Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch"
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
@@ -278,8 +296,8 @@
                         </Style>
                     </ComboBox.ItemContainerStyle>
                 </ComboBox>
-                <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"/>
-                <Button Content="Target info" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"/>
+                <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
+                <Button Content="Target info" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">
@@ -296,7 +314,9 @@
                         </Hyperlink>
                     </TextBlock>
                     </StackPanel>
-                    <ListBox Name="ModsList_ListBox" ItemsSource="{Binding LoadedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
+                    <ListBox Name="ModsList_ListBox" ItemsSource="{Binding LoadedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
+                             IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
+                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -307,9 +327,9 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </DockPanel>
-                <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch" />
+                <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch"/>
                 <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="3">
-                    <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold"/>
+                    <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold" Height="18"/>
                     <StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
                         <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
@@ -317,8 +337,9 @@
                         </Hyperlink>
                     </TextBlock>
                     </StackPanel>
-                    <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" 
-                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AllowDrop="True" PreviewDragOver="Window_DragOver" Drop="Window_Drop" DragOver="Window_DragOver">
+                    <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False"  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AllowDrop="True" PreviewDragOver="Window_DragOver" Drop="Window_Drop" DragOver="Window_DragOver" VerticalContentAlignment="Top"
+                             adonisExtensions:CursorSpotlightExtension.BackgroundBrush="Transparent" adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"  adonisExtensions:CursorSpotlightExtension.MaxBlurRadius="0">
                         <TextBox.Text>
                             <PriorityBinding>
                                 <Binding Path="SelectedMod.DisplayedModDescription" Mode="OneWay"/>

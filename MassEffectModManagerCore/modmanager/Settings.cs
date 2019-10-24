@@ -63,6 +63,14 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _developerMode, value);
         }
 
+        private static bool _darkTheme;
+        public static bool DarkTheme
+        {
+            get => _darkTheme;
+            set => SetProperty(ref _darkTheme, value);
+        }
+        
+
         private static string _modLibraryPath;
         public static string ModLibraryPath
         {
@@ -85,6 +93,7 @@ namespace MassEffectModManagerCore.modmanager
             LogModInstallation = LoadSettingBool(settingsIni, "Logging", "LogModInstallation", false);
             ModLibraryPath = LoadSettingString(settingsIni, "ModLibrary", "LibraryPath", null);
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
+            DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             Loaded = true;
         }
@@ -153,6 +162,7 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
             SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
             SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
+            SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
             SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);

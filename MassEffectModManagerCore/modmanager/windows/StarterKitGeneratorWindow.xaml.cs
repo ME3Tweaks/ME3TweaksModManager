@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             ModName = "Debug Test Mod";
             ModDeveloper = "Developer";
             ModInternalName = "StarterKit Mod";
-            ModDLCFolderName = "StarterKitMod";
+            //ModDLCFolderName = "DLC_MOD_StarterKitMod";
             ModMountPriority = 3678;
             ModDLCModuleNumber = 150;
             ModURL = "https://example.com";
@@ -221,6 +221,13 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             Validator.AddRequiredRule(() => ModDeveloper, "Mod developer name is required");
             Validator.AddRequiredRule(() => ModDescription, "Mod description is required");
+            Validator.AddRule(nameof(ModDLCFolderName), () =>
+            {
+                Debug.WriteLine("MDFN " + ModDLCFolderName);
+                if (string.IsNullOrWhiteSpace(ModDLCFolderName)) return RuleResult.Invalid("DLC folder name cannot be empty");
+                if (ModDLCFolderName == "DLC_MOD_") return RuleResult.Invalid("DLC folder name cannot be empty");
+                return RuleResult.Valid();
+            });
             Validator.AddRule(nameof(ModURL), () =>
             {
                 if (string.IsNullOrWhiteSpace(ModURL)) return RuleResult.Valid(); //Empty URL is OK. Discouraged, but OK
@@ -366,7 +373,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
                 var skOption = args.Argument as StarterKitOptions;
 
-                var dlcFolderName = $"DLC_MOD_{skOption.ModDLCFolderName}";
+                var dlcFolderName = skOption.ModDLCFolderName;
                 var modsDirectory = Utilities.GetModDirectoryForGame(skOption.ModGame);
                 var modPath = Directory.CreateDirectory(Path.Combine(modsDirectory, skOption.ModName)).FullName;
 
@@ -438,7 +445,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         //bioEngineIni["Engine.PackagesToAlwaysCook"]["!SeekFreePackage"] = "CLEAR";
 
                         //Todo: Find way to tell user what this is for and how to pick one. Used to determine TLK filename
-                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString(); 
+                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString();
 
                         bioEngineIni["DLCInfo"]["Version"] = 0.ToString(); //unknown
                         bioEngineIni["DLCInfo"]["Flags"] = ((int)skOption.ModMountFlag).ToString(); //unknown

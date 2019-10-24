@@ -159,7 +159,7 @@
                   <Border Background="White"
                           BorderThickness="1"
                           CornerRadius="2">
-                              <Border.BorderBrush>
+                              <!--<Border.BorderBrush>
                       <LinearGradientBrush StartPoint="0.5,0"
                                            EndPoint="0.5,1">
                         <GradientStop Color="#FFA3AEB9"
@@ -171,7 +171,7 @@
                         <GradientStop Color="#FF617584"
                                       Offset="1" />
                                  </LinearGradientBrush>
-                              </Border.BorderBrush>
+                              </Border.BorderBrush>-->
                     <Border CornerRadius="1.5"
                             Margin="1">
                                  <Border.Background>

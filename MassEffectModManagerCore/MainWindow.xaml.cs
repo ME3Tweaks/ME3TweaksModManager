@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
+using AdonisUI;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -95,7 +96,7 @@ namespace MassEffectModManagerCore
             PopulateTargets();
             InitializeComponent();
             AttachListeners();
-
+            SetTheme();
             //Must be done after UI has initialized
             if (InstallationTargets.Count > 0)
             {
@@ -917,6 +918,7 @@ namespace MassEffectModManagerCore
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                new StarterKitGeneratorWindow(Mod.MEGame.ME2).Show();
                 if (b.Result is int i)
                 {
                     if (i != 0)
@@ -1166,12 +1168,21 @@ namespace MassEffectModManagerCore
             {
                 ChooseModLibraryPath(true);
             }
+            else if (callingMember == DarkMode_MenuItem)
+            {
+                SetTheme();
+            }
             else
             {
                 //unknown caller
                 return;
             }
             Settings.Save();
+        }
+
+        private void SetTheme()
+        {
+            ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
         }
 
         private bool ChooseModLibraryPath(bool loadModsAfterSelecting)

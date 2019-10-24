@@ -7,11 +7,14 @@
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
-        Style="{StaticResource WindowStyle}"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         SizeToContent="WidthAndHeight"
         Title="{Binding ModalTitle}" MinHeight="150" Width="440">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
+
     <Grid Margin="5,5,15,5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>

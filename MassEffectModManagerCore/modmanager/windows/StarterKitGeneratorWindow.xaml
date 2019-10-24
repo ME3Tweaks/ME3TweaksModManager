@@ -8,10 +8,15 @@
         xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
         xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
         xmlns:me3tweaks="clr-namespace:MassEffectModManagerCore.modmanager.me3tweaks"
+        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
+        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
         WindowStartupLocation="CenterOwner"
-        Style="{StaticResource WindowStyle}"
         Title="DLC Mod Starter Kit Generator" Height="650" MinHeight="650" MinWidth="875" Width="875">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
     <ui:ValidatableWindowBase.Resources>
         <converters:StarterKitRowHeightConverter x:Key="StarterKitRowHeightConverter"/>
         <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter"/>
@@ -122,7 +127,7 @@
             <TextBlock VerticalAlignment="Center" Text="Mod Name" Grid.Row="2" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Mod Developer" Grid.Row="3" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Mod Website/Nexusmods page" Grid.Row="4" Grid.Column="1"/>
-            <TextBlock VerticalAlignment="Center" Text="DLC Folder Name Suffix" Grid.Row="5" Grid.Column="1"/>
+            <TextBlock VerticalAlignment="Center" Text="DLC Folder Name" Grid.Row="5" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Internal Name" Grid.Row="6" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Internal Name TLK ID" Grid.Row="7" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="DLC Module Number" Grid.Row="8" Grid.Column="1"/>
@@ -132,14 +137,20 @@
             <xctk:WatermarkTextBox Grid.Row="2" Grid.Column="2" Watermark="Faster Legs" Text="{Binding ModName, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
             <xctk:WatermarkTextBox Grid.Row="3" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
             <xctk:WatermarkTextBox Grid.Row="4" Grid.Column="2" Watermark="https://nexusmods.com/masseffect2/..." Text="{Binding ModURL, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
-            <xctk:WatermarkTextBox Grid.Row="5" Grid.Column="2" Watermark="FasterLegs" Text="{Binding ModDLCFolderName, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
+            <DockPanel Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" Margin="0">
+            <TextBlock Text="DLC_MOD_" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+            <xctk:WatermarkTextBox Watermark="OneGreatMod"
+                                Text="{Binding ModDLCFolderName, Mode=TwoWay, ValidatesOnDataErrors=True}"  VerticalContentAlignment="Center"
+                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            </DockPanel>
+
             <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName, Mode=TwoWay, ValidatesOnDataErrors=True}" 
                                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"/>
             <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
             <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber, Mode=TwoWay, ValidatesOnDataErrors=True}" 
                                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"/>
             <xctk:WatermarkTextBox Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="MountPriority_TextChanged" Name="ModMountPriority_TextBox"/>
-            <xctk:WatermarkComboBox Grid.Row="10" Grid.Column="2" Watermark="Mount Flag" ItemsSource="{Binding DisplayedMountFlags}" 
+            <ComboBox Grid.Row="10" Grid.Column="2" ItemsSource="{Binding DisplayedMountFlags}" 
                                     DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag, Mode=TwoWay}"
                                     IsSynchronizedWithCurrentItem="True"/>
 
@@ -176,8 +187,8 @@
             </StackPanel>
             <TextBlock Text="Existing known DLC" FontWeight="Bold" DockPanel.Dock="Top" Grid.Row="1" Grid.Column="4"/>
 
-            <DockPanel Grid.Column="4" Grid.RowSpan="15" Grid.Row="2" MinWidth="300" MaxHeight="600">
-                <ListBox Name="CustomDLCMountsListBox" ItemsSource="{Binding CustomDLCMountsForGame}" SelectedItem="{Binding SelectedModMount, Mode=TwoWay}" SelectedValuePath="IsSelected" HorizontalContentAlignment="Stretch">
+            <DockPanel Grid.Column="4" Grid.RowSpan="15" Grid.Row="2" MinWidth="300">
+                <ListBox Name="CustomDLCMountsListBox" BorderThickness="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ItemsSource="{Binding CustomDLCMountsForGame}" SelectedItem="{Binding SelectedModMount, Mode=TwoWay}" SelectedValuePath="IsSelected" HorizontalContentAlignment="Stretch">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Padding" Value="0"/>
@@ -189,13 +200,14 @@
                             <TextBlock Text="{Binding StarterKitString}"
                                            FontSize="12"
                                            VerticalAlignment="Center"
-                                           HorizontalAlignment="Stretch" Padding="2">
+                                           HorizontalAlignment="Stretch" Padding="2"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}">
                                 <TextBlock.Style>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsPreview}" Value="True" >
-                                                <Setter Property="Foreground" Value="DarkRed" />
-                                                <Setter Property="Background" Value="Orange" />
+                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentIntenseHighlightBorderBrush}}" />
                                                 <Setter Property="FontWeight" Value="Bold" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -207,7 +219,7 @@
                 </ListBox>
             </DockPanel>
 
-            <Button Content="Generate Starter Kit" Grid.Column="2" Grid.Row="14" Command="{Binding GenerateStarterKitCommand}"/>
+            <Button Content="Generate Starter Kit" Grid.Column="2" Grid.Row="14" Command="{Binding GenerateStarterKitCommand}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBorderBrush}}" />
         </Grid>
     </xctk:BusyIndicator>
 
