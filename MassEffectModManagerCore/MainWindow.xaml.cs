@@ -496,7 +496,6 @@ namespace MassEffectModManagerCore
             }
             LoadMods();
             PerformStartupNetworkFetches(true);
-            Xceed.Wpf.Toolkit.MessageBox.Show("I am a message");
         }
 
         private void UpdateBinkStatus(Mod.MEGame game)

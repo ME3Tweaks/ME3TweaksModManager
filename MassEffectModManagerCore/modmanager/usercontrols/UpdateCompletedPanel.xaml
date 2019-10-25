@@ -9,7 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
         <TextBlock Text="{Binding UpdateTitle}" FontWeight="Bold" FontSize="20" TextAlignment="Center"/>
-        <Improv Text="{Binding UpdateMessage}" TextWrapping="Wrap"/>
+        <TextBlock Text="{Binding UpdateMessage}" TextWrapping="Wrap"/>
         <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="7,4" Margin="0,40,0,0"/>
     </StackPanel>
 </local:MMBusyPanelBase>
