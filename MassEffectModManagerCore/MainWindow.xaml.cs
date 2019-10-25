@@ -192,7 +192,7 @@ namespace MassEffectModManagerCore
 
         private void ShowUpdateCompletedPane()
         {
-            var archiveDeploymentPane = new UpdateCompletedPanel("Test message", "testtitle");
+            var archiveDeploymentPane = new UpdateCompletedPanel("Update completed", "Mod Manager has been updated to version "+App.AppVersionAbout+".");
             archiveDeploymentPane.Close += (a, b) =>
             {
                 ReleaseBusyControl();
@@ -400,7 +400,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        MessageBox.Show("Unable to add this directory as a target:\n" + failureReason);
+                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target:\n" + failureReason,"Error adding target",MessageBoxButton.OK,MessageBoxImage.Error);
                     }
                 }
 
@@ -489,6 +489,7 @@ namespace MassEffectModManagerCore
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
+            App.BootingUpdate = true;
             if (App.BootingUpdate)
             {
                 ShowUpdateCompletedPane();

@@ -202,10 +202,11 @@
                         MinWidth="65"
                         Margin="6,0,0,0"
                         Visibility="Collapsed"
+                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         BorderThickness="1"
-                        BorderBrush="Red"
+                        Padding="7,4"
                         Content="{TemplateBinding OkButtonContent}"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.WindowButton}}" />
+                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
                 <Button Grid.Column="3"
                         x:Name="PART_CancelButton"
                         MinWidth="65"
@@ -225,7 +226,7 @@
   <Style TargetType="{x:Type local:MessageBox}"
          BasedOn="{StaticResource {x:Type prim:WindowControl}}">
     <Setter Property="ButtonRegionBackground"
-            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
     <Setter Property="Focusable"
             Value="False" />
     <Setter Property="MinWidth"

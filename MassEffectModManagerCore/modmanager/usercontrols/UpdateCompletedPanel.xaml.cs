@@ -10,16 +10,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for UpdateCompletedPanel.xaml
     /// </summary>
-    public partial class UpdateCompletedPanel : UserControl
+    public partial class UpdateCompletedPanel : MMBusyPanelBase
     {
 
-        public UpdateCompletedPanel(string message, string title)
+        public UpdateCompletedPanel(string title, string message)
         {
             DataContext = this;
             UpdateTitle = title;
@@ -30,16 +31,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string UpdateTitle { get; }
         public string UpdateMessage { get; }
 
-        public event EventHandler<EventArgs> Close;
-        protected virtual void OnClosing(EventArgs e)
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            EventHandler<EventArgs> handler = Close;
-            handler?.Invoke(this, e);
+            if (e.Key == Key.Escape)
+            {
+                e.Handled = true;
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         private void Close_Clicked(object sender, RoutedEventArgs e)
         {
-            OnClosing(EventArgs.Empty);
+            OnClosing(DataEventArgs.Empty);
         }
     }
 }
