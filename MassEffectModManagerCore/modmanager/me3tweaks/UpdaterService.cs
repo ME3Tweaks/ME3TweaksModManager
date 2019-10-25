@@ -14,6 +14,7 @@ using ByteSizeLib;
 
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
 using SevenZip;
@@ -64,72 +65,77 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             using var wc = new System.Net.WebClient();
-            string updatexml = wc.DownloadStringAwareOfEncoding(updateFinalRequest);
-            Debug.WriteLine(updatexml);
-
-            XElement rootElement = XElement.Parse(updatexml);
-            var modUpdateInfos = (from e in rootElement.Elements("mod")
-                                  select new ModUpdateInfo
-                                  {
-                                      changelog = (string)e.Attribute("changelog"),
-                                      version = (double)e.Attribute("version"),
-                                      updatecode = (int)e.Attribute("updatecode"),
-                                      serverfolder = (string)e.Attribute("folder"),
-                                      sourceFiles = (from f in e.Elements("sourcefile")
-                                                     select new SourceFile
-                                                     {
-                                                         lzmahash = (string)f.Attribute("lzmahash"),
-                                                         hash = (string)f.Attribute("hash"),
-                                                         size = (int)f.Attribute("size"),
-                                                         lzmasize = (int)f.Attribute("lzmasize"),
-                                                         relativefilepath = f.Value,
-                                                         timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
-                                                     }).ToList(),
-                                  }).ToList();
-            foreach (var modUpdateInfo in modUpdateInfos)
+            try
             {
-                //Calculate update information
-                var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
-                if (matchingMod != null && (forceRecheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
+                string updatexml = wc.DownloadStringAwareOfEncoding(updateFinalRequest);
+
+                XElement rootElement = XElement.Parse(updatexml);
+                var modUpdateInfos = (from e in rootElement.Elements("mod")
+                                      select new ModUpdateInfo
+                                      {
+                                          changelog = (string)e.Attribute("changelog"),
+                                          version = (double)e.Attribute("version"),
+                                          updatecode = (int)e.Attribute("updatecode"),
+                                          serverfolder = (string)e.Attribute("folder"),
+                                          sourceFiles = (from f in e.Elements("sourcefile")
+                                                         select new SourceFile
+                                                         {
+                                                             lzmahash = (string)f.Attribute("lzmahash"),
+                                                             hash = (string)f.Attribute("hash"),
+                                                             size = (int)f.Attribute("size"),
+                                                             lzmasize = (int)f.Attribute("lzmasize"),
+                                                             relativefilepath = f.Value,
+                                                             timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
+                                                         }).ToList(),
+                                      }).ToList();
+                foreach (var modUpdateInfo in modUpdateInfos)
                 {
-                    modUpdateInfo.mod = matchingMod;
-                    string modBasepath = matchingMod.ModPath;
-                    foreach (var serverFile in modUpdateInfo.sourceFiles)
+                    //Calculate update information
+                    var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
+                    if (matchingMod != null && (forceRecheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
                     {
-                        var localFile = Path.Combine(modBasepath, serverFile.relativefilepath);
-                        if (File.Exists(localFile))
+                        modUpdateInfo.mod = matchingMod;
+                        string modBasepath = matchingMod.ModPath;
+                        foreach (var serverFile in modUpdateInfo.sourceFiles)
                         {
-                            var info = new FileInfo(localFile);
-                            if (info.Length != serverFile.size)
+                            var localFile = Path.Combine(modBasepath, serverFile.relativefilepath);
+                            if (File.Exists(localFile))
                             {
-                                modUpdateInfo.applicableUpdates.Add(serverFile);
-                            }
-                            else
-                            {
-                                //Check hash
-                                var md5 = Utilities.CalculateMD5(localFile);
-                                if (md5 != serverFile.hash)
+                                var info = new FileInfo(localFile);
+                                if (info.Length != serverFile.size)
                                 {
                                     modUpdateInfo.applicableUpdates.Add(serverFile);
                                 }
+                                else
+                                {
+                                    //Check hash
+                                    var md5 = Utilities.CalculateMD5(localFile);
+                                    if (md5 != serverFile.hash)
+                                    {
+                                        modUpdateInfo.applicableUpdates.Add(serverFile);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                modUpdateInfo.applicableUpdates.Add(serverFile);
                             }
                         }
-                        else
-                        {
-                            modUpdateInfo.applicableUpdates.Add(serverFile);
-                        }
+
+                        //Files to remove calculation
+                        var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories).Select(x => x.Substring(modBasepath.Length + 1)).ToList();
+                        modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath), StringComparer.InvariantCultureIgnoreCase).ToList()); //Todo: Add security check here to prevent malicious values
+                        modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
                     }
-
-                    //Files to remove calculation
-                    var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories).Select(x => x.Substring(modBasepath.Length + 1)).ToList();
-                    modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath), StringComparer.InvariantCultureIgnoreCase).ToList()); //Todo: Add security check here to prevent malicious values
-                    modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
+                    return modUpdateInfos;
                 }
-
             }
-
-
-            return modUpdateInfos;
+            catch (Exception e)
+            {
+                Log.Error("Error checking for mod updates: " + App.FlattenException(e));
+                Crashes.TrackError(e, new Dictionary<string, string>() { { "Update check URL", updateFinalRequest } });
+            }
+            return null;
         }
 
         public static bool UpdateMod(ModUpdateInfo updateInfo, string stagingDirectory, Action<string> errorMessageCallback)

@@ -36,15 +36,35 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
-
-                using (var wc = new System.Net.WebClient())
+                try
                 {
+                    using var wc = new System.Net.WebClient();
+
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyIdentificationServiceURL);
                     File.WriteAllText(Utilities.GetThirdPartyIdentificationCachedFile(), json);
                     return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(json);
                 }
-            }
+                catch (Exception e)
+                {
+                    //Unable to fetch latest help.
+                    Log.Error("Error fetching online third party identification service: " + e.Message);
 
+                    if (File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()))
+                    {
+                        Log.Warning("Using cached third party identification service instead");
+                        return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+                    }
+                    else
+                    {
+                        Log.Error("Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
+                        Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> d = new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>();
+                        d["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
+                        d["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
+                        d["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
+                        return d;
+                    }
+                }
+            }
             return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
         }
 
@@ -59,11 +79,29 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             if (!File.Exists(Utilities.GetTipsServiceFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
-                using (var wc = new System.Net.WebClient())
+                try
                 {
+                    using var wc = new System.Net.WebClient();
+
                     string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
                     File.WriteAllText(Utilities.GetTipsServiceFile(), json);
                     return JsonConvert.DeserializeObject<List<string>>(json);
+                }
+                catch (Exception e)
+                {
+                    //Unable to fetch latest help.
+                    Log.Error("Error fetching latest tips service file: " + e.Message);
+
+                    if (File.Exists(Utilities.GetTipsServiceFile()))
+                    {
+                        Log.Warning("Using cached tips service file instead");
+                        return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+                    }
+                    else
+                    {
+                        Log.Error("Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
+                        return new List<string>();
+                    }
                 }
             }
 
@@ -74,11 +112,29 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
-                using (var wc = new System.Net.WebClient())
+                try
                 {
+                    using var wc = new System.Net.WebClient();
+
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
                     File.WriteAllText(Utilities.GetThirdPartyImportingCachedFile(), json);
                     return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(json);
+                }
+                catch (Exception e)
+                {
+                    //Unable to fetch latest help.
+                    Log.Error("Error fetching latest tips service file: " + e.Message);
+
+                    if (File.Exists(Utilities.GetThirdPartyImportingCachedFile()))
+                    {
+                        Log.Warning("Using cached third party importing service file instead");
+                        return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
+                    }
+                    else
+                    {
+                        Log.Error("Unable to fetch latest third party importing service file from server and local file doesn't exist. Returning a blank copy.");
+                        return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
+                    }
                 }
             }
 

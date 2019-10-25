@@ -17,12 +17,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             if (!File.Exists(Utilities.GetLocalHelpFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
-                string contents;
-                using (var wc = new System.Net.WebClient())
+                try
                 {
+                    using var wc = new System.Net.WebClient();
                     string xml = wc.DownloadStringAwareOfEncoding(LatestHelpFileLink);
                     File.WriteAllText(Utilities.GetLocalHelpFile(), xml);
                     return ParseLocalHelp(xml);
+                }
+                catch (Exception e)
+                {
+                    //Unable to fetch latest help.
+                    Log.Error("Error fetching online help: " + e.Message);
+
+                    if (File.Exists(Utilities.GetLocalHelpFile()))
+                    {
+                        Log.Warning("Using cached help instead");
+                        return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()));
+                    }
+                    else
+                    {
+                        Log.Error("Unable to display dynamic help: Could not fetch online asset and cached help asset does not exist.");
+                        return null;
+                    }
                 }
             }
 
@@ -33,30 +49,32 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             //We can't use LINQ here as we have to multiselect
             //And parse things in a certain order
-
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(xml);
-            var sortableHelpItems = new List<SortableHelpElement>();
-            //Get top level items, in order
-            string xpathExpression = "/helpmenu/helpitem|/helpmenu/list";
-
-            var nodes = doc.SelectNodes(xpathExpression);
-            foreach (XmlNode node in nodes)
+            try
             {
-                var title = node.Attributes.GetNamedItem("title");
-                if (title != null)
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xml);
+                var sortableHelpItems = new List<SortableHelpElement>();
+                //Get top level items, in order
+                string xpathExpression = "/helpmenu/helpitem|/helpmenu/list";
+
+                var nodes = doc.SelectNodes(xpathExpression);
+                foreach (XmlNode node in nodes)
                 {
-                    var helpItem = new SortableHelpElement(node);
-                    sortableHelpItems.Add(helpItem);
-
-
+                    var title = node.Attributes.GetNamedItem("title");
+                    if (title != null)
+                    {
+                        var helpItem = new SortableHelpElement(node);
+                        sortableHelpItems.Add(helpItem);
+                    }
                 }
+                sortableHelpItems.Sort();
+                return sortableHelpItems;
             }
-
-            sortableHelpItems.Sort();
-
-
-            return sortableHelpItems;
+            catch (Exception e)
+            {
+                Log.Error("ERROR IN LOCAL HELP FILE: " + e.Message);
+                return new List<SortableHelpElement>();
+            }
         }
     }
 

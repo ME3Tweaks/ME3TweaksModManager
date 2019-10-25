@@ -192,7 +192,8 @@ namespace MassEffectModManagerCore
 
         private void ShowUpdateCompletedPane()
         {
-            var archiveDeploymentPane = new UpdateCompletedPanel("Update completed", "Mod Manager has been updated to version "+App.AppVersionAbout+".");
+            var message = $"Mod Manager has been updated from build {App.UpdatedFrom} to version {App.AppVersionAbout}.";
+            var archiveDeploymentPane = new UpdateCompletedPanel("Update completed", message);
             archiveDeploymentPane.Close += (a, b) =>
             {
                 ReleaseBusyControl();
@@ -489,7 +490,6 @@ namespace MassEffectModManagerCore
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
-            App.BootingUpdate = true;
             if (App.BootingUpdate)
             {
                 ShowUpdateCompletedPane();
@@ -596,24 +596,30 @@ namespace MassEffectModManagerCore
                 if (LoadedMods.Count > 0)
                 {
                     BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
-                    var updates = OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true).Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
-                    if (updates.Count > 0)
-                    {
-                        Application.Current.Dispatcher.Invoke(delegate
+                    var allModsInManifest = OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true);
+                    if (allModsInManifest != null) {
+                        var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
+                        if (updates != null && updates.Count > 0)
                         {
-                            var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
-                            modUpdatesNotificationDialog.Close += (sender, args) =>
+                            Application.Current.Dispatcher.Invoke(delegate
                             {
-                                ReleaseBusyControl();
-                                if (args.Data is bool reloadMods && reloadMods)
+                                var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
+                                modUpdatesNotificationDialog.Close += (sender, args) =>
                                 {
-                                    LoadMods(updates.Count == 1 ? updates[0].mod : null);
-                                }
+                                    ReleaseBusyControl();
+                                    if (args.Data is bool reloadMods && reloadMods)
+                                    {
+                                        LoadMods(updates.Count == 1 ? updates[0].mod : null);
+                                    }
 
-                            };
-                            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-                            ShowBusyControl(modUpdatesNotificationDialog);
-                        });
+                                };
+                                UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+                                ShowBusyControl(modUpdatesNotificationDialog);
+                            });
+                        }
+                    } else
+                    {
+                        bgTask.finishedUiText = "Error checking for mod updates";
                     }
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }

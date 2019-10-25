@@ -134,6 +134,10 @@ namespace MassEffectModManagerCore
                         {
                             App.UpdatedFrom = parsedCommandLineArgs.Value.UpdateFromBuild;
                         }
+                        if (parsedCommandLineArgs.Value.BootingNewUpdate)
+                        {
+                            App.BootingUpdate = true;
+                        }
                     }
                 }
                 #endregion
@@ -329,14 +333,14 @@ namespace MassEffectModManagerCore
 
         [Option('c', "completing-update",
             HelpText = "Indicates that we are booting a new copy of ME3Tweaks Mod Manager that has just been upgraded. --update-from should be included when calling this parameter.")]
-        public int BootingNewUpdate { get; set; }
+        public bool BootingNewUpdate { get; set; }
 
         [Option("update-from",
             HelpText = "Indicates what build of Mod Manager we are upgrading from.")]
         public int UpdateFromBuild { get; set; }
 
         [Option("update-boot",
-            HelpText = "Indicates that this is process is running in update mode. The process will exit upon starting because the extraction process will have completed.")]
+            HelpText = "Indicates that the process should run in update mode for a single file .net core executable. The process will exit upon starting because the platform extraction process will have completed.")]
         public bool UpdateBoot { get; set; }
     }
 }
