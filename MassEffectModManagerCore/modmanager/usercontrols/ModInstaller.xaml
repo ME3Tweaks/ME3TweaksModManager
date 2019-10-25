@@ -7,6 +7,8 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
+             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d" 
              Height="Auto" MinWidth="300" MaxWidth="480">
     <local:MMBusyPanelBase.Resources>
@@ -17,35 +19,36 @@
             <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Select installation options" Margin="0,5,0,0" DockPanel.Dock="Top" />
             <TextBlock TextAlignment="Center" Text="{Binding ModBeingInstalled.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
             <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,15,0,0">
+                <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" MaxWidth="350" HorizontalAlignment="Left" Text="All installation options for this mod are automatic. Ensure you have the listed relevant mods installed before installing this mod if you plan to use them."/>
+
                 <Button Content="Install" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click"/>
                 <Button Content="Cancel" DockPanel.Dock="Right" Padding="5" Margin="5,0" Click="InstallCancel_Click"/>
             </DockPanel>
-            <ScrollViewer MaxHeight="300" BorderBrush="Red" BorderThickness="2">
-            <ItemsControl ItemsSource="{Binding AlternateOptions}" >
-                <!-- ItemTemplateSelector="{StaticResource ModInstaller_AlternateDataTemplateSelector}"-->
-                <ItemsControl.Resources>
-                    <DataTemplate DataType="{x:Type objects:AlternateDLC}">
-                        <DockPanel Margin="0,0,0,5">
-                            <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
-                            <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Description}" VerticalAlignment="Center" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="Gray" MaxWidth="350" FontSize="10" Padding="3,0,20,0"/>
-                        </DockPanel>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type objects:AlternateFile}">
-                        <DockPanel Margin="0,0,0,5">
-                            <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
-                            <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Description}" VerticalAlignment="Center" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="Gray" MaxWidth="350" FontSize="10" Padding="3,0,20,0"/>
-                        </DockPanel>
-                    </DataTemplate>
-                </ItemsControl.Resources>
-            </ItemsControl>
+            <ScrollViewer MaxHeight="300" BorderThickness="2">
+                <ItemsControl ItemsSource="{Binding AlternateOptions}" >
+                    <!-- ItemTemplateSelector="{StaticResource ModInstaller_AlternateDataTemplateSelector}"-->
+                    <ItemsControl.Resources>
+                        <DataTemplate DataType="{x:Type objects:AlternateDLC}">
+                            <DockPanel Margin="0,0,0,5">
+                                <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
+                            </DockPanel>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type objects:AlternateFile}">
+                            <DockPanel Margin="0,0,0,5">
+                                <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="3,0,20,0"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.Resources>
+                </ItemsControl>
             </ScrollViewer>
-
         </DockPanel>
 
         <StackPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center">
-            <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="Black" Margin="10"/>
+            <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10"/>
             <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
             <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Installing Mod}" TextWrapping="Wrap" TextAlignment="Center"/>
             <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding ModBeingInstalled.ModName, FallbackValue=SP Controller Support}" TextWrapping="Wrap" TextAlignment="Center"/>

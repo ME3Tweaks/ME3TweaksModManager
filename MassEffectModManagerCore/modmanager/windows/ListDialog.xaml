@@ -5,26 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         Title="List Dialog" Width="640" Height="480">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
     <DockPanel Margin="5" LastChildFill="True">
         <DockPanel.Resources>
             <Style x:Key="CustomListViewItemStyle" TargetType="{x:Type ListViewItem}">
                 <Style.Triggers>
                     <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                        <Setter Property="Background" Value="White"></Setter>
+                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"/>
                     </Trigger>
                     <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                        <Setter Property="Background" Value="#EEEEFF"></Setter>
+                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
         </DockPanel.Resources>
         <TextBlock Name="ListDialog_Message" Text="This is a message." TextWrapping="Wrap" DockPanel.Dock="Top" Margin="0,5,0,5"/>
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" DockPanel.Dock="Bottom" Margin="0,5,0,0">
-            <Button FlowDirection="LeftToRight" Click="CopyItemsToClipBoard_Click" Content="Copy items to clipboard" Padding="3"/>
-            <Label Name="ListDialog_Status" FlowDirection="LeftToRight" Content="Copied to clipboard" Margin="8,0,0,0" Visibility="Collapsed"/>
+            <Button FlowDirection="LeftToRight" Click="CopyItemsToClipBoard_Click" Content="Copy items to clipboard" Padding="7,5"/>
+            <Label Name="ListDialog_Status" FlowDirection="LeftToRight" Content="Copied to clipboard" Margin="8,0,0,0" Visibility="Collapsed" VerticalAlignment="Center"/>
         </StackPanel>
-        <ListView Name="ListDialog_List" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AlternationCount="2" ItemContainerStyle="{DynamicResource CustomListViewItemStyle}">
+        <ListView Name="ListDialog_List" Background="Red" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AlternationCount="2" BorderThickness="1" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                  ItemContainerStyle="{DynamicResource CustomListViewItemStyle}">
             <!-- here set the itemTemplate to a TextBlock that can wraps-->
             <ListView.ItemTemplate>
                 <DataTemplate>

@@ -8,7 +8,6 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
         mc:Ignorable="d"
@@ -30,10 +29,12 @@
                     Value="Bold" />
             <Setter Property="Height"
                     Value="14" />
-            <Setter Property="IsEnabled"
-                    Value="False" />
-            <Setter Property="Foreground"
-                    Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
+            <Setter Property="StaysOpenOnClick"
+                    Value="True" />
+            <Setter Property="BorderThickness"
+                    Value="0" />
+            <Setter Property="Background"
+                        Value="{DynamicResource {x:Static adonisUi:Brushes.WindowButtonHighlightBrush}}" />
         </Style>
         <Storyboard x:Key="OpenLoadingSpinner" Storyboard.TargetProperty="(FrameworkElement.Width)">
             <DoubleAnimation To="32" Duration="0:0:0.25"/>
@@ -246,7 +247,7 @@
                         <Image Name="BottomBarGameID_Image" Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0"/>
                         <Button MinWidth="70" Padding="10,7" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
                         <Button MinWidth="70" Padding="10,7" Content="{Binding StartGameButtonText, FallbackValue=Start Game}" Command="{Binding StartGameCommand}" Margin="5,0,0,0"
-                                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
+                                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
                     </StackPanel>
                 </StatusBarItem>
             </StatusBar>
@@ -256,7 +257,7 @@
                     <ColumnDefinition Width="250"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*"/>
-                   <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="7"/>
                 </Grid.ColumnDefinitions>
@@ -301,8 +302,8 @@
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">
-                        <Button DockPanel.Dock="Right" Margin="0,0,5,0" Background="Transparent" BorderThickness="0" Command="{Binding ReloadModsCommand}">
-                            <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="Gray"/>
+                        <Button DockPanel.Dock="Right" Margin="0,0,5,0" Background="Transparent" BorderThickness="0" Command="{Binding ReloadModsCommand}" ToolTip="Reload mods from library">
+                            <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}"/>
                         </Button>
                         <TextBlock Text="Available Mods" FontWeight="Bold"/>
                     </DockPanel>

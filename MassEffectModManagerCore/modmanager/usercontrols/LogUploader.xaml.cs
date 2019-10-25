@@ -4,11 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using ByteSizeLib;
 using Flurl.Http;
-
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
@@ -21,18 +19,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for LogUploader.xaml
     /// </summary>
-    public partial class LogUploader : UserControl, INotifyPropertyChanged
+    public partial class LogUploader : MMBusyPanelBase
     {
-        private readonly Action<ProgressBarUpdate> progressBarUpdateCallback;
-        private bool UploadingLog;
+        public bool UploadingLog { get; private set; }
         private const string LogUploaderEndpoint = "https://me3tweaks.com/modmanager/loguploader";
         public string TopText { get; private set; } = "Select a log to view on log viewing service";
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
-        public LogUploader(Action<ProgressBarUpdate> progressBarVisibilityCallback)
+        public LogUploader()
         {
             DataContext = this;
-            this.progressBarUpdateCallback = progressBarVisibilityCallback;
-            progressBarUpdateCallback?.Invoke(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             LoadCommands();
             InitializeComponent();
             InitLogUploaderUI();
@@ -86,8 +81,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             UploadingLog = true;
             TopText = "Collecting log information";
-            progressBarUpdateCallback?.Invoke(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Visible));
-            progressBarUpdateCallback?.Invoke(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE, true));
             NamedBackgroundWorker bw = new NamedBackgroundWorker("LogUpload");
             bw.DoWork += (a, b) =>
             {
@@ -167,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.Result is string response)
                     {
-                        if (response.StartsWith("http"))
+                        if (!response.StartsWith("http"))
                         {
                             Utilities.OpenWebpage(response);
                         }
@@ -188,6 +181,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return LogSelector_ComboBox.SelectedItem != null && !UploadingLog;
         }
 
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         public class LogItem
         {
             public string filepath;
@@ -198,7 +196,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public override string ToString()
             {
-                return System.IO.Path.GetFileName(filepath) + " - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
+                return Path.GetFileName(filepath) + " - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
             }
         }
 

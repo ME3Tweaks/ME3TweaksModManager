@@ -495,6 +495,7 @@ namespace MassEffectModManagerCore
             }
             LoadMods();
             PerformStartupNetworkFetches(true);
+            Xceed.Wpf.Toolkit.MessageBox.Show("I am a message");
         }
 
         private void UpdateBinkStatus(Mod.MEGame game)
@@ -918,7 +919,6 @@ namespace MassEffectModManagerCore
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
-                new StarterKitGeneratorWindow(Mod.MEGame.ME2).Show();
                 if (b.Result is int i)
                 {
                     if (i != 0)
@@ -1036,7 +1036,7 @@ namespace MassEffectModManagerCore
 
         private void UploadLog_Click(object sender, RoutedEventArgs e)
         {
-            var logUploaderUI = new LogUploader(UpdateBusyProgressBarCallback);
+            var logUploaderUI = new LogUploader();
             logUploaderUI.Close += (a, b) =>
             {
                 ReleaseBusyControl();
@@ -1143,9 +1143,11 @@ namespace MassEffectModManagerCore
 
         private void RunAutoTOC_Clicked(object sender, RoutedEventArgs e)
         {
+            var task = backgroundTaskEngine.SubmitBackgroundJob("AutoTOC", "Running AutoTOC", "Ran AutoTOC");
             var autoTocUI = new AutoTOC(GetCurrentTarget(Mod.MEGame.ME3));
             autoTocUI.Close += (a, b) =>
             {
+                backgroundTaskEngine.SubmitJobCompletion(task);
                 ReleaseBusyControl();
             };
             ShowBusyControl(autoTocUI);
