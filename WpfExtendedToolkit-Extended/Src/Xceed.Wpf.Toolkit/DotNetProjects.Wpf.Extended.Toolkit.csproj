@@ -30,6 +30,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AdonisUI.ClassicTheme" Version="1.12.1" />
+    <ProjectReference Include="..\..\..\AdonisUI\AdonisUI.csproj" />
   </ItemGroup>
 </Project>

@@ -5,11 +5,12 @@ using System.Diagnostics;
 using System.Linq;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using System.ComponentModel;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay("AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
-    public class AlternateDLC
+    public class AlternateDLC : INotifyPropertyChanged
     {
         public enum AltDLCOperation
         {
@@ -46,6 +47,9 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool ValidAlternate;
         public string LoadFailedReason;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public AlternateDLC(string alternateDLCText, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);

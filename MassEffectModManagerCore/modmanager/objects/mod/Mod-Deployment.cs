@@ -44,7 +44,10 @@ namespace MassEffectModManagerCore.modmanager
                 }
             }
             references.AddRange(AdditionalDeploymentFiles);
-            references.AddRange(AdditionalDeploymentFolders);
+            foreach(var additionalDeploymentDir in AdditionalDeploymentFolders)
+            {
+                references.AddRange(Directory.GetFiles(Path.Combine(ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length + 1)).ToList());
+            }
             return references;
         }
     }

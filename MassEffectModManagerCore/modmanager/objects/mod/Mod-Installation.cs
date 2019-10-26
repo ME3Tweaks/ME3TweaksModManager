@@ -59,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager
                         //loop over every file 
                         foreach (var sourceFile in allSourceDirFiles)
                         {
-
+                            //Check against alt files
                             bool altApplied = false;
                             foreach (var altFile in alternateFiles)
                             {
@@ -84,7 +84,9 @@ namespace MassEffectModManagerCore.modmanager
                             }
 
                             if (altApplied) continue; //no further processing for file
-                            installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
+                            var relativeDestStartIndex = sourceFile.IndexOf(mapping.Value);
+                            string destPath = sourceFile.Substring(relativeDestStartIndex);
+                            installationMapping[destPath] = sourceFile; //destination is mapped to source file that will replace it.
                         }
 
                         foreach (var altdlc in alternateDLC)

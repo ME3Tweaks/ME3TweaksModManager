@@ -86,6 +86,8 @@ namespace MassEffectModManagerCore.modmanager
                     sb.AppendLine("Add Custom DLCs: " + String.Join(", ", customDLCJob.CustomDLCFolderMapping.Values));
                 }
 
+                //todo: Add potentials through AlternateDLC
+
                 if (RequiredDLC.Count > 0)
                 {
                     sb.AppendLine("Requires the following DLC to install: ");
@@ -815,7 +817,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
 
                     //Check folder exists
-                    if (FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, addlFolder), Archive))
+                    if (!FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, addlFolder), Archive))
                     {
                         Log.Error($"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}");
                         LoadFailedReason = $"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}";

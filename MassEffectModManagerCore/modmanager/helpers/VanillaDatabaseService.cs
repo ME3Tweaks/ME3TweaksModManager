@@ -33,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     return ME1VanillaDatabase;
                 case Mod.MEGame.ME2:
                     if (ME2VanillaDatabase.Count > 0) return ME2VanillaDatabase;
-                    var me2stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}3.bin");
+                    var me2stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}2.bin");
                     ParseDatabase(me2stream, ME2VanillaDatabase);
                     return ME2VanillaDatabase;
                 case Mod.MEGame.ME3:

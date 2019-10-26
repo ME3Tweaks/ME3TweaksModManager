@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -560,14 +559,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SortedSet<string> directories = new SortedSet<string>();
             foreach (var file in referencedFiles)
             {
-                string[] split = file.Split('\\');
-                if (split.Length < 2) continue; //not a directory
-                split = split.Take(split.Length - 1).ToArray();
-                string folderpath = string.Join('\\', split);
-                if (directories.Add(folderpath))
+                var path = Path.Combine(ModBeingDeployed.ModPath, file);
+                var directory = Directory.GetParent(path).FullName;
+                if (directory.Length <= ModBeingDeployed.ModPath.Length) continue; //root file or directory.
+                directory = directory.Substring(ModBeingDeployed.ModPath.Length + 1);
+
+                //nested folders with no folders
+                var relativeFolders = directory.Split('\\');
+                string buildingFolderList = "";
+                foreach(var relativeFolder in relativeFolders)
                 {
-                    archiveMapping[folderpath] = null;
+                    if (buildingFolderList != "")
+                    {
+                        buildingFolderList += "\\";
+                    }
+                    buildingFolderList += relativeFolder;
+                    if (directories.Add(buildingFolderList))
+                    {
+                        Debug.WriteLine("7z folder: " + buildingFolderList);
+                        archiveMapping[buildingFolderList] = null;
+                    }
                 }
+                
             }
 
             archiveMapping.AddRange(referencedFiles.ToDictionary(x => x, x => Path.Combine(ModBeingDeployed.ModPath, x)));
@@ -668,13 +681,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Icon = FontAwesomeIcon.Spinner;
                 Spinning = true;
-                Foreground = Brushes.Gray;
+                Foreground = Application.Current.FindResource(AdonisUI.Brushes.DisabledAccentForegroundBrush) as SolidColorBrush;
                 ToolTip = "Validation in progress...";
             }
 
             public void ExecuteValidationFunction()
             {
-                Foreground = Brushes.RoyalBlue;
+                Foreground = Application.Current.FindResource(AdonisUI.Brushes.AccentBrush) as SolidColorBrush;
                 ValidationFunction?.Invoke(this);
                 Debug.WriteLine("Invoke finished");
                 Spinning = false;

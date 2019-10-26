@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using MassEffectModManagerCore.GameDirectories;
@@ -9,7 +10,7 @@ using Serilog;
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay("AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
-    public class AlternateFile
+    public class AlternateFile : INotifyPropertyChanged
     {
         public enum AltFileOperation
         {
@@ -55,6 +56,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
         public bool ValidAlternate;
         public string LoadFailedReason;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public AlternateFile(string alternateFileText, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);

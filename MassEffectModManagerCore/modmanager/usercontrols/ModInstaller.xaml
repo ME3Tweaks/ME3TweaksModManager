@@ -19,27 +19,48 @@
             <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Select installation options" Margin="0,5,0,0" DockPanel.Dock="Top" />
             <TextBlock TextAlignment="Center" Text="{Binding ModBeingInstalled.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
             <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,15,0,0">
-                <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" MaxWidth="350" HorizontalAlignment="Left" Text="All installation options for this mod are automatic. Ensure you have the listed relevant mods installed before installing this mod if you plan to use them."/>
+                <TextBlock Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap" MaxWidth="350" HorizontalAlignment="Left" 
+                           Text="All installation options for this mod are automatic. Ensure you have the listed relevant mods installed before installing this mod if you plan to use them."/>
 
                 <Button Content="Install" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click"/>
                 <Button Content="Cancel" DockPanel.Dock="Right" Padding="5" Margin="5,0" Click="InstallCancel_Click"/>
             </DockPanel>
-            <ScrollViewer MaxHeight="300" BorderThickness="2">
-                <ItemsControl ItemsSource="{Binding AlternateOptions}" >
+            <ScrollViewer MaxHeight="300" BorderThickness="2" Padding="0" Focusable="False">
+                <ItemsControl ItemsSource="{Binding AlternateOptions}">
                     <!-- ItemTemplateSelector="{StaticResource ModInstaller_AlternateDataTemplateSelector}"-->
                     <ItemsControl.Resources>
                         <DataTemplate DataType="{x:Type objects:AlternateDLC}">
                             <DockPanel Margin="0,0,0,5">
-                                <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
                                 <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
                                 <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
+                                <DockPanel.Style>
+                                    <Style TargetType="{x:Type DockPanel}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DockPanel.Style>
                             </DockPanel>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type objects:AlternateFile}">
-                            <DockPanel Margin="0,0,0,5">
-                                <CheckBox IsEnabled="{Binding IsManual}" IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                            <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp">
+                                <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
                                 <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Top" FontWeight="Bold"/>
-                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="3,0,20,0"/>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
+                                <DockPanel.Style>
+                                    <Style TargetType="{x:Type DockPanel}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DockPanel.Style>
                             </DockPanel>
                         </DataTemplate>
                     </ItemsControl.Resources>

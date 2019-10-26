@@ -29,6 +29,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool InstallationSucceeded { get; private set; }
         public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
         public bool ModIsInstalling { get; set; }
+        public bool AllOptionsAreAutomatic { get; private set; }
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             DataContext = this;
@@ -70,6 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
             //See if any alternate options are available and display them even if they are all autos
+            AllOptionsAreAutomatic = true;
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
                 AlternateOptions.AddRange(job.AlternateDLCs);
@@ -81,10 +83,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (o is AlternateDLC altdlc)
                 {
                     altdlc.SetupInitialSelection(gameTarget);
+                    if (altdlc.IsManual) AllOptionsAreAutomatic = false;
                 }
                 else if (o is AlternateFile altfile)
                 {
                     altfile.SetupInitialSelection(gameTarget);
+                    if (altfile.IsManual) AllOptionsAreAutomatic = false;
                 }
             }
 
@@ -134,7 +138,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
             //Prepare queues
-            (Dictionary<ModJob, (Dictionary<string, string> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
+            (Dictionary<ModJob, (Dictionary<string, string> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
+                List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues =
+                ModBeingInstalled.GetInstallationQueues(gameTarget);
 
             if (gameTarget.ALOTInstalled)
             {
@@ -556,6 +562,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             //throw new NotImplementedException();
+        }
+
+        private void AlternateItem_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DockPanel dp)
+            {
+                if (dp.DataContext is AlternateDLC ad && ad.IsManual)
+                {
+                    ad.IsSelected = !ad.IsSelected;
+                }
+                else if (dp.DataContext is AlternateFile af && af.IsManual)
+                {
+                    af.IsSelected = !af.IsSelected;
+                }
+            }
         }
     }
 }

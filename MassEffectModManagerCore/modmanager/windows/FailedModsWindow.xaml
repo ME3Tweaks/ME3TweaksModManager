@@ -6,15 +6,18 @@
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
         xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
         mc:Ignorable="d"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+
         WindowStartupLocation="CenterOwner"
         Title="Failed mods" Height="450" Width="641.562">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
     <Window.Resources>
-        <SolidColorBrush x:Key="MainWindowMainBackgroundBrush" Color="#f0f0f0"/>
-        <SolidColorBrush x:Key="MainWindowMenuBackgroundBrush" Color="White"/>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     </Window.Resources>
     <DockPanel>
-        <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource MainWindowMainBackgroundBrush}" Padding="5,0">
+        <StatusBar DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" Padding="5,0">
             <StatusBarItem HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Name="LoadingSpinnerContainer" Width="Auto" Height="36" Padding="0">
                 <StatusBarItem.Resources>
                     <Storyboard x:Key="imageRotationStoryboard" Storyboard.TargetName="LoadingSpinner_Image" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)">
@@ -50,7 +53,7 @@
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
-        <Grid Background="{StaticResource MainWindowMainBackgroundBrush}">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="7"/>
                 <ColumnDefinition Width="200"/>
@@ -95,7 +98,8 @@
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>-->
-                <TextBox Name="FailureInformation_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding SelectedMod.LoadFailedReason, Mode=OneWay}" TextWrapping="Wrap"/>
+                <TextBox Name="FailureInformation_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" 
+                         Text="{Binding SelectedMod.LoadFailedReason, Mode=OneWay}" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
             </DockPanel>
         </Grid>
     </DockPanel>

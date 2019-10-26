@@ -49,8 +49,8 @@
         </ItemsControl>
         <ProgressBar Height="16" IsIndeterminate="{Binding ProgressIndeterminate}" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"/>
         <DockPanel Margin="0,4">
-            <Button DockPanel.Dock="Right" Content="Deploy" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="4"/>
-            <Button DockPanel.Dock="Right" Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="4" Margin="4,0"/>
+            <Button DockPanel.Dock="Right" Content="Deploy" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="7,5"/>
+            <Button DockPanel.Dock="Right" Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="5" Margin="4,0"/>
             <TextBlock Text="{Binding OperationText, FallbackValue=Verify above items before deployment}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
         </DockPanel>
     </StackPanel>
