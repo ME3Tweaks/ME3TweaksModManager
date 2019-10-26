@@ -1101,7 +1101,7 @@ namespace MassEffectModManagerCore
 
         private void openModImportUI(string archiveFile = null)
         {
-            var modInspector = new ModArchiveImporter(UpdateBusyProgressBarCallback);
+            var modInspector = new ModArchiveImporter();
             modInspector.Close += (a, b) =>
             {
 

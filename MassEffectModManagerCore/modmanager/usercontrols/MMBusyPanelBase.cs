@@ -14,7 +14,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public MMBusyPanelBase()
+        protected MMBusyPanelBase()
         {
             Loaded += UserControl_Loaded;
             Unloaded += UserControl_Unloaded;
