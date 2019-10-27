@@ -209,7 +209,7 @@
                     <MenuItem Header="Mod Manager Logs &amp; Diagnostics" Click="UploadLog_Click"/>
                     <Separator/>
                     <MenuItem Header="About" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="moddesc.ini file format specification"></MenuItem>
+                    <MenuItem Header="moddesc.ini file format specification" Click="Documentation_Click"/>
                     <MenuItem Header="About ME3Tweaks Mod Manager" Click="About_Click"/>
                 </MenuItem>
             </Menu>

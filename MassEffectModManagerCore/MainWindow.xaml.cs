@@ -1215,5 +1215,10 @@ namespace MassEffectModManagerCore
                 return false;
             }
         }
+
+        private void Documentation_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.OpenWebpage("https://me3tweaks.com/modmanager/documentation/moddesc");
+        }
     }
 }
