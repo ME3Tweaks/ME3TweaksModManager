@@ -159,9 +159,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
                 }
-                else if (sfarEntries.Count > 0)
+                else if (sfarEntries.Count > 0 || bioengineEntries.Count > 0)
                 {
                     //Todo: Run unofficially supported scan
+                    currentOperationTextCallback?.Invoke($"Querying Third Party Importing Service");
                     var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
                     long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
                     var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
@@ -194,6 +195,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 internalModList.Add(vMod);
                             }
                         }
+
+                        //ME2
+                        //foreach (var entry in bioengineEntries)
+                        //{
+                        //    var vMod = AttemptLoadVirtualMod(entry, archiveFile, Mod.MEGame.ME2, md5);
+                        //    if (vMod.ValidMod)
+                        //    {
+                        //        addCompressedModCallback?.Invoke(vMod);
+                        //        internalModList.Add(vMod);
+                        //    }
+                        //}
 
                         if (importingInfo.version != null)
                         {
