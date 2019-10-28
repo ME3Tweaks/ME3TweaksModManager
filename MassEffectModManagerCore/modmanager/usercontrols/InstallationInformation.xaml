@@ -55,35 +55,50 @@
             </ComboBox.ItemContainerStyle>
         </ComboBox>
         <TabControl DataContext="{Binding SelectedTarget}" Padding="0" BorderThickness="1" Margin="0">
-            <TabItem Header="Installed DLC mods">
-                <DockPanel Height="300" Margin="-4">
+            <TabItem Header="Installed DLC mods" Padding="0">
+                <DockPanel Height="300" Margin="-8">
                     <ScrollViewer Padding="0">
                         <ItemsControl ItemsSource="{Binding InstalledDLCMods}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2" Padding="0">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:InstallationInformation+InstalledDLCMod}">
-                                    <Grid Margin="0,5">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center">
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0} {1}">
-                                                    <Binding Path="ModName" />
-                                                    <Binding Path="Version" />
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DLCFolderNameString}" TextAlignment="Left" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" FontSize="10" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstalledBy}" TextAlignment="Right" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" FontSize="10" VerticalAlignment="Center"/>
-                                        <Button Grid.Row="0" Grid.Column="1" Content="Delete" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                                                         AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding ="7,2"/>
-                                    </Grid>
+                                    <DockPanel>
+                                        <DockPanel.Resources>
+                                            <Style TargetType="{x:Type DockPanel}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DockPanel.Resources>
+                                        <Grid>
+
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Padding="0,5,0,0">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} {1}">
+                                                        <Binding Path="ModName" />
+                                                        <Binding Path="Version" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DLCFolderNameString}" TextAlignment="Left" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" FontSize="10" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstalledBy}" TextAlignment="Right" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" FontSize="10" VerticalAlignment="Center"/>
+                                            <DockPanel Background="Transparent" Grid.Row="0" Grid.Column="1">
+                                            <Button  Content="Delete" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding ="7,2" Margin="0,5,0,0"/>
+                                            </DockPanel>
+
+                                        </Grid>
+                                    </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -91,63 +106,40 @@
                 </DockPanel>
             </TabItem>
 
-            <TabItem Header="Modified basegame files">
-                <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
-                              AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}"/>
-                                <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <ItemsControl.Template>
-                        <ControlTemplate>
-                            <ScrollViewer x:Name="ScrollViewer" Padding="2">
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </TabItem>
-            <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}" Margin="0" Padding="0">
-                <DockPanel Height="300" Margin="0">
-                    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="Red">
-                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified SFARs" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+            <TabItem Header="Modified basegame files" Margin="0" Padding="0">
+                <DockPanel Height="300" Margin="-8">
+
+                    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified basegame files" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedSFARs}"/>
                     </DockPanel>
-                    <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                    <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+                              AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Margin="0,1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" >
-                                        <TextBlock FontSize="12" Text="{Binding UIString}"/>
-                                        <TextBlock Margin="5,0" FontWeight="Bold" Text="Inconsistency detected" FontSize="12" Foreground="Red" Visibility="{Binding Inconsistent, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    </StackPanel>
-                                    <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" Foreground="Gray" Text="{Binding FilePath}"/>
-                                    <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{Binding RestoreButtonContent}" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
-                                </Grid>
+                                <DockPanel >
+                                    <DockPanel.Resources>
+                                        <Style TargetType="{x:Type DockPanel}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DockPanel.Resources>
+                                    <Grid Margin="0,1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}"/>
+                                        <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
+                                    </Grid>
+                                </DockPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.Template>
@@ -157,6 +149,62 @@
                                 </ScrollViewer>
                             </ControlTemplate>
                         </ItemsControl.Template>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}" Margin="0" Padding="0">
+                <DockPanel Height="300" Margin="-8">
+                    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified SFARs" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedSFARs}"/>
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel >
+                                    <DockPanel.Resources>
+                                        <Style TargetType="{x:Type DockPanel}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DockPanel.Resources>
+                                    <Grid Margin="0,1">
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" >
+                                            <TextBlock FontSize="12" Text="{Binding UIString}"/>
+                                            <TextBlock Margin="5,0" FontWeight="Bold" Text="Inconsistency detected" FontSize="12" Foreground="Red" Visibility="{Binding Inconsistent, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" Foreground="Gray" Text="{Binding FilePath}"/>
+                                        <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{Binding RestoreButtonContent}" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
+                                    </Grid>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <ScrollViewer x:Name="ScrollViewer" Padding="2">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+
                     </ItemsControl>
                 </DockPanel>
 

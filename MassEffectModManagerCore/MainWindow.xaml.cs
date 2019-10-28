@@ -401,7 +401,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target:\n" + failureReason,"Error adding target",MessageBoxButton.OK,MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target:\n" + failureReason, "Error adding target", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
 
@@ -597,7 +597,8 @@ namespace MassEffectModManagerCore
                 {
                     BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
                     var allModsInManifest = OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true);
-                    if (allModsInManifest != null) {
+                    if (allModsInManifest != null)
+                    {
                         var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
                         if (updates != null && updates.Count > 0)
                         {
@@ -617,7 +618,8 @@ namespace MassEffectModManagerCore
                                 ShowBusyControl(modUpdatesNotificationDialog);
                             });
                         }
-                    } else
+                    }
+                    else
                     {
                         bgTask.finishedUiText = "Error checking for mod updates";
                     }
@@ -1112,7 +1114,18 @@ namespace MassEffectModManagerCore
                 }
                 else if (b.Data is Mod compressedModToInstall)
                 {
-                    ApplyMod(compressedModToInstall);
+                    ReleaseBusyControl();
+                    var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == compressedModToInstall.Game);
+                    if (installTarget != null)
+                    {
+                        InstallationTargets_ComboBox.SelectedItem = installTarget;
+                        ApplyMod(compressedModToInstall);
+                    }
+                    else
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mod: {compressedModToInstall.Game} is not installed.", "Game not installed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        ReleaseBusyControl();
+                    }
                 }
                 else
                 {
