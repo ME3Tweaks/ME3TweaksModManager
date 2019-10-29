@@ -845,12 +845,12 @@ namespace MassEffectModManagerCore
                     try
                     {
                         var manifest = OnlineContent.FetchOnlineStartupManifest();
-#if DEBUG
-                        if (int.Parse(manifest["latest_build_number"]) > 0)
-#else
+//#if DEBUG
+    //                    if (int.Parse(manifest["latest_build_number"]) > 0)
+//#else
                         if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
 
-#endif
+//#endif
                         {
                             Application.Current.Dispatcher.Invoke(delegate
                             {
