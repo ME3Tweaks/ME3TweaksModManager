@@ -56,6 +56,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
         public bool ValidAlternate;
         public string LoadFailedReason;
+        public string MultiMappingFile;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -89,6 +90,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
+            if (properties.TryGetValue("MultiMappingFile", out string multifilemapping))
+            {
+                MultiMappingFile = multifilemapping.TrimStart('\\', '/');
+            }
+
             if (properties.TryGetValue("AltFile", out string altfile))
             {
                 AltFile = altfile;
@@ -114,21 +120,29 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (Operation == AltFileOperation.OP_INSTALL || Operation == AltFileOperation.OP_SUBSTITUTE)
             {
-                //Validate file
-                var altPath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AltFile);
-                var altFileSourceExists = FilesystemInterposer.FileExists(altPath, modForValidating.Archive);
-                if (!altFileSourceExists)
+                if (MultiMappingFile == null)
                 {
-                    Log.Error("Alternate file source (AltFile) does not exist: " + AltFile);
-                    ValidAlternate = false;
-                    LoadFailedReason = $"Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}";
-                    return;
-                }
+                    //Validate file
+                    var altPath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AltFile);
+                    var altFileSourceExists = FilesystemInterposer.FileExists(altPath, modForValidating.Archive);
+                    if (!altFileSourceExists)
+                    {
+                        Log.Error("Alternate file source (AltFile) does not exist: " + AltFile);
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}";
+                        return;
+                    }
 
-                //Ensure it is not part of  DLC directory itself.
-                var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
-                //Todo
+                    //Ensure it is not part of  DLC directory itself.
+                    var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
+                    //Todo
+                }
+                else
+                {
+
+                }
             }
+
             //Todo: Pass through job so we can lookup targets for add/replace files.
             //else if (Operation == AltFileOperation.OP_NOINSTALL)
             //{
