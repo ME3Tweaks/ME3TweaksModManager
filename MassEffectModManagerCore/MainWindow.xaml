@@ -244,7 +244,7 @@
                 </StatusBarItem>
                 <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                     <StackPanel Orientation="Horizontal" >
-                        <Image Name="BottomBarGameID_Image" Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0"/>
+                        <Image Name="BottomBarGameID_Image" Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0"/>
                         <Button MinWidth="70" Padding="10,7" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
                         <Button MinWidth="70" Padding="10,7" Content="{Binding StartGameButtonText, FallbackValue=Start Game}" Command="{Binding StartGameCommand}" Margin="5,0,0,0"
                                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>

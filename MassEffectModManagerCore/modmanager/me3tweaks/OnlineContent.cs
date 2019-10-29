@@ -24,12 +24,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
-            using (var wc = new System.Net.WebClient())
-            {
-                string json = wc.DownloadString(StartupManifestURL);
-                App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                return App.ServerManifest;
-            }
+            using var wc = new System.Net.WebClient();
+            string json = wc.DownloadString(StartupManifestURL);
+            App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            return App.ServerManifest;
+
         }
 
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
