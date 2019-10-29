@@ -6,8 +6,8 @@ namespace MassEffectModManagerCore.GameDirectories
 {
     public enum EMountFileFlag
     {
-        ME2_NoSaveFileDependency = 0x1,
-        ME2_SaveFileDependency = 0x2,
+        ME2_NoSaveFileDependency = 0x0, //Based on tajfun research
+        ME2_SaveFileDependency = 0x2, //Based on tajfun research
         ME3_SPOnly_NoSaveFileDependency = 0x8,
         ME3_SPOnly_SaveFileDependency = 0x9,
         ME3_SPMP_SaveFileDependency = 0x1C,
@@ -59,7 +59,7 @@ namespace MassEffectModManagerCore.GameDirectories
         private void LoadMountFileME2(MemoryStream ms)
         {
             IsME2 = true;
-            ms.Seek(0x1, SeekOrigin.Begin);
+            ms.Seek(0x28, SeekOrigin.Begin);
             MountFlag = (EMountFileFlag)ms.ReadByte();
             ms.Seek(0xC, SeekOrigin.Begin);
             MountPriority = ms.ReadUInt16();
@@ -92,7 +92,8 @@ namespace MassEffectModManagerCore.GameDirectories
                 ms.WriteByte(0x0);
 
                 //@ 0x01 - Mount Flag
-                ms.WriteByte((byte)MountFlag);
+                // NOT ACTUALY MOUNT FLAG IT SEEMS, ACCORDING TO TAJFUN.
+                ms.WriteByte(0x1);
                 ms.WriteInt16(0x0);
 
                 //@ 0x04
@@ -110,7 +111,9 @@ namespace MassEffectModManagerCore.GameDirectories
                 var guidbytes = new byte[] { 0xAE, 0x0F, 0x43, 0xDD, 0x0B, 0x52, 0x5D, 0x4C, 0x9E, 0x28, 0x0D, 0x77, 0x6D, 0x86, 0x91, 0x55 };
                 ms.WriteFromBuffer(guidbytes);
                 ms.WriteInt32(0x0);
-                ms.WriteInt32(0x2);
+
+                //@ 0x28 - Mount Flag
+                ms.WriteInt32((int) MountFlag);
 
                 //@ 0x2C - Common Name
                 //ms.WriteInt32(commonname.Length);

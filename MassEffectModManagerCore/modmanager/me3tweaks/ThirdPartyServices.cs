@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string preventimport { get; set; }
             public string updatecode { get; set; } //has to be string I guess
 
-            public int MountPriorityInt => int.Parse(mountpriority);
+            public int MountPriorityInt => string.IsNullOrWhiteSpace(mountpriority) ? 0 : int.Parse(mountpriority);
             public string StarterKitString => $"{MountPriorityInt} - {modname}{(modulenumber != null ? " - Module # " + modulenumber : "")}";
 
             public event PropertyChangedEventHandler PropertyChanged;
