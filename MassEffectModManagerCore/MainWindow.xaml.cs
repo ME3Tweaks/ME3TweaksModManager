@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using AdonisUI;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
@@ -844,13 +845,20 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
                     try
                     {
+                        var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
+                        if (File.Exists(coalesced))
+                        {
+                            ME2Coalesced me2c = new ME2Coalesced(coalesced);
+                            me2c.Serialize(@"C:\users\public\me2c.ini");
+                        }
+
                         var manifest = OnlineContent.FetchOnlineStartupManifest();
-//#if DEBUG
-    //                    if (int.Parse(manifest["latest_build_number"]) > 0)
-//#else
+                        //#if DEBUG
+                        //                    if (int.Parse(manifest["latest_build_number"]) > 0)
+                        //#else
                         if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
 
-//#endif
+                        //#endif
                         {
                             Application.Current.Dispatcher.Invoke(delegate
                             {
