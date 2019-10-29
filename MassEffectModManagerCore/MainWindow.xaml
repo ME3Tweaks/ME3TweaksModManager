@@ -353,12 +353,12 @@
         </DockPanel>
         <xctk:BusyIndicator.ProgressBarStyle>
             <Style TargetType="ProgressBar">
-                <Setter Property="Visibility" Value="{Binding BusyProgressBarVisibility}"/>
-                <Setter Property="Maximum" Value="{Binding BusyProgressBarMaximum}"/>
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <!--<Setter Property="Maximum" Value="{Binding BusyProgressBarMaximum}"/>
                 <Setter Property="Value" Value="{Binding BusyProgressBarValue}"/>
                 <Setter Property="IsIndeterminate" Value="{Binding BusyProgressBarIndeterminate}"/>
                 <Setter Property="Height" Value="14"/>
-                <Setter Property="Margin" Value="5,0,5,5"/>
+                <Setter Property="Margin" Value="5,0,5,5"/>-->
             </Style>
         </xctk:BusyIndicator.ProgressBarStyle>
         <xctk:BusyIndicator.OverlayStyle>

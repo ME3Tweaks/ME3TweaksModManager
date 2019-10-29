@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string Changelog { get; set; }
         public string PrimaryDownloadLink { get; }
         public string BackupDownloadLink { get; }
-
+        public string UpdateMessage { get; set; } = "An update to ME3Tweaks Mod Manager is available.";
         public ProgramUpdateNotification()
         {
             DataContext = this;
@@ -57,6 +57,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ProgressIndeterminate { get; private set; }
         public ICommand NotNowCommand { get; set; }
         public ICommand StartUpdateCommand { get; set; }
+
         private void LoadCommands()
         {
             NotNowCommand = new GenericCommand(CloseDialog, TaskNotRunning);

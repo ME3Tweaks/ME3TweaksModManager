@@ -856,17 +856,46 @@ namespace MassEffectModManagerCore
                         //#if DEBUG
                         //                    if (int.Parse(manifest["latest_build_number"]) > 0)
                         //#else
-                        if (int.Parse(manifest["latest_build_number"]) > App.BuildNumber)
-
-                        //#endif
+                        if (int.TryParse(manifest["latest_build_number"], out var latestServerBuildNumer))
                         {
-                            Application.Current.Dispatcher.Invoke(delegate
+                            if (latestServerBuildNumer > App.BuildNumber)
+
+                            //#endif
                             {
-                                var updateAvailableDialog = new ProgramUpdateNotification();
-                                updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
-                                UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-                                ShowBusyControl(updateAvailableDialog);
-                            });
+                                Log.Information("Found update for Mod Manager: Build " + latestServerBuildNumer);
+
+                                Application.Current.Dispatcher.Invoke(delegate
+                                {
+                                    var updateAvailableDialog = new ProgramUpdateNotification();
+                                    updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
+                                    ShowBusyControl(updateAvailableDialog);
+                                });
+                            }
+                            else if (latestServerBuildNumer == App.BuildNumber)
+                            {
+                                if (manifest.TryGetValue("build_md5", out var md5) && md5 != null)
+                                {
+                                    var localmd5 = Utilities.CalculateMD5(App.ExecutableLocation);
+                                    if (localmd5 != md5)
+                                    {
+                                        //Update is available.
+                                        {
+                                            Log.Information("MD5 of local exe doesn't match server version, minor update detected.");
+                                            Application.Current.Dispatcher.Invoke(delegate
+                                            {
+                                                var updateAvailableDialog = new ProgramUpdateNotification();
+                                                updateAvailableDialog.UpdateMessage = $"An updated version of ME3Tweaks Mod Manager Build {App.BuildNumber} is available. Minor updates commonly fix small bugs in the program that do not merit a full re-release.";
+                                                updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
+                                                ShowBusyControl(updateAvailableDialog);
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Log.Information("Mod Manager is up to date");
+                            }
                         }
                     }
                     catch (Exception e)

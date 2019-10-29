@@ -12,7 +12,7 @@
     </local:MMBusyPanelBase.Resources>
         <StackPanel>
         <TextBlock Text="Update available" TextAlignment="Center" FontWeight="Bold" FontSize="20" Margin="10"/>
-        <TextBlock Text="An update to ME3Tweaks Mod Manager is available."/>
+        <TextBlock Text="{Binding UpdateMessage}" TextWrapping="Wrap"/>
         <Separator/>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Current version: "/>
