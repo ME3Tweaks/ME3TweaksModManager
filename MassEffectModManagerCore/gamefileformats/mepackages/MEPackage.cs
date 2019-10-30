@@ -521,12 +521,12 @@ namespace ME3Explorer.Packages
                         }
                         chunks[c] = chunk;
                     }
-                    File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-comp.bin", m1.ToArray());
+                    //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-comp.bin", m1.ToArray());
                     MemoryStream m3 = new MemoryStream();
                     WriteHeader(m3);
                     m2.Position = 0;
                     m2.CopyTo(m3);
-                    File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-uncomp.bin", m3.ToArray());
+                    //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-uncomp.bin", m3.ToArray());
 
 
                     //Update each chunk header with new information
