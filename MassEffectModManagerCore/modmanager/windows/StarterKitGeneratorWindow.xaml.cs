@@ -224,8 +224,14 @@ namespace MassEffectModManagerCore.modmanager.windows
             Validator.AddRule(nameof(ModDLCFolderName), () =>
             {
                 Debug.WriteLine("MDFN " + ModDLCFolderName);
-                if (string.IsNullOrWhiteSpace(ModDLCFolderName)) return RuleResult.Invalid("DLC folder name cannot be empty");
-                if (ModDLCFolderName == "DLC_MOD_") return RuleResult.Invalid("DLC folder name cannot be empty");
+                if (string.IsNullOrWhiteSpace(ModDLCFolderName)) 
+                    return RuleResult.Invalid("DLC folder name cannot be empty");
+                Regex reg = new Regex("[A-Za-z0-9_]+$");
+                if (!reg.IsMatch(ModDLCFolderName))
+                {
+                    return RuleResult.Invalid("DLC folder name can only consist of A-Z a-z 0-9 and _.");
+
+                }
                 return RuleResult.Valid();
             });
             Validator.AddRule(nameof(ModURL), () =>
@@ -295,12 +301,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private bool ValidateInput()
         {
-            if (string.IsNullOrEmpty(ModName)) return false;
-            if (string.IsNullOrEmpty(ModDLCFolderName)) return false;
-            if (ModMountPriority <= 0 || ModMountPriority > 4800) return false; //todo: adjust for each game
-            if (ModInternalTLKID < 0) return false;
-            if (Game != Mod.MEGame.ME1 && string.IsNullOrEmpty(ModInternalName)) return false;
-            return true;
+            return Validator.ValidateAll().IsValid;
         }
 
         public Mod.MEGame Game { get; private set; }
