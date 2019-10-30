@@ -4,13 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using MassEffectModManagerCore.modmanager.objects;
+using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager
 {
     //This file contains deployment to archive related functionality
     public partial class Mod
     {
-        public List<string> GetAllRelativeReferences()
+        public List<string> GetAllRelativeReferences(SevenZipExtractor archive = null)
         {
             var references = new List<string>();
             //references.Add("moddesc.ini"); //Moddesc is implicitly referenced by the mod.
@@ -26,7 +27,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     if (dlc.AlternateDLCFolder != null)
                     {
-                        var files = Directory.GetFiles(Path.Combine(ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length + 1)).ToList();
+                        var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList();
                         references.AddRange(files);
                     }
                 }
@@ -40,13 +41,13 @@ namespace MassEffectModManagerCore.modmanager
 
                 foreach (var customDLCmapping in job.CustomDLCFolderMapping)
                 {
-                    references.AddRange(Directory.GetFiles(Path.Combine(ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length + 1)).ToList());
+                    references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList());
                 }
             }
             references.AddRange(AdditionalDeploymentFiles);
-            foreach(var additionalDeploymentDir in AdditionalDeploymentFolders)
+            foreach (var additionalDeploymentDir in AdditionalDeploymentFolders)
             {
-                references.AddRange(Directory.GetFiles(Path.Combine(ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length + 1)).ToList());
+                references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList());
             }
             return references;
         }

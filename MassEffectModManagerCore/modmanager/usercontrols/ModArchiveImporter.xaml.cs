@@ -15,7 +15,8 @@ using SevenZip;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-
+using System.Collections.Concurrent;
+using Threading;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -24,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ModArchiveImporter : MMBusyPanelBase
     {
-        private bool TaskRunning;
+        public bool TaskRunning { get; private set; }
         public string NoModSelectedText { get; } = "Select a mod on the left to view its description";
         public bool ArchiveScanned { get; set; }
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -37,6 +38,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public bool CompressPackages { get; set; }
 
+        public int CompressionProgressValue { get; set; }
+        public int CompressionProgressMaximum { get; set; } = 100;
 
         public Mod SelectedMod { get; private set; }
 
@@ -47,6 +50,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public int ProgressValue { get; private set; }
         public int ProgressMaximum { get; private set; }
         public bool ProgressIndeterminate { get; private set; }
+
+        public bool CanCompressPackages { get; private set; }
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter()
@@ -76,8 +81,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
-
                     ArchiveScanned = true;
+                    CanCompressPackages = CompressedMods.Any() && CompressedMods.Any(x => x.Game != Mod.MEGame.ME1);
                 }
                 else
                 {
@@ -92,6 +97,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ActionText = $"Scanning {Path.GetFileName(filepath)}";
 
             bw.RunWorkerAsync(filepath);
+        }
+
+        /// <summary>
+        /// Notifies listeners when given property is updated.
+        /// </summary>
+        /// <param name="propertyname">Name of property to give notification for. If called in property, argument can be ignored as it will be default.</param>
+        protected virtual void hack_NotifyPropertyChanged([CallerMemberName] string propertyname = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
 
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
@@ -330,6 +344,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     OnClosing(new DataEventArgs(modList));
                     return;
                 }
+                if (b.Result is int resultcode)
+                {
+                    if (resultcode == USER_ABORTED_IMPORT)
+                    {
+                        ProgressValue = 0;
+                        ProgressMaximum = 100;
+                        ProgressIndeterminate = false;
+                        ActionText = "Select mods to import or install";
+                        return; //Don't do anything.
+                    }
+                    else if (resultcode == ERROR_COULD_NOT_DELETE_EXISTING_DIR)
+                    {
+                        ProgressValue = 0;
+                        ProgressMaximum = 100;
+                        ProgressIndeterminate = false;
+                        ActionText = "Error: Unable to delete existing mod directory";
+                        return; //Don't do anything.
+                    }
+                }
+                //Close.
                 OnClosing(DataEventArgs.Empty);
             };
             TaskRunning = true;
@@ -352,6 +386,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Information("Extracting mod: " + mod.ModName);
                 ActionText = $"Extracting {mod.ModName}";
                 ProgressValue = 0;
+                ProgressMaximum = 100;
                 ProgressIndeterminate = true;
                 //Ensure directory
                 var modDirectory = Utilities.GetModDirectoryForGame(mod.Game);
@@ -359,15 +394,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Directory.Exists(sanitizedPath))
                 {
                     //Will delete on import
+                    bool abort = false;
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Importing this mod will delete an existing mod directory in the mod library:\n{sanitizedPath}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                        if (result == MessageBoxResult.No)
+                        {
+                            e.Result = USER_ABORTED_IMPORT;
+                            abort = true;
+                            return;
+                        }
+                        try
+                        {
+                            if (!Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath))
+                            {
+                                Log.Error("Could not delete existing mod directory.");
+                                e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
 
+                        }
+                        catch (Exception ex)
+                        {
+                            //I don't think this can be triggered but will leave as failsafe anyways.
+                            Log.Error("Error while deleting existing output directory: " + App.FlattenException(ex));
+                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory:\n{ex.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                            e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                        }
+                    });
+                    if (abort)
+                    {
+                        Log.Warning("Aborting mod import.");
+                        return;
+                    }
+
+                    Directory.CreateDirectory(sanitizedPath);
+
+                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
+                    extractedMods.Add(mod);
                 }
-
-                Directory.CreateDirectory(sanitizedPath);
-
-                mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback);
-                extractedMods.Add(mod);
             }
-
             e.Result = extractedMods;
         }
 
@@ -377,6 +444,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ProgressMaximum = 100;
             ProgressIndeterminate = false;
         }
+
+        private void CompressedPackageCallback(string activityString, int numDone, int numToDo)
+        {
+            //progress for compression
+
+            CompressionProgressMaximum = numToDo;
+            CompressionProgressValue = numDone;
+
+        }
+
+        private SerialQueue fileCompressionQueue = new SerialQueue();
 
         public ICommand ImportModsCommand { get; set; }
         public ICommand CancelCommand { get; set; }
@@ -389,10 +467,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         private static ModJob.JobHeader[] CurrentlyDirectInstallSupportedJobs = { ModJob.JobHeader.BASEGAME, ModJob.JobHeader.BALANCE_CHANGES, ModJob.JobHeader.CUSTOMDLC };
+        private readonly int USER_ABORTED_IMPORT = 1;
+        private readonly int ERROR_COULD_NOT_DELETE_EXISTING_DIR = 2;
+
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm /*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
+            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm && !TaskRunning/*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
         }
 
         private void InstallCompressedMod()
@@ -405,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        private bool CanCancel() => true;
+        private bool CanCancel() => !TaskRunning;
 
         private bool CanImportMods() => !TaskRunning && CompressedMods.Any(x => x.SelectedForImport);
 

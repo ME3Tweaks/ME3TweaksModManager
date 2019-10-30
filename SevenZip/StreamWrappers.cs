@@ -225,7 +225,7 @@ namespace SevenZip
 
         private void OnBytesWritten(IntEventArgs e)
         {
-            Debug.WriteLine("OnBytesWritten: " + e.Value);
+            //Debug.WriteLine("OnBytesWritten: " + e.Value);
             BytesWritten?.Invoke(this, e);
         }
     }

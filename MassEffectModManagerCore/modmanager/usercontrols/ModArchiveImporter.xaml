@@ -17,12 +17,15 @@
         <TextBlock DockPanel.Dock="Top" Text="Import mods from archive file" FontSize="16" FontWeight="Bold" TextAlignment="Center"/>
         <TextBlock DockPanel.Dock="Top" Text="{Binding ScanningFile, FallbackValue=Placeholder.7z}" TextAlignment="Center"/>
         <DockPanel DockPanel.Dock="Bottom">
-            <ProgressBar DockPanel.Dock="Bottom" Height="14" Margin="0,5" IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}" Value="{Binding ProgressValue, Mode=OneWay}" Maximum="{Binding ProgressMaximum, Mode=OneWay}"/>
+            <ProgressBar DockPanel.Dock="Bottom" Height="8" Margin="0" Value="{Binding CompressionProgressValue, Mode=OneWay}" Visibility="{Binding CompressPackages, Converter={StaticResource BoolToVisibilityConverter}}" Maximum="{Binding CompressionProgressMaximum, Mode=OneWay}"/>
+            <ProgressBar DockPanel.Dock="Bottom" Height="14" Margin="0,5,0,0" IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}" Value="{Binding ProgressValue, Mode=OneWay}" Maximum="{Binding ProgressMaximum, Mode=OneWay}"/>
             <DockPanel  Margin="0,5,0,0">
                 <Button DockPanel.Dock="Right" Content="Install" Padding="8,3" Command="{Binding InstallModCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{Binding InstallModToolTip}"/>
                 <Button DockPanel.Dock="Right" Content="Import mods" Padding="8,3" Margin="5,0" Command="{Binding ImportModsCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 <Button DockPanel.Dock="Right" Content="Cancel" Padding="7,5" Command="{Binding CancelCommand}"/>
-                <CheckBox DockPanel.Dock="Right" Content="Compress packages" VerticalContentAlignment="Center" Padding="8,3" IsChecked="{Binding CompressPackages}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Visibility="{Binding CanCompressPackages, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+                    <CheckBox  Content="Compress packages" VerticalContentAlignment="Center" Padding="8,3" IsChecked="{Binding CompressPackages}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{Binding TaskRunning, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
+                </StackPanel>
                 <TextBlock DockPanel.Dock="Left" Text="{Binding ActionText, FallbackValue=Scanning archive....}" VerticalAlignment="Center"/>
             </DockPanel>
         </DockPanel>
@@ -33,7 +36,7 @@
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <ListBox Name="CompressedMods_ListBox" Grid.Column="0" ItemsSource="{Binding CompressedMods}" SelectionChanged="SelectedMod_Changed">
+            <ListBox Name="CompressedMods_ListBox" Grid.Column="0" ItemsSource="{Binding CompressedMods}" SelectionChanged="SelectedMod_Changed" IsEnabled="{Binding TaskRunning, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -44,7 +47,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top">
+            <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" IsReadOnly="True" IsReadOnlyCaretVisible="False">
                 <TextBox.Text>
                     <PriorityBinding>
                         <Binding Path="SelectedMod.DisplayedModDescription" Mode="OneWay"/>

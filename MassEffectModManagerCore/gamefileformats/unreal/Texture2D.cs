@@ -59,6 +59,33 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             return Mips.FirstOrDefault(x => x.storageType != StorageTypes.empty);
         }
 
+        public static StorageTypes GetTopMipStorageType(ExportEntry exportEntry)
+        {
+            MemoryStream ms = new MemoryStream(exportEntry.Data);
+            ms.Seek(exportEntry.propsEnd(), SeekOrigin.Begin);
+            if (exportEntry.FileRef.Game != Mod.MEGame.ME3)
+            {
+                ms.Skip(4);//BulkDataFlags
+                ms.Skip(4);//ElementCount
+                int bulkDataSize = ms.ReadInt32();
+                ms.Seek(4, SeekOrigin.Current); // position in the package
+                ms.Skip(bulkDataSize); //skips over thumbnail png, if it exists
+            }
+
+            var mips = new List<Texture2DMipInfo>();
+            int numMipMaps = ms.ReadInt32();
+            for (int l = 0; l < numMipMaps; l++)
+            {
+                var storageType = (StorageTypes)ms.ReadInt32();
+                if (storageType != StorageTypes.empty) return storageType;
+                var uncompressedSize = ms.ReadInt32();
+                var compressedSize = ms.ReadInt32();
+                var externalOffset = ms.ReadInt32();
+                var localExportOffset = (int)ms.Position;
+            }
+            return StorageTypes.empty;
+        }
+
         public static List<Texture2DMipInfo> GetTexture2DMipInfos(ExportEntry exportEntry, string cacheName)
         {
             MemoryStream ms = new MemoryStream(exportEntry.Data);

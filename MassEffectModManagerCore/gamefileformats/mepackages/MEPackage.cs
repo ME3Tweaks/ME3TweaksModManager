@@ -277,7 +277,7 @@ namespace ME3Explorer.Packages
             {
                 Flags &= ~EPackageFlags.Compressed;
             }
-            else
+            else if (compress)
             {
                 Flags |= EPackageFlags.Compressed;
             }
@@ -307,8 +307,8 @@ namespace ME3Explorer.Packages
 
         private void saveByReconstructing(string path, CompressionType compressionType = CompressionType.None)
         {
-            try
-            {
+            //try
+            //{
                 var uncompressedStream = new MemoryStream();
 
                 //just for positioning. We write over this later when the header values have been updated
@@ -568,13 +568,13 @@ namespace ME3Explorer.Packages
                     }
                 }
                 AfterSave();
-            }
-            catch (Exception ex)
-            {
-                // TODO: Implement this for how Mod Manager saves things.
-                throw ex;
-                //MessageBox.Show($"Error saving {FilePath}:\n{App.FlattenException(ex)}");
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    // TODO: Implement this for how Mod Manager saves things.
+            //    throw ex;
+            //    //MessageBox.Show($"Error saving {FilePath}:\n{App.FlattenException(ex)}");
+            //}
         }
 
         private void WriteHeader(Stream ms, CompressionType compressionType = CompressionType.None, List<CompressionHelper.Chunk> chunks = null)
