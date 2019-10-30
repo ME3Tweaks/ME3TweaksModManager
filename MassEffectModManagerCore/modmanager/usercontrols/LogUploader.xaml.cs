@@ -160,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.Result is string response)
                     {
-                        if (!response.StartsWith("http"))
+                        if (response.StartsWith("http"))
                         {
                             Utilities.OpenWebpage(response);
                         }
