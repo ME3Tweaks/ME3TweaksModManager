@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -78,6 +79,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             /// Denotes this TPMI object is selected in a listbox. (UI only)
             /// </summary>
             public bool IsSelected { get; set; }
+            public string dlcfoldername { get; set; } //This is also the key into the TPMIS dictionary. 
             public string modname { get; set; }
             public string moddev { get; set; }
             public string modsite { get; set; }
@@ -93,5 +95,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public event PropertyChangedEventHandler PropertyChanged;
         }
 
+        internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByModuleNumber(int modDLCModuleNumber)
+        {
+            if (App.ThirdPartyIdentificationService == null) return new List<ThirdPartyModInfo>(); //Not loaded
+            var me2Values = App.ThirdPartyIdentificationService["ME2"];
+            return me2Values.Where(x => x.Value.modulenumber == modDLCModuleNumber.ToString()).Select(x=>x.Value).ToList();
+        }
+
+        internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByMountPriority(Mod.MEGame game, int modMountPriority)
+        {
+            if (App.ThirdPartyIdentificationService == null) return new List<ThirdPartyModInfo>(); //Not loaded
+            var gameValues = App.ThirdPartyIdentificationService[game.ToString()];
+            return gameValues.Where(x => x.Value.MountPriorityInt == modMountPriority).Select(x => x.Value).ToList();
+        }
     }
 }

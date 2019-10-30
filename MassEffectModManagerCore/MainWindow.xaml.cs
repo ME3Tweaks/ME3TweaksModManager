@@ -845,12 +845,12 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob("UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
                     try
                     {
-                        var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
-                        if (File.Exists(coalesced))
-                        {
-                            ME2Coalesced me2c = new ME2Coalesced(coalesced);
-                            me2c.Serialize(@"C:\users\public\me2c.ini");
-                        }
+                        //var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
+                        //if (File.Exists(coalesced))
+                        //{
+                        //    ME2Coalesced me2c = new ME2Coalesced(coalesced);
+                        //    me2c.Serialize(@"C:\users\public\me2c.ini");
+                        //}
 
                         var manifest = OnlineContent.FetchOnlineStartupManifest();
                         //#if DEBUG

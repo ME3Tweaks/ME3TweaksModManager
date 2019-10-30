@@ -16,10 +16,12 @@ using IniParser.Model;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using ME3Explorer;
 using ME3Explorer.Packages;
 using MvvmValidation;
+using Serilog;
 using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
 using static MassEffectModManagerCore.modmanager.Mod;
 
@@ -114,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     PreviewTPMI.mountpriority = value.ToString();
                     CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
-                    CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
+                    CustomDLCMountsListBox?.ScrollIntoView(PreviewTPMI);
                 }
             }
         }
@@ -164,7 +166,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "No save file dependency on DLC"));
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, "Save file dependency on DLC"));
 
-            ME2MountFlags.Add(new UIMountFlag(EMountFileFlag.ME2_NoSaveFileDependency, "0x01 | No save file dependency on DLC"));
+            ME2MountFlags.Add(new UIMountFlag(EMountFileFlag.ME2_NoSaveFileDependency, "0x00 | No save file dependency on DLC"));
             ME2MountFlags.Add(new UIMountFlag(EMountFileFlag.ME2_SaveFileDependency, "0x02 | Save file dependency on DLC"));
 
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_SPOnly_NoSaveFileDependency, "0x08 - SP only | No file dependency on DLC"));
@@ -178,7 +180,6 @@ namespace MassEffectModManagerCore.modmanager.windows
             SetupValidation();
 
             LoadCommands();
-            InitializeComponent();
 
 #if DEBUG
             ModName = "Debug Test Mod";
@@ -191,6 +192,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             ModInternalTLKID = 277346578;
             ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
 #endif
+            InitializeComponent();
             SetGame(Game);
         }
 
@@ -224,7 +226,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             Validator.AddRule(nameof(ModDLCFolderName), () =>
             {
                 Debug.WriteLine("MDFN " + ModDLCFolderName);
-                if (string.IsNullOrWhiteSpace(ModDLCFolderName)) 
+                if (string.IsNullOrWhiteSpace(ModDLCFolderName))
                     return RuleResult.Invalid("DLC folder name cannot be empty");
                 Regex reg = new Regex("[A-Za-z0-9_]+$");
                 if (!reg.IsMatch(ModDLCFolderName))
@@ -256,6 +258,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 }
                 return RuleResult.Valid();
             });
+            Validator.AddRequiredRule(() => ModInternalName, "Internal mod name cannot be empty. This string is shown to users when mod fails to load in-game");
 
             #endregion        
         }
@@ -263,7 +266,60 @@ namespace MassEffectModManagerCore.modmanager.windows
         public ICommand GenerateStarterKitCommand { get; set; }
         private void LoadCommands()
         {
-            GenerateStarterKitCommand = new GenericCommand(RunStarterKitGenerator, ValidateInput);
+            GenerateStarterKitCommand = new GenericCommand(PrecheckStarterKitValues, ValidateInput);
+        }
+
+        private void PrecheckStarterKitValues()
+        {
+            if (Game == MEGame.ME2)
+            {
+                //Check Engine Number.
+                var sameModuleNumberItems = ThirdPartyServices.GetThirdPartyModInfosByModuleNumber(ModDLCModuleNumber);
+                if (sameModuleNumberItems.Count > 0)
+                {
+                    string conflicts = "";
+                    sameModuleNumberItems.ForEach(x => conflicts += "\n - " + x.modname);
+                    var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"The DLC module number for this mod conflicts with existing DLC:{conflicts}\n\nModule numbers are used to determine filenames in the mod, such as the TLK. Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC module numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                    if (result == MessageBoxResult.No) return;
+                }
+            }
+
+            var sameMountPriorityItems = ThirdPartyServices.GetThirdPartyModInfosByMountPriority(Game, ModMountPriority);
+            if (sameMountPriorityItems.Count > 0)
+            {
+                string conflicts = "";
+                sameMountPriorityItems.ForEach(x => conflicts += "\n - " + x.modname);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"The DLC mount priority for this mod conflicts with existing DLC:{conflicts}\n\nMount priority numbers are used to determine which files to use in case of ambiguous package names (same-named file exists in multiple locations). Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC mount priority numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                if (result == MessageBoxResult.No) return;
+            }
+
+            var outputDirectory = Path.Combine(Utilities.GetModDirectoryForGame(Game), Utilities.SanitizePath(ModName));
+            if (Directory.Exists(outputDirectory))
+            {
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Creating this mod will delete an existing directory in the mod library:\n{outputDirectory}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                if (result == MessageBoxResult.No) return;
+                try
+                {
+                    if (!Utilities.DeleteFilesAndFoldersRecursively(outputDirectory))
+                    {
+                        Log.Error("Could not delete existing output directory.");
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    //I don't think this can be triggered but will leave as failsafe anyways.
+                    Log.Error("Error while deleting existing output directory: " + App.FlattenException(e));
+                    Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Error occured while deleting existing mod directory:\n{e.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
+            {
+                RunStarterKitGenerator();
+            }
         }
 
         private void RunStarterKitGenerator()
@@ -374,9 +430,9 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
                 var skOption = args.Argument as StarterKitOptions;
 
-                var dlcFolderName = skOption.ModDLCFolderName;
+                var dlcFolderName = $"DLC_MOD_{skOption.ModDLCFolderName}";
                 var modsDirectory = Utilities.GetModDirectoryForGame(skOption.ModGame);
-                var modPath = Directory.CreateDirectory(Path.Combine(modsDirectory, skOption.ModName)).FullName;
+                var modPath = Directory.CreateDirectory(Path.Combine(modsDirectory, Utilities.SanitizePath(skOption.ModName))).FullName;
 
                 //Creating DLC directories
                 var contentDirectory = Directory.CreateDirectory(Path.Combine(modPath, dlcFolderName)).FullName;
@@ -526,7 +582,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
                 PreviewTPMI.mountpriority = val.ToString();
                 CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
-                CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
+                CustomDLCMountsListBox?.ScrollIntoView(PreviewTPMI);
             }
         }
     }
