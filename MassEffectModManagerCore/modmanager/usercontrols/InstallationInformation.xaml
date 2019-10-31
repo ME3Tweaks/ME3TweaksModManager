@@ -66,12 +66,16 @@
                                             <Style TargetType="{x:Type DockPanel}">
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"/>
                                                         <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="TextBlock.Foreground" Value="Pink"/>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </DockPanel.Resources>
-                                        <Grid>
+                                        <Grid Margin="3">
 
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -82,7 +86,7 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Padding="0,5,0,0">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Padding="0,0,0,0">
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="{}{0} {1}">
                                                         <Binding Path="ModName" />
@@ -90,11 +94,11 @@
                                                     </MultiBinding>
                                                 </TextBlock.Text>
                                             </TextBlock>
-                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DLCFolderNameString}" TextAlignment="Left" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" FontSize="10" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstalledBy}" TextAlignment="Right" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" FontSize="10" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding DLCFolderNameString}" TextAlignment="Left" IsEnabled="False" FontSize="10" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstalledBy}" TextAlignment="Right" IsEnabled="False" FontSize="10" VerticalAlignment="Center"/>
                                             <DockPanel Background="Transparent" Grid.Row="0" Grid.Column="1">
                                             <Button  Content="Delete" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                                                         AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding ="7,2" Margin="0,5,0,0"/>
+                                                         AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding ="7,2" Margin="0,0,0,0"/>
                                             </DockPanel>
 
                                         </Grid>
@@ -122,8 +126,8 @@
                                         <Style TargetType="{x:Type DockPanel}">
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"/>
                                                     <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
-                                                    <Setter Property="Cursor" Value="Hand"/>
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -171,8 +175,8 @@
                                         <Style TargetType="{x:Type DockPanel}">
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"/>
                                                     <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
-                                                    <Setter Property="Cursor" Value="Hand"/>
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>

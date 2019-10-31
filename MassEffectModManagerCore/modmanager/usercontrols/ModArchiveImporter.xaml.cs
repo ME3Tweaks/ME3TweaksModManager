@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
                     ArchiveScanned = true;
-                    CanCompressPackages = CompressedMods.Any() && CompressedMods.Any(x => x.Game != Mod.MEGame.ME1);
+                    CanCompressPackages = CompressedMods.Any() && CompressedMods.Any(x => x.Game == Mod.MEGame.ME3); //Change to include ME2 when support for LZO is improved
                 }
                 else
                 {
@@ -404,6 +404,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             abort = true;
                             return;
                         }
+
                         try
                         {
                             if (!Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath))
@@ -411,6 +412,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 Log.Error("Could not delete existing mod directory.");
                                 e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                                 Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                                abort = true;
                                 return;
                             }
 
@@ -421,6 +423,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Log.Error("Error while deleting existing output directory: " + App.FlattenException(ex));
                             Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory:\n{ex.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
                             e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                            abort = true;
                         }
                     });
                     if (abort)
@@ -428,12 +431,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Warning("Aborting mod import.");
                         return;
                     }
-
-                    Directory.CreateDirectory(sanitizedPath);
-
-                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
-                    extractedMods.Add(mod);
                 }
+
+                Directory.CreateDirectory(sanitizedPath);
+                mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
+                extractedMods.Add(mod);
             }
             e.Result = extractedMods;
         }
@@ -448,7 +450,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void CompressedPackageCallback(string activityString, int numDone, int numToDo)
         {
             //progress for compression
-
+            if (ProgressValue >= ProgressMaximum)
+            {
+                ActionText = activityString;
+            }
             CompressionProgressMaximum = numToDo;
             CompressionProgressValue = numDone;
 

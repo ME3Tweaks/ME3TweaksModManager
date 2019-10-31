@@ -941,23 +941,7 @@ namespace MassEffectModManagerCore
                 ME2UnrealObjectInfo.loadfromJSON();
                 ME1UnrealObjectInfo.loadfromJSON();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                //bgTask = backgroundTaskEngine.SubmitBackgroundJob("Test", "Running test", "Test completed");
-
-                //string testfileu = @"C:\Users\Public\uncompressed.pcc";
-                //string testfilec = @"C:\Users\Public\compressed.pcc";
-                //var package = MEPackageHandler.OpenMEPackage(testfileu);
-                //package.save(testfilec, true);
-
-                //testfileu = @"C:\Users\Public\uncompressed.sfm";
-                //if (File.Exists(testfileu))
-                //{
-                //    testfilec = @"C:\Users\Public\compressed.sfm";
-                //    package = MEPackageHandler.OpenMEPackage(testfileu);
-                //    package.save(testfilec, true);
-                //}
-                //backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
+                
                 //TODO: FIX THIS FOR .NET CORE
                 //Properties.Settings.Default.LastContentCheck = DateTime.Now;
                 //Properties.Settings.Default.Save();

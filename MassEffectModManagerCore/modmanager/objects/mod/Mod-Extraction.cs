@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using IniParser.Parser;
 using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -17,14 +20,22 @@ namespace MassEffectModManagerCore.modmanager
     {
         public bool SelectedForImport { get; set; } = true; //Default check on
 
-        private SerialQueue compressionQueue;
+        private BlockingCollection<string> compressionQueue;
+        private object compressionCompletedSignaler = new object();
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
+            compressPackages &= Game == MEGame.ME3; //ME3 ONLY FOR NOW
             using (var archiveFile = new SevenZipExtractor(archivePath))
             {
                 var fileIndicesToExtract = new List<int>();
                 var referencedFiles = GetAllRelativeReferences(archiveFile);
+
+                if (!IsVirtualized)
+                {
+                    referencedFiles.Add(ModDescPath);
+                }
+
                 foreach (var info in archiveFile.ArchiveFileData)
                 {
                     if (referencedFiles.Contains(info.FileName))
@@ -33,6 +44,7 @@ namespace MassEffectModManagerCore.modmanager
                         fileIndicesToExtract.Add(info.Index);
                     }
                 }
+                #region old
                 /*
             bool fileAdded = false;
             //moddesc.ini
@@ -127,7 +139,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
             }
         }*/
-
+                #endregion
                 archiveFile.Extracting += (sender, args) => { extractingCallback?.Invoke(args); };
 
                 string outputFilePathMapping(string entryPath)
@@ -141,43 +153,112 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (compressPackages)
                 {
-                    compressionQueue = new SerialQueue();
+                    compressionQueue = new BlockingCollection<string>();
                 }
 
                 int numberOfPackagesToCompress = referencedFiles.Count(x => x.RepresentsPackageFilePath());
                 int compressedPackageCount = 0;
+                NamedBackgroundWorker compressionThread;
+                if (compressPackages)
+                {
+                    compressionThread = new NamedBackgroundWorker("ImportingCompressionThread");
+                    compressionThread.DoWork += (a, b) =>
+                    {
+                        try
+                        {
+                            while (true)
+                            {
+                                var package = compressionQueue.Take();
+                                //updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
+                                var p = MEPackageHandler.OpenMEPackage(package);
+                                //Check if any compressed textures.
+                                bool shouldNotCompress = false;
+                                foreach (var texture in p.Exports.Where(x => x.IsTexture()))
+                                {
+                                    var storageType = Texture2D.GetTopMipStorageType(texture);
+                                    shouldNotCompress |= storageType == ME3Explorer.Unreal.StorageTypes.pccLZO || storageType == ME3Explorer.Unreal.StorageTypes.pccZlib;
+                                }
+
+                                if (!shouldNotCompress)
+                                {
+                                    compressedPackageCallback?.Invoke($"Compressing {Path.GetFileName(package)}", compressedPackageCount, numberOfPackagesToCompress);
+                                    Log.Information("Compressing package: " + package);
+                                    p.save(true);
+                                }
+                                else
+                                {
+                                    Log.Information("Not compressing package due to file containing compressed textures: " + package);
+                                }
+
+
+                                Interlocked.Increment(ref compressedPackageCount);
+                                compressedPackageCallback?.Invoke($"Compressed {Path.GetFileName(package)}", compressedPackageCount, numberOfPackagesToCompress);
+                            }
+                        }
+                        catch (InvalidOperationException e)
+                        {
+                            //Done.
+                            lock (compressionCompletedSignaler)
+                            {
+                                Monitor.Pulse(compressionCompletedSignaler);
+                            }
+                        }
+                    };
+                    compressionThread.RunWorkerAsync();
+                }
                 archiveFile.FileExtractionFinished += async (sender, args) =>
                 {
                     if (compressPackages)
                     {
-                        await compressionQueue.Enqueue(() =>
+
+                        var fToCompress = outputFilePathMapping(args.FileInfo.FileName);
+                        if (fToCompress.RepresentsPackageFilePath())
                         {
-                            var fToCompress = outputFilePathMapping(args.FileInfo.FileName);
-                            var p = MEPackageHandler.OpenMEPackage(fToCompress);
-                            //Check if any compressed textures.
-                            bool shouldNotCompress = false;
-                            foreach (var texture in p.Exports.Where(x => x.IsTexture()))
-                            {
-                                var storageType = Texture2D.GetTopMipStorageType(texture);
-                                shouldNotCompress |= storageType == ME3Explorer.Unreal.StorageTypes.pccLZO || storageType == ME3Explorer.Unreal.StorageTypes.pccZlib;
-                            }
-                            if (!shouldNotCompress)
-                            {
-                                compressedPackageCallback?.Invoke("Compressing " + Path.GetFileName(fToCompress), compressedPackageCount, numberOfPackagesToCompress);
-                                Log.Information("Compressing package: " + fToCompress);
-                                p.save(true);
-                            } else
-                            {
-                                Log.Information("Not compressing package due to file containing compressed textures: " + fToCompress);
-                            }
-                            compressedPackageCount++;
-                        });
-                    };
+                            //Debug.WriteLine("Adding to blocking queue");
+                            compressionQueue.TryAdd(fToCompress);
+                        }
+                    }
+
+                    //    await compressPackage(fToCompress);
+                    //    var p = MEPackageHandler.OpenMEPackage(fToCompress);
+                    //    //Check if any compressed textures.
+                    //    bool shouldNotCompress = false;
+                    //    foreach (var texture in p.Exports.Where(x => x.IsTexture()))
+                    //    {
+                    //        var storageType = Texture2D.GetTopMipStorageType(texture);
+                    //        shouldNotCompress |= storageType == ME3Explorer.Unreal.StorageTypes.pccLZO || storageType == ME3Explorer.Unreal.StorageTypes.pccZlib;
+                    //    }
+                    //    if (!shouldNotCompress)
+                    //    {
+                    //        compressedPackageCallback?.Invoke("Compressing " + Path.GetFileName(fToCompress), compressedPackageCount, numberOfPackagesToCompress);
+                    //        Log.Information("Compressing package: " + fToCompress);
+                    //        p.save(true);
+                    //    }
+                    //    else
+                    //    {
+                    //        Log.Information("Not compressing package due to file containing compressed textures: " + fToCompress);
+                    //    }
+                    //    compressedPackageCount++;
+                    //};
                 };
 
 
 
                 archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                compressionQueue?.CompleteAdding();
+                if (compressPackages && numberOfPackagesToCompress > 0 && numberOfPackagesToCompress > compressedPackageCount)
+                {
+                    Log.Information("Waiting for compression of packages to complete.");
+                    while (!compressionQueue.IsCompleted)
+                    {
+                        lock (compressionCompletedSignaler)
+                        {
+                            Monitor.Wait(compressionCompletedSignaler);
+                        }
+                    }
+
+                    Log.Information("Package compression has completed.");
+                }
                 ModPath = outputFolderPath;
                 if (IsVirtualized)
                 {
