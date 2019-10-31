@@ -489,6 +489,16 @@ namespace MassEffectModManagerCore.modmanager.windows
                     {
                         //Extract Default.Sfar
                         Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, "Default.sfar"), true);
+
+                        //Generate Coalesced.bin for mod
+                        var memory = Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
+                        var files = MassEffect3.Coalesce.Converter.DecompileToMemory(memory);
+                        //Modify coal files for this mod.
+                        files["BioEngine.xml"] = files["BioEngine.xml"].Replace("StarterKit", skOption.ModDLCFolderName); //update bioengine
+
+                        var newMemory = MassEffect3.Coalesce.Converter.CompileFromMemory(files);
+                        var outpath = Path.Combine(cookedDir, $"Default_{dlcFolderName}.bin");
+                        File.WriteAllBytes(outpath, newMemory.ToArray());
                     }
                     else
                     {

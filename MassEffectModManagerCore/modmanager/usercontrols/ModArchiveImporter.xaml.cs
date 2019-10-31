@@ -105,7 +105,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <param name="propertyname">Name of property to give notification for. If called in property, argument can be ignored as it will be default.</param>
         protected virtual void hack_NotifyPropertyChanged([CallerMemberName] string propertyname = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+            hack_PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
 
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
@@ -495,7 +495,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanImportMods() => !TaskRunning && CompressedMods.Any(x => x.SelectedForImport);
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler hack_PropertyChanged;
 
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {

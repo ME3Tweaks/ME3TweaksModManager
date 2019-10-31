@@ -183,7 +183,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         private bool TaskRunning;
-        private Window window;
 
         private bool TaskNotRunning() => !TaskRunning;
 

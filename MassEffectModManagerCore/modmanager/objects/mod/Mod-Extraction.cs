@@ -195,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager
                                 compressedPackageCallback?.Invoke($"Compressed {Path.GetFileName(package)}", compressedPackageCount, numberOfPackagesToCompress);
                             }
                         }
-                        catch (InvalidOperationException e)
+                        catch (InvalidOperationException)
                         {
                             //Done.
                             lock (compressionCompletedSignaler)

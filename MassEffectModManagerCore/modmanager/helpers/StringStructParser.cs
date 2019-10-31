@@ -143,7 +143,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             {
                                 Log.Error("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
                                 throw new Exception("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
-                                return new List<string>();
                             }
 
                             var popped = parenthesisStack.Pop();
@@ -168,7 +167,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 Log.Error("Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
                 throw new Exception("Unclosed opening parenthesis encountered while parsing parenthesis split list");
-                return new List<string>();
             }
             return splits;
         }

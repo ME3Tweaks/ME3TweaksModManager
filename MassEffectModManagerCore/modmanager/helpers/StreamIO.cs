@@ -106,6 +106,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return Encoding.Unicode.GetString(buffer);
         }
 
+        public static string ReadStringUTF8(this Stream stream, int count)
+        {
+            var buffer = stream.ReadToBuffer(count);
+            return Encoding.UTF8.GetString(buffer);
+        }
+
         public static string ReadStringUnicodeNull(this Stream stream, int count)
         {
             return stream.ReadStringUnicode(count).Trim('\0');
@@ -124,6 +130,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static void WriteStringUnicode(this Stream stream, string str)
         {
             stream.Write(Encoding.Unicode.GetBytes(str), 0, Encoding.Unicode.GetByteCount(str));
+        }
+
+        public static void WriteStringUTF8(this Stream stream, string str)
+        {
+            stream.Write(Encoding.UTF8.GetBytes(str), 0, Encoding.UTF8.GetByteCount(str));
         }
 
         public static void WriteStringUnicodeNull(this Stream stream, string str)

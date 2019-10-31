@@ -46,12 +46,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        public event EventHandler Close;
-        protected virtual void OnClosing(EventArgs e)
-        {
-            EventHandler handler = Close;
-            handler?.Invoke(this, e);
-        }
         public ICommand UploadLogCommand { get; set; }
         public ICommand CancelUploadCommand { get; set; }
         public LogItem SelectedLog { get; set; }
@@ -69,7 +63,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CancelUpload()
         {
-            OnClosing(EventArgs.Empty);
+            OnClosing(DataEventArgs.Empty);
         }
 
         private bool CanCancelUpload()
@@ -166,12 +160,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            OnClosing(EventArgs.Empty);
+                            OnClosing(DataEventArgs.Empty);
                             var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), response, $"Log upload failed", MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
                     }
-                    OnClosing(EventArgs.Empty);
+                    OnClosing(DataEventArgs.Empty);
                 };
             bw.RunWorkerAsync();
         }
@@ -199,7 +193,5 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return Path.GetFileName(filepath) + " - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

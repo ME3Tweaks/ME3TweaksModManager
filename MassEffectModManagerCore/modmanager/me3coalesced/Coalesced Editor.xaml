@@ -1,0 +1,68 @@
+﻿<global:NotifyPropertyChangedWindowBase x:Class="MassEffect3.CoalesceTool.CoalescedEditor"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:global="clr-namespace:ME3Explorer"
+		mc:Ignorable="d" xmlns:local="clr-namespace:MassEffect3.CoalesceTool"
+		Title="Coalesced Editor" MinHeight="300" MinWidth="600" d:DesignHeight="300" d:DesignWidth="600" SizeToContent="WidthAndHeight"
+		d:DataContext="{d:DesignInstance local:CoalescedEditor}">
+	<Window.CommandBindings>
+		<CommandBinding Command="local:Commands.Browse" CanExecute="Browse_OnCanExecute" Executed="Browse_OnExecuted" />
+        <CommandBinding Command="local:Commands.ConvertTo" CanExecute="ConvertTo_OnCanExecute" Executed="ConvertTo_OnExecuted" />
+        <CommandBinding Command="local:Commands.Exit" CanExecute="Exit_OnCanExecute" Executed="Exit_OnExecuted" />
+    </Window.CommandBindings>
+	<Grid Margin="5">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="10" />
+			<ColumnDefinition Width="Auto" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="25" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="25" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<!-- Source -->
+		<Label Content="Source:" Grid.Column="0" Grid.Row="0" />
+		<TextBox x:Name="SourceTextBox" Text="{Binding Path=SourcePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0"
+				 Grid.Row="1" ToolTip="Source XML or Binary Coalesced file." />
+		<Button x:Name="SourceBrowseButton" Width="80" Content="Browse" Grid.Column="2" Grid.Row="1" Command="local:Commands.Browse"
+				CommandParameter="Source" />
+
+		<!-- Destination -->
+		<Label Content="Destination:" Grid.Column="0" Grid.Row="3" />
+		<TextBox x:Name="DestinationTextBox" Text="{Binding Path=DestinationPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				 Grid.Column="0" Grid.Row="4" ToolTip="Destination XML or Binary Coalesced file." />
+		<Button x:Name="DestinationBrowseButton" Width="80" Content="Browse" Grid.Column="2" Grid.Row="4" Command="local:Commands.Browse"
+				CommandParameter="Destination" />
+
+		<!-- Compile/Decompile -->
+		<Grid Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="3">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="10" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="25" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<Label Content="Destination Type:" ToolTip="Auto-detected on selecting the source file." Grid.Column="0" Grid.Row="0" />
+			<ComboBox x:Name="ConvertComboBox" IsEnabled="False" Width="100" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1"
+					  ItemsSource="{local:EnumValues local:CoalescedType}" SelectedItem="{Binding Path=DestinationType, Mode=TwoWay}" />
+			<Button x:Name="ConvertButton" Width="80" Content="Convert" Grid.Column="4" Grid.Row="3" Command="local:Commands.ConvertTo" />
+
+			<CheckBox x:Name="ChangeDestinationCheckBox" Content="Change destination path after browsing for source" IsChecked="True"
+					  Grid.Column="0" Grid.Row="3" />
+		</Grid>
+	</Grid>
+</global:NotifyPropertyChangedWindowBase>
