@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -296,8 +297,22 @@ namespace MassEffectModManagerCore
 
         private void StartGame()
         {
+
+            var game = "Mass Effect";
+            if (SelectedGameTarget.Game == Mod.MEGame.ME2)
+            {
+                game += " 2";
+            }
+            else if (SelectedGameTarget.Game == Mod.MEGame.ME3)
+            {
+                game += " 3";
+            }
+            BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob("GameLaunch", $"Launching {game}", $"Launched {game}");
+            Task.Delay(TimeSpan.FromMilliseconds(4000))
+                .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
             var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
             Process.Start(exePath);
+
         }
 
         private bool CanStartGame()
@@ -941,7 +956,7 @@ namespace MassEffectModManagerCore
                 ME2UnrealObjectInfo.loadfromJSON();
                 ME1UnrealObjectInfo.loadfromJSON();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                
+
                 //TODO: FIX THIS FOR .NET CORE
                 //Properties.Settings.Default.LastContentCheck = DateTime.Now;
                 //Properties.Settings.Default.Save();
