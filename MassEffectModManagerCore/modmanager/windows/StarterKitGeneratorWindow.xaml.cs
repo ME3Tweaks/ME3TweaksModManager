@@ -12,11 +12,11 @@ using System.Windows;
 using System.Windows.Input;
 using IniParser;
 using IniParser.Model;
-
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
 using ME3Explorer;
 using ME3Explorer.Packages;
@@ -162,6 +162,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         public StarterKitGeneratorWindow(Mod.MEGame Game) : base()
         {
+            MemoryAnalyzer.AddTrackedMemoryItem("Starter Kit Window", new WeakReference(this));
             DataContext = this;
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "No save file dependency on DLC"));
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, "Save file dependency on DLC"));
@@ -181,17 +182,17 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             LoadCommands();
 
-#if DEBUG
-            ModName = "Debug Test Mod";
-            ModDeveloper = "Developer";
-            ModInternalName = "StarterKit Mod";
-            //ModDLCFolderName = "DLC_MOD_StarterKitMod";
-            ModMountPriority = 3678;
-            ModDLCModuleNumber = 150;
-            ModURL = "https://example.com";
-            ModInternalTLKID = 277346578;
-            ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
-#endif
+            //#if DEBUG
+            //            ModName = "Debug Test Mod";
+            //            ModDeveloper = "Developer";
+            //            ModInternalName = "StarterKit Mod";
+            //            //ModDLCFolderName = "DLC_MOD_StarterKitMod";
+            //            ModMountPriority = 3678;
+            //            ModDLCModuleNumber = 150;
+            //            ModURL = "https://example.com";
+            //            ModInternalTLKID = 277346578;
+            //            ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
+            //#endif
             InitializeComponent();
             SetGame(Game);
         }
@@ -221,11 +222,29 @@ namespace MassEffectModManagerCore.modmanager.windows
                 return RuleResult.Valid();
             });
 
+            Validator.AddRule(nameof(ModMountPriority), () =>
+            {
+                if (ModMountPriority <= 0 || ModMountPriority >= GetGameSpecificMountLimit())
+                {
+                    return RuleResult.Invalid("Mount priority must be > 0 and < " + GetGameSpecificMountLimit());
+                }
+                return RuleResult.Valid();
+            });
+
+            Validator.AddRule(nameof(ModInternalTLKID), () =>
+            {
+                if (ModInternalTLKID <= 0)
+                {
+                    return RuleResult.Invalid("Internal TLK ID must be greater than 0");
+                }
+                return RuleResult.Valid();
+            });
+
             Validator.AddRequiredRule(() => ModDeveloper, "Mod developer name is required");
             Validator.AddRequiredRule(() => ModDescription, "Mod description is required");
             Validator.AddRule(nameof(ModDLCFolderName), () =>
             {
-                Debug.WriteLine("MDFN " + ModDLCFolderName);
+                //Debug.WriteLine("MDFN " + ModDLCFolderName);
                 if (string.IsNullOrWhiteSpace(ModDLCFolderName))
                     return RuleResult.Invalid("DLC folder name cannot be empty");
                 Regex reg = new Regex("[A-Za-z0-9_]+$");
@@ -562,7 +581,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
 
                 var modDescPath = Path.Combine(modPath, "moddesc.ini");
-                new FileIniDataParser().WriteFile(modDescPath, ini);
+                new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
                 Mod m = new Mod(modDescPath, skOption.ModGame);
                 args.Result = m;
             };
@@ -588,11 +607,23 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void MountPriority_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > 0 && val < 4800)
+            if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > 0 && val < GetGameSpecificMountLimit())
             {
                 PreviewTPMI.mountpriority = val.ToString();
                 CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
                 CustomDLCMountsListBox?.ScrollIntoView(PreviewTPMI);
+            }
+        }
+
+        private int GetGameSpecificMountLimit()
+        {
+            switch (Game)
+            {
+                case MEGame.ME1:
+                case MEGame.ME2:
+                    return 500;
+                default:
+                    return 4800;
             }
         }
     }

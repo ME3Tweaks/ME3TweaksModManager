@@ -42,9 +42,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InstallationTargets_ComboBox.SelectedItem = selectedTarget;
         }
         public ICommand RestoreAllModifiedSFARs { get; set; }
+        public ICommand RestoreAllModifiedBasegame { get; set; }
         private void LoadCommands()
         {
             RestoreAllModifiedSFARs = new GenericCommand(RestoreAllSFARs, CanRestoreAllSFARs);
+            RestoreAllModifiedBasegame = new GenericCommand(RestoreAllBasegame, CanRestoreAllBasegame);
+        }
+
+        private bool CanRestoreAllBasegame()
+        {
+            return SelectedTarget.ModifiedBasegameFiles.Count > 0; //check if ifles being restored
+        }
+
+        private void RestoreAllBasegame()
+        {
+            bool restore = false;
+            if (SelectedTarget.ALOTInstalled)
+            {
+                if (!Settings.DeveloperMode)
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore SFAR files", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                else
+                {
+                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring files while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    restore = res == MessageBoxResult.Yes;
+
+                }
+            }
+            else
+            {
+                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore all modified files?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+
+            }
+            if (restore)
+            {
+                foreach (var v in SelectedTarget.ModifiedBasegameFiles.ToList())
+                {
+                    v.RestoreFile(true);
+                }
+            }
         }
 
         private void RestoreAllSFARs()

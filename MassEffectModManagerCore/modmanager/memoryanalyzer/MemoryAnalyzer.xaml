@@ -1,0 +1,53 @@
+﻿<global:NotifyPropertyChangedWindowBase
+    xmlns:global="clr-namespace:ME3Explorer" x:Class="MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+        Closing="MemoryAnalyzer_Closing"
+        SizeToContent="Width"
+        Title="Mod Manager Memory Analyzer" MinHeight="445" Height="440" MinWidth="500">
+    <DockPanel LastChildFill="True" Margin="5">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="This tool is for mod manager developers only."/>
+            <TextBlock Text="Tracked references:" FontWeight="Bold" Margin="0,10,0,0"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock TextWrapping="Wrap" Text="{Binding CurrentMemoryUsageText}" HorizontalAlignment="Left"/>
+                <TextBlock TextWrapping="Wrap" Text="{Binding LastRefreshText}" Grid.Column="1" HorizontalAlignment="Right"/>
+            </Grid>
+            <DockPanel>
+                <Button Content="Clear garbage collected references" Padding="5,3,5,3" Margin="0,5,0,5" Click="CleanUpOldRefs_Click"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Force Large GC" Margin="2,5" Padding="5,3,5,3" Click="ForceLargeGC_Click"/>
+                    <Button Content="Force GC" Margin="2,5" Padding="3,3,3,3" Click="ForceGC_Click"/>
+                </StackPanel>
+            </DockPanel>
+
+        </StackPanel>
+        <ListBox ItemsSource="{Binding InstancedTrackedMemoryObjects}" MinHeight="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+<ListBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+                        <TextBlock TextWrapping="Wrap" Text="{Binding AllocationTime}" FontStyle="Italic"  Foreground="{Binding DrawColor}"/>
+                        <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Margin="10,0,0,0">
+                            <TextBlock TextWrapping="Wrap" DockPanel.Dock="Right" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding Path=ReferenceStatus}" FontWeight="Bold" Foreground="{Binding DrawColor}"/>
+                            <TextBlock TextWrapping="Wrap" Text="{Binding Path=ReferenceName}" Foreground="{Binding DrawColor}"/>
+                        </DockPanel>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</global:NotifyPropertyChangedWindowBase>

@@ -74,6 +74,7 @@
                 <MenuItem Header="Actions" Padding="4">
                     <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
                     <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click"/>
+                    <MenuItem Header="Open Memory Analyzer" IsEnabled="True" Click="OpenMemoryAnalyzer_Click" Visibility="{x:Static local:App.IsDebugVisibility}"/>
                     <MenuItem Header="Options">
                         <MenuItem Header="Mod Manager" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Name="SetModLibraryPath_MenuItem" Header="Set mod library path" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}"/>

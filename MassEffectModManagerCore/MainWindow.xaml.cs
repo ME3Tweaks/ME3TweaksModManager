@@ -17,6 +17,7 @@ using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
@@ -1270,6 +1271,13 @@ namespace MassEffectModManagerCore
         private void Documentation_Click(object sender, RoutedEventArgs e)
         {
             Utilities.OpenWebpage("https://me3tweaks.com/modmanager/documentation/moddesc");
+        }
+
+        private void OpenMemoryAnalyzer_Click(object sender, RoutedEventArgs e)
+        {
+#if DEBUG
+            new MemoryAnalyzer().Show();
+#endif
         }
     }
 }

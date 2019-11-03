@@ -97,7 +97,7 @@
                 <!-- Mod Internal Name DLC_MOD_VALUE -->
                 <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
                 <!-- Internal Name  Not ME1 -->
-                <RowDefinition Height="{Binding Game, Converter={StaticResource StarterKitRowHeightConverter}, ConverterParameter='Not_ME1'}"/>
+                <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
                 <!-- Internal TLK ID -->
                 <RowDefinition Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}"/>
                 <!-- DLC Module Number (ME2 Only) -->
@@ -144,8 +144,7 @@
                                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             </DockPanel>
 
-            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName, Mode=TwoWay, ValidatesOnDataErrors=True}" 
-                                   Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"/>
+            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName, Mode=TwoWay, ValidatesOnDataErrors=True}" />
             <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
             <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber, Mode=TwoWay, ValidatesOnDataErrors=True}" 
                                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"/>

@@ -413,19 +413,31 @@ namespace MassEffectModManagerCore.modmanager.objects
                 this.target = target;
                 this.notifyRestoredCallback = notifyRestoredCallback;
                 this.restoreBasegamefileConfirmationCallback = restoreBasegamefileConfirmationCallback;
-                RestoreCommand = new GenericCommand(RestoreFile, CanRestoreFile);
+                RestoreCommand = new GenericCommand(RestoreFileWrapper, CanRestoreFile);
             }
 
-            private void RestoreFile()
+            private void RestoreFileWrapper()
             {
-                bool? restore = restoreBasegamefileConfirmationCallback?.Invoke(FilePath);
+                RestoreFile(false);
+            }
+            public void RestoreFile(bool batchRestore)
+            {
+                bool? restore = batchRestore;
+                if (!restore.Value) restore = restoreBasegamefileConfirmationCallback?.Invoke(FilePath);
                 if (restore.HasValue && restore.Value)
                 {
                     //Todo: Background thread this maybe?
                     var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
                     var targetFile = Path.Combine(target.TargetPath, FilePath);
-                    File.Copy(backupFile, targetFile, true);
-                    notifyRestoredCallback?.Invoke(this);
+                    try
+                    {
+                        File.Copy(backupFile, targetFile, true);
+                        notifyRestoredCallback?.Invoke(this);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("Error restoring file: " + e.Message);
+                    }
                 }
             }
 

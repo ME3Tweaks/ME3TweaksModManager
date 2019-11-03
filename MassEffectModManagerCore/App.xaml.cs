@@ -42,6 +42,14 @@ namespace MassEffectModManagerCore
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
+
+        public static Visibility IsDebugVisibility => IsDebug ? Visibility.Visible : Visibility.Collapsed;
+
+#if DEBUG
+        public static bool IsDebug => true;
+#else
+        public static bool IsDebug => false;
+#endif
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
