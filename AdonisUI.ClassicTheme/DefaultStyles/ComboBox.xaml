@@ -266,7 +266,7 @@
 
                         <Border Margin="0, 0, 11, 0">
 
-                            <DockPanel Margin="{TemplateBinding Padding}">
+                            <DockPanel Margin="{TemplateBinding Padding}" LastChildFill="True">
 
                                 <adonisControls:ValidationErrorIndicator x:Name="ErrorAlertHost"
                                                                          ValidatedElement="{Binding ., RelativeSource={RelativeSource TemplatedParent}}"
@@ -278,13 +278,7 @@
                                                                          DockPanel.Dock="Left"
                                                                          Margin="0, 0, 4, 0"/>
 
-                                <ContentPresenter x:Name="ContentSite" 
-                                                  IsHitTestVisible="False"
-                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                  Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
-                                                  ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
-                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+
 
 
                                 <TextBox x:Name="PART_EditableTextBox"
@@ -322,6 +316,13 @@
                                         </ControlTemplate>
                                     </TextBox.Template>
                                 </TextBox>
+                                <ContentPresenter x:Name="ContentSite" 
+                                                  IsHitTestVisible="False"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                                                  ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
                             </DockPanel>
                         </Border>
 
