@@ -93,11 +93,12 @@
                 <MenuItem Header="Mod Management" Padding="4">
                     <MenuItem Header="Import Mod">
                         <MenuItem Header="Import mod from .7z/.rar/.zip" Command="{Binding ImportArchiveCommand}"/>
-                        <MenuItem Header="Import already installed Custom DLC mod"/>
+                        <MenuItem Header="Import already installed Custom DLC mod" IsEnabled="False"/>
                     </MenuItem>
                     <MenuItem Header="Download ModMaker mod" IsEnabled="False"/>
                     <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click"/>
-                    <MenuItem Header="Custom DLC Conflict Detector"/>
+                    <MenuItem Header="Custom DLC Conflict Detector" IsEnabled="False"/>
+                    <MenuItem Header="Interface Scaling/Controller mod compatibility pack generator (ME3)" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary"/>
                     <MenuItem Header="Batch Mod Installer" IsEnabled="False"/>
                     <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click"/>
                     <MenuItem Header="Mixins (for ME3)" IsEnabled="False">
@@ -276,11 +277,11 @@
                 <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold"/>
                 <TextBlock Text="{Binding InstallationTargetText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
                 <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged"
-                          Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch"
-                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
+                  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False"
+                  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
+                            <DockPanel HorizontalAlignment="Stretch">
                                 <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
                                 <Image DockPanel.Dock="Left" Source="/images/origin.png" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
                                 <StackPanel ToolTip="This target has ALOT texture mod installed."  DockPanel.Dock="Right" Orientation="Horizontal"  Margin="3,0,0,0" Visibility="{Binding ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
@@ -292,7 +293,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                     <ComboBox.ItemContainerStyle>
-                        <Style TargetType="{x:Type ComboBoxItem}">
+                        <Style TargetType="ComboBoxItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             <Setter Property="IsEnabled" Value="{Binding Selectable}" />
                         </Style>

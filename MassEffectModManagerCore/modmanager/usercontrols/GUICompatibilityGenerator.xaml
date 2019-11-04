@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.GUICompatibilityGenerator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center">
+            <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Scanning for GUI files in game mods}" TextWrapping="Wrap" TextAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding CurrentFolderBeingScanned, FallbackValue=Citadel Epilogue Mod}" TextWrapping="Wrap" TextAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
