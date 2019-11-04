@@ -221,13 +221,13 @@ namespace MassEffectModManagerCore.modmanager
         }
 
 
-        internal static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
             [JobHeader.BRING_DOWN_THE_SKY] = "DLC_UNC",
             [JobHeader.PINNACLE_STATION] = "DLC_PRC"
         };
 
-        internal static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
             [JobHeader.AEGIS_PACK] = "DLC_CER_02",
             [JobHeader.APPEARANCE_PACK_1] = "DLC_CON_Pack01",
@@ -254,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager
             [JobHeader.ZAEED] = "DLC_HEN_VT"
         };
 
-        internal static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
             [JobHeader.COLLECTORS_EDITION] = "DLC_OnlinePassHidCE",
             [JobHeader.RESURGENCE] = "DLC_CON_MP1",

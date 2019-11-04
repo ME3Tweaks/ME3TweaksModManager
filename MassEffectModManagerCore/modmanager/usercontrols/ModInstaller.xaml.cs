@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Check/warn on official headers
             if (!PrecheckOfficialHeaders(gameDLCPath, installationJobs))
             {
-                e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES, (string)null);
+                e.Result = ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
                 return;
             }
 
@@ -467,31 +467,49 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //if (ModBeingInstalled.Game != Mod.MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
             {
-                if (job.Header == ModJob.JobHeader.BALANCE_CHANGES) continue; //Don't check balance changes
-                if (job.Header == ModJob.JobHeader.BASEGAME) continue; //Don't check basegame
-                if (job.Header == ModJob.JobHeader.CUSTOMDLC) continue; //Don't check custom dlc
-                string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header], "CookedPCConsole", "Default.sfar");
-                if (!File.Exists(sfarPath))
+
+
+                if (!MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                 {
                     Log.Warning($"DLC not installed that mod is marked to modify: {job.Header}, prompting user.");
                     //Prompt user
                     bool cancel = false;
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        string message = $"{ModBeingInstalled.ModName} installs files into the {ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]} ({ME3Directory.OfficialDLCNames[ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]]}) DLC, which is not installed.";
+                        var dlcName = ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header];
+                        string resolvedName = dlcName;
+                        MEDirectories.OfficialDLCNames(ModBeingInstalled.Game).TryGetValue(dlcName, out resolvedName);
+                        string message = $"{ModBeingInstalled.ModName} installs files into {dlcName} ({resolvedName}) DLC, which is not installed.";
                         if (job.RequirementText != null)
                         {
+                            message += "\n\nThe mod lists the following reason for this task:";
                             message += $"\n{job.RequirementText}";
                         }
+
                         message += "\n\nThe mod might not function properly without this DLC installed first. Continue installing anyways?";
-                        MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(message, $"{ME3Directory.OfficialDLCNames[ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]]} DLC not installed", MessageBoxButton.YesNo, MessageBoxImage.Error);
-                        if (result == MessageBoxResult.No) { cancel = true; return; }
+                        MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(message, $"{MEDirectories.OfficialDLCNames(ModBeingInstalled.Game)[ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]]} DLC not installed", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                        if (result == MessageBoxResult.No)
+                        {
+                            cancel = true;
+                            return;
+                        }
 
                     }));
-                    if (cancel) { Log.Error("User canceling installation"); return false; }
+                    if (cancel)
+                    {
+                        Log.Error("User canceling installation");
+
+                        return false;
+                    }
+
                     Log.Warning($"User continuing installation anyways");
                 }
+                else
+                {
+                    CLog.Information("Official headers check passed for header " + job.Header, Settings.LogModInstallation);
+                }
             }
+
             return true;
         }
 
@@ -513,6 +531,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
                 {
                     Xceed.Wpf.Toolkit.MessageBox.Show($"Mod was installed but did not pass installation count verification. This is likely a bug in Mod Maanger, please report this to Mgamerz on Discord.", $"Installation suceeded, maybe", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES)
+                {
+                    InstallationCancelled = true;
                 }
             }
             else if (e.Result is (ModInstallCompletedStatus result, List<string> items))

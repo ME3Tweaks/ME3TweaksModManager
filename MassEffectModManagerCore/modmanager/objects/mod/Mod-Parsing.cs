@@ -744,7 +744,7 @@ namespace MassEffectModManagerCore.modmanager
                     switch (Game)
                     {
                         case MEGame.ME1:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header1) && ModJob.ME3HeadersToDLCNamesMap.TryGetValue(header1, out var foldername1))
+                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
                             {
                                 RequiredDLC.Add(foldername1);
                                 CLog.Information("Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
@@ -752,7 +752,7 @@ namespace MassEffectModManagerCore.modmanager
                             }
                             break;
                         case MEGame.ME2:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header2) && ModJob.ME3HeadersToDLCNamesMap.TryGetValue(header2, out var foldername2))
+                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header2) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME2).TryGetValue(header2, out var foldername2))
                             {
                                 RequiredDLC.Add(foldername2);
                                 CLog.Information("Adding DLC requirement to mod: " + foldername2, Settings.LogModStartup);
@@ -760,7 +760,7 @@ namespace MassEffectModManagerCore.modmanager
                             }
                             break;
                         case MEGame.ME3:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header3) && ModJob.ME3HeadersToDLCNamesMap.TryGetValue(header3, out var foldername3))
+                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header3) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME3).TryGetValue(header3, out var foldername3))
                             {
                                 RequiredDLC.Add(foldername3);
                                 CLog.Information("Adding DLC requirement to mod: " + foldername3, Settings.LogModStartup);

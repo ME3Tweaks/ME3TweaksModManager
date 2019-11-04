@@ -124,30 +124,34 @@ namespace MassEffectModManagerCore.modmanager
                 else if (Game == MEGame.ME3 && ModJob.ME3SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
                 {
                     #region Installation: DLC Unpacked and SFAR (ME3 ONLY)
-                    Debug.WriteLine("Building installation queue for header: " + job.Header);
-                    string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.ME3HeadersToDLCNamesMap[job.Header], "CookedPCConsole", "Default.sfar");
 
-
-                    if (File.Exists(sfarPath))
+                    if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
-                        var installationMapping = new Dictionary<string, string>();
-                        if (new FileInfo(sfarPath).Length == 32)
+                        Debug.WriteLine("Building installation queue for header: " + job.Header);
+                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], "CookedPCConsole", "Default.sfar");
+
+
+                        if (File.Exists(sfarPath))
                         {
-                            //Unpacked
-                            unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
-                            buildInstallationQueue(job, installationMapping, false);
-                        }
-                        else
-                        {
-                            //Packed
-                            //unpackedJobInstallationMapping[job] = installationMapping;
-                            buildInstallationQueue(job, installationMapping, true);
-                            sfarInstallationJobs.Add((job, sfarPath, installationMapping));
+                            var installationMapping = new Dictionary<string, string>();
+                            if (new FileInfo(sfarPath).Length == 32)
+                            {
+                                //Unpacked
+                                unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
+                                buildInstallationQueue(job, installationMapping, false);
+                            }
+                            else
+                            {
+                                //Packed
+                                //unpackedJobInstallationMapping[job] = installationMapping;
+                                buildInstallationQueue(job, installationMapping, true);
+                                sfarInstallationJobs.Add((job, sfarPath, installationMapping));
+                            }
                         }
                     }
                     else
                     {
-                        Log.Warning($"SFAR doesn't exist {sfarPath}, skipping job: {job.Header}");
+                        Log.Warning($"DLC not installed, skipping: {job.Header}");
                     }
                     #endregion
                 }
@@ -155,9 +159,17 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: DLC Unpacked (ME1/ME2 ONLY)
                     //Unpacked
-                    var installationMapping = new Dictionary<string, string>();
-                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
-                    buildInstallationQueue(job, installationMapping, false);
+                    if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
+                    {
+                        var installationMapping = new Dictionary<string, string>();
+                        unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
+                        buildInstallationQueue(job, installationMapping, false);
+                    }
+                    else
+                    {
+                        Log.Warning($"DLC not installed, skipping: {job.Header}");
+                    }
+
                     #endregion
                 }
                 else
