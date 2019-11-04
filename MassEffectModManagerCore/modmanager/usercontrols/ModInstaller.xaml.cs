@@ -364,6 +364,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
+                Log.Warning($"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
                 e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
             }
         }
@@ -530,7 +531,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show($"Mod was installed but did not pass installation count verification. This is likely a bug in Mod Maanger, please report this to Mgamerz on Discord.", $"Installation suceeded, maybe", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Xceed.Wpf.Toolkit.MessageBox.Show($"Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.", $"Installation suceeded, maybe", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES)
                 {

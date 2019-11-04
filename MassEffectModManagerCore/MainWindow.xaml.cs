@@ -311,8 +311,24 @@ namespace MassEffectModManagerCore
             BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob("GameLaunch", $"Launching {game}", $"Launched {game}");
             Task.Delay(TimeSpan.FromMilliseconds(4000))
                 .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
-            var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
-            Process.Start(exePath);
+            try
+            {
+                Utilities.RunProcess(MEDirectories.ExecutablePath(SelectedGameTarget), null, false, true);
+            }
+            catch (Exception e)
+            {
+                if (e is Win32Exception w32e)
+                {
+                    if (w32e.NativeErrorCode == 1223)
+                    {
+                        //Admin canceled.
+                        return; //we don't care.
+                    }
+                }
+                Log.Error("Error launching game: " + e.Message);
+            }
+            //var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
+            //Process.Start(exePath);
 
         }
 
