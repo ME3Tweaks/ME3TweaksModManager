@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                       select new ModUpdateInfo
                                       {
                                           changelog = (string)e.Attribute("changelog"),
-                                          version = (double)e.Attribute("version"),
+                                          versionstr = (string)e.Attribute("version"),
                                           updatecode = (int)e.Attribute("updatecode"),
                                           serverfolder = (string)e.Attribute("folder"),
                                           sourceFiles = (from f in e.Elements("sourcefile")
@@ -90,6 +90,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                       }).ToList();
                 foreach (var modUpdateInfo in modUpdateInfos)
                 {
+                    modUpdateInfo.ResolveVersionVar();
                     //Calculate update information
                     var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
                     if (matchingMod != null && (forceRecheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
@@ -241,6 +242,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string serverfolder;
             public int updatecode;
 
+            public string versionstr { get; set; }
+            public Version version;
+
             public event PropertyChangedEventHandler PropertyChanged;
 
             public bool UpdateInProgress { get; set; }
@@ -277,7 +281,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     return "1 file will be downloaded";
                 }
             }
-            public double version { get; set; }
+
+            public void ResolveVersionVar()
+            {
+                Version.TryParse(versionstr, out version);
+            }
             public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
             public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
             public bool CanUpdate { get; internal set; } = true; //Default to true

@@ -194,7 +194,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
             }
-            FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath;
+            FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath.Replace('/', '\\');
             return null;
         }
 
@@ -216,7 +216,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 return $"Failed to add additional file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.";
             }
-            FilesToInstall[destRelativePath] = sourceRelativePath;
+            FilesToInstall[destRelativePath] = sourceRelativePath.Replace('/', '\\');
             return null;
         }
 

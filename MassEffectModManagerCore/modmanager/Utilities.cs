@@ -74,6 +74,22 @@ namespace MassEffectModManagerCore
             }
         }
 
+        internal static int GetDisplayableVersionFieldCount(Version parsedModVersion)
+        {
+            int fieldCount = 2;
+            if (parsedModVersion.Minor > 0)
+            {
+                fieldCount = 3;
+            }
+
+            if (parsedModVersion.MinorRevision > 0)
+            {
+                fieldCount = 4;
+            }
+
+            return fieldCount;
+        }
+
         internal static void HighlightInExplorer(string filePath)
         {
             string argument = "/select, \"" + filePath + "\"";

@@ -110,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager
         public ModJob GetJob(ModJob.JobHeader header) => InstallationJobs.FirstOrDefault(x => x.Header == header);
 
         public string ModVersionString { get; set; }
-        public double ParsedModVersion { get; set; }
+        public Version ParsedModVersion { get; set; }
         public string ModWebsite { get; set; } = ""; //not null default I guess.
         public double ModDescTargetVersion { get; set; }
         public int ModClassicUpdateCode { get; set; }
@@ -192,10 +192,11 @@ namespace MassEffectModManagerCore.modmanager
         {
             ModPath = forcedModPath;
             Archive = archive;
+            ArchivePath = archive.FileName;
             IsInArchive = true;
             IsVirtualized = true;
             VirtualizedIniText = iniText;
-            Log.Information("Loading virutalized moddesc.ini");
+            Log.Information("Loading virtualized moddesc.ini");
             try
             {
                 loadMod(iniText, MEGame.Unknown);
@@ -233,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager
             ModDescription = Utilities.ConvertBrToNewline(iniData["ModInfo"]["moddesc"]);
             ModDeveloper = iniData["ModInfo"]["moddev"];
             ModVersionString = iniData["ModInfo"]["modver"];
-            double.TryParse(ModVersionString, out double parsedValue);
+            Version.TryParse(ModVersionString, out var parsedValue);
             ParsedModVersion = parsedValue;
 
             ModWebsite = iniData["ModInfo"]["modsite"] ?? DefaultWebsite;
@@ -473,7 +474,7 @@ namespace MassEffectModManagerCore.modmanager
                     CLog.Information($"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
 
                     ModJob headerJob = new ModJob(header, this);
-                    headerJob.JobDirectory = jobSubdirectory;
+                    headerJob.JobDirectory = jobSubdirectory.Replace('/', '\\');
                     headerJob.RequirementText = jobRequirement;
                     //Build replacements 
                     if (replaceFilesSourceSplit != null)

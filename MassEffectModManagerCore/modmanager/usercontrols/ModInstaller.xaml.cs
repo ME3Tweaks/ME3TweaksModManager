@@ -163,9 +163,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
             numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * (ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
             Debug.WriteLine("Number of expected installation tasks: " + numFilesToInstall);
-            void FileInstalledCallback()
+            void FileInstalledCallback(string target)
             {
                 numdone++;
+                Debug.WriteLine("Installed: " + target);
                 Action = "Installing";
                 var now = DateTime.Now;
                 if (numdone > numFilesToInstall) Debug.WriteLine($"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
@@ -260,16 +261,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
                 {
-                    CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                    //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
                 };
+                List<string> filesInstalled = new List<string>();
+                List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
                 ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
                 {
                     if (args.FileInfo.IsDirectory) return; //ignore
-                    FileInstalledCallback();
-                    Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
+                    if (!fullPathMappingArchive.ContainsKey(args.FileInfo.Index)) return; //archive extracted this file (in memory) but did not do anything with this file (7z)
+                    FileInstalledCallback(args.FileInfo.FileName);
+                    filesInstalled.Add(args.FileInfo.FileName);
+                    //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
                 };
                 ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
+                filesInstalled.Sort();
+                filesToInstall.Sort();
+                Debug.WriteLine("Files installed:");
+                foreach (var f in filesInstalled)
+                {
+                    Debug.WriteLine(f);
+                }
+                Debug.WriteLine("Files expected:");
+                foreach (var f in filesToInstall)
+                {
+                    Debug.WriteLine(f);
+                }
+
             }
 
             //Write MetaCMM
@@ -346,7 +364,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action FileInstalledCallback = null, string ForcedSourcePath = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action<string> FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
             int numfiles = sfarJob.fileMapping.Count;
@@ -383,7 +401,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     dlc.AddFileQuick(sourcePath, entryPath);
                     CLog.Information("Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
                 }
-                FileInstalledCallback?.Invoke();
+                FileInstalledCallback?.Invoke(entryPath);
             }
 
             //Todo: Support deleting files from sfar (I am unsure if this is actually ever used and I might remove this feature)

@@ -94,6 +94,7 @@ namespace MassEffectModManagerCore.modmanager
 
             foreach (var entry in archive.ArchiveFileData)
             {
+                if (entry.IsDirectory) continue; //not a file
                 string fname = entry.FileName;
                 if (!fname.StartsWith(directoryPath)) continue; //not in this directory.
                 if (directorySearchOption == SearchOption.TopDirectoryOnly && fname.Count(x => x == '\\') != numSlashesInBasepath) continue; //Skip if we are in a different subdirectory

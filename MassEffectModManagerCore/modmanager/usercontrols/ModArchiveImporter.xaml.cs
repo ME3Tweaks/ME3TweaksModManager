@@ -16,6 +16,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Threading;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -183,9 +184,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
                 }
-                else if (sfarEntries.Count > 0 || bioengineEntries.Count > 0)
+                else
                 {
-                    //Todo: Run unofficially supported scan
                     currentOperationTextCallback?.Invoke($"Querying Third Party Importing Service");
                     var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
                     long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
@@ -236,7 +236,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             foreach (Mod compressedMod in internalModList)
                             {
                                 compressedMod.ModVersionString = importingInfo.version;
-                                Double.TryParse(importingInfo.version, out double parsedValue);
+                                Version.TryParse(importingInfo.version, out var parsedValue);
                                 compressedMod.ParsedModVersion = parsedValue;
                             }
                         }
@@ -254,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 foreach (Mod compressedMod in internalModList)
                                 {
                                     compressedMod.ModVersionString = value;
-                                    Double.TryParse(value, out double parsedValue);
+                                    Version.TryParse(value, out var parsedValue);
                                     compressedMod.ParsedModVersion = parsedValue;
                                 }
 
@@ -268,12 +268,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Warning($"No importing information is available for file with hash {md5}");
+                        Log.Warning($"No importing information is available for file with hash {md5}. No mods could be found.");
                     }
-                }
-                else
-                {
-                    Log.Information("This archive does not appear to have any officially supported mods and does not contain any dlc-required content files, thus contains no mods.");
                 }
             }
         }

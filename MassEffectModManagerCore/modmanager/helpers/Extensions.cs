@@ -617,12 +617,33 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
     public static class WebClientExtensions
     {
+        private static readonly byte[] utf8Preamble = Encoding.UTF8.GetPreamble();
+
         public static string DownloadStringAwareOfEncoding(this WebClient webClient, string uri)
         {
-            
             var rawData = webClient.DownloadData(uri);
-            var encoding = WebUtils.GetEncodingFrom(webClient.ResponseHeaders, Encoding.UTF8);
-            return encoding.GetString(rawData);
+            if (rawData.StartsWith(utf8Preamble))
+            {
+                return Encoding.UTF8.GetString(rawData, utf8Preamble.Length, rawData.Length - utf8Preamble.Length);
+            }
+            var encoding = WebUtils.GetEncodingFrom(webClient.ResponseHeaders, new UTF8Encoding(false));
+            return encoding.GetString(rawData).Normalize();
+        }
+
+        private static bool StartsWith(this byte[] thisArray, byte[] otherArray)
+        {
+            // Handle invalid/unexpected input
+            // (nulls, thisArray.Length < otherArray.Length, etc.)
+
+            for (int i = 0; i < otherArray.Length; ++i)
+            {
+                if (thisArray[i] != otherArray[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 

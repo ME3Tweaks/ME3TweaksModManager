@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return numdone;
         }
 
-        public static void CopyFiles_ProgressBar(Dictionary<string, string> fileMapping, Action fileCopiedCallback = null)
+        public static void CopyFiles_ProgressBar(Dictionary<string, string> fileMapping, Action<string> fileCopiedCallback = null)
         {
             foreach (var singleMapping in fileMapping)
             {
@@ -90,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var dest = singleMapping.Value;
                 Directory.CreateDirectory(Directory.GetParent(dest).FullName);
                 File.Copy(source, dest, true);
-                fileCopiedCallback?.Invoke();
+                fileCopiedCallback?.Invoke(dest);
             }
         }
     }

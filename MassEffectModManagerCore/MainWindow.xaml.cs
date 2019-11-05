@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
         /// </summary>
-        private Queue<UserControl> queuedUserControls = new Queue<UserControl>();
+        private Queue<MMBusyPanelBase> queuedUserControls = new Queue<MMBusyPanelBase>();
 
 
         public Mod SelectedMod { get; set; }
@@ -247,7 +247,9 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                BusyContent = queuedUserControls.Dequeue();
+                var control = queuedUserControls.Dequeue();
+                control.OnPanelVisible();
+                BusyContent = control;
             }
         }
 

@@ -52,7 +52,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.mainWindow = mainWindow;
             ModBeingDeployed = mod;
 
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = "Verify mod version is correct: " + mod.ParsedModVersion.ToString("0.0####"), ValidationFunction = ManualValidation });
+            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = "Verify mod version is correct: " + mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)), ValidationFunction = ManualValidation });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
                 ItemText = "Verify URL is correct: " + mod.ModWebsite,

@@ -57,8 +57,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding mod.ParsedModVersion, StringFormat='Current version: {0}'}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding version, StringFormat='New version: {0}'}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding mod.ParsedModVersion, StringFormat='Local version: {0}'}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding versionstr, StringFormat='Server version: {0}'}"/>
                             <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" >
                                 <Button Command="{Binding ApplyUpdateCommand}" CommandParameter="{Binding}" Content="{Binding DownloadButtonText}" HorizontalAlignment="Right" Padding="4"/>
                                 <TextBlock Text="{Binding TotalBytesHR, FallbackValue=32MB}" TextAlignment="Center" Foreground="Gray"/>

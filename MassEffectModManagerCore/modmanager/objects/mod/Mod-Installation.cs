@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
 
                         //Log.Information($"Copying CustomDLC to target: {source} -> {target}");
-                        //CopyDir.CopyFiles_ProgressBar(installationMapping, FileInstalledCallback);
+                        //CopyDir.CopyFiles_ProgressBar(installatnionMapping, FileInstalledCallback);
                         //Log.Information($"Installed CustomDLC {mapping.Value}");
                     }
 

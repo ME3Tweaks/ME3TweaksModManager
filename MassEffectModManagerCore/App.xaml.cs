@@ -263,7 +263,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += " DEBUG";
 #else
-                version += "TEST BUILD";
+                //version += " TEST BUILD";
 #endif
                 return $"{version}, Build {BuildNumber}";
             }
@@ -277,7 +277,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += " DEBUG";
 #else
-                version += "TEST BUILD";
+                //version += "TEST BUILD";
 #endif
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
