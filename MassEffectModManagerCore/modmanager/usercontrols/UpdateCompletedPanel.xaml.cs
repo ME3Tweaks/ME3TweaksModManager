@@ -40,6 +40,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
+        public override void OnPanelVisible()
+        {
+            throw new NotImplementedException();
+        }
+
         private void Close_Clicked(object sender, RoutedEventArgs e)
         {
             OnClosing(DataEventArgs.Empty);

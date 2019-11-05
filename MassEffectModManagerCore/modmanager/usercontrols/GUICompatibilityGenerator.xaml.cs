@@ -16,11 +16,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for GUICompatibilityGenerator.xaml
     /// </summary>
-    public partial class GUICompatibilityGenerator : UserControl
+    public partial class GUICompatibilityGenerator : MMBusyPanelBase
     {
         public GUICompatibilityGenerator()
         {
             InitializeComponent();
+        }
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void OnPanelVisible()
+        {
+
         }
     }
 }

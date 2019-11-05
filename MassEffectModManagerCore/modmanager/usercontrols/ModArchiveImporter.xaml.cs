@@ -54,17 +54,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool CanCompressPackages { get; private set; }
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
-        public ModArchiveImporter()
+        public ModArchiveImporter(string file)
         {
             DataContext = this;
             LoadCommands();
+            ArchiveFilePath = file;
             InitializeComponent();
         }
 
-
-        public void InspectArchiveFile(string filepath)
+        /// <summary>
+        /// Begins inspection of archive file. This method will spawn a background thread that will
+        /// run asynchronously.
+        /// </summary>
+        /// <param name="filepath">Path to the archive file</param>
+        private void InspectArchiveFile(string filepath)
         {
-            ArchiveFilePath = filepath;
             ScanningFile = Path.GetFileName(filepath);
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ModArchiveInspector");
             bw.DoWork += InspectArchiveBackgroundThread;
@@ -331,7 +335,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return null;
         }
 
-        public void BeginImportingMods()
+        private void BeginImportingMods()
         {
             var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ModExtractor");
@@ -500,6 +504,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {
             SelectedMod = CompressedMods_ListBox.SelectedItem as Mod;
+        }
+
+        public override void OnPanelVisible()
+        {
+            InspectArchiveFile(ArchiveFilePath);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private bool panelVisible = false;
         protected MMBusyPanelBase()
         {
             Loaded += UserControl_Loaded;
@@ -28,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         public abstract void HandleKeyPress(object sender, KeyEventArgs e);
-
+        public abstract void OnPanelVisible();
 
         public event EventHandler<DataEventArgs> Close;
         protected virtual void OnClosing(DataEventArgs e)

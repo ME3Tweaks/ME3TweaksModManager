@@ -219,12 +219,14 @@ namespace MassEffectModManagerCore
         /// Shows or queues the specified control
         /// </summary>
         /// <param name="control">Control to show or queue</param>
-        private void ShowBusyControl(UserControl control)
+        private void ShowBusyControl(MMBusyPanelBase control)
         {
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
                 IsBusy = true;
+                control.OnPanelVisible();
                 BusyContent = control;
+
             }
             else
             {
@@ -251,7 +253,7 @@ namespace MassEffectModManagerCore
 
         private void ShowBackupPane()
         {
-            var backupRestoreManager = new BackupRestoreManager(InstallationTargets.ToList(), SelectedGameTarget, this);
+            var backupRestoreManager = new BackupCreator(InstallationTargets.ToList(), SelectedGameTarget, this);
             backupRestoreManager.Close += (a, b) =>
             {
                 ReleaseBusyControl();
@@ -497,7 +499,6 @@ namespace MassEffectModManagerCore
                     };
                     ShowBusyControl(autoTocUI);
                     ReleaseBusyControl();
-                    autoTocUI.RunAutoTOC();
                 }
                 else
                 {
@@ -507,7 +508,6 @@ namespace MassEffectModManagerCore
             };
             UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             ShowBusyControl(modInstaller);
-            modInstaller.PrepareToInstallMod();
         }
 
         private void ReloadMods()
@@ -1082,8 +1082,6 @@ namespace MassEffectModManagerCore
                 //Todo: Update Busy UI Content
                 UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
                 ShowBusyControl(exLauncher);
-
-                exLauncher.StartLaunchingTool();
             }
         }
 
@@ -1156,9 +1154,9 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void openModImportUI(string archiveFile = null)
+        private void openModImportUI(string archiveFile)
         {
-            var modInspector = new ModArchiveImporter();
+            var modInspector = new ModArchiveImporter(archiveFile);
             modInspector.Close += (a, b) =>
             {
 
@@ -1188,11 +1186,6 @@ namespace MassEffectModManagerCore
                 }
             };
             ShowBusyControl(modInspector); //todo: Set progress bar params
-
-            if (archiveFile != null)
-            {
-                modInspector.InspectArchiveFile(archiveFile);
-            }
         }
 
         private void Window_DragOver(object sender, DragEventArgs e)
@@ -1225,7 +1218,6 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
             };
             ShowBusyControl(autoTocUI);
-            autoTocUI.RunAutoTOC();
         }
 
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)

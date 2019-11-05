@@ -30,7 +30,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             LoadCommands();
             InitializeComponent();
-            InitLogUploaderUI();
         }
 
 
@@ -177,7 +176,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            if (e.Key == Key.Escape && !UploadingLog)
+            {
+                e.Handled = true;
+                OnClosing(DataEventArgs.Empty);
+            }
+        }
+
+        public override void OnPanelVisible()
+        {
+            InitLogUploaderUI();
         }
 
         public class LogItem

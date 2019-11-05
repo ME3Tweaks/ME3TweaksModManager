@@ -103,5 +103,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CloseDialog();
             }
         }
+
+        public override void OnPanelVisible()
+        {
+
+        }
     }
 }

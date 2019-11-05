@@ -36,7 +36,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ArchiveDeployment.xaml
     /// </summary>
-    public partial class ArchiveDeployment : UserControl, INotifyPropertyChanged
+    public partial class ArchiveDeployment : MMBusyPanelBase
     {
         private MainWindow mainWindow;
 
@@ -44,7 +44,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string Header { get; set; } = "Prepare mod for distribution";
         public ArchiveDeployment(Mod mod, MainWindow mainWindow)
         {
-            Analytics.TrackEvent("Started deployment for mod", new Dictionary<string, string>()
+            Analytics.TrackEvent("Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { "Mod name" , mod.ModName + " " + mod.ParsedModVersion}
             });
@@ -120,21 +120,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             LoadCommands();
             InitializeComponent();
-            lastPercentUpdateTime = DateTime.Now;
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("DeploymentValidation");
-            bw.DoWork += (a, b) =>
-                {
-                    foreach (var checkItem in DeploymentChecklistItems)
-                    {
-                        checkItem.ExecuteValidationFunction();
-                    }
-                };
-            bw.RunWorkerCompleted += (a, b) =>
-            {
-                PrecheckCompleted = true;
-                CommandManager.InvalidateRequerySuggested();
-            };
-            bw.RunWorkerAsync();
+            
         }
 
         private void URLValidation(DeploymentChecklistItem obj)
@@ -623,22 +609,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return PrecheckCompleted && !DeploymentInProgress;
         }
 
-
-
-        #region Closing and INotify
-        public event EventHandler<DataEventArgs> Close;
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void Close_Clicked(object sender, RoutedEventArgs e)
-        {
-            OnClosing(new DataEventArgs());
-        }
-        protected virtual void OnClosing(DataEventArgs e)
-        {
-            EventHandler<DataEventArgs> handler = Close;
-            handler?.Invoke(this, e);
-        }
-        #endregion
-
         public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
         public bool PrecheckCompleted { get; private set; }
         public bool DeploymentInProgress { get; private set; }
@@ -702,6 +672,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ld.ShowDialog();
             }
             Debug.WriteLine("Request navigate.");
+        }
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void OnPanelVisible()
+        {
+            throw new NotImplementedException();
         }
     }
 }

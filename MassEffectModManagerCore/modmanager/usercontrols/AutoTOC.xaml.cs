@@ -5,10 +5,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Input;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.ui;
 using ME3Explorer.Unreal;
 using Serilog;
 
@@ -17,7 +19,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// In-Window content container for AutoTOC. Most of this class was ported from Mod Manager Command Line Tools.
     /// </summary>
-    public partial class AutoTOC : UserControl, INotifyPropertyChanged
+    public partial class AutoTOC : MMBusyPanelBase
     {
         private const string SFAR_SUBPATH = @"CookedPCConsole\Default.sfar";
         private const long TESTPATCH_16_SIZE = 2455091L;
@@ -33,12 +35,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private Mod modModeMod;
         private GameTarget gameWideModeTarget;
 
-        public event EventHandler<EventArgs> Close;
-        protected virtual void OnClosing(EventArgs e)
-        {
-            EventHandler<EventArgs> handler = Close;
-            handler?.Invoke(this, e);
-        }
         public int Percent { get; private set; }
         public string ActionText { get; private set; }
 
@@ -52,6 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public AutoTOC(Mod mod)
         {
+            //TODO: Implement this. Possibly make it static.
             DataContext = this;
             if (mod.Game != Mod.MEGame.ME3) throw new Exception("AutoTOC cannot be run on mods not designed for Mass Effect 3.");
             this.modModeMod = mod;
@@ -59,29 +56,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         }
 
-        public void RunAutoTOC()
-        {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("AutoTOC");
-            bw.DoWork += (a, b) =>
-            {
-                if (mode == AutoTOCMode.MODE_GAMEWIDE)
-                {
-                    RunGameWideAutoTOC();
-                }
-                else if (mode == AutoTOCMode.MODE_MOD)
-                {
-                    RunModAutoTOC();
-                }
-            };
-            bw.RunWorkerCompleted += (a, b) =>
-            {
-                OnClosing(EventArgs.Empty);
-            };
-            bw.RunWorkerAsync();
-        }
-
         private void RunModAutoTOC()
         {
+            //Implement mod-only autotoc, for deployments
         }
 
         private bool RunGameWideAutoTOC()
@@ -231,6 +208,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             return sfarSizeMap;
         }
-        public event PropertyChangedEventHandler PropertyChanged;
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            //autocloses
+        }
+
+        public override void OnPanelVisible()
+        {
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("AutoTOC");
+            bw.DoWork += (a, b) =>
+            {
+                if (mode == AutoTOCMode.MODE_GAMEWIDE)
+                {
+                    RunGameWideAutoTOC();
+                }
+                else if (mode == AutoTOCMode.MODE_MOD)
+                {
+                    RunModAutoTOC();
+                }
+            };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                OnClosing(DataEventArgs.Empty);
+            };
+            bw.RunWorkerAsync();
+        }
     }
 }

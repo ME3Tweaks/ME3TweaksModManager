@@ -24,7 +24,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for InstallationInformation.xaml
     /// </summary>
-    public partial class InstallationInformation : UserControl, INotifyPropertyChanged
+    public partial class InstallationInformation : MMBusyPanelBase
     {
         public string ALOTStatusString { get; set; }
         public GameTarget SelectedTarget { get; set; }
@@ -32,6 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<InstalledDLCMod> DLCModsInstalled { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
         public bool SFARBeingRestored { get; private set; }
+        public bool BasegameFilesBeingRestored { get; private set; }
 
         public InstallationInformation(List<GameTarget> targetsList, GameTarget selectedTarget)
         {
@@ -39,14 +40,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InstallationTargets.AddRange(targetsList);
             LoadCommands();
             InitializeComponent();
-            InstallationTargets_ComboBox.SelectedItem = selectedTarget;
+            SelectedTarget = selectedTarget;
         }
         public ICommand RestoreAllModifiedSFARs { get; set; }
         public ICommand RestoreAllModifiedBasegame { get; set; }
+        public ICommand CloseCommand { get; set; }
+
         private void LoadCommands()
         {
             RestoreAllModifiedSFARs = new GenericCommand(RestoreAllSFARs, CanRestoreAllSFARs);
             RestoreAllModifiedBasegame = new GenericCommand(RestoreAllBasegame, CanRestoreAllBasegame);
+            CloseCommand = new GenericCommand(ClosePanel, CanClose);
+        }
+
+        private void ClosePanel()
+        {
+            OnClosing(DataEventArgs.Empty);
         }
 
         private bool CanRestoreAllBasegame()
@@ -78,10 +87,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             if (restore)
             {
-                foreach (var v in SelectedTarget.ModifiedBasegameFiles.ToList())
+                NamedBackgroundWorker bw = new NamedBackgroundWorker("RestoreAllBasegameFilesThread");
+                bw.DoWork += (a, b) =>
                 {
-                    v.RestoreFile(true);
-                }
+                    foreach (var v in SelectedTarget.ModifiedBasegameFiles.ToList())
+                    {
+                        v.RestoreFile(true);
+                    }
+                };
+                bw.RunWorkerAsync();
             }
         }
 
@@ -119,15 +133,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanRestoreAllSFARs()
         {
             return SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
-        }
-
-        public event EventHandler<DataEventArgs> Close;
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnClosing(DataEventArgs e)
-        {
-            EventHandler<DataEventArgs> handler = Close;
-            handler?.Invoke(this, e);
         }
 
         private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
@@ -217,7 +222,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             void notifyStartingSfarRestoreCallback()
             {
                 SFARBeingRestored = true;
-                SelectedTarget.NotifySFARBeingRestored();
+            }
+
+            void notifyStartingBasegameFileRestoreCallback()
+            {
+                BasegameFilesBeingRestored = true;
             }
 
             void notifyRestoredCallback(object itemRestored)
@@ -225,6 +234,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (itemRestored is GameTarget.ModifiedFileObject mf)
                 {
                     SelectedTarget.ModifiedBasegameFiles.Remove(mf);
+                    bool resetBasegameFilesBeingRestored = SelectedTarget.ModifiedBasegameFiles.Count == 0;
+                    if (!resetBasegameFilesBeingRestored)
+                    {
+                        resetBasegameFilesBeingRestored = !SelectedTarget.ModifiedBasegameFiles.Any(x => x.Restoring);
+                    }
+                    if (resetBasegameFilesBeingRestored)
+                    {
+                        BasegameFilesBeingRestored = false;
+                    }
                 }
                 else if (itemRestored is GameTarget.SFARObject ms)
                 {
@@ -242,8 +260,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         SFARBeingRestored = false;
                     }
                 }
+                else if (itemRestored == null)
+                {
+                    //restore failed.
+                    bool resetSfarsBeingRestored = SelectedTarget.ModifiedSFARFiles.Count == 0;
+                    if (!resetSfarsBeingRestored)
+                    {
+                        resetSfarsBeingRestored = !SelectedTarget.ModifiedSFARFiles.Any(x => x.Restoring);
+                    }
+                    if (resetSfarsBeingRestored)
+                    {
+                        SFARBeingRestored = false;
+                    }
+                    bool resetBasegameFilesBeingRestored = SelectedTarget.ModifiedBasegameFiles.Count == 0;
+                    if (!resetBasegameFilesBeingRestored)
+                    {
+                        resetBasegameFilesBeingRestored = !SelectedTarget.ModifiedBasegameFiles.Any(x => x.Restoring);
+                    }
+                    if (resetBasegameFilesBeingRestored)
+                    {
+                        BasegameFilesBeingRestored = false;
+                    }
+                }
             }
-            SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback, restoreSfarConfirmationCallback, notifyStartingSfarRestoreCallback, notifyRestoredCallback);
+            SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
+                restoreSfarConfirmationCallback,
+                notifyStartingSfarRestoreCallback,
+                notifyStartingBasegameFileRestoreCallback,
+                notifyRestoredCallback);
             SFARBeingRestored = false;
         }
 
@@ -353,14 +397,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(new DataEventArgs("ALOTInstaller"));
         }
 
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            OnClosing(new DataEventArgs());
-        }
-
         private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
         {
             Utilities.OpenExplorer(SelectedTarget.TargetPath);
+        }
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && CanClose())
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
+        }
+
+        private bool CanClose()
+        {
+            return !SFARBeingRestored && !BasegameFilesBeingRestored;
+        }
+
+        public override void OnPanelVisible()
+        {
         }
     }
 }

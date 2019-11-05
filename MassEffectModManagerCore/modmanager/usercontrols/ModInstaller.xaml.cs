@@ -62,43 +62,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public int Percent { get; set; }
         public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
 
-        public void PrepareToInstallMod()
-        {
-            //Detect incompatible DLC
-
-
-            //Detect outdated DLC
-
-
-            //See if any alternate options are available and display them even if they are all autos
-            AllOptionsAreAutomatic = true;
-            foreach (var job in ModBeingInstalled.InstallationJobs)
-            {
-                AlternateOptions.AddRange(job.AlternateDLCs);
-                AlternateOptions.AddRange(job.AlternateFiles);
-            }
-
-            foreach (object o in AlternateOptions)
-            {
-                if (o is AlternateDLC altdlc)
-                {
-                    altdlc.SetupInitialSelection(gameTarget);
-                    if (altdlc.IsManual) AllOptionsAreAutomatic = false;
-                }
-                else if (o is AlternateFile altfile)
-                {
-                    altfile.SetupInitialSelection(gameTarget);
-                    if (altfile.IsManual) AllOptionsAreAutomatic = false;
-                }
-            }
-
-            if (AlternateOptions.Count == 0)
-            {
-                //Just start installing mod
-                BeginInstallingMod();
-            }
-        }
-
         private void BeginInstallingMod()
         {
             ModIsInstalling = true;
@@ -599,6 +562,43 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     af.IsSelected = !af.IsSelected;
                 }
+            }
+        }
+
+        public override void OnPanelVisible()
+        {
+            //Detect incompatible DLC
+            //TODO
+
+            //Detect outdated DLC
+            //TODO
+
+            //See if any alternate options are available and display them even if they are all autos
+            AllOptionsAreAutomatic = true;
+            foreach (var job in ModBeingInstalled.InstallationJobs)
+            {
+                AlternateOptions.AddRange(job.AlternateDLCs);
+                AlternateOptions.AddRange(job.AlternateFiles);
+            }
+
+            foreach (object o in AlternateOptions)
+            {
+                if (o is AlternateDLC altdlc)
+                {
+                    altdlc.SetupInitialSelection(gameTarget);
+                    if (altdlc.IsManual) AllOptionsAreAutomatic = false;
+                }
+                else if (o is AlternateFile altfile)
+                {
+                    altfile.SetupInitialSelection(gameTarget);
+                    if (altfile.IsManual) AllOptionsAreAutomatic = false;
+                }
+            }
+
+            if (AlternateOptions.Count == 0)
+            {
+                //Just start installing mod
+                BeginInstallingMod();
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation"
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -33,7 +33,7 @@
         </StackPanel.Resources>
         <TextBlock Text="Installation Information" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
         <TextBlock Text="Files installed into the basegame or official DLC directories cannot be tracked" TextAlignment="Center"/>
-        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Margin="0,5" Grid.Column="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch">
+        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedItem="{Binding SelectedTarget}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Margin="0,5" Grid.Column="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
@@ -221,7 +221,7 @@
             <DockPanel Dock="Right" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
                     <Button Content="Open in Explorer" Padding="5" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right"/>
-                    <Button  Content="Close" Padding="9,5" Margin="3,0,0,0" VerticalAlignment="Bottom" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Click="Close_Click" HorizontalAlignment="Right"/>
+                    <Button  Content="Close" Padding="9,5" Margin="3,0,0,0" VerticalAlignment="Bottom" Command="{Binding CloseCommand}" HorizontalAlignment="Right"/>
                 </StackPanel>
                 <TextBlock Text="{Binding BackupLocationString}" DockPanel.Dock="Top" HorizontalAlignment="Right" TextAlignment="Right" Foreground="Gray" VerticalAlignment="Center"/>
             </DockPanel>
@@ -235,4 +235,4 @@
             </StackPanel>
         </DockPanel>
     </StackPanel>
-</UserControl>
+</local:MMBusyPanelBase>

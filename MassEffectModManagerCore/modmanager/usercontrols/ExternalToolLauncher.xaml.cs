@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Windows.Input;
 using Octokit;
 using Serilog;
 using SevenZip;
@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class ExternalToolLauncher : UserControl, INotifyPropertyChanged
+    public partial class ExternalToolLauncher : MMBusyPanelBase
     {
         public const string ME3Explorer = "ME3Explorer";
         public const string ALOTInstaller = "ALOT Installer";
@@ -69,92 +69,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.tool = tool;
             this.arguments = arguments;
             InitializeComponent();
-        }
-
-        public void StartLaunchingTool()
-        {
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += async (a, b) =>
-            {
-                var toolName = tool.Replace(" ", "");
-                var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), "ExternalTools", toolName);
-                var localExecutable = Path.Combine(localToolFolderName, toolName + ".exe");
-                bool needsDownloading = !File.Exists(localExecutable);
-
-                if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
-                {
-                    //Don't check for updates again.
-                    LaunchTool(localExecutable);
-                    return;
-                }
-                Action = "Checking for updates";
-                var latestRelease = await FetchLatestRelease();
-
-
-                //Failed to get release check
-                if (latestRelease == null)
-                {
-                    if (!needsDownloading)
-                    {
-                        LaunchTool(localExecutable);
-                        return;
-                    }
-                    else
-                    {
-                        //Must run on UI thread
-                        //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
-                        Log.Error("Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
-                        Action = "Failed to download " + tool;
-                        PercentVisibility = Visibility.Collapsed;
-                        PercentDownloaded = 0;
-                        Thread.Sleep(5000);
-                        OnClosing(EventArgs.Empty);
-                        return;
-                    }
-                }
-
-                //Got a release
-                if (needsDownloading)
-                {
-                    DownloadTool(localToolFolderName, latestRelease, localExecutable);
-                }
-                else
-                {
-                    //Check if it need updated
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
-                    bool needsUpdated = false;
-                    if (tool == MEM)
-                    {
-                        //Checks based on major
-                        int releaseVer = int.Parse(latestRelease.TagName);
-                        if (releaseVer > fvi.ProductMajorPart)
-                        {
-                            needsUpdated = true;
-                        }
-                    }
-                    else
-                    {
-                        Version serverVersion = new Version(latestRelease.TagName);
-                        Version localVersion = new Version(string.Format("{0}.{1}.{2}.{3}", fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart));
-                        if (serverVersion > localVersion)
-                        {
-                            needsUpdated = true;
-                        }
-                    }
-
-                    if (!needsUpdated)
-                    {
-                        LaunchTool(localExecutable);
-                    }
-                    else
-                    {
-                        DownloadTool(localToolFolderName, latestRelease, localExecutable);
-                    }
-                    ToolsCheckedForUpdatesInThisSession.Add(tool);
-                }
-            };
-
-            bw.RunWorkerAsync();
         }
 
         private void DownloadTool(string localToolFolderName, Release latestRelease, string executable)
@@ -282,6 +196,97 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return null;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            //Abort download
+
+        }
+
+        public override void OnPanelVisible()
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += async (a, b) =>
+            {
+                var toolName = tool.Replace(" ", "");
+                var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), "ExternalTools", toolName);
+                var localExecutable = Path.Combine(localToolFolderName, toolName + ".exe");
+                bool needsDownloading = !File.Exists(localExecutable);
+
+                if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
+                {
+                    //Don't check for updates again.
+                    LaunchTool(localExecutable);
+                    return;
+                }
+                Action = "Checking for updates";
+                var latestRelease = await FetchLatestRelease();
+
+
+                //Failed to get release check
+                if (latestRelease == null)
+                {
+                    if (!needsDownloading)
+                    {
+                        LaunchTool(localExecutable);
+                        return;
+                    }
+                    else
+                    {
+                        //Must run on UI thread
+                        //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
+                        Log.Error("Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
+                        Action = "Failed to download " + tool;
+                        PercentVisibility = Visibility.Collapsed;
+                        PercentDownloaded = 0;
+                        Thread.Sleep(5000);
+                        OnClosing(EventArgs.Empty);
+                        return;
+                    }
+                }
+
+                //Got a release
+                if (needsDownloading)
+                {
+                    DownloadTool(localToolFolderName, latestRelease, localExecutable);
+                }
+                else
+                {
+                    //Check if it need updated
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
+                    bool needsUpdated = false;
+                    if (tool == MEM)
+                    {
+                        //Checks based on major
+                        int releaseVer = int.Parse(latestRelease.TagName);
+                        if (releaseVer > fvi.ProductMajorPart)
+                        {
+                            needsUpdated = true;
+                        }
+                    }
+                    else
+                    {
+                        Version serverVersion = new Version(latestRelease.TagName);
+                        Version localVersion = new Version(string.Format("{0}.{1}.{2}.{3}", fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart));
+                        if (serverVersion > localVersion)
+                        {
+                            needsUpdated = true;
+                        }
+                    }
+
+                    if (!needsUpdated)
+                    {
+                        LaunchTool(localExecutable);
+                    }
+                    else
+                    {
+                        DownloadTool(localToolFolderName, latestRelease, localExecutable);
+                    }
+                    ToolsCheckedForUpdatesInThisSession.Add(tool);
+                }
+            };
+
+            bw.RunWorkerAsync();
+        }
+
     }
 }

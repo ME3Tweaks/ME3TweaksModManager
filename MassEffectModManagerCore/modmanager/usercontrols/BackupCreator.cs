@@ -23,7 +23,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for BackupRestoreManager.xaml
     /// </summary>
-    public partial class BackupRestoreManager : UserControl, INotifyPropertyChanged
+    public partial class BackupCreator : MMBusyPanelBase
     {
 
         public bool AnyGameMissingBackup => !BackupService.ME1BackedUp || !BackupService.ME2BackedUp || !BackupService.ME3BackedUp;
@@ -32,12 +32,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         //public GameBackup ME3Backup { get; set; }
         //public GameBackup ME2Backup { get; set; }
         //public GameBackup ME1Backup { get; set; }
-        public BackupRestoreManager(List<GameTarget> targetsList, GameTarget selectedTarget, Window window)
+        public BackupCreator(List<GameTarget> targetsList, GameTarget selectedTarget, Window window)
         {
             DataContext = this;
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), window));
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), window));
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), window));
             LoadCommands();
             InitializeComponent();
 
@@ -49,19 +46,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //ME3BackupCommand = new GenericCommand(BackupME3, CanBackupME3);
         }
 
-
-        public event EventHandler<DataEventArgs> Close;
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private void Close_Clicked(object sender, RoutedEventArgs e)
         {
-            OnClosing(new DataEventArgs());
+            OnClosing(DataEventArgs.Empty);
         }
 
-        protected virtual void OnClosing(DataEventArgs e)
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            EventHandler<DataEventArgs> handler = Close;
-            handler?.Invoke(this, e);
+
+        }
+
+        public override void OnPanelVisible()
+        {
         }
 
         public class GameBackup : INotifyPropertyChanged

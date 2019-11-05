@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupRestoreManager"
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupCreator"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -74,4 +74,4 @@
         <TextBlock Text="Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported." TextWrapping="Wrap" MaxWidth="400" Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}"/>
         <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="7,5" Margin ="0,5,0,0"/>
     </StackPanel>
-</UserControl>
+</local:MMBusyPanelBase>

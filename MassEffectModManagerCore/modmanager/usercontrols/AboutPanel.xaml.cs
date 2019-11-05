@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MassEffectModManagerCore.ui;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -16,18 +17,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for AboutPanel.xaml
     /// </summary>
-    public partial class AboutPanel : UserControl
+    public partial class AboutPanel : MMBusyPanelBase
     {
         public AboutPanel()
         {
             InitializeComponent();
-        }
-
-        public event EventHandler<EventArgs> Close;
-        protected virtual void OnClosing(EventArgs e)
-        {
-            EventHandler<EventArgs> handler = Close;
-            handler?.Invoke(this, e);
         }
 
         private void Image_ME3Tweaks_Click(object sender, MouseButtonEventArgs e)
@@ -37,7 +31,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void About_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            OnClosing(EventArgs.Empty);
+            OnClosing(DataEventArgs.Empty);
+        }
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            OnClosing(DataEventArgs.Empty);
+        }
+
+        public override void OnPanelVisible()
+        {
         }
     }
 }

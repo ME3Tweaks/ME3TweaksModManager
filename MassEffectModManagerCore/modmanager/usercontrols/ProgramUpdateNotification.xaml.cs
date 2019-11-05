@@ -216,5 +216,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 OnClosing(DataEventArgs.Empty);
             }
         }
+
+        public override void OnPanelVisible()
+        {
+        }
     }
 }

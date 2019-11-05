@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.ExternalToolLauncher"
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ExternalToolLauncher"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,4 +16,4 @@
         <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding PercentDownloaded, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
         <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Downloading ALOT Installer}"/>
     </StackPanel>
-</UserControl>
+</local:MMBusyPanelBase>

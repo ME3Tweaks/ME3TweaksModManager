@@ -70,8 +70,19 @@ namespace MassEffectModManagerCore.modmanager.objects
                     ALOTVersion = alotInfo.ToString();
                 }
                 GameSource = VanillaDatabaseService.GetGameSource(this);
-
+                if (GameSource == null)
+                {
+                    Log.Error("Unknown or illegitimate installation: " + target);
+                }
+                else
+                {
+                    Log.Information("Source: " + GameSource);
+                }
                 IsPolishME1 = game == Mod.MEGame.ME1 && File.Exists(Path.Combine(target, "BioGame", "CookedPC", "Movies", "niebieska_pl.bik"));
+                if (IsPolishME1)
+                {
+                    Log.Information("ME1 Polish Edition detected");
+                }
             }
         }
 
@@ -170,7 +181,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
         public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
 
-        public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback, Func<string, bool> restoreSfarConfirmationCallback, Action notifySFARRestoringCallback, Action<object> notifyRestoredCallback)
+        public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback,
+            Func<string, bool> restoreSfarConfirmationCallback,
+            Action notifySFARRestoringCallback,
+            Action notifyFileRestoringCallback,
+            Action<object> notifyRestoredCallback)
         {
             ModifiedBasegameFiles.ClearEx();
             ModifiedSFARFiles.ClearEx();
@@ -182,7 +197,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                     ModifiedSFARFiles.Add(new SFARObject(file, this, restoreSfarConfirmationCallback, notifySFARRestoringCallback, notifyRestoredCallback));
                     return;
                 }
-                ModifiedBasegameFiles.Add(new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this, restoreBasegamefileConfirmationCallback, notifyRestoredCallback));
+                ModifiedBasegameFiles.Add(new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this,
+                    restoreBasegamefileConfirmationCallback,
+                    notifyFileRestoringCallback,
+                    notifyRestoredCallback));
             }
             VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
         }
@@ -213,14 +231,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         public bool IsValid { get; set; }
-
-        public void NotifySFARBeingRestored()
-        {
-            //foreach (var sfar in ModifiedSFARFiles)
-            //{
-            //    sfar.OtherSFARBeingRestored = true;
-            //}
-        }
 
         /// <summary>
         /// Validates a game directory by checking for multiple things that should be present in a working game.
@@ -404,15 +414,21 @@ namespace MassEffectModManagerCore.modmanager.objects
             public string FilePath { get; }
             private GameTarget target;
             private Action<object> notifyRestoredCallback;
+            private Action notifyRestoringCallback;
             private Func<string, bool> restoreBasegamefileConfirmationCallback;
             public ICommand RestoreCommand { get; }
+            public bool Restoring { get; private set; }
 
-            public ModifiedFileObject(string filePath, GameTarget target, Func<string, bool> restoreBasegamefileConfirmationCallback, Action<object> notifyRestoredCallback)
+            public ModifiedFileObject(string filePath, GameTarget target,
+                Func<string, bool> restoreBasegamefileConfirmationCallback,
+                Action notifyRestoringFileCallback,
+                Action<object> notifyRestoredCallback)
             {
                 this.FilePath = filePath;
                 this.target = target;
                 this.notifyRestoredCallback = notifyRestoredCallback;
                 this.restoreBasegamefileConfirmationCallback = restoreBasegamefileConfirmationCallback;
+                this.notifyRestoringCallback = notifyRestoringFileCallback;
                 RestoreCommand = new GenericCommand(RestoreFileWrapper, CanRestoreFile);
             }
 
@@ -431,12 +447,17 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var targetFile = Path.Combine(target.TargetPath, FilePath);
                     try
                     {
+                        Restoring = true;
+                        Log.Information("Restoring basegame file: " + targetFile);
+                        notifyRestoringCallback?.Invoke();
                         File.Copy(backupFile, targetFile, true);
                         notifyRestoredCallback?.Invoke(this);
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Error restoring file: " + e.Message);
+                        Restoring = false;
+                        notifyRestoredCallback?.Invoke(this);
+                        Log.Error($"Error restoring file {targetFile}: " + e.Message);
                     }
                 }
             }
