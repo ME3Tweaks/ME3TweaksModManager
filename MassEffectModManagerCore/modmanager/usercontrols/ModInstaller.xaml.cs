@@ -159,13 +159,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             int numdone = 0;
 
-            //Calculate number of installation tasks beforehand - we won't know SFAR cou
+            //Calculate number of installation tasks beforehand
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
             numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * (ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
             Debug.WriteLine("Number of expected installation tasks: " + numFilesToInstall);
             void FileInstalledCallback()
             {
                 numdone++;
+                Action = "Installing";
                 var now = DateTime.Now;
                 if (numdone > numFilesToInstall) Debug.WriteLine($"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
                 if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
@@ -248,6 +249,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
+                Action = "Loading mod archive";
                 //Extraction to destination
                 string installationRedirectCallback(string inArchivePath)
                 {
@@ -262,7 +264,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 };
                 ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
                 {
+                    if (args.FileInfo.IsDirectory) return; //ignore
                     FileInstalledCallback();
+                    Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
                 };
                 ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
