@@ -120,7 +120,7 @@
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Open mod folder" Click="OpenModFolder_Click"/>
-                    <MenuItem Header="Delete mod from library"/>
+                    <MenuItem Header="Delete mod from library" Command="{Binding DeleteModFromLibraryCommand}"/>
                 </MenuItem>
                 <MenuItem Header="Tools" Padding="4">
                     <MenuItem Header="Run official game configuration tool">

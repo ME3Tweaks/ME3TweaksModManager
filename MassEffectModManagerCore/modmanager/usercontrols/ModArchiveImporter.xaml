@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              mc:Ignorable="d" 
-             Height="440" Width="650">
+             Height="440" Width="720">
     <UserControl.Resources>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>

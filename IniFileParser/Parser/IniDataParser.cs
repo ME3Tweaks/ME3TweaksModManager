@@ -271,7 +271,6 @@ namespace IniParser.Parser
                 return;
 
             //Process sections
-            Debug.WriteLine(currentLine);
             if (LineMatchesASection(currentLine))
             {
                 ProcessSection(currentLine, currentIniData);

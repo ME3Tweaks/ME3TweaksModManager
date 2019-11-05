@@ -45,6 +45,20 @@ namespace MassEffectModManagerCore.modmanager
         public string ModDescription { get; set; }
         public int ModModMakerID { get; set; }
 
+        /// <summary>
+        /// Indicates if this mod has the relevant information attached to it for updates. That is, classic update code, modmaker id, or nexusmods ID
+        /// </summary>
+        public bool IsUpdatable
+        {
+            get
+            {
+                if (ModClassicUpdateCode > 0) return true;
+                //if (ModModMakerID > 0) return true; //Not available yet
+                //Nexus update check?
+
+                return false;
+            }
+        }
         public string DisplayedModDescription
         {
             get
@@ -785,8 +799,9 @@ namespace MassEffectModManagerCore.modmanager
             var outdatedDLCText = ModDescTargetVersion >= 4.4 ? iniData["CUSTOMDLC"]["outdatedcustomdlc"] : null;
             if (!string.IsNullOrEmpty(outdatedDLCText))
             {
-
+                //Todo: Implement outdated Custom DLC parsing.
             }
+
             //Incompatible DLC (Mod Manager 6)
             //Todo: Update documentation
             var incompatibleDLCText = ModDescTargetVersion >= 6.0 ? iniData["CUSTOMDLC"]["incompatiblecustomdlc"] : null;

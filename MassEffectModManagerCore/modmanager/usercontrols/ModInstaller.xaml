@@ -20,10 +20,10 @@
             <TextBlock TextAlignment="Center" Text="{Binding ModBeingInstalled.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
             <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,15,0,0">
                 <TextBlock Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap" MaxWidth="350" HorizontalAlignment="Left" 
-                           Text="All installation options for this mod are automatic. Ensure you have the listed relevant mods installed before installing this mod if you plan to use them."/>
+                           Text="All installation options for this mod are automatic. Ensure you have the listed relevant DLC (mods or official) installed before installing this mod if you plan to use them."/>
 
-                <Button Content="Install" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click"/>
-                <Button Content="Cancel" DockPanel.Dock="Right" Padding="5" Margin="5,0" Click="InstallCancel_Click"/>
+                <Button Content="Install" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click" Margin="0,10,0,0"/>
+                <Button Content="Cancel" DockPanel.Dock="Right" Padding="5" Margin="0,10,5,0" Click="InstallCancel_Click"/>
             </DockPanel>
             <ScrollViewer MaxHeight="300" BorderThickness="2" Padding="0" Focusable="False">
                 <ItemsControl ItemsSource="{Binding AlternateOptions}">

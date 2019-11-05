@@ -160,6 +160,7 @@ namespace MassEffectModManagerCore
         public ICommand ShowinstallationInformationCommand { get; set; }
         public ICommand BackupCommand { get; set; }
         public ICommand DeployModCommand { get; set; }
+        public ICommand DeleteModFromLibraryCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -173,6 +174,20 @@ namespace MassEffectModManagerCore
             ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
             BackupCommand = new GenericCommand(ShowBackupPane, CanShowBackupPane);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, CanShowDeploymentPane);
+            DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibrary, CanDeleteModFromLibrary);
+        }
+
+        private bool CanDeleteModFromLibrary() => SelectedMod != null && !ContentCheckInProgress;
+
+        private void DeleteModFromLibrary()
+        {
+            var confirmationResult = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Delete {SelectedMod.ModName} from your mod library? This only deletes the mod from your local Mod Manager library, it does not remove it from any game installations.", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (confirmationResult == MessageBoxResult.Yes)
+            {
+                Log.Information("Deleting mod from library: " + SelectedMod.ModPath);
+                Utilities.DeleteFilesAndFoldersRecursively(SelectedMod.ModPath);
+                LoadMods();
+            }
         }
 
         private void ShowDeploymentPane()
@@ -626,41 +641,10 @@ namespace MassEffectModManagerCore
                 UpdateBinkStatus(Mod.MEGame.ME2);
                 UpdateBinkStatus(Mod.MEGame.ME3);
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
+                OnPropertyChanged(nameof(NoModSelectedText));
 
                 //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
-                if (LoadedMods.Count > 0)
-                {
-                    BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
-                    var allModsInManifest = OnlineContent.CheckForModUpdates(LoadedMods.ToList(), true);
-                    if (allModsInManifest != null)
-                    {
-                        var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
-                        if (updates != null && updates.Count > 0)
-                        {
-                            Application.Current.Dispatcher.Invoke(delegate
-                            {
-                                var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
-                                modUpdatesNotificationDialog.Close += (sender, args) =>
-                                {
-                                    ReleaseBusyControl();
-                                    if (args.Data is bool reloadMods && reloadMods)
-                                    {
-                                        LoadMods(updates.Count == 1 ? updates[0].mod : null);
-                                    }
-
-                                };
-                                UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
-                                ShowBusyControl(modUpdatesNotificationDialog);
-                            });
-                        }
-                    }
-                    else
-                    {
-                        bgTask.finishedUiText = "Error checking for mod updates";
-                    }
-                    backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                }
-                OnPropertyChanged(nameof(NoModSelectedText));
+                CheckModsForUpdates();
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
@@ -672,6 +656,43 @@ namespace MassEffectModManagerCore
                 ModsLoaded = true;
             };
             bw.RunWorkerAsync();
+        }
+
+        private void CheckModsForUpdates()
+        {
+            var updatableMods = LoadedMods.Where(x => x.IsUpdatable).ToList();
+            if (updatableMods.Count > 0)
+            {
+                BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
+                var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, true);
+                if (allModsInManifest != null)
+                {
+                    var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
+                    if (updates != null && updates.Count > 0)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
+                            modUpdatesNotificationDialog.Close += (sender, args) =>
+                            {
+                                ReleaseBusyControl();
+                                if (args.Data is bool reloadMods && reloadMods)
+                                {
+                                    LoadMods(updates.Count == 1 ? updates[0].mod : null);
+                                }
+
+                            };
+                            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
+                            ShowBusyControl(modUpdatesNotificationDialog);
+                        });
+                    }
+                }
+                else
+                {
+                    bgTask.finishedUiText = "Error checking for mod updates";
+                }
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+            }
         }
 
         private void PopulateTargets(GameTarget selectedTarget = null)
