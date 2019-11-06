@@ -200,7 +200,7 @@
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Backup &amp; Restore" Padding="4">
-                    <MenuItem Header="Backup" Command="{Binding BackupCommand}"/>
+                    <MenuItem Header="Backup" Command="{Binding BackupCommand}" ToolTip="Create game backups"/>
                     <MenuItem Header="Restore" Command="{Binding RestoreCommand}" IsEnabled="False"/>
                 </MenuItem>
                 <MenuItem Name="HelpMenuItem" Header="Help" Padding="4">
@@ -208,11 +208,11 @@
 
                     <Separator/>
                     <MenuItem Header="Diagnostics" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="Mod Manager Logs &amp; Diagnostics" Click="UploadLog_Click"/>
+                    <MenuItem Header="Mod Manager Logs &amp; Diagnostics" Click="UploadLog_Click" ToolTip="Troubleshooting tools for ME3Tweaks"/>
                     <Separator/>
                     <MenuItem Header="About" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="moddesc.ini file format specification" Click="Documentation_Click"/>
-                    <MenuItem Header="About ME3Tweaks Mod Manager" Click="About_Click"/>
+                    <MenuItem Header="moddesc.ini file format specification" Click="Documentation_Click" ToolTip="Reference information about the moddesc.ini specification"/>
+                    <MenuItem Header="About ME3Tweaks Mod Manager" Click="About_Click" ToolTip="About this program"/>
                 </MenuItem>
             </Menu>
             <StatusBar DockPanel.Dock="Bottom" Padding="5,0">
