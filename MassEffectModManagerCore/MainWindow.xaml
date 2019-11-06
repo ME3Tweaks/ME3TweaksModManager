@@ -98,7 +98,7 @@
                     <MenuItem Header="Download ModMaker mod" IsEnabled="False"/>
                     <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click"/>
                     <MenuItem Header="Custom DLC Conflict Detector" IsEnabled="False"/>
-                    <MenuItem Header="Interface Scaling/Controller mod compatibility pack generator (ME3)" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary"/>
+                    <MenuItem Header="Interface Scaling/Controller mod compatibility pack generator (ME3)" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" IsEnabled="False"  ToolTip="Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary"/>
                     <MenuItem Header="Batch Mod Installer" IsEnabled="False"/>
                     <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click"/>
                     <MenuItem Header="Mixins (for ME3)" IsEnabled="False">
@@ -108,14 +108,14 @@
                 </MenuItem>
                 <MenuItem Header="Mod Utils" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold"/>
-                    <MenuItem Header="Check for updates"/>
-                    <MenuItem Header="Restore mod from ME3Tweaks"/>
+                    <MenuItem Header="Check for updates" IsEnabled="False"/>
+                    <MenuItem Header="Restore mod from ME3Tweaks" IsEnabled="False"/>
                     <Separator/>
                     <MenuItem Header="Install custom keybinds into this mod" IsEnabled="False"/>
                     <MenuItem Header="Developer options" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                         <MenuItem Header="Metadata editor" IsEnabled="False"/>
                         <MenuItem Header="Deploy mod to 7z file for distribution" Command="{Binding DeployModCommand}"/>
-                        <MenuItem Header="Prepare for updater service"/>
+                        <MenuItem Header="Prepare for updater service" IsEnabled="False"/>
                         <MenuItem Header="Mount.dlc files" IsEnabled="False"/>
                     </MenuItem>
                     <Separator/>
@@ -167,7 +167,7 @@
                         <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
                     </MenuItem>
-                    <MenuItem Header="Grant write access to game directories"/>
+                    <MenuItem Header="Grant write access to game directories" IsEnabled="False"/>
                     <MenuItem Header="Run AutoTOC on game (ME3)" Name="AutoTOC_MenuItem" Click="RunAutoTOC_Clicked"/>
 
                     <Separator/>
@@ -201,7 +201,7 @@
                 </MenuItem>
                 <MenuItem Header="Backup &amp; Restore" Padding="4">
                     <MenuItem Header="Backup" Command="{Binding BackupCommand}"/>
-                    <MenuItem Header="Restore" Command="{Binding RestoreCommand}"/>
+                    <MenuItem Header="Restore" Command="{Binding RestoreCommand}" IsEnabled="False"/>
                 </MenuItem>
                 <MenuItem Name="HelpMenuItem" Header="Help" Padding="4">
                     <MenuItem Name="DynamicHelp_MenuItem" Header="Dynamic Help" Style="{StaticResource MenuItemHeaderStyle}"/>

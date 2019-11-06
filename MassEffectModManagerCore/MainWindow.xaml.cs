@@ -661,6 +661,9 @@ namespace MassEffectModManagerCore
 
         private void CheckModsForUpdates()
         {
+#if !DEBUG
+return;
+#endif
             var updatableMods = LoadedMods.Where(x => x.IsUpdatable).ToList();
             if (updatableMods.Count > 0)
             {
@@ -813,7 +816,7 @@ namespace MassEffectModManagerCore
 
         private void OpenME3Tweaks_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://me3tweaks.com");
+            Utilities.OpenWebpage("https://me3tweaks.com/");
         }
 
         private void About_Click(object sender, RoutedEventArgs e)

@@ -99,7 +99,7 @@
                     </TextBlock>
                 </StackPanel>-->
                 <TextBox Name="FailureInformation_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" 
-                         Text="{Binding SelectedMod.LoadFailedReason, Mode=OneWay}" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
+                         Text="{Binding SelectedMod.LoadFailedReason, Mode=OneWay}" TextWrapping="Wrap" VerticalContentAlignment="Top" HorizontalContentAlignment="Left"/>
             </DockPanel>
         </Grid>
     </DockPanel>

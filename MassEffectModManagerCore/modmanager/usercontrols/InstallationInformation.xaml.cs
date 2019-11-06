@@ -233,7 +233,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (itemRestored is GameTarget.ModifiedFileObject mf)
                 {
-                    SelectedTarget.ModifiedBasegameFiles.Remove(mf);
+                    Application.Current.Dispatcher.Invoke(delegate { SelectedTarget.ModifiedBasegameFiles.Remove(mf); });
                     bool resetBasegameFilesBeingRestored = SelectedTarget.ModifiedBasegameFiles.Count == 0;
                     if (!resetBasegameFilesBeingRestored)
                     {
