@@ -120,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             LoadCommands();
             InitializeComponent();
-            
+
         }
 
         private void URLValidation(DeploymentChecklistItem obj)
@@ -156,10 +156,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             obj.ItemText = "Language check in progress";
             foreach (var customDLC in customDLCFolders)
             {
+                if (_closed) return;
                 var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, "CookedPCConsole", customDLC);
                 Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
                 foreach (var language in languages)
                 {
+                    if (_closed) return;
                     var tlkLangPath = tlkBasePath + "_" + language.filecode + ".tlk";
                     if (File.Exists(tlkLangPath))
                     {
@@ -239,6 +241,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bool hasSFARs = false;
             foreach (var f in referencedFiles)
             {
+                if (_closed) return;
                 if (Path.GetExtension(f) == ".sfar")
                 {
                     hasSFARs = true;
@@ -304,6 +307,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var f in referencedFiles)
             {
+                if (_closed) return;
                 numChecked++;
                 item.ItemText = $"Checking audio references in mod [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
@@ -312,6 +316,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var wwiseStreams = package.Exports.Where(x => x.ClassName == "WwiseStream" && !x.IsDefaultObject).ToList();
                     foreach (var wwisestream in wwiseStreams)
                     {
+                        if (_closed) return;
                         //Check each reference.
                         var afcNameProp = wwisestream.GetProperty<NameProperty>("Filename");
                         if (afcNameProp != null)
@@ -454,6 +459,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var errors = new List<string>();
             foreach (var f in referencedFiles)
             {
+                if (_closed) return;
                 numChecked++;
                 item.ItemText = $"Checking textures in mod [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
@@ -462,6 +468,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var textures = package.Exports.Where(x => x.IsTexture()).ToList();
                     foreach (var texture in textures)
                     {
+                        if (_closed) return;
                         var cache = texture.GetProperty<NameProperty>("TextureFileCacheName");
                         if (cache != null)
                         {
@@ -512,10 +519,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         public ICommand DeployCommand { get; set; }
+        public ICommand CloseCommand { get; set; }
         private void LoadCommands()
         {
             DeployCommand = new GenericCommand(StartDeployment, CanDeploy);
+            CloseCommand = new GenericCommand(ClosePanel, CanClose);
         }
+
+        private void ClosePanel()
+        {
+            _closed = true;
+            OnClosing(DataEventArgs.Empty);
+        }
+
+        private bool CanClose() => !DeploymentInProgress;
 
         private void StartDeployment()
         {
@@ -553,7 +570,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //nested folders with no folders
                 var relativeFolders = directory.Split('\\');
                 string buildingFolderList = "";
-                foreach(var relativeFolder in relativeFolders)
+                foreach (var relativeFolder in relativeFolders)
                 {
                     if (buildingFolderList != "")
                     {
@@ -566,7 +583,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         archiveMapping[buildingFolderList] = null;
                     }
                 }
-                
+
             }
 
             archiveMapping.AddRange(referencedFiles.ToDictionary(x => x, x => Path.Combine(ModBeingDeployed.ModPath, x)));
@@ -617,6 +634,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string OperationText { get; set; } = "Verify above items before deployment";
 
         private DateTime lastPercentUpdateTime;
+        private bool _closed;
 
         public class DeploymentChecklistItem : INotifyPropertyChanged
         {
@@ -657,7 +675,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public void ExecuteValidationFunction()
             {
-                Foreground = Application.Current.FindResource(AdonisUI.Brushes.AccentBrush) as SolidColorBrush;
+                Foreground = Application.Current.FindResource(AdonisUI.Brushes.HyperlinkBrush) as SolidColorBrush;
                 ValidationFunction?.Invoke(this);
                 Debug.WriteLine("Invoke finished");
                 Spinning = false;
@@ -676,12 +694,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            if (e.Key == Key.Escape && CanClose())
+            {
+                ClosePanel();
+            }
         }
 
         public override void OnPanelVisible()
         {
-            throw new NotImplementedException();
+            lastPercentUpdateTime = DateTime.Now;
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("DeploymentValidation");
+            bw.DoWork += (a, b) =>
+            {
+                foreach (var checkItem in DeploymentChecklistItems)
+                {
+                    checkItem.ExecuteValidationFunction();
+                }
+            };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                PrecheckCompleted = true;
+                CommandManager.InvalidateRequerySuggested();
+            };
+            bw.RunWorkerAsync();
         }
     }
 }

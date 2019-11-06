@@ -77,12 +77,12 @@ namespace MassEffectModManagerCore
         internal static int GetDisplayableVersionFieldCount(Version parsedModVersion)
         {
             int fieldCount = 2;
-            if (parsedModVersion.Minor > 0)
+            if (parsedModVersion.Build > 0)
             {
                 fieldCount = 3;
             }
 
-            if (parsedModVersion.MinorRevision > 0)
+            if (parsedModVersion.Revision > 0)
             {
                 fieldCount = 4;
             }
