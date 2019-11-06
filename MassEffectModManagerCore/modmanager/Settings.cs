@@ -42,6 +42,15 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModStartup, value);
         }
 
+        private static bool _logModUpdater = true;
+        public static bool LogModUpdater
+        {
+            get => _logModUpdater;
+            set => SetProperty(ref _logModUpdater, value);
+        }
+
+
+
         private static bool _logMixinStartup = false;
         public static bool LogMixinStartup
         {

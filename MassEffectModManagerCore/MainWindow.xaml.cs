@@ -587,6 +587,7 @@ namespace MassEffectModManagerCore
                 }
                 else
                 {
+                    Log.Error("Unable to create mod library. Mod Manager will now exit.");
                     Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to create mod library. Mod Manager will now close.");
                     Environment.Exit(1);
                 }

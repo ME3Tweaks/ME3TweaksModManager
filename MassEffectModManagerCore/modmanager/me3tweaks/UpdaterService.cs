@@ -110,6 +110,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 else
                                 {
                                     //Check hash
+                                    CLog.Information("Hashing file for update check: " + localFile, Settings.LogModUpdater);
                                     var md5 = Utilities.CalculateMD5(localFile);
                                     if (md5 != serverFile.hash)
                                     {
@@ -233,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return true;
         }
 
-
+        [DebuggerDisplay("ModUpdateInfo | {mod.ModName} with {filesToDelete.Count} FTDelete and {applicableUpdates.Count} FTDownload")]
         public class ModUpdateInfo : INotifyPropertyChanged
         {
             public Mod mod { get; set; }
