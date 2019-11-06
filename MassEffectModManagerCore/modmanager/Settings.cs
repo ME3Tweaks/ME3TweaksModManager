@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager
             get => _darkTheme;
             set => SetProperty(ref _darkTheme, value);
         }
-        
+
 
         private static string _modLibraryPath;
         public static string ModLibraryPath
@@ -87,6 +87,13 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _modLibraryPath, value);
         }
         public static DateTime LastContentCheck { get; internal set; }
+
+        private static bool _showedPreviewPanel;
+        public static bool ShowedPreviewPanel
+        {
+            get => _showedPreviewPanel;
+            set => SetProperty(ref _showedPreviewPanel, value);
+        }
 
         private static string SettingsPath = Path.Combine(Utilities.GetAppDataFolder(), "settings.ini");
         public static void Load()
@@ -97,6 +104,7 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+            ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage", false);
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
             LogModInstallation = LoadSettingBool(settingsIni, "Logging", "LogModInstallation", false);
@@ -175,6 +183,7 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
+            SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage", ShowedPreviewPanel);
             try
             {
                 File.WriteAllText(SettingsPath, settingsIni.ToString());

@@ -204,7 +204,6 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             ShowBusyControl(archiveDeploymentPane); //Todo: Support the progress bar updates in the queue
         }
 
@@ -216,7 +215,6 @@ namespace MassEffectModManagerCore
             {
                 ReleaseBusyControl();
             };
-            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             ShowBusyControl(archiveDeploymentPane);
         }
 
@@ -282,7 +280,6 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             ShowBusyControl(backupRestoreManager); //Todo: Support the progress bar updates in the queue
         }
 
@@ -300,7 +297,6 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             ShowBusyControl(installationInformation); //Todo: Support the progress bar updates in the queue
             //installationInformation.ShowInfo();
         }
@@ -523,7 +519,6 @@ namespace MassEffectModManagerCore
                     backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                 }
             };
-            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             ShowBusyControl(modInstaller);
         }
 
@@ -544,8 +539,22 @@ namespace MassEffectModManagerCore
             {
                 ShowUpdateCompletedPane();
             }
+            if (!Settings.ShowedPreviewPanel)
+            {
+                ShowPreviewPanel();
+            }
             LoadMods();
             PerformStartupNetworkFetches(true);
+        }
+
+        private void ShowPreviewPanel()
+        {
+            var archiveDeploymentPane = new PreviewWelcomePanel();
+            archiveDeploymentPane.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(archiveDeploymentPane);
         }
 
         private void UpdateBinkStatus(Mod.MEGame game)
@@ -686,7 +695,6 @@ return;
                                 }
 
                             };
-                            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
                             ShowBusyControl(modUpdatesNotificationDialog);
                         });
                     }
@@ -826,7 +834,6 @@ return;
             {
                 ReleaseBusyControl();
             };
-            UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
             ShowBusyControl(aboutWindow);
         }
 
@@ -1107,7 +1114,6 @@ return;
                     ReleaseBusyControl();
                 };
                 //Todo: Update Busy UI Content
-                UpdateBusyProgressBarCallback(new ProgressBarUpdate(ProgressBarUpdate.UpdateTypes.SET_VISIBILITY, Visibility.Collapsed));
                 ShowBusyControl(exLauncher);
             }
         }
@@ -1137,29 +1143,29 @@ return;
         public ulong BusyProgressBarValue { get; set; } = 0;
         public bool BusyProgressBarIndeterminate { get; set; } = true;
 
-        /// <summary>
-        /// Updates the progressbar that the user controls use
-        /// </summary>
-        /// <param name="update"></param>
-        internal void UpdateBusyProgressBarCallback(ProgressBarUpdate update)
-        {
-            switch (update.UpdateType)
-            {
-                case ProgressBarUpdate.UpdateTypes.SET_VISIBILITY:
-                    BusyProgressBarVisibility = update.GetDataAsVisibility();
-                    break;
-                case ProgressBarUpdate.UpdateTypes.SET_MAX:
-                    BusyProgressBarMaximum = update.GetDataAsULong();
-                    break;
-                case ProgressBarUpdate.UpdateTypes.SET_VALUE:
-                    BusyProgressBarValue = update.GetDataAsULong();
-                    break;
-                case ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE:
-                    BusyProgressBarIndeterminate = update.GetDataAsBool();
-                    break;
+        ///// <summary>
+        ///// Updates the progressbar that the user controls use
+        ///// </summary>
+        ///// <param name="update"></param>
+        //internal void UpdateBusyProgressBarCallback(ProgressBarUpdate update)
+        //{
+        //    switch (update.UpdateType)
+        //    {
+        //        case ProgressBarUpdate.UpdateTypes.SET_VISIBILITY:
+        //            BusyProgressBarVisibility = update.GetDataAsVisibility();
+        //            break;
+        //        case ProgressBarUpdate.UpdateTypes.SET_MAX:
+        //            BusyProgressBarMaximum = update.GetDataAsULong();
+        //            break;
+        //        case ProgressBarUpdate.UpdateTypes.SET_VALUE:
+        //            BusyProgressBarValue = update.GetDataAsULong();
+        //            break;
+        //        case ProgressBarUpdate.UpdateTypes.SET_INDETERMINATE:
+        //            BusyProgressBarIndeterminate = update.GetDataAsBool();
+        //            break;
 
-            }
-        }
+        //    }
+        //}
 
         private void Window_Drop(object sender, DragEventArgs e)
         {

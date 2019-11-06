@@ -1,0 +1,23 @@
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.PreviewWelcomePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+                       MaxWidth="400">
+    <StackPanel Margin="5">
+        <TextBlock Text="Welcome to ME3Tweaks Mod Manager" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10"/>
+        <TextBlock TextWrapping="Wrap" Text="Thanks for downloading the preview of ME3Tweaks Mod Manager, the next generation of Mod Manager. This preview version is a work in progress and will have stability issues and missing features that are being worked on.
+                   &#10;&#10;If you are working with Mass Effect 3, I suggest staying with Mass Effect 3 Mod Manager as it is stable and has more features. ME3Tweaks Mod Manager will replace Mass Effect 3 Mod Manager once it is at feature parity.
+                   &#10;&#10;Please direct all feedback to the ME3Tweaks Discord, where you can have your voice heard for feature requests and bug fixes."/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+
+            <Button Content="Join the ME3Tweaks Discord" Click="JoinDiscord_Click" Padding="7,4" Margin="4,0"/>
+            <Button Content="Close" Click="Close_Clicked" Padding="7,4"/>
+
+        </StackPanel>
+    </StackPanel>
+</local:MMBusyPanelBase>
