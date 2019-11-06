@@ -1221,14 +1221,13 @@ namespace MassEffectModManagerCore
                 if (!SupportedDroppableExtensions.Contains(ext))
                 {
                     e.Effects = DragDropEffects.None;
-                    e.Handled = true;
                 }
             }
             else
             {
                 e.Effects = DragDropEffects.None;
-                e.Handled = true;
             }
+            e.Handled = true;
         }
 
         private void RunAutoTOC_Clicked(object sender, RoutedEventArgs e)
