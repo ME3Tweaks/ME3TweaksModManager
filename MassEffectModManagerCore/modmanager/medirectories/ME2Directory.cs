@@ -88,7 +88,7 @@ namespace MassEffectModManagerCore.GameDirectories
             ["DLC_HEN_MT"] = "Kasumi - Stolen Memory",
             ["DLC_HEN_VT"] = "Zaeed - The Price of Revenge",
             ["DLC_MCR_01"] = "Firepower pack",
-            ["DLC_MCR_03 "] = "Equalizer pack",
+            ["DLC_MCR_03"] = "Equalizer pack",
             ["DLC_PRE_Cerberus"] = "Cerberus Weapon and Armor",
             ["DLC_PRE_Collectors"] = "Collectors' Weapon and Armor",
             ["DLC_PRE_DA"] = "Blood Dragon Armor",
