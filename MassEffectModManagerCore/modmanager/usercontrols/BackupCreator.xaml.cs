@@ -32,32 +32,44 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         //public GameBackup ME3Backup { get; set; }
         //public GameBackup ME2Backup { get; set; }
         //public GameBackup ME1Backup { get; set; }
+        private List<GameTarget> targetsList;
         public BackupCreator(List<GameTarget> targetsList, GameTarget selectedTarget, Window window)
         {
             DataContext = this;
+            this.targetsList = targetsList;
             LoadCommands();
             InitializeComponent();
 
             //InstallationTargets_ComboBox.SelectedItem = selectedTarget;
         }
 
+        public ICommand CloseCommand;
+
         private void LoadCommands()
         {
-            //ME3BackupCommand = new GenericCommand(BackupME3, CanBackupME3);
+            CloseCommand = new GenericCommand(Close, CanClose);
         }
 
-        private void Close_Clicked(object sender, RoutedEventArgs e)
+        private bool CanClose() => !GameBackups.Any(x => x.BackupInProgress);
+
+        private void Close()
         {
             OnClosing(DataEventArgs.Empty);
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Escape && CanClose())
+            {
+                Close();
+            }
         }
 
         public override void OnPanelVisible()
         {
+            GameBackups.Add(new GameBackup(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), window));
+            GameBackups.Add(new GameBackup(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), window));
+            GameBackups.Add(new GameBackup(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), window));
         }
 
         public class GameBackup : INotifyPropertyChanged

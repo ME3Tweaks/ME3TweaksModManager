@@ -72,6 +72,6 @@
 
         <TextBlock Text="Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer." TextWrapping="Wrap" MaxWidth="400" Margin="0,5"/>
         <TextBlock Text="Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported." TextWrapping="Wrap" MaxWidth="400" Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="7,5" Margin ="0,5,0,0"/>
+        <Button Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin ="0,5,0,0"/>
     </StackPanel>
 </local:MMBusyPanelBase>
