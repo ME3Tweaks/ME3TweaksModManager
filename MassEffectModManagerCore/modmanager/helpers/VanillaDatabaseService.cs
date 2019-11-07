@@ -299,20 +299,20 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="target">Target to get source for</param>
         /// <returns>Game source if supported, null otherwise</returns>
-        internal static string GetGameSource(GameTarget target)
+        internal static (string hash, string result) GetGameSource(GameTarget target)
         {
             var md5 = Utilities.CalculateMD5(MEDirectories.ExecutablePath(target));
             switch (target.Game)
             {
                 case Mod.MEGame.ME1:
                     SUPPORTED_HASHES_ME1.TryGetValue(md5, out var me1result);
-                    return me1result;
+                    return (md5, me1result);
                 case Mod.MEGame.ME2:
                     SUPPORTED_HASHES_ME2.TryGetValue(md5, out var me2result);
-                    return me2result;
+                    return (md5, me2result);
                 case Mod.MEGame.ME3:
                     SUPPORTED_HASHES_ME3.TryGetValue(md5, out var me3result);
-                    return me3result;
+                    return (md5, me3result);
                 default:
                     throw new Exception("Cannot vanilla check against game that is not ME1/ME2/ME3");
             }

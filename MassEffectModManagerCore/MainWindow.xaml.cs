@@ -23,6 +23,7 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using ME3Explorer.Unreal;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -149,7 +150,7 @@ namespace MassEffectModManagerCore
                 }
             };
         }
-
+        public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
         public ICommand ApplyModCommand { get; set; }
         public ICommand CheckForContentUpdatesCommand { get; set; }
@@ -175,6 +176,28 @@ namespace MassEffectModManagerCore
             BackupCommand = new GenericCommand(ShowBackupPane, CanShowBackupPane);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, CanShowDeploymentPane);
             DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibrary, CanDeleteModFromLibrary);
+            ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
+        }
+
+        private void OpenArchiveSelectionDialog()
+        {
+            OpenFileDialog m = new OpenFileDialog
+            {
+                Title = "Select mod archive"
+            };
+            var result = m.ShowDialog(this);
+            if (result.Value)
+            {
+                Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Manual file selection" } });
+                var archiveFile = m.FileName;
+                Log.Information("Opening archive user selected: " + archiveFile);
+                openModImportUI(archiveFile);
+            }
+        }
+
+        private bool CanOpenArchiveSelectionDialog()
+        {
+            return App.ThirdPartyImportingService != null && App.ThirdPartyIdentificationService != null && !ContentCheckInProgress;
         }
 
         private bool CanDeleteModFromLibrary() => SelectedMod != null && !ContentCheckInProgress;
@@ -1179,6 +1202,7 @@ return;
                     case ".rar":
                     case ".7z":
                     case ".zip":
+                        Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Drag & drop" } });
                         openModImportUI(files[0]);
                         break;
                         //TPF, .mod, .mem
@@ -1189,6 +1213,7 @@ return;
 
         private void openModImportUI(string archiveFile)
         {
+            Log.Information("Opening Mod Archive Importer for file " + archiveFile);
             var modInspector = new ModArchiveImporter(archiveFile);
             modInspector.Close += (a, b) =>
             {

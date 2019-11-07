@@ -69,10 +69,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                     ALOTInstalled = true;
                     ALOTVersion = alotInfo.ToString();
                 }
-                GameSource = VanillaDatabaseService.GetGameSource(this);
+                Log.Information("Getting game source for target " + TargetPath);
+                var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
+
+                GameSource = hashCheckResult.result;
                 if (GameSource == null)
                 {
-                    Log.Error("Unknown or illegitimate installation: " + target);
+                    Log.Error("Unknown source or illegitimate installation: " + hashCheckResult.hash);
                 }
                 else
                 {

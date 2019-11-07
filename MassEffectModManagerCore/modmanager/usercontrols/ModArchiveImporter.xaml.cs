@@ -87,7 +87,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
                     ArchiveScanned = true;
-                    CanCompressPackages = CompressedMods.Any() && CompressedMods.Any(x => x.Game == Mod.MEGame.ME3); //Change to include ME2 when support for LZO is improved
+                    //Initial release disables this.
+                    CanCompressPackages = false && CompressedMods.Any() && CompressedMods.Any(x => x.Game == Mod.MEGame.ME3); //Change to include ME2 when support for LZO is improved
                 }
                 else
                 {

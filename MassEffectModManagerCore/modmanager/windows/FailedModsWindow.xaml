@@ -42,14 +42,9 @@
                 </StatusBarItem>-->
             <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                 <StackPanel Orientation="Horizontal" >
-                    <Button MinWidth="70" Padding="4" Command="{Binding ApplyModCommand}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="{Binding SelectedMod.Game, Converter={StaticResource GameToImageIconConverter}}" MaxWidth="16" MaxHeight="16" Margin="0,0,5,0"/>
-                            <TextBlock Text="{Binding ApplyModButtonText}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
 
-                    <Button MinWidth="70" Padding="4" Content="Close" Margin="5,0,0,0" Click="Close_Clicked"/>
+                    <Button MinWidth="70" Content="Restore from ME3Tweaks" Margin="5,0,0,0" IsEnabled="False" Padding="7,4"/>
+                    <Button MinWidth="70" Content="Close" Margin="5,0,0,0" Click="Close_Clicked" Padding="7,4"/>
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
