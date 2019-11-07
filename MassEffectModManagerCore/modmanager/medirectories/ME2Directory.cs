@@ -123,7 +123,7 @@ namespace MassEffectModManagerCore.GameDirectories
             "DLC_UNC_Pack01", //132
             "DLC_CER_02",
             "DLC_MCR_01", //136
-            "DLC_MCR_03 ",
+            "DLC_MCR_03",
             "DLC_EXP_Part01", //300
             "DLC_DHME1", //375
             "DLC_CON_Pack02", //380
