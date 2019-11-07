@@ -248,6 +248,11 @@ namespace MassEffectModManagerCore.modmanager
             ModDescription = Utilities.ConvertBrToNewline(iniData["ModInfo"]["moddesc"]);
             ModDeveloper = iniData["ModInfo"]["moddev"];
             ModVersionString = iniData["ModInfo"]["modver"];
+            //Check for integer value only
+            if (int.TryParse(ModVersionString, out var intVersion))
+            {
+                ModVersionString += ".0";
+            }
             Version.TryParse(ModVersionString, out var parsedValue);
             ParsedModVersion = parsedValue;
 

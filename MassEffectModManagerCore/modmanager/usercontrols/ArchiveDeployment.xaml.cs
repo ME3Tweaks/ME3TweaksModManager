@@ -51,8 +51,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             this.mainWindow = mainWindow;
             ModBeingDeployed = mod;
-
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = "Verify mod version is correct: " + mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)), ValidationFunction = ManualValidation });
+            string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
+            string versionFormat = mod.ModDescTargetVersion < 6 ? "X.X" : "X.X[.X[.X]]";
+            string checklistItemText = mod.ParsedModVersion != null ? "Verify mod version is correct" : $"Recommended version format not followed ({versionFormat})";
+            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = $"{checklistItemText}: {versionString}", ValidationFunction = ManualValidation });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
                 ItemText = "Verify URL is correct: " + mod.ModWebsite,

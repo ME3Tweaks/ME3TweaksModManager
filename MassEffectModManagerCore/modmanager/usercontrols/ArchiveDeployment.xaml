@@ -15,7 +15,7 @@
     <StackPanel>
         <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Header, FallbackValue=Prepare mod for distribution}" TextAlignment="Center"/>
         <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" HorizontalAlignment="Center"/>
-        <TextBlock Text="{Binding ModBeingDeployed.ParsedModVersion, StringFormat='Version {0:0.0###}'}" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}" HorizontalAlignment="Center"/>
 
         <TextBlock Text="Deployment Checklist" FontSize="14" FontWeight="Bold"/>
         <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
