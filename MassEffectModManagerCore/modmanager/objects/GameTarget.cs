@@ -255,6 +255,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             switch (Game)
             {
                 case Mod.MEGame.ME1:
+                    if (!File.Exists(Path.Combine(TargetPath, "Binaries", "MassEffect.exe"))) return "Invalid game directory: Game EXE not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Maps", "EntryMenu.SFM"))) return "Invalid game directory: Entrymenu.sfm not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "BIOC_Base.u"))) return "Invalid game directory: BIOC_Base.u not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Packages", "Textures", "BIOA_GLO_00_A_Opening_FlyBy_T.upk"))) return "Invalid game directory: BIOA_GLO_00_A_Opening_FlyBy_T.upk not found";
@@ -262,6 +263,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Movies", "MEvisionSEQ3.bik"))) return "Invalid game directory: MEvisionSEQ3.bik not found";
                     break;
                 case Mod.MEGame.ME2:
+                    if (!File.Exists(Path.Combine(TargetPath, "Binaries", "MassEffect2.exe"))) return "Invalid game directory: Game EXE not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "BioA_BchLmL.pcc"))) return "Invalid game directory: BioA_BchLmL.pcc not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "Config", "PC", "Cooked", "Coalesced.ini"))) return "Invalid game directory: Coalesced.ini not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPC", "Wwise_Jack_Loy_Music.afc"))) return "Invalid game directory: Wwise_Jack_Loy_Music.afc not found";
@@ -269,6 +271,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "Movies", "Crit03_CollectArrive_Part2_1.bik"))) return "Invalid game directory: Crit03_CollectArrive_Part2_1.bik not found";
                     break;
                 case Mod.MEGame.ME3:
+                    if (!File.Exists(Path.Combine(TargetPath, "Binaries", "win32", "MassEffect3.exe"))) return "Invalid game directory: Game EXE not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "Textures.tfc"))) return "Invalid game directory: Textures.tfc not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "Startup.pcc"))) return "Invalid game directory: Startup.pcc not found";
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "Coalesced.bin"))) return "Invalid game directory: Coalesced.bin not found";
@@ -277,6 +280,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (!File.Exists(Path.Combine(TargetPath, "BioGame", "CookedPCConsole", "citwrd_rp1_bailey_m_D_Int.afc"))) return "Invalid game directory: citwrd_rp1_bailey_m_D_Int.afc not found";
                     break;
             }
+            if (File.Exists(Path.Combine(TargetPath, "cmm_vanilla"))) return "Invalid target: Marked as backup protected with cmm_vanilla file";
 
             IsValid = true;
             return null;
@@ -362,13 +366,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                     };
                     bw.RunWorkerCompleted += (a, b) =>
                     {
-                //File.Copy(backupFile, targetFile, true);
-                //if (!batchRestore)
-                //{
-                RevalidateIsModified();
-                //restoreCompletedCallback?.Invoke();
-                //}
-                Restoring = false;
+                        //File.Copy(backupFile, targetFile, true);
+                        //if (!batchRestore)
+                        //{
+                        RevalidateIsModified();
+                        //restoreCompletedCallback?.Invoke();
+                        //}
+                        Restoring = false;
                     };
                     startingRestoreCallback?.Invoke();
                     bw.RunWorkerAsync();

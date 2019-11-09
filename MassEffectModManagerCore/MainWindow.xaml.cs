@@ -420,7 +420,7 @@ namespace MassEffectModManagerCore
                 args.Add("add");
                 args.Add(regPath);
                 args.Add("/v");
-                args.Add("Install Dir");
+                args.Add(target.Game == Mod.MEGame.ME3 ? "Install Dir" : "Path");
                 args.Add("/t");
                 args.Add("REG_SZ");
                 args.Add("/d");
@@ -526,6 +526,12 @@ namespace MassEffectModManagerCore
 
                     if (gameSelected == Mod.MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32 directory.
+                    //Test for cmmvanilla
+                    if (File.Exists(Path.Combine(result, "cmmvanilla")))
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target because it has been marked as a backup (cmmvanilla file detected).", "Error adding target", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
                     var pendingTarget = new GameTarget(gameSelected, result, false);
                     string failureReason = pendingTarget.ValidateTarget();
                     if (failureReason == null)
@@ -848,6 +854,7 @@ return;
         private void PopulateTargets(GameTarget selectedTarget = null)
         {
             InstallationTargets.ClearEx();
+            MEDirectories.ReloadGamePaths(); //this is redundant on the first boot but whatever.
             Log.Information("Populating game targets");
             if (ME3Directory.gamePath != null)
             {

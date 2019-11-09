@@ -102,6 +102,16 @@ namespace MassEffectModManagerCore.GameDirectories
             }
         }
 
+        /// <summary>
+        /// Refreshes the registry active paths for all three games
+        /// </summary>
+        public static void ReloadGamePaths()
+        {
+            ME1Directory.ReloadActivePath();
+            ME2Directory.ReloadActivePath();
+            ME3Directory.ReloadActivePath();
+        }
+
         public static string DLCPath(Mod.MEGame game)
         {
             switch (game)

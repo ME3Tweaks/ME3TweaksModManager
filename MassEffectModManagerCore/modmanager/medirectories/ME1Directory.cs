@@ -39,12 +39,11 @@ namespace MassEffectModManagerCore.GameDirectories
 
         static ME1Directory()
         {
-            //   if (!string.IsNullOrEmpty(Properties.Settings.Default.ME1Directory))
-            //   {
-            //       gamePath = Properties.Settings.Default.ME1Directory;
-            //   }
-            //   else
-            //{
+            ReloadActivePath();
+        }
+
+        public static void ReloadActivePath()
+        {
             string hkey32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
             string hkey64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\";
             string subkey = @"BioWare\Mass Effect";
@@ -59,12 +58,6 @@ namespace MassEffectModManagerCore.GameDirectories
 
             keyName = hkey64 + subkey;
             gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Path", null);
-            if (gamePath != null)
-            {
-                gamePath = gamePath + "\\";
-                return;
-            }
-            //}
         }
 
         public static string ExecutablePath(string gameRoot) => Path.Combine(gameRoot, "Binaries", "MassEffect.exe");

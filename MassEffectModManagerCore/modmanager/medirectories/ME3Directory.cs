@@ -41,12 +41,11 @@ namespace MassEffectModManagerCore.GameDirectories
 
         static ME3Directory()
         {
-            //if (!string.IsNullOrEmpty(Properties.Settings.Default.ME3Directory))
-            //{
-            //    gamePath = Properties.Settings.Default.ME3Directory;
-            //}
-            //else
-            //{
+            ReloadActivePath();
+        }
+
+        public static void ReloadActivePath()
+        {
             string hkey32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\";
             string hkey64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\";
             string subkey = @"BioWare\Mass Effect 3";
@@ -59,12 +58,8 @@ namespace MassEffectModManagerCore.GameDirectories
                 return;
             }
 
-            /*if (gamePath != null)
-                return;*/
-
             keyName = hkey64 + subkey;
             gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null);
-            //}
         }
 
         public static Dictionary<string, string> OfficialDLCNames = new Dictionary<string, string>
