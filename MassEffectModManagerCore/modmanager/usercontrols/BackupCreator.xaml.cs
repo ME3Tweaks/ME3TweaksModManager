@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //InstallationTargets_ComboBox.SelectedItem = selectedTarget;
         }
 
-        public ICommand CloseCommand;
+        public ICommand CloseCommand { get; set; }
 
         private void LoadCommands()
         {

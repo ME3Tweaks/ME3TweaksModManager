@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -351,7 +352,7 @@ namespace MassEffectModManagerCore
                 .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
             try
             {
-                Utilities.RunProcess(MEDirectories.ExecutablePath(SelectedGameTarget), null, false, true);
+                Utilities.RunProcess(MEDirectories.ExecutablePath(SelectedGameTarget), (string)null, false, true);
             }
             catch (Exception e)
             {
@@ -368,6 +369,68 @@ namespace MassEffectModManagerCore
             //var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
             //Process.Start(exePath);
 
+        }
+
+        /// <summary>
+        /// Updates boot target and returns the HRESULT of the update command for registry.
+        /// Returns -3 if no registry update was performed.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private int UpdateBootTarget(GameTarget target)
+        {
+            string exe = "reg";
+            var args = new List<string>();
+            string regPath = null;
+            switch (target.Game)
+            {
+                case Mod.MEGame.ME1:
+                    {
+                        var existingPath = ME1Directory.gamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect";
+                        }
+                    }
+                    break;
+                case Mod.MEGame.ME2:
+                    {
+                        var existingPath = ME1Directory.gamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 2";
+                        }
+                    }
+
+                    break;
+                case Mod.MEGame.ME3:
+                    {
+                        var existingPath = ME1Directory.gamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 3";
+                        }
+                    }
+                    break;
+            }
+
+            if (regPath != null)
+            {
+                //is set in registry
+                args.Add("add");
+                args.Add(regPath);
+                args.Add("/v");
+                args.Add("Install Dir");
+                args.Add("/t");
+                args.Add("REG_SZ");
+                args.Add("/d");
+                args.Add(target.TargetPath);
+                args.Add("/f");
+
+                return Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
+            }
+
+            return -3;
         }
 
         private bool CanStartGame()
@@ -548,6 +611,58 @@ namespace MassEffectModManagerCore
         private void ReloadMods()
         {
             LoadMods();
+        }
+
+        private void CheckTargetPermissions(bool promptForConsent = true)
+        {
+            var targetsNeedingUpdate = InstallationTargets.Where(x => x.Selectable && !x.IsTargetWritable()).ToList();
+            bool me1AGEIAKeyNotWritable = false;
+            if (InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1))
+            {
+                //Check AGEIA
+                try
+                {
+                    var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\AGEIA Technologies", true);
+                    if (key != null)
+                    {
+                        key.Close();
+                    }
+                    else
+                    {
+                        Log.Information("ME1 AGEIA Technologies key is not present or is not writable.");
+                        me1AGEIAKeyNotWritable = true;
+                    }
+                }
+                catch (SecurityException)
+                {
+                    Log.Information("ME1 AGEIA Technologies key is not writable.");
+                    me1AGEIAKeyNotWritable = true;
+                }
+            }
+
+            if (targetsNeedingUpdate.Count > 0 || me1AGEIAKeyNotWritable)
+            {
+                if (promptForConsent)
+                {
+                    Log.Information("Some game paths/keys are not writable. Prompting user.");
+                    var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Some game directories/registry keys are not writable by your user account. ME3Tweaks Mod Manager can grant write access to these directories for you for easier modding. Grant write access to these folders?", "Some targets/keys write-protected", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Yes" } });
+                        Utilities.EnableWritePermissions(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                    }
+                    else
+                    {
+                        Log.Warning("User denied permission to grant write permissions");
+                        Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "No" } });
+                    }
+                }
+                else
+                {
+                    Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Implicit" } });
+                    Utilities.EnableWritePermissions(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -790,11 +905,15 @@ return;
                 InstallationTargets.AddRange(otherTargetsFileME1);
                 InstallationTargets.AddRange(otherTargetsFileME2);
                 InstallationTargets.AddRange(otherTargetsFileME3);
-
             }
             if (selectedTarget != null)
             {
-                InstallationTargets_ComboBox.SelectedItem = selectedTarget;
+                //find new corresponding target
+                var newTarget = InstallationTargets.FirstOrDefault(x => x.TargetPath == selectedTarget.TargetPath);
+                if (newTarget != null)
+                {
+                    InstallationTargets_ComboBox.SelectedItem = newTarget;
+                }
             }
         }
 
@@ -877,7 +996,7 @@ return;
 
         private const int STARTUP_FAIL_CRITICAL_FILES_MISSING = 1;
 
-        public void PerformStartupNetworkFetches(bool checkForModManagerUpdates)
+        public void PerformStartupNetworkFetches(bool firstStartupCheck)
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker("ContentCheckNetworkThread");
             bw.WorkerReportsProgress = true;
@@ -916,7 +1035,7 @@ return;
                 BackgroundTask bgTask;
                 bool success;
 
-                if (checkForModManagerUpdates)
+                if (firstStartupCheck)
                 {
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading required files", "Required files downloaded");
                     if (!OnlineContent.EnsureCriticalFiles())
@@ -1004,23 +1123,23 @@ return;
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
-                var helpItemsLoading = OnlineContent.FetchLatestHelp(!checkForModManagerUpdates);
+                var helpItemsLoading = OnlineContent.FetchLatestHelp(!firstStartupCheck);
                 bw.ReportProgress(0, helpItemsLoading);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("ThirdPartyIdentificationServiceFetch", "Loading Third Party Identification Service", "Loaded Third Party Identification Service");
-                App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!checkForModManagerUpdates);
+                App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadTipsService", "Loading Third Party Importing Service", "Loaded Third Party Importing Service");
-                App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!checkForModManagerUpdates);
+                App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadTipsService", "Loading tips service", "Loaded tips service");
-                LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!checkForModManagerUpdates));
+                LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!firstStartupCheck));
                 OnPropertyChanged(nameof(NoModSelectedText));
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
@@ -1031,6 +1150,12 @@ return;
                 ME1UnrealObjectInfo.loadfromJSON();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                if (firstStartupCheck)
+                {
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob("WritePermissions", "Checking write permissions", "Checked user write permissions");
+                    CheckTargetPermissions(true);
+                    backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                }
                 //TODO: FIX THIS FOR .NET CORE
                 //Properties.Settings.Default.LastContentCheck = DateTime.Now;
                 //Properties.Settings.Default.Save();
@@ -1146,9 +1271,33 @@ return;
             LaunchExternalTool(ExternalToolLauncher.ME3Explorer, ExternalToolLauncher.ME3EXP_ASIMANAGER);
         }
 
+        private bool RepopulatingTargets;
         private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
+            if (!RepopulatingTargets)
+            {
+                var oldTarget = SelectedGameTarget;
+                SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
+                if (!SelectedGameTarget.RegistryActive)
+                {
+                    try
+                    {
+                        var hresult = UpdateBootTarget(SelectedGameTarget);
+                        if (hresult == -3) return; //do nothing.
+                        if (hresult == 0)
+                        {
+                            //rescan
+                            RepopulatingTargets = true;
+                            PopulateTargets(SelectedGameTarget);
+                            RepopulatingTargets = false;
+                        }
+                    }
+                    catch (Win32Exception ex)
+                    {
+                        Log.Warning("Win32 exception occured updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
+                    }
+                }
+            }
         }
 
         private void UploadLog_Click(object sender, RoutedEventArgs e)

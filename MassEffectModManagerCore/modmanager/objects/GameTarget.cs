@@ -218,6 +218,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             InstalledDLCMods.AddRange(installedMods);
         }
 
+        public bool IsTargetWritable()
+        {
+            return Utilities.IsDirectoryWritable(TargetPath) && Utilities.IsDirectoryWritable(Path.Combine(TargetPath, "Binaries"));
+        }
+
         public string ALOTStatusString
         {
             get
@@ -357,13 +362,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                     };
                     bw.RunWorkerCompleted += (a, b) =>
                     {
-                        //File.Copy(backupFile, targetFile, true);
-                        //if (!batchRestore)
-                        //{
-                        RevalidateIsModified();
-                        //restoreCompletedCallback?.Invoke();
-                        //}
-                        Restoring = false;
+                //File.Copy(backupFile, targetFile, true);
+                //if (!batchRestore)
+                //{
+                RevalidateIsModified();
+                //restoreCompletedCallback?.Invoke();
+                //}
+                Restoring = false;
                     };
                     startingRestoreCallback?.Invoke();
                     bw.RunWorkerAsync();

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Threading;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.GameDirectories;
@@ -32,6 +33,126 @@ namespace MassEffectModManagerCore
             {
                 return Path.Combine(GetMMExecutableDirectory(), "mods");
             }
+        }
+
+        public static bool IsAdministrator()
+        {
+            var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        public static bool EnableWritePermissions(List<GameTarget> targets, bool me1ageia)
+        {
+            string args = "";
+            if (targets.Any() || me1ageia)
+            {
+                foreach (var target in targets)
+                {
+                    if (args != "")
+                    {
+                        args += " ";
+                    }
+                    args += $"\"{target.TargetPath}\"";
+                }
+
+                if (me1ageia)
+                {
+                    args += " -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
+                }
+                string exe = GetCachedExecutablePath("PermissionsGranter.exe");
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                args = $"\"{System.Security.Principal.WindowsIdentity.GetCurrent().Name}\" " + args;
+                //need to run write permissions program
+                if (IsAdministrator())
+                {
+                    int result = Utilities.RunProcess(exe, args, true, false);
+                    if (result == 0)
+                    {
+                        Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
+                        return true;
+                    }
+                    else
+                    {
+                        Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    //string message = "Some game folders/registry keys are not writeable by your user account. ALOT Installer will attempt to grant access to these folders/registry with the PermissionsGranter.exe program:\n";
+                    //if (required)
+                    //{
+                    //    message = "Some game paths and registry keys are not writeable by your user account. These need to be writable or ALOT Installer will be unable to install ALOT. Please grant administrative privledges to PermissionsGranter.exe to give your account the necessary privileges to the following:\n";
+                    //}
+                    //foreach (String str in directories)
+                    //{
+                    //    message += "\n" + str;
+                    //}
+                    //if (me1ageia)
+                    //{
+                    //    message += "\nRegistry: HKLM\\SOFTWARE\\WOW6432Node\\AGEIA Technologies (Fixes an ME1 launch issue)";
+                    //}
+                    int result = Utilities.RunProcess(exe, args, true, true);
+                    if (result == 0)
+                    {
+                        Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
+                        return true;
+                    }
+                    else
+                    {
+                        Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
+                        return false;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the path where the specified static executable would be. This call does not check if that file exists.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetCachedExecutablePath(string path)
+        {
+            return Path.Combine(Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "executables")).FullName, path);
+        }
+
+        //(Exception e)
+        //    {
+        //        Log.Error("Error checking for write privledges. This may be a significant sign that an installed game is not in a good state.");
+        //        Log.Error(App.FlattenException(e));
+        //        await this.ShowMessageAsync("Error checking write privileges", "An error occured while checking write privileges to game folders. This may be a sign that the game is in a bad state.\n\nThe error was:\n" + e.Message);
+        //        return false;
+        //}
+        //    return true;
+        //}
+
+        /// <summary> Checks for write access for the given file.
+        /// </summary>
+        /// <param name="fileName">The filename.</param>
+        /// <returns>true, if write access is allowed, otherwise false</returns>
+        public static bool IsDirectoryWritable(string dir)
+        {
+            var files = Directory.GetFiles(dir);
+            try
+            {
+                System.IO.File.Create(Path.Combine(dir, "temp_m3.txt")).Close();
+                System.IO.File.Delete(Path.Combine(dir, "temp_m3.txt"));
+                return true;
+            }
+            catch (System.UnauthorizedAccessException)
+            {
+                return false;
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error checking permissions to folder: " + dir);
+                Log.Error("Directory write test had error that was not UnauthorizedAccess: " + e.Message);
+            }
+            return false;
         }
 
         internal static void WriteRegistryKey(string subpath, string value, string data)
@@ -134,434 +255,488 @@ namespace MassEffectModManagerCore
             }
         }
 
-        public static bool RunProcess(string exe, string args, bool waitForProcess = false, bool allowReattemptAsAdmin = false)
+        public static int RunProcess(string exe, string args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true)
         {
-            Log.Information($"Running process: {exe} {args}");
-            try
+            return RunProcess(exe, null, args, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow);
+        }
+
+        public static int RunProcess(string exe, List<string> args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true)
+        {
+            return RunProcess(exe, args, null, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow);
+        }
+
+
+        private static int RunProcess(string exe, List<string> argsL, string argsS, bool waitForProcess, bool allowReattemptAsAdmin, bool requireAdmin, bool noWindow)
+        {
+            var argsStr = argsS;
+            if (argsStr == null && argsL != null)
             {
+                argsStr = "";
+                foreach (var arg in argsL)
+                {
+                    if (arg != "") argsStr += " ";
+                    if (arg.Contains(" "))
+                    {
+                        argsStr += $"\"{arg}\"";
+                    }
+                    else
+                    {
+                        argsStr += arg;
+                    }
+                }
+            }
+            if (requireAdmin)
+            {
+                Log.Information($"Running process as admin: {exe} {argsStr}");
+                //requires elevation
                 using (Process p = new Process())
                 {
                     p.StartInfo.FileName = exe;
                     p.StartInfo.UseShellExecute = true;
-                    p.StartInfo.Arguments = args;
+                    p.StartInfo.CreateNoWindow = noWindow;
+                    p.StartInfo.Arguments = argsStr;
+                    p.StartInfo.Verb = "runas";
                     p.Start();
                     if (waitForProcess)
                     {
                         p.WaitForExit();
+                        return p.ExitCode;
                     }
 
-                    return true;
+                    return -1;
                 }
             }
-            catch (Win32Exception w32e)
+            else
             {
-                Log.Warning("Win32 exception running process: " + w32e.ToString());
-                if (w32e.NativeErrorCode == 740 && allowReattemptAsAdmin)
+                Log.Information($"Running process: {exe} {argsStr}");
+                try
                 {
-                    Log.Information("Attempting relaunch with administrative rights.");
-                    //requires elevation
                     using (Process p = new Process())
                     {
                         p.StartInfo.FileName = exe;
                         p.StartInfo.UseShellExecute = true;
-                        p.StartInfo.Arguments = args;
-                        p.StartInfo.Verb = "runas";
+                        p.StartInfo.CreateNoWindow = noWindow;
+                        p.StartInfo.Arguments = argsStr;
                         p.Start();
                         if (waitForProcess)
                         {
                             p.WaitForExit();
+                            return p.ExitCode;
                         }
 
-                        return true;
+                        return -1;
                     }
                 }
-                else
+                catch (Win32Exception w32e)
                 {
-                    throw w32e; //rethrow to higher.
+                    Log.Warning("Win32 exception running process: " + w32e.ToString());
+                    if (w32e.NativeErrorCode == 740 && allowReattemptAsAdmin)
+                    {
+                        Log.Information("Attempting relaunch with administrative rights.");
+                        //requires elevation
+                        using (Process p = new Process())
+                        {
+                            p.StartInfo.FileName = exe;
+                            p.StartInfo.UseShellExecute = true;
+                            p.StartInfo.CreateNoWindow = noWindow;
+                            p.StartInfo.Arguments = argsStr;
+                            p.StartInfo.Verb = "runas";
+                            p.Start();
+                            if (waitForProcess)
+                            {
+                                p.WaitForExit();
+                                return p.ExitCode;
+                            }
+
+                            return -1;
+                        }
+                    }
+                    else
+                    {
+                        throw w32e; //rethrow to higher.
+                    }
                 }
             }
-
-            return false;
         }
 
         public static bool DeleteFilesAndFoldersRecursively(string targetDirectory)
+        {
+            bool result = true;
+            foreach (string file in Directory.GetFiles(targetDirectory))
             {
-                bool result = true;
-                foreach (string file in Directory.GetFiles(targetDirectory))
-                {
-                    File.SetAttributes(file, FileAttributes.Normal); //remove read only
-                    try
-                    {
-                        //Debug.WriteLine("Deleting file: " + file);
-                        File.Delete(file);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error($"Unable to delete file: {file}. It may be open still: {e.Message}");
-                        return false;
-                    }
-                }
-
-                foreach (string subDir in Directory.GetDirectories(targetDirectory))
-                {
-                    result &= DeleteFilesAndFoldersRecursively(subDir);
-                }
-
-                Thread.Sleep(10); // This makes the difference between whether it works or not. Sleep(0) is not enough.
+                File.SetAttributes(file, FileAttributes.Normal); //remove read only
                 try
                 {
-                    //Debug.WriteLine("Deleting directory: " + targetDirectory);
-
-                    Directory.Delete(targetDirectory);
+                    //Debug.WriteLine("Deleting file: " + file);
+                    File.Delete(file);
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to delete directory: {targetDirectory}. It may be open still or may not be actually empty: {e.Message}");
+                    Log.Error($"Unable to delete file: {file}. It may be open still: {e.Message}");
                     return false;
                 }
-                return result;
             }
 
-
-            internal static void InstallEmbeddedASI(string asiFname, double installingVersion, GameTarget gameTarget)
+            foreach (string subDir in Directory.GetDirectories(targetDirectory))
             {
-                string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
+                result &= DeleteFilesAndFoldersRecursively(subDir);
+            }
 
-                var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
-                if (existingmatchingasis.Count > 0)
+            Thread.Sleep(10); // This makes the difference between whether it works or not. Sleep(0) is not enough.
+            try
+            {
+                //Debug.WriteLine("Deleting directory: " + targetDirectory);
+
+                Directory.Delete(targetDirectory);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Unable to delete directory: {targetDirectory}. It may be open still or may not be actually empty: {e.Message}");
+                return false;
+            }
+            return result;
+        }
+
+
+        internal static void InstallEmbeddedASI(string asiFname, double installingVersion, GameTarget gameTarget)
+        {
+            string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
+
+            var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
+            if (existingmatchingasis.Count > 0)
+            {
+                foreach (var v in existingmatchingasis)
                 {
-                    foreach (var v in existingmatchingasis)
+                    string shortName = Path.GetFileNameWithoutExtension(v);
+                    var asiVersion = shortName.Substring(shortName.LastIndexOf('-') + 2); //Todo: Try catch this as it might explode if for some reason filename is like ASIMod-.asi
+                    if (double.TryParse(asiVersion, out double version) && version > installingVersion)
                     {
-                        string shortName = Path.GetFileNameWithoutExtension(v);
-                        var asiVersion = shortName.Substring(shortName.LastIndexOf('-') + 2); //Todo: Try catch this as it might explode if for some reason filename is like ASIMod-.asi
-                        if (double.TryParse(asiVersion, out double version) && version > installingVersion)
-                        {
-                            Log.Information("A newer version of a supporting ASI is installed: " + shortName + ". Not installing ASI.");
-                            return;
-                        }
+                        Log.Information("A newer version of a supporting ASI is installed: " + shortName + ". Not installing ASI.");
+                        return;
                     }
                 }
-
-                //Todo: Use ASI manifest to identify malformed names
-                string asiPath = "MassEffectModManagerCore.modmanager.asi." + asiFname + ".asi";
-                Utilities.ExtractInternalFile(asiPath, Path.Combine(asiTargetDirectory, asiFname + ".asi"), true);
             }
 
-            public static string GetModDirectoryForGame(Mod.MEGame game)
+            //Todo: Use ASI manifest to identify malformed names
+            string asiPath = "MassEffectModManagerCore.modmanager.asi." + asiFname + ".asi";
+            Utilities.ExtractInternalFile(asiPath, Path.Combine(asiTargetDirectory, asiFname + ".asi"), true);
+        }
+
+        public static string GetModDirectoryForGame(Mod.MEGame game)
+        {
+            if (game == Mod.MEGame.ME1) return GetME1ModsDirectory();
+            if (game == Mod.MEGame.ME2) return GetME2ModsDirectory();
+            if (game == Mod.MEGame.ME3) return GetME3ModsDirectory();
+            return null;
+        }
+
+        internal static string GetDllDirectory()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "dlls")).FullName;
+        }
+
+        internal static void EnsureModDirectories()
+        {
+            //Todo: Ensure these are not under any game targets.
+            Directory.CreateDirectory(GetME3ModsDirectory());
+            Directory.CreateDirectory(GetME2ModsDirectory());
+            Directory.CreateDirectory(GetME1ModsDirectory());
+        }
+
+        internal static string GetME3TweaksServicesCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ME3TweaksServicesCache")).FullName;
+        }
+
+        internal static string GetLocalHelpResourcesDirectory()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "HelpResources")).FullName;
+        }
+
+        public static string CalculateMD5(string filename)
+        {
+            try
             {
-                if (game == Mod.MEGame.ME1) return GetME1ModsDirectory();
-                if (game == Mod.MEGame.ME2) return GetME2ModsDirectory();
-                if (game == Mod.MEGame.ME3) return GetME3ModsDirectory();
-                return null;
+                using var md5 = MD5.Create();
+                using var stream = File.OpenRead(filename);
+                var hash = md5.ComputeHash(stream);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
-
-            internal static string GetDllDirectory()
+            catch (IOException e)
             {
-                return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "dlls")).FullName;
+                Log.Error("I/O ERROR CALCULATING CHECKSUM OF FILE: " + filename);
+                Log.Error(App.FlattenException(e));
+                return "";
             }
+        }
 
-            internal static void EnsureModDirectories()
+        public static string CalculateMD5(Stream stream)
+        {
+            try
             {
-                //Todo: Ensure these are not under any game targets.
-                Directory.CreateDirectory(GetME3ModsDirectory());
-                Directory.CreateDirectory(GetME2ModsDirectory());
-                Directory.CreateDirectory(GetME1ModsDirectory());
+                using var md5 = MD5.Create();
+                stream.Position = 0;
+                var hash = md5.ComputeHash(stream);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
-
-            internal static string GetME3TweaksServicesCache()
+            catch (Exception e)
             {
-                return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ME3TweaksServicesCache")).FullName;
+                Log.Error("I/O ERROR CALCULATING CHECKSUM OF STREAM");
+                Log.Error(App.FlattenException(e));
+                return "";
             }
+        }
 
-            internal static string GetLocalHelpResourcesDirectory()
+        internal static string GetTipsServiceFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
+        }
+
+        internal static string GetThirdPartyImportingCachedFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyimportingservice.json");
+        }
+
+        internal static bool CanFetchContentThrottleCheck()
+        {
+            var lastContentCheck = Settings.LastContentCheck;
+            var timeNow = DateTime.Now;
+            return (timeNow - lastContentCheck).TotalDays > 1;
+        }
+
+        internal static string GetThirdPartyIdentificationCachedFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyidentificationservice.json");
+        }
+
+        /**
+     * Replaces all break (br between <>) lines with a newline character. Used
+     * to add newlines to ini4j.
+     * 
+     * @param string
+     *            String to parse
+     * @return String that has been fixed
+     */
+        public static string ConvertBrToNewline(string str) => str?.Replace("<br>", "\n");
+        public static string ConvertNewlineToBr(string str) => str?.Replace("\n", "<br>");
+
+
+        public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
+        public static string GetME2ModsDirectory() => Path.Combine(GetModsDirectory(), "ME2");
+
+        internal static string Get7zDllPath()
+        {
+            return Path.Combine(GetDllDirectory(), "7z.dll");
+        }
+
+        public static string GetME1ModsDirectory() => Path.Combine(GetModsDirectory(), "ME1");
+
+        public static void OpenWebpage(string uri)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
             {
-                return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "HelpResources")).FullName;
-            }
+                FileName = uri,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }
 
-            public static string CalculateMD5(string filename)
-            {
-                try
-                {
-                    using var md5 = MD5.Create();
-                    using var stream = File.OpenRead(filename);
-                    var hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                }
-                catch (IOException e)
-                {
-                    Log.Error("I/O ERROR CALCULATING CHECKSUM OF FILE: " + filename);
-                    Log.Error(App.FlattenException(e));
-                    return "";
-                }
-            }
+        internal static string GetAppCrashHandledFile()
+        {
+            return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH_HANDLED");
+        }
 
-            public static string CalculateMD5(Stream stream)
-            {
-                try
-                {
-                    using var md5 = MD5.Create();
-                    stream.Position = 0;
-                    var hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                }
-                catch (Exception e)
-                {
-                    Log.Error("I/O ERROR CALCULATING CHECKSUM OF STREAM");
-                    Log.Error(App.FlattenException(e));
-                    return "";
-                }
-            }
+        internal static string GetAppCrashFile()
+        {
+            return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH");
+        }
 
-            internal static string GetTipsServiceFile()
-            {
-                return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
-            }
+        internal static string GetAppDataFolder()
+        {
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
+            Directory.CreateDirectory(folder);
+            return folder;
+        }
 
-            internal static string GetThirdPartyImportingCachedFile()
-            {
-                return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyimportingservice.json");
-            }
+        public static Stream GetResourceStream(string assemblyResource)
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var res = assembly.GetManifestResourceNames();
+            return assembly.GetManifestResourceStream(assemblyResource);
+        }
 
-            internal static bool CanFetchContentThrottleCheck()
-            {
-                var lastContentCheck = Settings.LastContentCheck;
-                var timeNow = DateTime.Now;
-                return (timeNow - lastContentCheck).TotalDays > 1;
-            }
-
-            internal static string GetThirdPartyIdentificationCachedFile()
-            {
-                return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyidentificationservice.json");
-            }
-
-            /**
-         * Replaces all break (br between <>) lines with a newline character. Used
-         * to add newlines to ini4j.
-         * 
-         * @param string
-         *            String to parse
-         * @return String that has been fixed
-         */
-            public static string ConvertBrToNewline(string str) => str?.Replace("<br>", "\n");
-            public static string ConvertNewlineToBr(string str) => str?.Replace("\n", "<br>");
-
-
-            public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
-            public static string GetME2ModsDirectory() => Path.Combine(GetModsDirectory(), "ME2");
-
-            internal static string Get7zDllPath()
-            {
-                return Path.Combine(GetDllDirectory(), "7z.dll");
-            }
-
-            public static string GetME1ModsDirectory() => Path.Combine(GetModsDirectory(), "ME1");
-
-            public static void OpenWebpage(string uri)
-            {
-                ProcessStartInfo psi = new ProcessStartInfo
-                {
-                    FileName = uri,
-                    UseShellExecute = true
-                };
-                Process.Start(psi);
-            }
-
-            internal static string GetAppCrashHandledFile()
-            {
-                return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH_HANDLED");
-            }
-
-            internal static string GetAppCrashFile()
-            {
-                return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH");
-            }
-
-            internal static string GetAppDataFolder()
-            {
-                var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
-                Directory.CreateDirectory(folder);
-                return folder;
-            }
-
-            public static Stream GetResourceStream(string assemblyResource)
-            {
-                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                var res = assembly.GetManifestResourceNames();
-                return assembly.GetManifestResourceStream(assemblyResource);
-            }
-
-            internal static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite)
-            {
-                Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
+        internal static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite)
+        {
+            Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
 #if DEBUG
-                var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
 #endif
-                if (!File.Exists(destination) || overwrite || new FileInfo(destination).Length == 0)
+            if (!File.Exists(destination) || overwrite || new FileInfo(destination).Length == 0)
+            {
+
+                using (Stream stream = Utilities.GetResourceStream(internalResourceName))
                 {
 
-                    using (Stream stream = Utilities.GetResourceStream(internalResourceName))
+                    using (var file = new FileStream(destination, FileMode.Create, FileAccess.Write))
                     {
-
-                        using (var file = new FileStream(destination, FileMode.Create, FileAccess.Write))
-                        {
-                            stream.CopyTo(file);
-                        }
+                        stream.CopyTo(file);
                     }
                 }
-                else
-                {
-                    Log.Warning("File already exists. Not overwriting file.");
-                }
-                return destination;
             }
-
-            internal static string GetExecutableDirectory(GameTarget target)
+            else
             {
-                if (target.Game == Mod.MEGame.ME1 || target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries");
-                if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32");
-                return null;
+                Log.Warning("File already exists. Not overwriting file.");
             }
+            return destination;
+        }
 
-            internal static bool InstallBinkBypass(GameTarget target)
+        internal static string GetExecutableDirectory(GameTarget target)
+        {
+            if (target.Game == Mod.MEGame.ME1 || target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries");
+            if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32");
+            return null;
+        }
+
+        internal static bool InstallBinkBypass(GameTarget target)
+        {
+            if (target == null) return false;
+            var binkPath = GetBinkw32File(target);
+            Log.Information($"Installing Binkw32 bypass for {target.Game} to {binkPath}");
+
+            if (target.Game == Mod.MEGame.ME1)
             {
-                if (target == null) return false;
-                var binkPath = GetBinkw32File(target);
-                Log.Information($"Installing Binkw32 bypass for {target.Game} to {binkPath}");
-
-                if (target.Game == Mod.MEGame.ME1)
-                {
-                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
-                }
-                else if (target.Game == Mod.MEGame.ME2)
-                {
-                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
-
-                }
-                else if (target.Game == Mod.MEGame.ME3)
-                {
-                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
-                }
-                else
-                {
-                    Log.Error("Unknown game for gametarget (InstallBinkBypass)");
-                    return false;
-                }
-                Log.Information($"Installed Binkw32 bypass for {target.Game}");
-                return true;
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
             }
-
-            /// <summary>
-            /// Gets scratch space directory
-            /// </summary>
-            /// <returns>AppData/Temp</returns>
-            internal static string GetTempPath()
+            else if (target.Game == Mod.MEGame.ME2)
             {
-                return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "Temp")).FullName;
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
+
             }
-
-            internal static string GetBinkw32File(GameTarget target)
+            else if (target.Game == Mod.MEGame.ME3)
             {
-                if (target == null) return null;
-                if (target.Game == Mod.MEGame.ME1) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-                if (target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-                if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
-                return null;
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
             }
-
-            internal static bool UninstallBinkBypass(GameTarget target)
+            else
             {
-                if (target == null) return false;
-                var binkPath = GetBinkw32File(target);
-                if (target.Game == Mod.MEGame.ME1)
-                {
-                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                    File.Delete(obinkPath);
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
-                }
-                else if (target.Game == Mod.MEGame.ME2)
-                {
-                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                    File.Delete(obinkPath);
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
-                }
-                else if (target.Game == Mod.MEGame.ME3)
-                {
-                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
-                    File.Delete(obinkPath);
-
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
-                }
-                return true;
+                Log.Error("Unknown game for gametarget (InstallBinkBypass)");
+                return false;
             }
+            Log.Information($"Installed Binkw32 bypass for {target.Game}");
+            return true;
+        }
 
-            internal static string GetCachedTargetsFile(Mod.MEGame game)
+        /// <summary>
+        /// Gets scratch space directory
+        /// </summary>
+        /// <returns>AppData/Temp</returns>
+        internal static string GetTempPath()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "Temp")).FullName;
+        }
+
+        internal static string GetBinkw32File(GameTarget target)
+        {
+            if (target == null) return null;
+            if (target.Game == Mod.MEGame.ME1) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
+            return null;
+        }
+
+        internal static bool UninstallBinkBypass(GameTarget target)
+        {
+            if (target == null) return false;
+            var binkPath = GetBinkw32File(target);
+            if (target.Game == Mod.MEGame.ME1)
             {
-                return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                File.Delete(obinkPath);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
             }
-
-            internal static List<GameTarget> GetCachedTargets(Mod.MEGame game)
+            else if (target.Game == Mod.MEGame.ME2)
             {
-                var cacheFile = GetCachedTargetsFile(game);
-                if (File.Exists(cacheFile))
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                File.Delete(obinkPath);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
+            }
+            else if (target.Game == Mod.MEGame.ME3)
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
+                File.Delete(obinkPath);
+
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
+            }
+            return true;
+        }
+
+        internal static string GetCachedTargetsFile(Mod.MEGame game)
+        {
+            return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
+        }
+
+        internal static List<GameTarget> GetCachedTargets(Mod.MEGame game)
+        {
+            var cacheFile = GetCachedTargetsFile(game);
+            if (File.Exists(cacheFile))
+            {
+                List<GameTarget> targets = new List<GameTarget>();
+                foreach (var file in File.ReadAllLines(cacheFile))
                 {
-                    List<GameTarget> targets = new List<GameTarget>();
-                    foreach (var file in File.ReadAllLines(cacheFile))
+                    //Validate game directory
+                    GameTarget target = new GameTarget(game, file, false);
+                    var failureReason = target.ValidateTarget();
+                    if (failureReason == null)
                     {
-                        //Validate game directory
-                        GameTarget target = new GameTarget(game, file, false);
-                        var failureReason = target.ValidateTarget();
-                        if (failureReason == null)
-                        {
-                            targets.Add(target);
-                        }
-                        else
-                        {
-                            Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
-                        }
+                        targets.Add(target);
                     }
+                    else
+                    {
+                        Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
+                    }
+                }
 
-                    return targets;
-                }
-                else
-                {
-                    return new List<GameTarget>();
-                }
+                return targets;
             }
-
-            internal static string GetGameConfigToolPath(GameTarget target)
+            else
             {
-                switch (target.Game)
-                {
-                    case Mod.MEGame.ME1:
-                        return Path.Combine(target.TargetPath, "Binaries", "MassEffectConfig.exe");
-                    case Mod.MEGame.ME2:
-                        return Path.Combine(target.TargetPath, "Binaries", "MassEffect2Config.exe");
-                    case Mod.MEGame.ME3:
-                        return Path.Combine(target.TargetPath, "Binaries", "MassEffect3Config.exe");
-                }
-                return null;
+                return new List<GameTarget>();
             }
+        }
 
-            internal static void AddCachedTarget(GameTarget target)
+        internal static string GetGameConfigToolPath(GameTarget target)
+        {
+            switch (target.Game)
             {
-                var cachefile = GetCachedTargetsFile(target.Game);
-                if (!File.Exists(cachefile)) File.Create(cachefile).Close();
-                var savedTargets = File.ReadAllLines(cachefile).ToList();
-                var path = Path.GetFullPath(target.TargetPath); //standardize
-
-                if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
-                {
-                    savedTargets.Add(path);
-                    Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
-                    File.WriteAllLines(cachefile, savedTargets);
-                }
+                case Mod.MEGame.ME1:
+                    return Path.Combine(target.TargetPath, "Binaries", "MassEffectConfig.exe");
+                case Mod.MEGame.ME2:
+                    return Path.Combine(target.TargetPath, "Binaries", "MassEffect2Config.exe");
+                case Mod.MEGame.ME3:
+                    return Path.Combine(target.TargetPath, "Binaries", "MassEffect3Config.exe");
             }
+            return null;
+        }
+
+        internal static void AddCachedTarget(GameTarget target)
+        {
+            var cachefile = GetCachedTargetsFile(target.Game);
+            if (!File.Exists(cachefile)) File.Create(cachefile).Close();
+            var savedTargets = File.ReadAllLines(cachefile).ToList();
+            var path = Path.GetFullPath(target.TargetPath); //standardize
+
+            if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
+            {
+                savedTargets.Add(path);
+                Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
+                File.WriteAllLines(cachefile, savedTargets);
+            }
+        }
 
         private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
         private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
