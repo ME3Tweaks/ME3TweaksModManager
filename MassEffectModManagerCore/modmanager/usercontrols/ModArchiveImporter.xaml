@@ -20,7 +20,7 @@
             <ProgressBar DockPanel.Dock="Bottom" Height="8" Margin="0" Value="{Binding CompressionProgressValue, Mode=OneWay}" Visibility="{Binding CompressPackages, Converter={StaticResource BoolToVisibilityConverter}}" Maximum="{Binding CompressionProgressMaximum, Mode=OneWay}"/>
             <ProgressBar DockPanel.Dock="Bottom" Height="14" Margin="0,5,0,0" IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}" Value="{Binding ProgressValue, Mode=OneWay}" Maximum="{Binding ProgressMaximum, Mode=OneWay}"/>
             <DockPanel  Margin="0,5,0,0">
-                <Button DockPanel.Dock="Right" Content="Install" Padding="8,3" Command="{Binding InstallModCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{Binding InstallModToolTip}"/>
+                <Button DockPanel.Dock="Right" Content="{Binding InstallModText}" Padding="8,3" Command="{Binding InstallModCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{Binding InstallModToolTip}"/>
                 <Button DockPanel.Dock="Right" Content="Import mods" Padding="8,3" Margin="5,0" Command="{Binding ImportModsCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 <Button DockPanel.Dock="Right" Content="Cancel" Padding="7,5" Command="{Binding CancelCommand}"/>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Visibility="{Binding CanCompressPackages, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
@@ -46,6 +46,12 @@
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+                <ListBox.Resources>
+                    <Style TargetType="ListBox"
+                           BasedOn="{StaticResource {x:Type ListBox}}">
+                        <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxWithoutRippleStyle}"/>
+                    </Style>
+                </ListBox.Resources>
             </ListBox>
             <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" IsReadOnly="True" IsReadOnlyCaretVisible="False">
                 <TextBox.Text>

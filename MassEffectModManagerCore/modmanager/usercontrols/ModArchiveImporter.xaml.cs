@@ -465,6 +465,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand ImportModsCommand { get; set; }
         public ICommand CancelCommand { get; set; }
         public ICommand InstallModCommand { get; set; }
+
+        public string InstallModText
+        {
+            get
+            {
+                if (SelectedMod != null)
+                {
+                    return "Install " + SelectedMod.ModName;
+                }
+
+                return "Install";
+            }
+        }
+
         private void LoadCommands()
         {
             ImportModsCommand = new GenericCommand(BeginImportingMods, CanImportMods);
