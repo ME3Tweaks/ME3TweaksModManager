@@ -42,6 +42,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public Mod ModBeingDeployed { get; }
         public string Header { get; set; } = "Prepare mod for distribution";
+        public bool MultithreadedCompression { get; set; } = true;
         public ArchiveDeployment(Mod mod, MainWindow mainWindow)
         {
             Analytics.TrackEvent("Started deployment panel for mod", new Dictionary<string, string>()
@@ -560,7 +561,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             string archivePath = e.Argument as string;
             //Key is in-archive path, value is on disk path
-            var archiveMapping = new Dictionary<string, string>();
+            var archiveMapping = new Dictionary<string, string>(); 
             SortedSet<string> directories = new SortedSet<string>();
             foreach (var file in referencedFiles)
             {
@@ -591,8 +592,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             archiveMapping.AddRange(referencedFiles.ToDictionary(x => x, x => Path.Combine(ModBeingDeployed.ModPath, x)));
 
             var compressor = new SevenZip.SevenZipCompressor();
-            compressor.CompressionLevel = CompressionLevel.Ultra;
-            //compressor.CustomParameters.Add("s", "on");
+            //compressor.CompressionLevel = CompressionLevel.Ultra;
+            compressor.CustomParameters.Add("s", "on");
+            if (!MultithreadedCompression)
+            {
+                compressor.CustomParameters.Add("mt", "off");
+            }
+            compressor.CustomParameters.Add("yx","9");
+            //compressor.CustomParameters.Add("x", "9");
+            compressor.CustomParameters.Add("d", "28");
             string currentDeploymentStep = "Mod";
             compressor.Progressing += (a, b) =>
             {

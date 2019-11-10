@@ -312,7 +312,7 @@ namespace SevenZip
                             names.Add(Marshal.StringToBSTR(pair.Key));
                             var pv = new PropVariant();
 
-                            if (pair.Key == "fb" || pair.Key == "pass" || pair.Key == "d")
+                            if (pair.Key == "fb" || pair.Key == "pass" || pair.Key == "d" || pair.Key == "yx")
                             {
                                 pv.VarType = VarEnum.VT_UI4;
                                 pv.UInt32Value = Convert.ToUInt32(pair.Value, CultureInfo.InvariantCulture);

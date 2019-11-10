@@ -47,6 +47,7 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
+        <CheckBox Content="Multi-threaded compression" ToolTip="Multi-threaded compression is significantly faster than single threaded, but at the cost of more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory" IsChecked="{Binding MultithreadedCompression}" Margin="0,5"/>
         <ProgressBar Height="16" IsIndeterminate="{Binding ProgressIndeterminate}" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"/>
         <DockPanel Margin="0,4">
             <Button DockPanel.Dock="Right" Content="Deploy" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="7,5"/>
