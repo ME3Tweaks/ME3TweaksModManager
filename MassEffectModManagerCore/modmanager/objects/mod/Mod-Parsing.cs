@@ -33,7 +33,6 @@ namespace MassEffectModManagerCore.modmanager
 
         //Mod variables
         public bool ValidMod;
-        private bool ignoreLoadErrors;
         public List<ModJob> InstallationJobs = new List<ModJob>();
 
         //private List<ModJob> jobs;
@@ -221,6 +220,8 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+        private readonly string[] GameFileExtensions = { ".u", ".upk", ".sfm", ".pcc", ".bin", ".tlk", ".cnd", ".ini", ".afc", ".tfc", ".dlc", ".sfar", ".txt", ".bik", ".bmp" };
+
         private void loadMod(string iniText, MEGame expectedGame)
         {
             Game = expectedGame; //we will assign this later. This is for startup errors only
@@ -359,9 +360,13 @@ namespace MassEffectModManagerCore.modmanager
                 var jobSubdirectory = iniData[headerAsString]["moddir"];
                 if (jobSubdirectory != null)
                 {
+                    jobSubdirectory = jobSubdirectory.Replace('/', '\\').TrimStart('\\');
                     CLog.Information("Found INI header with moddir specified: " + headerAsString, Settings.LogModStartup);
                     CLog.Information("Subdirectory (moddir): " + jobSubdirectory, Settings.LogModStartup);
                     //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
+
+                    bool directoryMatchesGameStructure = false;
+                    if (ModDescTargetVersion >= 6.0) bool.TryParse(iniData[headerAsString]["gamedirectorystructure"], out directoryMatchesGameStructure);
 
                     //Replace files (ModDesc 2.0)
                     string replaceFilesSourceList = iniData[headerAsString]["newfiles"]; //Present in MM2. So this will always be read
@@ -475,7 +480,6 @@ namespace MassEffectModManagerCore.modmanager
 
 
                         //TODO: Bini support
-                        //TODO: Basegame support
 
                         //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
                         //ME3 only
@@ -485,6 +489,7 @@ namespace MassEffectModManagerCore.modmanager
                             LoadFailedReason = $"Job header ({headerAsString}) has been specified as part of the mod, but this header is only supported when targeting ModDesc 3 or higher.";
                             return;
                         }
+
                     }
 
                     //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
@@ -495,31 +500,67 @@ namespace MassEffectModManagerCore.modmanager
                     ModJob headerJob = new ModJob(header, this);
                     headerJob.JobDirectory = jobSubdirectory.Replace('/', '\\');
                     headerJob.RequirementText = jobRequirement;
+
+
+
                     //Build replacements 
                     if (replaceFilesSourceSplit != null)
                     {
                         for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
                         {
-                            string destFile = replaceFilesTargetSplit[i];
-                            CLog.Information($"Adding file to job installation queue: {replaceFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
-                            string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this, ignoreLoadErrors);
-                            if (failurereason != null)
+                            if (directoryMatchesGameStructure)
                             {
-                                Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
-                                LoadFailedReason = $"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}";
-                                return;
+                                var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory, replaceFilesSourceSplit[i]);
+                                var destGameDirectory = replaceFilesTargetSplit[i];
+                                if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
+                                {
+                                    var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, "*.*", SearchOption.AllDirectories, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobSubdirectory.Length).TrimStart('\\')).ToList();
+                                    foreach (var file in files)
+                                    {
+                                        if (GameFileExtensions.Contains(Path.GetExtension(file), StringComparer.InvariantCultureIgnoreCase))
+                                        {
+                                            var destFile = destGameDirectory + file.Substring(replaceFilesSourceSplit[i].Length);
+                                            CLog.Information($"Adding file to job installation queue: {file} => {destFile}", Settings.LogModStartup);
+                                            string failurereason = headerJob.AddPreparsedFileToInstall(destFile, file, this);
+                                            if (failurereason != null)
+                                            {
+                                                Log.Error($"Error occured while automapping the replace files lists for {headerAsString}: {failurereason}. This is likely a bug in M3, please report it to Mgamerz");
+                                                LoadFailedReason = $"Error occured while automapping the replace files lists for {headerAsString}: {failurereason}. This is likely a bug in M3, please report it to Mgamerz.";
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Log.Error($"Error occured while parsing the replace files lists for {headerAsString}:  source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
+                                    LoadFailedReason = $"Error occured while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.";
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                string destFile = replaceFilesTargetSplit[i];
+                                CLog.Information($"Adding file to job installation queue: {replaceFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                                string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this);
+                                if (failurereason != null)
+                                {
+                                    Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
+                                    LoadFailedReason = $"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}";
+                                    return;
+                                }
                             }
                         }
                     }
 
                     //Build additions (vars will be null if these aren't supported by target version)
-                    if (addFilesSourceSplit != null)
+                    if (addFilesSourceSplit != null && !directoryMatchesGameStructure)
                     {
                         for (int i = 0; i < addFilesSourceSplit.Count; i++)
                         {
                             string destFile = addFilesTargetSplit[i];
                             CLog.Information($"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
-                            string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this, ignoreLoadErrors); //add files are layered on top
+                            string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this); //add files are layered on top
                             if (failurereason != null)
                             {
                                 Log.Error($"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
@@ -530,7 +571,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
 
                     var removeFailureReason = headerJob.AddFilesToRemove(removeFilesSplit);
-                    if (removeFailureReason != null)
+                    if (removeFailureReason != null && !directoryMatchesGameStructure)
                     {
                         Log.Error($"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}");
                         LoadFailedReason = $"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}";
@@ -735,7 +776,7 @@ namespace MassEffectModManagerCore.modmanager
                             return;
                         }
                         ModJob balanceJob = new ModJob(ModJob.JobHeader.BALANCE_CHANGES);
-                        balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceChangesDirectory + '\'' + balanceFile, this, false);
+                        balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceChangesDirectory + '\'' + balanceFile, this);
                         CLog.Information($"Successfully made mod job for {balanceJob.Header}", Settings.LogModStartup);
                         InstallationJobs.Add(balanceJob);
                     }
@@ -751,6 +792,49 @@ namespace MassEffectModManagerCore.modmanager
 
 
             #endregion
+
+            #region CONFIG FILES FOR ME1 AND ME2
+
+            if (ModDescTargetVersion >= 6 && Game < MEGame.ME3)
+            {
+
+                if (Game == MEGame.ME1)
+                {
+                    var jobSubdirectory = iniData[ModJob.JobHeader.ME1_CONFIG.ToString()]["moddir"];
+                    if (!string.IsNullOrWhiteSpace(jobSubdirectory))
+                    {
+                        var configfilesStr = iniData["ME1_CONFIG"]["configfiles"];
+                        if (string.IsNullOrWhiteSpace(configfilesStr))
+                        {
+                            Log.Error("ME1_CONFIG job was specified but configfiles descriptor is empty or missing. Remove this header if you are not using this task.");
+                            LoadFailedReason = $"Mod specifies ME1_CONFIG job, but the configfiles descriptor is empty or missing. Remove this header if you are not using this task.";
+                            return;
+                        }
+                        var configFilesSplit = configfilesStr.Split(';').ToList();
+                        ModJob me1ConfigJob = new ModJob(ModJob.JobHeader.ME1_CONFIG, this);
+                        me1ConfigJob.JobDirectory = jobSubdirectory;
+                        foreach (var configFilename in configFilesSplit)
+                        {
+                            if (allowedConfigFilesME1.Contains(configFilename, StringComparer.InvariantCultureIgnoreCase))
+                            {
+                                me1ConfigJob.AddFileToInstall(configFilename, configFilename, this);
+                            }
+                            else
+                            {
+                                Log.Error("ME1_CONFIG job's configfiles descriptor contains an unsupported config file: " + configFilename);
+                                LoadFailedReason = "ME1_CONFIG job's configfiles descriptor contains an unsupported config file: " + configFilename;
+                                return;
+                            }
+                        }
+                        CLog.Information($"Successfully made mod job for {ModJob.JobHeader.ME1_CONFIG}", Settings.LogModStartup);
+                        InstallationJobs.Add(me1ConfigJob);
+                    }
+                }
+            }
+
+
+            #endregion
+
             #endregion
             #region Additional Mod Items
 
@@ -922,11 +1006,11 @@ namespace MassEffectModManagerCore.modmanager
             CLog.Information($"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
         }
 
-
+        private static readonly string[] allowedConfigFilesME1 = { "BIOCredits.ini", "BioEditor.ini", "BIOEngine.ini", "BIOGame.ini", "BIOGuiResources.ini", "BIOInput.ini", "BIOParty.in", "BIOQA.ini" };
         private bool CheckAndCreateLegacyCoalescedJob()
         {
             var legacyCoalFile = FilesystemInterposer.PathCombine(IsInArchive, ModPath, "Coalesced.bin");
-            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(legacyCoalFile, Archive))
+            if (!FilesystemInterposer.FileExists(legacyCoalFile, Archive))
             {
                 if (ModDescTargetVersion == 1.0)
                 {
@@ -945,7 +1029,7 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             ModJob basegameJob = new ModJob(ModJob.JobHeader.BASEGAME);
-            string failurereason = basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", "Coalesced.bin", this, ignoreLoadErrors);
+            string failurereason = basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", "Coalesced.bin", this);
             if (failurereason != null)
             {
                 Log.Error($"Error occured while creating basegame job for legacy 1.0 mod: {failurereason}");

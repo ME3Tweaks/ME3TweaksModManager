@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Check/warn on official headers
-            if (!PrecheckOfficialHeaders(gameDLCPath, installationJobs))
+            if (!PrecheckHeaders(gameDLCPath, installationJobs))
             {
                 e.Result = ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
                 return;
@@ -184,9 +184,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
-                //Todo: Implement unpacked copy queue
-                //CopyDir.CopyFiles_ProgressBar(unpackedQueue.)
-
                 foreach (var originalMapping in unpackedQueue.Value.fileMapping)
                 {
                     //always unpacked
@@ -203,17 +200,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, unpackedQueue.Key.JobDirectory, originalMapping.Value);
                     }
 
-                    var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? MEDirectories.DLCPath(gameTarget) : gameTarget.TargetPath, originalMapping.Key); //official
-                    if (ModBeingInstalled.IsInArchive)
+                    if (unpackedQueue.Key.Header == ModJob.JobHeader.ME1_CONFIG)
                     {
-                        int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
-                        fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
-                        fullPathMappingDisk[sourceFile] = destFile; //used for redirection
+
+                        var destFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", originalMapping.Key);
+                        if (ModBeingInstalled.IsInArchive)
+                        {
+                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
+                            fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
+                            fullPathMappingDisk[sourceFile] = destFile; //used for redirection
+                        }
+                        else
+                        {
+                            fullPathMappingDisk[sourceFile] = destFile;
+                        }
                     }
                     else
                     {
-                        fullPathMappingDisk[sourceFile] = destFile;
+
+                        var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? MEDirectories.DLCPath(gameTarget) : gameTarget.TargetPath, originalMapping.Key); //official
+                        if (ModBeingInstalled.IsInArchive)
+                        {
+                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
+                            fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
+                            fullPathMappingDisk[sourceFile] = destFile; //used for redirection
+                        }
+                        else
+                        {
+                            fullPathMappingDisk[sourceFile] = destFile;
+                        }
                     }
+
                     //}
                 }
             }
@@ -275,18 +292,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Debug.WriteLine(numdone);
                 };
                 ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
-                filesInstalled.Sort();
-                filesToInstall.Sort();
-                Debug.WriteLine("Files installed:");
-                foreach (var f in filesInstalled)
-                {
-                    Debug.WriteLine(f);
-                }
-                Debug.WriteLine("Files expected:");
-                foreach (var f in filesToInstall)
-                {
-                    Debug.WriteLine(f);
-                }
+                //filesInstalled.Sort();
+                //filesToInstall.Sort();
+                //Debug.WriteLine("Files installed:");
+                //foreach (var f in filesInstalled)
+                //{
+                //    Debug.WriteLine(f);
+                //}
+                //Debug.WriteLine("Files expected:");
+                //foreach (var f in filesToInstall)
+                //{
+                //    Debug.WriteLine(f);
+                //}
 
             }
 
@@ -353,16 +370,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Warning($"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
                 e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
             }
-        }
-
-        private bool PrecheckRequiredDLC(string gameDLCPath)
-        {
-            foreach (var reqdlc in ModBeingInstalled.RequiredDLC)
-            {
-                //todo
-            }
-            return true;
-
         }
 
         private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action<string> FileInstalledCallback = null, string ForcedSourcePath = null)
@@ -444,17 +451,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         /// <summary>
-        /// Checks if DLC specified by the job installation headers exist and prompt user to continue or not if the DLC is not found. This is only used for ME3's headers such as CITADEL or RESURGENCE and not CUSTOMDLC or BASEGAME.'
+        /// Checks if DLC specified by the job installation headers exist and prompt user to continue or not if the DLC is not found. This is only used jobs that are not CUSTOMDLC.'
         /// </summary>
         /// <param name="gameDLCPath">Game DLC path</param>
         /// <param name="installationJobs">List of jobs to look through and validate</param>
         /// <returns></returns>
-        private bool PrecheckOfficialHeaders(string gameDLCPath, List<ModJob> installationJobs)
+        private bool PrecheckHeaders(string gameDLCPath, List<ModJob> installationJobs)
         {
             //if (ModBeingInstalled.Game != Mod.MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
             {
+                if (job.Header == ModJob.JobHeader.ME1_CONFIG)
+                {
+                    //Make sure config files exist.
+                    var destFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOEngine.ini");
+                    if (!File.Exists(destFile))
+                    {
+                        bool cancel = false;
 
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+
+                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Mods that modify configuration files require that Mass Effect be run at least once before they are installed. This is to ensure the game does not overwrite the files on first boot.", "Game must be run at least once", MessageBoxButton.OK, MessageBoxImage.Error);
+                            cancel = true;
+                            return;
+                        }));
+                        if (cancel) return false;
+                    }
+
+                    continue;
+                }
 
                 if (!MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                 {

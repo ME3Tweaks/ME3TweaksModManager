@@ -16,6 +16,7 @@ namespace MassEffectModManagerCore.modmanager
             //ME1 ONLY
             BRING_DOWN_THE_SKY,
             PINNACLE_STATION,
+            ME1_CONFIG,
 
             //ME2
             AEGIS_PACK,
@@ -41,10 +42,11 @@ namespace MassEffectModManagerCore.modmanager
             TERMINUS_WEAPON_ARMOR,
             UMBRA_VISOR,
             ZAEED,
+            ME2_COALESCED,
 
             //ME3 ONLY
             BALANCE_CHANGES,
-            COALESCED,
+            //COALESCED,
             RESURGENCE,
             REBELLION,
             EARTH,
@@ -178,7 +180,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod, bool ignoreLoadErrors)
+        internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
             string checkingSourceFile;
             if (JobDirectory != null)
@@ -190,11 +192,38 @@ namespace MassEffectModManagerCore.modmanager
                 //root (legacy)
                 checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, sourceRelativePath);
             }
-            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
+            if (!FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
             {
                 return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
             }
             FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath.Replace('/', '\\');
+            return null;
+        }
+
+        /// <summary>
+        /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same. This is for automapping.
+        /// </summary>
+        /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
+        /// <param name="sourcePath">Path to parsed file</param>
+        /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
+        /// <returns>string of failure reason. null if OK.</returns>
+        internal string AddPreparsedFileToInstall(string destRelativePath, string sourcePath, Mod mod)
+        {
+            //string checkingSourceFile;
+            //if (JobDirectory != null)
+            //{
+            //    checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
+            //}
+            //else
+            //{
+            //    //root (legacy)
+            //    checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, sourceRelativePath);
+            //}
+            //if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
+            //{
+            //    return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
+            //}
+            FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourcePath.Replace('/', '\\');
             return null;
         }
 
@@ -205,10 +234,10 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod, bool ignoreLoadErrors)
+        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
             var checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
-            if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
+            if (!FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
             {
                 return $"Failed to add additional file to mod job: {checkingSourceFile} does not exist but is specified by the job";
             }
@@ -224,7 +253,7 @@ namespace MassEffectModManagerCore.modmanager
         private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
             [JobHeader.BRING_DOWN_THE_SKY] = "DLC_UNC",
-            [JobHeader.PINNACLE_STATION] = "DLC_PRC"
+            [JobHeader.PINNACLE_STATION] = "DLC_Vegas"
         };
 
         private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
