@@ -120,7 +120,13 @@ namespace MassEffectModManagerCore.modmanager
             {
                 path = path.TrimStart('\\', '/'); //archive paths don't start with a / \ but path combining will append one of these.
                 var entry = archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
-                return !string.IsNullOrEmpty(entry.FileName) && entry.IsDirectory; //must check filename is populated as this is a struct
+                if (!string.IsNullOrEmpty(entry.FileName) && entry.IsDirectory) return true;//must check filename is populated as this is a struct
+                //if this is zip archive it might not have entry for folder specifically. We should look for a subfile that will create this folder.
+                if (archive.Format == InArchiveFormat.Zip)
+                {
+                    return archive.ArchiveFileData.Any(x => x.FileName.StartsWith(path + "\\"));
+                }
+                return false;
             }
             else
             {

@@ -2,7 +2,7 @@
   "profiles": {
     "TestDirectoryGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "--inputdir \"C:\\Users\\mgame\\Desktop\\testingbuild\""
+      "commandLineArgs": "--inputdir \"X:\\test\""
     }
   }
 }
