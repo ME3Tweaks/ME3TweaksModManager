@@ -67,6 +67,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
         <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
+        <converters:ButtonHighlightOnOffStyleConverter x:Key="ButtonHighlightOnOffStyleConverter"/>
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
@@ -116,7 +117,7 @@
                         <MenuItem Header="Metadata editor" IsEnabled="False"/>
                         <MenuItem Header="Deploy mod to 7z file for distribution" Command="{Binding DeployModCommand}"/>
                         <MenuItem Header="Prepare for updater service" IsEnabled="False"/>
-                        <MenuItem Header="Mount.dlc files" IsEnabled="False"/>
+                        <MenuItem Header="Submit mod information to ME3Tweaks" Command="{Binding SubmitTelemetryForModCommand}"/>
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Open mod folder" Click="OpenModFolder_Click"/>
@@ -304,10 +305,44 @@
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">
-                        <Button DockPanel.Dock="Right" Margin="0,0,5,0" Background="Transparent" BorderThickness="0" Command="{Binding ReloadModsCommand}" ToolTip="Reload mods from library">
+                        <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="2" Command="{Binding ReloadModsCommand}" ToolTip="Reload mods from library">
                             <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}"/>
                         </Button>
-                        <TextBlock Text="Available Mods" FontWeight="Bold"/>
+                        <Button Content ="ME3" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME3Visibility_Click" ToolTip="Click to toggle showing mods for Mass Effect 3">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ME3ModsVisible}" Value="True">
+                                            <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentIntenseHighlightBrush}}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content ="ME2" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME2Visibility_Click" ToolTip="Click to toggle showing mods for Mass Effect 2">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ME2ModsVisible}" Value="True">
+                                            <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentIntenseHighlightBrush}}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content ="ME1" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME1Visibility_Click" ToolTip="Click to toggle showing mods for Mass Effect">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ME1ModsVisible}" Value="True">
+                                            <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentIntenseHighlightBrush}}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <TextBlock Text="Available Mods" FontWeight="Bold" VerticalAlignment="Center"/>
+
                     </DockPanel>
 
                     <StackPanel Name="FailedModsPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
@@ -317,7 +352,7 @@
                         </Hyperlink>
                     </TextBlock>
                     </StackPanel>
-                    <ListBox Name="ModsList_ListBox" ItemsSource="{Binding LoadedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
+                    <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
                              IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                               Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1">
                         <ListBox.ItemTemplate>

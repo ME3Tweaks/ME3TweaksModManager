@@ -56,7 +56,9 @@ namespace MassEffectModManagerCore
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
         public bool ME3ASILoaderInstalled { get; set; }
-
+        public bool ME1ModsVisible { get; set; } = true;
+        public bool ME2ModsVisible { get; set; } = true;
+        public bool ME3ModsVisible { get; set; } = true;
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
         public string ME3ASILoaderText { get; set; }
@@ -88,7 +90,8 @@ namespace MassEffectModManagerCore
 
 
         public Mod SelectedMod { get; set; }
-        public ObservableCollectionExtended<Mod> LoadedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
 
@@ -163,7 +166,7 @@ namespace MassEffectModManagerCore
         public ICommand BackupCommand { get; set; }
         public ICommand DeployModCommand { get; set; }
         public ICommand DeleteModFromLibraryCommand { get; set; }
-
+        public ICommand SubmitTelemetryForModCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -178,8 +181,20 @@ namespace MassEffectModManagerCore
             DeployModCommand = new GenericCommand(ShowDeploymentPane, CanShowDeploymentPane);
             DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibrary, CanDeleteModFromLibrary);
             ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
+            SubmitTelemetryForModCommand = new GenericCommand(SubmitTelemetryForMod, CanSubmitTelemetryForMod);
         }
 
+        private void SubmitTelemetryForMod()
+        {
+            var telemetryPane = new TPMITelemetrySubmissionForm(SelectedMod);
+            telemetryPane.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(telemetryPane);
+        }
+
+        private bool CanSubmitTelemetryForMod() => SelectedMod?.GetJob(ModJob.JobHeader.CUSTOMDLC) != null;
         private void OpenArchiveSelectionDialog()
         {
             OpenFileDialog m = new OpenFileDialog
@@ -228,7 +243,7 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            ShowBusyControl(archiveDeploymentPane); //Todo: Support the progress bar updates in the queue
+            ShowBusyControl(archiveDeploymentPane);
         }
 
         private void ShowUpdateCompletedPane()
@@ -747,7 +762,8 @@ namespace MassEffectModManagerCore
                 return;
             }
             IsLoadingMods = true;
-            LoadedMods.ClearEx();
+            VisibleFilteredMods.ClearEx();
+            AllLoadedMods.ClearEx();
             FailedMods.ClearEx();
 
 
@@ -769,9 +785,12 @@ namespace MassEffectModManagerCore
                     {
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            LoadedMods.Add(mod);
-
-                            LoadedMods.Sort(x => x.ModName);
+                            AllLoadedMods.Add(mod);
+                            if (ME1ModsVisible && mod.Game == Mod.MEGame.ME1 || ME2ModsVisible && mod.Game == Mod.MEGame.ME2 || ME3ModsVisible && mod.Game == Mod.MEGame.ME3)
+                            {
+                                VisibleFilteredMods.Add(mod);
+                                VisibleFilteredMods.Sort(x => x.ModName);
+                            }
                         });
                     }
                     else
@@ -789,7 +808,7 @@ namespace MassEffectModManagerCore
                 }
                 if (modToHighlight != null)
                 {
-                    args.Result = LoadedMods.FirstOrDefault(x => x.ModPath == modToHighlight.ModPath);
+                    args.Result = VisibleFilteredMods.FirstOrDefault(x => x.ModPath == modToHighlight.ModPath);
                 }
                 UpdateBinkStatus(Mod.MEGame.ME1);
                 UpdateBinkStatus(Mod.MEGame.ME2);
@@ -817,7 +836,7 @@ namespace MassEffectModManagerCore
 #if !DEBUG
 return;
 #endif
-            var updatableMods = LoadedMods.Where(x => x.IsUpdatable).ToList();
+            var updatableMods = VisibleFilteredMods.Where(x => x.IsUpdatable).ToList();
             if (updatableMods.Count > 0)
             {
                 BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
@@ -1499,6 +1518,35 @@ return;
 #if DEBUG
             new MemoryAnalyzer().Show();
 #endif
+        }
+
+        private void ToggleME3Visibility_Click(object sender, RoutedEventArgs e)
+        {
+            ME3ModsVisible = !ME3ModsVisible;
+            FilterMods();
+        }
+        private void ToggleME2Visibility_Click(object sender, RoutedEventArgs e)
+        {
+            ME2ModsVisible = !ME2ModsVisible;
+            FilterMods();
+        }
+        private void ToggleME1Visibility_Click(object sender, RoutedEventArgs e)
+        {
+            ME1ModsVisible = !ME1ModsVisible;
+            FilterMods();
+        }
+        private void FilterMods()
+        {
+            var allMods = AllLoadedMods.ToList();
+            if (!ME1ModsVisible)
+                allMods.RemoveAll(x => x.Game == Mod.MEGame.ME1);
+            if (!ME2ModsVisible)
+                allMods.RemoveAll(x => x.Game == Mod.MEGame.ME2);
+            if (!ME3ModsVisible)
+                allMods.RemoveAll(x => x.Game == Mod.MEGame.ME3);
+
+            VisibleFilteredMods.ReplaceAll(allMods);
+            VisibleFilteredMods.Sort(x=>x.ModName);
         }
     }
 }
