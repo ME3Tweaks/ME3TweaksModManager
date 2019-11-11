@@ -75,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.RunWorkerAsync();
         }
 
-        public class TelemetryPackage
+        public class TelemetryPackage : INotifyPropertyChanged
         {
             public string DLCFolderName { get; set; }
             public string ModName { get; set; }
@@ -97,12 +97,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SubmitCommand = new GenericCommand(SubmitPackage, CanSubmitPackage);
             }
 
+            public string SubmitText { get; set; } = "Submit to ME3Tweaks";
+
             private bool TelemetrySubmissionInProgress { get; set; }
             private bool TelemetrySubmitted { get; set; }
 
             private bool CanSubmitPackage() => !TelemetrySubmitted && !TelemetrySubmissionInProgress;
 
             private static readonly string TELEMETRY_ENDPOINT = "https://me3tweaks.com/mods/dlc_mods/telemetry";
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
             private void SubmitPackage()
             {
                 BackgroundWorker bw = new BackgroundWorker();
@@ -120,14 +125,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     url = url.SetQueryParam("mod_mount_flag", MountFlag);
                     if (Game == Mod.MEGame.ME2)
                     {
-                        url = url.SetQueryParam("mod_module_number", ModuleNumber);
+                        url = url.SetQueryParam("mod_modulenumber", ModuleNumber);
                     }
                     else
                     {
-                        url = url.SetQueryParam("mod_module_number", 0);
+                        url = url.SetQueryParam("mod_modulenumber", 0);
                     }
+
+                    SubmitText = "Submitting...";
                     var result = await url.GetAsync().ReceiveString();
-                    Debug.WriteLine(result);
+                    SubmitText = "Submitted";
+                    TelemetrySubmitted = true;
+                    TelemetrySubmissionInProgress = false;
                 };
                 bw.RunWorkerAsync();
             }
@@ -135,6 +144,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void GatherTelemetryDataBGThread(object sender, DoWorkEventArgs e)
         {
+            //var path = @"D:\Origin Games\Mass Effect 2\BioGame\DLC";
+            //var bioengines = Directory.GetFiles(path, "BIOEngine.ini", SearchOption.AllDirectories).ToList();
+            //foreach (var f in bioengines)
+            //{
+            //    var dlcFolderPath = Directory.GetParent(Directory.GetParent(f).FullName).FullName;
+            //    var dlcFolderName = Path.GetFileName(dlcFolderPath);
+            //    var dlcName = ME2Directory.OfficialDLCNames[dlcFolderName];
+            //    Debug.WriteLine(dlcName + "-----------------------------------------");
+            //    var mountFile = Path.Combine(dlcFolderPath, "CookedPC", "mount.dlc");
+            //    MountFile mf = new MountFile(mountFile);
+            //    Debug.WriteLine("Mount flag: " + mf.MountFlag.ToString() + "(" + ((int)mf.MountFlag) + ")");
+            //    var ini = new FileIniDataParser();
+            //    ini.Parser.Configuration.AllowDuplicateKeys = true;
+            //    ini.Parser.Configuration.SkipInvalidLines = true; 
+            //    ini.Parser.Configuration.AllowDuplicateSections = true;
+            //    var parsedIni = ini.Parser.Parse(File.ReadAllText(f));
+            //    Debug.WriteLine("DLCInfo Flags: " + parsedIni["DLCInfo"]["Flags"]);
+            //}
+            //Debugger.Break();
+
             List<TelemetryPackage> telemetryPackages = new List<TelemetryPackage>();
             foreach (var mapping in TelemetryMod.GetJob(ModJob.JobHeader.CUSTOMDLC).CustomDLCFolderMapping)
             {

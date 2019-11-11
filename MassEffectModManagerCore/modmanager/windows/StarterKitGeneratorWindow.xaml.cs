@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser;
 using IniParser.Model;
@@ -309,6 +310,12 @@ namespace MassEffectModManagerCore.modmanager.windows
                 string conflicts = "";
                 sameMountPriorityItems.ForEach(x => conflicts += "\n - " + x.modname);
                 var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"The DLC mount priority for this mod conflicts with existing DLC:{conflicts}\n\nMount priority numbers are used to determine which files to use in case of ambiguous package names (same-named file exists in multiple locations). Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC mount priority numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                if (result == MessageBoxResult.No) return;
+            }
+
+            if (ModMountFlag.Flag == EMountFileFlag.ME1_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME2_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency)
+            {
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"You have chosen to make this mod be required by the savegame. When a user removes your mod (by choice or by repair), saves that were made while this DLC is installed will not be usable by the user. In almost all circumstances this is not desirable for the end user. You should only pick this option if you really know what you're doing.\n\nUse this mount flag anyways?", "Undesirable mount flag", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
             }
 
@@ -613,6 +620,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
                 CustomDLCMountsListBox?.ScrollIntoView(PreviewTPMI);
             }
+            Validator.Validate(nameof(ModMountPriority));
         }
 
         private int GetGameSpecificMountLimit()
@@ -625,6 +633,23 @@ namespace MassEffectModManagerCore.modmanager.windows
                 default:
                     return 4800;
             }
+        }
+
+        private void FieldText_Changed(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            var textField = (TextBox)sender;
+            if (textField == ModModuleNumber_TextBox)
+                Validator.Validate(nameof(ModDLCModuleNumber));
+            else if (textField == ModDescription_TextBox)
+                Validator.Validate(nameof(ModDescription));
+            else if (textField == ModInternalName_TextBox)
+                Validator.Validate(nameof(ModInternalName));
+            else if (textField == ModDeveloper_TextBox)
+                Validator.Validate(nameof(ModDeveloper));
+            else if (textField == ModName_TextBox)
+                Validator.Validate(nameof(ModName));
+            else if (textField == ModInternalTLK_TextBox)
+                Validator.Validate(nameof(ModInternalTLKID));
         }
     }
 }

@@ -134,26 +134,26 @@
             <TextBlock VerticalAlignment="Center" Text="Mount Priority" Grid.Row="9" Grid.Column="1"/>
             <TextBlock VerticalAlignment="Center" Text="Mount Flag" Grid.Row="10" Grid.Column="1"/>
 
-            <xctk:WatermarkTextBox Grid.Row="2" Grid.Column="2" Watermark="Faster Legs" Text="{Binding ModName, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
-            <xctk:WatermarkTextBox Grid.Row="3" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
-            <xctk:WatermarkTextBox Grid.Row="4" Grid.Column="2" Watermark="https://nexusmods.com/masseffect2/..." Text="{Binding ModURL, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
+            <xctk:WatermarkTextBox Name="ModName_TextBox"  Grid.Row="2" Grid.Column="2" Watermark="Faster Legs" Text="{Binding ModName, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed"/>
+            <xctk:WatermarkTextBox Name="ModDeveloper_TextBox" Grid.Row="3" Grid.Column="2" Watermark="GatorZ" Text="{Binding ModDeveloper, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed"/>
+            <xctk:WatermarkTextBox Name="ModSite_TextBox" Grid.Row="4" Grid.Column="2" Watermark="https://nexusmods.com/masseffect2/..." Text="{Binding ModURL, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed"/>
             <DockPanel Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" Margin="0">
             <TextBlock Text="DLC_MOD_" DockPanel.Dock="Left" VerticalAlignment="Center"/>
-            <xctk:WatermarkTextBox Watermark="OneGreatMod"
+                <xctk:WatermarkTextBox Name="ModSuffix_TextBox" Watermark="OneGreatMod"
                                 Text="{Binding ModDLCFolderName, Mode=TwoWay, ValidatesOnDataErrors=True}"  VerticalContentAlignment="Center"
-                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"  TextChanged="FieldText_Changed"/>
             </DockPanel>
 
-            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName, Mode=TwoWay, ValidatesOnDataErrors=True}" />
-            <xctk:WatermarkTextBox Grid.Row="7" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
-            <xctk:WatermarkTextBox Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber, Mode=TwoWay, ValidatesOnDataErrors=True}" 
-                                   Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"/>
-            <xctk:WatermarkTextBox Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="MountPriority_TextChanged" Name="ModMountPriority_TextBox"/>
+            <xctk:WatermarkTextBox Name="ModInternalName_TextBox" Grid.Row="6" Grid.Column="2" Watermark="Faster Legs DLC Module" Text="{Binding ModInternalName, Mode=TwoWay, ValidatesOnDataErrors=True}"  TextChanged="FieldText_Changed"/>
+            <xctk:WatermarkTextBox Name="ModInternalTLK_TextBox" Grid.Row="7" Grid.Column="2" Watermark="1342879" Text="{Binding ModInternalTLKID, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed"/>
+            <xctk:WatermarkTextBox Name="ModModuleNumber_TextBox" Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber, Mode=TwoWay, ValidatesOnDataErrors=True}" 
+                                   Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}" TextChanged="FieldText_Changed"/>
+            <xctk:WatermarkTextBox Name="ModMountPriority_TextBox" Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed"/>
             <ComboBox Grid.Row="10" Grid.Column="2" ItemsSource="{Binding DisplayedMountFlags}" 
                                     DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag, Mode=TwoWay}"
                                     IsSynchronizedWithCurrentItem="True"/>
 
-            <xctk:WatermarkTextBox Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription, Mode=TwoWay, ValidatesOnDataErrors=True}">
+            <xctk:WatermarkTextBox Name="ModDescription_TextBox" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription, Mode=TwoWay, ValidatesOnDataErrors=True}"  TextChanged="FieldText_Changed">
                 <xctk:WatermarkTextBox.Watermark>
                     <TextBlock Text="Mod Manager description that users will see when they select your mod in Mod Manager. You can edit this later to more accurately describe your mod to users." TextWrapping="Wrap"/>
                 </xctk:WatermarkTextBox.Watermark>
