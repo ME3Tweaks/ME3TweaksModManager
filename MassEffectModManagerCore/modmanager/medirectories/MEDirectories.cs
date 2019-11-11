@@ -243,5 +243,18 @@ namespace MassEffectModManagerCore.GameDirectories
                 return MEDirectories.GetInstalledDLC(gameTarget).Contains(ModJob.GetHeadersToDLCNamesMap(gameTarget.Game)[header]);
             }
         }
+
+        /// <summary>
+        /// Gets DLC path based on specified game root and game.
+        /// </summary>
+        /// <param name="gameRoot"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal static string DLCPath(string gameRoot, Mod.MEGame game)
+        {
+            if (game == Mod.MEGame.ME1) return Path.Combine(gameRoot, @"DLC");
+            if (game == Mod.MEGame.ME2 || game == Mod.MEGame.ME3) return Path.Combine(gameRoot, "BioGame", @"DLC");
+            return null;
+        }
     }
 }

@@ -42,7 +42,50 @@ namespace MassEffectModManagerCore
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public static bool EnableWritePermissions(List<GameTarget> targets, bool me1ageia)
+        public static bool CreateDirectoryWithWritePermission(string directoryPath)
+        {
+            if (Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
+            {
+                Directory.CreateDirectory(directoryPath);
+                return true;
+            }
+
+            //Must have admin rights.
+            Log.Information("We need admin rights to create this directory");
+            string exe = GetCachedExecutablePath("PermissionsGranter.exe");
+            Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+            string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
+            try
+            {
+                int result = Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
+                if (result == 0)
+                {
+                    Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
+                    return true;
+                }
+                else
+                {
+                    Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                if (e is Win32Exception w32e)
+                {
+                    if (w32e.NativeErrorCode == 1223)
+                    {
+                        //Admin canceled.
+                        return false;
+                    }
+                }
+                Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
+                return false;
+
+            }
+        }
+
+        public static bool EnableWritePermissionsToFolders(List<GameTarget> targets, bool me1ageia)
         {
             string args = "";
             if (targets.Any() || me1ageia)

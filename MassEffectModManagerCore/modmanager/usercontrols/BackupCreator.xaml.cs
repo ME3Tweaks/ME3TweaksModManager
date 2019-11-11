@@ -25,7 +25,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class BackupCreator : MMBusyPanelBase
     {
-
         public bool AnyGameMissingBackup => !BackupService.ME1BackedUp || !BackupService.ME2BackedUp || !BackupService.ME3BackedUp;
         public ObservableCollectionExtended<GameBackup> GameBackups { get; } = new ObservableCollectionExtended<GameBackup>();
 
@@ -202,7 +201,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 //It's a DLC!
                                 string dlcname = file.Substring(dlcSubStringLen);
-                                dlcname = file.Substring(0, file.IndexOf('\\'));
+                                dlcname = dlcname.Substring(0, dlcname.IndexOf('\\'));
                                 if (MEDirectories.OfficialDLCNames(BackupSourceTarget.Game).TryGetValue(dlcname, out var hrName))
                                 {
                                     BackupStatusLine2 = "Backing up " + hrName;

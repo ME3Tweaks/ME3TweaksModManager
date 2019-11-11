@@ -55,13 +55,14 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool Selectable { get; internal set; } = true;
         public string ALOTVersion { get; private set; }
-
-        public GameTarget(Mod.MEGame game, string target, bool currentRegistryActive)
+        public bool IsCustomOption { get; set; } = false;
+        public GameTarget(Mod.MEGame game, string target, bool currentRegistryActive, bool isCustomOption = false)
         {
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
+            this.IsCustomOption = isCustomOption;
             this.TargetPath = target.TrimEnd('\\');
-            if (game != Mod.MEGame.Unknown)
+            if (game != Mod.MEGame.Unknown && !IsCustomOption)
             {
                 var alotInfo = GetInstalledALOTInfo();
                 if (alotInfo != null)

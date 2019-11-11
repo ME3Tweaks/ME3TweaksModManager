@@ -157,6 +157,7 @@ namespace MassEffectModManagerCore
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
         public ICommand ApplyModCommand { get; set; }
+        public ICommand RestoreCommand { get; set; }
         public ICommand CheckForContentUpdatesCommand { get; set; }
         public ICommand AddTargetCommand { get; set; }
         public ICommand RunGameConfigToolCommand { get; set; }
@@ -177,7 +178,8 @@ namespace MassEffectModManagerCore
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
             ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
-            BackupCommand = new GenericCommand(ShowBackupPane, CanShowBackupPane);
+            BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
+            RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, CanShowDeploymentPane);
             DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibrary, CanDeleteModFromLibrary);
             ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
@@ -262,7 +264,7 @@ namespace MassEffectModManagerCore
             return SelectedMod != null && Settings.DeveloperMode;
         }
 
-        private bool CanShowBackupPane()
+        private bool ContentCheckNotInProgress()
         {
             return !ContentCheckInProgress;
         }
@@ -319,7 +321,17 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            ShowBusyControl(backupRestoreManager); //Todo: Support the progress bar updates in the queue
+            ShowBusyControl(backupRestoreManager); 
+        }
+
+        private void ShowRestorePane()
+        {
+            var restoreManager = new RestorePanel(InstallationTargets.ToList(), SelectedGameTarget);
+            restoreManager.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(restoreManager); 
         }
 
         private void ShowInstallInfo()
@@ -670,7 +682,7 @@ namespace MassEffectModManagerCore
                     if (result == MessageBoxResult.Yes)
                     {
                         Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Yes" } });
-                        Utilities.EnableWritePermissions(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                        Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
                     }
                     else
                     {
@@ -681,7 +693,7 @@ namespace MassEffectModManagerCore
                 else
                 {
                     Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Implicit" } });
-                    Utilities.EnableWritePermissions(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
                 }
             }
         }
@@ -825,6 +837,8 @@ namespace MassEffectModManagerCore
                 if (b.Result is Mod m)
                 {
                     ModsList_ListBox.SelectedItem = m;
+                    ModsList_ListBox.ScrollIntoView(m);
+
                 }
                 ModsLoaded = true;
             };

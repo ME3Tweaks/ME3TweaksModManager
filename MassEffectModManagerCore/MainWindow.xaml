@@ -201,8 +201,8 @@
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Backup &amp; Restore" Padding="4">
-                    <MenuItem Header="Backup" Command="{Binding BackupCommand}" ToolTip="Create game backups"/>
-                    <MenuItem Header="Restore" Command="{Binding RestoreCommand}" IsEnabled="False"/>
+                    <MenuItem Header="Backup" Command="{Binding BackupCommand}" ToolTip="Create entire game backups"/>
+                    <MenuItem Header="Restore" Command="{Binding RestoreCommand}" ToolTip="Restore a game from backup.&#10;For granular options, use the restore options in Target Info"/>
                 </MenuItem>
                 <MenuItem Name="HelpMenuItem" Header="Help" Padding="4">
                     <MenuItem Name="DynamicHelp_MenuItem" Header="Dynamic Help" Style="{StaticResource MenuItemHeaderStyle}"/>
