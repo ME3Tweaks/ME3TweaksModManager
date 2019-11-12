@@ -4,64 +4,65 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             mc:Ignorable="d" 
-             MaxWidth="400">
+             mc:Ignorable="d"
+             MaxHeight="500"
+             MaxWidth="600">
     <DockPanel>
         <TextBlock Text="ME3Tweaks TPMI submission" TextAlignment="Center" FontSize="20" FontWeight="Bold" DockPanel.Dock="Top"/>
         <TextBlock Text="{Binding TelemetryMod.ModName}" DockPanel.Dock="Top" HorizontalAlignment="Center" FontSize="16"/>
         <Button Content="Close" Margin="4,10,4,0" Command="{Binding CloseCommand}" DockPanel.Dock="Bottom" HorizontalAlignment="Right"/>
         <TextBlock Grid.Row="0" Text="Submitting your mod information to the Third Party Mod Identification database allows ME3Tweaks to provide better services to the modding scene." TextWrapping="Wrap" DockPanel.Dock="Top"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding TelemetryPackages}">
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="FrameworkElement.DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="DLC folder name:" Grid.Row="0" Grid.Column="0"/>
+                            <TextBlock Text="Name:" Grid.Row="1" Grid.Column="0"/>
+                            <TextBlock Text="Game:" Grid.Row="2" Grid.Column="0"/>
+                            <TextBlock Text="Developer:" Grid.Row="3" Grid.Column="0"/>
+                            <TextBlock Text="Mod site:" Grid.Row="4" Grid.Column="0"/>
+                            <TextBlock Text="TLK ID:" Grid.Row="5" Grid.Column="0"/>
+                            <TextBlock Text="Mount Priority:" Grid.Row="6" Grid.Column="0"/>
+                            <TextBlock Text="Mount Flag:" Grid.Row="7" Grid.Column="0"/>
+                            <TextBlock Text="Module Number:" Grid.Row="8" Grid.Column="0"/>
 
-        <ItemsControl ItemsSource="{Binding TelemetryPackages}">
-            <ItemsControl.ItemContainerStyle>
-                <Style>
-                    <Setter Property="FrameworkElement.DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"/>
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="DLC folder name:" Grid.Row="0" Grid.Column="0"/>
-                        <TextBlock Text="Name:" Grid.Row="1" Grid.Column="0"/>
-                        <TextBlock Text="Game:" Grid.Row="2" Grid.Column="0"/>
-                        <TextBlock Text="Developer:" Grid.Row="3" Grid.Column="0"/>
-                        <TextBlock Text="Mod site:" Grid.Row="4" Grid.Column="0"/>
-                        <TextBlock Text="TLK ID:" Grid.Row="5" Grid.Column="0"/>
-                        <TextBlock Text="Mount Priority:" Grid.Row="6" Grid.Column="0"/>
-                        <TextBlock Text="Mount Flag:" Grid.Row="7" Grid.Column="0"/>
-                        <TextBlock Text="Module Number:" Grid.Row="8" Grid.Column="0"/>
+                            <TextBlock Text="{Binding DLCFolderName}" Grid.Row="0" Grid.Column="1"/>
+                            <TextBlock Text="{Binding ModName}" Grid.Row="1" Grid.Column="1"/>
+                            <TextBlock Text="{Binding Game}" Grid.Row="2" Grid.Column="1"/>
+                            <TextBlock Text="{Binding ModAuthor}" Grid.Row="3" Grid.Column="1"/>
+                            <TextBlock Text="{Binding ModSite}" Grid.Row="4" Grid.Column="1"/>
+                            <TextBlock Text="{Binding ModMountTLK1}" Grid.Row="5" Grid.Column="1"/>
+                            <TextBlock Text="{Binding MountPriority}" Grid.Row="6" Grid.Column="1"/>
+                            <TextBlock Text="{Binding MountFlagHR}" Grid.Row="7" Grid.Column="1"/>
+                            <TextBlock Text="{Binding ModuleNumber}" Grid.Row="8" Grid.Column="1"/>
 
-                        <TextBlock Text="{Binding DLCFolderName}" Grid.Row="0" Grid.Column="1"/>
-                        <TextBlock Text="{Binding ModName}" Grid.Row="1" Grid.Column="1"/>
-                        <TextBlock Text="{Binding Game}" Grid.Row="2" Grid.Column="1"/>
-                        <TextBlock Text="{Binding ModAuthor}" Grid.Row="3" Grid.Column="1"/>
-                        <TextBlock Text="{Binding ModSite}" Grid.Row="4" Grid.Column="1"/>
-                        <TextBlock Text="{Binding ModMountTLK1}" Grid.Row="5" Grid.Column="1"/>
-                        <TextBlock Text="{Binding MountPriority}" Grid.Row="6" Grid.Column="1"/>
-                        <TextBlock Text="{Binding MountFlagHR}" Grid.Row="7" Grid.Column="1"/>
-                        <TextBlock Text="{Binding ModuleNumber}" Grid.Row="8" Grid.Column="1"/>
-
-                        <Button Grid.Column="1" Grid.Row="9" HorizontalAlignment="Right"  Content="{Binding SubmitText, FallbackValue=Submit to ME3Tweaks}" Command="{Binding SubmitCommand}" Margin="0,4,4,0"/>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
+                            <Button Grid.Column="1" Grid.Row="9" HorizontalAlignment="Right"  Content="{Binding SubmitText, FallbackValue=Submit to ME3Tweaks}" Command="{Binding SubmitCommand}" Margin="0,4,4,0"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </DockPanel>
 </local:MMBusyPanelBase>

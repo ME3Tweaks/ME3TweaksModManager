@@ -329,6 +329,10 @@ namespace MassEffectModManagerCore
             var restoreManager = new RestorePanel(InstallationTargets.ToList(), SelectedGameTarget);
             restoreManager.Close += (a, b) =>
             {
+                if (b.Data is bool refresh && refresh)
+                {
+                    PopulateTargets(SelectedGameTarget);
+                }
                 ReleaseBusyControl();
             };
             ShowBusyControl(restoreManager); 
@@ -886,6 +890,7 @@ return;
 
         private void PopulateTargets(GameTarget selectedTarget = null)
         {
+            RepopulatingTargets = true;
             InstallationTargets.ClearEx();
             MEDirectories.ReloadGamePaths(); //this is redundant on the first boot but whatever.
             Log.Information("Populating game targets");
@@ -955,6 +960,8 @@ return;
                     InstallationTargets_ComboBox.SelectedItem = newTarget;
                 }
             }
+
+            RepopulatingTargets = false;
         }
 
         private void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1327,9 +1334,7 @@ return;
                         if (hresult == 0)
                         {
                             //rescan
-                            RepopulatingTargets = true;
                             PopulateTargets(SelectedGameTarget);
-                            RepopulatingTargets = false;
                         }
                     }
                     catch (Win32Exception ex)

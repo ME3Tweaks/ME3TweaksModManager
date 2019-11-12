@@ -58,9 +58,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
+        private bool RestoreAllBasegameInProgress;
+
         private bool CanRestoreAllBasegame()
         {
-            return SelectedTarget.ModifiedBasegameFiles.Count > 0; //check if ifles being restored
+            return SelectedTarget.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress; //check if ifles being restored
         }
 
         private void RestoreAllBasegame()
@@ -90,10 +92,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 NamedBackgroundWorker bw = new NamedBackgroundWorker("RestoreAllBasegameFilesThread");
                 bw.DoWork += (a, b) =>
                 {
-                    foreach (var v in SelectedTarget.ModifiedBasegameFiles.ToList())
+                    RestoreAllBasegameInProgress = true;
+                    foreach (var v in SelectedTarget.ModifiedBasegameFiles)
+                    {
+                        v.Restoring = true;
+                    }
+                    foreach (var v in SelectedTarget.ModifiedBasegameFiles.ToList()) //to list will make sure this doesn't throw concurrent modification
                     {
                         v.RestoreFile(true);
                     }
+
+
+                };
+                bw.RunWorkerCompleted += (a, b) =>
+                {
+                    RestoreAllBasegameInProgress = false;
+                    CommandManager.InvalidateRequerySuggested();
                 };
                 bw.RunWorkerAsync();
             }

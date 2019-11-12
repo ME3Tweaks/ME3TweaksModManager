@@ -420,7 +420,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             public bool Inconsistent { get; }
         }
 
-        public class ModifiedFileObject
+        public class ModifiedFileObject : INotifyPropertyChanged
         {
             private bool canRestoreFile;
             private bool checkedForBackupFile;
@@ -429,8 +429,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             private Action<object> notifyRestoredCallback;
             private Action notifyRestoringCallback;
             private Func<string, bool> restoreBasegamefileConfirmationCallback;
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
             public ICommand RestoreCommand { get; }
-            public bool Restoring { get; private set; }
+            public bool Restoring { get;  set; }
 
             public ModifiedFileObject(string filePath, GameTarget target,
                 Func<string, bool> restoreBasegamefileConfirmationCallback,
@@ -475,8 +478,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
+            public string RestoreButtonText => Restoring ? "Restoring" : (CanRestoreFile() ? "Restore" : "No backup");
+
             private bool CanRestoreFile()
             {
+                if (Restoring) return false;
                 if (checkedForBackupFile) return canRestoreFile;
                 var backupPath = Utilities.GetGameBackupPath(target.Game);
                 canRestoreFile = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));

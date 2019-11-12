@@ -52,21 +52,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadCommands()
         {
-            CloseCommand = new GenericCommand(Close, CanClose);
+            CloseCommand = new GenericCommand(ClosePanel, CanClose);
+        }
+
+
+        private void ClosePanel()
+        {
+            OnClosing(new DataEventArgs(GameRestoreControllers.Any(x=>x.RefreshTargets)));
         }
 
         private bool CanClose() => !GameRestoreControllers.Any(x => x.RestoreInProgress);
-
-        private void Close()
-        {
-            OnClosing(DataEventArgs.Empty);
-        }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && CanClose())
             {
-                Close();
+                ClosePanel();
             }
         }
 
@@ -79,6 +80,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public class GameRestoreObject : INotifyPropertyChanged
         {
+            public bool RefreshTargets;
+
             private Mod.MEGame Game;
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
             private Window window;
@@ -116,7 +119,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private bool CanBeginRestore()
             {
-                return RestoreTarget != null && !RestoreInProgress;
+                return RestoreTarget != null && !RestoreInProgress && BackupLocation != null;
             }
 
             public enum RestoreResult
@@ -207,7 +210,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (fileBeingCopied.Contains("\\cmmbackup\\")) return false; //do not copy cmmbackup files
                             Debug.WriteLine(fileBeingCopied);
-                            if (fileBeingCopied.StartsWith(dlcFolderpath))
+                            if (fileBeingCopied.StartsWith(dlcFolderpath,StringComparison.InvariantCultureIgnoreCase))
                             {
                                 //It's a DLC!
                                 string dlcname = fileBeingCopied.Substring(dlcSubStringLen);
@@ -308,7 +311,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (Directory.GetFiles(restTarget).Length > 0 || Directory.GetDirectories(restTarget).Length > 0)
                             {
                                 //Directory not empty
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Directory is not empty. A backup destination must be empty.", "Cannot restore to this location", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Xceed.Wpf.Toolkit.MessageBox.Show("Directory is not empty. Location to restore to must be empty.", "Cannot restore to this location", MessageBoxButton.OK, MessageBoxImage.Error);
                                 return;
                             }
                         }
@@ -318,6 +321,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return;
                     }
                 }
+
+                RefreshTargets = true;
                 bw.RunWorkerAsync(restTarget);
             }
 

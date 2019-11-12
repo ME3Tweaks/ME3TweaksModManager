@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
              mc:Ignorable="d" 
-             MinWidth="550"
+             MinWidth="600"
              MaxHeight="500"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              d:DesignHeight="550" d:DesignWidth="800">
@@ -114,10 +114,10 @@
                 <DockPanel Height="300" Margin="-8">
 
                     <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified basegame files" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                                                         AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedBasegame}"/>
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="Restore all modified basegame files" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedBasegame}" ToolTip="Will attempt to restore all modified basegame + unpacked DLC (ME2) files."/>
                     </DockPanel>
-                    <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" Height="300" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+                    <ItemsControl ItemsSource="{Binding ModifiedBasegameFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                               AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -137,11 +137,11 @@
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}"/>
-                                        <Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Transparent"/>
+                                        <Button Grid.Row="0" Grid.Column="1" Content="{Binding RestoreButtonText, FallbackValue=No backup}" HorizontalAlignment="Right" Padding ="5,2" Command="{Binding RestoreCommand}"/>
                                     </Grid>
                                 </DockPanel>
                             </DataTemplate>
@@ -164,8 +164,8 @@
             <TabItem Header="Modified DLC archives (SFAR)" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}" Margin="0" Padding="0">
                 <DockPanel Height="300" Margin="-8">
                     <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <Button DockPanel.Dock="Right" Margin="4" Padding="4,3" Content="Restore all modified SFARs" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                                                         AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedSFARs}"/>
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="Restore all modified SFARs" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedSFARs}" ToolTip="Will attempt to restore all modified SFARs. Will delete unpacked files too."/>
                     </DockPanel>
                     <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2">
                         <ItemsControl.ItemTemplate>
@@ -188,10 +188,10 @@
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" >
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Background="Transparent" >
                                             <TextBlock FontSize="12" Text="{Binding UIString}"/>
                                             <TextBlock Margin="5,0" FontWeight="Bold" Text="Inconsistency detected" FontSize="12" Foreground="Red" Visibility="{Binding Inconsistent, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                         </StackPanel>

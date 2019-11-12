@@ -116,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     TelemetrySubmissionInProgress = true;
                     string endpoint = TELEMETRY_ENDPOINT;
                     var url = endpoint.SetQueryParam("dlc_folder_name", DLCFolderName);
-                    url = url.SetQueryParam("mod_name", DLCFolderName);
+                    url = url.SetQueryParam("mod_name", ModName);
                     url = url.SetQueryParam("mod_game", Game.ToString().Substring(2));
                     url = url.SetQueryParam("mod_author", ModAuthor);
                     url = url.SetQueryParam("mod_site", ModSite);
@@ -144,25 +144,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void GatherTelemetryDataBGThread(object sender, DoWorkEventArgs e)
         {
-            //var path = @"D:\Origin Games\Mass Effect 2\BioGame\DLC";
-            //var bioengines = Directory.GetFiles(path, "BIOEngine.ini", SearchOption.AllDirectories).ToList();
-            //foreach (var f in bioengines)
-            //{
-            //    var dlcFolderPath = Directory.GetParent(Directory.GetParent(f).FullName).FullName;
-            //    var dlcFolderName = Path.GetFileName(dlcFolderPath);
-            //    var dlcName = ME2Directory.OfficialDLCNames[dlcFolderName];
-            //    Debug.WriteLine(dlcName + "-----------------------------------------");
-            //    var mountFile = Path.Combine(dlcFolderPath, "CookedPC", "mount.dlc");
-            //    MountFile mf = new MountFile(mountFile);
-            //    Debug.WriteLine("Mount flag: " + mf.MountFlag.ToString() + "(" + ((int)mf.MountFlag) + ")");
-            //    var ini = new FileIniDataParser();
-            //    ini.Parser.Configuration.AllowDuplicateKeys = true;
-            //    ini.Parser.Configuration.SkipInvalidLines = true; 
-            //    ini.Parser.Configuration.AllowDuplicateSections = true;
-            //    var parsedIni = ini.Parser.Parse(File.ReadAllText(f));
-            //    Debug.WriteLine("DLCInfo Flags: " + parsedIni["DLCInfo"]["Flags"]);
-            //}
-            //Debugger.Break();
 
             List<TelemetryPackage> telemetryPackages = new List<TelemetryPackage>();
             foreach (var mapping in TelemetryMod.GetJob(ModJob.JobHeader.CUSTOMDLC).CustomDLCFolderMapping)
