@@ -321,7 +321,7 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            ShowBusyControl(backupRestoreManager); 
+            ShowBusyControl(backupRestoreManager);
         }
 
         private void ShowRestorePane()
@@ -335,7 +335,7 @@ namespace MassEffectModManagerCore
                 }
                 ReleaseBusyControl();
             };
-            ShowBusyControl(restoreManager); 
+            ShowBusyControl(restoreManager);
         }
 
         private void ShowInstallInfo()
@@ -858,7 +858,7 @@ return;
             if (updatableMods.Count > 0)
             {
                 BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
-                var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, true);
+                var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, false);
                 if (allModsInManifest != null)
                 {
                     var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
@@ -1565,7 +1565,7 @@ return;
                 allMods.RemoveAll(x => x.Game == Mod.MEGame.ME3);
 
             VisibleFilteredMods.ReplaceAll(allMods);
-            VisibleFilteredMods.Sort(x=>x.ModName);
+            VisibleFilteredMods.Sort(x => x.ModName);
         }
     }
 }

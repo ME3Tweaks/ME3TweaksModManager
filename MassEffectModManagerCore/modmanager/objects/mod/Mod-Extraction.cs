@@ -33,9 +33,10 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (!IsVirtualized)
                 {
-                    referencedFiles.Add(ModDescPath);
+                    referencedFiles.Add("moddesc.ini");
                 }
 
+                referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
                 foreach (var info in archiveFile.ArchiveFileData)
                 {
                     if (referencedFiles.Contains(info.FileName))
