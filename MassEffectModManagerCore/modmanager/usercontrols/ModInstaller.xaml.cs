@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.VisualBasic;
 using Serilog;
 
@@ -370,6 +371,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Warning($"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
                 e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
             }
+            Analytics.TrackEvent("Installed a mod", new Dictionary<string, string>()
+            {
+                { "Mod name", $"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },
+                { "Installed from", ModBeingInstalled.IsInArchive ? "Archive" : "Library" },
+                { "Game", ModBeingInstalled.Game.ToString() },
+                { "Result", e.Result.ToString() }
+            });
         }
 
         private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action<string> FileInstalledCallback = null, string ForcedSourcePath = null)
@@ -617,10 +625,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             //Detect incompatible DLC
-            //TODO
+            if (ModBeingInstalled.IncompatibleDLC.Count > 0)
+            {
+                //Check for incompatible DLC.
+            }
 
             //Detect outdated DLC
-            //TODO
+            if (ModBeingInstalled.OutdatedCustomDLC.Count > 0)
+            {
+
+            }
 
             //See if any alternate options are available and display them even if they are all autos
             AllOptionsAreAutomatic = true;

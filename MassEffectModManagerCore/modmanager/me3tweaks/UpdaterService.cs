@@ -25,7 +25,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     {
         private const string UpdateManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch";
         private const string UpdateStorageRoot = "https://me3tweaks.com/mods/updates/";
-        public static List<ModUpdateInfo> CheckForModUpdates(List<Mod> modsToCheck, bool forceRecheck)
+
+        /// <summary>
+        /// Checks mods for updates. ForceUpdateCheck will force the mod to validate against the server (essentially repair mode). It is not used for rate limiting!
+        /// </summary>
+        /// <param name="modsToCheck"></param>
+        /// <param name="forceUpdateCheck"></param>
+        /// <returns></returns>
+        public static List<ModUpdateInfo> CheckForModUpdates(List<Mod> modsToCheck, bool forceUpdateCheck)
         {
             string updateFinalRequest = UpdateManifestEndpoint;
             bool first = true;
@@ -33,6 +40,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 if (mod.ModModMakerID > 0)
                 {
+                    //Modmaker style
                     if (first)
                     {
                         updateFinalRequest += "?";
@@ -43,7 +51,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         updateFinalRequest += "&";
                     }
 
-                    //Modmaker style
                     updateFinalRequest += "modmakerupdatecode[]=" + mod.ModModMakerID;
 
                 }
@@ -59,9 +66,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         updateFinalRequest += "&";
                     }
-
                     updateFinalRequest += "classicupdatecode[]=" + mod.ModClassicUpdateCode;
-                }
+                } 
+                //else if (mod.NexusModID > 0)
+                //{
+                //    //Classic style
+                //    if (first)
+                //    {
+                //        updateFinalRequest += "?";
+                //        first = false;
+                //    }
+                //    else
+                //    {
+                //        updateFinalRequest += "&";
+                //    }
+                //    updateFinalRequest += "nexusupdatecode[]=" + mod.ModClassicUpdateCode;
+                //}
             }
 
             using var wc = new System.Net.WebClient();
@@ -93,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     modUpdateInfo.ResolveVersionVar();
                     //Calculate update information
                     var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
-                    if (matchingMod != null && (forceRecheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
+                    if (matchingMod != null && (forceUpdateCheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
                     {
                         modUpdateInfo.mod = matchingMod;
                         string modBasepath = matchingMod.ModPath;
@@ -165,6 +185,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                            return;
                        }
 
+
                        if (cancelDownloading)
                        {
                            return; //Concurrency for long running download to memory
@@ -207,7 +228,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             //All files have been downloaded successfully.
-
+            //TODO:... Have to figure out some way to do this. Will have to likely go through mod-parsing.
+            updateInfo.DownloadButtonText = "Applying";
             //Apply update
             if (stagedFileMapping.Count > 0)
             {
@@ -215,6 +237,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 foreach (var file in stagedFileMapping)
                 {
                     Log.Information($"Applying update file: {file.Key} => {file.Value}");
+                    Directory.CreateDirectory(Directory.GetParent(file.Value).FullName);
                     File.Copy(file.Key, file.Value, true);
                 }
             }
@@ -229,7 +252,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             //Delete empty subdirectories
             Utilities.DeleteEmptySubdirectories(modPath);
-
+            Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             //We're done!
             return true;
         }
@@ -256,7 +279,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public bool HasFilesToDownload => applicableUpdates.Count > 0;
             public bool HasFilesToDelete => filesToDelete.Count > 0;
             public string DownloadButtonText { get; set; }
-            public void RecalculateAmountDownloaded() => CurrentBytesDownloaded = sourceFiles.Sum(x => x.AmountDownloaded);
+            public void RecalculateAmountDownloaded()
+            {
+                CurrentBytesDownloaded = sourceFiles.Sum(x => x.AmountDownloaded);
+                RemainingDataToDownload = ""; //trigger value change
+            }
             public string FilesToDeleteUIString
             {
                 get
@@ -276,10 +303,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     if (applicableUpdates.Count != 1)
                     {
-                        return applicableUpdates.Count + " files will be downloaded";
+                        return $"{applicableUpdates.Count} files will be downloaded ({TotalBytesHR})";
                     }
 
-                    return "1 file will be downloaded";
+                    return $"1 file will be downloaded ({TotalBytesHR})";
                 }
             }
 
@@ -291,6 +318,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
             public bool CanUpdate { get; internal set; } = true; //Default to true
             public string TotalBytesHR => ByteSize.FromBytes(TotalBytesToDownload).ToString();
+            public string RemainingDataToDownload
+            {
+                get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? ByteSize.FromBytes(TotalBytesToDownload - CurrentBytesDownloaded).ToString() : "";
+                set { } //do nothing.
+            }
         }
 
         public class SourceFile

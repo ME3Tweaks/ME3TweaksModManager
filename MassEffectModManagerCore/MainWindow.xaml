@@ -109,8 +109,8 @@
                 </MenuItem>
                 <MenuItem Header="Mod Utils" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold"/>
-                    <MenuItem Header="Check for updates" IsEnabled="False"/>
-                    <MenuItem Header="Restore mod from ME3Tweaks" IsEnabled="False"/>
+                    <MenuItem Header="Check for updates" Command="{Binding SelectedModCheckForUpdatesCommand}"/>
+                    <MenuItem Header="Restore mod from ME3Tweaks" IsEnabled="{Binding RestoreModFromME3TweaksCommand}"/>
                     <Separator/>
                     <MenuItem Header="Install custom keybinds into this mod" IsEnabled="False"/>
                     <MenuItem Header="Developer options" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">

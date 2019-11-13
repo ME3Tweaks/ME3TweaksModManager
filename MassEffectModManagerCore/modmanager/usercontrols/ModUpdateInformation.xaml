@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="500" MaxHeight="500" MinWidth="420" MaxWidth="620">
     <UserControl.Resources>
@@ -61,7 +62,7 @@
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding versionstr, StringFormat='Server version: {0}'}"/>
                             <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" >
                                 <Button Command="{Binding ApplyUpdateCommand}" CommandParameter="{Binding}" Content="{Binding DownloadButtonText}" HorizontalAlignment="Right" Padding="4"/>
-                                <TextBlock Text="{Binding TotalBytesHR, FallbackValue=32MB}" TextAlignment="Center" Foreground="Gray"/>
+                                <TextBlock Text="{Binding RemainingDataToDownload, FallbackValue=32MB}" TextAlignment="Center" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
                             </StackPanel>
                             <ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="3" Height="12" Maximum="{Binding TotalBytesToDownload}" Value="{Binding CurrentBytesDownloaded}" IsIndeterminate="{Binding Indeterminate}" />
                         </Grid>

@@ -404,6 +404,11 @@ namespace MassEffectModManagerCore
 
         public static bool DeleteFilesAndFoldersRecursively(string targetDirectory)
         {
+            if (!Directory.Exists(targetDirectory))
+            {
+                Debug.WriteLine("Directory to delete doesn't exist: " + targetDirectory);
+                return true;
+            }
             bool result = true;
             foreach (string file in Directory.GetFiles(targetDirectory))
             {

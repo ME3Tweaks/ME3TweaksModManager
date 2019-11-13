@@ -549,7 +549,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 NamedBackgroundWorker bw = new NamedBackgroundWorker("ModDeploymentThread");
                 bw.DoWork += Deployment_BackgroundThread;
-                bw.RunWorkerCompleted += (a, b) => { DeploymentInProgress = false; };
+                bw.RunWorkerCompleted += (a, b) =>
+                {
+                    DeploymentInProgress = false;
+                    CommandManager.InvalidateRequerySuggested();
+                };
                 bw.RunWorkerAsync(d.FileName);
                 DeploymentInProgress = true;
             }
@@ -561,7 +565,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             string archivePath = e.Argument as string;
             //Key is in-archive path, value is on disk path
-            var archiveMapping = new Dictionary<string, string>(); 
+            var archiveMapping = new Dictionary<string, string>();
             SortedSet<string> directories = new SortedSet<string>();
             foreach (var file in referencedFiles)
             {
@@ -598,7 +602,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 compressor.CustomParameters.Add("mt", "off");
             }
-            compressor.CustomParameters.Add("yx","9");
+            compressor.CustomParameters.Add("yx", "9");
             //compressor.CustomParameters.Add("x", "9");
             compressor.CustomParameters.Add("d", "28");
             string currentDeploymentStep = "Mod";

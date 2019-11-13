@@ -168,6 +168,8 @@ namespace MassEffectModManagerCore
         public ICommand DeployModCommand { get; set; }
         public ICommand DeleteModFromLibraryCommand { get; set; }
         public ICommand SubmitTelemetryForModCommand { get; set; }
+        public ICommand SelectedModCheckForUpdatesCommand { get; set; }
+        public ICommand RestoreModFromME3Tweaks { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -184,7 +186,21 @@ namespace MassEffectModManagerCore
             DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibrary, CanDeleteModFromLibrary);
             ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
             SubmitTelemetryForModCommand = new GenericCommand(SubmitTelemetryForMod, CanSubmitTelemetryForMod);
+            SelectedModCheckForUpdatesCommand = new GenericCommand(CheckSelectedModForUpdate, SelectedModIsME3TweaksUpdatable);
+            RestoreModFromME3Tweaks = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
         }
+
+        private void CheckSelectedModForUpdate()
+        {
+            CheckModsForUpdates(new List<Mod>(new Mod[] { SelectedMod }));
+        }
+
+        private void RestoreSelectedMod()
+        {
+            CheckModsForUpdates(new List<Mod>(new Mod[] { SelectedMod }), true);
+        }
+
+        private bool SelectedModIsME3TweaksUpdatable() => SelectedMod != null && (SelectedMod.ModClassicUpdateCode > 0 /* || SelectedMod.ModModMakerID > 0*/);
 
         private void SubmitTelemetryForMod()
         {
@@ -787,6 +803,7 @@ namespace MassEffectModManagerCore
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
+                bool canCheckForModUpdates = Utilities.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob("ModLoader", "Loading mods", "Loaded mods");
                 CLog.Information("Loading mods from mod library: " + Utilities.GetModsDirectory(), Settings.LogModStartup);
@@ -833,7 +850,10 @@ namespace MassEffectModManagerCore
                 OnPropertyChanged(nameof(NoModSelectedText));
 
                 //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
-                CheckModsForUpdates();
+                if (canCheckForModUpdates)
+                {
+                    CheckAllModsForUpdates();
+                }
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
@@ -849,43 +869,48 @@ namespace MassEffectModManagerCore
             bw.RunWorkerAsync();
         }
 
-        private void CheckModsForUpdates()
+        private void CheckAllModsForUpdates()
+        {
+            var updatableMods = VisibleFilteredMods.Where(x => x.IsUpdatable).ToList();
+            if (updatableMods.Count > 0)
+            {
+                CheckModsForUpdates(updatableMods);
+            }
+        }
+
+        private void CheckModsForUpdates(List<Mod> updatableMods, bool restoreMode = false)
         {
 #if !DEBUG
 return;
 #endif
-            var updatableMods = VisibleFilteredMods.Where(x => x.IsUpdatable).ToList();
-            if (updatableMods.Count > 0)
+            BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
+            var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode);
+            if (allModsInManifest != null)
             {
-                BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob("ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
-                var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, false);
-                if (allModsInManifest != null)
+                var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
+                if (updates != null && updates.Count > 0)
                 {
-                    var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
-                    if (updates != null && updates.Count > 0)
+                    Application.Current.Dispatcher.Invoke(delegate
                     {
-                        Application.Current.Dispatcher.Invoke(delegate
+                        var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
+                        modUpdatesNotificationDialog.Close += (sender, args) =>
                         {
-                            var modUpdatesNotificationDialog = new ModUpdateInformation(updates);
-                            modUpdatesNotificationDialog.Close += (sender, args) =>
+                            ReleaseBusyControl();
+                            if (args.Data is bool reloadMods && reloadMods)
                             {
-                                ReleaseBusyControl();
-                                if (args.Data is bool reloadMods && reloadMods)
-                                {
-                                    LoadMods(updates.Count == 1 ? updates[0].mod : null);
-                                }
+                                LoadMods(updates.Count == 1 ? updates[0].mod : null);
+                            }
 
-                            };
-                            ShowBusyControl(modUpdatesNotificationDialog);
-                        });
-                    }
+                        };
+                        ShowBusyControl(modUpdatesNotificationDialog);
+                    });
                 }
-                else
-                {
-                    bgTask.finishedUiText = "Error checking for mod updates";
-                }
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
             }
+            else
+            {
+                bgTask.finishedUiText = "Error checking for mod updates";
+            }
+            backgroundTaskEngine.SubmitJobCompletion(bgTask);
         }
 
         private void PopulateTargets(GameTarget selectedTarget = null)
@@ -1033,7 +1058,18 @@ return;
 
         private void FailedMods_LinkClick(object sender, RequestNavigateEventArgs e)
         {
-            new FailedModsWindow(FailedMods.ToList()) { Owner = this }.ShowDialog();
+            var failedModsPanel = new FailedModsPanel(FailedMods.ToList());
+            failedModsPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is Mod failedmod)
+                {
+                    BackgroundWorker bw = new BackgroundWorker();
+                    bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new Mod[] { failedmod }), true); };
+                    bw.RunWorkerAsync();
+                }
+            };
+            ShowBusyControl(failedModsPanel);
         }
 
         private void OpenModsDirectory_Click(object sender, RoutedEventArgs e)

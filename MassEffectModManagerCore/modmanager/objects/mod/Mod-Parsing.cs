@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using IniParser.Parser;
-
+using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
@@ -28,6 +28,8 @@ namespace MassEffectModManagerCore.modmanager
 
         public const string DefaultWebsite = "http://example.com"; //this is required to prevent exceptions when binding the navigateuri
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public int NexusModID { get; private set; }
 
         // Constants
 
@@ -81,6 +83,10 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     sb.AppendLine($"Update code: {ModClassicUpdateCode}");
                 }
+                //else if (NexusModID > 0 && Settings.DeveloperMode)
+                //{
+                //    sb.AppendLine($"NexusMods ID: {NexusModID}");
+                //}
 
                 sb.AppendLine("-------Installation information--------");
                 if (Settings.DeveloperMode)
@@ -126,6 +132,9 @@ namespace MassEffectModManagerCore.modmanager
         public Version ParsedModVersion { get; set; }
         public string ModWebsite { get; set; } = ""; //not null default I guess.
         public double ModDescTargetVersion { get; set; }
+
+        public List<string> OutdatedCustomDLC = new List<string>();
+        public List<string> IncompatibleDLC = new List<string>();
         public int ModClassicUpdateCode { get; set; }
         public string LoadFailedReason { get; set; }
         public List<string> RequiredDLC = new List<string>();
@@ -266,6 +275,40 @@ namespace MassEffectModManagerCore.modmanager
             int.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode);
             ModClassicUpdateCode = modupdatecode;
 
+            int.TryParse(iniData["ModInfo"]["nexuscode"], out int nexuscode);
+            NexusModID = nexuscode;
+
+            if (NexusModID == 0 && ModModMakerID == 0 && ModClassicUpdateCode == 0 && !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains("nexusmods.com/masseffect"))
+            {
+                try
+                {
+                    //try to extract nexus mods ID
+
+                    string nexusId = ModWebsite.Substring(ModWebsite.IndexOf("nexusmods.com/masseffect")).Substring("nexusmods.com/masseffect".Length);// http:/
+                    if (!nexusId.StartsWith("/"))
+                    {
+                        nexusId = nexusId.Substring(nexusId.IndexOf("/")).TrimStart('/'); //3/mods/NUM (removes 3/)
+                    }
+                    nexusId = nexusId.Substring(nexusId.IndexOf("/")).TrimStart('/'); //mods/NUM (removes mods/)
+
+                    if (int.TryParse(nexusId, out var nid))
+                    {
+                        NexusModID = nid;
+                    }
+                    else
+                    {
+                        nexusId = nexusId.Substring(0, nexusId.IndexOf('/'));
+                        if (int.TryParse(nexusId, out var nid2))
+                        {
+                            NexusModID = nid2;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    //don't bother.
+                }
+            }
 
             CLog.Information($"Read modmaker update code (or used default): {ModClassicUpdateCode}", Settings.LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
@@ -888,7 +931,18 @@ namespace MassEffectModManagerCore.modmanager
             var outdatedDLCText = ModDescTargetVersion >= 4.4 ? iniData["CUSTOMDLC"]["outdatedcustomdlc"] : null;
             if (!string.IsNullOrEmpty(outdatedDLCText))
             {
-                //Todo: Implement outdated Custom DLC parsing.
+                var outdatedCustomDLCDLCSplits = outdatedDLCText.Split(';').Select(x => x.Trim()).ToList();
+                foreach (var outdated in outdatedCustomDLCDLCSplits)
+                {
+                    if (MEDirectories.OfficialDLC(Game).Contains(outdated, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        Log.Error($"Outdated Custom DLC cannot contain an official DLC: " + outdated);
+                        LoadFailedReason = $"CustomDLC header contains an item in outdatedcustomdlc list that is an official DLC: {outdated}. This is not allowed.";
+                        return;
+                    }
+                }
+                OutdatedCustomDLC.ReplaceAll(outdatedCustomDLCDLCSplits);
+
             }
 
             //Incompatible DLC (Mod Manager 6)
@@ -896,12 +950,17 @@ namespace MassEffectModManagerCore.modmanager
             var incompatibleDLCText = ModDescTargetVersion >= 6.0 ? iniData["CUSTOMDLC"]["incompatiblecustomdlc"] : null;
             if (!string.IsNullOrEmpty(incompatibleDLCText))
             {
-                var incompatibleDLCSplits = incompatibleDLCText.Split(';').ToList();
+                var incompatibleDLCSplits = incompatibleDLCText.Split(';').Select(x => x.Trim()).ToList();
                 foreach (var incompat in incompatibleDLCSplits)
                 {
-                    //todo: check if official dlc header or official dlc name. no mod should be incompatible if official dlc is installed.
+                    if (MEDirectories.OfficialDLC(Game).Contains(incompat, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        Log.Error($"Incompatible Custom DLC cannot contain an official DLC: " + incompat);
+                        LoadFailedReason = $"CustomDLC header contains an item in incompatibledlc list that is an official DLC: {incompat}. This is not allowed.";
+                        return;
+                    }
                 }
-                //incompatibleDLCText = incompatibleDLCSplits;
+                IncompatibleDLC.ReplaceAll(incompatibleDLCSplits);
             }
 
 
