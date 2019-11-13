@@ -169,7 +169,9 @@ namespace MassEffectModManagerCore
         public ICommand DeleteModFromLibraryCommand { get; set; }
         public ICommand SubmitTelemetryForModCommand { get; set; }
         public ICommand SelectedModCheckForUpdatesCommand { get; set; }
-        public ICommand RestoreModFromME3Tweaks { get; set; }
+        public ICommand RestoreModFromME3TweaksCommand { get; set; }
+        public ICommand GrantWriteAccessCommand { get; set; }
+        public ICommand AutoTOCCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -187,20 +189,35 @@ namespace MassEffectModManagerCore
             ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
             SubmitTelemetryForModCommand = new GenericCommand(SubmitTelemetryForMod, CanSubmitTelemetryForMod);
             SelectedModCheckForUpdatesCommand = new GenericCommand(CheckSelectedModForUpdate, SelectedModIsME3TweaksUpdatable);
-            RestoreModFromME3Tweaks = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
+            RestoreModFromME3TweaksCommand = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
+            GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
+            AutoTOCCommand = new GenericCommand(RunAutoTOCOnTarget, HasME3Target);
+        }
+
+        public bool HasAtLeastOneTarget() => InstallationTargets.Any();
+
+        private bool HasME3Target()
+        {
+            return InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3);
         }
 
         private void CheckSelectedModForUpdate()
         {
-            CheckModsForUpdates(new List<Mod>(new Mod[] { SelectedMod }));
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new[] { SelectedMod })); };
+            bw.RunWorkerAsync();
+
         }
 
         private void RestoreSelectedMod()
         {
-            CheckModsForUpdates(new List<Mod>(new Mod[] { SelectedMod }), true);
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new[] { SelectedMod }), true); };
+            bw.RunWorkerAsync();
         }
 
-        private bool SelectedModIsME3TweaksUpdatable() => SelectedMod != null && (SelectedMod.ModClassicUpdateCode > 0 /* || SelectedMod.ModModMakerID > 0*/);
+        private bool SelectedModIsME3TweaksUpdatable() => SelectedMod?.IsUpdatable ?? false;
+
 
         private void SubmitTelemetryForMod()
         {
@@ -413,6 +430,58 @@ namespace MassEffectModManagerCore
                 }
                 Log.Error("Error launching game: " + e.Message);
             }
+
+            //Detect screen resolution - useful info for scene modders
+            string resolution = "Could not detect";
+            var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare");
+            switch (SelectedGameTarget.Game)
+            {
+                case Mod.MEGame.ME1:
+                    {
+                        iniFile = Path.Combine(iniFile, "Mass Effect", "Config", "BIOEngine.ini");
+                        if (File.Exists(iniFile))
+                        {
+                            var dini = DuplicatingIni.LoadIni(iniFile);
+                            var section = dini.Sections.FirstOrDefault(x => x.Header == "WinDrv.WindowsClient");
+                            if (section != null)
+                            {
+                                var resx = section.Entries.FirstOrDefault(x => x.Key == "StartupResolutionX");
+                                var resy = section.Entries.FirstOrDefault(x => x.Key == "StartupResolutionY");
+                                if (resx != null && resy != null)
+                                {
+                                    resolution = $"{resx.Value}x{resy.Value}";
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case Mod.MEGame.ME2:
+                case Mod.MEGame.ME3:
+                    {
+                        iniFile = Path.Combine(iniFile, "Mass Effect " + SelectedGameTarget.Game.ToString().Substring(2), "BIOGame", "Config", "Gamersettings.ini");
+                        if (File.Exists(iniFile))
+                        {
+                            var dini = DuplicatingIni.LoadIni(iniFile);
+                            var section = dini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
+                            if (section != null)
+                            {
+                                var resx = section.Entries.FirstOrDefault(x => x.Key == "ResX");
+                                var resy = section.Entries.FirstOrDefault(x => x.Key == "ResY");
+                                if (resx != null && resy != null)
+                                {
+                                    resolution = $"{resx.Value}x{resy.Value}";
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            Analytics.TrackEvent("Launched game", new Dictionary<string, string>()
+            {
+                {"Game", game},
+                {"Screen resolution", resolution }
+            });
             //var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
             //Process.Start(exePath);
 
@@ -666,7 +735,7 @@ namespace MassEffectModManagerCore
             LoadMods();
         }
 
-        private void CheckTargetPermissions(bool promptForConsent = true)
+        private void CheckTargetPermissions(bool promptForConsent = true, bool showDialogEvenIfNone = false)
         {
             var targetsNeedingUpdate = InstallationTargets.Where(x => x.Selectable && !x.IsTargetWritable()).ToList();
             bool me1AGEIAKeyNotWritable = false;
@@ -698,8 +767,12 @@ namespace MassEffectModManagerCore
                 if (promptForConsent)
                 {
                     Log.Information("Some game paths/keys are not writable. Prompting user.");
-                    var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Some game directories/registry keys are not writable by your user account. ME3Tweaks Mod Manager can grant write access to these directories for you for easier modding. Grant write access to these folders?", "Some targets/keys write-protected", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
+                    bool result = false;
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Some game directories/registry keys are not writable by your user account. ME3Tweaks Mod Manager can grant write access to these directories for you for easier modding. Grant write access to these folders?", "Some targets/keys write-protected", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+                    });
+                    if (result)
                     {
                         Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Yes" } });
                         Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
@@ -715,6 +788,10 @@ namespace MassEffectModManagerCore
                     Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Implicit" } });
                     Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
                 }
+            }
+            else if (showDialogEvenIfNone)
+            {
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, "All game directory roots appear to be writable.", "Targets writable", MessageBoxButton.YesNo, MessageBoxImage.Information);
             }
         }
 
@@ -767,7 +844,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private GameTarget GetCurrentTarget(Mod.MEGame game) => InstallationTargets.FirstOrDefault(x => x.Game == game && x.RegistryActive);
+        private GameTarget GetCurrentTarget(Mod.MEGame game) => SelectedGameTarget.Game == game ? SelectedGameTarget : InstallationTargets.FirstOrDefault(x => x.Game == game && x.RegistryActive);
 
         public void LoadMods(Mod modToHighlight = null)
         {
@@ -1225,16 +1302,16 @@ return;
                 LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!firstStartupCheck));
                 OnPropertyChanged(nameof(NoModSelectedText));
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadObjectInfo", "Loading package information database", "Loaded package information database");
-
-                ME3UnrealObjectInfo.loadfromJSON();
-                ME2UnrealObjectInfo.loadfromJSON();
-                ME1UnrealObjectInfo.loadfromJSON();
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
                 if (firstStartupCheck)
                 {
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadObjectInfo", "Loading package information database", "Loaded package information database");
+
+                    ME3UnrealObjectInfo.loadfromJSON();
+                    ME2UnrealObjectInfo.loadfromJSON();
+                    ME1UnrealObjectInfo.loadfromJSON();
+                    backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob("WritePermissions", "Checking write permissions", "Checked user write permissions");
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
@@ -1495,7 +1572,7 @@ return;
             e.Handled = true;
         }
 
-        private void RunAutoTOC_Clicked(object sender, RoutedEventArgs e)
+        private void RunAutoTOCOnTarget()
         {
             var task = backgroundTaskEngine.SubmitBackgroundJob("AutoTOC", "Running AutoTOC", "Ran AutoTOC");
             var autoTocUI = new AutoTOC(GetCurrentTarget(Mod.MEGame.ME3));

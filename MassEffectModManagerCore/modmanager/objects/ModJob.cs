@@ -245,7 +245,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 return $"Failed to add additional file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.";
             }
-            FilesToInstall[destRelativePath] = sourceRelativePath.Replace('/', '\\');
+            FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath.Replace('/', '\\');
             return null;
         }
 

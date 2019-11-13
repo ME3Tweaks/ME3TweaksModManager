@@ -32,6 +32,10 @@ namespace MassEffectModManagerCore.modmanager.objects
         public AltDLCCondition Condition;
         public AltDLCOperation Operation;
         public bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
+        public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
+        public bool UIRequired => !IsManual && IsSelected;
+        public bool UINotApplicable => !IsManual && !IsSelected;
+
         public string FriendlyName { get; private set; }
         public string Description { get; private set; }
         public List<string> ConditionalDLC = new List<string>();

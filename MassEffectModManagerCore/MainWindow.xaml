@@ -110,7 +110,7 @@
                 <MenuItem Header="Mod Utils" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold"/>
                     <MenuItem Header="Check for updates" Command="{Binding SelectedModCheckForUpdatesCommand}"/>
-                    <MenuItem Header="Restore mod from ME3Tweaks" IsEnabled="{Binding RestoreModFromME3TweaksCommand}"/>
+                    <MenuItem Header="Restore mod from ME3Tweaks" Command="{Binding RestoreModFromME3TweaksCommand}"/>
                     <Separator/>
                     <MenuItem Header="Install custom keybinds into this mod" IsEnabled="False"/>
                     <MenuItem Header="Developer options" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
@@ -168,8 +168,8 @@
                         <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
                     </MenuItem>
-                    <MenuItem Header="Grant write access to game directories" IsEnabled="False"/>
-                    <MenuItem Header="Run AutoTOC on game (ME3)" Name="AutoTOC_MenuItem" Click="RunAutoTOC_Clicked"/>
+                    <MenuItem Header="Grant write access to game directories" Command="{Binding GrantWriteAccessCommand}"/>
+                    <MenuItem Header="Run AutoTOC on game (ME3)" Name="AutoTOC_MenuItem" Command="{Binding AutoTOCCommand}"/>
 
                     <Separator/>
                     <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
@@ -375,7 +375,7 @@
                         </Hyperlink>
                     </TextBlock>
                     </StackPanel>
-                    <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False"  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                    <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                          TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AllowDrop="True" PreviewDragOver="Window_DragOver" VerticalContentAlignment="Top"
                              adonisExtensions:CursorSpotlightExtension.BackgroundBrush="Transparent" adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"  adonisExtensions:CursorSpotlightExtension.MaxBlurRadius="0">
                         <TextBox.Text>

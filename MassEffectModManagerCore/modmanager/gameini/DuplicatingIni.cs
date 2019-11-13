@@ -8,7 +8,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
 {
     public class DuplicatingIni
     {
-        private List<Section> sections = new List<Section>();
+        public List<Section> Sections = new List<Section>();
         public static DuplicatingIni LoadIni(string iniFile)
         {
             return ParseIni(File.ReadAllText(iniFile));
@@ -30,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                     {
                         Header = trimmed.Trim('[', ']')
                     };
-                    di.sections.Add(currentSection);
+                    di.Sections.Add(currentSection);
                 }
                 else if (currentSection == null)
                 {
@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
         {
             StringBuilder sb = new StringBuilder();
             //bool isFirst = true;
-            foreach (var section in sections)
+            foreach (var section in Sections)
             {
                 //if (isFirst)
                 //{

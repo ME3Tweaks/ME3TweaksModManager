@@ -89,6 +89,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var source = singleMapping.Key;
                 var dest = singleMapping.Value;
                 Directory.CreateDirectory(Directory.GetParent(dest).FullName);
+                if (File.Exists(dest))
+                {
+                    FileAttributes attributes = File.GetAttributes(dest);
+
+                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        // Make the file RW
+                        attributes = attributes & ~FileAttributes.ReadOnly;
+                        File.SetAttributes(dest, attributes);
+                    }
+                }
+
                 File.Copy(source, dest, true);
                 fileCopiedCallback?.Invoke(dest);
             }

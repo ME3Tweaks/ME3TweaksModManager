@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (ModClassicUpdateCode > 0) return true;
                 //if (ModModMakerID > 0) return true; //Not available yet
-                //Nexus update check?
+                //Nexus update check? //Not available yet. Will likely require whitelisting.
 
                 return false;
             }
@@ -284,11 +284,10 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     //try to extract nexus mods ID
 
-                    string nexusId = ModWebsite.Substring(ModWebsite.IndexOf("nexusmods.com/masseffect")).Substring("nexusmods.com/masseffect".Length);// http:/
-                    if (!nexusId.StartsWith("/"))
-                    {
-                        nexusId = nexusId.Substring(nexusId.IndexOf("/")).TrimStart('/'); //3/mods/NUM (removes 3/)
-                    }
+                    string nexusId = ModWebsite.Substring(ModWebsite.IndexOf("nexusmods.com/")).Substring("nexusmods.com/".Length);// http:/
+
+                    //two slashes: end of masseffect/, end of mods/, end o
+                    nexusId = nexusId.Substring(nexusId.IndexOf("/")).TrimStart('/'); //mods/NUM (removes mods/)
                     nexusId = nexusId.Substring(nexusId.IndexOf("/")).TrimStart('/'); //mods/NUM (removes mods/)
 
                     if (int.TryParse(nexusId, out var nid))
@@ -297,7 +296,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
                     else
                     {
-                        nexusId = nexusId.Substring(0, nexusId.IndexOf('/'));
+                        nexusId = nexusId.Substring(0, nexusId.IndexOf('?'));
                         if (int.TryParse(nexusId, out var nid2))
                         {
                             NexusModID = nid2;

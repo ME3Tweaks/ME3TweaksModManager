@@ -54,7 +54,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_USER_CANCELED_MISSING_MODULES,
             INSTALL_FAILED_ALOT_BLOCKING,
             INSTALL_FAILED_REQUIRED_DLC_MISSING,
-            INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS
+            INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS,
+            NO_RESULT_CODE
         }
 
 
@@ -83,6 +84,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var gamePath = gameTarget.TargetPath;
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
 
+            Directory.CreateDirectory(gameDLCPath); //me1/me2 missing dlc might not have this folder
+
             //Check we can install
             var missingRequiredDLC = ModBeingInstalled.ValidateRequiredModulesAreInstalled(gameTarget);
             if (missingRequiredDLC.Count > 0)
@@ -90,6 +93,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING, missingRequiredDLC);
                 return;
             }
+
 
             //Check/warn on official headers
             if (!PrecheckHeaders(gameDLCPath, installationJobs))
@@ -273,7 +277,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 string installationRedirectCallback(string inArchivePath)
                 {
                     var redirectedPath = fullPathMappingDisk[inArchivePath];
-                    //Debug.WriteLine($"Redirecting {inArchivePath} to {redirectedPath}");
+                    Debug.WriteLine($"Redirecting {inArchivePath} to {redirectedPath}");
                     return redirectedPath;
                 }
 
@@ -371,13 +375,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Warning($"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
                 e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
             }
-            Analytics.TrackEvent("Installed a mod", new Dictionary<string, string>()
-            {
-                { "Mod name", $"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },
-                { "Installed from", ModBeingInstalled.IsInArchive ? "Archive" : "Library" },
-                { "Game", ModBeingInstalled.Game.ToString() },
-                { "Result", e.Result.ToString() }
-            });
         }
 
         private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action<string> FileInstalledCallback = null, string ForcedSourcePath = null)
@@ -540,8 +537,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Log.Error("An error occured during mod installation.\n" + App.FlattenException(e.Error));
             }
+
+            var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
             if (e.Result is ModInstallCompletedStatus mcis)
             {
+                telemetryResult = mcis;
                 //Success, canceled (generic and handled), ALOT canceled
                 InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
                 if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
@@ -551,7 +551,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show($"Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.", $"Installation suceeded, maybe", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Xceed.Wpf.Toolkit.MessageBox.Show($"Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.", $"Installation succeeded, maybe", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES)
                 {
@@ -560,6 +560,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
             {
+                telemetryResult = result;
                 //Failures with results
                 Log.Warning("Installation failed with status " + result.ToString());
                 switch (result)
@@ -587,6 +588,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 throw new Exception("Mod installer did not have return code. This should be caught and handled, but it wasn't.");
             }
+            Analytics.TrackEvent("Installed a mod", new Dictionary<string, string>()
+            {
+                { "Mod name", $"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },
+                { "Installed from", ModBeingInstalled.IsInArchive ? "Archive" : "Library" },
+                { "Game", ModBeingInstalled.Game.ToString() },
+                { "Result", telemetryResult.ToString() }
+            });
             OnClosing(DataEventArgs.Empty);
         }
 
@@ -624,16 +632,89 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            //Write check
+            //Write check
+            var canWrite = Utilities.IsDirectoryWritable(gameTarget.TargetPath);
+            if (!canWrite)
+            {
+                //needs write permissions
+                InstallationCancelled = true;
+                Xceed.Wpf.Toolkit.MessageBox.Show($"Your user account does not have write privileges to the game directory. You can grant your account privileges using the \"Grant write privleges to game directories\" option in the tools menu.", $"Cannot write to game directory", MessageBoxButton.OK, MessageBoxImage.Warning);
+                OnClosing(DataEventArgs.Empty);
+                return;
+            }
+
             //Detect incompatible DLC
+            var dlcMods = VanillaDatabaseService.GetInstalledDLCMods(gameTarget);
             if (ModBeingInstalled.IncompatibleDLC.Count > 0)
             {
                 //Check for incompatible DLC.
+                List<string> incompatibleDLC = new List<string>();
+                foreach (var incompat in ModBeingInstalled.IncompatibleDLC)
+                {
+                    if (dlcMods.Contains(incompat, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var tpmi = ThirdPartyServices.GetThirdPartyModInfo(incompat, ModBeingInstalled.Game);
+                        if (tpmi != null)
+                        {
+                            incompatibleDLC.Add($" - {incompat} ({tpmi.modname})");
+                        }
+                        else
+                        {
+                            incompatibleDLC.Add(" - " + incompat);
+
+                        }
+                    }
+                }
+
+                if (incompatibleDLC.Count > 0)
+                {
+                    string message = $"The following DLC mods are listed as incompatible with {ModBeingInstalled.ModName}:\n";
+                    message += string.Join('\n', incompatibleDLC);
+                    message += $"\n\nIn order to install {ModBeingInstalled.ModName}, the above listed Custom DLC mods must be removed first.\nYou can manage installed Custom DLC by clicking Target Info button.";
+                    InstallationCancelled = true;
+                    Xceed.Wpf.Toolkit.MessageBox.Show(message, $"Incompatible DLC detected", MessageBoxButton.OK, MessageBoxImage.Error);
+                    OnClosing(DataEventArgs.Empty);
+                    return;
+                }
             }
 
             //Detect outdated DLC
             if (ModBeingInstalled.OutdatedCustomDLC.Count > 0)
             {
+                //Check for incompatible DLC.
+                List<string> outdatedDLC = new List<string>();
+                foreach (var outdatedItem in ModBeingInstalled.OutdatedCustomDLC)
+                {
+                    if (dlcMods.Contains(outdatedItem, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var tpmi = ThirdPartyServices.GetThirdPartyModInfo(outdatedItem, ModBeingInstalled.Game);
+                        if (tpmi != null)
+                        {
+                            outdatedDLC.Add($" - {outdatedItem} ({tpmi.modname})");
+                        }
+                        else
+                        {
+                            outdatedDLC.Add(" - " + outdatedItem);
 
+                        }
+                    }
+                }
+
+                if (outdatedDLC.Count > 0)
+                {
+                    string message = $"The following DLC mods are listed as outdated/no longer relevant by {ModBeingInstalled.ModName} and will be removed upon installation:\n";
+                    message += string.Join('\n', outdatedDLC);
+                    message += $"\n\nClick yes to continue installing this {ModBeingInstalled.ModName}, or click no to abort installation.";
+                    InstallationCancelled = true;
+                    var result = Xceed.Wpf.Toolkit.MessageBox.Show(message, $"Outdated DLC detected", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.No)
+                    {
+                        InstallationCancelled = true;
+                        OnClosing(DataEventArgs.Empty);
+                        return;
+                    }
+                }
             }
 
             //See if any alternate options are available and display them even if they are all autos

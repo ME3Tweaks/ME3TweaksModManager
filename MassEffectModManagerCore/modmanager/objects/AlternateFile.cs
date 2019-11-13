@@ -48,6 +48,10 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public string SubstituteFile;
 
+        public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
+        public bool UIRequired => !IsManual && IsSelected;
+        public bool UINotApplicable => !IsManual && !IsSelected;
+
         //public const string OPERATION_SUBSTITUTE = "OP_SUBSTITUTE"; //swap a file in a job
         //public const string OPERATION_NOINSTALL = "OP_NOINSTALL"; //do not install a file
         //public const string OPERATION_INSTALL = "OP_INSTALL"; //install a file
