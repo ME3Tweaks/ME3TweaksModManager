@@ -337,6 +337,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CLog.Information("Main stage of mod installation has completed", Settings.LogModInstallation);
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
 
+            //Remove outdated custom DLC
+            foreach (var outdatedDLCFolder in ModBeingInstalled.OutdatedCustomDLC)
+            {
+                var outdatedDLCInGame = Path.Combine(gameDLCPath, outdatedDLCFolder);
+                if (Directory.Exists(outdatedDLCInGame))
+                {
+                    Log.Information("Deleting outdated custom DLC folder: " + outdatedDLCInGame);
+                    Utilities.DeleteFilesAndFoldersRecursively(outdatedDLCInGame);
+                }
+            }
+
             //Install supporting ASI files if necessary
             //Todo: Upgrade to version detection code from ME3EXP to prevent conflicts
 

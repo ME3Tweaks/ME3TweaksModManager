@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public string CurrentOperationText { get; set; }
+        public string CurrentOperationText { get; set; } = "Starting up";
 
         public bool IsBusy { get; set; }
         /// <summary>
@@ -775,7 +775,14 @@ namespace MassEffectModManagerCore
                     if (result)
                     {
                         Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Yes" } });
-                        Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                        try
+                        {
+                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("Error granting write permissions: " + App.FlattenException(e));
+                        }
                     }
                     else
                     {
