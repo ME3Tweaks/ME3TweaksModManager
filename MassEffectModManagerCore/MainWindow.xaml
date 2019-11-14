@@ -169,8 +169,8 @@
                         <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
                     </MenuItem>
                     <MenuItem Header="Grant write access to game directories" Command="{Binding GrantWriteAccessCommand}"/>
-                    <MenuItem Header="Run AutoTOC on game (ME3)" Name="AutoTOC_MenuItem" Command="{Binding AutoTOCCommand}"/>
-
+                    <MenuItem Header="Run AutoTOC on game (ME3)" Command="{Binding AutoTOCCommand}"/>
+                    <MenuItem Header="Enable console in ME1" Command="{Binding EnableME1ConsoleCommand}"/>
                     <Separator/>
                     <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
                     <MenuItem Header="ALOT Installer" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked">

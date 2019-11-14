@@ -62,12 +62,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllBasegame()
         {
-            return SelectedTarget.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress; //check if ifles being restored
+            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress; //check if ifles being restored
         }
 
         private void RestoreAllBasegame()
         {
             bool restore = false;
+
+
             if (SelectedTarget.ALOTInstalled)
             {
                 if (!Settings.DeveloperMode)
@@ -146,7 +148,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllSFARs()
         {
-            return SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
+            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
         private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
@@ -181,6 +183,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             bool deleteConfirmationCallback(InstalledDLCMod mod)
             {
+                if (Utilities.IsGameRunning(SelectedTarget.Game))
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Cannot delete mods while {Utilities.GetGameName(SelectedTarget.Game)} is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
                 if (SelectedTarget.ALOTInstalled)
                 {
                     var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Deleting {mod.ModName} while ALOT is installed will not cause the game to become broken, however you will not be able to install updates to ALOT without a full reinstallation (unsupported configuration).\n\nAre you sure you want to delete the DLC mod?", $"Deleting will put ALOT in unsupported configuration", MessageBoxButton.YesNo, MessageBoxImage.Error);
@@ -196,6 +203,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             bool restoreBasegamefileConfirmationCallback(string filepath)
             {
+                if (Utilities.IsGameRunning(SelectedTarget.Game))
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Cannot restore files while {Utilities.GetGameName(SelectedTarget.Game)} is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
                 if (SelectedTarget.ALOTInstalled && filepath.RepresentsPackageFilePath())
                 {
                     if (!Settings.DeveloperMode)
@@ -215,6 +227,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             bool restoreSfarConfirmationCallback(string sfarPath)
             {
+                if (Utilities.IsGameRunning(SelectedTarget.Game))
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Cannot restore files while {Utilities.GetGameName(SelectedTarget.Game)} is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+
                 if (SelectedTarget.ALOTInstalled)
                 {
                     if (!Settings.DeveloperMode)

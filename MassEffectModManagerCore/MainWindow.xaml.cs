@@ -173,6 +173,7 @@ namespace MassEffectModManagerCore
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
         public ICommand ME3UICompatibilityPackGeneratorCommand { get; set; }
+        public ICommand EnableME1ConsoleCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -194,6 +195,51 @@ namespace MassEffectModManagerCore
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new GenericCommand(RunAutoTOCOnTarget, HasME3Target);
             ME3UICompatibilityPackGeneratorCommand = new GenericCommand(RunCompatGenerator, CanRunCompatGenerator);
+            EnableME1ConsoleCommand = new GenericCommand(EnableME1Console, CanEnableME1Console);
+        }
+
+        private bool CanEnableME1Console()
+        {
+            var installed = InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1);
+            if (installed)
+            {
+                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOInput.ini");
+                return File.Exists(iniFile);
+                {
+
+                }
+            }
+            return false;
+        }
+
+        private void EnableME1Console()
+        {
+            var installed = InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1);
+            if (installed)
+            {
+                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOInput.ini");
+                if (File.Exists(iniFile))
+                {
+                    var ini = DuplicatingIni.LoadIni(iniFile);
+                    var engineConsole = ini.Sections.FirstOrDefault(x => x.Header == "Engine.Console");
+                    if (engineConsole != null)
+                    {
+                        var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == "ConsoleKey");
+                        if (consoleKey == null)
+                        {
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry("ConsoleKey=Tilde"));
+                        }
+
+                        var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == "TypeKey");
+                        if (typeKey == null)
+                        {
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry("TypeKey=Tab"));
+                        }
+
+                        File.WriteAllText(iniFile, ini.ToString());
+                    }
+                }
+            }
         }
 
         private void RunCompatGenerator()
@@ -403,7 +449,7 @@ namespace MassEffectModManagerCore
                 }
             };
             ShowBusyControl(installationInformation); //Todo: Support the progress bar updates in the queue
-            //installationInformation.ShowInfo();
+                                                      //installationInformation.ShowInfo();
         }
 
         private bool CanShowInstallInfo()
@@ -577,7 +623,7 @@ namespace MassEffectModManagerCore
             if (obj is string str && Enum.TryParse(str, out Mod.MEGame game))
             {
                 var target = GetCurrentTarget(game);
-                if (target != null)
+                if (target != null && !Utilities.IsGameRunning(game))
                 {
                     return File.Exists(Utilities.GetBinkw32File(target));
                 }
@@ -592,6 +638,12 @@ namespace MassEffectModManagerCore
             {
                 var target = GetCurrentTarget(game);
                 if (target == null) return; //can't toggle this
+                if (Utilities.IsGameRunning(game))
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install the binkw32 DLC bypass while {Utilities.GetGameName(game)} is running.", "Game running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 bool install = false;
                 switch (game)
                 {
@@ -667,7 +719,7 @@ namespace MassEffectModManagerCore
 
                     if (gameSelected == Mod.MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32 directory.
-                    //Test for cmmvanilla
+                                                                //Test for cmmvanilla
                     if (File.Exists(Path.Combine(result, "cmmvanilla")))
                     {
                         Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target because it has been marked as a backup (cmmvanilla file detected).", "Error adding target", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -860,7 +912,25 @@ namespace MassEffectModManagerCore
         private void UpdateBinkStatus(Mod.MEGame game)
         {
             var target = GetCurrentTarget(game);
-            if (target == null) return; //don't do anything
+            if (target == null)
+            {
+                switch (game)
+                {
+                    case Mod.MEGame.ME1:
+                        ME1ASILoaderInstalled = false;
+                        ME1ASILoaderText = "Game not installed";
+                        break;
+                    case Mod.MEGame.ME2:
+                        ME2ASILoaderInstalled = false;
+                        ME2ASILoaderText = "Game not installed";
+                        break;
+                    case Mod.MEGame.ME3:
+                        ME3ASILoaderInstalled = false;
+                        ME3ASILoaderText = "Game not installed";
+                        break;
+                }
+                return; //don't check or anything
+            }
             switch (game)
             {
                 case Mod.MEGame.ME1:
