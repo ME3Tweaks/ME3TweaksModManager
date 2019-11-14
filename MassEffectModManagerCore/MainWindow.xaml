@@ -93,6 +93,7 @@
                 </MenuItem>
                 <MenuItem Header="Mod Management" Padding="4">
                     <MenuItem Header="Import Mod">
+                        <MenuItem Header="Use drag and drop for faster import" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Header="Import mod from .7z/.rar/.zip" Command="{Binding ImportArchiveCommand}"/>
                         <MenuItem Header="Import already installed Custom DLC mod" IsEnabled="False"/>
                     </MenuItem>

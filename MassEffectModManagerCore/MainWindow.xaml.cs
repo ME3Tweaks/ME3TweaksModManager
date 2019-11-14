@@ -239,7 +239,7 @@ namespace MassEffectModManagerCore
             var result = m.ShowDialog(this);
             if (result.Value)
             {
-                Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Manual file selection" } });
+                Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Manual file selection" }, { "Filename", Path.GetFileName(m.FileName) } });
                 var archiveFile = m.FileName;
                 Log.Information("Opening archive user selected: " + archiveFile);
                 openModImportUI(archiveFile);
@@ -1513,7 +1513,7 @@ namespace MassEffectModManagerCore
                     case ".rar":
                     case ".7z":
                     case ".zip":
-                        Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Drag & drop" } });
+                        Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Drag & drop" }, { "Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;
                         //TPF, .mod, .mem
