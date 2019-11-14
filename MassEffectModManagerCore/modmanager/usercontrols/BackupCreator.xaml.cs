@@ -112,6 +112,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void BeginBackup()
             {
+                if (Utilities.IsGameRunning(BackupSourceTarget.Game))
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, $"Cannot backup {Utilities.GetGameName(BackupSourceTarget.Game)} while it is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + "Backup");
                 bw.DoWork += (a, b) =>
                 {

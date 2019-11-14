@@ -581,17 +581,43 @@ namespace MassEffectModManagerCore
 
         public static void OpenWebpage(string uri)
         {
-            ProcessStartInfo psi = new ProcessStartInfo
+            try
             {
-                FileName = uri,
-                UseShellExecute = true
-            };
-            Process.Start(psi);
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = uri,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception trying to open web page from system (typically means browser default is incorrectly configured by Windows): " + e.Message + ". Try opening the URL manually: " + uri);
+            }
         }
 
-        internal static string GetAppCrashHandledFile()
+        /// <summary>
+        /// Determines if a specific game is running. 
+        /// </summary>
+        /// <returns>True if running, false otherwise</returns>
+        public static bool IsGameRunning(Mod.MEGame gameID)
         {
-            return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH_HANDLED");
+            if (gameID == Mod.MEGame.ME1)
+            {
+                Process[] pname = Process.GetProcessesByName("MassEffect");
+                return pname.Length > 0;
+            }
+            if (gameID == Mod.MEGame.ME2)
+            {
+                Process[] pname = Process.GetProcessesByName("MassEffect2");
+                Process[] pname2 = Process.GetProcessesByName("ME2Game");
+                return pname.Length > 0 || pname2.Length > 0;
+            }
+            else
+            {
+                Process[] pname = Process.GetProcessesByName("MassEffect3");
+                return pname.Length > 0;
+            }
         }
 
         internal static string GetAppCrashFile()
@@ -611,6 +637,14 @@ namespace MassEffectModManagerCore
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             var res = assembly.GetManifestResourceNames();
             return assembly.GetManifestResourceStream(assemblyResource);
+        }
+
+        internal static object GetGameName(Mod.MEGame game)
+        {
+            if (game == Mod.MEGame.ME1) return "Mass Effect";
+            if (game == Mod.MEGame.ME2) return "Mass Effect 2";
+            if (game == Mod.MEGame.ME3) return "Mass Effect 3";
+            return "Error: Unknown game";
         }
 
         internal static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite)

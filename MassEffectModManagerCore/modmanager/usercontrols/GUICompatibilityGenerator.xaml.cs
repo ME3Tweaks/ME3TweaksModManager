@@ -60,6 +60,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (installedDLCMods.Count < numMods && installedDLCMods.Count > 0)
                 {
                     //We have UI mod(s) installed and at least one other DLC mod.
+
                 }
             };
             bw.RunWorkerAsync();

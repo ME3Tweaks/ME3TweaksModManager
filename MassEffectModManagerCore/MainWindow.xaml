@@ -100,7 +100,7 @@
                     <MenuItem Header="Download ModMaker mod" IsEnabled="False"/>
                     <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click"/>
                     <MenuItem Header="Custom DLC Conflict Detector" IsEnabled="False"/>
-                    <MenuItem Header="Interface Scaling/Controller mod compatibility pack generator (ME3)" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" IsEnabled="False"  ToolTip="Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary"/>
+                    <MenuItem Header="Interface Scaling/Controller mod compatibility pack generator (ME3)" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary"/>
                     <MenuItem Header="Batch Mod Installer" IsEnabled="False"/>
                     <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click"/>
                     <MenuItem Header="Mixins (for ME3)" IsEnabled="False">
@@ -170,8 +170,8 @@
                         <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
                     </MenuItem>
                     <MenuItem Header="Grant write access to game directories" Command="{Binding GrantWriteAccessCommand}"/>
-                    <MenuItem Header="Run AutoTOC on game (ME3)" Name="AutoTOC_MenuItem" Command="{Binding AutoTOCCommand}"/>
-
+                    <MenuItem Header="Run AutoTOC on game (ME3)" Command="{Binding AutoTOCCommand}"/>
+                    <MenuItem Header="Enable console in ME1" Command="{Binding EnableME1ConsoleCommand}"/>
                     <Separator/>
                     <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
                     <MenuItem Header="ALOT Installer" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked">

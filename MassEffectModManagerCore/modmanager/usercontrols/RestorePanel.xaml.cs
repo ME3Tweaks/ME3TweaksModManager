@@ -58,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ClosePanel()
         {
-            OnClosing(new DataEventArgs(GameRestoreControllers.Any(x=>x.RefreshTargets)));
+            OnClosing(new DataEventArgs(GameRestoreControllers.Any(x => x.RefreshTargets)));
         }
 
         private bool CanClose() => !GameRestoreControllers.Any(x => x.RestoreInProgress);
@@ -132,6 +132,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void BeginRestore()
             {
+                if (Utilities.IsGameRunning(Game))
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, $"Cannot restore {Utilities.GetGameName(Game)} while it is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + "Backup");
                 bw.DoWork += (a, b) =>
                 {
@@ -210,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (fileBeingCopied.Contains("\\cmmbackup\\")) return false; //do not copy cmmbackup files
                             Debug.WriteLine(fileBeingCopied);
-                            if (fileBeingCopied.StartsWith(dlcFolderpath,StringComparison.InvariantCultureIgnoreCase))
+                            if (fileBeingCopied.StartsWith(dlcFolderpath, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 //It's a DLC!
                                 string dlcname = fileBeingCopied.Substring(dlcSubStringLen);
