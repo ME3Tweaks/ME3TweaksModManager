@@ -172,6 +172,7 @@ namespace MassEffectModManagerCore
         public ICommand RestoreModFromME3TweaksCommand { get; set; }
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
+        public ICommand ME3UICompatibilityPackGeneratorCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -192,6 +193,22 @@ namespace MassEffectModManagerCore
             RestoreModFromME3TweaksCommand = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new GenericCommand(RunAutoTOCOnTarget, HasME3Target);
+            ME3UICompatibilityPackGeneratorCommand = new GenericCommand(RunCompatGenerator, CanRunCompatGenerator);
+        }
+
+        private void RunCompatGenerator()
+        {
+            var guiCompatibilityGenerator = new GUICompatibilityGenerator(SelectedGameTarget);
+            guiCompatibilityGenerator.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(guiCompatibilityGenerator);
+        }
+
+        private bool CanRunCompatGenerator()
+        {
+            return SelectedGameTarget?.Game == Mod.MEGame.ME3;
         }
 
         public bool HasAtLeastOneTarget() => InstallationTargets.Any();
@@ -969,7 +986,7 @@ namespace MassEffectModManagerCore
             if (allModsInManifest != null)
             {
                 var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
-                if (updates != null && updates.Count > 0)
+                if (updates.Count > 0)
                 {
                     Application.Current.Dispatcher.Invoke(delegate
                     {
