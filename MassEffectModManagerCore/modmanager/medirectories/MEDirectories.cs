@@ -57,15 +57,17 @@ namespace MassEffectModManagerCore.GameDirectories
             switch (game)
             {
                 case Mod.MEGame.ME1:
-                    return ME1Directory.BioGamePath;
+                    return ME1Directory.bioGamePath;
                 case Mod.MEGame.ME2:
-                    return ME2Directory.BioGamePath;
+                    return ME2Directory.bioGamePath;
                 case Mod.MEGame.ME3:
-                    return ME3Directory.BIOGamePath;
+                    return ME3Directory.biogamePath;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(game), game, null);
             }
         }
+
+        public static string BioGamePath(GameTarget target) => Path.Combine(target.TargetPath, "BioGame"); //all games use same biogame path.
 
         public static Dictionary<string, string> OfficialDLCNames(Mod.MEGame game)
         {

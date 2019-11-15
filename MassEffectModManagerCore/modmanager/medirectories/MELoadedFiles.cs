@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using IniParser.Parser;
 using MassEffectModManagerCore.modmanager;
-
+using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
 {
@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.GameDirectories
 
             foreach (string directory in GetEnabledDLC(game).OrderBy(dir => GetMountPriority(dir, game)).Prepend(MEDirectories.BioGamePath(game)))
             {
-                foreach (string filePath in GetCookedFiles(game, directory,includeTFC))
+                foreach (string filePath in GetCookedFiles(game, directory, includeTFC))
                 {
                     string fileName = Path.GetFileName(filePath);
                     if (fileName != null) loadedFiles[fileName] = filePath;
@@ -51,9 +51,33 @@ namespace MassEffectModManagerCore.GameDirectories
             return loadedFiles;
         }
 
+        /// <summary>
+        /// Gets a Dictionary of all loaded files in the given target. Key is the filename, value is file path
+        /// </summary>
+        /// <param name="target">Game target</param>
+        /// <returns>Mapping of files</returns>
+        public static Dictionary<string, string> GetFilesLoadedInGame(GameTarget target, bool includeTFC = false, bool includeBasegame = true)
+        {
+            Mod.MEGame game = target.Game;
+            //make dictionary from basegame files
+            var loadedFiles = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var directories = GetEnabledDLC(target).OrderBy(dir => GetMountPriority(dir, target.Game));
+            if (includeBasegame) directories.Prepend(MEDirectories.BioGamePath(target));
+            foreach (string directory in directories)
+            {
+                foreach (string filePath in GetCookedFiles(target.Game, directory, includeTFC))
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    if (fileName != null) loadedFiles[fileName] = filePath;
+                }
+            }
+
+            return loadedFiles;
+        }
+
         public static IEnumerable<string> GetAllFiles(Mod.MEGame game) => GetEnabledDLC(game).Prepend(MEDirectories.BioGamePath(game)).SelectMany(directory => GetCookedFiles(game, directory));
 
-        private static IEnumerable<string> GetCookedFiles(Mod.MEGame game, string directory, bool includeTFCs = false)
+        public static IEnumerable<string> GetCookedFiles(Mod.MEGame game, string directory, bool includeTFCs = false)
         {
             if (game == Mod.MEGame.ME1)
                 return ME1FilePatterns.SelectMany(pattern => Directory.EnumerateFiles(Path.Combine(directory, "CookedPC"), pattern, SearchOption.AllDirectories));
@@ -75,6 +99,16 @@ namespace MassEffectModManagerCore.GameDirectories
         public static IEnumerable<string> GetEnabledDLC(Mod.MEGame game, string directoryOverride = null) =>
             Directory.Exists(MEDirectories.DLCPath(game))
                 ? Directory.EnumerateDirectories(directoryOverride ?? MEDirectories.DLCPath(game)).Where(dir => IsEnabledDLC(dir, game))
+                : Enumerable.Empty<string>();
+
+        /// <summary>
+        /// Gets the base DLC directory of each unpacked DLC/mod that will load in game (eg. C:\Program Files (x86)\Origin Games\Mass Effect 3\BIOGame\DLC\DLC_EXP_Pack001)
+        /// Directory Override is used to use a custom path, for things like TFC Compactor, where the directory ME3Exp is pointing to may not be the one you want to use.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<string> GetEnabledDLC(GameTarget target, string directoryOverride = null) =>
+            Directory.Exists(MEDirectories.DLCPath(target))
+                ? Directory.EnumerateDirectories(directoryOverride ?? MEDirectories.DLCPath(target)).Where(dir => IsEnabledDLC(dir, target.Game))
                 : Enumerable.Empty<string>();
 
         public static string GetMountDLCFromDLCDir(string dlcDirectory, Mod.MEGame game) => Path.Combine(dlcDirectory, game == Mod.MEGame.ME3 ? "CookedPCConsole" : "CookedPC", "Mount.dlc");

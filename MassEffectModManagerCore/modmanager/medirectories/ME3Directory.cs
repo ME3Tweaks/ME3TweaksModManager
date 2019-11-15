@@ -27,7 +27,7 @@ namespace MassEffectModManagerCore.GameDirectories
                 _gamePath = value;
             }
         }
-        public static string BIOGamePath => gamePath != null ? gamePath.Contains("biogame", StringComparison.OrdinalIgnoreCase) ? gamePath : Path.Combine(gamePath, @"BIOGame\") : null;
+        public static string biogamePath => gamePath != null ? gamePath.Contains("biogame", StringComparison.OrdinalIgnoreCase) ? gamePath : Path.Combine(gamePath, @"BIOGame\") : null;
         public static string tocFile => gamePath != null ? Path.Combine(gamePath, @"BIOGame\PCConsoleTOC.bin") : null;
         public static string cookedPath => gamePath != null ? Path.Combine(gamePath, @"BIOGame\CookedPCConsole\") : "Not Found";
         public static string CookedPath(GameTarget target) => Path.Combine(target.TargetPath, @"BioGame\CookedPCConsole");

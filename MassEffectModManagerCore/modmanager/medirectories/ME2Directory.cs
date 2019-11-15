@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.GameDirectories
             }
         }
 
-        public static string BioGamePath => gamePath != null ? gamePath.Contains("biogame", StringComparison.OrdinalIgnoreCase) ? gamePath : Path.Combine(gamePath, @"BioGame\") : null;
+        public static string bioGamePath => gamePath != null ? gamePath.Contains("biogame", StringComparison.OrdinalIgnoreCase) ? gamePath : Path.Combine(gamePath, @"BioGame\") : null;
         public static string cookedPath => gamePath != null ? Path.Combine(gamePath,  @"BioGame\CookedPC\") : "Not Found";
         public static string CookedPath(GameTarget target) => Path.Combine(target.TargetPath, @"BioGame\CookedPC");
 
