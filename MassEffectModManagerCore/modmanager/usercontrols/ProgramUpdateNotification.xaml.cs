@@ -39,6 +39,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string PrimaryDownloadLink { get; }
         public string BackupDownloadLink { get; }
         public string UpdateMessage { get; set; } = "An update to ME3Tweaks Mod Manager is available.";
+        private string ChangelogLink;
         public ProgramUpdateNotification()
         {
             DataContext = this;
@@ -46,6 +47,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Changelog = GetPlainTextFromHtml(App.ServerManifest["release_notes"]);
             PrimaryDownloadLink = App.ServerManifest["download_link2"];
             BackupDownloadLink = App.ServerManifest["download_link"];
+            App.ServerManifest.TryGetValue("changelog_link", out ChangelogLink);
             LoadCommands();
             InitializeComponent();
         }
@@ -57,11 +59,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ProgressIndeterminate { get; private set; }
         public ICommand NotNowCommand { get; set; }
         public ICommand StartUpdateCommand { get; set; }
+        public ICommand ViewChangelogCommand { get; set; }
 
         private void LoadCommands()
         {
             NotNowCommand = new GenericCommand(CloseDialog, TaskNotRunning);
             StartUpdateCommand = new GenericCommand(StartUpdate, CanStartUpdate);
+            ViewChangelogCommand = new GenericCommand(ViewChangelog, CanViewChangelog);
+        }
+
+        private bool CanViewChangelog() => ChangelogLink != null;
+
+        private void ViewChangelog()
+        {
+            Utilities.OpenWebpage(ChangelogLink);
         }
 
         private void StartUpdate()

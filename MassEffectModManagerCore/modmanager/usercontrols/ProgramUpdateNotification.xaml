@@ -34,7 +34,8 @@
             <ProgressBar Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}" IsIndeterminate="{Binding ProgressIndeterminate}" Height="16"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
-            <Button Content="Not now" Padding="4" Margin="5,0" Command="{Binding NotNowCommand}"/>
+            <Button Content="Not now" Padding="4" Command="{Binding NotNowCommand}"/>
+            <Button Content="View changelog" Margin="5,0" Padding="7,5"  Command="{Binding ViewChangelogCommand}"/>
             <Button Content="Install update" Padding="4" Width="190" Command="{Binding StartUpdateCommand}"/>
         </StackPanel>
     </StackPanel>
