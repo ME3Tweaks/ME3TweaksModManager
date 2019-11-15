@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using ME3Explorer.Packages;
 using static MassEffectModManagerCore.modmanager.Mod;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -93,9 +94,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker("GUICompatibilityScanner");
             bw.DoWork += (a, b) =>
             {
+                //Ensure UI libraries
+
+
+
                 var installedDLCMods = VanillaDatabaseService.GetInstalledDLCMods(target);
                 var numMods = installedDLCMods.Count;
                 var uiModInstalled = installedDLCMods.Intersect(DLCUIModFolderNames).Any();
+                var dlcRoot = MEDirectories.DLCPath(target);
                 if (uiModInstalled)
                 {
                     installedDLCMods = installedDLCMods.Except(DLCUIModFolderNames).ToList();
@@ -104,7 +110,30 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //We have UI mod(s) installed and at least one other DLC mod.
                         var supercedanceList = getFileSupercedances();
-                        var count = supercedanceList.Where(x => x.Value.Count > 1).Count();
+                        //Find GUIs
+
+                        foreach (var pair in supercedanceList)
+                        {
+                            var firstNonUIModFile = pair.Value.FirstOrDefault(x => !DLCUIModFolderNames.Contains(x));
+                            if (firstNonUIModFile != null)
+                            {
+                                //Scan file.
+                                var packagefile = Path.Combine(dlcRoot, pair.Key, target.Game == MEGame.ME3 ? "CookedPCConsole" : "CookedPC", firstNonUIModFile);
+                                if (!File.Exists(packagefile)) throw new Exception("Package file for inspecting GUIs in was not found!");
+                                var package = MEPackageHandler.OpenMEPackage(packagefile);
+                                var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == "GFxMovieInfo").ToList();
+                                if (guiExports.Count > 0)
+                                {
+                                    //potential item needing replacement
+                                    //Check GUI library to see if we have anything.
+                                }
+                            }
+
+                            for (int i = 0; i < pair.Value.Count; i++)
+                            {
+
+                            }
+                        }
                     }
                     b.Result = GUICompatibilityThreadResult.NOT_REQUIRED;
                 }

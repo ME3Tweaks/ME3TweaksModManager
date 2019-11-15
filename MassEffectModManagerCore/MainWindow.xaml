@@ -74,7 +74,7 @@
             <Menu DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" >
                 <MenuItem Header="Actions" Padding="4">
                     <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
-                    <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click"/>
+                    <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click" ToolTip="Opens ME3Tweaks.com"/>
                     <MenuItem Header="Open Memory Analyzer" IsEnabled="True" Click="OpenMemoryAnalyzer_Click" Visibility="{x:Static local:App.IsDebugVisibility}"/>
                     <MenuItem Header="Options">
                         <MenuItem Header="Mod Manager" Style="{StaticResource MenuItemHeaderStyle}"/>
@@ -87,22 +87,22 @@
                         <MenuItem Name="LogModInstall_MenuItem" Header="Log Mod Installation" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True"/>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="Check for content updates" Command="{Binding CheckForContentUpdatesCommand}"/>
-                    <MenuItem Header="Reloads Mods" Command="{Binding ReloadModsCommand}"/>
+                    <MenuItem Header="Check for content updates" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="Checks ME3Tweaks for updates to various services"/>
+                    <MenuItem Header="Reloads Mods" Command="{Binding ReloadModsCommand}" ToolTip="Reloads mods from the mod library"/>
                     <MenuItem Header="Exit" Click="ExitApplication_Click"/>
                 </MenuItem>
                 <MenuItem Header="Mod Management" Padding="4">
                     <MenuItem Header="Import Mod">
                         <MenuItem Header="Use drag and drop for faster import" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="Import mod from .7z/.rar/.zip" Command="{Binding ImportArchiveCommand}"/>
+                        <MenuItem Header="Import mod from .7z/.rar/.zip" Command="{Binding ImportArchiveCommand}" ToolTip="Open file browser for selecting mods stored in archive files.&#10;You can drag and drop files onto the interface to import them faster."/>
                         <MenuItem Header="Import already installed Custom DLC mod" IsEnabled="False"/>
                     </MenuItem>
                     <MenuItem Header="Download ModMaker mod" IsEnabled="False"/>
-                    <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click"/>
+                    <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click" ToolTip="Manage ASI mods. For advanced users only."/>
                     <MenuItem Header="Custom DLC Conflict Detector" IsEnabled="False"/>
                     <MenuItem Header="Interface Scaling/Controller mod compatibility pack generator (ME3)" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary"/>
                     <MenuItem Header="Batch Mod Installer" IsEnabled="False"/>
-                    <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click"/>
+                    <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click" ToolTip="Opens the mod library folder"/>
                     <MenuItem Header="Mixins (for ME3)" IsEnabled="False">
                         <MenuItem Header="MixIn Library"/>
                         <MenuItem Header="Clear Mixin Cache"/>
@@ -169,33 +169,33 @@
                         <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
                     </MenuItem>
-                    <MenuItem Header="Grant write access to game directories" Command="{Binding GrantWriteAccessCommand}"/>
-                    <MenuItem Header="Run AutoTOC on game (ME3)" Command="{Binding AutoTOCCommand}"/>
-                    <MenuItem Header="Enable console in ME1" Command="{Binding EnableME1ConsoleCommand}"/>
+                    <MenuItem Header="Grant write access to game directories" Command="{Binding GrantWriteAccessCommand}" ToolTip="Grants write permissions to game directories"/>
+                    <MenuItem Header="Run AutoTOC on game (ME3)" Command="{Binding AutoTOCCommand}" ToolTip="Runs AutoTOC on the current ME3 target (or first ME3 one in the list if the current target is not ME3)"/>
+                    <MenuItem Header="Enable console in ME1" Command="{Binding EnableME1ConsoleCommand}" ToolTip="Enables full console on ~ and miniconsole on TAB"/>
                     <Separator/>
                     <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="ALOT Installer" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked">
+                    <MenuItem Header="ALOT Installer" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Installer for A Lot of Textures, a graphical upgrade mod supporting all three games">
                         <MenuItem.Icon>
                             <Image Source="/modmanager/toolicons/alot_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Mass Effect INI Modder" Name="MassEffectIniModder_MenuItem" Click="LaunchExternalTool_Clicked">
+                    <MenuItem Header="Mass Effect INI Modder" Name="MassEffectIniModder_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Tool for configuring many different settings for Mass Effect">
                         <MenuItem.Icon>
                             <Image Source="/modmanager/toolicons/masseffectinimodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
                         </MenuItem.Icon>
 
                     </MenuItem>
-                    <MenuItem Header="Mass Effect Modder" Name="MassEffectModder_MenuItem" Click="LaunchExternalTool_Clicked">
+                    <MenuItem Header="Mass Effect Modder" Name="MassEffectModder_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Texture browser and installer">
                         <MenuItem.Icon>
                             <Image Source="/modmanager/toolicons/masseffectmodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Mass Effect Randomizer" Name="MassEffectRandomizer_MenuItem" Click="LaunchExternalTool_Clicked">
+                    <MenuItem Header="Mass Effect Randomizer" Name="MassEffectRandomizer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Randomizer for the first Mass Effect game">
                         <MenuItem.Icon>
                             <Image Source="/modmanager/toolicons/masseffectrandomizer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="ME3Explorer - ME3Tweaks Fork" Name="ME3Explorer_MenuItem" Click="LaunchExternalTool_Clicked">
+                    <MenuItem Header="ME3Explorer - ME3Tweaks Fork" Name="ME3Explorer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Toolset for developing Mass Effect trilogy mods">
                         <MenuItem.Icon>
                             <Image Source="/modmanager/toolicons/me3explorer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
                         </MenuItem.Icon>

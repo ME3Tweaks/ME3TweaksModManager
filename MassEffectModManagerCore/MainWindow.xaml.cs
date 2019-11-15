@@ -205,9 +205,6 @@ namespace MassEffectModManagerCore
             {
                 var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOInput.ini");
                 return File.Exists(iniFile);
-                {
-
-                }
             }
             return false;
         }
@@ -236,7 +233,20 @@ namespace MassEffectModManagerCore
                             engineConsole.Entries.Add(new DuplicatingIni.IniEntry("TypeKey=Tab"));
                         }
 
-                        File.WriteAllText(iniFile, ini.ToString());
+
+                        try
+                        {
+                            File.WriteAllText(iniFile, ini.ToString());
+                            Analytics.TrackEvent("Enabled the ME1 console", new Dictionary<string, string>() { { "Succeeded", "true" } });
+                            Xceed.Wpf.Toolkit.MessageBox.Show(this, "Console enabled.\nPress ~ to open the full size console.\nPress TAB to open the mini console.", "Console enabled");
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("Unable to enable console: " + e.Message);
+                            Analytics.TrackEvent("Enabled the ME1 console", new Dictionary<string, string>() { { "Succeeded", "false" } });
+                            Crashes.TrackError(e);
+                            Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to modify bioinput.ini: " + e.Message, "Could not enable console", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                 }
             }
@@ -254,7 +264,8 @@ namespace MassEffectModManagerCore
 
         private bool CanRunCompatGenerator()
         {
-            return SelectedGameTarget?.Game == Mod.MEGame.ME3;
+            //disable in this build
+            return false && SelectedGameTarget?.Game == Mod.MEGame.ME3;
         }
 
         public bool HasAtLeastOneTarget() => InstallationTargets.Any();
@@ -333,13 +344,6 @@ namespace MassEffectModManagerCore
             archiveDeploymentPane.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is string result)
-                {
-                    if (result == "ALOTInstaller")
-                    {
-                        LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
-                    }
-                }
             };
             ShowBusyControl(archiveDeploymentPane);
         }
@@ -701,6 +705,7 @@ namespace MassEffectModManagerCore
 
         private void AddTarget()
         {
+            Log.Information("User is adding new modding target");
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = $"Select game executable";
             string filter = $"Game executable|MassEffect.exe;MassEffect2.exe;MassEffect3.exe";
@@ -727,13 +732,25 @@ namespace MassEffectModManagerCore
                     }
                     var pendingTarget = new GameTarget(gameSelected, result, false);
                     string failureReason = pendingTarget.ValidateTarget();
+
                     if (failureReason == null)
                     {
+                        Analytics.TrackEvent("Attempted to add game target", new Dictionary<string, string>() {
+                            { "Game", pendingTarget.Game.ToString() },
+                            { "Result", "Success" },
+                            { "Supported", pendingTarget.Supported.ToString() }
+                        });
                         Utilities.AddCachedTarget(pendingTarget);
                         PopulateTargets();
                     }
                     else
                     {
+                        Analytics.TrackEvent("Attempted to add game target", new Dictionary<string, string>() {
+                            { "Game", pendingTarget.Game.ToString() },
+                            { "Result", "Failed, "+failureReason },
+                            { "Supported", pendingTarget.Supported.ToString() }
+                        });
+                        Log.Error("Could not add target: " + failureReason);
                         Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target:\n" + failureReason, "Error adding target", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
@@ -1530,6 +1547,11 @@ namespace MassEffectModManagerCore
         {
             if (tool != null)
             {
+                Analytics.TrackEvent("Launched external tool", new Dictionary<string, string>()
+                {
+                    { "Tool name", tool },
+                    { "Arguments", arguments }
+                });
                 var exLauncher = new ExternalToolLauncher(tool, arguments);
                 exLauncher.Close += (a, b) =>
                 {
@@ -1563,6 +1585,11 @@ namespace MassEffectModManagerCore
                             //rescan
                             PopulateTargets(SelectedGameTarget);
                         }
+                        Analytics.TrackEvent("Changed to non-active target", new Dictionary<string, string>()
+                        {
+                            {"New target", SelectedGameTarget.Game.ToString() },
+                            {"ALOT Installed", SelectedGameTarget.ALOTInstalled.ToString()}
+                        });
                     }
                     catch (Win32Exception ex)
                     {

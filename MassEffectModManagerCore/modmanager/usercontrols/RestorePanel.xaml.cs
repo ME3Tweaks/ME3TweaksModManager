@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 
@@ -284,13 +285,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             switch (result)
                             {
                                 case RestoreResult.ERROR_COULD_NOT_CREATE_DIRECTORY:
+                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
+                                        { "Game", Game.ToString() },
+                                        { "Result", "Failure, Could not create target directory" }
+                                    });
                                     Xceed.Wpf.Toolkit.MessageBox.Show("Could not create the game directory after it was deleted due to an error. View the logs from the help menu for more information.", "Error restoring game", MessageBoxButton.OK, MessageBoxImage.Error);
                                     break;
                                 case RestoreResult.ERROR_COULD_NOT_DELETE_GAME_DIRECTORY:
+                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
+                                        { "Game", Game.ToString() },
+                                        { "Result", "Failure, Could not delete existing game directory" }
+                                    });
                                     Xceed.Wpf.Toolkit.MessageBox.Show("Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted. View the logs from the help menu for more information.", "Error restoring game", MessageBoxButton.OK, MessageBoxImage.Error);
                                     break;
                                 case RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY:
+                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
+                                        { "Game", Game.ToString() },
+                                        { "Result", "Failure, Excpetion deleting existing game directory" }
+                                    });
                                     Xceed.Wpf.Toolkit.MessageBox.Show("An error occured while deleting the game directory. View the logs from the help menu for more information.", "Error restoring game", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    break;
+                                case RestoreResult.RESTORE_OK:
+                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
+                                        { "Game", Game.ToString() },
+                                        { "Result", "Success" }
+                                    });
                                     break;
                             }
                         }
@@ -320,6 +339,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 return;
                             }
                         }
+
+                        Analytics.TrackEvent("Chose to restore game to custom location", new Dictionary<string, string>() {{"Game", Game.ToString()}});
+                        
                     }
                     else
                     {

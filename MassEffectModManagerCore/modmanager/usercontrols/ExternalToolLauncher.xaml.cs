@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.AppCenter.Analytics;
 using Octokit;
 using Serilog;
 using SevenZip;
@@ -23,6 +24,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ExternalToolLauncher : MMBusyPanelBase
     {
+        //have to be const apparently
         public const string ME3Explorer = "ME3Explorer";
         public const string ALOTInstaller = "ALOT Installer";
         public const string MEIM = "Mass Effect INI Modder";
@@ -73,6 +75,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void DownloadTool(string localToolFolderName, Release latestRelease, string executable)
         {
+            Analytics.TrackEvent("Downloading new external tool", new Dictionary<string, string>()
+            {
+                {"Tool name", Path.GetFileName(executable) },
+                {"Version", latestRelease.TagName}
+            });
             var toolName = tool.Replace(" ", "");
             Action = "Downloading " + tool;
             PercentVisibility = Visibility.Visible;
@@ -115,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             PercentDownloaded = 0;
                             void progressCallback(object sender, ProgressEventArgs progress)
                             {
-                                PercentDownloaded = (int) progress.PercentDone;
+                                PercentDownloaded = (int)progress.PercentDone;
                             };
                             archiveFile.Extracting += progressCallback;
                             archiveFile.ExtractArchive(outputDiretory); // extract all
@@ -130,6 +137,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LaunchTool(string localExecutable)
         {
             Action = "Launching " + tool;
+            Analytics.TrackEvent("Launching tool", new Dictionary<string, string>()
+            {
+                {"Tool name", Path.GetFileName(localExecutable) }
+            });
             PercentVisibility = Visibility.Collapsed;
             PercentDownloaded = 0;
             Log.Information($"Launching: {localExecutable} {arguments}");

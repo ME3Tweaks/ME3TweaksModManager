@@ -16,6 +16,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.windows;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -259,6 +260,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3CMM, "VanillaCopyLocation", backupPath);
                                 break;
                         }
+                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
+                            { "Game", Game.ToString() },
+                            { "Result", "Success" }
+                        });
+
                         EndBackup();
                         return;
                     }
@@ -266,10 +272,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (!isVanilla)
                     {
                         //Show UI for non vanilla
+                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
+                            { "Game", Game.ToString() },
+                            { "Result", "Failure, Game modified" }
+                        });
                         b.Result = (nonVanillaFiles, "Cannot backup modified game", "The following files do not match the vanilla database and appear to be modified. Due to these files being modified, a backup cannot be taken of this installation.");
                     }
                     else if (!isDLCConsistent)
                     {
+                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
+                            { "Game", Game.ToString() },
+                            { "Result", "Failure, DLC inconsistent" }
+                        });
                         if (BackupSourceTarget.Supported)
                         {
                             b.Result = (inconsistentDLC, "Inconsistent DLC detected", "The following DLC are in an inconsistent state; they have a packed SFAR file but contain unpacked game files. The configuration of these DLC are not supported, the unpacked files must be manually removed.");
@@ -281,13 +295,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else if (dlcModsInstalled.Count > 0)
                     {
-                        b.Result = (dlcModsInstalled, "DLC mods are installed", "The following DLC folders were detected that are not part of the official game by BioWare. Backups cannot include DLC mods and must be unmodified.");
-
+                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
+                            { "Game", Game.ToString() },
+                            { "Result", "Failure, DLC mods found" }
+                        });
+                        b.Result = (dlcModsInstalled, "DLC mods are installed", "The following DLC folders were detected that are not part of the official game by BioWare. Backups cannot include DLC mods - the game must be unmodified.");
                     }
                     EndBackup();
                 };
                 bw.RunWorkerCompleted += (a, b) =>
                 {
+
                     if (b.Result is (List<string> listItems, string title, string text))
                     {
                         ListDialog ld = new ListDialog(listItems, title, text, window);
