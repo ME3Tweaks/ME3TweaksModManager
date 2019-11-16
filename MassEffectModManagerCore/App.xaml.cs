@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using System.Linq;
 
 namespace MassEffectModManagerCore
 {
@@ -60,15 +61,34 @@ namespace MassEffectModManagerCore
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            //API keys are not stored in the git repository for Mod Manager.
-            //You will need to provide your own keys for use by defining public properties
-            //in a partial APIKeys class.
-#if !DEBUG
-            var props = typeof(APIKeys).GetProperties();
+            #if !DEBUG
+
             if (APIKeys.HasAppCenterKey)
             {
-                AppCenter.Start(APIKeys.AppCenterKey,
-                                   typeof(Analytics), typeof(Crashes));
+                Crashes.GetErrorAttachments = (ErrorReport report) =>
+                {
+
+                    var attachments = new List<ErrorAttachmentLog>();
+                    // Attach some text.
+                    var logFile = new DirectoryInfo(LogDir)
+                                 .GetFiles("*.txt")
+                                 .OrderByDescending(f => f.LastWriteTime)
+                                 .FirstOrDefault();
+                    if (logFile != null && File.Exists(logFile.FullName))
+                    {
+                        string log = Utilities.ReadLockedTextFile(logFile.FullName);
+                        if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                        {
+                            attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
+                        }
+                    }
+                    // Attach binary data.
+                    //var fakeImage = System.Text.Encoding.Default.GetBytes("Fake image");
+                    //ErrorAttachmentLog binaryLog = ErrorAttachmentLog.AttachmentWithBinary(fakeImage, "ic_launcher.jpeg", "image/jpeg");
+
+                    return attachments;
+                };
+                AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
             }
 #endif
         }
@@ -101,7 +121,7 @@ namespace MassEffectModManagerCore
                 //Parsed<Options> parsedCommandLineArgs = null;
                 string updateDestinationPath = null;
 
-                #region Command line
+#region Command line
                 if (args.Length > 1)
                 {
                     var result = Parser.Default.ParseArguments<Options>(args);
@@ -148,7 +168,7 @@ namespace MassEffectModManagerCore
                         }
                     }
                 }
-                #endregion
+#endregion
 
 
 
@@ -164,7 +184,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Application boot: " + DateTime.UtcNow.ToString());
                 Log.Information("Executable location: " + ExecutableLocation);
 
-                #region Update mode boot
+#region Update mode boot
                 if (updateDestinationPath != null)
                 {
                     Log.Information(" >> In update mode. Update destination: " + updateDestinationPath);
@@ -209,7 +229,7 @@ namespace MassEffectModManagerCore
                     Environment.Exit(0);
                     Current.Shutdown();
                 }
-                #endregion
+#endregion
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                new FrameworkPropertyMetadata(true));
 
