@@ -203,18 +203,26 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             string[] objectInfoFiles = { "ME1ObjectInfo.json", "ME2ObjectInfo.json", "ME3ObjectInfo.json" };
             string localBaseDir = Utilities.GetObjectInfoFolder();
-            foreach (var info in objectInfoFiles)
+            try
             {
-                var localPath = Path.Combine(localBaseDir, info);
-                if (!File.Exists(localPath))
+                foreach (var info in objectInfoFiles)
                 {
-                    using (var wc = new System.Net.WebClient())
+                    var localPath = Path.Combine(localBaseDir, info);
+                    if (!File.Exists(localPath))
                     {
-                        var fullURL = StaticFilesBaseURL + "objectinfos/" + info;
-                        Log.Information("Downloading static asset: " + fullURL);
-                        wc.DownloadFile(fullURL, localPath);
+                        using (var wc = new System.Net.WebClient())
+                        {
+                            var fullURL = StaticFilesBaseURL + "objectinfos/" + info;
+                            Log.Information("Downloading static asset: " + fullURL);
+                            wc.DownloadFile(fullURL, localPath);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception trying to ensure static assets: " + e.Message);
+                return false;
             }
 
             return true;

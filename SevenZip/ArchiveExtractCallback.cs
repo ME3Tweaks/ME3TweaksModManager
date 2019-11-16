@@ -52,7 +52,7 @@ namespace SevenZip
         /// <param name="directoryStructure">The value indicating whether to preserve directory structure of extracted files.</param>
         /// <param name="outputmappingcallback">Optional callback that is used to determine the output filepath of the entry being extracted</param>
         public ArchiveExtractCallback(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, SevenZipExtractor extractor, Func<string,string>  outputmappingcallback = null)
+            List<uint> actualIndexes, SevenZipExtractor extractor, Func<string, string> outputmappingcallback = null)
         {
             Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor, outputmappingcallback);
         }
@@ -69,7 +69,7 @@ namespace SevenZip
         /// <param name="directoryStructure">The value indicating whether to preserve directory structure of extracted files.</param>
         /// <param name="outputmappingcallback">Optional callback that is used to determine the output filepath of the entry being extracted</param>
         public ArchiveExtractCallback(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, string password, SevenZipExtractor extractor, Func<string,string> outputmappingcallback = null)
+            List<uint> actualIndexes, string password, SevenZipExtractor extractor, Func<string, string> outputmappingcallback = null)
             : base(password)
         {
             Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor, outputmappingcallback);
@@ -342,6 +342,18 @@ namespace SevenZip
                             }
                             try
                             {
+                                if (File.Exists(fileName))
+                                {
+                                    //Ensure existing file is not read only
+                                    FileAttributes attributes = File.GetAttributes(fileName);
+
+                                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                                    {
+                                        // Make the file RW
+                                        attributes = attributes & ~FileAttributes.ReadOnly;
+                                        File.SetAttributes(fileName, attributes);
+                                    }
+                                }
                                 _fileStream = new OutStreamWrapper(File.Create(fileName), fileName, time, true);
                             }
                             catch (Exception e)
@@ -475,7 +487,7 @@ namespace SevenZip
                     GC.WaitForPendingFinalizers();
                 }
                 var iea = new FileInfoEventArgs(
-                    _extractor.ArchiveFileData[_currentIndex], PercentDoneEventArgs.ProducePercentDone(_doneRate));                
+                    _extractor.ArchiveFileData[_currentIndex], PercentDoneEventArgs.ProducePercentDone(_doneRate));
                 OnFileExtractionFinished(iea);
                 if (iea.Cancel)
                 {

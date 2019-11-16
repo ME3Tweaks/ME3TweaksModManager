@@ -211,8 +211,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var destFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", originalMapping.Key);
                         if (ModBeingInstalled.IsInArchive)
                         {
-                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
+                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile,StringComparer.InvariantCultureIgnoreCase);
                             fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
+                            if (archiveIndex == -1)
+                            {
+                                Log.Error("Archive Index is -1 for file " + sourceFile + ". This will probably throw an exception!");
+                                Debugger.Break();
+                            }
                             fullPathMappingDisk[sourceFile] = destFile; //used for redirection
                         }
                         else
@@ -226,8 +231,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? MEDirectories.DLCPath(gameTarget) : gameTarget.TargetPath, originalMapping.Key); //official
                         if (ModBeingInstalled.IsInArchive)
                         {
-                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
+                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile, StringComparer.InvariantCultureIgnoreCase);
                             fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
+                            if (archiveIndex == -1)
+                            {
+                                Log.Error("Archive Index is -1 for file " + sourceFile + ". This will probably throw an exception!");
+                                Debugger.Break();
+                            }
                             fullPathMappingDisk[sourceFile] = destFile; //used for redirection
                         }
                         else
@@ -249,9 +259,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     foreach (var fileToInstall in sfarJob.sfarInstallationMapping)
                     {
                         string sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, sfarJob.job.JobDirectory, fileToInstall.Value);
-                        int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile);
+                        int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile, StringComparer.InvariantCultureIgnoreCase);
                         if (archiveIndex == -1)
                         {
+                            Log.Error("Archive Index is -1 for file " + sourceFile + ". This will probably throw an exception!");
                             Debugger.Break();
                         }
                         string destFile = Path.Combine(sfarStagingDirectory, sfarJob.job.JobDirectory, fileToInstall.Value);

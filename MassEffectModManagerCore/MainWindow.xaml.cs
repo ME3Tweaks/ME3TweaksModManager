@@ -1411,6 +1411,14 @@ namespace MassEffectModManagerCore
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("EnsureStaticFiles", "Downloading static files", "Static files downloaded");
                 success = OnlineContent.EnsureStaticAssets();
+                if (!success)
+                {
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, "Could not download static supporting files to ME3Tweaks Mod Manager. Mod Manager may be unstable due to these files not being present. Ensure you are able to connect to Github.com so these assets may be downloaded.", "Missing assets", MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
+                    bgTask.finishedUiText = "Failed to download static files";
+                }
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
