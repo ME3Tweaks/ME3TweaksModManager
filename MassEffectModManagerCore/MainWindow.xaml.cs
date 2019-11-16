@@ -265,7 +265,7 @@ namespace MassEffectModManagerCore
         private bool CanRunCompatGenerator()
         {
             //disable in this build
-            return false && SelectedGameTarget?.Game == Mod.MEGame.ME3;
+            return SelectedGameTarget?.Game == Mod.MEGame.ME3;
         }
 
         public bool HasAtLeastOneTarget() => InstallationTargets.Any();

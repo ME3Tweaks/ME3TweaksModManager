@@ -209,14 +209,14 @@ namespace MassEffectModManagerCore.modmanager.objects
             VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
         }
 
-        public ObservableCollectionExtended<InstalledDLCMod> InstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
+        public ObservableCollectionExtended<InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
 
         public void PopulateDLCMods(Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted)
         {
-            InstalledDLCMods.ClearEx();
+            UIInstalledDLCMods.ClearEx();
             var dlcDir = MEDirectories.DLCPath(this);
             var installedMods = MEDirectories.GetInstalledDLC(this).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted)).ToList();
-            InstalledDLCMods.AddRange(installedMods);
+            UIInstalledDLCMods.AddRange(installedMods);
         }
 
         public bool IsTargetWritable()

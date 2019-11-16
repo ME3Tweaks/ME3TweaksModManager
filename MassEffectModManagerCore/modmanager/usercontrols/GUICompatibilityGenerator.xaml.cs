@@ -17,6 +17,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using ME3Explorer.Packages;
 using static MassEffectModManagerCore.modmanager.Mod;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.ui;
+using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -55,7 +58,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             NO_UI_MODS_INSTALLED,
             NOT_REQUIRED,
-            REQUIRED
+            REQUIRED,
+            INVALID_UI_MOD_CONFIG,
+            NO_UI_LIBRARY
         }
 
         private Dictionary<string, List<string>> getFileSupercedances()
@@ -89,52 +94,135 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
+        private static readonly string M3_UILIBRARY_ROOT = "https://me3tweaks.com/modmanager/tools/uilibrary/m3/";
+
+        /// <summary>
+        /// Gets the path to the GUI library specified by the DLC name. Returns null if the library is not found and could not be downloaded.
+        /// If Download is specified this call should run on a background thread only.
+        /// </summary>
+        /// <param name="dlcname">DLC mod to lookup library for</param>
+        /// <param name="download">Download library if missing. If this is false and library is missing the value returned will be null</param>
+        /// <returns>Path to library, null if it does not exist.</returns>
+        public static string GetUILibraryPath(string dlcname, bool download)
+        {
+            string libraryFolder = Path.Combine(Utilities.GetAppDataFolder(), "UIModLibrary");
+            string libraryPath = Path.Combine(libraryFolder, dlcname + ".zip");
+            if (File.Exists(libraryPath)) return libraryPath;
+
+            if (!Directory.Exists(libraryFolder) && !download) return null;
+            if (!File.Exists(libraryPath) && !download) return null;
+
+            if (download)
+            {
+                Directory.CreateDirectory(libraryFolder);
+                Log.Information("Downloading UI library for " + dlcname);
+                var downloaded = OnlineContent.DownloadToMemory(M3_UILIBRARY_ROOT + dlcname + ".zip");
+                if (downloaded.errorMessage == null)
+                {
+                    File.WriteAllBytes(libraryPath, downloaded.result.ToArray());
+                    Log.Information("Downloaded UI library for " + dlcname);
+                    return libraryPath;
+                }
+                else
+                {
+                    Log.Error("Error downloading UI library: " + downloaded.errorMessage);
+                    return null;
+                }
+            }
+            return null;
+        }
+
         private void StartGuiCompatibilityScanner()
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker("GUICompatibilityScanner");
             bw.DoWork += (a, b) =>
             {
-                //Ensure UI libraries
-
-
-
                 var installedDLCMods = VanillaDatabaseService.GetInstalledDLCMods(target);
-                var numMods = installedDLCMods.Count;
+                var numTotalDLCMods = installedDLCMods.Count;
                 var uiModInstalled = installedDLCMods.Intersect(DLCUIModFolderNames).Any();
                 var dlcRoot = MEDirectories.DLCPath(target);
                 if (uiModInstalled)
                 {
-                    installedDLCMods = installedDLCMods.Except(DLCUIModFolderNames).ToList();
 
-                    if (installedDLCMods.Count < numMods && installedDLCMods.Count > 0)
+
+                    var nonUIinstalledDLCMods = installedDLCMods.Except(DLCUIModFolderNames).ToList();
+
+                    if (nonUIinstalledDLCMods.Count < numTotalDLCMods && nonUIinstalledDLCMods.Count > 0)
                     {
+                        //Get UI library
+                        bool xbxLibrary = installedDLCMods.Contains("DLC_CON_XBX");
+                        bool uiscalinglibrary = installedDLCMods.Contains("DLC_CON_UIScaling");
+                        if (!xbxLibrary && !uiscalinglibrary) uiscalinglibrary = installedDLCMods.Contains("DLC_CON_UIScaling_Shared");
+                        if (xbxLibrary && uiscalinglibrary)
+                        {
+                            //can't have both! Not supported.
+                            Application.Current.Dispatcher.Invoke(delegate
+                            {
+                                Xceed.Wpf.Toolkit.MessageBox.Show(window, "Cannot generate a compatibility pack: Both Interface Scaling Mod and SP Controller support are installed. These mods are not compatible with each other. You must use one or the other.", "Invalid configuration", MessageBoxButton.OK, MessageBoxImage.Error);
+                                OnClosing(DataEventArgs.Empty);
+                            });
+                            b.Result = GUICompatibilityThreadResult.INVALID_UI_MOD_CONFIG;
+                            return;
+                        }
+
+                        var uiLibraryPath = GetUILibraryPath(xbxLibrary ? "DLC_CON_XBX" : "DLC_CON_UIScaling", true);
+                        if (uiLibraryPath == null)
+                        {
+                            Application.Current.Dispatcher.Invoke(delegate
+                            {
+                                Xceed.Wpf.Toolkit.MessageBox.Show(window, "Cannot generate a compatibility pack: The required UI library could not be downloaded from ME3Tweaks. See the log for more information.", "Could not acquire UI library", MessageBoxButton.OK, MessageBoxImage.Error);
+                                OnClosing(DataEventArgs.Empty);
+                            });
+                            b.Result = GUICompatibilityThreadResult.NO_UI_LIBRARY;
+                            return;
+                        }
+
+                        //Open UI library
+                        SevenZipExtractor libraryArchive = new SevenZipExtractor(uiLibraryPath);
+                        List<string> libraryGUIs = libraryArchive.ArchiveFileData.Where(x => !x.IsDirectory).Select(x => x.FileName.Substring(Path.GetFileNameWithoutExtension(uiLibraryPath).Length + 1)).Select(x => x.Substring(0, x.Length - 4)).ToList(); //remove / on end too
+
                         //We have UI mod(s) installed and at least one other DLC mod.
                         var supercedanceList = getFileSupercedances();
                         //Find GUIs
 
+                        List<string> filesToBePatched = new List<string>();
                         foreach (var pair in supercedanceList)
                         {
-                            var firstNonUIModFile = pair.Value.FirstOrDefault(x => !DLCUIModFolderNames.Contains(x));
-                            if (firstNonUIModFile != null)
+                            var firstNonUIModDlc = pair.Value.FirstOrDefault(x => !DLCUIModFolderNames.Contains(x));
+                            if (firstNonUIModDlc != null)
                             {
                                 //Scan file.
-                                var packagefile = Path.Combine(dlcRoot, pair.Key, target.Game == MEGame.ME3 ? "CookedPCConsole" : "CookedPC", firstNonUIModFile);
-                                if (!File.Exists(packagefile)) throw new Exception("Package file for inspecting GUIs in was not found!");
+                                var packagefile = Path.Combine(dlcRoot, firstNonUIModDlc, target.Game == MEGame.ME3 ? "CookedPCConsole" : "CookedPC", pair.Key);
+                                if (!File.Exists(packagefile)) throw new Exception("Package file for inspecting GUIs in was not found: " + packagefile);
+                                Log.Information("Scanning file for GFXMovieInfo exports: " + packagefile);
                                 var package = MEPackageHandler.OpenMEPackage(packagefile);
                                 var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == "GFxMovieInfo").ToList();
                                 if (guiExports.Count > 0)
                                 {
                                     //potential item needing replacement
                                     //Check GUI library to see if we have anything.
+                                    foreach (var export in guiExports)
+                                    {
+                                        if (libraryGUIs.Contains(export.GetFullPath, StringComparer.InvariantCultureIgnoreCase))
+                                        {
+                                            //match
+                                            filesToBePatched.Add(packagefile);
+                                            Log.Information(firstNonUIModDlc + " " + pair.Key + " has GUI export that is in UI library, marking for patching. Trigger: " + export.GetFullPath);
+                                            break;
+                                        }
+                                    }
                                 }
                             }
+                        }
 
-                            for (int i = 0; i < pair.Value.Count; i++)
-                            {
-
-                            }
+                        if (filesToBePatched.Count > 0)
+                        {
+                            Log.Information("A GUI compatibility patch is required for this game configuration");
+                            b.Result = GUICompatibilityThreadResult.REQUIRED;
+                            return;
                         }
                     }
+                    Log.Information("A GUI compatibility patch is not required for this game configuration");
                     b.Result = GUICompatibilityThreadResult.NOT_REQUIRED;
                 }
                 else

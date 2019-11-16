@@ -58,7 +58,7 @@
             <TabItem Header="Installed DLC mods" Padding="0">
                 <DockPanel Height="300" Margin="-8">
                     <ScrollViewer Padding="0">
-                        <ItemsControl ItemsSource="{Binding InstalledDLCMods}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2" Padding="0">
+                        <ItemsControl ItemsSource="{Binding UIInstalledDLCMods}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  AlternationCount="2" Padding="0">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:InstallationInformation+InstalledDLCMod}">
                                     <DockPanel>

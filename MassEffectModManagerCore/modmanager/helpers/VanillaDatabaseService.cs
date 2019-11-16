@@ -225,9 +225,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns>List of DLC foldernames</returns>
         internal static List<string> GetInstalledDLCMods(GameTarget target)
         {
-            var installedDLC = MEDirectories.GetInstalledDLC(target);
-            var officialDLC = MEDirectories.OfficialDLC(target.Game);
-            return installedDLC.Except(officialDLC).ToList();
+            return MEDirectories.GetInstalledDLC(target).Where(x => !MEDirectories.OfficialDLC(target.Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).ToList();
         }
 
         internal static bool ValidateTargetDLCConsistency(GameTarget target, Action<string> inconsistentDLCCallback = null)
