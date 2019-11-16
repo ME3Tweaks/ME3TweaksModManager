@@ -449,7 +449,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             public bool Selected { get; set; }
         }
 
-        public static void CreateStarterKitMod(StarterKitOptions options, Action<string> UITextCallback, Action<Mod> FinishedCallback)
+        public static void CreateStarterKitMod(StarterKitOptions options, Action<string> UITextCallback, Action<Mod> finishedCallback)
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker("StarterKitThread");
             bw.DoWork += (sender, args) =>
@@ -458,7 +458,13 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                 var dlcFolderName = $"DLC_MOD_{skOption.ModDLCFolderName}";
                 var modsDirectory = Utilities.GetModDirectoryForGame(skOption.ModGame);
-                var modPath = Directory.CreateDirectory(Path.Combine(modsDirectory, Utilities.SanitizePath(skOption.ModName))).FullName;
+                var modPath = Path.Combine(modsDirectory, Utilities.SanitizePath(skOption.ModName));
+                if (Directory.Exists(modPath))
+                {
+                    Utilities.DeleteFilesAndFoldersRecursively(modPath);
+                }
+
+                Directory.CreateDirectory(modPath);
 
                 //Creating DLC directories
                 var contentDirectory = Directory.CreateDirectory(Path.Combine(modPath, dlcFolderName)).FullName;
@@ -592,7 +598,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Mod m = new Mod(modDescPath, skOption.ModGame);
                 args.Result = m;
             };
-            bw.RunWorkerCompleted += (a, b) => { FinishedCallback(b.Result as Mod); };
+            bw.RunWorkerCompleted += (a, b) => { finishedCallback(b.Result as Mod); };
             bw.RunWorkerAsync(options);
         }
 
