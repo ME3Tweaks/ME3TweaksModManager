@@ -61,6 +61,7 @@
     <None Remove="modmanager\binkw32\me2\binkw32.dll" />
     <None Remove="modmanager\binkw32\me3\binkw23.dll" />
     <None Remove="modmanager\binkw32\me3\binkw32.dll" />
+    <None Remove="modmanager\executables\vpat.exe" />
     <None Remove="modmanager\gamemd5\me1.bin" />
     <None Remove="modmanager\gamemd5\me1pl.bin" />
     <None Remove="modmanager\gamemd5\me2.bin" />
@@ -165,6 +166,7 @@
     <Resource Include="images\gameicons\Unknown_48.ico" />
     <Resource Include="images\loadingspinner.png" />
     <Resource Include="images\origin.png" />
+    <EmbeddedResource Include="modmanager\executables\vpat.exe" />
     <Resource Include="modmanager\toolicons\alot_32.png" />
     <Resource Include="modmanager\toolicons\alot_big.png" />
     <Resource Include="modmanager\toolicons\masseffectinimodder_32.png" />
