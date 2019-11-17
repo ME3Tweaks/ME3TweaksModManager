@@ -55,6 +55,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string version { get; set; }
             public string requireddlc { get; set; }
             public string zippedexepath { get; set; }
+            public string exetransform { get; set; }
 
             public List<string> GetParsedRequiredDLC()
             {

@@ -18,9 +18,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string StaticFilesBaseURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
+        private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
 
-        private static readonly string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
+        private const string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
 
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
@@ -71,6 +72,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             using var wc = new System.Net.WebClient();
             string moddesc = wc.DownloadStringAwareOfEncoding(ThirdPartyModDescURL + name);
+            return moddesc;
+        }
+
+        public static string FetchExeTransform(string name)
+        {
+            using var wc = new System.Net.WebClient();
+            string moddesc = wc.DownloadStringAwareOfEncoding(ExeTransformBaseURL + name);
             return moddesc;
         }
 

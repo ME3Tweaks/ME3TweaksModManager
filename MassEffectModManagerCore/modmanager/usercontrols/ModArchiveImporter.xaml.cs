@@ -260,6 +260,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
 
+                    ExeTransform transform = null;
+                    if (importingInfo?.exetransform != null)
+                    {
+                        Log.Information("TPIS lists exe transform for this mod: " + importingInfo.exetransform);
+                        transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
+                    }
+
                     //Fully unofficial third party mod.
 
                     //ME3
@@ -270,6 +277,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             addCompressedModCallback?.Invoke(vMod);
                             internalModList.Add(vMod);
+                            vMod.ExeExtractionTransform = transform;
                         }
                     }
 
@@ -312,7 +320,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 Version.TryParse(value, out var parsedValue);
                                 compressedMod.ParsedModVersion = parsedValue;
                             }
-
                             relayVersionResponse = value;
                         }
                         else
@@ -324,7 +331,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         //Try straight up TPMI import?
-
                         Log.Warning($"No importing information is available for file with hash {md5}. No mods could be found.");
                     }
                 }
@@ -411,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         ProgressIndeterminate = false;
                         ActionText = "Select mods to import or install";
                         return; //Don't do anything.
-                    } 
+                    }
                     if (resultcode == ERROR_COULD_NOT_DELETE_EXISTING_DIR)
                     {
                         ProgressValue = 0;
@@ -491,13 +497,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                //Debug only.
-                var f = File.ReadAllText(@"C:\users\mgame\desktop\mehem_0.5_exeextract.xml");
-                ExeTransform exet = new ExeTransform(f);
-                //End Debug only.
-
                 Directory.CreateDirectory(sanitizedPath);
-                mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback, exet);
+                mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
                 extractedMods.Add(mod);
             }
             e.Result = extractedMods;
@@ -520,9 +521,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }).ToList());
                 PatchRedirects.ReplaceAll(doc.Root.Elements("patchredirect")
                     .Select(d => ((int)d.Attribute("index"), (string)d.Attribute("outfile"))).ToList());
+
+                PostTransformModdesc = (string)doc.Root.Element("posttransformmodesc");
             }
             public List<VPatchDirective> VPatches = new List<VPatchDirective>();
             public List<(int index, string outfile)> PatchRedirects = new List<(int index, string outfile)>();
+
+            public string PostTransformModdesc { get; internal set; }
 
             public class VPatchDirective
             {

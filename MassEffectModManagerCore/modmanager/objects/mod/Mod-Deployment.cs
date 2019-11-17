@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager
@@ -11,6 +12,8 @@ namespace MassEffectModManagerCore.modmanager
     //This file contains deployment to archive related functionality
     public partial class Mod
     {
+        internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
+
         public List<string> GetAllRelativeReferences(SevenZipExtractor archive = null)
         {
             var references = new List<string>();

@@ -9,6 +9,7 @@ using System.Threading;
 using IniParser.Parser;
 using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3Explorer.Packages;
 using Serilog;
@@ -24,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager
         private BlockingCollection<string> compressionQueue;
         private object compressionCompletedSignaler = new object();
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
-            Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null, ModArchiveImporter.ExeTransform exeTransform = null)
+            Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
             compressPackages &= Game == MEGame.ME3; //ME3 ONLY FOR NOW
@@ -149,9 +150,9 @@ namespace MassEffectModManagerCore.modmanager
                 string outputFilePathMapping(ArchiveFileInfo entryInfo)
                 {
                     string entryPath = entryInfo.FileName;
-                    if (exeTransform != null && exeTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
+                    if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                     {
-                        return Path.Combine(Utilities.GetVPatchRedirectsFolder(), exeTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
+                        return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                     }
 
                     //Archive path might start with a \. Substring may return value that start with a \
@@ -260,11 +261,11 @@ namespace MassEffectModManagerCore.modmanager
                     IsVirtualized = false; //no longer virtualized
                 }
 
-                if (exeTransform != null)
+                if (ExeExtractionTransform != null)
                 {
                     var vpat = Utilities.GetCachedExecutablePath("vpat.exe");
                     //Possible pending work to do
-                    foreach (var transform in exeTransform.VPatches)
+                    foreach (var transform in ExeExtractionTransform.VPatches)
                     {
                         var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
                         var inputfile = Path.Combine(ModPath, transform.inputfile);
@@ -273,8 +274,16 @@ namespace MassEffectModManagerCore.modmanager
                         var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\"";
                         Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
                         Log.Information("Vpatching file into alternate: " + inputfile + " to " + outputfile);
-                        updateTextCallback?.Invoke("VPatching into alternate: "+Path.GetFileName(inputfile));
+                        updateTextCallback?.Invoke("VPatching into alternate: " + Path.GetFileName(inputfile));
                         Utilities.RunProcess(vpat, args, true, false, false, true);
+                    }
+
+                    if (ExeExtractionTransform.PostTransformModdesc != null)
+                    {
+                        //fetch online moddesc for this mod.
+                        Log.Information("Fetching post-transform third party moddesc.");
+                        var moddesc = OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
+                        File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), moddesc);
                     }
                 }
 
