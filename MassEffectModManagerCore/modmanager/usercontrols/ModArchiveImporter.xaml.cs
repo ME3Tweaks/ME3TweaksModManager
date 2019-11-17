@@ -17,6 +17,8 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Xml;
+using System.Xml.Linq;
 using Threading;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -119,6 +121,50 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             TaskRunning = true;
             ActionText = $"Opening {ScanningFile}";
 
+            var archive = e.Argument as string;
+
+            //Embedded executables.
+            var archiveSize = new FileInfo(archive).Length;
+            var knownModsOfThisSize = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+            string pathOverride = null;
+            if (knownModsOfThisSize.Count > 0 && knownModsOfThisSize.Any(x => x.zippedexepath != null))
+            {
+                //might have embedded exe
+                if (archive.RepresentsFileArchive())
+                {
+                    SevenZipExtractor sve = new SevenZipExtractor(archive);
+                    string embeddedExePath = null;
+                    foreach (var importingInfo in knownModsOfThisSize)
+                    {
+                        if (importingInfo.zippedexepath == null) continue;
+                        if (sve.ArchiveFileNames.Contains(importingInfo.zippedexepath))
+                        {
+                            embeddedExePath = importingInfo.zippedexepath;
+                            //Ensure embedded exe is supported at least by decompressed size
+                            var exedata = sve.ArchiveFileData.FirstOrDefault(x => x.FileName == embeddedExePath);
+                            if (exedata.FileName != null)
+                            {
+                                var importingInfo2 = ThirdPartyServices.GetImportingInfosBySize((long)exedata.Size);
+                                if (importingInfo2.Count == 0)
+                                {
+                                    Log.Warning("zip wrapper for this file has importing information but the embedded exe does not!");
+                                    break; //no importing info
+                                }
+
+                                ActionText = "Reading zipped executable";
+                                pathOverride = Path.Combine(Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
+                                using var outstream = new FileStream(pathOverride, FileMode.Create);
+                                sve.Extracting += (o, pea) => { ActionText = $"Reading zipped executable {pea.PercentDone}%"; };
+                                sve.ExtractFile(embeddedExePath, outstream);
+                                ArchiveFilePath = pathOverride; //set new path so further extraction calls use correct archive path.
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+            }
 
             void AddCompressedModCallback(Mod m)
             {
@@ -132,7 +178,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ActionText = newText;
             }
-            InspectArchive(e.Argument as string, AddCompressedModCallback, ActionTextUpdateCallback);
+            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, ActionTextUpdateCallback);
         }
 
         //this should be private but no way to test it private for now...
@@ -148,7 +194,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             string relayVersionResponse = "-1";
             List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
-            using (var archiveFile = new SevenZipExtractor(filepath))
+            var archiveFile = filepath.EndsWith(".exe") ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
+            using (archiveFile)
             {
                 var moddesciniEntries = new List<ArchiveFileInfo>();
                 var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
@@ -286,189 +333,223 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
         private static Mod AttemptLoadVirtualMod(ArchiveFileInfo sfarEntry, SevenZipExtractor archive, Mod.MEGame game, string md5)
+        {
+            var sfarPath = sfarEntry.FileName;
+            var cookedPath = FilesystemInterposer.DirectoryGetParent(sfarPath, true);
+            //Todo: Check if value is CookedPC/CookedPCConsole as further validation
+            if (!string.IsNullOrEmpty(FilesystemInterposer.DirectoryGetParent(cookedPath, true)))
             {
-                var sfarPath = sfarEntry.FileName;
-                var cookedPath = FilesystemInterposer.DirectoryGetParent(sfarPath, true);
-                //Todo: Check if value is CookedPC/CookedPCConsole as further validation
-                if (!string.IsNullOrEmpty(FilesystemInterposer.DirectoryGetParent(cookedPath, true)))
+                var dlcDir = FilesystemInterposer.DirectoryGetParent(cookedPath, true);
+                var dlcFolderName = Path.GetFileName(dlcDir);
+                if (!string.IsNullOrEmpty(dlcFolderName))
                 {
-                    var dlcDir = FilesystemInterposer.DirectoryGetParent(cookedPath, true);
-                    var dlcFolderName = Path.GetFileName(dlcDir);
-                    if (!string.IsNullOrEmpty(dlcFolderName))
+                    var thirdPartyInfo = ThirdPartyServices.GetThirdPartyModInfo(dlcFolderName, game);
+                    if (thirdPartyInfo != null)
                     {
-                        var thirdPartyInfo = ThirdPartyServices.GetThirdPartyModInfo(dlcFolderName, game);
-                        if (thirdPartyInfo != null)
+                        Log.Information($"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
+                        //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build an feed it a virtual one.
+                        IniData virtualModDesc = new IniData();
+                        virtualModDesc["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
+                        virtualModDesc["ModInfo"]["modname"] = thirdPartyInfo.modname;
+                        virtualModDesc["ModInfo"]["moddev"] = thirdPartyInfo.moddev;
+                        virtualModDesc["ModInfo"]["modsite"] = thirdPartyInfo.modsite;
+                        virtualModDesc["ModInfo"]["moddesc"] = thirdPartyInfo.moddesc;
+                        virtualModDesc["ModInfo"]["unofficial"] = "true";
+                        if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
                         {
-                            Log.Information($"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
-                            //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build an feed it a virtual one.
-                            IniData virtualModDesc = new IniData();
-                            virtualModDesc["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
-                            virtualModDesc["ModInfo"]["modname"] = thirdPartyInfo.modname;
-                            virtualModDesc["ModInfo"]["moddev"] = thirdPartyInfo.moddev;
-                            virtualModDesc["ModInfo"]["modsite"] = thirdPartyInfo.modsite;
-                            virtualModDesc["ModInfo"]["moddesc"] = thirdPartyInfo.moddesc;
-                            virtualModDesc["ModInfo"]["unofficial"] = "true";
-                            if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
-                            {
-                                virtualModDesc["ModInfo"]["updatecode"] = updatecode.ToString();
-                                virtualModDesc["ModInfo"]["modver"] = 0.001.ToString(); //This will force mod to check for update after reload
-                            }
-                            else
-                            {
-                                virtualModDesc["ModInfo"]["modver"] = 0.0.ToString(); //Will attempt to look up later after mods have parsed.
-                            }
-
-                            virtualModDesc["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
-                            virtualModDesc["CUSTOMDLC"]["destdirs"] = dlcFolderName;
-                            virtualModDesc["UPDATES"]["originalarchivehash"] = md5;
-
-                            var archiveSize = new FileInfo(archive.FileName).Length;
-                            var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
-                            if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
-                            {
-                                OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
-                                virtualModDesc["ModInfo"]["requireddlc"] = importingInfos[0].requireddlc;
-                            }
-
-                            return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
+                            virtualModDesc["ModInfo"]["updatecode"] = updatecode.ToString();
+                            virtualModDesc["ModInfo"]["modver"] = 0.001.ToString(); //This will force mod to check for update after reload
                         }
-                    }
-                    else
-                    {
-                        Log.Information($"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
+                        else
+                        {
+                            virtualModDesc["ModInfo"]["modver"] = 0.0.ToString(); //Will attempt to look up later after mods have parsed.
+                        }
+
+                        virtualModDesc["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
+                        virtualModDesc["CUSTOMDLC"]["destdirs"] = dlcFolderName;
+                        virtualModDesc["UPDATES"]["originalarchivehash"] = md5;
+
+                        var archiveSize = new FileInfo(archive.FileName).Length;
+                        var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+                        if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
+                        {
+                            OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
+                            virtualModDesc["ModInfo"]["requireddlc"] = importingInfos[0].requireddlc;
+                        }
+
+                        return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
                     }
                 }
-
-                return null;
+                else
+                {
+                    Log.Information($"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
+                }
             }
 
-            private void BeginImportingMods()
+            return null;
+        }
+
+        private void BeginImportingMods()
+        {
+            var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
+            NamedBackgroundWorker bw = new NamedBackgroundWorker("ModExtractor");
+            bw.DoWork += ExtractModsBackgroundThread;
+            bw.RunWorkerCompleted += (a, b) =>
             {
-                var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
-                NamedBackgroundWorker bw = new NamedBackgroundWorker("ModExtractor");
-                bw.DoWork += ExtractModsBackgroundThread;
-                bw.RunWorkerCompleted += (a, b) =>
+                TaskRunning = false;
+                if (b.Result is List<Mod> modList)
                 {
-                    TaskRunning = false;
-                    if (b.Result is List<Mod> modList)
+                    OnClosing(new DataEventArgs(modList));
+                    return;
+                }
+                if (b.Result is int resultcode)
+                {
+                    if (resultcode == USER_ABORTED_IMPORT)
                     {
-                        OnClosing(new DataEventArgs(modList));
-                        return;
-                    }
-                    if (b.Result is int resultcode)
+                        ProgressValue = 0;
+                        ProgressMaximum = 100;
+                        ProgressIndeterminate = false;
+                        ActionText = "Select mods to import or install";
+                        return; //Don't do anything.
+                    } 
+                    if (resultcode == ERROR_COULD_NOT_DELETE_EXISTING_DIR)
                     {
-                        if (resultcode == USER_ABORTED_IMPORT)
-                        {
-                            ProgressValue = 0;
-                            ProgressMaximum = 100;
-                            ProgressIndeterminate = false;
-                            ActionText = "Select mods to import or install";
-                            return; //Don't do anything.
+                        ProgressValue = 0;
+                        ProgressMaximum = 100;
+                        ProgressIndeterminate = false;
+                        ActionText = "Error: Unable to delete existing mod directory";
+                        return; //Don't do anything.
                     }
-                        else if (resultcode == ERROR_COULD_NOT_DELETE_EXISTING_DIR)
-                        {
-                            ProgressValue = 0;
-                            ProgressMaximum = 100;
-                            ProgressIndeterminate = false;
-                            ActionText = "Error: Unable to delete existing mod directory";
-                            return; //Don't do anything.
-                    }
-                    }
+                }
                 //Close.
                 OnClosing(DataEventArgs.Empty);
-                };
-                TaskRunning = true;
-                bw.RunWorkerAsync(modsToExtract);
+            };
+            TaskRunning = true;
+            bw.RunWorkerAsync(modsToExtract);
+        }
+
+        private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
+        {
+            List<Mod> mods = (List<Mod>)e.Argument;
+            List<Mod> extractedMods = new List<Mod>();
+
+            void TextUpdateCallback(string x)
+            {
+                ActionText = x;
             }
 
-            private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
+            foreach (var mod in mods)
             {
-                List<Mod> mods = (List<Mod>)e.Argument;
-                List<Mod> extractedMods = new List<Mod>();
-
-                void TextUpdateCallback(string x)
+                //Todo: Extract files
+                Log.Information("Extracting mod: " + mod.ModName);
+                ActionText = $"Extracting {mod.ModName}";
+                ProgressValue = 0;
+                ProgressMaximum = 100;
+                ProgressIndeterminate = true;
+                //Ensure directory
+                var modDirectory = Utilities.GetModDirectoryForGame(mod.Game);
+                var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(mod.ModName));
+                if (Directory.Exists(sanitizedPath))
                 {
-                    ActionText = x;
-                }
-
-                foreach (var mod in mods)
-                {
-                    //Todo: Extract files
-                    Log.Information("Extracting mod: " + mod.ModName);
-                    ActionText = $"Extracting {mod.ModName}";
-                    ProgressValue = 0;
-                    ProgressMaximum = 100;
-                    ProgressIndeterminate = true;
-                    //Ensure directory
-                    var modDirectory = Utilities.GetModDirectoryForGame(mod.Game);
-                    var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(mod.ModName));
-                    if (Directory.Exists(sanitizedPath))
+                    //Will delete on import
+                    bool abort = false;
+                    Application.Current.Dispatcher.Invoke(delegate
                     {
-                        //Will delete on import
-                        bool abort = false;
-                        Application.Current.Dispatcher.Invoke(delegate
+                        var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Importing this mod will delete an existing mod directory in the mod library:\n{sanitizedPath}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                        if (result == MessageBoxResult.No)
                         {
-                            var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Importing this mod will delete an existing mod directory in the mod library:\n{sanitizedPath}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
-                            if (result == MessageBoxResult.No)
+                            e.Result = USER_ABORTED_IMPORT;
+                            abort = true;
+                            return;
+                        }
+
+                        try
+                        {
+                            if (!Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath))
                             {
-                                e.Result = USER_ABORTED_IMPORT;
+                                Log.Error("Could not delete existing mod directory.");
+                                e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
                                 abort = true;
                                 return;
                             }
 
-                            try
-                            {
-                                if (!Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath))
-                                {
-                                    Log.Error("Could not delete existing mod directory.");
-                                    e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    abort = true;
-                                    return;
-                                }
-
-                            }
-                            catch (Exception ex)
-                            {
+                        }
+                        catch (Exception ex)
+                        {
                             //I don't think this can be triggered but will leave as failsafe anyways.
                             Log.Error("Error while deleting existing output directory: " + App.FlattenException(ex));
-                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory:\n{ex.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
-                                e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                                abort = true;
-                            }
-                        });
-                        if (abort)
-                        {
-                            Log.Warning("Aborting mod import.");
-                            return;
+                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory:\n{ex.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                            e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                            abort = true;
                         }
+                    });
+                    if (abort)
+                    {
+                        Log.Warning("Aborting mod import.");
+                        return;
                     }
-
-                    Directory.CreateDirectory(sanitizedPath);
-                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
-                    extractedMods.Add(mod);
                 }
-                e.Result = extractedMods;
-            }
 
-            private void ExtractionProgressCallback(ProgressEventArgs args)
+                //Debug only.
+                var f = File.ReadAllText(@"C:\users\mgame\desktop\mehem_0.5_exeextract.xml");
+                ExeTransform exet = new ExeTransform(f);
+                //End Debug only.
+
+                Directory.CreateDirectory(sanitizedPath);
+                mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback, exet);
+                extractedMods.Add(mod);
+            }
+            e.Result = extractedMods;
+        }
+
+        /// <summary>
+        /// Class for exe-file extraction transformations
+        /// </summary>
+        public class ExeTransform
+        {
+            public ExeTransform(string xml)
             {
-                ProgressValue = args.PercentDone;
-                ProgressMaximum = 100;
-                ProgressIndeterminate = false;
+                var doc = XDocument.Parse(xml);
+                VPatches.ReplaceAll(doc.Root.Elements("vpatch")
+                    .Select(d => new VPatchDirective
+                    {
+                        inputfile = (string)d.Attribute("inputfile"),
+                        outputfile = (string)d.Attribute("outputfile"),
+                        patchfile = (string)d.Attribute("patchfile")
+                    }).ToList());
+                PatchRedirects.ReplaceAll(doc.Root.Elements("patchredirect")
+                    .Select(d => ((int)d.Attribute("index"), (string)d.Attribute("outfile"))).ToList());
             }
+            public List<VPatchDirective> VPatches = new List<VPatchDirective>();
+            public List<(int index, string outfile)> PatchRedirects = new List<(int index, string outfile)>();
 
-            private void CompressedPackageCallback(string activityString, int numDone, int numToDo)
+            public class VPatchDirective
             {
-                //progress for compression
-                if (ProgressValue >= ProgressMaximum)
-                {
-                    ActionText = activityString;
-                }
-                CompressionProgressMaximum = numToDo;
-                CompressionProgressValue = numDone;
-
+                public string inputfile;
+                public string outputfile;
+                public string patchfile;
             }
+        }
+
+        private void ExtractionProgressCallback(ProgressEventArgs args)
+        {
+            ProgressValue = args.PercentDone;
+            ProgressMaximum = 100;
+            ProgressIndeterminate = false;
+        }
+
+        private void CompressedPackageCallback(string activityString, int numDone, int numToDo)
+        {
+            //progress for compression
+            if (ProgressValue >= ProgressMaximum)
+            {
+                ActionText = activityString;
+            }
+            CompressionProgressMaximum = numToDo;
+            CompressionProgressValue = numDone;
+
+        }
 
         private SerialQueue fileCompressionQueue = new SerialQueue();
 

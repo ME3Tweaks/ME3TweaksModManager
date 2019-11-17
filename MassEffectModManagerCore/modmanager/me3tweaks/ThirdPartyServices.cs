@@ -54,6 +54,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public Mod.MEGame game { get; set; }
             public string version { get; set; }
             public string requireddlc { get; set; }
+            public string zippedexepath { get; set; }
 
             public List<string> GetParsedRequiredDLC()
             {

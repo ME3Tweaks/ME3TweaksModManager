@@ -122,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager
                 var entry = archive.ArchiveFileData.FirstOrDefault(x => x.FileName.Equals(path, StringComparison.InvariantCultureIgnoreCase));
                 if (!string.IsNullOrEmpty(entry.FileName) && entry.IsDirectory) return true;//must check filename is populated as this is a struct
                 //if this is zip archive it might not have entry for folder specifically. We should look for a subfile that will create this folder.
-                if (archive.Format == InArchiveFormat.Zip)
+                if (archive.Format == InArchiveFormat.Zip || archive.Format == InArchiveFormat.Nsis)
                 {
                     return archive.ArchiveFileData.Any(x => x.FileName.StartsWith(path + "\\"));
                 }

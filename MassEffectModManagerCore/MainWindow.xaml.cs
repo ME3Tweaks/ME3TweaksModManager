@@ -47,7 +47,7 @@ namespace MassEffectModManagerCore
         public object BusyContent { get; set; }
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = "Select a mod on the left to get started";
-        private readonly string[] SupportedDroppableExtensions = { ".rar", ".zip", ".7z" };
+        private readonly string[] SupportedDroppableExtensions = { ".rar", ".zip", ".7z", ".exe" };
         private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
@@ -1455,9 +1455,9 @@ namespace MassEffectModManagerCore
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }
-                //TODO: FIX THIS FOR .NET CORE
-                //Properties.Settings.Default.LastContentCheck = DateTime.Now;
-                //Properties.Settings.Default.Save();
+
+                SevenZipExtractor sve = new SevenZipExtractor(@"C:\users\mgame\downloads\MEHEM_v0_5_Installer.exe", InArchiveFormat.Nsis);
+
                 Log.Information("End of content check network thread");
                 b.Result = 0; //all good
             };
@@ -1658,10 +1658,11 @@ namespace MassEffectModManagerCore
                     case ".rar":
                     case ".7z":
                     case ".zip":
+                    case ".exe":
                         Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Drag & drop" }, { "Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;
-                        //TPF, .mod, .mem
+                        //TPF, .mod, .mdem
 
                 }
             }

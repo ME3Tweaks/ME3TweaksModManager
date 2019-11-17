@@ -124,7 +124,7 @@ namespace SevenZip
             {
                 SpecialDetect(stream, 257, InArchiveFormat.Tar);
             }
-            catch (ArgumentException) {}
+            catch (ArgumentException) { }
 
             if (SpecialDetect(stream, 0x8001, InArchiveFormat.Iso))
             {
@@ -198,9 +198,9 @@ namespace SevenZip
 
                 #endregion
 
-                foreach (var format in new[] 
+                foreach (var format in new[]
                 {
-                    InArchiveFormat.Zip, 
+                    InArchiveFormat.Zip,
                     InArchiveFormat.SevenZip,
                     InArchiveFormat.Rar4,
                     InArchiveFormat.Rar,

@@ -98,7 +98,6 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (properties.TryGetValue("ConditionalDLC", out string conditionalDlc))
             {
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
-                Debug.WriteLine(conditionalDlc);
                 foreach (var dlc in conditionalList)
                 {
                     //if (modForValidating.Game == Mod.MEGame.ME3)

@@ -9,6 +9,7 @@ using System.Threading;
 using IniParser.Parser;
 using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3Explorer.Packages;
 using Serilog;
 using SevenZip;
@@ -22,11 +23,13 @@ namespace MassEffectModManagerCore.modmanager
 
         private BlockingCollection<string> compressionQueue;
         private object compressionCompletedSignaler = new object();
-        public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages, Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
+        public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
+            Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null, ModArchiveImporter.ExeTransform exeTransform = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
             compressPackages &= Game == MEGame.ME3; //ME3 ONLY FOR NOW
-            using (var archiveFile = new SevenZipExtractor(archivePath))
+            var archiveFile = archivePath.EndsWith(".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+            using (archiveFile)
             {
                 var fileIndicesToExtract = new List<int>();
                 var referencedFiles = GetAllRelativeReferences(archiveFile);
@@ -35,8 +38,8 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     referencedFiles.Add("moddesc.ini");
                 }
-
-                referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
+                //unsure if this is required?? doesn't work for MEHEM EXE
+                //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
                 foreach (var info in archiveFile.ArchiveFileData)
                 {
                     if (referencedFiles.Contains(info.FileName))
@@ -143,13 +146,22 @@ namespace MassEffectModManagerCore.modmanager
                 #endregion
                 archiveFile.Extracting += (sender, args) => { extractingCallback?.Invoke(args); };
 
-                string outputFilePathMapping(string entryPath)
+                string outputFilePathMapping(ArchiveFileInfo entryInfo)
                 {
+                    string entryPath = entryInfo.FileName;
+                    if (exeTransform != null && exeTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
+                    {
+                        return Path.Combine(Utilities.GetVPatchRedirectsFolder(), exeTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
+                    }
+
                     //Archive path might start with a \. Substring may return value that start with a \
                     var subModPath = entryPath /*.TrimStart('\\')*/.Substring(ModPath.Length).TrimStart('\\');
                     var path = Path.Combine(outputFolderPath, subModPath);
+
+
                     //Debug.WriteLine("remapping output: " + entryPath + " -> " + path);
                     return path;
+
                 }
 
                 if (compressPackages)
@@ -178,6 +190,7 @@ namespace MassEffectModManagerCore.modmanager
                                 {
                                     var storageType = Texture2D.GetTopMipStorageType(texture);
                                     shouldNotCompress |= storageType == ME3Explorer.Unreal.StorageTypes.pccLZO || storageType == ME3Explorer.Unreal.StorageTypes.pccZlib;
+                                    if (!shouldNotCompress) break;
                                 }
 
                                 if (!shouldNotCompress)
@@ -212,35 +225,13 @@ namespace MassEffectModManagerCore.modmanager
                     if (compressPackages)
                     {
 
-                        var fToCompress = outputFilePathMapping(args.FileInfo.FileName);
+                        var fToCompress = outputFilePathMapping(args.FileInfo);
                         if (fToCompress.RepresentsPackageFilePath())
                         {
                             //Debug.WriteLine("Adding to blocking queue");
                             compressionQueue.TryAdd(fToCompress);
                         }
                     }
-
-                    //    await compressPackage(fToCompress);
-                    //    var p = MEPackageHandler.OpenMEPackage(fToCompress);
-                    //    //Check if any compressed textures.
-                    //    bool shouldNotCompress = false;
-                    //    foreach (var texture in p.Exports.Where(x => x.IsTexture()))
-                    //    {
-                    //        var storageType = Texture2D.GetTopMipStorageType(texture);
-                    //        shouldNotCompress |= storageType == ME3Explorer.Unreal.StorageTypes.pccLZO || storageType == ME3Explorer.Unreal.StorageTypes.pccZlib;
-                    //    }
-                    //    if (!shouldNotCompress)
-                    //    {
-                    //        compressedPackageCallback?.Invoke("Compressing " + Path.GetFileName(fToCompress), compressedPackageCount, numberOfPackagesToCompress);
-                    //        Log.Information("Compressing package: " + fToCompress);
-                    //        p.save(true);
-                    //    }
-                    //    else
-                    //    {
-                    //        Log.Information("Not compressing package due to file containing compressed textures: " + fToCompress);
-                    //    }
-                    //    compressedPackageCount++;
-                    //};
                 };
 
 
@@ -266,6 +257,25 @@ namespace MassEffectModManagerCore.modmanager
                     var parser = new IniDataParser().Parse(VirtualizedIniText);
                     parser["ModInfo"]["modver"] = ModVersionString; //In event relay service resolved this
                     File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), parser.ToString());
+                    IsVirtualized = false; //no longer virtualized
+                }
+
+                if (exeTransform != null)
+                {
+                    var vpat = Utilities.GetCachedExecutablePath("vpat.exe");
+                    //Possible pending work to do
+                    foreach (var transform in exeTransform.VPatches)
+                    {
+                        var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
+                        var inputfile = Path.Combine(ModPath, transform.inputfile);
+                        var outputfile = Path.Combine(ModPath, transform.outputfile);
+
+                        var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\"";
+                        Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
+                        Log.Information("Vpatching file into alternate: " + inputfile + " to " + outputfile);
+                        updateTextCallback?.Invoke("VPatching into alternate: "+Path.GetFileName(inputfile));
+                        Utilities.RunProcess(vpat, args, true, false, false, true);
+                    }
                 }
 
                 //int packagesCompressed = 0;

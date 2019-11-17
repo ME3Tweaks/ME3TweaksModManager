@@ -647,7 +647,7 @@ namespace SevenZip
         /// <param name="outputMapping">Optional callback that will be called to determine the output filename path</param>
         /// <returns>The ArchiveExtractCallback callback</returns>
         private ArchiveExtractCallback GetArchiveExtractCallback(string directory, int filesCount,
-                                                                 List<uint> actualIndexes, Func<string, string> outputMapping = null)
+                                                                 List<uint> actualIndexes, Func<ArchiveFileInfo, string> outputMapping = null)
         {
             var aec = String.IsNullOrEmpty(Password)
                       ? new ArchiveExtractCallback(_archive, directory, filesCount, PreserveDirectoryStructure, actualIndexes, this, outputMapping)
@@ -1086,7 +1086,7 @@ namespace SevenZip
         /// <param name="indexes">indexes of the files in the archive file table.</param>
         /// <param name="outputMappingCallback">Callback that will be called when output path of file is being determined</param>
         /// <param name="directory">Directory where the files are to be unpacked.</param>
-        public void ExtractFiles(string directory, Func<string, string> outputMappingCallback, params int[] indexes)
+        public void ExtractFiles(string directory, Func<ArchiveFileInfo, string> outputMappingCallback, params int[] indexes)
         {
             DisposedCheck();
             ClearExceptions();

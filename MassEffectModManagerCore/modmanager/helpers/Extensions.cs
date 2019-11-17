@@ -700,6 +700,25 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
+        public static bool RepresentsFileArchive(this string path)
+        {
+            string extension = Path.GetExtension(path);
+            if (extension.Equals(".rar", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".7z", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".zip", StringComparison.InvariantCultureIgnoreCase)) return true;
+            return false;
+        }
+
+        public static bool RepresentsExtractableItem(this string path)
+        {
+            string extension = Path.GetExtension(path);
+            if (extension.Equals(".rar", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".7z", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".zip", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(".exe", StringComparison.InvariantCultureIgnoreCase)) return true;
+            return false;
+        }
+
         //based on algorithm described here: http://www.codeproject.com/Articles/13525/Fast-memory-efficient-Levenshtein-algorithm
         public static int LevenshteinDistance(this string a, string b)
         {

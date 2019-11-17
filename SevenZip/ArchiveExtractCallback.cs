@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace SevenZip
 {
     using System;
@@ -36,7 +38,7 @@ namespace SevenZip
         private OutStreamWrapper _fileStream;
         private bool _directoryStructure;
         private int _currentIndex;
-        private Func<string, string> outputFilenameMapping;
+        private Func<ArchiveFileInfo, string> outputFilenameMapping;
         const int MEMORY_PRESSURE = 64 * 1024 * 1024; //64mb seems to be the maximum value
 
         #region Constructors
@@ -52,7 +54,7 @@ namespace SevenZip
         /// <param name="directoryStructure">The value indicating whether to preserve directory structure of extracted files.</param>
         /// <param name="outputmappingcallback">Optional callback that is used to determine the output filepath of the entry being extracted</param>
         public ArchiveExtractCallback(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, SevenZipExtractor extractor, Func<string, string> outputmappingcallback = null)
+            List<uint> actualIndexes, SevenZipExtractor extractor, Func<ArchiveFileInfo, string> outputmappingcallback = null)
         {
             Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor, outputmappingcallback);
         }
@@ -69,7 +71,7 @@ namespace SevenZip
         /// <param name="directoryStructure">The value indicating whether to preserve directory structure of extracted files.</param>
         /// <param name="outputmappingcallback">Optional callback that is used to determine the output filepath of the entry being extracted</param>
         public ArchiveExtractCallback(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, string password, SevenZipExtractor extractor, Func<string, string> outputmappingcallback = null)
+            List<uint> actualIndexes, string password, SevenZipExtractor extractor, Func<ArchiveFileInfo, string> outputmappingcallback = null)
             : base(password)
         {
             Init(archive, directory, filesCount, directoryStructure, actualIndexes, extractor, outputmappingcallback);
@@ -106,7 +108,7 @@ namespace SevenZip
         }
 
         private void Init(IInArchive archive, string directory, int filesCount, bool directoryStructure,
-            List<uint> actualIndexes, SevenZipExtractor extractor, Func<string, string> outputMappingCallback = null)
+            List<uint> actualIndexes, SevenZipExtractor extractor, Func<ArchiveFileInfo, string> outputMappingCallback = null)
         {
             CommonInit(archive, filesCount, extractor);
             _directory = directory;
@@ -300,7 +302,7 @@ namespace SevenZip
                         //ExtractionPath - TODO: Allow customization of where file is output to.
                         if (outputFilenameMapping != null)
                         {
-                            fileName = outputFilenameMapping.Invoke(entryName);
+                            fileName = outputFilenameMapping.Invoke(_extractor.ArchiveFileData.FirstOrDefault(x => x.Index == index));
                         }
                         else
                         {

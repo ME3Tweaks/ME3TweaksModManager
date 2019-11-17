@@ -163,6 +163,15 @@ namespace MassEffectModManagerCore
             return Path.Combine(Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "executables")).FullName, path);
         }
 
+        /// <summary>
+        /// Returns Temp/VPatchRedirects
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetVPatchRedirectsFolder()
+        {
+            return Path.Combine(Utilities.GetTempPath(), "VPatchRedirects");
+        }
+
         //(Exception e)
         //    {
         //        Log.Error("Error checking for write privledges. This may be a significant sign that an installed game is not in a good state.");

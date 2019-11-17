@@ -17,6 +17,7 @@ using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.VisualBasic;
 using Serilog;
+using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -285,8 +286,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Action = "Loading mod archive";
                 //Extraction to destination
-                string installationRedirectCallback(string inArchivePath)
+                string installationRedirectCallback(ArchiveFileInfo info)
                 {
+                    var inArchivePath = info.FileName;
                     var redirectedPath = fullPathMappingDisk[inArchivePath];
                     Debug.WriteLine($"Redirecting {inArchivePath} to {redirectedPath}");
                     return redirectedPath;
