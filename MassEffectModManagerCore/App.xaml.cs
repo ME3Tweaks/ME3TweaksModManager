@@ -20,6 +20,7 @@ using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
+using ME3Explorer.Packages;
 
 namespace MassEffectModManagerCore
 {
@@ -238,7 +239,7 @@ namespace MassEffectModManagerCore
                 Settings.Load();
                 Log.Information("Ensuring mod directories");
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
-
+                MEPackageHandler.Initialize();
                 Log.Information("Mod Manager pre-UI startup has completed");
             }
             catch (Exception e)

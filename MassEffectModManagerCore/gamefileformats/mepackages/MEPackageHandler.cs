@@ -10,6 +10,15 @@ namespace ME3Explorer.Packages
         static Func<string, Mod.MEGame, MEPackage> MEConstructorDelegate;
         private static bool initialized;
 
+        public static void Initialize()
+        {
+            if (!initialized)
+            {
+                MEConstructorDelegate = MEPackage.Initialize();
+                initialized = true;
+            }
+        }
+
         public static IMEPackage OpenMEPackage(string pathToFile)
         {
             if (!initialized)
