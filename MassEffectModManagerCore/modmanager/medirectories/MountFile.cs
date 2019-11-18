@@ -93,7 +93,7 @@ namespace MassEffectModManagerCore.GameDirectories
 
                 //@ 0x01 - Mount Flag
                 // NOT ACTUALY MOUNT FLAG IT SEEMS, ACCORDING TO TAJFUN.
-                ms.WriteByte(0x1);
+                ms.WriteByte(0x2);
                 ms.WriteInt16(0x0);
 
                 //@ 0x04
