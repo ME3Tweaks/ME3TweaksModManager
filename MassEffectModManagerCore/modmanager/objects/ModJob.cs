@@ -105,18 +105,48 @@ namespace MassEffectModManagerCore.modmanager
         public Dictionary<string, string> CustomDLCFolderMapping = new Dictionary<string, string>();
 
         /// <summary>
-        /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include CUSTOMDLC or BALANCE_CHANGES, does include BASEGAME (which will work for ME1/ME2)
+        /// List of ME1-only supported headers. BASEGAME, BRING_DOWN_THE_SKY, and PINNACLE_STATION.
         /// </summary>
         internal static readonly JobHeader[] ME1SupportedNonCustomDLCJobHeaders =
         {
             JobHeader.BASEGAME,
-            //JobHeader.BALANCE_CHANGES, //Must be parsed separately
             JobHeader.BRING_DOWN_THE_SKY,
             JobHeader.PINNACLE_STATION
         };
 
         /// <summary>
-        /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include CUSTOMDLC or BALANCE_CHANGES, does include BASEGAME (which will work for ME1/ME2)
+        /// List of ME2-only supported headers such as ARRIVAL or LAIR_OF_THE_SHADOW_BROKER. Does not include CUSTOMDLC or BALANCE_CHANGES, does include BASEGAME
+        /// </summary>
+        internal static readonly JobHeader[] ME2SupportedNonCustomDLCJobHeaders =
+        {
+            JobHeader.BASEGAME,
+            JobHeader.AEGIS_PACK,
+            JobHeader.APPEARANCE_PACK_1,
+            JobHeader.APPEARANCE_PACK_2,
+            JobHeader.ARC_PROJECTOR,
+            JobHeader.ARRIVAL,
+            JobHeader.BLOOD_DRAGON_ARMOR,
+            JobHeader.CERBERUS_WEAPON_ARMOR,
+            JobHeader.COLLECTORS_WEAPON_ARMOR,
+            JobHeader.EQUALIZER_PACK,
+            JobHeader.FIREPOWER_PACK,
+            JobHeader.FIREWALKER,
+            JobHeader.GENESIS,
+            JobHeader.INCISOR,
+            JobHeader.INFERNO_ARMOR,
+            JobHeader.KASUMI,
+            JobHeader.LAIR_OF_THE_SHADOW_BROKER,
+            JobHeader.NORMANDY_CRASH_SITE,
+            JobHeader.OVERLORD,
+            JobHeader.RECON_HOOD,
+            JobHeader.SENTRY_INTERFACE,
+            JobHeader.TERMINUS_WEAPON_ARMOR,
+            JobHeader.UMBRA_VISOR,
+            JobHeader.ZAEED
+        };
+
+        /// <summary>
+        /// List of ME3-only supported headers such as CITADEL or RESURGENCE. Does not include CUSTOMDLC or BALANCE_CHANGES, does include BASEGAME
         /// </summary>
         internal static readonly JobHeader[] ME3SupportedNonCustomDLCJobHeaders =
         {
@@ -349,7 +379,7 @@ namespace MassEffectModManagerCore.modmanager
                 case Mod.MEGame.ME1:
                     return ME1SupportedNonCustomDLCJobHeaders;
                 case Mod.MEGame.ME2:
-                    return new JobHeader[] { JobHeader.BASEGAME };
+                    return ME2SupportedNonCustomDLCJobHeaders;
                 case Mod.MEGame.ME3:
                     return ME3SupportedNonCustomDLCJobHeaders;
                 default:

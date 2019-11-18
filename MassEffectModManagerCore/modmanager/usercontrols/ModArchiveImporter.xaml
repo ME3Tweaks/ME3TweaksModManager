@@ -53,7 +53,7 @@
                     </Style>
                 </ListBox.Resources>
             </ListBox>
-            <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" IsReadOnly="True" IsReadOnlyCaretVisible="False">
+            <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left">
                 <TextBox.Text>
                     <PriorityBinding>
                         <Binding Path="SelectedMod.DisplayedModDescription" Mode="OneWay"/>
