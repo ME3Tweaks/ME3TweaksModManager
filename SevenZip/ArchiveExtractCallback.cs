@@ -113,7 +113,7 @@ namespace SevenZip
             CommonInit(archive, filesCount, extractor);
             _directory = directory;
             _actualIndexes = actualIndexes;
-            _directoryStructure = directoryStructure;.
+            _directoryStructure = directoryStructure;
             if (!directory.EndsWith("" + Path.DirectorySeparatorChar, StringComparison.CurrentCulture))
             {
                 _directory += Path.DirectorySeparatorChar;
