@@ -14,6 +14,7 @@ namespace MassEffectModManagerCore.modmanager.objects
     {
         public enum AltFileOperation
         {
+            INVALID_OPERATION,
             OP_SUBSTITUTE,
             OP_NOINSTALL,
             OP_INSTALL
@@ -21,6 +22,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public enum AltFileCondition
         {
+            INVALID_CONDITION,
             COND_MANUAL,
             COND_DLC_PRESENT,
             COND_DLC_NOT_PRESENT
@@ -28,7 +30,13 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public AltFileCondition Condition;
         public AltFileOperation Operation;
+
+        public bool CheckedByDefault { get; }
         public bool IsManual => Condition == AltFileCondition.COND_MANUAL;
+        public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
+        public bool UIRequired => !IsManual && IsSelected;
+        public bool UINotApplicable => !IsManual && !IsSelected;
+
 
         public string FriendlyName { get; private set; }
         public string Description { get; private set; }
@@ -48,9 +56,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public string SubstituteFile;
 
-        public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
-        public bool UIRequired => !IsManual && IsSelected;
-        public bool UINotApplicable => !IsManual && !IsSelected;
 
         //public const string OPERATION_SUBSTITUTE = "OP_SUBSTITUTE"; //swap a file in a job
         //public const string OPERATION_NOINSTALL = "OP_NOINSTALL"; //do not install a file
@@ -64,6 +69,9 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public string ApplicableAutoText { get; }
+        public string NotApplicableAutoText { get; }
+
         public AlternateFile(string alternateFileText, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
@@ -73,9 +81,21 @@ namespace MassEffectModManagerCore.modmanager.objects
                 FriendlyName = friendlyName;
             }
 
-            Enum.TryParse(properties["Condition"], out Condition);
-            Enum.TryParse(properties["ModOperation"], out Operation);
+            if (!Enum.TryParse(properties["Condition"], out Condition))
+            {
+                Log.Error("Alternate File specifies unknown/unsupported condition: " + properties["Condition"]);
+                ValidAlternate = false;
+                LoadFailedReason = "Alternate File specifies unknown/unsupported condition: " + properties["Condition"];
+                return;
+            }
 
+            if (!Enum.TryParse(properties["ModOperation"], out Operation))
+            {
+                Log.Error("Alternate File specifies unknown/unsupported operation: " + properties["ModOperation"]);
+                ValidAlternate = false;
+                LoadFailedReason = "Alternate File specifies unknown/unsupported operation: " + properties["ModOperation"];
+                return;
+            }
 
             if (properties.TryGetValue("Description", out string description))
             {
@@ -143,25 +163,32 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 else
                 {
-
+                    //Multimapping, Todo
                 }
             }
 
-            //Todo: Pass through job so we can lookup targets for add/replace files.
-            //else if (Operation == AltFileOperation.OP_NOINSTALL)
-            //{
-            //    //Validate noinstall file exists
-            //    var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
-            //    var modFileExists = FilesystemInterposer.FileExists(modFile, modForValidating.Archive);
+            if (properties.TryGetValue("ApplicableAutoText", out string applicableText))
+            {
+                ApplicableAutoText = applicableText;
+            }
+            else
+            {
+                ApplicableAutoText = "Auto Applied";
+            }
 
-            //    if (!modFileExists)
-            //    {
-            //        Log.Error("Alternate file target (ModFile) to be operated on does not exist: " + ModFile);
-            //        ValidAlternate = false;
-            //        LoadFailedReason = $"Alternate file is specified with operation {Operation}, but targeted file doesn't exist: {ModFile}";
-            //        return;
-            //    }
-            //}
+            if (properties.TryGetValue("NotApplicableAutoText", out string notApplicableText))
+            {
+                NotApplicableAutoText = notApplicableText;
+            }
+            else
+            {
+                NotApplicableAutoText = "Not applicable";
+            }
+
+            if (Condition == AltFileCondition.COND_MANUAL && properties.TryGetValue("CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
+            {
+                CheckedByDefault = cbd;
+            }
 
             CLog.Information($"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;
