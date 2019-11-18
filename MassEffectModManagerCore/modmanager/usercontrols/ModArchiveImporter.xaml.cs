@@ -197,6 +197,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var archiveFile = filepath.EndsWith(".exe") ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
             using (archiveFile)
             {
+#if DEBUG
+                foreach (var v in archiveFile.ArchiveFileData)
+                {
+                    Debug.WriteLine(v.FileName + " | Index " + v.Index + " | Size " + v.Size);
+                }
+#endif
                 var moddesciniEntries = new List<ArchiveFileInfo>();
                 var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
                 var bioengineEntries = new List<ArchiveFileInfo>(); //ME2 DLC
@@ -475,7 +481,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 Log.Error("Could not delete existing mod directory.");
                                 e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
                                 abort = true;
                                 return;
                             }
@@ -522,10 +528,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 PatchRedirects.ReplaceAll(doc.Root.Elements("patchredirect")
                     .Select(d => ((int)d.Attribute("index"), (string)d.Attribute("outfile"))).ToList());
 
-                PostTransformModdesc = (string)doc.Root.Element("posttransformmodesc");
+                AlternateRedirects.ReplaceAll(doc.Root.Elements("alternateredirect")
+                    .Select(d => ((int)d.Attribute("index"), (string)d.Attribute("outfile"))).ToList());
+
+                NoExtractIndexes.ReplaceAll(doc.Root.Elements("noextract")
+                    .Select(d => (int)d.Attribute("index")).ToList());
+
+                var postTransform = doc.Root.Elements("posttransformmoddesc");
+                if (postTransform.Count() == 1)
+                {
+                    PostTransformModdesc = (string)postTransform.First();
+                }
             }
             public List<VPatchDirective> VPatches = new List<VPatchDirective>();
             public List<(int index, string outfile)> PatchRedirects = new List<(int index, string outfile)>();
+            public List<(int index, string outfile)> AlternateRedirects = new List<(int index, string outfile)>();
+            public List<int> NoExtractIndexes = new List<int>();
 
             public string PostTransformModdesc { get; internal set; }
 
@@ -535,13 +553,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 public string outputfile;
                 public string patchfile;
             }
+
+            public class AlternateRedirect
+            {
+                public int index;
+                public string outputfile;
+            }
         }
 
         private void ExtractionProgressCallback(ProgressEventArgs args)
         {
+            Debug.WriteLine("Extraction progress " + args.PercentDone);
             ProgressValue = args.PercentDone;
             ProgressMaximum = 100;
-            ProgressIndeterminate = false;
+            ProgressIndeterminate = ProgressValue == 0;
         }
 
         private void CompressedPackageCallback(string activityString, int numDone, int numToDo)
@@ -568,12 +593,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (SelectedMod != null)
                 {
+                    if (SelectedMod.ExeExtractionTransform != null)
+                    {
+                        return "Exe mods must be imported before install";
+                    }
                     return "Install " + SelectedMod.ModName;
                 }
 
                 return "Install";
             }
         }
+
 
         private void LoadCommands()
         {
@@ -589,7 +619,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm && !TaskRunning/*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
+            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm && cm.ExeExtractionTransform == null && !TaskRunning/*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
         }
 
         private void InstallCompressedMod()

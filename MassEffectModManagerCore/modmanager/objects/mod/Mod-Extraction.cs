@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     if (referencedFiles.Contains(info.FileName))
                     {
-                        Debug.WriteLine("Add file to extraction list: " + info.FileName);
+                        Log.Information("Adding file to extraction list: " + info.FileName);
                         fileIndicesToExtract.Add(info.Index);
                     }
                 }
@@ -155,6 +155,16 @@ namespace MassEffectModManagerCore.modmanager
                         return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                     }
 
+                    if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
+                    {
+                        return Path.Combine(Utilities.GetTempPath(), "Trash", "trashfile");
+                    }
+
+                    if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
+                    {
+                        return Path.Combine(outputFolderPath, ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile);
+                    }
+
                     //Archive path might start with a \. Substring may return value that start with a \
                     var subModPath = entryPath /*.TrimStart('\\')*/.Substring(ModPath.Length).TrimStart('\\');
                     var path = Path.Combine(outputFolderPath, subModPath);
@@ -238,6 +248,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                 archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                Log.Information("File extraction completed.");
                 compressionQueue?.CompleteAdding();
                 if (compressPackages && numberOfPackagesToCompress > 0 && numberOfPackagesToCompress > compressedPackageCount)
                 {
@@ -264,7 +275,9 @@ namespace MassEffectModManagerCore.modmanager
                 if (ExeExtractionTransform != null)
                 {
                     var vpat = Utilities.GetCachedExecutablePath("vpat.exe");
-                    //Possible pending work to do
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
+
+                    //Handle VPatching
                     foreach (var transform in ExeExtractionTransform.VPatches)
                     {
                         var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);

@@ -14,12 +14,14 @@ namespace MassEffectModManagerCore.modmanager.objects
     {
         public enum AltDLCOperation
         {
+            INVALID_OPERATION,
             OP_ADD_CUSTOMDLC,
             OP_ADD_FOLDERFILES_TO_CUSTOMDLC
         }
 
         public enum AltDLCCondition
         {
+            INVALID_CONDITION, //INVALID DEFAULT
             COND_MANUAL, //Must be manually selected by user
             COND_DLC_PRESENT, //Auto - Apply if conditional (single) dlc is present
             COND_DLC_NOT_PRESENT, //Auto - Apply if conditional (single) dlc is not present
@@ -31,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public AltDLCCondition Condition;
         public AltDLCOperation Operation;
+        public bool CheckedByDefault { get; }
         public bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
         public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
         public bool UIRequired => !IsManual && IsSelected;
@@ -63,8 +66,22 @@ namespace MassEffectModManagerCore.modmanager.objects
                 FriendlyName = friendlyName;
             }
 
-            Enum.TryParse(properties["Condition"], out Condition);
-            Enum.TryParse(properties["ModOperation"], out Operation);
+            if (!Enum.TryParse(properties["Condition"], out Condition))
+            {
+                Log.Error("Alternate DLC specifies unknown/unsupported condition: "+ properties["Condition"]);
+                ValidAlternate = false;
+                LoadFailedReason = "Alternate DLC specifies unknown/unsupported condition: " + properties["Condition"];
+                return;
+            }
+
+            if (!Enum.TryParse(properties["ModOperation"], out Operation))
+            {
+                Log.Error("Alternate DLC specifies unknown/unsupported operation: " + properties["ModOperation"]);
+                ValidAlternate = false;
+                LoadFailedReason = "Alternate DLC specifies unknown/unsupported operation: " + properties["ModOperation"];
+                return;
+            }
+
             if (properties.TryGetValue("Description", out string description))
             {
                 Description = description;
@@ -102,11 +119,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     //if (modForValidating.Game == Mod.MEGame.ME3)
                     //{
-                        if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
-                        {
-                            ConditionalDLC.Add(foldername);
-                            continue;
-                        }
+                    if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                    {
+                        ConditionalDLC.Add(foldername);
+                        continue;
+                    }
                     //}
                     if (!dlc.StartsWith("DLC_"))
                     {
@@ -120,6 +137,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
 
                 }
+            }
+
+            if (Condition == AltDLCCondition.COND_MANUAL && properties.TryGetValue("CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
+            {
+                CheckedByDefault = cbd;
             }
 
             //Validation
@@ -156,7 +178,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public void SetupInitialSelection(GameTarget target)
         {
             IsSelected = false; //Reset
-            if (Condition == AltDLCCondition.COND_MANUAL) return;
+            if (Condition == AltDLCCondition.COND_MANUAL)
+            {
+                IsSelected = CheckedByDefault;
+                return;
+            }
             var installedDLC = MEDirectories.GetInstalledDLC(target);
             switch (Condition)
             {

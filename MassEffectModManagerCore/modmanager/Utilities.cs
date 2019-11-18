@@ -667,7 +667,6 @@ namespace MassEffectModManagerCore
 
                 using (Stream stream = Utilities.GetResourceStream(internalResourceName))
                 {
-
                     using (var file = new FileStream(destination, FileMode.Create, FileAccess.Write))
                     {
                         stream.CopyTo(file);
