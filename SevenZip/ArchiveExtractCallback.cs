@@ -113,7 +113,7 @@ namespace SevenZip
             CommonInit(archive, filesCount, extractor);
             _directory = directory;
             _actualIndexes = actualIndexes;
-            _directoryStructure = directoryStructure;
+            _directoryStructure = directoryStructure;.
             if (!directory.EndsWith("" + Path.DirectorySeparatorChar, StringComparison.CurrentCulture))
             {
                 _directory += Path.DirectorySeparatorChar;
@@ -485,8 +485,8 @@ namespace SevenZip
                     }
                     catch (ObjectDisposedException) { }
                     _fileStream = null;
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
+                    //GC.Collect();
+                    //GC.WaitForPendingFinalizers();
                 }
                 var iea = new FileInfoEventArgs(
                     _extractor.ArchiveFileData[_currentIndex], PercentDoneEventArgs.ProducePercentDone(_doneRate));

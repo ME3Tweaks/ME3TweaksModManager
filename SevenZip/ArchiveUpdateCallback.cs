@@ -732,7 +732,7 @@ namespace SevenZip
                     _wrappersToDispose.Add(_fileStream);
                 }
                 _fileStream = null;
-                GC.Collect();
+                //GC.Collect();
                 // Issue #6987
                 //GC.WaitForPendingFinalizers();
             }
