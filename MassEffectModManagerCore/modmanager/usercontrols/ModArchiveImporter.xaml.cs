@@ -134,6 +134,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     SevenZipExtractor sve = new SevenZipExtractor(archive);
                     string embeddedExePath = null;
+                    Log.Information("This file may contain a known exe-based mod.");
                     foreach (var importingInfo in knownModsOfThisSize)
                     {
                         if (importingInfo.zippedexepath == null) continue;
@@ -151,6 +152,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     break; //no importing info
                                 }
 
+                                Log.Information("Reading embedded executable file in archive: " + embeddedExePath);
                                 ActionText = "Reading zipped executable";
                                 pathOverride = Path.Combine(Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
                                 using var outstream = new FileStream(pathOverride, FileMode.Create);

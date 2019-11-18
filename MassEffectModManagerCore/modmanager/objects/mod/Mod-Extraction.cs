@@ -152,17 +152,21 @@ namespace MassEffectModManagerCore.modmanager
                     string entryPath = entryInfo.FileName;
                     if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                     {
+                        Log.Information("Extracting vpatch file at index " + entryInfo.Index);
                         return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                     }
 
                     if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
                     {
+                        Log.Information("Extracting file to trash (not used): " + entryPath);
                         return Path.Combine(Utilities.GetTempPath(), "Trash", "trashfile");
                     }
 
                     if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
                     {
-                        return Path.Combine(outputFolderPath, ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile);
+                        var outfile = ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile;
+                        Log.Information("Extracting file with redirection: " + entryPath + " to " + outfile);
+                        return Path.Combine(outputFolderPath, outfile);
                     }
 
                     //Archive path might start with a \. Substring may return value that start with a \
