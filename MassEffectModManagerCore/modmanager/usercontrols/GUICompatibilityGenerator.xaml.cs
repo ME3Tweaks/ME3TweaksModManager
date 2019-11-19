@@ -58,17 +58,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, "A GUI compatibility mod is used to make SP Controller Support, Interface Scaling Mod and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. " +
+            var installedDLCMods = VanillaDatabaseService.GetInstalledDLCMods(target);
+            var uiModInstalled = installedDLCMods.Intersect(DLCUIModFolderNames).Any();
+            if (uiModInstalled)
+            {
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, "A GUI compatibility mod is used to make SP Controller Support, Interface Scaling Mod and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. " +
                                                                    "This is a critical step when using UI mods or you may experience softlocks or incorrect interfaces on screen.\n\n" +
                                                                    "Generate a GUI compatibility pack ONLY when you have installed all other non-texture mods as it is built against your current installation.\n\nGenerate compatibility pack?",
                 "Confirm generation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No)
-            {
-                OnClosing(DataEventArgs.Empty);
-                return;
-            }
+                if (result == MessageBoxResult.No)
+                {
+                    OnClosing(DataEventArgs.Empty);
+                    return;
+                }
 
-            StartGuiCompatibilityScanner();
+                StartGuiCompatibilityScanner();
+            } else
+            { 
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, "No UI mods are installed. GUI compatibility generator only works with SP Controller Mod, Interface Scaling Mod, and Interface Scaling Add-On.", "No UI mods installed", MessageBoxButton.OK, MessageBoxImage.Error);
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         private static readonly string[] DLCUIModFolderNames =
