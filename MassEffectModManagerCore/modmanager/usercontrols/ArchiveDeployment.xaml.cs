@@ -624,6 +624,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             compressor.FileCompressionStarted += (a, b) => { Debug.WriteLine(b.FileName); };
             compressor.CompressFileDictionary(archiveMapping, archivePath);
             Debug.WriteLine("Now compressing moddesc.ini...");
+            compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
             compressor.CompressionMode = CompressionMode.Append;
             compressor.CompressionLevel = CompressionLevel.None;
             currentDeploymentStep = "moddesc.ini";

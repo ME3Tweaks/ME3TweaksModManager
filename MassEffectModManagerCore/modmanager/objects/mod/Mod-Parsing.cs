@@ -502,7 +502,7 @@ namespace MassEffectModManagerCore.modmanager
                                 LoadFailedReason = $"Job header ({headerAsString}) specifies the addfilesreadonlytargets descriptor, but the addfilestargets descriptor is not set.";
                                 return;
                             }
-
+                            //TODO: IMPLEMENT INSTALLER LOGIC FOR THIS.
                             CLog.Information($"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
                         }
 
