@@ -237,6 +237,12 @@ namespace MassEffectModManagerCore
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 Log.Information("Loading settings");
                 Settings.Load();
+                if (!Settings.EnableTelemetry)
+                {
+                    Log.Warning("Telemetry is disabled :(");
+                    Analytics.SetEnabledAsync(false);
+                    Crashes.SetEnabledAsync(false);
+                }
                 Log.Information("Ensuring mod directories");
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
                 MEPackageHandler.Initialize();

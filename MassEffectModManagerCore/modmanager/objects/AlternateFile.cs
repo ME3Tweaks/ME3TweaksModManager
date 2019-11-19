@@ -75,7 +75,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         public AlternateFile(string alternateFileText, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
-            //todo: if statements to check these.
             if (properties.TryGetValue("FriendlyName", out string friendlyName))
             {
                 FriendlyName = friendlyName;
@@ -87,6 +86,33 @@ namespace MassEffectModManagerCore.modmanager.objects
                 ValidAlternate = false;
                 LoadFailedReason = "Alternate File specifies unknown/unsupported condition: " + properties["Condition"];
                 return;
+            }
+
+            if (properties.TryGetValue("ConditionalDLC", out string conditionalDlc))
+            {
+                var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
+                foreach (var dlc in conditionalList)
+                {
+                    //if (modForValidating.Game == Mod.MEGame.ME3)
+                    //{
+                    if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                    {
+                        ConditionalDLC.Add(foldername);
+                        continue;
+                    }
+                    //}
+                    if (!dlc.StartsWith("DLC_"))
+                    {
+                        Log.Error("An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
+                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.";
+                        return;
+                    }
+                    else
+                    {
+                        ConditionalDLC.Add(dlc);
+                    }
+
+                }
             }
 
             if (!Enum.TryParse(properties["ModOperation"], out Operation))
