@@ -47,7 +47,7 @@ namespace MassEffectModManagerCore
         public object BusyContent { get; set; }
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = "Select a mod on the left to get started";
-        private readonly string[] SupportedDroppableExtensions = { ".rar", ".zip", ".7z", ".exe" };
+        private readonly string[] SupportedDroppableExtensions = { ".rar", ".zip", ".7z", ".exe", ".tpf", ".mod", ".mem" };
         private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
@@ -1662,8 +1662,13 @@ namespace MassEffectModManagerCore
                         Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Drag & drop" }, { "Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;
-                        //TPF, .mod, .mdem
-
+                    //TPF, .mod, .mem
+                    case ".tpf":
+                    case ".mod":
+                    case ".mem":
+                        Analytics.TrackEvent("User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { "Filename", Path.GetFileName(files[0]) } });
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"{ext} files can be installed with ALOT Installer or Mass Effect Modder (MEM), both available in the tools menu.\n\nWARNING: These types of mods change game file pointers. They must be installed AFTER all other DLC/content mods. Installing content/DLC mods after will cause various issues in the game. Once these types of mods are installed, ME3Tweaks Mod Manager will refuse to install further mods without a restore of the game.", "Non-Mod Manager mod found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        break;
                 }
             }
         }
@@ -1761,6 +1766,29 @@ namespace MassEffectModManagerCore
             else if (callingMember == DarkMode_MenuItem)
             {
                 SetTheme();
+            }
+            else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
+            {
+                //user trying to turn it off 
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Disabling telemetry makes it more difficult to fix bugs and develop new features for ME3Tweaks Mod Manager. " +
+                     "Telemetry data collected is used to identify crashes, errors, see what demand there is for various mod support, and see what tasks are difficult for users (such as lack of guidance on a particular enforced rule of modding).\n\n" +
+                     "Telemetry data is deleted automatically after 90 days. You can continue to turn it off, but it provides valuable metrics to the developers of this program.\n\nTurn off telemetry?", "Turning off telemetry", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    Settings.EnableTelemetry = true; //keep on.
+                    return;
+                }
+                Log.Warning("Turning off telemetry :(");
+                //Turn off telemetry.
+                Analytics.SetEnabledAsync(false);
+                Crashes.SetEnabledAsync(false);
+            }
+            else if (callingMember == EnableTelemetry_MenuItem)
+            {
+                //turning telemetry on
+                Log.Information("Turning on telemetry :)");
+                Analytics.SetEnabledAsync(true);
+                Crashes.SetEnabledAsync(true);
             }
             else
             {

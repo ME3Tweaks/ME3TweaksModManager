@@ -38,7 +38,8 @@ namespace MassEffectModManagerCore.modmanager.objects
         public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
         public bool UIRequired => !IsManual && IsSelected;
         public bool UINotApplicable => !IsManual && !IsSelected;
-
+        public string ApplicableAutoText { get; }
+        public string NotApplicableAutoText { get; }
         public string FriendlyName { get; private set; }
         public string Description { get; private set; }
         public List<string> ConditionalDLC = new List<string>();
@@ -137,6 +138,23 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
 
                 }
+            }
+            if (properties.TryGetValue("ApplicableAutoText", out string applicableText))
+            {
+                ApplicableAutoText = applicableText;
+            }
+            else
+            {
+                ApplicableAutoText = "Auto Applied";
+            }
+
+            if (properties.TryGetValue("NotApplicableAutoText", out string notApplicableText))
+            {
+                NotApplicableAutoText = notApplicableText;
+            }
+            else
+            {
+                NotApplicableAutoText = "Not applicable";
             }
 
             if (Condition == AltDLCCondition.COND_MANUAL && properties.TryGetValue("CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))

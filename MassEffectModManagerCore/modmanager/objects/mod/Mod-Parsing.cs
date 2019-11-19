@@ -105,7 +105,35 @@ namespace MassEffectModManagerCore.modmanager
                     sb.AppendLine("Add Custom DLCs: " + String.Join(", ", customDLCJob.CustomDLCFolderMapping.Values));
                 }
 
-                //todo: Add potentials through AlternateDLC
+                SortedSet<string> autoConfigs = new SortedSet<string>();
+                foreach(var InstallationJob in InstallationJobs)
+                {
+                    foreach (var altdlc in InstallationJob.AlternateDLCs)
+                    {
+                        foreach (var conditionaldlc in altdlc.ConditionalDLC)
+                        {
+                            autoConfigs.Add(conditionaldlc);
+                        }
+                    }
+                    foreach (var altfile in InstallationJob.AlternateFiles)
+                    {
+                        foreach (var conditionaldlc in altfile.ConditionalDLC)
+                        {
+                            autoConfigs.Add(conditionaldlc);
+                        }
+                    }
+                }
+
+                if (autoConfigs.Count > 0)
+                {
+                    sb.AppendLine("Configuration of this mod can change if any of the following DLC are present at installation time:");
+                    foreach (var autoConfigDLC in autoConfigs)
+                    {
+                        string name = ThirdPartyServices.GetThirdPartyModInfo(autoConfigDLC, Game)?.modname ?? autoConfigDLC;
+                        sb.AppendLine($" - {name}");
+                    }
+                }
+
 
                 if (RequiredDLC.Count > 0)
                 {

@@ -25,6 +25,9 @@ using ME3Explorer.Unreal;
 using Microsoft.AppCenter.Analytics;
 using SevenZip;
 using static MassEffectModManagerCore.modmanager.windows.StarterKitGeneratorWindow;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -55,17 +58,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, "A GUI compatibility mod is used to make SP Controller Support, Interface Scaling Mod and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. " +
+            var installedDLCMods = VanillaDatabaseService.GetInstalledDLCMods(target);
+            var uiModInstalled = installedDLCMods.Intersect(DLCUIModFolderNames).Any();
+            if (uiModInstalled)
+            {
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, "A GUI compatibility mod is used to make SP Controller Support, Interface Scaling Mod and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. " +
                                                                    "This is a critical step when using UI mods or you may experience softlocks or incorrect interfaces on screen.\n\n" +
                                                                    "Generate a GUI compatibility pack ONLY when you have installed all other non-texture mods as it is built against your current installation.\n\nGenerate compatibility pack?",
                 "Confirm generation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No)
-            {
-                OnClosing(DataEventArgs.Empty);
-                return;
-            }
+                if (result == MessageBoxResult.No)
+                {
+                    OnClosing(DataEventArgs.Empty);
+                    return;
+                }
 
-            StartGuiCompatibilityScanner();
+                StartGuiCompatibilityScanner();
+            } else
+            { 
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, "No UI mods are installed. GUI compatibility generator only works with SP Controller Mod, Interface Scaling Mod, and Interface Scaling Add-On.", "No UI mods installed", MessageBoxButton.OK, MessageBoxImage.Error);
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         private static readonly string[] DLCUIModFolderNames =
@@ -221,23 +233,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         List<string> libraryGUIs = libraryArchive.ArchiveFileData.Where(x => !x.IsDirectory).Select(x => x.FileName.Substring(Path.GetFileNameWithoutExtension(uiLibraryPath).Length + 1)).Select(x => x.Substring(0, x.Length - 4)).ToList(); //remove / on end too
 
                         //We have UI mod(s) installed and at least one other DLC mod.
-                        var supercedanceList = getFileSupercedances();
+                        var supercedanceList = getFileSupercedances().Where(x => x.Value.Any(x => !DLCUIModFolderNames.Contains(x))).ToDictionary(p => p.Key, p => p.Value);
+
                         //Find GUIs
 
-                        List<string> filesToBePatched = new List<string>();
+                        ConcurrentDictionary<string, string> filesToBePatched = new ConcurrentDictionary<string, string>(); //Dictionary because there is no ConcurrentList. Keys and values are idenitcal.
                         ActionString = "Scanning for GUI exports";
                         ActionSubstring = "Please wait";
                         Percent = 0;
                         int done = 0;
-                        foreach (var pair in supercedanceList)
+                        Parallel.ForEach(supercedanceList, new ParallelOptions() { MaxDegreeOfParallelism = 4 }, (pair) =>
                         {
                             var firstNonUIModDlc = pair.Value.FirstOrDefault(x => !DLCUIModFolderNames.Contains(x));
+
                             if (firstNonUIModDlc != null)
                             {
                                 //Scan file.
                                 var packagefile = Path.Combine(dlcRoot, firstNonUIModDlc, target.Game == MEGame.ME3 ? "CookedPCConsole" : "CookedPC", pair.Key);
-                                if (!File.Exists(packagefile)) throw new Exception("Package file for inspecting GUIs in was not found: " + packagefile);
                                 Log.Information("Scanning file for GFXMovieInfo exports: " + packagefile);
+                                if (!File.Exists(packagefile)) throw new Exception("Package file for inspecting GUIs in was not found: " + packagefile);
                                 var package = MEPackageHandler.OpenMEPackage(packagefile);
                                 var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == "GFxMovieInfo").ToList();
                                 if (guiExports.Count > 0)
@@ -249,7 +263,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         if (libraryGUIs.Contains(export.GetFullPath, StringComparer.InvariantCultureIgnoreCase))
                                         {
                                             //match
-                                            filesToBePatched.Add(packagefile);
+                                            filesToBePatched[packagefile] = packagefile;
                                             ActionSubstring = $"{filesToBePatched.Count} file{(filesToBePatched.Count == 1 ? "" : "s")} need to be patched";
 
                                             Log.Information(firstNonUIModDlc + " " + pair.Key + " has GUI export that is in UI library, marking for patching. Trigger: " + export.GetFullPath);
@@ -257,17 +271,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         }
                                     }
                                 }
+                            } else
+                            {
+                                Debug.WriteLine("Somehwo found null file in list");
                             }
-
-                            done++;
+                            Interlocked.Increment(ref done);
                             Percent = getPercent(done, supercedanceList.Count);
-                        }
+                            Debug.WriteLine("Percent: " + Percent);
+                        });
 
                         if (filesToBePatched.Count > 0)
                         {
                             Log.Information("A GUI compatibility patch is required for this game configuration");
                             b.Result = GUICompatibilityThreadResult.REQUIRED;
-                            var generatedMod = GenerateCompatibilityPackForFiles(nonUIinstalledDLCMods, filesToBePatched, libraryArchive);
+                            var generatedMod = GenerateCompatibilityPackForFiles(nonUIinstalledDLCMods, filesToBePatched.Keys.ToList(), libraryArchive);
                             b.Result = GUICompatibilityThreadResult.GENERATED_PACK;
                             Application.Current.Dispatcher.Invoke(delegate { ((MainWindow)window).LoadMods(generatedMod); }); //reload to this mod
                         }

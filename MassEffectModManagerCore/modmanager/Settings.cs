@@ -49,7 +49,12 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModUpdater, value);
         }
 
-
+        private static bool _enableTelemetry = true;
+        public static bool EnableTelemetry
+        {
+            get => _enableTelemetry;
+            set => SetProperty(ref _enableTelemetry, value);
+        }
 
         private static bool _logMixinStartup = false;
         public static bool LogMixinStartup
@@ -107,6 +112,7 @@ namespace MassEffectModManagerCore.modmanager
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage", false);
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
+            EnableTelemetry = LoadSettingBool(settingsIni, "Logging", "EnableTelemetry", true);
             LogModInstallation = LoadSettingBool(settingsIni, "Logging", "LogModInstallation", false);
             ModLibraryPath = LoadSettingString(settingsIni, "ModLibrary", "LibraryPath", null);
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
@@ -178,6 +184,7 @@ namespace MassEffectModManagerCore.modmanager
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
             SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
+            SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
             SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
             SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
             SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
