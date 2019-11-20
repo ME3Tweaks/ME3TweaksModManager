@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class ModArchiveImporter : MMBusyPanelBase
     {
         public bool TaskRunning { get; private set; }
-        public string NoModSelectedText { get; } = "Select a mod on the left to view its description";
+        public string NoModSelectedText { get; set; } = "Select a mod on the left to view its description";
         public bool ArchiveScanned { get; set; }
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -176,11 +176,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     CompressedMods.Sort(x => x.ModName);
                 });
             }
+            void CompressedModFailedCallback(Mod m)
+            {
+                Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += $"\n\n{m.ModName} failed to load: {m.LoadFailedReason}"; });
+            }
             void ActionTextUpdateCallback(string newText)
             {
                 ActionText = newText;
             }
-            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, ActionTextUpdateCallback);
+            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, ActionTextUpdateCallback);
         }
 
         //this should be private but no way to test it private for now...
@@ -192,7 +196,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <param name="addCompressedModCallback">Callback indicating that the mod should be added to the collection of found mods</param>
         /// <param name="currentOperationTextCallback">Callback to tell caller what's going on'</param>
         /// <param name="forcedOverrideData">Override data about archive. Used for testing only</param>
-        public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<string> currentOperationTextCallback = null, string forcedMD5 = null, int forcedSize = -1)
+        public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<Mod> failedToLoadModeCallback = null, Action<string> currentOperationTextCallback = null, string forcedMD5 = null, int forcedSize = -1)
         {
             string relayVersionResponse = "-1";
             List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
@@ -237,6 +241,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             addCompressedModCallback?.Invoke(m);
                             internalModList.Add(m);
+                        }
+                        else
+                        {
+                            failedToLoadModeCallback?.Invoke(m);
                         }
                     }
                 }
