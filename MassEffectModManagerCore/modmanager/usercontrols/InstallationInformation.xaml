@@ -33,27 +33,9 @@
         </StackPanel.Resources>
         <TextBlock Text="Installation Information" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
         <TextBlock Text="Files installed into the basegame or official DLC directories cannot be tracked" TextAlignment="Center"/>
-        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedItem="{Binding SelectedTarget}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Margin="0,5" Grid.Column="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Stretch">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
-                        <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
-                        <Image DockPanel.Dock="Left" Source="/images/origin.png" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
-                        <StackPanel ToolTip="This target has ALOT texture mod installed."  DockPanel.Dock="Right" Orientation="Horizontal"  Margin="3,0,0,0" Visibility="{Binding ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
-                            <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
-                            <TextBlock Text="{Binding ALOTVersion}"/>
-                        </StackPanel>
-                        <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
-                    </DockPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-            <ComboBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ComboBoxItem}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    <Setter Property="IsEnabled" Value="{Binding Selectable}" />
-                </Style>
-            </ComboBox.ItemContainerStyle>
-        </ComboBox>
+        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
+                  SelectedItem="{Binding SelectedTarget}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Margin="0,5"  HorizontalContentAlignment="Stretch"
+                  ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
         <TabControl DataContext="{Binding SelectedTarget}" Padding="0" BorderThickness="1" Margin="0">
             <TabItem Header="Installed DLC mods" Padding="0">
                 <DockPanel Height="300" Margin="-8">

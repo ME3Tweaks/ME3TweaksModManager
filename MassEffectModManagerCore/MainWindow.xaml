@@ -281,8 +281,9 @@
                 <TextBlock Text="{Binding InstallationTargetText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
                 <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged"
                   Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False"
-                  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="Current modding target">
-                    <ComboBox.ItemTemplate>
+                  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="Current modding target"
+                  ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
+                    <!--<ComboBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel HorizontalAlignment="Stretch">
                                 <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
@@ -294,14 +295,14 @@
                                 <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
                             </DockPanel>
                         </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                    <ComboBox.ItemContainerStyle>
+                    </ComboBox.ItemTemplate>-->
+                    <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             <Setter Property="IsEnabled" Value="{Binding Selectable}" />
                         </Style>
-                    </ComboBox.ItemContainerStyle>
-                </ComboBox>
+                    </ComboBox.ItemContainerStyle>-->
+                
                 <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="Add an additional installation target"/>
                 <Button Content="Target info" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="View and manage installed mods and files for this target"/>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>

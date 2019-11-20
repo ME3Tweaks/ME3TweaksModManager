@@ -47,22 +47,8 @@
                         <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus, FallbackValue=Not backed up}"/>
                         <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding BackupStatusLine2, FallbackValue=Z:\\Nothing}"/>
                         <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" IsEnabled="{Binding RestoreInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Name="InstallationTargetsME3_ComboBox" ItemsSource="{Binding AvailableBackupSources}" 
-                                  SelectedItem="{Binding RestoreTarget}" HorizontalContentAlignment="Stretch">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel HorizontalAlignment="Stretch"  LastChildFill="True">
-                                        <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
-                                        <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ComboBoxItem}">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="IsEnabled" Value="{Binding Selectable}" />
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
-                        </ComboBox>
+                                  SelectedItem="{Binding RestoreTarget}" HorizontalContentAlignment="Stretch"
+                                  ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
                         <Button Content="{Binding RestoreButtonText, FallbackValue=Restore this target}" Padding="3,0" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="3" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
                         <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding ProgressValue}" Height="10" Maximum="{Binding ProgressMax}" Visibility="{Binding RestoreInProgress, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" />
                     </Grid>

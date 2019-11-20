@@ -47,21 +47,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadCommands()
         {
-            CloseCommand = new GenericCommand(Close, CanClose);
+            CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
         }
 
         private bool CanClose() => !GameBackups.Any(x => x.BackupInProgress);
-
-        private void Close()
-        {
-            OnClosing(DataEventArgs.Empty);
-        }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && CanClose())
             {
-                Close();
+                OnClosing(DataEventArgs.Empty);
             }
         }
 

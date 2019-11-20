@@ -1432,7 +1432,7 @@ namespace MassEffectModManagerCore
 
 
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadTipsService", "Loading Third Party Importing Service", "Loaded Third Party Importing Service");
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob("LoadThirdPartyImportingService", "Loading Third Party Importing Service", "Loaded Third Party Importing Service");
                 App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Octokit;
 using Serilog;
@@ -146,15 +147,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Log.Information($"Launching: {localExecutable} {arguments}");
             Process.Start(localExecutable, arguments);
             Thread.Sleep(2500);
-            OnClosing(EventArgs.Empty);
+            OnClosing(DataEventArgs.Empty);
         }
 
-        public event EventHandler Close;
-        protected virtual void OnClosing(EventArgs e)
-        {
-            EventHandler handler = Close;
-            handler?.Invoke(this, e);
-        }
+
 
         private async Task<Release> FetchLatestRelease()
         {
@@ -250,7 +246,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         PercentVisibility = Visibility.Collapsed;
                         PercentDownloaded = 0;
                         Thread.Sleep(5000);
-                        OnClosing(EventArgs.Empty);
+                        OnClosing(DataEventArgs.Empty);
                         return;
                     }
                 }

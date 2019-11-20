@@ -1,6 +1,7 @@
 ﻿using ByteSizeLib;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime;
@@ -9,13 +10,14 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using MassEffectModManagerCore.ui;
 using ME3Explorer;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 {
     /// <summary>
     /// Interaction logic for MemoryAnalyzer.xaml
     /// </summary>
-    public partial class MemoryAnalyzer : NotifyPropertyChangedWindowBase
+    public partial class MemoryAnalyzer : Window, INotifyPropertyChanged
     {
 
         #region Static Reference Adding
@@ -38,6 +40,8 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 
         readonly DispatcherTimer dispatcherTimer;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public MemoryAnalyzer()
         {
             AddTrackedMemoryItem("Memory Analyzer", new WeakReference(this));
@@ -55,10 +59,8 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 
 
 
-        private string _lastRefreshText;
-        public string LastRefreshText { get => _lastRefreshText; set => SetProperty(ref _lastRefreshText, value); }
-        private string _currentUsageText;
-        public string CurrentMemoryUsageText { get => _currentUsageText; set => SetProperty(ref _currentUsageText, value); }
+        public string LastRefreshText { get; set; }
+        public string CurrentMemoryUsageText { get; set; }
 
         private void automatedRefresh_Tick(object sender, EventArgs e)
         {
@@ -95,11 +97,11 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             InstancedTrackedMemoryObjects.ReplaceAll(TrackedMemoryObjects);
         }
 
-        public class MemoryAnalyzerObject : NotifyPropertyChangedBase
+
+        public class MemoryAnalyzerObject : INotifyPropertyChanged
         {
             private readonly WeakReference Reference;
             public string AllocationTime { get; }
-            private string _referenceName;
             public System.Windows.Media.Brush DrawColor
             {
                 get
@@ -116,11 +118,10 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
                 }
             }
             public int RemainingLifetimeAfterGC = 10;
-            public string ReferenceName
-            {
-                get => _referenceName;
-                set => SetProperty(ref _referenceName, value);
-            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public string ReferenceName { get; set; }
 
             public string ReferenceStatus
             {
@@ -148,10 +149,10 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
                 this.ReferenceName = ReferenceName;
             }
 
-            public void RefreshStatus()
-            {
-                OnPropertyChanged(nameof(ReferenceStatus));
-            }
+            //public void RefreshStatus()
+            //{
+            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ReferenceStatus));
+            //}
 
             public bool IsAlive()
             {

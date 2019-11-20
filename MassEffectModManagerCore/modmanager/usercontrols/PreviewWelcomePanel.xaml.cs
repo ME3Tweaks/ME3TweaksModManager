@@ -29,11 +29,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (e.Key == Key.Escape)
             {
                 e.Handled = true;
-                Close();
+                CloseInternal();
             }
         }
 
-        private void Close()
+        private void CloseInternal()
         {
             OnClosing(DataEventArgs.Empty);
             Settings.ShowedPreviewPanel = true;
@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void Close_Clicked(object sender, RoutedEventArgs e)
         {
-            Close();
+            CloseInternal();
         }
     }
 }
