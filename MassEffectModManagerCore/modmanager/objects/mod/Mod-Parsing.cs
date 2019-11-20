@@ -278,13 +278,26 @@ namespace MassEffectModManagerCore.modmanager
             if (string.IsNullOrEmpty(ModName))
             {
                 ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
-                Log.Error($"Moddesc.ini in {ModPath} does not set the modname descriptor.");
+                Log.Error($"moddesc.ini in {ModPath} does not set the modname descriptor.");
                 LoadFailedReason = $"The moddesc.ini file located at {ModPath} does not have a value set for modname. This value is required.";
                 return; //Won't set valid
             }
 
             ModDescription = Utilities.ConvertBrToNewline(iniData["ModInfo"]["moddesc"]);
+            if (string.IsNullOrWhiteSpace(ModDescription))
+            {
+                Log.Error($"moddesc.ini in {ModPath} does not set the moddesc descriptor.");
+                LoadFailedReason = $"The moddesc.ini file located at {ModPath} does not have a value set for moddesc. This value is required.";
+                return; //Won't set valid
+            }
             ModDeveloper = iniData["ModInfo"]["moddev"];
+            if (string.IsNullOrWhiteSpace(ModDeveloper))
+            {
+                Log.Error($"moddesc.ini in {ModPath} does not set the moddev descriptor.");
+                LoadFailedReason = $"The moddesc.ini file located at {ModPath} does not have a value set for moddev. This value is required.";
+                return; //Won't set valid
+            }
+
             ModVersionString = iniData["ModInfo"]["modver"];
             //Check for integer value only
             if (int.TryParse(ModVersionString, out var intVersion))
@@ -300,8 +313,15 @@ namespace MassEffectModManagerCore.modmanager
             int.TryParse(iniData["ModInfo"]["modid"], out int modmakerId);
             ModModMakerID = modmakerId;
 
-            int.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode);
+            int.TryParse(iniData["UPDATES"]["updatecode"], out int modupdatecode);
             ModClassicUpdateCode = modupdatecode;
+
+            if (ModClassicUpdateCode == 0)
+            {
+                //try in old location
+                int.TryParse(iniData["ModInfo"]["updatecode"], out int modupdatecode2);
+                ModClassicUpdateCode = modupdatecode;
+            }
 
             int.TryParse(iniData["ModInfo"]["nexuscode"], out int nexuscode);
             NexusModID = nexuscode;
@@ -450,13 +470,12 @@ namespace MassEffectModManagerCore.modmanager
                     string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString]["addfilesreadonlytargets"] : null;
 
 
-                    //Remove files (ModDesc 4.1)
-                    string removeFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString]["removefilestargets"] : null;
+                    //Remove files (ModDesc 4.1) - REMOVE IN MODDESC 6
+                    
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
                     bool taskDoesSomething = replaceFilesSourceList != null && replaceFilesTargetList != null;
                     if (addFilesSourceList != null && addFilesTargetList != null) taskDoesSomething = true;
-                    if (removeFilesTargetList != null) taskDoesSomething = true;
 
                     if (!taskDoesSomething)
                     {
@@ -533,21 +552,6 @@ namespace MassEffectModManagerCore.modmanager
                             //TODO: IMPLEMENT INSTALLER LOGIC FOR THIS.
                             CLog.Information($"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
                         }
-
-                        if (removeFilesTargetList != null)
-                        {
-                            removeFilesSplit = removeFilesTargetList.Split(';').ToList();
-                            CLog.Information($"Parsing removefilestargets on {headerAsString}. Found {removeFilesSplit.Count} items in list", Settings.LogModStartup);
-
-                            if (removeFilesSplit.Any(x => x.Contains("..")))
-                            {
-                                //Security violation: Cannot use .. in filepath
-                                Log.Error($"Mod has job header ({headerAsString}) that has removefilestargets descriptor set, however at least one item in the list has a .. in it's listed file path. This is not allowed for security purposes.");
-                                LoadFailedReason = $"Job header ({headerAsString}) has removefilestargets descriptor set, however at least one item in the list has a .. in it's listed file path. This is not allowed for security purposes.";
-                                return;
-                            }
-                        }
-
 
                         //TODO: Bini support
 
@@ -846,7 +850,16 @@ namespace MassEffectModManagerCore.modmanager
                             return;
                         }
                         ModJob balanceJob = new ModJob(ModJob.JobHeader.BALANCE_CHANGES);
-                        balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceChangesDirectory + '\'' + balanceFile, this);
+                        balanceJob.JobDirectory = balanceChangesDirectory;
+                        CLog.Information($"Adding file to job installation queue: {balanceFile} => {@"Binaries\win32\asi\ServerCoalesced.bin"}", Settings.LogModStartup);
+
+                        string failurereason = balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceFile, this);
+                        if (failurereason != null)
+                        {
+                            Log.Error($"Error occured while creating BALANCE_CHANGE job: {failurereason}");
+                            LoadFailedReason = $"Error occured while creating BALANCE_CHANGE job: {failurereason}";
+                            return;
+                        }
                         CLog.Information($"Successfully made mod job for {balanceJob.Header}", Settings.LogModStartup);
                         InstallationJobs.Add(balanceJob);
                     }
@@ -887,7 +900,13 @@ namespace MassEffectModManagerCore.modmanager
                         {
                             if (allowedConfigFilesME1.Contains(configFilename, StringComparer.InvariantCultureIgnoreCase))
                             {
-                                me1ConfigJob.AddFileToInstall(configFilename, configFilename, this);
+                                var failurereason = me1ConfigJob.AddFileToInstall(configFilename, configFilename, this);
+                                if (failurereason != null)
+                                {
+                                    Log.Error($"Error occured while creating ME1_CONFIG job: {failurereason}");
+                                    LoadFailedReason = $"Error occured while creating ME1_CONFIG job: {failurereason}";
+                                    return;
+                                }
                             }
                             else
                             {

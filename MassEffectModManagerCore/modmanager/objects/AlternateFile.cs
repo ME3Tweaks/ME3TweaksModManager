@@ -79,6 +79,14 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 FriendlyName = friendlyName;
             }
+            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
+            {
+                //Cannot be null.
+                Log.Error($"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
+                ValidAlternate = false;
+                LoadFailedReason = $"At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.";
+                return;
+            }
 
             if (!Enum.TryParse(properties["Condition"], out Condition))
             {
@@ -126,6 +134,15 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (properties.TryGetValue("Description", out string description))
             {
                 Description = description;
+            }
+
+            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
+            {
+                //Cannot be null.
+                Log.Error($"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing description");
+                ValidAlternate = false;
+                LoadFailedReason = $"Alternate File  {FriendlyName} does not specify a Description, which is required for mods targeting cmmver >= 6.0.";
+                return;
             }
 
             if (properties.TryGetValue("ModFile", out string modfile))

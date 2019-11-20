@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.modmanager
@@ -174,12 +175,6 @@ namespace MassEffectModManagerCore.modmanager
         };
 
 
-
-        /// <summary>
-        /// Internal path used for resolving where files are for this job.
-        /// </summary>
-        private readonly string jobParentPath;
-
         /// <summary>
         /// ModDesc.ini Header that this mod job targets
         /// </summary>
@@ -197,10 +192,6 @@ namespace MassEffectModManagerCore.modmanager
         public ModJob(JobHeader jobHeader, Mod mod = null)
         {
             this.Header = jobHeader;
-            if (mod != null)
-            {
-                jobParentPath = mod.ModPath;
-            }
         }
 
         /// <summary>
@@ -209,9 +200,15 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
+        /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
         internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
+            //Security check
+            if (!checkExtension(sourceRelativePath, out string failReason))
+            {
+                return failReason;
+            }
             string checkingSourceFile;
             if (JobDirectory != null)
             {
@@ -230,12 +227,35 @@ namespace MassEffectModManagerCore.modmanager
             return null;
         }
 
+        private bool checkExtension(string sourceRelativePath, out string failReason)
+        {
+            var ext = Path.GetExtension(sourceRelativePath).ToLower();
+            if (ext == ".exe")
+            {
+                failReason = ".exe files are not allowed in M3 mods.";
+                return false;
+            }
+            if (ext == ".dll")
+            {
+                failReason = ".dll files are not allowed in M3 mods.";
+                return false;
+            }
+            if (ext == ".asi")
+            {
+                failReason = ".asi files are not allowed in M3 mods.";
+                return false;
+            }
+
+            failReason = null;
+            return true;
+        }
+
         /// <summary>
         /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same. This is for automapping.
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
         /// <param name="sourcePath">Path to parsed file</param>
-        /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
+        /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
         internal string AddPreparsedFileToInstall(string destRelativePath, string sourcePath, Mod mod)
         {
@@ -253,6 +273,11 @@ namespace MassEffectModManagerCore.modmanager
             //{
             //    return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
             //}
+            //Security check
+            if (!checkExtension(sourcePath, out string failReason))
+            {
+                return failReason;
+            }
             FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourcePath.Replace('/', '\\');
             return null;
         }
@@ -262,10 +287,15 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
-        /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
+        /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
         internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
+            //Security check
+            if (!checkExtension(sourceRelativePath, out string failReason))
+            {
+                return failReason;
+            }
             var checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
             if (!FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
             {

@@ -66,6 +66,14 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 FriendlyName = friendlyName;
             }
+            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
+            {
+                //Cannot be null.
+                Log.Error($"Alternate DLC does not specify FriendlyName. Mods targeting moddesc >= 6.0 require FriendlyName");
+                ValidAlternate = false;
+                LoadFailedReason = $"At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.";
+                return;
+            }
 
             if (!Enum.TryParse(properties["Condition"], out Condition))
             {
@@ -86,6 +94,14 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (properties.TryGetValue("Description", out string description))
             {
                 Description = description;
+            }
+            if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
+            {
+                //Cannot be null.
+                Log.Error($"Alternate DLC {FriendlyName} cannot have empty Description or missing description as it targets cmmver >= 6");
+                ValidAlternate = false;
+                LoadFailedReason = $"Alternate DLC  {FriendlyName} does not specify a Description, which is required for mods targeting cmmver >= 6.0.";
+                return;
             }
 
             if (properties.TryGetValue("ModAltDLC", out string altDLCFolder))

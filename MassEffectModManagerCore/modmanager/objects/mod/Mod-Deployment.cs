@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,11 @@ namespace MassEffectModManagerCore.modmanager
     {
         internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
 
+        /// <summary>
+        /// Gets all files referenced by this mod.
+        /// </summary>
+        /// <param name="archive">Archive, if this mod is in an archive.</param>
+        /// <returns></returns>
         public List<string> GetAllRelativeReferences(SevenZipExtractor archive = null)
         {
             var references = new List<string>();
@@ -21,6 +27,7 @@ namespace MassEffectModManagerCore.modmanager
             //Replace or Add references
             foreach (var job in InstallationJobs)
             {
+
                 foreach (var jobFile in job.FilesToInstall.Values)
                 {
                     references.Add(job.JobDirectory + "\\" + jobFile);
