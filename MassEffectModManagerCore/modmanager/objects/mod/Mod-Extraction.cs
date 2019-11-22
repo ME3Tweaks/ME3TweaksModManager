@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3Explorer.Packages;
 using Serilog;
 using SevenZip;
+using SevenZip.EventArguments;
 using Threading;
 
 namespace MassEffectModManagerCore.modmanager
@@ -25,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager
         private BlockingCollection<string> compressionQueue;
         private object compressionCompletedSignaler = new object();
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
-            Action<string> updateTextCallback = null, Action<ProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
+            Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
         {
             if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
             compressPackages &= Game == MEGame.ME3; //ME3 ONLY FOR NOW
@@ -145,8 +146,7 @@ namespace MassEffectModManagerCore.modmanager
             }
         }*/
                 #endregion
-                archiveFile.Extracting += (sender, args) => { extractingCallback?.Invoke(args); };
-
+                archiveFile.Progressing += (sender, args) => { extractingCallback?.Invoke(args); };
                 string outputFilePathMapping(ArchiveFileInfo entryInfo)
                 {
                     string entryPath = entryInfo.FileName;

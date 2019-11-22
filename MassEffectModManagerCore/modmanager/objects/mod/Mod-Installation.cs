@@ -95,10 +95,10 @@ namespace MassEffectModManagerCore.modmanager
                             {
                                 string alternatePathRoot = FilesystemInterposer.PathCombine(IsInArchive, ModPath, altdlc.AlternateDLCFolder);
                                 //Todo: Change to Filesystem Interposer to support installation from archives
-                                var filesToAdd = FilesystemInterposer.DirectoryGetFiles(alternatePathRoot, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
+                                var filesToAdd = FilesystemInterposer.DirectoryGetFiles(alternatePathRoot, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
                                 foreach (var fileToAdd in filesToAdd)
                                 {
-                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, Path.GetFileName(fileToAdd));
+                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.Substring(altdlc.AlternateDLCFolder.Length).TrimStart('\\', '/'));
                                     CLog.Information($"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
                                     installationMapping[destFile] = fileToAdd;

@@ -788,45 +788,53 @@ namespace MassEffectModManagerCore
 
         private void ApplyMod(Mod mod)
         {
-            BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob("ModInstall", $"Installing {mod.ModName}", $"Installed {mod.ModName}");
-            var modInstaller = new ModInstaller(mod, SelectedGameTarget);
-            modInstaller.Close += (a, b) =>
+            if (!Utilities.IsGameRunning(mod.Game))
             {
-
-                if (!modInstaller.InstallationSucceeded)
+                BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob("ModInstall", $"Installing {mod.ModName}", $"Installed {mod.ModName}");
+                var modInstaller = new ModInstaller(mod, SelectedGameTarget);
+                modInstaller.Close += (a, b) =>
                 {
-                    if (modInstaller.InstallationCancelled)
+
+                    if (!modInstaller.InstallationSucceeded)
                     {
-                        modInstallTask.finishedUiText = $"Installation aborted";
+                        if (modInstaller.InstallationCancelled)
+                        {
+                            modInstallTask.finishedUiText = $"Installation aborted";
+                            ReleaseBusyControl();
+                            backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                            return;
+                        }
+                        else
+                        {
+                            modInstallTask.finishedUiText = $"Failed to install {mod.ModName}";
+                        }
+                    }
+
+                    //Run AutoTOC if ME3
+                    if (SelectedGameTarget.Game == Mod.MEGame.ME3)
+                    {
+                        var autoTocUI = new AutoTOC(SelectedGameTarget);
+                        autoTocUI.Close += (a, b) =>
+                        {
+                            ReleaseBusyControl();
+                            backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                        };
+                        ShowBusyControl(autoTocUI);
                         ReleaseBusyControl();
-                        backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                        return;
                     }
                     else
                     {
-                        modInstallTask.finishedUiText = $"Failed to install {mod.ModName}";
-                    }
-                }
-
-                //Run AutoTOC if ME3
-                if (SelectedGameTarget.Game == Mod.MEGame.ME3)
-                {
-                    var autoTocUI = new AutoTOC(SelectedGameTarget);
-                    autoTocUI.Close += (a, b) =>
-                    {
                         ReleaseBusyControl();
                         backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                    };
-                    ShowBusyControl(autoTocUI);
-                    ReleaseBusyControl();
-                }
-                else
-                {
-                    ReleaseBusyControl();
-                    backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                }
-            };
-            ShowBusyControl(modInstaller);
+                    }
+                };
+                ShowBusyControl(modInstaller);
+            }
+            else
+            {
+                Log.Error($"Blocking install of {mod.ModName} because {Utilities.GetGameName(mod.Game)} is running.");
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mods while {Utilities.GetGameName(mod.Game)} is running.", "Cannot install mod", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ReloadMods()
@@ -1207,6 +1215,7 @@ namespace MassEffectModManagerCore
                 if (newTarget != null)
                 {
                     InstallationTargets_ComboBox.SelectedItem = newTarget;
+                    SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
                 }
             }
             else
@@ -1214,6 +1223,7 @@ namespace MassEffectModManagerCore
                 if (InstallationTargets.Count > 0)
                 {
                     InstallationTargets_ComboBox.SelectedIndex = 0;
+                    SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
                 }
             }
 
@@ -1343,8 +1353,6 @@ namespace MassEffectModManagerCore
             bw.DoWork += (a, b) =>
             {
                 Log.Information("Start of content check network thread");
-
-
 
                 BackgroundTask bgTask;
                 bool success;
@@ -1478,8 +1486,6 @@ namespace MassEffectModManagerCore
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }
-
-                SevenZipExtractor sve = new SevenZipExtractor(@"C:\users\mgame\downloads\MEHEM_v0_5_Installer.exe", InArchiveFormat.Nsis);
 
                 Log.Information("End of content check network thread");
                 b.Result = 0; //all good

@@ -19,6 +19,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Xml;
 using System.Xml.Linq;
+using SevenZip.EventArguments;
 using Threading;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -50,8 +51,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public string ScanningFile { get; private set; } = "Please wait";
         public string ActionText { get; private set; }
-        public int ProgressValue { get; private set; }
-        public int ProgressMaximum { get; private set; }
+        public long ProgressValue { get; private set; }
+        public long ProgressMaximum { get; private set; }
         public bool ProgressIndeterminate { get; private set; }
 
         public bool CanCompressPackages { get; private set; }
@@ -563,19 +564,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 public string outputfile;
                 public string patchfile;
             }
-
-            public class AlternateRedirect
-            {
-                public int index;
-                public string outputfile;
-            }
         }
 
-        private void ExtractionProgressCallback(ProgressEventArgs args)
+        private void ExtractionProgressCallback(DetailedProgressEventArgs args)
         {
-            Debug.WriteLine("Extraction progress " + args.PercentDone);
-            ProgressValue = args.PercentDone;
-            ProgressMaximum = 100;
+            Debug.WriteLine("Extraction progress " + args.AmountCompleted + "/" + args.TotalAmount);
+            ProgressValue = (long)args.AmountCompleted;
+            ProgressMaximum = (long)args.TotalAmount;
             ProgressIndeterminate = ProgressValue == 0;
         }
 

@@ -187,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Stage: Unpacked files build map
             Dictionary<string, string> fullPathMappingDisk = new Dictionary<string, string>();
             Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
-
+            SortedSet<string> customDLCsBeingInstalled = new SortedSet<string>();
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
                 foreach (var originalMapping in unpackedQueue.Value.fileMapping)
@@ -195,8 +195,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //always unpacked
                     //if (unpackedQueue.Key == ModJob.JobHeader.CUSTOMDLC || unpackedQueue.Key == ModJob.JobHeader.BALANCE_CHANGES || unpackedQueue.Key == ModJob.JobHeader.BASEGAME)
                     //{
+
                     string sourceFile;
-                    //todo: maybe handle null parameters as nothing
                     if (unpackedQueue.Key.JobDirectory == null)
                     {
                         sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, originalMapping.Value);
@@ -206,13 +206,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, unpackedQueue.Key.JobDirectory, originalMapping.Value);
                     }
 
+
+
                     if (unpackedQueue.Key.Header == ModJob.JobHeader.ME1_CONFIG)
                     {
 
                         var destFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", originalMapping.Key);
                         if (ModBeingInstalled.IsInArchive)
                         {
-                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile,StringComparer.InvariantCultureIgnoreCase);
+                            int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile, StringComparer.InvariantCultureIgnoreCase);
                             fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
                             if (archiveIndex == -1)
                             {
@@ -230,6 +232,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
 
                         var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? MEDirectories.DLCPath(gameTarget) : gameTarget.TargetPath, originalMapping.Key); //official
+
+                        //Extract Custom DLC name
+                        if (unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC)
+                        {
+                            var custDLC = destFile.Substring(gameDLCPath.Length, destFile.Length - gameDLCPath.Length).TrimStart('\\', '/');
+                            var nextSlashIndex = custDLC.IndexOf('\\');
+                            if (nextSlashIndex == -1) nextSlashIndex = custDLC.IndexOf('/');
+                            if (nextSlashIndex != -1)
+                            {
+                                custDLC = custDLC.Substring(0, nextSlashIndex);
+                                customDLCsBeingInstalled.Add(custDLC);
+                            }
+                        }
+
                         if (ModBeingInstalled.IsInArchive)
                         {
                             int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile, StringComparer.InvariantCultureIgnoreCase);
@@ -274,6 +290,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            foreach (var cdbi in customDLCsBeingInstalled)
+            {
+                var path = Path.Combine(gameDLCPath, cdbi);
+                if (Directory.Exists(path))
+                {
+                    Log.Information("Deleting existing DLC directory: " + path);
+                    Utilities.DeleteFilesAndFoldersRecursively(path);
+                }
+            }
 
             //Stage: Unpacked files installation
             if (!ModBeingInstalled.IsInArchive)
