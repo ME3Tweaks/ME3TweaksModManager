@@ -87,6 +87,11 @@ namespace MassEffectModManagerCore.Tests
                 modsFoundInArchive.Add(m);
             }
 
+            void failedModCallback(Mod m)
+            {
+                Console.WriteLine($"A mod failed to load. This may be expected: {m.ModName}");
+            }
+
             void logMessageCallback(string m)
             {
                 Console.WriteLine(m);
@@ -96,7 +101,7 @@ namespace MassEffectModManagerCore.Tests
                 modsFoundInArchive.Clear();
                 var realArchiveInfo = parseRealArchiveAttributes(archive);
                 Console.WriteLine($"Inspecting archive: { archive}");
-                ModArchiveImporter.InspectArchive(archive, addModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
+                ModArchiveImporter.InspectArchive(archive, addModCallback, failedModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
                 Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count, $"{archive} did not parse correct amount of mods.");
             }
         }
