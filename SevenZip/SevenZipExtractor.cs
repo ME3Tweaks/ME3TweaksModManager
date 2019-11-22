@@ -1,4 +1,5 @@
 using System.Reflection.Metadata.Ecma335;
+using SevenZip.EventArguments;
 
 namespace SevenZip
 {
@@ -635,6 +636,8 @@ namespace SevenZip
             aec.FileExtractionStarted += FileExtractionStartedEventProxy;
             aec.FileExtractionFinished += FileExtractionFinishedEventProxy;
             aec.Extracting += ExtractingEventProxy;
+            aec.Progressing += ProgressingEventProxy;
+
             aec.FileExists += FileExistsEventProxy;
         }
 
@@ -790,6 +793,12 @@ namespace SevenZip
         public event EventHandler<FileInfoEventArgs> FileExtractionStarted;
 
         /// <summary>
+        /// Occurs when the 7z library indicates work has been done
+        /// </summary>
+        /// <remarks>Use this event for your own handling of progress. (TEST REMARK: THIS SEEMS MORE ACCURATE THAN EXTRACTING)</remarks>
+        public event EventHandler<DetailedProgressEventArgs> Progressing;
+
+        /// <summary>
         /// Occurs when a file has been successfully unpacked.
         /// </summary>
         public event EventHandler<FileInfoEventArgs> FileExtractionFinished;
@@ -819,6 +828,16 @@ namespace SevenZip
         private void FileExtractionStartedEventProxy(object sender, FileInfoEventArgs e)
         {
             OnEvent(FileExtractionStarted, e, true);
+        }
+
+        /// <summary>
+        /// Event proxy for Progressing.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event arguments.</param>
+        private void ProgressingEventProxy(object sender, DetailedProgressEventArgs e)
+        {
+            OnEvent(Progressing, e, false);
         }
 
         /// <summary>

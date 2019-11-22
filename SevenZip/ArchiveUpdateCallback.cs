@@ -364,6 +364,10 @@ namespace SevenZip
             Debug.WriteLine("TOTAL: " + total);
         }
 
+        /// <summary>
+        /// Sets the amount of completed percent data
+        /// </summary>
+        /// <param name="completeValue"></param>
         public void SetCompleted(ref ulong completeValue)
         {
             //Debug.WriteLine("SetCompleted: " + completeValue);

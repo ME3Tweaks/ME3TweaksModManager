@@ -1,4 +1,5 @@
 using System.Linq;
+using SevenZip.EventArguments;
 
 namespace SevenZip
 {
@@ -246,7 +247,24 @@ namespace SevenZip
             OnOpen(new OpenEventArgs(total));
         }
 
-        public void SetCompleted(ref ulong completeValue) { }
+
+        public void SetCompleted(ref ulong completeValue)
+        {
+            OnProgressing(new DetailedProgressEventArgs(completeValue, (ulong)_bytesCount));
+        }
+
+        public void OnProgressing(DetailedProgressEventArgs e)
+        {
+            if (Progressing != null)
+            {
+                Progressing(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Occurs when 7z library has made progress on an operation
+        /// </summary>
+        public event EventHandler<DetailedProgressEventArgs> Progressing;
 
         /// <summary>
         /// Sets output stream for writing unpacked data
