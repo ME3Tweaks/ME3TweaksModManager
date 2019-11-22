@@ -15,7 +15,7 @@
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
-        <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
+        <converters:BoolEnabledConverter x:Key="BoolToEnabledConverter"/>
         <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter"/>
     </UserControl.Resources>
     <StackPanel MaxHeight="520">
@@ -202,12 +202,14 @@
             <Image Source="/modmanager/toolicons/alot_big.png" DockPanel.Dock="Left" Width="32" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
             <DockPanel Dock="Right" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+                    <Button Content="Remove target from M3" Padding="5"  Margin="3,0" VerticalAlignment="Bottom" Command="{Binding RemoveTargetCommand}" HorizontalAlignment="Right" ToolTip="{Binding SelectedTarget.RemoveTargetTooltipText}"/>
+                    
                     <Button Content="Open in Explorer" Padding="5" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right"/>
                     <Button  Content="Close" Padding="9,5" Margin="3,0,0,0" VerticalAlignment="Bottom" Command="{Binding CloseCommand}" HorizontalAlignment="Right"/>
                 </StackPanel>
                 <TextBlock Text="{Binding BackupLocationString}" DockPanel.Dock="Top" HorizontalAlignment="Right" TextAlignment="Right" Foreground="Gray" VerticalAlignment="Center"/>
             </DockPanel>
-            <StackPanel Margin="5">
+            <StackPanel Margin="5,5,0,0">
                 <TextBlock Text="{Binding SelectedTarget.ALOTStatusString}"/>
                 <TextBlock ToolTip="Click to open ALOT Installer">
                         <Hyperlink RequestNavigate="OpenALOTInstaller_Click" NavigateUri="internal://trigger">

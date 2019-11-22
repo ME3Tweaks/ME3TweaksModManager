@@ -45,12 +45,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand RestoreAllModifiedSFARs { get; set; }
         public ICommand RestoreAllModifiedBasegame { get; set; }
         public ICommand CloseCommand { get; set; }
+        public ICommand RemoveTargetCommand { get; set; }
 
         private void LoadCommands()
         {
             RestoreAllModifiedSFARs = new GenericCommand(RestoreAllSFARs, CanRestoreAllSFARs);
             RestoreAllModifiedBasegame = new GenericCommand(RestoreAllBasegame, CanRestoreAllBasegame);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
+            RemoveTargetCommand = new GenericCommand(RemoveTarget, CanRemoveTarget);
+        }
+
+        private bool CanRemoveTarget() => SelectedTarget != null && !SelectedTarget.RegistryActive;
+
+        private void RemoveTarget()
+        {
+            Utilities.RemoveCachedTarget(SelectedTarget);
+            OnClosing(new DataEventArgs("ReloadTargets"));
         }
 
         private void ClosePanel()

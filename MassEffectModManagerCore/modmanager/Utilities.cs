@@ -85,6 +85,7 @@ namespace MassEffectModManagerCore
             }
         }
 
+
         public static bool EnableWritePermissionsToFolders(List<GameTarget> targets, bool me1ageia)
         {
             string args = "";
@@ -824,6 +825,22 @@ namespace MassEffectModManagerCore
             {
                 savedTargets.Add(path);
                 Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
+                File.WriteAllLines(cachefile, savedTargets);
+            }
+        }
+
+
+        internal static void RemoveCachedTarget(GameTarget target)
+        {
+            var cachefile = GetCachedTargetsFile(target.Game);
+            if (!File.Exists(cachefile)) return; //can't do anything.
+            var savedTargets = File.ReadAllLines(cachefile).ToList();
+            var path = Path.GetFullPath(target.TargetPath); //standardize
+
+            int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
+            if (numRemoved > 0)
+            {
+                Log.Information("Removed " + numRemoved + " targets matching name " + path);
                 File.WriteAllLines(cachefile, savedTargets);
             }
         }

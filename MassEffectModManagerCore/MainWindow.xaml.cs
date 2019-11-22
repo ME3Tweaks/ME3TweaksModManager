@@ -101,8 +101,8 @@ namespace MassEffectModManagerCore
         {
             DataContext = this;
             LoadCommands();
-            PopulateTargets();
             InitializeComponent();
+            PopulateTargets();
             AttachListeners();
             SetTheme();
             //Must be done after UI has initialized
@@ -450,6 +450,11 @@ namespace MassEffectModManagerCore
                     {
                         LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
                     }
+
+                    if (result == "ReloadTargets")
+                    {
+                        PopulateTargets();
+                    }
                 }
             };
             ShowBusyControl(installationInformation); //Todo: Support the progress bar updates in the queue
@@ -741,7 +746,7 @@ namespace MassEffectModManagerCore
                             { "Supported", pendingTarget.Supported.ToString() }
                         });
                         Utilities.AddCachedTarget(pendingTarget);
-                        PopulateTargets();
+                        PopulateTargets(pendingTarget);
                     }
                     else
                     {
@@ -1127,6 +1132,7 @@ namespace MassEffectModManagerCore
             InstallationTargets.ClearEx();
             MEDirectories.ReloadGamePaths(); //this is redundant on the first boot but whatever.
             Log.Information("Populating game targets");
+
             if (ME3Directory.gamePath != null)
             {
                 var target = new GameTarget(Mod.MEGame.ME3, ME3Directory.gamePath, true);
@@ -1135,6 +1141,7 @@ namespace MassEffectModManagerCore
                 {
                     Log.Information("Current boot target for ME3: " + target.TargetPath);
                     InstallationTargets.Add(target);
+                    Utilities.AddCachedTarget(target);
                 }
                 else
                 {
@@ -1150,6 +1157,7 @@ namespace MassEffectModManagerCore
                 {
                     Log.Information("Current boot target for ME2: " + target.TargetPath);
                     InstallationTargets.Add(target);
+                    Utilities.AddCachedTarget(target);
                 }
                 else
                 {
@@ -1164,6 +1172,7 @@ namespace MassEffectModManagerCore
                 {
                     Log.Information("Current boot target for ME1: " + target.TargetPath);
                     InstallationTargets.Add(target);
+                    Utilities.AddCachedTarget(target);
                 }
                 else
                 {
@@ -1179,10 +1188,17 @@ namespace MassEffectModManagerCore
 
             if (otherTargetsFileME1.Any() || otherTargetsFileME2.Any() || otherTargetsFileME3.Any())
             {
-                InstallationTargets.Add(new GameTarget(Mod.MEGame.Unknown, "===================Other saved targets===================", false) { Selectable = false });
+                int count = InstallationTargets.Count;
                 InstallationTargets.AddRange(otherTargetsFileME1);
                 InstallationTargets.AddRange(otherTargetsFileME2);
                 InstallationTargets.AddRange(otherTargetsFileME3);
+                var distinct = InstallationTargets.Distinct().ToList();
+                InstallationTargets.ReplaceAll(distinct);
+                if (InstallationTargets.Count > count)
+                {
+                    InstallationTargets.Insert(count, new GameTarget(Mod.MEGame.Unknown, "===================Other saved targets===================", false) { Selectable = false });
+
+                }
             }
             if (selectedTarget != null)
             {
@@ -1191,6 +1207,13 @@ namespace MassEffectModManagerCore
                 if (newTarget != null)
                 {
                     InstallationTargets_ComboBox.SelectedItem = newTarget;
+                }
+            }
+            else
+            {
+                if (InstallationTargets.Count > 0)
+                {
+                    InstallationTargets_ComboBox.SelectedIndex = 0;
                 }
             }
 

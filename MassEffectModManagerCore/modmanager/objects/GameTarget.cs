@@ -234,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 else
                 {
-                    return "A Lot Of Textures (ALOT) is not installed";
+                    return "A Lot Of Textures (ALOT)\nNot Installed";
                 }
             }
         }
@@ -285,6 +285,33 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             IsValid = true;
             return null;
+        }
+
+        protected bool Equals(GameTarget other)
+        {
+            return TargetPath == other.TargetPath;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((GameTarget) obj);
+        }
+
+        public string RemoveTargetTooltipText
+        {
+            get
+            {
+                if (RegistryActive) return "Cannot remove a target that is currently the active boot target.\nChange the active target in the main window dropdown to remove allow removing this target";
+                return "Removes this target from Mod Manager's list of available targets for modding";
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return (TargetPath != null ? TargetPath.GetHashCode() : 0);
         }
 
         public class SFARObject : INotifyPropertyChanged
