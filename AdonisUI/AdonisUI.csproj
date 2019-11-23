@@ -19,7 +19,8 @@
     <NeutralLanguage>en</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <UseWpf>true</UseWpf>
-    <Platforms>x64</Platforms>
+    <Platforms>x64</Platforms> 
+    <noWarn>1591</noWarn> <!-- XML Property missing attributes-->
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
