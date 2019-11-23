@@ -73,8 +73,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 StartGuiCompatibilityScanner();
-            } else
-            { 
+            }
+            else
+            {
                 Xceed.Wpf.Toolkit.MessageBox.Show(window, "No UI mods are installed. GUI compatibility generator only works with SP Controller Mod, Interface Scaling Mod, and Interface Scaling Add-On.", "No UI mods installed", MessageBoxButton.OK, MessageBoxImage.Error);
                 OnClosing(DataEventArgs.Empty);
             }
@@ -85,6 +86,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             "DLC_CON_XBX",
             "DLC_MOD_UIScaling",
             "DLC_MOD_UIScaling_Shared"
+        };
+
+        private static readonly string[] DLCUIModFolderNamesIncludingPatch =
+        {
+            "DLC_CON_XBX",
+            "DLC_MOD_UIScaling",
+            "DLC_MOD_UIScaling_Shared",
+            "DLC_MOD_GUICompatibilityPack"
         };
 
         public enum GUICompatibilityThreadResult
@@ -189,7 +198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var dlcRoot = MEDirectories.DLCPath(target);
                 if (uiModInstalled)
                 {
-                    var nonUIinstalledDLCMods = installedDLCMods.Except(DLCUIModFolderNames).ToList();
+                    var nonUIinstalledDLCMods = installedDLCMods.Except(DLCUIModFolderNamesIncludingPatch).ToList();
 
                     if (nonUIinstalledDLCMods.Count < numTotalDLCMods && nonUIinstalledDLCMods.Count > 0)
                     {
@@ -233,7 +242,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         List<string> libraryGUIs = libraryArchive.ArchiveFileData.Where(x => !x.IsDirectory).Select(x => x.FileName.Substring(Path.GetFileNameWithoutExtension(uiLibraryPath).Length + 1)).Select(x => x.Substring(0, x.Length - 4)).ToList(); //remove / on end too
 
                         //We have UI mod(s) installed and at least one other DLC mod.
-                        var supercedanceList = getFileSupercedances().Where(x => x.Value.Any(x => !DLCUIModFolderNames.Contains(x))).ToDictionary(p => p.Key, p => p.Value);
+                        var supercedanceList = getFileSupercedances().Where(x => x.Value.Any(x => !DLCUIModFolderNamesIncludingPatch.Contains(x))).ToDictionary(p => p.Key, p => p.Value);
 
                         //Find GUIs
 
@@ -244,7 +253,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         int done = 0;
                         Parallel.ForEach(supercedanceList, new ParallelOptions() { MaxDegreeOfParallelism = 4 }, (pair) =>
                         {
-                            var firstNonUIModDlc = pair.Value.FirstOrDefault(x => !DLCUIModFolderNames.Contains(x));
+                            var firstNonUIModDlc = pair.Value.FirstOrDefault(x => !DLCUIModFolderNamesIncludingPatch.Contains(x));
 
                             if (firstNonUIModDlc != null)
                             {
@@ -271,13 +280,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         }
                                     }
                                 }
-                            } else
+                            }
+                            else
                             {
                                 Debug.WriteLine("Somehwo found null file in list");
                             }
                             Interlocked.Increment(ref done);
                             Percent = getPercent(done, supercedanceList.Count);
-                            Debug.WriteLine("Percent: " + Percent);
                         });
 
                         if (filesToBePatched.Count > 0)
@@ -331,7 +340,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ModName = "GUI Compatibility Pack",
                 ModDescription = description,
-                ModDeveloper = "ME3Tweaks Mod Manager " + App.AppVersionHR,
+                ModDeveloper = App.AppVersionHR,
                 ModDLCFolderName = UI_MOD_NAME,
                 ModGame = MEGame.ME3,
                 ModInternalName = "UI Mod Compatibility Pack",
