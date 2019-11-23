@@ -96,6 +96,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     ActionText = "No compatible mods found in archive";
+                    if (filepath.EndsWith(".exe"))
+                    {
+                        NoModSelectedText = "Executable installer based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.";
+                    }
+                    else
+                    {
+                        NoModSelectedText = "No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.";
+                    }
                 }
 
                 ProgressValue = 0;
@@ -201,7 +209,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             string relayVersionResponse = "-1";
             List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
-            var archiveFile = filepath.EndsWith(".exe") ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
+            var isExe = filepath.EndsWith(".exe");
+            var archiveFile = isExe ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
             using (archiveFile)
             {
 #if DEBUG
@@ -257,6 +266,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
                     var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
                     var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
+
+                    if (importingInfo == null && isExe)
+                    {
+                        Log.Error("EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
+                        return;
+                    }
+
                     if (importingInfo?.servermoddescname != null)
                     {
                         //Partially supported unofficial third party mod
@@ -568,7 +584,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ExtractionProgressCallback(DetailedProgressEventArgs args)
         {
-            Debug.WriteLine("Extraction progress " + args.AmountCompleted + "/" + args.TotalAmount);
+            //Debug.WriteLine("Extraction progress " + args.AmountCompleted + "/" + args.TotalAmount);
             ProgressValue = (long)args.AmountCompleted;
             ProgressMaximum = (long)args.TotalAmount;
             ProgressIndeterminate = ProgressValue == 0;
