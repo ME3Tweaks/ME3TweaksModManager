@@ -43,6 +43,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public string ActionSubstring { get; set; } = "Please wait";
 
+        //CEM (not sure why I had this). Will enable if required
+        private string[] doNotPatchFiles = { "BioD_CitCas.pcc" };
         public GUICompatibilityGenerator(GameTarget target)
         {
             if (target.Game != MEGame.ME3) throw new Exception("Cannot generate compatibility mods for " + target.Game);
@@ -283,7 +285,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             else
                             {
-                                Debug.WriteLine("Somehwo found null file in list");
+                                Debug.WriteLine("Found null item in the list. May be that gui compat and gui mod are the only installed mods.");
                             }
                             Interlocked.Increment(ref done);
                             Percent = getPercent(done, supercedanceList.Count);
@@ -416,6 +418,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             rawData.Clear();
                             rawData.AddRange(newData.Select(x => new ByteProperty(x))); //This will be terribly slow. Need to port over new ME3Exp binary data handler
                             export.WriteProperties(exportProperties);
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Not patching gui export, file not in library: " + export.GetFullPath);
                         }
                     }
 
