@@ -22,7 +22,8 @@ Also implements merging operations, both for complete ini files, sections, or ev
 		<PackageTags>ini</PackageTags>
 		<PackageId>ini-parser</PackageId>
 		<Product>INI Parser</Product>
-		<ReleaseVersion></ReleaseVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <ReleaseVersion></ReleaseVersion>
 	</PropertyGroup>
 
 	<!-- Auto-select supported target frameworks based on MSBuild version -->

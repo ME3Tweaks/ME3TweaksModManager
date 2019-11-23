@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using MassEffectModManagerCore.modmanager;
@@ -42,5 +43,14 @@ namespace MassEffectModManagerCore.Tests
         public static string GetTestGameFoldersDirectory() => Path.Combine(GetTestDataDirectory(), "gamedirectories");
         public static string GetTestGameFoldersDirectory(Mod.MEGame game) => Path.Combine(GetTestGameFoldersDirectory(), game.ToString().ToLowerInvariant());
 
+        public static (string md5, int size, int nummodsexpected) ParseRealArchiveAttributes(string filename)
+        {
+            string fname = Path.GetFileNameWithoutExtension(filename);
+            string[] parts = fname.Split('-');
+            string md5 = parts.Last();
+            int size = int.Parse(parts[^2]);
+            int nummodsexpected = int.Parse(parts[^3]);
+            return (md5, size, nummodsexpected);
+        }
     }
 }

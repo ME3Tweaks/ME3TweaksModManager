@@ -99,21 +99,13 @@ namespace MassEffectModManagerCore.Tests
             foreach (var archive in Directory.GetFiles(compressedModsDirectory))
             {
                 modsFoundInArchive.Clear();
-                var realArchiveInfo = parseRealArchiveAttributes(archive);
+                var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
                 Console.WriteLine($"Inspecting archive: { archive}");
                 ModArchiveImporter.InspectArchive(archive, addModCallback, failedModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
                 Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count, $"{archive} did not parse correct amount of mods.");
             }
         }
 
-        private (string md5, int size, int nummodsexpected) parseRealArchiveAttributes(string filename)
-        {
-            string fname = Path.GetFileNameWithoutExtension(filename);
-            string[] parts = fname.Split('-');
-            string md5 = parts.Last();
-            int size = int.Parse(parts[^2]);
-            int nummodsexpected = int.Parse(parts[^3]);
-            return (md5, size, nummodsexpected);
-        }
+
     }
 }
