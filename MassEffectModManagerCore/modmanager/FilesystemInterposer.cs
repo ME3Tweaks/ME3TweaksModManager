@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <returns>Combined path</returns>
         public static string PathCombine(bool archiveFilesystem, string pathBase, params string[] paths)
         {
-            char separator = '\\'; // IsInArchive ? '/' : '\\';
+            char separator = '\\'; 
             if (paths == null || !paths.Any())
                 return pathBase;
 
@@ -30,14 +30,14 @@ namespace MassEffectModManagerCore.modmanager
                 pathBase = pathBase.TrimStart('\\', '/'); //archive paths don't start with a / or \
             }
 
+
             #region Remove path end slash
 
             var slash = new[] { '/', '\\' };
-            Action<StringBuilder> removeLastSlash = null;
-            removeLastSlash = (sb) =>
+            void removeLastSlash(StringBuilder sb)
             {
                 if (sb.Length == 0) return;
-                if (!slash.Contains(sb[sb.Length - 1])) return;
+                if (!slash.Contains(sb[^1])) return;
                 sb.Remove(sb.Length - 1, 1);
                 removeLastSlash(sb);
             };
@@ -53,6 +53,10 @@ namespace MassEffectModManagerCore.modmanager
             removeLastSlash(pathSb);
             foreach (var path in paths)
             {
+                if (path == ".")
+                {
+                    continue; //A . path is the same as nothing so don't parse it. This can be used to have hack workarounds where we need a folder but we don't have one.
+                }
                 if (!skipFirst || skippedFirst)
                 {
                     pathSb.Append(separator);

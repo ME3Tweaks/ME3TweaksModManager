@@ -578,6 +578,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                     //Build replacements 
+                    int jobDirLength = jobSubdirectory == "." ? 0 : jobSubdirectory.Length;
                     if (replaceFilesSourceSplit != null)
                     {
                         for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
@@ -588,7 +589,7 @@ namespace MassEffectModManagerCore.modmanager
                                 var destGameDirectory = replaceFilesTargetSplit[i];
                                 if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
                                 {
-                                    var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, "*.*", SearchOption.AllDirectories, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobSubdirectory.Length).TrimStart('\\')).ToList();
+                                    var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, "*.*", SearchOption.AllDirectories, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobDirLength).TrimStart('\\')).ToList();
                                     foreach (var file in files)
                                     {
                                         if (GameFileExtensions.Contains(Path.GetExtension(file), StringComparer.InvariantCultureIgnoreCase))
@@ -607,7 +608,7 @@ namespace MassEffectModManagerCore.modmanager
                                 }
                                 else
                                 {
-                                    Log.Error($"Error occured while parsing the replace files lists for {headerAsString}:  source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
+                                    Log.Error($"Error occured while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
                                     LoadFailedReason = $"Error occured while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.";
                                     return;
                                 }
