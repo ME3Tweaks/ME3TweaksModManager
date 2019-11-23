@@ -8,6 +8,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SevenZip;
 
 namespace MassEffectModManagerCore.Tests
 {
@@ -83,9 +84,10 @@ namespace MassEffectModManagerCore.Tests
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
                 Console.WriteLine($"Inspecting archive: { archive}");
                 ModArchiveImporter.InspectArchive(archive, addModCallback, failedModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
+                var archiveZ = new SevenZipExtractor(archive);
                 foreach (var mod in modsFoundInArchive)
                 {
-                    mod.GetAllRelativeReferences();
+                    mod.GetAllRelativeReferences(archiveZ);
                     var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                     foreach (var target in targetsForMod)
                     {
