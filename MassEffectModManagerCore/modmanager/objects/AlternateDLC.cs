@@ -6,6 +6,7 @@ using System.Linq;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using System.ComponentModel;
+using System.Configuration;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -39,6 +40,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool UIRequired => !IsManual && IsSelected;
         public bool UINotApplicable => !IsManual && !IsSelected;
         public string ApplicableAutoText { get; }
+        public string GroupName { get; }
         public string NotApplicableAutoText { get; }
         public string FriendlyName { get; private set; }
         public string Description { get; private set; }
@@ -155,22 +157,13 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                 }
             }
-            if (properties.TryGetValue("ApplicableAutoText", out string applicableText))
-            {
-                ApplicableAutoText = applicableText;
-            }
-            else
-            {
-                ApplicableAutoText = "Auto Applied";
-            }
+            ApplicableAutoText = properties.TryGetValue("ApplicableAutoText", out string applicableText) ? applicableText : "Auto Applied";
 
-            if (properties.TryGetValue("NotApplicableAutoText", out string notApplicableText))
+            NotApplicableAutoText = properties.TryGetValue("NotApplicableAutoText", out string notApplicableText) ? notApplicableText : "Not applicable";
+
+            if (modForValidating.ModDescTargetVersion >= 6.0)
             {
-                NotApplicableAutoText = notApplicableText;
-            }
-            else
-            {
-                NotApplicableAutoText = "Not applicable";
+                GroupName = properties.TryGetValue("OptionGroup", out string groupName) ? groupName : null;
             }
 
             if (Condition == AltDLCCondition.COND_MANUAL && properties.TryGetValue("CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
