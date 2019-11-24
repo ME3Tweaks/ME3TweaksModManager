@@ -335,7 +335,7 @@ namespace MassEffectModManagerCore.modmanager
                     var nexusIndex = ModWebsite.IndexOf("nexusmods.com/");
                     if (nexusIndex > 0)
                     {
-                        string nexusId = ModWebsite.Substring().Substring("nexusmods.com/".Length); // http:/
+                        string nexusId = ModWebsite.Substring("nexusmods.com/".Length); // http:/
 
                         nexusId = nexusId.Substring("masseffect".Length);
                         if (Game == MEGame.ME2 || Game == MEGame.ME3)

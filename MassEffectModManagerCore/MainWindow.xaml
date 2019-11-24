@@ -86,6 +86,11 @@
                         <MenuItem Name="LogModStartup_MenuItem" Header="Log Mod Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True"/>
                         <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True"/>
                         <MenuItem Name="LogModInstall_MenuItem" Header="Log Mod Installation" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True"/>
+                        <MenuItem Header="{DynamicResource string_Language}">
+                            <MenuItem Name="LanguageINT_MenuItem" Header="English" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
+                            <MenuItem Name="LanguageRUS_MenuItem" Header="русский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
+                            <MenuItem Name="LanguagePOL_MenuItem" Header="Polskie" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
+                        </MenuItem>
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Check for content updates" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="Checks ME3Tweaks for updates to various services"/>
@@ -344,7 +349,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <TextBlock Text="Available Mods" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource string_AvailableMods}" FontWeight="Bold" VerticalAlignment="Center"/>
 
                     </DockPanel>
 

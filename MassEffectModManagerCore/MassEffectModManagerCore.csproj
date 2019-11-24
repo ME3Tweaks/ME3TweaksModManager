@@ -179,4 +179,13 @@
     <Resource Include="modmanager\toolicons\me3explorer_big.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="modmanager\localizations\pol.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="modmanager\localizations\rus.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>
