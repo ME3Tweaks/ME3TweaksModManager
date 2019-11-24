@@ -76,7 +76,7 @@ Du kannst dann Dateien auf das Mod Manager Fenster ziehen um sie schneller zu im
     <system:String x:Key="string_MassEffectModder">Mass Effect Modder</system:String>
     <system:String x:Key="string_Texturebrowserandinstaller">Textur-Browser und Installer</system:String>
     <system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
-    <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Ein zufallsgeneriertes Erlebnis für das Mass Effect Spiel</system:String>
+    <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Ein zufallsgeneriertes Erlebnis für das erste Mass Effect Spiel</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip">Werkzeuge zum Entwickeln von Mods für die Mass Effect Trilogie</system:String>
     <system:String x:Key="string_BackupRestore">Backup &amp; Wiederhestellen</system:String>
@@ -86,7 +86,7 @@ Du kannst dann Dateien auf das Mod Manager Fenster ziehen um sie schneller zu im
     <system:String x:Key="string_Restoreagamefrombackup">Stelle eine Installation aus einem Backup wieder her.
 Nutze die Wiederherstellungsoptionen unter Ziel Info für detaillierte Optionen.</system:String>
     <system:String x:Key="string_Help">Hilfe</system:String>
-    <system:String x:Key="string_DynamicHelp">Dynamische Hilf</system:String>
+    <system:String x:Key="string_DynamicHelp">Hilfe</system:String>
     <system:String x:Key="string_Diagnostics">Diagnose</system:String>
     <system:String x:Key="string_ModManagerLogsDiagnostics">Mod Manager-Protokolle &amp; -Diagnose</system:String>
     <system:String x:Key="string_TroubleshootingtoolsforME3Tweaks">Problembehebungswerkzeuge für ME3Tweaks</system:String>
