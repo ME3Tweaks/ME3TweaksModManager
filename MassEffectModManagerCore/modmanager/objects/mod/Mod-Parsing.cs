@@ -106,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
 
                 SortedSet<string> autoConfigs = new SortedSet<string>();
-                foreach(var InstallationJob in InstallationJobs)
+                foreach (var InstallationJob in InstallationJobs)
                 {
                     foreach (var altdlc in InstallationJob.AlternateDLCs)
                     {
@@ -326,28 +326,34 @@ namespace MassEffectModManagerCore.modmanager
             int.TryParse(iniData["ModInfo"]["nexuscode"], out int nexuscode);
             NexusModID = nexuscode;
 
+            #region NexusMods ID from URL
             if (NexusModID == 0 && ModModMakerID == 0 && ModClassicUpdateCode == 0 && !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains("nexusmods.com/masseffect"))
             {
                 try
                 {
                     //try to extract nexus mods ID
-
-                    string nexusId = ModWebsite.Substring(ModWebsite.IndexOf("nexusmods.com/")).Substring("nexusmods.com/".Length);// http:/
-
-                    //two slashes: end of masseffect/, end of mods/, end o
-                    nexusId = nexusId.Substring(nexusId.IndexOf("/")).TrimStart('/'); //mods/NUM (removes mods/)
-                    nexusId = nexusId.Substring(nexusId.IndexOf("/")).TrimStart('/'); //mods/NUM (removes mods/)
-
-                    if (int.TryParse(nexusId, out var nid))
+                    var nexusIndex = ModWebsite.IndexOf("nexusmods.com/");
+                    if (nexusIndex > 0)
                     {
-                        NexusModID = nid;
-                    }
-                    else
-                    {
-                        nexusId = nexusId.Substring(0, nexusId.IndexOf('?'));
-                        if (int.TryParse(nexusId, out var nid2))
+                        string nexusId = ModWebsite.Substring().Substring("nexusmods.com/".Length); // http:/
+
+                        nexusId = nexusId.Substring("masseffect".Length);
+                        if (Game == MEGame.ME2 || Game == MEGame.ME3)
                         {
-                            NexusModID = nid2;
+                            nexusId = nexusId.Substring(1); //number
+                        }
+
+                        nexusId = nexusId.Substring(5); // /mods/
+
+                        int questionMark = nexusId.IndexOf("?");
+                        if (questionMark > 0)
+                        {
+                            nexusId = nexusId.Substring(0, questionMark);
+                        }
+
+                        if (int.TryParse(nexusId, out var nid))
+                        {
+                            NexusModID = nid;
                         }
                     }
                 }
@@ -356,6 +362,7 @@ namespace MassEffectModManagerCore.modmanager
                     //don't bother.
                 }
             }
+            #endregion
 
             CLog.Information($"Read modmaker update code (or used default): {ModClassicUpdateCode}", Settings.LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
@@ -471,7 +478,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                     //Remove files (ModDesc 4.1) - REMOVE IN MODDESC 6
-                    
+
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
                     bool taskDoesSomething = replaceFilesSourceList != null && replaceFilesTargetList != null;

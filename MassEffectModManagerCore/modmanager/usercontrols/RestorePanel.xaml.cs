@@ -19,6 +19,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 
@@ -220,14 +221,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 //It's a DLC!
                                 string dlcname = fileBeingCopied.Substring(dlcSubStringLen);
-                                dlcname = dlcname.Substring(0, dlcname.IndexOf('\\'));
-                                if (MEDirectories.OfficialDLCNames(RestoreTarget.Game).TryGetValue(dlcname, out var hrName))
+                                int index = dlcname.IndexOf('\\');
+                                try
                                 {
-                                    BackupStatusLine2 = "Restoring " + hrName;
+                                    dlcname = dlcname.Substring(0, index);
+                                    if (MEDirectories.OfficialDLCNames(RestoreTarget.Game).TryGetValue(dlcname, out var hrName))
+                                    {
+                                        BackupStatusLine2 = "Restoring " + hrName;
+                                    }
+                                    else
+                                    {
+                                        BackupStatusLine2 = "Restoring " + dlcname;
+                                    }
                                 }
-                                else
+                                catch (Exception e)
                                 {
-                                    BackupStatusLine2 = "Restoring " + dlcname;
+                                    Crashes.TrackError(e, new Dictionary<string, string>()
+                                    {
+                                        { "Source", "Restore UI display callback" },
+                                        { "Value", fileBeingCopied },
+                                        { "DLC Folder path", dlcFolderpath }
+                                    });
                                 }
                             }
                             else
@@ -340,8 +354,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
 
-                        Analytics.TrackEvent("Chose to restore game to custom location", new Dictionary<string, string>() {{"Game", Game.ToString()}});
-                        
+                        Analytics.TrackEvent("Chose to restore game to custom location", new Dictionary<string, string>() { { "Game", Game.ToString() } });
+
                     }
                     else
                     {
