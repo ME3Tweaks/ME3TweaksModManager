@@ -89,7 +89,7 @@
                         <MenuItem Header="{DynamicResource string_Language}">
                             <MenuItem Name="LanguageINT_MenuItem" Header="English" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
                             <MenuItem Name="LanguageRUS_MenuItem" Header="русский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
-                            <MenuItem Name="LanguagePOL_MenuItem" Header="Polskie" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
+                            <MenuItem Name="LanguagePOL_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
                             <MenuItem Name="LanguageDEU_MenuItem" Header="Deutsch" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
                         </MenuItem>
                     </MenuItem>
