@@ -19,7 +19,7 @@
     <system:String x:Key="string_Enabletelemetry">Włącz telemetrię</system:String>
     <system:String x:Key="string_LogModStartup">Uruchom Log Mixin</system:String>
     <system:String x:Key="string_LogMixinStartup">Uruchom Log Mixin</system:String>
-    <system:String x:Key="string_LogModInstallation">Loguj Installacię Modu</system:String>
+    <system:String x:Key="string_LogModInstallation">Tworzenie Logu Instalacji Mod</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Sprawdź dostępność aktualizacji</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Sprawdź ME3Tweaks pod kątem aktualizacji różnych usług</system:String>
     <system:String x:Key="string_ReloadsMods">Przeładuj Mody</system:String>
