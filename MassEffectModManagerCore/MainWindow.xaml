@@ -71,156 +71,154 @@
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
-            <Menu DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" >
-                <MenuItem Header="Actions" Padding="4">
-                    <MenuItem Header="Create a ME3 mod on ModMaker" IsEnabled="False"/>
-                    <MenuItem Header="Open ME3Tweaks.com" IsEnabled="True" Click="OpenME3Tweaks_Click" ToolTip="Opens ME3Tweaks.com"/>
-                    <MenuItem Header="Open Memory Analyzer" IsEnabled="True" Click="OpenMemoryAnalyzer_Click" Visibility="{x:Static local:App.IsDebugVisibility}"/>
-                    <MenuItem Header="Options">
-                        <MenuItem Header="Mod Manager" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Name="SetModLibraryPath_MenuItem" Header="Set mod library path" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}"/>
-                        <MenuItem Name="DeveloperMode_MenuItem" Header="Developer mode" StaysOpenOnClick="True"  Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="Enable developer-oriented features" IsCheckable="True"/>
-                        <MenuItem Name="DarkMode_MenuItem" Visibility="Visible" Header="Dark theme" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}" ToolTip="Switch UI to dark theme" IsCheckable="True"/>
-                        <MenuItem Header="Logging" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Name="EnableTelemetry_MenuItem" Header="Enable telemetry" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" IsCheckable="True"/>
-                        <MenuItem Name="LogModStartup_MenuItem" Header="Log Mod Startup" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True"/>
-                        <MenuItem Name="LogMixinStartup_MenuItem" Header="Log Mixin Startup" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True"/>
-                        <MenuItem Name="LogModInstall_MenuItem" Header="Log Mod Installation" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True"/>
+            <Menu DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
+                <MenuItem Header="{DynamicResource string_Actions}" Padding="4">
+                    <MenuItem Header="{DynamicResource string_CreateaME3modonModMaker}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_OpenME3Tweaks.com}" IsEnabled="True" Click="OpenME3Tweaks_Click" ToolTip="{DynamicResource string_OpensME3Tweaks.com}" />
+                    <MenuItem Header="{DynamicResource string_OpenMemoryAnalyzer}" IsEnabled="True" Click="OpenMemoryAnalyzer_Click" Visibility="{x:Static local:App.IsDebugVisibility}" />
+                    <MenuItem Header="{DynamicResource string_Options}">
+                        <MenuItem Header="{DynamicResource string_ModManager}" Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem Name="SetModLibraryPath_MenuItem" Header="{DynamicResource string_Setmodlibrarypath}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}" />
+                        <MenuItem Name="DeveloperMode_MenuItem" Header="{DynamicResource string_Developermode}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="{DynamicResource string_Enabledeveloper-orientedfeatures}" IsCheckable="True" />
+                        <MenuItem Name="DarkMode_MenuItem" Visibility="Visible" Header="{DynamicResource string_Darktheme}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}" ToolTip="{DynamicResource string_SwitchUItodarktheme}" IsCheckable="True" />
+                        <MenuItem Header="{DynamicResource string_Logging}" Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" IsCheckable="True" />
+                        <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True" />
+                        <MenuItem Name="LogMixinStartup_MenuItem" Header="{DynamicResource string_LogMixinStartup}" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True" />
+                        <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True" />
                         <MenuItem Header="{DynamicResource string_Language}">
                             <MenuItem Name="LanguageINT_MenuItem" Header="English" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
                             <MenuItem Name="LanguageRUS_MenuItem" Header="русский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
                             <MenuItem Name="LanguagePOL_MenuItem" Header="Polskie" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
                         </MenuItem>
                     </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="Check for content updates" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="Checks ME3Tweaks for updates to various services"/>
-                    <MenuItem Header="Reloads Mods" Command="{Binding ReloadModsCommand}" ToolTip="Reloads mods from the mod library"/>
-                    <MenuItem Header="Exit" Click="ExitApplication_Click"/>
+                    <Separator />
+                    <MenuItem Header="{DynamicResource string_Checkforcontentupdates}" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}" />
+                    <MenuItem Header="{DynamicResource string_ReloadsMods}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_Reloadsmodsfromthemodlibrary}" />
+                    <MenuItem Header="{DynamicResource string_Exit}" Click="ExitApplication_Click" />
                 </MenuItem>
-                <MenuItem Header="Mod Management" Padding="4">
-                    <MenuItem Header="Import Mod">
-                        <MenuItem Header="Use drag and drop for faster import" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Header="Import mod from .7z/.rar/.zip" Command="{Binding ImportArchiveCommand}" ToolTip="Open file browser for selecting mods stored in archive files.&#10;You can drag and drop files onto the interface to import them faster."/>
-                        <MenuItem Header="Import already installed Custom DLC mod" IsEnabled="False"/>
+                <MenuItem Header="{DynamicResource string_ModManagement}" Padding="4">
+                    <MenuItem Header="{DynamicResource string_ImportMod}">
+                        <MenuItem Header="{DynamicResource string_HeaderDragDropFaster}" Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem Header="{DynamicResource string_Importmodfrom.7z/.rar/.zip}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
+                        <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" IsEnabled="False" />
                     </MenuItem>
-                    <MenuItem Header="Download ModMaker mod" IsEnabled="False"/>
-                    <MenuItem Header="ASI Mod Manager" Click="ASIModManager_Click" ToolTip="Manage ASI mods. For advanced users only."/>
-                    <MenuItem Header="Custom DLC Conflict Detector" IsEnabled="False"/>
-                    <MenuItem Header="Interface Scaling/Controller mod compatibility pack generator (ME3)" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary"/>
-                    <MenuItem Header="Batch Mod Installer" IsEnabled="False"/>
-                    <MenuItem Header="Open mods library directory" Click="OpenModsDirectory_Click" ToolTip="Opens the mod library folder"/>
-                    <MenuItem Header="Mixins (for ME3)" IsEnabled="False">
-                        <MenuItem Header="MixIn Library"/>
-                        <MenuItem Header="Clear Mixin Cache"/>
-                    </MenuItem>
-                </MenuItem>
-                <MenuItem Header="Mod Utils" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
-                    <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold"/>
-                    <MenuItem Header="Check for updates" Command="{Binding SelectedModCheckForUpdatesCommand}"/>
-                    <MenuItem Header="Restore mod from ME3Tweaks" Command="{Binding RestoreModFromME3TweaksCommand}"/>
-                    <Separator/>
-                    <MenuItem Header="Install custom keybinds into this mod" IsEnabled="False"/>
-                    <MenuItem Header="Developer options" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
-                        <MenuItem Header="Metadata editor" IsEnabled="False"/>
-                        <MenuItem Header="Deploy mod to 7z file for distribution" Command="{Binding DeployModCommand}"/>
-                        <MenuItem Header="Prepare for updater service" IsEnabled="False"/>
-                        <MenuItem Header="Submit mod information to ME3Tweaks" Command="{Binding SubmitTelemetryForModCommand}"/>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="Open mod folder" Click="OpenModFolder_Click"/>
-                    <MenuItem Header="Delete mod from library" Command="{Binding DeleteModFromLibraryCommand}"/>
-                </MenuItem>
-                <MenuItem Header="Tools" Padding="4">
-                    <MenuItem Header="Run official game configuration tool">
-                        <MenuItem Header="Mass Effect" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME1">
-                            <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME1_48.ico" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Mass Effect 2" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME2">
-                            <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME2_48.ico" Width="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Mass Effect 3" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME3">
-                            <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME3_48.ico" Width="16"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
-                    <MenuItem Header="Generate new mod (Starter Kit)">
-                        <MenuItem Name="GenerateStarterKitME1_MenuItem" Header="Mass Effect" Click="GenerateStarterKit_Clicked">
-                            <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME1_48.ico"  Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Name="GenerateStarterKitME2_MenuItem"  Header="Mass Effect 2" Click="GenerateStarterKit_Clicked">
-                            <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME2_48.ico"  Width="16" Height="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Name="GenerateStarterKitME3_MenuItem"  Header="Mass Effect 3" Click="GenerateStarterKit_Clicked">
-                            <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME3_48.ico" Width="16" Height="16"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
-                    <MenuItem Header="Binkw32 Bypasses">
-                        <MenuItem Header="Mass Effect" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME1" Header="{Binding ME1ASILoaderText}" IsChecked="{Binding ME1ASILoaderInstalled}" StaysOpenOnClick="True"/>
-                        <Separator/>
-                        <MenuItem Header="Mass Effect 2" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME2" Header="{Binding ME2ASILoaderText}"  IsChecked="{Binding ME2ASILoaderInstalled}" StaysOpenOnClick="True"/>
-                        <Separator/>
-                        <MenuItem Header="Mass Effect 3" Style="{StaticResource MenuItemHeaderStyle}"/>
-                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True"/>
-                    </MenuItem>
-                    <MenuItem Header="Grant write access to game directories" Command="{Binding GrantWriteAccessCommand}" ToolTip="Grants write permissions to game directories"/>
-                    <MenuItem Header="Run AutoTOC on game (ME3)" Command="{Binding AutoTOCCommand}" ToolTip="Runs AutoTOC on the current ME3 target (or first ME3 one in the list if the current target is not ME3)"/>
-                    <MenuItem Header="Enable console in ME1" Command="{Binding EnableME1ConsoleCommand}" ToolTip="Enables full console on ~ and miniconsole on TAB"/>
-                    <Separator/>
-                    <MenuItem Header="Additional modding tools" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="ALOT Installer" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Installer for A Lot of Textures, a graphical upgrade mod supporting all three games">
-                        <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/alot_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Mass Effect INI Modder" Name="MassEffectIniModder_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Tool for configuring many different settings for Mass Effect">
-                        <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/masseffectinimodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
-                        </MenuItem.Icon>
-
-                    </MenuItem>
-                    <MenuItem Header="Mass Effect Modder" Name="MassEffectModder_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Texture browser and installer">
-                        <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/masseffectmodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Mass Effect Randomizer" Name="MassEffectRandomizer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Randomizer for the first Mass Effect game">
-                        <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/masseffectrandomizer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="ME3Explorer - ME3Tweaks Fork" Name="ME3Explorer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Toolset for developing Mass Effect trilogy mods">
-                        <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/me3explorer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear"/>
-                        </MenuItem.Icon>
+                    <MenuItem Header="{DynamicResource string_DownloadModMakermod}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_ASIModManager}" Click="ASIModManager_Click" ToolTip="{DynamicResource string_ASIManagerTooltip}" />
+                    <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
+                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
+                    <MenuItem Header="{DynamicResource string_Mixins(forME3)}" IsEnabled="False">
+                        <MenuItem Header="{DynamicResource string_MixInLibrary}" />
+                        <MenuItem Header="{DynamicResource string_ClearMixinCache}" />
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Backup &amp; Restore" Padding="4">
-                    <MenuItem Header="Backup" Command="{Binding BackupCommand}" ToolTip="Create entire game backups"/>
-                    <MenuItem Header="Restore" Command="{Binding RestoreCommand}" ToolTip="Restore a game from backup.&#10;For granular options, use the restore options in Target Info"/>
+                <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
+                    <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
+                    <MenuItem Header="{DynamicResource string_Checkforupdates}" Command="{Binding SelectedModCheckForUpdatesCommand}" />
+                    <MenuItem Header="{DynamicResource string_RestoremodfromME3Tweaks}" Command="{Binding RestoreModFromME3TweaksCommand}" />
+                    <Separator />
+                    <MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_Developeroptions}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
+                        <MenuItem Header="{DynamicResource string_Metadataeditor}" IsEnabled="False" />
+                        <MenuItem Header="{DynamicResource string_Deploymodto7zfilefordistribution}" Command="{Binding DeployModCommand}" />
+                        <MenuItem Header="{DynamicResource string_Prepareforupdaterservice}" IsEnabled="False" />
+                        <MenuItem Header="{DynamicResource string_SubmitmodinformationtoME3Tweaks}" Command="{Binding SubmitTelemetryForModCommand}" />
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="{DynamicResource string_Openmodfolder}" Click="OpenModFolder_Click" />
+                    <MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" />
                 </MenuItem>
-                <MenuItem Name="HelpMenuItem" Header="Help" Padding="4">
-                    <MenuItem Name="DynamicHelp_MenuItem" Header="Dynamic Help" Style="{StaticResource MenuItemHeaderStyle}"/>
-
-                    <Separator/>
-                    <MenuItem Header="Diagnostics" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="Mod Manager Logs &amp; Diagnostics" Click="UploadLog_Click" ToolTip="Troubleshooting tools for ME3Tweaks"/>
-                    <Separator/>
-                    <MenuItem Header="About" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="moddesc.ini file format specification" Click="Documentation_Click" ToolTip="Reference information about the moddesc.ini specification"/>
-                    <MenuItem Header="About ME3Tweaks Mod Manager" Click="About_Click" ToolTip="About this program"/>
+                <MenuItem Header="{DynamicResource string_Tools}" Padding="4">
+                    <MenuItem Header="{DynamicResource string_Runofficialgameconfigurationtool}">
+                        <MenuItem Header="{DynamicResource string_MassEffect}" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME1">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME1_48.ico" Width="16" RenderOptions.BitmapScalingMode="HighQuality" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="{DynamicResource string_MassEffect2}" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME2">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME2_48.ico" Width="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="{DynamicResource string_MassEffect3}" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME3">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME3_48.ico" Width="16" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_GenerateStarterKit}">
+                        <MenuItem Name="GenerateStarterKitME1_MenuItem" Header="{DynamicResource string_MassEffect}" Click="GenerateStarterKit_Clicked">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME1_48.ico" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Name="GenerateStarterKitME2_MenuItem" Header="{DynamicResource string_MassEffect2}" Click="GenerateStarterKit_Clicked">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME2_48.ico" Width="16" Height="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Name="GenerateStarterKitME3_MenuItem" Header="{DynamicResource string_MassEffect3}" Click="GenerateStarterKit_Clicked">
+                            <MenuItem.Icon>
+                                <Image Source="/images/gameicons/ME3_48.ico" Width="16" Height="16" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_Binkw32Bypasses}">
+                        <MenuItem Header="{DynamicResource string_MassEffect}" Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME1" Header="{Binding ME1ASILoaderText}" IsChecked="{Binding ME1ASILoaderInstalled}" StaysOpenOnClick="True" />
+                        <Separator />
+                        <MenuItem Header="{DynamicResource string_MassEffect2}" Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME2" Header="{Binding ME2ASILoaderText}" IsChecked="{Binding ME2ASILoaderInstalled}" StaysOpenOnClick="True" />
+                        <Separator />
+                        <MenuItem Header="{DynamicResource string_MassEffect3}" Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True" />
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_Grantwriteaccesstogamedirectories}" Command="{Binding GrantWriteAccessCommand}" ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}" />
+                    <MenuItem Header="{DynamicResource string_RunAutoTOC}" Command="{Binding AutoTOCCommand}" ToolTip="{DynamicResource string_RunsAutoTOCToolTip}" />
+                    <MenuItem Header="{DynamicResource string_EnableconsoleinME1}" Command="{Binding EnableME1ConsoleCommand}" ToolTip="{DynamicResource string_EnableME1ConsoleTooltip}" />
+                    <Separator />
+                    <MenuItem Header="{DynamicResource string_Additionalmoddingtools}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_ALOTInstaller}" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_ALOTInstallerTooltip}">
+                        <MenuItem.Icon>
+                            <Image Source="/modmanager/toolicons/alot_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_MassEffectINIModder}" Name="MassEffectIniModder_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_MEIMTooltip}">
+                        <MenuItem.Icon>
+                            <Image Source="/modmanager/toolicons/masseffectinimodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_MassEffectModder}" Name="MassEffectModder_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_Texturebrowserandinstaller}">
+                        <MenuItem.Icon>
+                            <Image Source="/modmanager/toolicons/masseffectmodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_MassEffectRandomizer}" Name="MassEffectRandomizer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_RandomizerforthefirstMassEffectgame}">
+                        <MenuItem.Icon>
+                            <Image Source="/modmanager/toolicons/masseffectrandomizer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_ME3ExplorerME3TweaksFork}" Name="ME3Explorer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_ME3ExplorerME3TweaksForkTooltip}">
+                        <MenuItem.Icon>
+                            <Image Source="/modmanager/toolicons/me3explorer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource string_BackupRestore}" Padding="4">
+                    <MenuItem Header="{DynamicResource string_Backup}" Command="{Binding BackupCommand}" ToolTip="{DynamicResource string_Createentiregamebackups}" />
+                    <MenuItem Header="{DynamicResource string_Restore}" Command="{Binding RestoreCommand}" ToolTip="{DynamicResource string_Restoreagamefrombackup}" />
+                </MenuItem>
+                <MenuItem Name="HelpMenuItem" Header="{DynamicResource string_Help}" Padding="4">
+                    <MenuItem Name="DynamicHelp_MenuItem" Header="{DynamicResource string_DynamicHelp}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <Separator />
+                    <MenuItem Header="{DynamicResource string_Diagnostics}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_ModManagerLogsDiagnostics}" Click="UploadLog_Click" ToolTip="{DynamicResource string_TroubleshootingtoolsforME3Tweaks}" />
+                    <Separator />
+                    <MenuItem Header="{DynamicResource string_About}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_moddescfileformatspecification}" Click="Documentation_Click" ToolTip="{DynamicResource string_ReferenceinformationModdesc}" />
+                    <MenuItem Header="{DynamicResource string_AboutME3TweaksModManager}" Click="About_Click" ToolTip="{DynamicResource string_Aboutthisprogram}" />
                 </MenuItem>
             </Menu>
             <StatusBar DockPanel.Dock="Bottom" Padding="5,0">

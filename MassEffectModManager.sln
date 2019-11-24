@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdonisUI.ClassicTheme", "Ad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IniFileParser", "IniFileParser\IniFileParser.csproj", "{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalizationHelper", "LocalizationHelper\LocalizationHelper.csproj", "{57F86ADA-7636-4757-9434-85CB57A3D450}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,18 @@ Global
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x64.Build.0 = Release|Any CPU
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x86.ActiveCfg = Release|Any CPU
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x86.Build.0 = Release|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|x64.Build.0 = Debug|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|x86.Build.0 = Debug|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|x64.ActiveCfg = Release|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|x64.Build.0 = Release|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|x86.ActiveCfg = Release|Any CPU
+		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
