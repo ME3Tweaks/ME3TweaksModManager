@@ -70,7 +70,7 @@ Możesz przeciągać i upuszczać pliki do interfejsu, aby je szybciej importowa
     <system:String x:Key="string_EnableME1ConsoleTooltip">Włącza pełną konsolę na ~ i minikonsolę na TAB</system:String>
     <system:String x:Key="string_Additionalmoddingtools">Dodatkowe narzędzia do modowania</system:String>
     <system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
-    <system:String x:Key="string_ALOTInstallerTooltip">Instalator dla A Lot of Textures, modu graficznej aktualizacji obsługującego wszystkie trzy gry</system:String>
+    <system:String x:Key="string_ALOTInstallerTooltip">Instalator dla A Lot of Textures, modu ulepszającego grafikę wszystkich trzech gier</system:String>
     <system:String x:Key="string_MassEffectINIModder">Mass Effect INI Modder</system:String>
     <system:String x:Key="string_MEIMTooltip">Narzędzie do konfigurowania wielu różnych ustawień Mass Effect</system:String>
     <system:String x:Key="string_MassEffectModder">Mass Effect Modder</system:String>
