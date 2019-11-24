@@ -42,5 +42,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
         }
+
+        private void Navigate_Click(object sender, RequestNavigateEventArgs e)
+        {
+            Utilities.OpenWebpage(e.Target);
+        }
+
+        private void ClosePanel(object sender, RoutedEventArgs e)
+        {
+            OnClosing(DataEventArgs.Empty);
+        }
     }
 }
