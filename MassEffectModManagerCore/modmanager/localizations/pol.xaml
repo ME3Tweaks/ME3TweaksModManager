@@ -24,7 +24,7 @@
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Sprawdź ME3Tweaks pod kątem aktualizacji różnych usług</system:String>
     <system:String x:Key="string_ReloadsMods">Przeładuj Mody</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Przeładowuje mody z biblioteki</system:String>
-    <system:String x:Key="string_Exit">Zamknięcie</system:String>
+    <system:String x:Key="string_Exit">Wyjdź</system:String>
     <system:String x:Key="string_ModManagement">Zarządzanie Modami</system:String>
     <system:String x:Key="string_ImportMod">Importuj Mod</system:String>
     <system:String x:Key="string_HeaderDragDropFaster">Przeciągnij i upuść, aby przyspieszyć import</system:String>
@@ -42,7 +42,7 @@ Możesz przeciągać i upuszczać pliki do interfejsu, aby je szybciej importowa
     <system:String x:Key="string_Openmodslibrarydirectory">Otwórz katalog biblioteki modów</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Otwiera folder biblioteki modów</system:String>
     <system:String x:Key="string_Mixins(forME3)">Mixins (dla ME3)</system:String>
-    <system:String x:Key="string_MixInLibrary">BibliotekaMixIn</system:String>
+    <system:String x:Key="string_MixInLibrary">Biblioteka MixIn</system:String>
     <system:String x:Key="string_ClearMixinCache">Wyczyść pamięć podręczną Mixin</system:String>
     <system:String x:Key="string_ModUtils">Narzędzia Modów</system:String>
     <system:String x:Key="string_Checkforupdates">Sprawdź aktualizacje</system:String>
@@ -50,7 +50,7 @@ Możesz przeciągać i upuszczać pliki do interfejsu, aby je szybciej importowa
     <system:String x:Key="string_Installcustomkeybindsintothismod">Zainstaluj niestandardowe skróty klawiszowe w tym modzie</system:String>
     <system:String x:Key="string_Developeroptions">Opcje Deweloperskie</system:String>
     <system:String x:Key="string_Metadataeditor">Edytor metadanych</system:String>
-    <system:String x:Key="string_Deploymodto7zfilefordistribution">Wdróż mod do pliku 7z w celu dystrybucji</system:String>
+    <system:String x:Key="string_Deploymodto7zfilefordistribution">Spakuj mod do pliku 7z w celu dystrybucji</system:String>
     <system:String x:Key="string_Prepareforupdaterservice">Przygotuj się do usługi aktualizacji</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Prześlij informacje o modzie do ME3Tweaks</system:String>
     <system:String x:Key="string_Openmodfolder">Otwórz folder modu</system:String>
