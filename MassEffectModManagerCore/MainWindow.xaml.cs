@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore
             DataContext = this;
             LoadCommands();
             InitializeComponent();
-            languageMenuItems = new[] {LanguageINT_MenuItem, LanguageRUS_MenuItem, LanguagePOL_MenuItem};
+            languageMenuItems = new[] {LanguageINT_MenuItem, LanguageRUS_MenuItem, LanguagePOL_MenuItem, LanguageDEU_MenuItem};
             PopulateTargets();
             AttachListeners();
             SetTheme();
@@ -1923,6 +1923,10 @@ namespace MassEffectModManagerCore
             else if (sender == LanguageRUS_MenuItem)
             {
                 lang = "rus";
+            }
+            else if (sender == LanguageDEU_MenuItem)
+            {
+                lang = "deu";
             }
 
             foreach (var item in languageMenuItems)
