@@ -19,7 +19,7 @@
     <system:String x:Key="string_Enabletelemetry">Włącz telemetrię</system:String>
     <system:String x:Key="string_LogModStartup">Uruchom Log Mixin</system:String>
     <system:String x:Key="string_LogMixinStartup">Uruchom Log Mixin</system:String>
-    <system:String x:Key="string_LogModInstallation">Log Mod Installation</system:String>
+    <system:String x:Key="string_LogModInstallation">Loguj Installacię Modu</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Sprawdź dostępność aktualizacji</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Sprawdź ME3Tweaks pod kątem aktualizacji różnych usług</system:String>
     <system:String x:Key="string_ReloadsMods">Przeładuj Mody</system:String>
@@ -69,7 +69,7 @@ Możesz przeciągać i upuszczać pliki do interfejsu, aby je szybciej importowa
     <system:String x:Key="string_EnableconsoleinME1">Włącz konsolę w ME1</system:String>
     <system:String x:Key="string_EnableME1ConsoleTooltip">Włącza pełną konsolę na ~ i minikonsolę na TAB</system:String>
     <system:String x:Key="string_Additionalmoddingtools">Dodatkowe narzędzia do modowania</system:String>
-    <system:String x:Key="string_ALOTInstaller">Instalator ALOT</system:String>
+    <system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
     <system:String x:Key="string_ALOTInstallerTooltip">Instalator dla A Lot of Textures, modu graficznej aktualizacji obsługującego wszystkie trzy gry</system:String>
     <system:String x:Key="string_MassEffectINIModder">Mass Effect INI Modder</system:String>
     <system:String x:Key="string_MEIMTooltip">Narzędzie do konfigurowania wielu różnych ustawień Mass Effect</system:String>
