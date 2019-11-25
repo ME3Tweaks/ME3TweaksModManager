@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore
 
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = "Select a mod on the left to get started";
-        private readonly string[] SupportedDroppableExtensions = {".rar", ".zip", ".7z", ".exe", ".tpf", ".mod", ".mem", ".me2mod"};
+        private readonly string[] SupportedDroppableExtensions = { ".rar", ".zip", ".7z", ".exe", ".tpf", ".mod", ".mem", ".me2mod" };
         private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore
             DataContext = this;
             LoadCommands();
             InitializeComponent();
-            languageMenuItems = new[] {LanguageINT_MenuItem, LanguageRUS_MenuItem, LanguagePOL_MenuItem, LanguageDEU_MenuItem};
+            languageMenuItems = new[] { LanguageINT_MenuItem, LanguageRUS_MenuItem, LanguagePOL_MenuItem, LanguageDEU_MenuItem };
             PopulateTargets();
             AttachListeners();
             SetTheme();
@@ -247,13 +247,13 @@ namespace MassEffectModManagerCore
                         try
                         {
                             File.WriteAllText(iniFile, ini.ToString());
-                            Analytics.TrackEvent("Enabled the ME1 console", new Dictionary<string, string>() {{"Succeeded", "true"}});
+                            Analytics.TrackEvent("Enabled the ME1 console", new Dictionary<string, string>() { { "Succeeded", "true" } });
                             Xceed.Wpf.Toolkit.MessageBox.Show(this, "Console enabled.\nPress ~ to open the full size console.\nPress TAB to open the mini console.", "Console enabled");
                         }
                         catch (Exception e)
                         {
                             Log.Error("Unable to enable console: " + e.Message);
-                            Analytics.TrackEvent("Enabled the ME1 console", new Dictionary<string, string>() {{"Succeeded", "false"}});
+                            Analytics.TrackEvent("Enabled the ME1 console", new Dictionary<string, string>() { { "Succeeded", "false" } });
                             Crashes.TrackError(e);
                             Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to modify bioinput.ini: " + e.Message, "Could not enable console", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
@@ -285,7 +285,7 @@ namespace MassEffectModManagerCore
         private void CheckSelectedModForUpdate()
         {
             BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new[] {SelectedMod})); };
+            bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new[] { SelectedMod })); };
             bw.RunWorkerAsync();
 
         }
@@ -293,7 +293,7 @@ namespace MassEffectModManagerCore
         private void RestoreSelectedMod()
         {
             BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new[] {SelectedMod}), true); };
+            bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new[] { SelectedMod }), true); };
             bw.RunWorkerAsync();
         }
 
@@ -318,7 +318,7 @@ namespace MassEffectModManagerCore
             var result = m.ShowDialog(this);
             if (result.Value)
             {
-                Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> {{"Method", "Manual file selection"}, {"Filename", Path.GetFileName(m.FileName)}});
+                Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Manual file selection" }, { "Filename", Path.GetFileName(m.FileName) } });
                 var archiveFile = m.FileName;
                 Log.Information("Opening archive user selected: " + archiveFile);
                 openModImportUI(archiveFile);
@@ -489,7 +489,7 @@ namespace MassEffectModManagerCore
                 .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
             try
             {
-                Utilities.RunProcess(MEDirectories.ExecutablePath(SelectedGameTarget), (string) null, false, true);
+                Utilities.RunProcess(MEDirectories.ExecutablePath(SelectedGameTarget), (string)null, false, true);
             }
             catch (Exception e)
             {
@@ -511,43 +511,43 @@ namespace MassEffectModManagerCore
             switch (SelectedGameTarget.Game)
             {
                 case Mod.MEGame.ME1:
-                {
-                    iniFile = Path.Combine(iniFile, "Mass Effect", "Config", "BIOEngine.ini");
-                    if (File.Exists(iniFile))
                     {
-                        var dini = DuplicatingIni.LoadIni(iniFile);
-                        var section = dini.Sections.FirstOrDefault(x => x.Header == "WinDrv.WindowsClient");
-                        if (section != null)
+                        iniFile = Path.Combine(iniFile, "Mass Effect", "Config", "BIOEngine.ini");
+                        if (File.Exists(iniFile))
                         {
-                            var resx = section.Entries.FirstOrDefault(x => x.Key == "StartupResolutionX");
-                            var resy = section.Entries.FirstOrDefault(x => x.Key == "StartupResolutionY");
-                            if (resx != null && resy != null)
+                            var dini = DuplicatingIni.LoadIni(iniFile);
+                            var section = dini.Sections.FirstOrDefault(x => x.Header == "WinDrv.WindowsClient");
+                            if (section != null)
                             {
-                                resolution = $"{resx.Value}x{resy.Value}";
+                                var resx = section.Entries.FirstOrDefault(x => x.Key == "StartupResolutionX");
+                                var resy = section.Entries.FirstOrDefault(x => x.Key == "StartupResolutionY");
+                                if (resx != null && resy != null)
+                                {
+                                    resolution = $"{resx.Value}x{resy.Value}";
+                                }
                             }
                         }
                     }
-                }
                     break;
                 case Mod.MEGame.ME2:
                 case Mod.MEGame.ME3:
-                {
-                    iniFile = Path.Combine(iniFile, "Mass Effect " + SelectedGameTarget.Game.ToString().Substring(2), "BIOGame", "Config", "Gamersettings.ini");
-                    if (File.Exists(iniFile))
                     {
-                        var dini = DuplicatingIni.LoadIni(iniFile);
-                        var section = dini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
-                        if (section != null)
+                        iniFile = Path.Combine(iniFile, "Mass Effect " + SelectedGameTarget.Game.ToString().Substring(2), "BIOGame", "Config", "Gamersettings.ini");
+                        if (File.Exists(iniFile))
                         {
-                            var resx = section.Entries.FirstOrDefault(x => x.Key == "ResX");
-                            var resy = section.Entries.FirstOrDefault(x => x.Key == "ResY");
-                            if (resx != null && resy != null)
+                            var dini = DuplicatingIni.LoadIni(iniFile);
+                            var section = dini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
+                            if (section != null)
                             {
-                                resolution = $"{resx.Value}x{resy.Value}";
+                                var resx = section.Entries.FirstOrDefault(x => x.Key == "ResX");
+                                var resy = section.Entries.FirstOrDefault(x => x.Key == "ResY");
+                                if (resx != null && resy != null)
+                                {
+                                    resolution = $"{resx.Value}x{resy.Value}";
+                                }
                             }
                         }
                     }
-                }
                     break;
             }
 
@@ -575,32 +575,32 @@ namespace MassEffectModManagerCore
             switch (target.Game)
             {
                 case Mod.MEGame.ME1:
-                {
-                    var existingPath = ME1Directory.gamePath;
-                    if (existingPath != null)
                     {
-                        regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect";
+                        var existingPath = ME1Directory.gamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect";
+                        }
                     }
-                }
                     break;
                 case Mod.MEGame.ME2:
-                {
-                    var existingPath = ME1Directory.gamePath;
-                    if (existingPath != null)
                     {
-                        regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 2";
+                        var existingPath = ME1Directory.gamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 2";
+                        }
                     }
-                }
 
                     break;
                 case Mod.MEGame.ME3:
-                {
-                    var existingPath = ME1Directory.gamePath;
-                    if (existingPath != null)
                     {
-                        regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 3";
+                        var existingPath = ME1Directory.gamePath;
+                        if (existingPath != null)
+                        {
+                            regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 3";
+                        }
                     }
-                }
                     break;
             }
 
@@ -884,7 +884,7 @@ namespace MassEffectModManagerCore
                     Application.Current.Dispatcher.Invoke(delegate { result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Some game directories/registry keys are not writable by your user account. ME3Tweaks Mod Manager can grant write access to these directories for you for easier modding. Grant write access to these folders?", "Some targets/keys write-protected", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes; });
                     if (result)
                     {
-                        Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() {{"Granted?", "Yes"}});
+                        Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Yes" } });
                         try
                         {
                             Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
@@ -897,12 +897,12 @@ namespace MassEffectModManagerCore
                     else
                     {
                         Log.Warning("User denied permission to grant write permissions");
-                        Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() {{"Granted?", "No"}});
+                        Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "No" } });
                     }
                 }
                 else
                 {
-                    Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() {{"Granted?", "Implicit"}});
+                    Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { "Granted?", "Implicit" } });
                     Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
                 }
             }
@@ -1216,7 +1216,7 @@ namespace MassEffectModManagerCore
                 InstallationTargets.ReplaceAll(distinct);
                 if (InstallationTargets.Count > count)
                 {
-                    InstallationTargets.Insert(count, new GameTarget(Mod.MEGame.Unknown, "===================Other saved targets===================", false) {Selectable = false});
+                    InstallationTargets.Insert(count, new GameTarget(Mod.MEGame.Unknown, "===================Other saved targets===================", false) { Selectable = false });
 
                 }
             }
@@ -1247,7 +1247,7 @@ namespace MassEffectModManagerCore
         {
             if (e.AddedItems.Count > 0)
             {
-                SelectedMod = (Mod) e.AddedItems[0];
+                SelectedMod = (Mod)e.AddedItems[0];
                 SetWebsitePanelVisibility(SelectedMod.ModWebsite != Mod.DefaultWebsite);
                 var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == SelectedMod.Game);
                 if (installTarget != null)
@@ -1317,7 +1317,7 @@ namespace MassEffectModManagerCore
                 if (b.Data is Mod failedmod)
                 {
                     BackgroundWorker bw = new BackgroundWorker();
-                    bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new Mod[] {failedmod}), true); };
+                    bw.DoWork += (a, b) => { CheckModsForUpdates(new List<Mod>(new Mod[] { failedmod }), true); };
                     bw.RunWorkerAsync();
                 }
             };
@@ -1401,7 +1401,7 @@ namespace MassEffectModManagerCore
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
 
-                                //#endif
+                            //#endif
                             {
                                 Log.Information("Found update for Mod Manager: Build " + latestServerBuildNumer);
 
@@ -1550,7 +1550,7 @@ namespace MassEffectModManagerCore
                 {
                     //Modal dialog
                     item.ModalText = Utilities.ConvertBrToNewline(item.ModalText);
-                    m.Click += (o, eventArgs) => { new DynamicHelpItemModalWindow(item) {Owner = this}.ShowDialog(); };
+                    m.Click += (o, eventArgs) => { new DynamicHelpItemModalWindow(item) { Owner = this }.ShowDialog(); };
                 }
 
                 dynamicMenuItems.Add(m);
@@ -1574,7 +1574,7 @@ namespace MassEffectModManagerCore
             if (sender == GenerateStarterKitME1_MenuItem) g = Mod.MEGame.ME1;
             if (sender == GenerateStarterKitME2_MenuItem) g = Mod.MEGame.ME2;
             if (sender == GenerateStarterKitME3_MenuItem) g = Mod.MEGame.ME3;
-            new StarterKitGeneratorWindow(g) {Owner = this}.ShowDialog();
+            new StarterKitGeneratorWindow(g) { Owner = this }.ShowDialog();
         }
 
         private void LaunchExternalTool_Clicked(object sender, RoutedEventArgs e)
@@ -1685,7 +1685,7 @@ namespace MassEffectModManagerCore
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 // Note that you can have more than one file.
-                string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 string ext = Path.GetExtension(files[0]).ToLower();
                 switch (ext)
                 {
@@ -1693,19 +1693,19 @@ namespace MassEffectModManagerCore
                     case ".7z":
                     case ".zip":
                     case ".exe":
-                        Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> {{"Method", "Drag & drop"}, {"Filename", Path.GetFileName(files[0])}});
+                        Analytics.TrackEvent("User opened mod archive for import", new Dictionary<string, string> { { "Method", "Drag & drop" }, { "Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;
                     //TPF, .mod, .mem
                     case ".tpf":
                     case ".mod":
                     case ".mem":
-                        Analytics.TrackEvent("User redirected to MEM/ALOT Installer", new Dictionary<string, string> {{"Filename", Path.GetFileName(files[0])}});
+                        Analytics.TrackEvent("User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { "Filename", Path.GetFileName(files[0]) } });
                         Xceed.Wpf.Toolkit.MessageBox.Show(this, $"{ext} files can be installed with ALOT Installer or Mass Effect Modder (MEM), both available in the tools menu.\n\nWARNING: These types of mods change game file pointers. They must be installed AFTER all other DLC/content mods. Installing content/DLC mods after will cause various issues in the game. Once these types of mods are installed, ME3Tweaks Mod Manager will refuse to install further mods without a restore of the game.", "Non-Mod Manager mod found", MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
                     case ".me2mod":
                         Analytics.TrackEvent("User opened me2mod file", new Dictionary<string, string> { { "Filename", Path.GetFileName(files[0]) } });
-                        var modsFound = RCWMod.ParseRCWMods(File.ReadAllText(files[0]));
+                        openModImportUI(files[0]);
                         break;
                 }
             }
@@ -1751,7 +1751,7 @@ namespace MassEffectModManagerCore
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 // Note that you can have more than one file.
-                var files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 string ext = Path.GetExtension(files[0]).ToLower();
                 if (!SupportedDroppableExtensions.Contains(ext))
                 {
@@ -1788,7 +1788,7 @@ namespace MassEffectModManagerCore
 
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
         {
-            var callingMember = (MenuItem) sender;
+            var callingMember = (MenuItem)sender;
             //if (callingMember == LogModStartup_MenuItem)
             //{
             //    Settings.LogModStartup = !Settings.LogModStartup; //flip

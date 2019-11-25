@@ -5,13 +5,17 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using IniParser;
+using IniParser.Model;
 using IniParser.Parser;
 using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3Explorer.Packages;
+using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
 using SevenZip.EventArguments;
@@ -320,6 +324,35 @@ namespace MassEffectModManagerCore.modmanager
                 //        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
                 //    }
                 //}
+            }
+        }
+
+
+        public void GenerateM3ModForRCW(string modpath)
+        {
+            //Write RCW
+            var rcw = GetJob(ModJob.JobHeader.ME2_RCWMOD)?.RCW;
+            if (rcw != null)
+            {
+                //Write RCW
+                rcw.WriteToFile(Path.Combine(modpath, ModName + ".me2mod"));
+
+                //Write moddesc.ini
+                IniData ini = new IniData();
+                ini["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
+                ini["ModInfo"]["game"] = "ME2";
+                ini["ModInfo"]["modname"] = ModName;
+                ini["ModInfo"]["moddev"] = ModDeveloper;
+                ini["ModInfo"]["moddesc"] = Utilities.ConvertNewlineToBr(ModDescription);
+                ini["ModInfo"]["modver"] = "1.0"; //Not going to bother looking this up to match the source
+
+                ini["ME2_RCWMOD"]["modfile"] = ModName + ".me2mod";
+                var modDescPath = Path.Combine(modpath, "moddesc.ini");
+                new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
+            }
+            else
+            {
+                Crashes.TrackError(new Exception("Tried to extract RCW mod to M3 mod but the job was empty."));
             }
         }
     }

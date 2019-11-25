@@ -8,7 +8,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
 {
     public class ME2Coalesced
     {
-        private SortedDictionary<string, DuplicatingIni> Inis = new SortedDictionary<string, DuplicatingIni>();
+        public SortedDictionary<string, DuplicatingIni> Inis = new SortedDictionary<string, DuplicatingIni>();
         public string Inputfile { get; }
         public ME2Coalesced(string file)
         {

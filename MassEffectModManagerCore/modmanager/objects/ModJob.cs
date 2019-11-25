@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.modmanager
@@ -69,6 +70,11 @@ namespace MassEffectModManagerCore.modmanager
             COLLECTORS_EDITION,
             TESTPATCH
         }
+
+        /// <summary>
+        /// RCWMod file. ONLY USED WITH RCWMOD HEADER.
+        /// </summary>
+        public RCWMod RCW { get; set; }
 
         public static IReadOnlyDictionary<string, JobHeader> ME3OfficialDLCFolderToHeaderMapping = new Dictionary<string, JobHeader>()
         {

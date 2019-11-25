@@ -21,6 +21,7 @@ using System.Xml;
 using System.Xml.Linq;
 using SevenZip.EventArguments;
 using Threading;
+using MassEffectModManagerCore.modmanager.gameini;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -131,7 +132,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ActionText = $"Opening {ScanningFile}";
 
             var archive = e.Argument as string;
+            void AddCompressedModCallback(Mod m)
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    CompressedMods.Add(m);
+                    CompressedMods.Sort(x => x.ModName);
+                });
+            }
+            void CompressedModFailedCallback(Mod m)
+            {
+                Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += $"\n\n{m.ModName} failed to load: {m.LoadFailedReason}"; });
+            }
 
+
+
+            if (Path.GetExtension(archive) == ".me2mod")
+            {
+                //RCW
+                var RCWMods = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(archive), File.ReadAllText(archive));
+                foreach(var rcw in RCWMods)
+                {
+                    AddCompressedModCallback(new Mod(rcw));
+                }
+                return;
+            }
             //Embedded executables.
             var archiveSize = new FileInfo(archive).Length;
             var knownModsOfThisSize = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
@@ -177,18 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             }
 
-            void AddCompressedModCallback(Mod m)
-            {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    CompressedMods.Add(m);
-                    CompressedMods.Sort(x => x.ModName);
-                });
-            }
-            void CompressedModFailedCallback(Mod m)
-            {
-                Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += $"\n\n{m.ModName} failed to load: {m.LoadFailedReason}"; });
-            }
+            
             void ActionTextUpdateCallback(string newText)
             {
                 ActionText = newText;
@@ -531,8 +545,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 Directory.CreateDirectory(sanitizedPath);
-                mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
-                extractedMods.Add(mod);
+
+                //Check if RCW mod
+                if (mod.InstallationJobs.Count == 1 && mod.InstallationJobs[0].Header == ModJob.JobHeader.ME2_RCWMOD)
+                {
+                    Log.Information("Generating M3 wrapper moddesc.ini for " + mod.ModName);
+                    mod.GenerateM3ModForRCW(sanitizedPath);
+                    extractedMods.Add(mod);
+                }
+                else
+                {
+
+                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
+                    extractedMods.Add(mod);
+                }
             }
             e.Result = extractedMods;
         }

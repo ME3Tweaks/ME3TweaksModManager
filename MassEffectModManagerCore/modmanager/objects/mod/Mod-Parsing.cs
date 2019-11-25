@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using IniParser.Parser;
 using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
@@ -93,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     sb.AppendLine("Targets ModDesc " + ModDescTargetVersion);
                 }
-                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header.ToString()).ToList();
+                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? "ME2 Coalesced.ini" : x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
                 {
                     sb.AppendLine("Modifies: " + String.Join(", ", modifiesList));
@@ -180,10 +181,23 @@ namespace MassEffectModManagerCore.modmanager
         public bool IsInArchive { get; }
         public bool IsVirtualized { get; private set; }
         public string OriginalArchiveHash { get; private set; }
-        public string RCWFile { get; private set; }
 
         private readonly string VirtualizedIniText;
         private readonly string ArchivePath;
+
+        public Mod(RCWMod rcw)
+        {
+            Log.Information("Converting an RCW mod to an M3 mod.");
+            Game = MEGame.ME2;
+            ModDescTargetVersion = 6.0;
+
+            ModDeveloper = rcw.Author;
+            ModName = rcw.ModName;
+            ModDescription = "RCW mod that applies changes to ME2 Coalesced.ini.\n\nRCW mods are applied directly to the Coalesced.ini file - it is not rebuilt from a vanilla version. This means applying the mod twice may have unintended side effects as duplicate keys may be created.";
+            ModJob rcwJob = new ModJob(ModJob.JobHeader.ME2_RCWMOD);
+            rcwJob.RCW = rcw;
+            InstallationJobs.Add(rcwJob);
+        }
 
         /// <summary>
         /// Loads a moddesc from a stream. Used when reading data from an archive. 
@@ -934,14 +948,33 @@ namespace MassEffectModManagerCore.modmanager
                     var rcwfile = iniData[ModJob.JobHeader.ME2_RCWMOD.ToString()]["modfile"];
                     if (!string.IsNullOrWhiteSpace(rcwfile))
                     {
-                        if (!FilesystemInterposer.FileExists(rcwfile, Archive))
+                        var path = FilesystemInterposer.PathCombine(IsInArchive, ModPath, rcwfile);
+                        if (!FilesystemInterposer.FileExists(path, Archive))
                         {
                             Log.Error("ME2_RCWMOD job was specified, but the specified file doesn't exist: " + rcwfile);
                             LoadFailedReason = $"Mod specifies ME2_RCWMOD job, but the specified file doesn't exist: " + rcwfile;
                             return;
                         }
+
+                        if (IsInArchive)
+                        {
+                            Log.Error("Cannot load compressed RCW through main mod loader.");
+                            LoadFailedReason = $"Cannot load a compressed RCW mod through the main mod loader. It may be that this mod includes an RCW mod with other tasks, which is not allowed.";
+                            return;
+                        }
+                        var rcwMods = RCWMod.LoadRCWMods(path);
+                        if (rcwMods.Count != 1)
+                        {
+                            Log.Error("M3-mod based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.");
+                            LoadFailedReason = $"M3-mod based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.";
+                            return;
+                        }
+
+                        ModJob rcwJob = new ModJob(ModJob.JobHeader.ME2_RCWMOD);
+                        rcwJob.RCW = rcwMods[0];
+                        InstallationJobs.Add(rcwJob);
+                        CLog.Information("Successfully made RCW mod job for " + rcwJob.RCW.ModName, Settings.LogModStartup);
                     }
-                    RCWFile = rcwfile;
                 }
             }
 
