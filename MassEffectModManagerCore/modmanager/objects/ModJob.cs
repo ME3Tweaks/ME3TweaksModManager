@@ -43,7 +43,8 @@ namespace MassEffectModManagerCore.modmanager
             TERMINUS_WEAPON_ARMOR,
             UMBRA_VISOR,
             ZAEED,
-            ME2_COALESCED,
+            //ME2_COALESCED,
+            ME2_RCWMOD, //RCW Mod Manager coalesced mods
 
             //ME3 ONLY
             BALANCE_CHANGES,

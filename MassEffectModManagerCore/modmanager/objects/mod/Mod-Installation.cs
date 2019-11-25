@@ -113,10 +113,6 @@ namespace MassEffectModManagerCore.modmanager
 
                     #endregion
                 }
-                else if (job.Header == ModJob.JobHeader.ME2_COALESCED)
-                {
-
-                }
                 else if (job.Header == ModJob.JobHeader.BASEGAME || job.Header == ModJob.JobHeader.BALANCE_CHANGES || job.Header == ModJob.JobHeader.ME1_CONFIG)
                 {
                     #region Installation: BASEGAME, BALANCE CHANGES, ME1 CONFIG

@@ -180,6 +180,7 @@ namespace MassEffectModManagerCore.modmanager
         public bool IsInArchive { get; }
         public bool IsVirtualized { get; private set; }
         public string OriginalArchiveHash { get; private set; }
+        public string RCWFile { get; private set; }
 
         private readonly string VirtualizedIniText;
         private readonly string ArchivePath;
@@ -926,6 +927,21 @@ namespace MassEffectModManagerCore.modmanager
                         CLog.Information($"Successfully made mod job for {ModJob.JobHeader.ME1_CONFIG}", Settings.LogModStartup);
                         InstallationJobs.Add(me1ConfigJob);
                     }
+                }
+
+                if (Game == MEGame.ME2)
+                {
+                    var rcwfile = iniData[ModJob.JobHeader.ME2_RCWMOD.ToString()]["modfile"];
+                    if (!string.IsNullOrWhiteSpace(rcwfile))
+                    {
+                        if (!FilesystemInterposer.FileExists(rcwfile, Archive))
+                        {
+                            Log.Error("ME2_RCWMOD job was specified, but the specified file doesn't exist: " + rcwfile);
+                            LoadFailedReason = $"Mod specifies ME2_RCWMOD job, but the specified file doesn't exist: " + rcwfile;
+                            return;
+                        }
+                    }
+                    RCWFile = rcwfile;
                 }
             }
 

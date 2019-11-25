@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore
 
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = "Select a mod on the left to get started";
-        private readonly string[] SupportedDroppableExtensions = {".rar", ".zip", ".7z", ".exe", ".tpf", ".mod", ".mem"};
+        private readonly string[] SupportedDroppableExtensions = {".rar", ".zip", ".7z", ".exe", ".tpf", ".mod", ".mem", ".me2mod"};
         private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = "Apply Mod";
         public string AddTargetButtonText { get; set; } = "Add Target";
@@ -1702,6 +1702,10 @@ namespace MassEffectModManagerCore
                     case ".mem":
                         Analytics.TrackEvent("User redirected to MEM/ALOT Installer", new Dictionary<string, string> {{"Filename", Path.GetFileName(files[0])}});
                         Xceed.Wpf.Toolkit.MessageBox.Show(this, $"{ext} files can be installed with ALOT Installer or Mass Effect Modder (MEM), both available in the tools menu.\n\nWARNING: These types of mods change game file pointers. They must be installed AFTER all other DLC/content mods. Installing content/DLC mods after will cause various issues in the game. Once these types of mods are installed, ME3Tweaks Mod Manager will refuse to install further mods without a restore of the game.", "Non-Mod Manager mod found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        break;
+                    case ".me2mod":
+                        Analytics.TrackEvent("User opened me2mod file", new Dictionary<string, string> { { "Filename", Path.GetFileName(files[0]) } });
+                        var modsFound = RCWMod.ParseRCWMods(File.ReadAllText(files[0]));
                         break;
                 }
             }

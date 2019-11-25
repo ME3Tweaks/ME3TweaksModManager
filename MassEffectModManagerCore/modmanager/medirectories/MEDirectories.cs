@@ -231,7 +231,7 @@ namespace MassEffectModManagerCore.GameDirectories
         internal static bool IsOfficialDLCInstalled(ModJob.JobHeader header, GameTarget gameTarget)
         {
             if (header == ModJob.JobHeader.BALANCE_CHANGES) return true; //Don't check balance changes
-            if (header == ModJob.JobHeader.ME2_COALESCED) return true; //Don't check
+            if (header == ModJob.JobHeader.ME2_RCWMOD) return true; //Don't check
             if (header == ModJob.JobHeader.ME1_CONFIG) return true; //Don't check
             if (header == ModJob.JobHeader.BASEGAME) return true; //Don't check basegame
             if (header == ModJob.JobHeader.CUSTOMDLC) return true; //Don't check custom dlc
