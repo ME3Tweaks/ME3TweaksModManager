@@ -31,12 +31,13 @@
                     <ItemsControl.Resources>
                         <DataTemplate DataType="{x:Type objects:AlternateDLC}">
                             <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp" Opacity="{Binding UIOpacity}">
-                                <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"  DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <RadioButton IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" GroupName="{Binding GroupName}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
                                 <DockPanel DockPanel.Dock="Top">
                                     <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     <TextBlock Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                </DockPanel>                                
+                                </DockPanel>
                                 <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
                                 <DockPanel.Style>
                                     <Style TargetType="{x:Type DockPanel}">
@@ -52,7 +53,8 @@
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type objects:AlternateFile}">
                             <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp" Opacity="{Binding UIOpacity}">
-                                <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"  DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <RadioButton IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" GroupName="{Binding GroupName}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
                                 <DockPanel DockPanel.Dock="Top">
                                     <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"/>

@@ -21,7 +21,7 @@
     <system:String x:Key="string_LogMixinStartup">Log Mixin Startup</system:String>
     <system:String x:Key="string_LogModInstallation">Log Mod Installation</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Check for content updates</system:String>
-    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks ME3Tweaks for updates to various services</system:String>
+    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks me3tweaks.com for updates to various services</system:String>
     <system:String x:Key="string_ReloadsMods">Reloads Mods</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Reloads mods from the mod library</system:String>
     <system:String x:Key="string_Exit">Exit</system:String>
@@ -46,7 +46,7 @@ You can drag and drop files onto the interface to import them faster.</system:St
     <system:String x:Key="string_ClearMixinCache">Clear Mixin Cache</system:String>
     <system:String x:Key="string_ModUtils">Mod Utils</system:String>
     <system:String x:Key="string_Checkforupdates">Check for updates</system:String>
-    <system:String x:Key="string_RestoremodfromME3Tweaks">Restore mod from ME3Tweaks</system:String>
+    <system:String x:Key="string_RestoremodfromME3Tweaks">Restore mod from me3tweaks.com</system:String>
     <system:String x:Key="string_Installcustomkeybindsintothismod">Install custom keybinds into this mod</system:String>
     <system:String x:Key="string_Developeroptions">Developer options</system:String>
     <system:String x:Key="string_Metadataeditor">Metadata editor</system:String>

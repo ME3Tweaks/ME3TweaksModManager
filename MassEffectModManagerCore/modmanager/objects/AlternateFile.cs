@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool UIRequired => !IsManual && IsSelected;
         public bool UINotApplicable => !IsManual && !IsSelected;
 
-
+        public string GroupName { get; }
         public string FriendlyName { get; private set; }
         public string Description { get; private set; }
         public List<string> ConditionalDLC = new List<string>();
@@ -210,23 +210,15 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            if (properties.TryGetValue("ApplicableAutoText", out string applicableText))
+            ApplicableAutoText = properties.TryGetValue("ApplicableAutoText", out string applicableText) ? applicableText : "Auto Applied";
+
+            NotApplicableAutoText = properties.TryGetValue("NotApplicableAutoText", out string notApplicableText) ? notApplicableText : "Not applicable";
+
+            if (modForValidating.ModDescTargetVersion >= 6.0)
             {
-                ApplicableAutoText = applicableText;
-            }
-            else
-            {
-                ApplicableAutoText = "Auto Applied";
+                GroupName = properties.TryGetValue("OptionGroup", out string groupName) ? groupName : null;
             }
 
-            if (properties.TryGetValue("NotApplicableAutoText", out string notApplicableText))
-            {
-                NotApplicableAutoText = notApplicableText;
-            }
-            else
-            {
-                NotApplicableAutoText = "Not applicable";
-            }
 
             if (Condition == AltFileCondition.COND_MANUAL && properties.TryGetValue("CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
             {
