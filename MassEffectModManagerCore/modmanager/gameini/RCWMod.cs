@@ -2,6 +2,7 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ using static MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
-
+    [DebuggerDisplay("RCWMod {ModName} by {Author}, {Files.Count} files")]
     public class RCWMod
     {
         public static List<RCWMod> LoadRCWMods(string fname)
@@ -22,31 +23,62 @@ namespace MassEffectModManagerCore.modmanager.gameini
         {
             var mods = new List<RCWMod>();
             var lines = Regex.Split(me2mod, "\r\n|\r|\n");
-            var author = lines.FirstOrDefault(x => x.StartsWith("###Author:"));
+            var author = lines.FirstOrDefault(x => x.StartsWith("###Author:", StringComparison.InvariantCultureIgnoreCase));
             if (author == null)
             {
-                Log.Error("RCW mod doesn't list author, returning empty list.");
-                return new List<RCWMod>();
+                Log.Warning("RCW mod doesn't list author");
+                author = "Unknown";
             }
-            author = author.Substring("###Author:".Length);
-
-            RCWMod m = null;
-            for (int i = 0; i < lines.Count(); i++)
+            else
             {
-                var line = lines[i];
-                if (line.StartsWith("###MOD:"))
+                author = author.Substring("###Author:".Length);
+            }
+
+            var nummods = lines.Count(x => x.StartsWith("###MOD:", StringComparison.InvariantCultureIgnoreCase));
+            if (nummods == 0)
+            {
+                //Check for file headers 
+                var numfiles = lines.Count(x => x.StartsWith("###FILE:", StringComparison.InvariantCultureIgnoreCase));
+                if (numfiles == 0)
                 {
-                    if (m != null)
+                    Log.Error("This does not appear to be RCW mod, as no ###MOD: or ###FILE: headers were found.");
+                    return new List<RCWMod>();
+                }
+                nummods = 1;
+            }
+            RCWMod m = null;
+            if (nummods > 1)
+            {
+                for (int i = 0; i < lines.Count(); i++)
+                {
+                    var line = lines[i];
+                    if (line.StartsWith("###MOD:", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        mods.Add(m);
+                        if (m != null)
+                        {
+                            mods.Add(m);
+                        }
+                        m = new RCWMod(author, fname + " " + line.Substring("###MOD:".Length), lines, ref i);
                     }
-                    m = new RCWMod(author, fname + " " + line.Substring("###MOD:".Length), lines, ref i);
+                }
+
+                if (m != null)
+                {
+                    mods.Add(m);
                 }
             }
-
-            if (m != null)
+            else
             {
-                mods.Add(m);
+                int pos = -1; //headers always pre-advance by 1.
+                m = new RCWMod(author, fname, lines, ref pos);
+                if (m.Files.Count > 0)
+                {
+                    mods.Add(m);
+                }
+                else
+                {
+                    Log.Error("This does not appear to be RCW mod, no files were found.");
+                }
             }
 
             return mods;
@@ -61,12 +93,12 @@ namespace MassEffectModManagerCore.modmanager.gameini
             {
                 linepos++;
                 var line = lines[linepos];
-                if (line.StartsWith("###MOD:"))
+                if (line.StartsWith("###MOD:", StringComparison.InvariantCultureIgnoreCase))
                 {
                     linepos--;
                     break;
                 }
-                if (line.StartsWith("###FILE:"))
+                if (line.StartsWith("###FILE:", StringComparison.InvariantCultureIgnoreCase))
                 {
                     if (currentFile != null)
                     {
@@ -85,11 +117,6 @@ namespace MassEffectModManagerCore.modmanager.gameini
         public string ModName;
         public string Author;
         public List<CoalescedFile> Files = new List<CoalescedFile>();
-
-        //public Mod ConvertAndImportIntoM3()
-        //{
-
-        //}
 
         public void ApplyToTarget(GameTarget target)
         {
@@ -136,6 +163,8 @@ namespace MassEffectModManagerCore.modmanager.gameini
         }
 
 
+        [DebuggerDisplay("RCWMod CoalescedFile {FileName}, {Sections.Count} sections")]
+
         public class CoalescedFile
         {
             public string FileName;
@@ -143,11 +172,11 @@ namespace MassEffectModManagerCore.modmanager.gameini
             public CoalescedFile(string filename, string[] lines, ref int linepos)
             {
                 FileName = filename;
+                Section currentSection = null;
                 while (linepos + 1 < lines.Count())
                 {
                     linepos++;
                     var line = lines[linepos];
-                    Section currentSection = null;
                     if (line.StartsWith("###"))
                     {
                         linepos--;
@@ -169,12 +198,14 @@ namespace MassEffectModManagerCore.modmanager.gameini
             internal void WriteToStringBuilder(StringBuilder sb)
             {
                 sb.AppendLine("###FILE:" + FileName);
-                foreach(var section in Sections)
+                foreach (var section in Sections)
                 {
                     section.WriteToStringBuilder(sb);
                 }
             }
         }
+
+        [DebuggerDisplay("RCWMod Section [{SectionName}], {KeysToDelete.Count} keys to delete, {KeysToAdd.Count} keys to add")]
 
         public class Section
         {
@@ -220,7 +251,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             internal void WriteToStringBuilder(StringBuilder sb)
             {
                 sb.AppendLine($"[{SectionName}]");
-                foreach(var value in KeysToDelete)
+                foreach (var value in KeysToDelete)
                 {
                     sb.AppendLine($"-{value.RawText}");
                 }
@@ -236,7 +267,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("###Author:" + Author);
             sb.AppendLine("###MOD:" + ModName);
-            foreach(var file in Files)
+            foreach (var file in Files)
             {
                 file.WriteToStringBuilder(sb);
             }

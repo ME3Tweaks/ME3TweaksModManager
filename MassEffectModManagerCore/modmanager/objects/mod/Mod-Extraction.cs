@@ -328,7 +328,7 @@ namespace MassEffectModManagerCore.modmanager
         }
 
 
-        public void GenerateM3ModForRCW(string modpath)
+        public void ExtractRCWModToM3LibraryMod(string modpath)
         {
             //Write RCW
             var rcw = GetJob(ModJob.JobHeader.ME2_RCWMOD)?.RCW;
@@ -352,6 +352,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             else
             {
+                Log.Error("Tried to extract RCW mod to M3 mod but the job was empty.");
                 Crashes.TrackError(new Exception("Tried to extract RCW mod to M3 mod but the job was empty."));
             }
         }

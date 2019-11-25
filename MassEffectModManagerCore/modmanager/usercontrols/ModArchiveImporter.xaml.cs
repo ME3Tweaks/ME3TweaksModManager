@@ -151,7 +151,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //RCW
                 var RCWMods = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(archive), File.ReadAllText(archive));
-                foreach(var rcw in RCWMods)
+                foreach (var rcw in RCWMods)
                 {
                     AddCompressedModCallback(new Mod(rcw));
                 }
@@ -202,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             }
 
-            
+
             void ActionTextUpdateCallback(string newText)
             {
                 ActionText = newText;
@@ -236,6 +236,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var moddesciniEntries = new List<ArchiveFileInfo>();
                 var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
                 var bioengineEntries = new List<ArchiveFileInfo>(); //ME2 DLC
+                var me2mods = new List<ArchiveFileInfo>(); //ME2 RCW Mods
                 foreach (var entry in archiveFile.ArchiveFileData)
                 {
                     string fname = Path.GetFileName(entry.FileName);
@@ -253,6 +254,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //for unofficial lookups
                         bioengineEntries.Add(entry);
                     }
+                    else if (!entry.IsDirectory && Path.GetExtension(fname) == ".me2mod")
+                    {
+                        //for unofficial lookups
+                        me2mods.Add(entry);
+                    }
                 }
 
                 if (moddesciniEntries.Count > 0)
@@ -269,6 +275,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             failedToLoadModeCallback?.Invoke(m);
+                        }
+                    }
+                }
+                else if (me2mods.Count > 0)
+                {
+                    //found some .me2mod files.
+                    foreach (var entry in me2mods)
+                    {
+                        currentOperationTextCallback?.Invoke($"Reading {entry.FileName}");
+                        MemoryStream ms = new MemoryStream();
+                        archiveFile.ExtractFile(entry.Index, ms);
+                        ms.Position = 0;
+                        StreamReader reader = new StreamReader(ms);
+                        string text = reader.ReadToEnd();
+                        var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
+                        foreach(var rcw in rcwModsForFile)
+                        {
+                            Mod m = new Mod(rcw);
+                            addCompressedModCallback?.Invoke(m);
+                            internalModList.Add(m);
                         }
                     }
                 }
@@ -550,7 +576,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (mod.InstallationJobs.Count == 1 && mod.InstallationJobs[0].Header == ModJob.JobHeader.ME2_RCWMOD)
                 {
                     Log.Information("Generating M3 wrapper moddesc.ini for " + mod.ModName);
-                    mod.GenerateM3ModForRCW(sanitizedPath);
+                    mod.ExtractRCWModToM3LibraryMod(sanitizedPath);
                     extractedMods.Add(mod);
                 }
                 else
