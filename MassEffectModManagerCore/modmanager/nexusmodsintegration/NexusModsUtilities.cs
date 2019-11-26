@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus;
+using Pathoschild.FluentNexus.Models;
+using Pathoschild.Http.Client;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 {
@@ -33,7 +39,32 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             return byteswritten > 0;
         }
 
-        public static bool IsAuthenticated => File.Exists(Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey"));
+        /// <summary>
+        /// Gets user information from NexusMods using their API key. This should only be called when setting API key or app boot
+        /// </summary>
+        /// <param name="apiKey"></param>
+        /// <returns></returns>
+        public static async Task<User> AuthToNexusMods(string apiKey = null)
+        {
+            var nexus = GetClient(apiKey);
+
+            Log.Information("Getting user information from NexusMods");
+
+            var userinfo = await nexus.Users.ValidateAsync();
+            if (userinfo.Name != null)
+            {
+                Log.Information("API call returned valid data. API key is valid");
+
+                //Authorized OK.
+
+                //Track how many users authenticate to nexusmods, but don't track who.
+                return userinfo;
+            }
+
+            return null;
+        }
+
+        public static bool HasAPIKey => File.Exists(Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey"));
 
         public static bool WipeKeys()
         {

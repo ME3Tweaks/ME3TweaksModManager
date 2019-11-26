@@ -16,7 +16,7 @@ namespace MassEffectModManagerCore.modmanager
         internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
 
         /// <summary>
-        /// Gets all files referenced by this mod.
+        /// Gets all files referenced by this mod. This does not include moddessc.ini.
         /// </summary>
         /// <param name="archive">Archive, if this mod is in an archive.</param>
         /// <returns></returns>

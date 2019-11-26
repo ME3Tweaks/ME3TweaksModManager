@@ -109,7 +109,11 @@ namespace MassEffectModManagerCore
         {
             DataContext = this;
             LoadCommands();
-            if (NexusModsUtilities.IsAuthenticated) NexusLoginInfoString = "Endorsements enabled (authenticated to NexusMods)";
+            if (NexusModsUtilities.HasAPIKey)
+            {
+                NexusLoginInfoString = "Endorsements enabled (authenticated to NexusMods)";
+                AuthToNexusMods();
+            }
             InitializeComponent();
             languageMenuItems = new[] { LanguageINT_MenuItem, LanguageRUS_MenuItem, LanguagePOL_MenuItem, LanguageDEU_MenuItem };
             PopulateTargets();
@@ -141,6 +145,13 @@ namespace MassEffectModManagerCore
                     });
                 }
             );
+        }
+
+        private async void AuthToNexusMods()
+        {
+            var userInfo = await NexusModsUtilities.AuthToNexusMods();
+            NexusUsername = userInfo.Name;
+            NexusUserID = userInfo.UserID;
         }
 
         private void AttachListeners()
@@ -188,6 +199,7 @@ namespace MassEffectModManagerCore
         public ICommand EnableME1ConsoleCommand { get; set; }
         public ICommand LoginToNexusCommand { get; set; }
         public GenericCommand EndorseSelectedModCommand { get; set; }
+        public ICommand CreateTestArchiveCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -213,6 +225,16 @@ namespace MassEffectModManagerCore
             EnableME1ConsoleCommand = new GenericCommand(EnableME1Console, CanEnableME1Console);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
+            CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
+        }
+
+        private bool CanCreateTestArchive() => SelectedMod != null && SelectedMod.GetJob(ModJob.JobHeader.ME2_RCWMOD) == null;
+
+        private void CreateTestArchive()
+        {
+            var testArchiveGenerator = new TestArchiveGenerator(SelectedMod);
+            testArchiveGenerator.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(testArchiveGenerator);
         }
 
         private void EndorseWrapper()
@@ -231,7 +253,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private bool CanEndorseMod() => NexusModsUtilities.IsAuthenticated && SelectedMod != null && SelectedMod.NexusModID > 0 && SelectedMod.CanEndorse && !IsEndorsingMod;
+        private bool CanEndorseMod() => NexusModsUtilities.HasAPIKey && SelectedMod != null && SelectedMod.NexusModID > 0 && SelectedMod.CanEndorse && !IsEndorsingMod;
 
         private void EndorseMod()
         {
@@ -271,9 +293,9 @@ namespace MassEffectModManagerCore
 
         private void ShowNexusPanel()
         {
-            var guiCompatibilityGenerator = new NexusModsLogin();
-            guiCompatibilityGenerator.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(guiCompatibilityGenerator);
+            var nexusModsLoginPane = new NexusModsLogin();
+            nexusModsLoginPane.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(nexusModsLoginPane);
         }
 
         private bool CanEnableME1Console()
@@ -1324,7 +1346,7 @@ namespace MassEffectModManagerCore
                     InstallationTargets_ComboBox.SelectedItem = installTarget;
                 }
 
-                if (NexusModsUtilities.IsAuthenticated)
+                if (NexusModsUtilities.HasAPIKey)
                 {
                     if (SelectedMod.NexusModID > 0)
                     {
@@ -1767,6 +1789,8 @@ namespace MassEffectModManagerCore
         public bool BusyProgressBarIndeterminate { get; set; } = true;
         public string CurrentModEndorsementStatus { get; private set; } = "Endorse mod";
         public bool IsEndorsingMod { get; private set; }
+        public string NexusUsername { get; set; }
+        public int NexusUserID { get; set; }
 
         ///// <summary>
         ///// Updates the progressbar that the user controls use

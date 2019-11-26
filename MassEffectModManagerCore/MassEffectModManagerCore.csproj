@@ -185,6 +185,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="modmanager\usercontrols\TestArchiveGenerator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="modmanager\localizations\deu.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -192,6 +198,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="modmanager\localizations\rus.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

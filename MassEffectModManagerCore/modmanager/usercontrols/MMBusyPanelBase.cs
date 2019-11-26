@@ -22,9 +22,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         protected Window window;
+        protected MainWindow mainwindow;
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             window = Window.GetWindow(this);
+            mainwindow = window as MainWindow;
             window.KeyDown += HandleKeyPress;
         }
 

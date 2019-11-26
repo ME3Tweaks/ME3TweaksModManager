@@ -123,7 +123,9 @@
                         <MenuItem Header="{DynamicResource string_Metadataeditor}" IsEnabled="False" />
                         <MenuItem Header="{DynamicResource string_Deploymodto7zfilefordistribution}" Command="{Binding DeployModCommand}" />
                         <MenuItem Header="{DynamicResource string_Prepareforupdaterservice}" IsEnabled="False" />
+                        <Separator/>
                         <MenuItem Header="{DynamicResource string_SubmitmodinformationtoME3Tweaks}" Command="{Binding SubmitTelemetryForModCommand}" />
+                        <MenuItem Header="{DynamicResource string_CreateTestingArchive}" ToolTip="{DynamicResource string_CreateTestingArchiveTooltip}" Command="{Binding CreateTestArchiveCommand}" />
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Openmodfolder}" Click="OpenModFolder_Click" />

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -18,7 +19,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public async Task<bool> GetEndorsementStatus()
         {
-            if (!NexusModsUtilities.IsAuthenticated) return false;
+            if (!NexusModsUtilities.HasAPIKey) return false;
             if (checkedEndorsementStatus) return IsEndorsed;
             var client = NexusModsUtilities.GetClient();
             string gamename = "masseffect";
@@ -50,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse)
         {
-            if (!NexusModsUtilities.IsAuthenticated || !CanEndorse) return;
+            if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += (a, b) =>
             {
@@ -58,13 +59,22 @@ namespace MassEffectModManagerCore.modmanager
                 string gamename = "masseffect";
                 if (Game == MEGame.ME2) gamename += "2";
                 if (Game == MEGame.ME3) gamename += "3";
-                if (endorse)
+                string telemetryOverride = null;
+                try
                 {
-                    client.Mods.Endorse(gamename, NexusModID, "1.0").Wait();
+                    if (endorse)
+                    {
+                        client.Mods.Endorse(gamename, NexusModID, "1.0").Wait();
+                    }
+                    else
+                    {
+                        client.Mods.Unendorse(gamename, NexusModID, "1.0").Wait();
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    client.Mods.Unendorse(gamename, NexusModID, "1.0").Wait();
+                    Log.Error("Error endorsing/unendorsing: " + e.ToString());
+                    telemetryOverride = e.ToString();
                 }
 
                 checkedEndorsementStatus = false;
@@ -72,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager
                 Analytics.TrackEvent("Set endorsement for mod", new Dictionary<string, string>
                 {
                     {"Endorsed", endorse.ToString() },
-                    {"Succeeded", (endorse == IsEndorsed).ToString() }
+                    {"Succeeded", telemetryOverride ?? (endorse == IsEndorsed).ToString() }
                 });
 
             };

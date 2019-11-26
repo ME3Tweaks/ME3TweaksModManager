@@ -95,5 +95,6 @@ For granular options, use the restore options in Target Info</system:String>
     <system:String x:Key="string_ReferenceinformationModdesc">Reference information about the moddesc.ini specification</system:String>
     <system:String x:Key="string_AboutME3TweaksModManager">About ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_Aboutthisprogram">About this program</system:String>
-
+    <system:String x:Key="string_CreateTestingArchive">Create testing archive for mod</system:String>
+    <system:String x:Key="string_CreateTestingArchiveTooltip">Creates an archive that has blank versions of all files for this mod. Useful for debugging the application</system:String>
 </ResourceDictionary>

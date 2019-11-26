@@ -55,10 +55,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
-        private void SetAuthorized(bool v, string name = null)
+        private void SetAuthorized(bool v)
         {
             IsAuthorized = v;
-            AuthorizeToNexusText = v ? "Authenticated " + (name != null ? "as " + name : "to NexusMods") : "Authenticate to NexusMods";
+            AuthorizeToNexusText = v ? "Authenticated " + (mainwindow.NexusUsername != null ? "as " + mainwindow.NexusUsername : "to NexusMods") : "Authenticate to NexusMods";
         }
 
         public ICommand AuthorizeCommand { get; set; }
@@ -89,23 +89,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.DoWork += async (a, b) =>
             {
                 //Check api key
-                var nexus = NexusModsUtilities.GetClient(APIKeyText);
-
+                AuthorizeToNexusText = "Checking key...";
+                IsAuthorizing = true;
                 try
                 {
-                    Log.Information("Checking API key works on NexusMods...");
-                    AuthorizeToNexusText = "Checking key...";
-                    IsAuthorizing = true;
-                    var userinfo = await nexus.Users.ValidateAsync();
-                    if (userinfo.Name != null)
+                    var authInfo = await NexusModsUtilities.AuthToNexusMods(APIKeyText);
+                    if (authInfo != null)
                     {
-                        Log.Information("API call returned valid data. API key is valid");
-
-                        //Authorized OK.
                         NexusModsUtilities.EncryptAPIKeyToDisk(APIKeyText);
-                        SetAuthorized(true, userinfo.Name);
-                        //Track how many users authenticate to nexusmods, but don't track who.
+                        mainwindow.NexusUsername = authInfo.Name;
+                        mainwindow.NexusUserID = authInfo.UserID;
+                        SetAuthorized(true);
                         Analytics.TrackEvent("Authenticated to NexusMods");
+
                     }
                 }
                 catch (ApiException apiException)
@@ -124,6 +120,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             APIKeyText = "";
             NexusModsUtilities.WipeKeys();
+            mainwindow.NexusUsername = null;
+            mainwindow.NexusUserID = 0;
             SetAuthorized(false);
         }
 
