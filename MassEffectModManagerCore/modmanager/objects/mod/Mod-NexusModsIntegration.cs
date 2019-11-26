@@ -14,10 +14,11 @@ namespace MassEffectModManagerCore.modmanager
     {
         private bool checkedEndorsementStatus;
         public bool IsEndorsed { get; set; }
+        public bool IsOwnMod { get; set; }
         public bool CanEndorse { get; set; }
         public string EndorsementStatus { get; set; } = "Endorse mod";
 
-        public async Task<bool> GetEndorsementStatus()
+        public async Task<bool?> GetEndorsementStatus(int currentuserid)
         {
             if (!NexusModsUtilities.HasAPIKey) return false;
             if (checkedEndorsementStatus) return IsEndorsed;
@@ -26,6 +27,14 @@ namespace MassEffectModManagerCore.modmanager
             if (Game == MEGame.ME2) gamename += "2";
             if (Game == MEGame.ME3) gamename += "3";
             var modinfo = await client.Mods.GetMod(gamename, NexusModID);
+            if (modinfo.User.MemberID == currentuserid)
+            {
+                IsEndorsed = false;
+                CanEndorse = false;
+                IsOwnMod = true;
+                checkedEndorsementStatus = true;
+                return null; //cannot endorse your own mods
+            }
             var endorsementstatus = modinfo.Endorsement;
             if (endorsementstatus != null)
             {
@@ -49,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager
             return IsEndorsed;
         }
 
-        public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse)
+        public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
         {
             if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
             BackgroundWorker bw = new BackgroundWorker();
@@ -78,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
 
                 checkedEndorsementStatus = false;
-                IsEndorsed = GetEndorsementStatus().Result;
+                IsEndorsed = GetEndorsementStatus(currentuserid).Result ?? false;
                 Analytics.TrackEvent("Set endorsement for mod", new Dictionary<string, string>
                 {
                     {"Endorsed", endorse.ToString() },

@@ -262,7 +262,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Endorsing mod: " + SelectedMod.ModName);
                 CurrentModEndorsementStatus = "Endorsing";
                 IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, true);
+                SelectedMod.EndorseMod(EndorsementCallback, true, NexusUserID);
             }
         }
 
@@ -273,7 +273,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Unendorsing mod: " + SelectedMod.ModName);
                 CurrentModEndorsementStatus = "Unendorsing";
                 IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, false);
+                SelectedMod.EndorseMod(EndorsementCallback, false, NexusUserID);
             }
         }
 
@@ -1350,18 +1350,33 @@ namespace MassEffectModManagerCore
                 {
                     if (SelectedMod.NexusModID > 0)
                     {
-                        CurrentModEndorsementStatus = "Getting endorsement status";
-                        var endorsed = await SelectedMod.GetEndorsementStatus();
-                        if (SelectedMod.CanEndorse)
+                        if (SelectedMod.IsOwnMod)
                         {
-                            UpdatedEndorsementString();
+                            CurrentModEndorsementStatus = "Cannot endorse your own mods";
                         }
                         else
                         {
-                            CurrentModEndorsementStatus = "Cannot endorse mod";
+                            CurrentModEndorsementStatus = "Getting endorsement status";
+                            var endorsed = await SelectedMod.GetEndorsementStatus(NexusUserID);
+                            if (endorsed != null)
+                            {
+                                if (SelectedMod.CanEndorse)
+                                {
+                                    UpdatedEndorsementString();
+                                }
+                                else
+                                {
+                                    CurrentModEndorsementStatus = "Cannot endorse mod";
+                                }
+                            }
+                            else
+                            {
+                                CurrentModEndorsementStatus = "Cannot endorse your own mods";
+                            }
                         }
+
                         EndorseSelectedModCommand.RaiseCanExecuteChanged();
-                        CommandManager.InvalidateRequerySuggested();
+                        //CommandManager.InvalidateRequerySuggested();
                     }
                     else
                     {
