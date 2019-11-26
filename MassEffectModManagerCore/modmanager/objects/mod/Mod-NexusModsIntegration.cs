@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
 
 namespace MassEffectModManagerCore.modmanager
@@ -38,23 +39,42 @@ namespace MassEffectModManagerCore.modmanager
 
                 CanEndorse = true;
             }
+            else
+            {
+                IsEndorsed = false;
+                CanEndorse = false;
+            }
             checkedEndorsementStatus = true;
             return IsEndorsed;
         }
 
-        public void EndorseMod(Action<Mod, bool> newEndorsementStatus)
+        public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse)
         {
             if (!NexusModsUtilities.IsAuthenticated || !CanEndorse) return;
             BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += async (a, b) =>
+            bw.DoWork += (a, b) =>
             {
                 var client = NexusModsUtilities.GetClient();
                 string gamename = "masseffect";
                 if (Game == MEGame.ME2) gamename += "2";
                 if (Game == MEGame.ME3) gamename += "3";
-                await client.Mods.Endorse(gamename, NexusModID, "1.0");
+                if (endorse)
+                {
+                    client.Mods.Endorse(gamename, NexusModID, "1.0").Wait();
+                }
+                else
+                {
+                    client.Mods.Unendorse(gamename, NexusModID, "1.0").Wait();
+                }
+
                 checkedEndorsementStatus = false;
-                IsEndorsed = await GetEndorsementStatus();
+                IsEndorsed = GetEndorsementStatus().Result;
+                Analytics.TrackEvent("Set endorsement for mod", new Dictionary<string, string>
+                {
+                    {"Endorsed", endorse.ToString() },
+                    {"Succeeded", (endorse == IsEndorsed).ToString() }
+                });
+
             };
             bw.RunWorkerCompleted += (a, b) => { newEndorsementStatus.Invoke(this, IsEndorsed); };
             bw.RunWorkerAsync();

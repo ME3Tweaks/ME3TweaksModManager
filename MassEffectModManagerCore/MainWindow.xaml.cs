@@ -212,10 +212,26 @@ namespace MassEffectModManagerCore
             ME3UICompatibilityPackGeneratorCommand = new GenericCommand(RunCompatGenerator, CanRunCompatGenerator);
             EnableME1ConsoleCommand = new GenericCommand(EnableME1Console, CanEnableME1Console);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
-            EndorseSelectedModCommand = new GenericCommand(EndorseMod, CanEndorseMod);
+            EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
         }
 
-        private bool CanEndorseMod() => NexusModsUtilities.IsAuthenticated && SelectedMod != null && SelectedMod.NexusModID > 0 && SelectedMod.CanEndorse;
+        private void EndorseWrapper()
+        {
+            if (SelectedMod.IsEndorsed)
+            {
+                var unendorseresult = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unendorse " + SelectedMod.ModName + "?", "Confirm unendorsement", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (unendorseresult == MessageBoxResult.Yes)
+                {
+                    UnendorseMod();
+                }
+            }
+            else
+            {
+                EndorseMod();
+            }
+        }
+
+        private bool CanEndorseMod() => NexusModsUtilities.IsAuthenticated && SelectedMod != null && SelectedMod.NexusModID > 0 && SelectedMod.CanEndorse && !IsEndorsingMod;
 
         private void EndorseMod()
         {
@@ -224,7 +240,18 @@ namespace MassEffectModManagerCore
                 Log.Information("Endorsing mod: " + SelectedMod.ModName);
                 CurrentModEndorsementStatus = "Endorsing";
                 IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback);
+                SelectedMod.EndorseMod(EndorsementCallback, true);
+            }
+        }
+
+        private void UnendorseMod()
+        {
+            if (SelectedMod != null)
+            {
+                Log.Information("Unendorsing mod: " + SelectedMod.ModName);
+                CurrentModEndorsementStatus = "Unendorsing";
+                IsEndorsingMod = true;
+                SelectedMod.EndorseMod(EndorsementCallback, false);
             }
         }
 
