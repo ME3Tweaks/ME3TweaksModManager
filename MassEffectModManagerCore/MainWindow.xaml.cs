@@ -109,6 +109,7 @@ namespace MassEffectModManagerCore
         {
             DataContext = this;
             LoadCommands();
+            if (NexusModsUtilities.IsAuthenticated) NexusLoginInfoString = "Endorsements enabled (authenticated to NexusMods)";
             InitializeComponent();
             languageMenuItems = new[] { LanguageINT_MenuItem, LanguageRUS_MenuItem, LanguagePOL_MenuItem, LanguageDEU_MenuItem };
             PopulateTargets();
