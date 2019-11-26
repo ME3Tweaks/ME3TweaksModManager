@@ -42,12 +42,6 @@
         <Storyboard x:Key="CloseLoadingSpinner">
             <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
         </Storyboard>
-        <!--<Storyboard x:Key="OpenBottomBarGameIcon" Storyboard.TargetProperty="Width">
-            <DoubleAnimation To="25" Duration="0:0:0.25"/>
-        </Storyboard>
-        <Storyboard x:Key="CloseBottomBarGameIcon">
-            <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="Width"/>
-        </Storyboard>-->
         <Storyboard x:Key="OpenWebsitePanel" Storyboard.TargetProperty="(FrameworkElement.Height)">
             <DoubleAnimation To="20" Duration="0:0:0.25">
                 <DoubleAnimation.EasingFunction>
@@ -66,8 +60,6 @@
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
-        <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
-        <converters:ButtonHighlightOnOffStyleConverter x:Key="ButtonHighlightOnOffStyleConverter"/>
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
@@ -114,7 +106,13 @@
                         <MenuItem Header="{DynamicResource string_MixInLibrary}" />
                         <MenuItem Header="{DynamicResource string_ClearMixinCache}" />
                     </MenuItem>
-                </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="{Binding NexusLoginInfoString}" Command="{Binding LoginToNexusCommand}">
+                        <MenuItem.Icon>
+                            <Image Source="/modmanager/nexusmodsintegration/nexusmods_icon.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
                     <MenuItem Header="{DynamicResource string_Checkforupdates}" Command="{Binding SelectedModCheckForUpdatesCommand}" />
@@ -287,7 +285,7 @@
                   Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False"
                   Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="Current modding target"
                   ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
-                    <!--<ComboBox.ItemTemplate>
+                <!--<ComboBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel HorizontalAlignment="Stretch">
                                 <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
@@ -300,13 +298,13 @@
                             </DockPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>-->
-                    <!--<ComboBox.ItemContainerStyle>
+                <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             <Setter Property="IsEnabled" Value="{Binding Selectable}" />
                         </Style>
                     </ComboBox.ItemContainerStyle>-->
-                
+
                 <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="Add an additional installation target"/>
                 <Button Content="Target info" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="View and manage installed mods and files for this target"/>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
@@ -348,6 +346,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
+
                         <TextBlock Text="{DynamicResource string_AvailableMods}" FontWeight="Bold" VerticalAlignment="Center"/>
 
                     </DockPanel>
@@ -374,7 +373,10 @@
                 </DockPanel>
                 <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch"/>
                 <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="3">
-                    <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold" Height="18"/>
+                    <DockPanel DockPanel.Dock="Top">
+                        <Button Content="{Binding CurrentModEndorsementStatus, FallbackValue=Endorse mod}" DockPanel.Dock="Right" Visibility="{Binding SelectedMod, Converter={StaticResource NullHiddenConverter}}" Command="{Binding EndorseSelectedModCommand}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                            <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold" Height="18"/>
+                    </DockPanel>
                     <StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
                         <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">

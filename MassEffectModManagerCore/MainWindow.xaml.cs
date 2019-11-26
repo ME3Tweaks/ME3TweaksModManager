@@ -19,6 +19,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
@@ -86,6 +87,8 @@ namespace MassEffectModManagerCore
                 return retvar;
             }
         }
+
+        public string NexusLoginInfoString { get; set; } = "Log in to NexusMods to enable Endorsements";
 
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
@@ -182,6 +185,8 @@ namespace MassEffectModManagerCore
         public ICommand AutoTOCCommand { get; set; }
         public ICommand ME3UICompatibilityPackGeneratorCommand { get; set; }
         public ICommand EnableME1ConsoleCommand { get; set; }
+        public ICommand LoginToNexusCommand { get; set; }
+        public GenericCommand EndorseSelectedModCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -205,6 +210,42 @@ namespace MassEffectModManagerCore
             AutoTOCCommand = new GenericCommand(RunAutoTOCOnTarget, HasME3Target);
             ME3UICompatibilityPackGeneratorCommand = new GenericCommand(RunCompatGenerator, CanRunCompatGenerator);
             EnableME1ConsoleCommand = new GenericCommand(EnableME1Console, CanEnableME1Console);
+            LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
+            EndorseSelectedModCommand = new GenericCommand(EndorseMod, CanEndorseMod);
+        }
+
+        private bool CanEndorseMod() => NexusModsUtilities.IsAuthenticated && SelectedMod != null && SelectedMod.NexusModID > 0 && SelectedMod.CanEndorse;
+
+        private void EndorseMod()
+        {
+            if (SelectedMod != null)
+            {
+                Log.Information("Endorsing mod: " + SelectedMod.ModName);
+                CurrentModEndorsementStatus = "Endorsing";
+                IsEndorsingMod = true;
+                SelectedMod.EndorseMod(EndorsementCallback);
+            }
+        }
+
+        private void EndorsementCallback(Mod m, bool newStatus)
+        {
+            IsEndorsingMod = false;
+            if (SelectedMod == m)
+            {
+                UpdatedEndorsementString();
+            }
+        }
+
+        private bool CanShowNexusPanel()
+        {
+            return true; //might make some condition later.
+        }
+
+        private void ShowNexusPanel()
+        {
+            var guiCompatibilityGenerator = new NexusModsLogin();
+            guiCompatibilityGenerator.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(guiCompatibilityGenerator);
         }
 
         private bool CanEnableME1Console()
@@ -1243,7 +1284,7 @@ namespace MassEffectModManagerCore
             RepopulatingTargets = false;
         }
 
-        private void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
             {
@@ -1253,6 +1294,33 @@ namespace MassEffectModManagerCore
                 if (installTarget != null)
                 {
                     InstallationTargets_ComboBox.SelectedItem = installTarget;
+                }
+
+                if (NexusModsUtilities.IsAuthenticated)
+                {
+                    if (SelectedMod.NexusModID > 0)
+                    {
+                        CurrentModEndorsementStatus = "Getting endorsement status";
+                        var endorsed = await SelectedMod.GetEndorsementStatus();
+                        if (SelectedMod.CanEndorse)
+                        {
+                            UpdatedEndorsementString();
+                        }
+                        else
+                        {
+                            CurrentModEndorsementStatus = "Cannot endorse mod";
+                        }
+                        EndorseSelectedModCommand.RaiseCanExecuteChanged();
+                        CommandManager.InvalidateRequerySuggested();
+                    }
+                    else
+                    {
+                        CurrentModEndorsementStatus = "Cannot endorse mod (not linked to NexusMods)";
+                    }
+                }
+                else
+                {
+                    CurrentModEndorsementStatus = "Cannot endorse mod (not authenticated)";
                 }
 
                 //CurrentDescriptionText = newSelectedMod.DisplayedModDescription;
@@ -1265,6 +1333,20 @@ namespace MassEffectModManagerCore
             }
         }
 
+        private void UpdatedEndorsementString()
+        {
+            if (SelectedMod != null)
+            {
+                if (SelectedMod.IsEndorsed)
+                {
+                    CurrentModEndorsementStatus = "👍 Mod endorsed";
+                }
+                else
+                {
+                    CurrentModEndorsementStatus = "Endorse mod";
+                }
+            }
+        }
 
         private void SetWebsitePanelVisibility(bool open)
         {
@@ -1655,6 +1737,8 @@ namespace MassEffectModManagerCore
         public ulong BusyProgressBarMaximum { get; set; } = 100;
         public ulong BusyProgressBarValue { get; set; } = 0;
         public bool BusyProgressBarIndeterminate { get; set; } = true;
+        public string CurrentModEndorsementStatus { get; private set; } = "Endorse mod";
+        public bool IsEndorsingMod { get; private set; }
 
         ///// <summary>
         ///// Updates the progressbar that the user controls use

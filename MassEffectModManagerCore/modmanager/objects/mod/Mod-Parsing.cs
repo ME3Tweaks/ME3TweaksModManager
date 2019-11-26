@@ -350,7 +350,7 @@ namespace MassEffectModManagerCore.modmanager
                     var nexusIndex = ModWebsite.IndexOf("nexusmods.com/");
                     if (nexusIndex > 0)
                     {
-                        string nexusId = ModWebsite.Substring("nexusmods.com/".Length); // http:/
+                        string nexusId = ModWebsite.Substring(nexusIndex + "nexusmods.com/".Length); // http:/
 
                         nexusId = nexusId.Substring("masseffect".Length);
                         if (Game == MEGame.ME2 || Game == MEGame.ME3)
@@ -358,7 +358,7 @@ namespace MassEffectModManagerCore.modmanager
                             nexusId = nexusId.Substring(1); //number
                         }
 
-                        nexusId = nexusId.Substring(5); // /mods/
+                        nexusId = nexusId.Substring(6).TrimEnd('/'); // /mods/ and any / after number in the event url has that in it.
 
                         int questionMark = nexusId.IndexOf("?");
                         if (questionMark > 0)

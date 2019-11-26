@@ -52,6 +52,11 @@ namespace MassEffectModManagerCore.ui
             _execute();
         }
 
+        public void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
+
         public event EventHandler CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;

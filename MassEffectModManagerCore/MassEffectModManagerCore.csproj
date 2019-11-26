@@ -50,6 +50,7 @@
     <None Remove="images\gameicons\Unknown_48.ico" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\me3tweaks.png" />
+    <None Remove="images\nexusmods_scenethemed.png" />
     <None Remove="images\origin.png" />
     <None Remove="images\windowicon.png" />
     <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
@@ -67,6 +68,7 @@
     <None Remove="modmanager\gamemd5\me2.bin" />
     <None Remove="modmanager\gamemd5\me3.bin" />
     <None Remove="modmanager\me3tweaks\PermissionsGranter.exe" />
+    <None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
     <None Remove="modmanager\starterkit\BlankTlkFile.upk" />
     <None Remove="modmanager\starterkit\Default.sfar" />
     <None Remove="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
@@ -89,6 +91,7 @@
   <ItemGroup>
     <Resource Include="appicon.ico" />
     <Resource Include="images\me3tweaks.png" />
+    <Resource Include="images\nexusmods_scenethemed.png" />
     <Resource Include="images\windowicon.png" />
   </ItemGroup>
 
@@ -141,6 +144,7 @@
     <PackageReference Include="MvvmValidation" Version="3.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Octokit" Version="0.36.0" />
+    <PackageReference Include="Pathoschild.FluentNexus" Version="0.8.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="3.1.3" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
@@ -167,6 +171,7 @@
     <Resource Include="images\loadingspinner.png" />
     <Resource Include="images\origin.png" />
     <EmbeddedResource Include="modmanager\executables\vpat.exe" />
+    <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
     <Resource Include="modmanager\toolicons\alot_32.png" />
     <Resource Include="modmanager\toolicons\alot_big.png" />
     <Resource Include="modmanager\toolicons\masseffectinimodder_32.png" />

@@ -42,6 +42,11 @@ namespace MassEffectModManagerCore
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
+        internal static string GetNexusModsCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "nexusmodsintegration")).FullName;
+        }
+
         public static bool CreateDirectoryWithWritePermission(string directoryPath)
         {
             if (Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
