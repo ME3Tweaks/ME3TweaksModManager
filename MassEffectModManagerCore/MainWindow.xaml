@@ -353,7 +353,7 @@
 
                     </DockPanel>
 
-                    <StackPanel Name="FailedModsPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
+                    <StackPanel Name="FailedModsPopupPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="Some mods failed to load, click to see why">
                         <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
                             <TextBlock Text="{Binding FailedMods.BindableCount, StringFormat={}{0} mods failed to load, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>

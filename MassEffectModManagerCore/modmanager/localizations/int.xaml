@@ -97,4 +97,26 @@ For granular options, use the restore options in Target Info</system:String>
     <system:String x:Key="string_Aboutthisprogram">About this program</system:String>
     <system:String x:Key="string_CreateTestingArchive">Create testing archive for mod</system:String>
     <system:String x:Key="string_CreateTestingArchiveTooltip">Creates an archive that has blank versions of all files for this mod. Useful for debugging the application</system:String>
+    <system:String x:Key="string_startingUp">Starting up</system:String>
+
+    <system:String x:Key="string_selectModOnLeftToGetStarted">Select a mod on the left to get started.</system:String>
+    <system:String x:Key="string_applyMod">Apply Mod</system:String>
+    <system:String x:Key="string_addTarget">Add Target</system:String>
+    <system:String x:Key="string_startGame">Start Game</system:String>
+    <system:String x:Key="string_installationTarget">Installation target:</system:String>
+    <system:String x:Key="string_binkAsiBypassNotInstalled">Binkw32 ASI bypass not installed</system:String>
+    <system:String x:Key="string_binkAsiBypassInstalled">Binkw32 ASI bypass installed</system:String>
+    <system:String x:Key="string_binkAsiLoaderNotInstalled">Binkw32 ASI loader not installed</system:String>
+    <system:String x:Key="string_binkAsiLoaderInstalled">Binkw32 ASI loader installed</system:String>
+    <system:String x:Key="string_gameNotInstalled">Game not installed</system:String>
+    <system:String x:Key="string_otherSavedTargets">Other saved targets</system:String>
+    <system:String x:Key="string_cannotEndorseMod">Cannot endorse mod</system:String>
+    <system:String x:Key="string_cannotEndorseOwnMod">Cannot endorse your own mod</system:String>
+    <system:String x:Key="string_notLinkedToNexusMods">not linked to NexusMods</system:String>
+    <system:String x:Key="string_notAuthenticated">not authenticated</system:String>
+    <system:String x:Key="string_gettingEndorsementStatus">Getting endorsement status</system:String>
+    <system:String x:Key="string_endorseMod">Endorse mod</system:String>
+    <system:String x:Key="string_modEndorsed">&#x1ff4d; Mod endorsed</system:String>
+
+
 </ResourceDictionary>

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
+using Path = System.IO.Path;
 
 namespace LocalizationHelper
 {
@@ -55,9 +59,9 @@ namespace LocalizationHelper
 
                 ResultTextBox.Text = doc.ToString();
                 StringBuilder sb = new StringBuilder();
-                foreach(var v in localizations)
+                foreach (var v in localizations)
                 {
-                    sb.AppendLine("\t<system:string x:Key=\""+v.Value+"\">"+v.Key+"</system:string>");
+                    sb.AppendLine("\t<system:string x:Key=\"" + v.Value + "\">" + v.Key + "</system:string>");
                 }
                 StringsTextBox.Text = sb.ToString();
             }
@@ -65,6 +69,27 @@ namespace LocalizationHelper
             {
 
             }
+        }
+
+        private void Synchronize_Clicked(object sender, RoutedEventArgs e)
+        {
+            //get out of project in debug mod
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var localizationsFolder = Path.Combine(solutionroot, "MassEffectModManagerCore", "modmanager", "localizations");
+            var m3lFile = Path.Combine(localizationsFolder, "M3L.cs");
+            var m3lTemplateFile = Path.Combine(localizationsFolder, "M3L_Template.txt");
+            var intfile = Path.Combine(localizationsFolder, "int.xaml");
+
+            var m3llines = File.ReadAllLines(m3lTemplateFile).ToList();
+
+            var doc = XDocument.Load(intfile);
+
+
+            //Write end of .cs file lines
+            m3llines.Add("\t}");
+            m3llines.Add("}");
+
+            File.WriteAllLines(m3lFile, m3llines); //write back updated file
         }
     }
 }

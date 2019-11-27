@@ -2,6 +2,7 @@
 using Serilog.Sinks.RollingFile.Extension;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -24,9 +25,7 @@ using ME3Explorer.Packages;
 
 namespace MassEffectModManagerCore
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+    [Localizable(false)]
     public partial class App : Application
     {
         /// <summary>
@@ -251,7 +250,7 @@ namespace MassEffectModManagerCore
             catch (Exception e)
             {
                 OnFatalCrash(e);
-                throw e;
+                throw;
             }
         }
 
