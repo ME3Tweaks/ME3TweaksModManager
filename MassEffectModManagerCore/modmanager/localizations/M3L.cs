@@ -206,15 +206,17 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_modManagerHasBeenUpdatedTo = "string_interp_modManagerHasBeenUpdatedTo";
 		public static readonly string string_interp_launching = "string_interp_launching";
 		public static readonly string string_interp_launched = "string_interp_launched";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
-		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_cannotInstallModGameNotInstalled = "string_interp_cannotInstallModGameNotInstalled";
+		public static readonly string string_interp_dialog_installingTextureMod = "string_interp_dialog_installingTextureMod";
+		public static readonly string string_interp_minorUpdateAvailableMessage = "string_interp_minorUpdateAvailableMessage";
+		public static readonly string string_interp_dialogUnableToCreateModLibraryNoPermissions = "string_interp_dialogUnableToCreateModLibraryNoPermissions";
+		public static readonly string string_interp_dialogCannotInstallModsWhileGameRunning = "string_interp_dialogCannotInstallModsWhileGameRunning";
+		public static readonly string string_interp_failedToInstallMod = "string_interp_failedToInstallMod";
+		public static readonly string string_interp_installingMod = "string_interp_installingMod";
+		public static readonly string string_interp_installedMod = "string_interp_installedMod";
+		public static readonly string string_interp_dialogUnableToAddGameTarget = "string_interp_dialogUnableToAddGameTarget";
+		public static readonly string string_gameExecutable = "string_gameExecutable";
+		public static readonly string string_interp_dialogCannotInstallBinkWhileGameRunning = "string_interp_dialogCannotInstallBinkWhileGameRunning";
 		public static readonly string string_interp_ = "string_interp_";
 	}
 }

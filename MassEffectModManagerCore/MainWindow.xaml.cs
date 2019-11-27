@@ -733,7 +733,7 @@ namespace MassEffectModManagerCore
                 if (target == null) return; //can't toggle this
                 if (Utilities.IsGameRunning(game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install the binkw32 DLC bypass while {Utilities.GetGameName(game)} is running.", M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogCannotInstallBinkWhileGameRunning, Utilities.GetGameName(game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -798,7 +798,7 @@ namespace MassEffectModManagerCore
             Log.Information(@"User is adding new modding target");
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
-            string filter = $"Game executable|MassEffect.exe;MassEffect2.exe;MassEffect3.exe"; //only partially localizable.
+            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe"; //only partially localizable.
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
@@ -844,7 +844,7 @@ namespace MassEffectModManagerCore
                             {@"Supported", pendingTarget.Supported.ToString()}
                         });
                         Log.Error(@"Could not add target: " + failureReason);
-                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target:\n" + failureReason, M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_dialogUnableToAddGameTarget, failureReason), M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
 
@@ -878,7 +878,7 @@ namespace MassEffectModManagerCore
         {
             if (!Utilities.IsGameRunning(mod.Game))
             {
-                BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", $"Installing {mod.ModName}", $"Installed {mod.ModName}");
+                BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
                 var modInstaller = new ModInstaller(mod, SelectedGameTarget);
                 modInstaller.Close += (a, b) =>
                 {
@@ -894,7 +894,7 @@ namespace MassEffectModManagerCore
                         }
                         else
                         {
-                            modInstallTask.finishedUiText = $"Failed to install {mod.ModName}";
+                            modInstallTask.finishedUiText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
                         }
                     }
 
@@ -921,7 +921,7 @@ namespace MassEffectModManagerCore
             else
             {
                 Log.Error($@"Blocking install of {mod.ModName} because {Utilities.GetGameName(mod.Game)} is running.");
-                Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mods while {Utilities.GetGameName(mod.Game)} is running.", M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogCannotInstallModsWhileGameRunning, Utilities.GetGameName(mod.Game)), M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1096,7 +1096,7 @@ namespace MassEffectModManagerCore
             {
                 Log.Error(@"Unable to ensure mod directories: " + e.Message);
                 Crashes.TrackError(e);
-                Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to create mod library directory: " + e.Message + ".\nChoose a mod directory that you have write permissions to.", M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogUnableToCreateModLibraryNoPermissions, e.Message), M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                 var folderPicked = ChooseModLibraryPath(false);
                 if (folderPicked)
                 {
@@ -1575,7 +1575,7 @@ namespace MassEffectModManagerCore
                                             Application.Current.Dispatcher.Invoke(delegate
                                             {
                                                 var updateAvailableDialog = new ProgramUpdateNotification();
-                                                updateAvailableDialog.UpdateMessage = $"An updated version of ME3Tweaks Mod Manager Build {App.BuildNumber} is available. Minor updates commonly fix small bugs in the program that do not merit a full re-release.";
+                                                updateAvailableDialog.UpdateMessage = M3L.GetString(M3L.string_interp_minorUpdateAvailableMessage, App.BuildNumber.ToString());
                                                 updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
                                                 ShowBusyControl(updateAvailableDialog);
                                             });
@@ -1829,7 +1829,7 @@ namespace MassEffectModManagerCore
                     case ".mod":
                     case ".mem":
                         Analytics.TrackEvent(@"User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"{ext} files can be installed with ALOT Installer or Mass Effect Modder (MEM), both available in the tools menu.\n\nWARNING: These types of mods change game file pointers. They must be installed AFTER all other DLC/content mods. Installing content/DLC mods after will cause various issues in the game. Once these types of mods are installed, ME3Tweaks Mod Manager will refuse to install further mods without a restore of the game.", M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialog_installingTextureMod, ext), M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
                     case ".me2mod":
                         Analytics.TrackEvent(@"User opened me2mod file", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
@@ -1862,7 +1862,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mod: {compressedModToInstall.Game} is not installed.", M3L.GetString(M3L.string_gameNotInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_cannotInstallModGameNotInstalled, Utilities.GetGameName(compressedModToInstall.Game)), M3L.GetString(M3L.string_gameNotInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
                         ReleaseBusyControl();
                     }
                 }
