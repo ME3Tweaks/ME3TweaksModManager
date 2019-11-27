@@ -654,12 +654,12 @@ namespace MassEffectModManagerCore
             return assembly.GetManifestResourceStream(assemblyResource);
         }
 
-        internal static object GetGameName(Mod.MEGame game)
+        internal static string GetGameName(Mod.MEGame game)
         {
             if (game == Mod.MEGame.ME1) return "Mass Effect";
             if (game == Mod.MEGame.ME2) return "Mass Effect 2";
             if (game == Mod.MEGame.ME3) return "Mass Effect 3";
-            return "Error: Unknown game";
+            return @"Error: Unknown game";
         }
 
         internal static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite)

@@ -240,7 +240,7 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod.IsEndorsed)
             {
-                var unendorseresult = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unendorse " + SelectedMod.ModName + "?", M3L.GetString(M3L.string_confirmUnendorsement), MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var unendorseresult = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_unendorseMod, SelectedMod.ModName), M3L.GetString(M3L.string_confirmUnendorsement), MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (unendorseresult == MessageBoxResult.Yes)
                 {
                     UnendorseMod();
@@ -345,7 +345,7 @@ namespace MassEffectModManagerCore
                             Log.Error(@"Unable to enable console: " + e.Message);
                             Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"false" } });
                             Crashes.TrackError(e);
-                            Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to modify bioinput.ini: " + e.Message, M3L.GetString(M3L.string_couldNotEnableConsole), MessageBoxButton.OK, MessageBoxImage.Error);
+                            Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_unableToModifyBioinputIni, e.Message), M3L.GetString(M3L.string_couldNotEnableConsole), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                 }
@@ -424,7 +424,7 @@ namespace MassEffectModManagerCore
 
         private void DeleteModFromLibrary()
         {
-            var confirmationResult = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Delete {SelectedMod.ModName} from your mod library? This only deletes the mod from your local Mod Manager library, it does not remove it from any game installations.", M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var confirmationResult = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogDeleteSelectedModFromLibrary, SelectedMod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (confirmationResult == MessageBoxResult.Yes)
             {
                 Log.Information(@"Deleting mod from library: " + SelectedMod.ModPath);
@@ -442,7 +442,7 @@ namespace MassEffectModManagerCore
 
         private void ShowUpdateCompletedPane()
         {
-            var message = $"Mod Manager has been updated from build {App.UpdatedFrom} to version {App.AppVersionAbout}.";
+            var message = M3L.GetString(M3L.string_interp_modManagerHasBeenUpdatedTo, App.UpdatedFrom.ToString(), App.AppVersionAbout);
             var archiveDeploymentPane = new UpdateCompletedPanel(M3L.GetString(M3L.string_updateCompleted), message);
             archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(archiveDeploymentPane);
@@ -566,7 +566,7 @@ namespace MassEffectModManagerCore
 
             var game = Utilities.GetGameName(SelectedGameTarget.Game);
 
-            BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", $"Launching {game}", $"Launched {game}");
+            BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
             Task.Delay(TimeSpan.FromMilliseconds(4000))
                 .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
             try

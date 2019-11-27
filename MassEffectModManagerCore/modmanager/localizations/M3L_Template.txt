@@ -15,12 +15,13 @@ namespace MassEffectModManagerCore.modmanager.localizations
     [Localizable(false)]
     public static class M3L
     {
-        internal static string GetString(string resourceKey)
+        internal static string GetString(string resourceKey, params string[] interpolationItems)
         {
             try
             {
                 if (!resourceKey.StartsWith(@"string_")) throw new Exception(@"Localization keys must start with a string_ identifier!");
-                return (string)Application.Current.FindResource(resourceKey);
+                var str = (string)Application.Current.FindResource(resourceKey);
+                return string.Format(str, interpolationItems);
             }
             catch (Exception e)
             {
@@ -28,3 +29,4 @@ namespace MassEffectModManagerCore.modmanager.localizations
                 return "ERROR!";
             }
         }
+

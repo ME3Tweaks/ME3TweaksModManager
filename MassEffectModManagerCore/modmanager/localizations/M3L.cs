@@ -15,12 +15,13 @@ namespace MassEffectModManagerCore.modmanager.localizations
     [Localizable(false)]
     public static class M3L
     {
-        internal static string GetString(string resourceKey)
+        internal static string GetString(string resourceKey, params string[] interpolationItems)
         {
             try
             {
                 if (!resourceKey.StartsWith(@"string_")) throw new Exception(@"Localization keys must start with a string_ identifier!");
-                return (string)Application.Current.FindResource(resourceKey);
+                var str = (string)Application.Current.FindResource(resourceKey);
+                return string.Format(str, interpolationItems);
             }
             catch (Exception e)
             {
@@ -28,6 +29,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
                 return "ERROR!";
             }
         }
+
 		public static readonly string string_AvailableMods = "string_AvailableMods";
 		public static readonly string string_Language = "string_Language";
 		public static readonly string string_Actions = "string_Actions";
@@ -198,5 +200,21 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_loadedDynamicHelp = "string_loadedDynamicHelp";
 		public static readonly string string_selectModArchive = "string_selectModArchive";
 		public static readonly string string_selectGameExecutable = "string_selectGameExecutable";
+		public static readonly string string_interp_unendorseMod = "string_interp_unendorseMod";
+		public static readonly string string_interp_unableToModifyBioinputIni = "string_interp_unableToModifyBioinputIni";
+		public static readonly string string_interp_dialogDeleteSelectedModFromLibrary = "string_interp_dialogDeleteSelectedModFromLibrary";
+		public static readonly string string_interp_modManagerHasBeenUpdatedTo = "string_interp_modManagerHasBeenUpdatedTo";
+		public static readonly string string_interp_launching = "string_interp_launching";
+		public static readonly string string_interp_launched = "string_interp_launched";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_interp_ = "string_interp_";
 	}
 }
