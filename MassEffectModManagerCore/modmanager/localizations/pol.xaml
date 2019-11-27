@@ -94,7 +94,7 @@
     <system:String x:Key="string_AboutME3TweaksModManager">O Managerze Modów ME3Tweaks</system:String>
     <system:String x:Key="string_Aboutthisprogram">O tym programie</system:String>
     <system:String x:Key="string_CreateTestingArchive">Stwórz archiwum testowe dla mod</system:String>
-    <system:String x:Key="string_CreateTestingArchiveTooltip">Creates an archive that has blank versions of all files for this mod. Useful for debugging the application</system:String>
+    <system:String x:Key="string_CreateTestingArchiveTooltip">Tworzy archiwum zawierające puste wersje wszystkich plików dla tego modu. Przydatne do debugowania aplikacji</system:String>
     <system:String x:Key="string_startingUp">Uruchamianie</system:String>
 
     <system:String x:Key="string_selectModOnLeftToGetStarted">Wybierz mod po lewej stronie aby rozpocząć.</system:String>
