@@ -273,9 +273,9 @@
                 <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                     <StackPanel Orientation="Horizontal" >
                         <Image Name="BottomBarGameID_Image" Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0"/>
-                        <Button MinWidth="70" Padding="10,7" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="Apply this mod to the game"/>
+                        <Button MinWidth="70" Padding="10,7" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}"/>
                         <Button MinWidth="70" Padding="10,7" Content="{Binding StartGameButtonText, FallbackValue=Start Game}" Command="{Binding StartGameCommand}" Margin="5,0,0,0"
-                                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" ToolTip="Launch the currently selected target.&#10;If this is an origin copy, the game may reboot to the Origin target"/>
+                                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}"/>
                     </StackPanel>
                 </StatusBarItem>
             </StatusBar>
@@ -304,7 +304,7 @@
                 <TextBlock Text="{Binding InstallationTargetText, FallbackValue=Installation Target:}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0"/>
                 <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged"
                   Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False"
-                  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="Current modding target"
+                  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="{DynamicResource string_tooltip_currentTarget}"
                   ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
                 <!--<ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -326,15 +326,15 @@
                         </Style>
                     </ComboBox.ItemContainerStyle>-->
 
-                <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="Add an additional installation target"/>
-                <Button Content="Target info" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="View and manage installed mods and files for this target"/>
+                <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}"/>
+                <Button Content="{DynamicResource string_targetInfo}" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_targetInfo}"/>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">
-                        <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="2" Command="{Binding ReloadModsCommand}" ToolTip="Reload mods from library">
+                        <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="2" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}">
                             <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}"/>
                         </Button>
-                        <Button Content ="ME3" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME3Visibility_Click" ToolTip="Click to toggle showing mods for Mass Effect 3">
+                        <Button Content ="ME3" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME3Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME3}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                     <Style.Triggers>
@@ -345,7 +345,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content ="ME2" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME2Visibility_Click" ToolTip="Click to toggle showing mods for Mass Effect 2">
+                        <Button Content ="ME2" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME2Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME2}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                     <Style.Triggers>
@@ -356,7 +356,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content ="ME1" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME1Visibility_Click" ToolTip="Click to toggle showing mods for Mass Effect">
+                        <Button Content ="ME1" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME1Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME1}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                     <Style.Triggers>
@@ -373,11 +373,11 @@
                     </DockPanel>
 
                     <StackPanel Name="FailedModsPopupPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
-                        <TextBlock ToolTip="Some mods failed to load, click to see why">
-                        <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
-                            <TextBlock Text="{Binding FailedMods.BindableCount, StringFormat={}{0} mods failed to load, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </Hyperlink>
-                    </TextBlock>
+                        <TextBlock ToolTip="{DynamicResource string_tooltip_someModsFailed}">
+                            <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
+                                <TextBlock Text="{Binding FailedMods.BindableCount, StringFormat={}{0} mods failed to load, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </Hyperlink>
+                        </TextBlock>
                     </StackPanel>
                     <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
                              IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
@@ -396,7 +396,7 @@
                 <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="3">
                     <DockPanel DockPanel.Dock="Top">
                         <Button Content="{Binding CurrentModEndorsementStatus, FallbackValue=Endorse mod}" DockPanel.Dock="Right" Visibility="{Binding SelectedMod, Converter={StaticResource NullHiddenConverter}}" Command="{Binding EndorseSelectedModCommand}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
-                        <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold" Height="18"/>
+                        <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_modDescription}" FontWeight="Bold" Height="18"/>
                     </DockPanel>
                     <StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">

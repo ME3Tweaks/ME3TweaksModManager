@@ -83,8 +83,7 @@ You can drag and drop files onto the interface to import them faster.</system:St
     <system:String x:Key="string_Backup">Backup</system:String>
     <system:String x:Key="string_Createentiregamebackups">Create entire game backups</system:String>
     <system:String x:Key="string_Restore">Restore</system:String>
-    <system:String x:Key="string_Restoreagamefrombackup">Restore a game from backup.
-For granular options, use the restore options in Target Info</system:String>
+    <system:String xml:space="preserve" x:Key="string_Restoreagamefrombackup">Restore a game from backup.&#10;For granular options, use the restore options in Target Info</system:String>
     <system:String x:Key="string_Help">Help</system:String>
     <system:String x:Key="string_DynamicHelp">Dynamic Help</system:String>
     <system:String x:Key="string_Diagnostics">Diagnostics</system:String>
@@ -193,12 +192,27 @@ For granular options, use the restore options in Target Info</system:String>
     <system:String x:Key="string_interp_installedMod">Installed {0}</system:String>
     <system:String x:Key="string_interp_dialogUnableToAddGameTarget">Unable to add this game as a target:\n{0}</system:String>
     <system:String x:Key="string_gameExecutable">Game executable</system:String>
-    <system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning"></system:String>
-    <system:String x:Key="string_interp_">Cannot modify binkw32 files while {0} is running.</system:String>
-    <!--<system:String x:Key="string_interp_"></system:String>
-    <system:String x:Key="string_interp_"></system:String>
-    <system:String x:Key="string_interp_"></system:String>
-    <system:String x:Key="string_interp_"></system:String>-->
+    <system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Cannot modify binkw32 files while {0} is running.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Launch the currently selected target.&#10;If this is an origin copy, the game may reboot to the Origin target</system:String>
+    <system:String x:Key="string_tooltip_applyThisModToTheGame">Apply this mod to the game</system:String>
+    <system:String x:Key="string_tooltip_currentTarget">Current modding target</system:String>
+    <system:String x:Key="string_tooltip_reloadModsFromLibrary">Reload mods from mod library</system:String>
+    <system:String x:Key="string_tooltip_filterME1">Click to toggle showing mods for Mass Effect</system:String>
+    <system:String x:Key="string_tooltip_filterME2">Click to toggle showing mods for Mass Effect 2</system:String>
+    <system:String x:Key="string_tooltip_filterME3">Click to toggle showing mods for Mass Effect 3</system:String>
+    <system:String x:Key="string_tooltip_someModsFailed">Some mods failed to load, click to see why</system:String>
+    <system:String x:Key="string_tooltip_addAdditionalTarget">Add an additional installation target</system:String>
+    <system:String x:Key="string_tooltip_targetInfo">View and manage installed mods and files for this target</system:String>
+    <!--<system:String x:Key="string_tooltip_"></system:String>
+    <system:String x:Key="string_tooltip_"></system:String>
+    <system:String x:Key="string_tooltip_"></system:String>
+    <system:String x:Key="string_tooltip_"></system:String>
+    <system:String x:Key="string_tooltip_"></system:String>
+    <system:String x:Key="string_tooltip_"></system:String>
+    <system:String x:Key="string_tooltip_"></system:String>-->
+
+    <system:String x:Key="string_targetInfo">Target info</system:String>
+    <system:String x:Key="string_modDescription">Mod Description</system:String>
 
 
 </ResourceDictionary>

@@ -217,6 +217,17 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_dialogUnableToAddGameTarget = "string_interp_dialogUnableToAddGameTarget";
 		public static readonly string string_gameExecutable = "string_gameExecutable";
 		public static readonly string string_interp_dialogCannotInstallBinkWhileGameRunning = "string_interp_dialogCannotInstallBinkWhileGameRunning";
-		public static readonly string string_interp_ = "string_interp_";
+		public static readonly string string_tooltip_launchCurrentlySelectedTarget = "string_tooltip_launchCurrentlySelectedTarget";
+		public static readonly string string_tooltip_applyThisModToTheGame = "string_tooltip_applyThisModToTheGame";
+		public static readonly string string_tooltip_currentTarget = "string_tooltip_currentTarget";
+		public static readonly string string_tooltip_reloadModsFromLibrary = "string_tooltip_reloadModsFromLibrary";
+		public static readonly string string_tooltip_filterME1 = "string_tooltip_filterME1";
+		public static readonly string string_tooltip_filterME2 = "string_tooltip_filterME2";
+		public static readonly string string_tooltip_filterME3 = "string_tooltip_filterME3";
+		public static readonly string string_tooltip_someModsFailed = "string_tooltip_someModsFailed";
+		public static readonly string string_tooltip_addAdditionalTarget = "string_tooltip_addAdditionalTarget";
+		public static readonly string string_tooltip_targetInfo = "string_tooltip_targetInfo";
+		public static readonly string string_targetInfo = "string_targetInfo";
+		public static readonly string string_modDescription = "string_modDescription";
 	}
 }
