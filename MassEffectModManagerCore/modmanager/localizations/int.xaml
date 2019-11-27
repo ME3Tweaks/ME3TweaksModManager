@@ -5,14 +5,14 @@
     <system:String x:Key="string_Language">Language</system:String>
     <system:String x:Key="string_Actions">Actions</system:String>
     <system:String x:Key="string_CreateaME3modonModMaker">Create a ME3 mod on ModMaker</system:String>
-    <system:String x:Key="string_OpenME3Tweaks.com">Open ME3Tweaks.com</system:String>
-    <system:String x:Key="string_OpensME3Tweaks.com">Opens ME3Tweaks.com</system:String>
+    <system:String x:Key="string_OpenME3Tweaks">Open ME3Tweaks.com</system:String>
+    <system:String x:Key="string_OpensME3Tweaks">Opens ME3Tweaks.com</system:String>
     <system:String x:Key="string_OpenMemoryAnalyzer">Open Memory Analyzer</system:String>
     <system:String x:Key="string_Options">Options</system:String>
     <system:String x:Key="string_ModManager">Mod Manager</system:String>
     <system:String x:Key="string_Setmodlibrarypath">Set mod library path</system:String>
     <system:String x:Key="string_Developermode">Developer mode</system:String>
-    <system:String x:Key="string_Enabledeveloper-orientedfeatures">Enable developer-oriented features</system:String>
+    <system:String x:Key="string_EnableDeveloperOrientedFeatures">Enable developer-oriented features</system:String>
     <system:String x:Key="string_Darktheme">Dark theme</system:String>
     <system:String x:Key="string_SwitchUItodarktheme">Switch UI to dark theme</system:String>
     <system:String x:Key="string_Logging">Logging</system:String>
@@ -28,7 +28,7 @@
     <system:String x:Key="string_ModManagement">Mod Management</system:String>
     <system:String x:Key="string_ImportMod">Import Mod</system:String>
     <system:String x:Key="string_HeaderDragDropFaster">Use drag and drop for faster import</system:String>
-    <system:String x:Key="string_Importmodfrom.7z/.rar/.zip">Import mod from .7z/.rar/.zip</system:String>
+    <system:String x:Key="string_ImportmodfromArchive">Import mod from .7z/.rar/.zip</system:String>
     <system:String x:Key="string_ImportModFromArchiveTooltip">Open file browser for selecting mods stored in archive files.
 You can drag and drop files onto the interface to import them faster.</system:String>
     <system:String x:Key="string_ImportalreadyinstalledCustomDLCmod">Import already installed Custom DLC mod</system:String>
@@ -41,7 +41,7 @@ You can drag and drop files onto the interface to import them faster.</system:St
     <system:String x:Key="string_BatchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_Openmodslibrarydirectory">Open mods library directory</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Opens the mod library folder</system:String>
-    <system:String x:Key="string_Mixins(forME3)">Mixins (for ME3)</system:String>
+    <system:String x:Key="string_MixinsForME3">Mixins (for ME3)</system:String>
     <system:String x:Key="string_MixInLibrary">MixIn Library</system:String>
     <system:String x:Key="string_ClearMixinCache">Clear Mixin Cache</system:String>
     <system:String x:Key="string_ModUtils">Mod Utils</system:String>
@@ -117,6 +117,65 @@ For granular options, use the restore options in Target Info</system:String>
     <system:String x:Key="string_gettingEndorsementStatus">Getting endorsement status</system:String>
     <system:String x:Key="string_endorseMod">Endorse mod</system:String>
     <system:String x:Key="string_modEndorsed">&#x1ff4d; Mod endorsed</system:String>
+
+    <system:String x:Key="string_loginToNexusModsToEnableEndorsements">Log in to NexusMods to enable Endorsements</system:String>
+    <system:String x:Key="string_endorsementsEnabledAuthenicatedToNexusMods">Endorsements enabled (authenticated to NexusMods)</system:String>
+    <system:String x:Key="string_endorsing">Endorsing</system:String>
+    <system:String x:Key="string_unendorsing">Unendorsing</system:String>
+    <system:String x:Key="string_dialogConsoleEnabled">Console enabled.\nPress ~ to open the full size console.\nPress TAB to open the mini console.</system:String>
+    <system:String x:Key="string_consoleEnabled">Console enabled</system:String>
+    <system:String x:Key="string_couldNotEnableConsole">Could not enable console</system:String>
+    <system:String x:Key="string_confirmDeletion">Confirm deletion</system:String>
+    <system:String x:Key="string_updateCompleted">Update completed</system:String>
+    <system:String x:Key="string_gameRunning">Game running</system:String>
+    <system:String x:Key="string_errorAddingTarget">Error adding target</system:String>
+    <system:String x:Key="string_dialogCannotAddTargetCmmVanilla">Unable to add this directory as a target because it has been marked as a backup (cmmvanilla file detected).</system:String>
+    <system:String x:Key="string_installationAborted">Installation aborted</system:String>
+    <system:String x:Key="string_cannotInstallMod">Cannot install mod</system:String>
+    <system:String x:Key="string_dialogUACPreConsent">Some game directories/registry keys are not writable by your user account. ME3Tweaks Mod Manager can grant write access to these directories for you for easier modding. Grant write access to these folders?</system:String>
+    <system:String x:Key="string_someTargetsKeysWriteProtected">Some targets/keys write-protected"</system:String>
+    <system:String x:Key="string_targetsWritable">Targets writable</system:String>
+    <system:String x:Key="string_allTargetsWritable">All game directory roots appear to be writable.</system:String>
+    <system:String x:Key="string_errorCreatingModLibrary">Error creating mod library</system:String>
+    <system:String x:Key="string_unableToCreateModLibrary">Unable to create mod library. Mod Manager will now close.</system:String>
+    <system:String x:Key="string_loadingMods">Loading mods</system:String>
+    <system:String x:Key="string_loadedMods">Loaded mods</system:String>
+    <system:String x:Key="string_checkingModsForUpdates">Checking mods for updates</system:String>
+    <system:String x:Key="string_modUpdateCheckCompleted">Mod update check completed</system:String>
+    <system:String x:Key="string_errorCheckingForModUpdates">Error checking for mod updates</system:String>
+    <system:String x:Key="string_downloadingRequiredFiles">Downloading required files</system:String>
+    <system:String x:Key="string_requiredFilesDownloaded">Required files downloaded</system:String>
+    <system:String x:Key="string_failedToDownloadRequiredFiles">Failed to acquire required files</system:String>
+    <system:String x:Key="string_checkingForModManagerUpdates">Checking for Mod Manager updates</system:String>
+    <system:String x:Key="string_completedModManagerUpdateCheck">Completed Mod Manager update check</system:String>
+    <system:String x:Key="string_failedToCheckForUpdates">Failed to check for updates</system:String>
+    <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Could not download static supporting files to ME3Tweaks Mod Manager. Mod Manager may be unstable due to these files not being present. Ensure you are able to connect to Github.com so these assets may be downloaded.</system:String>
+    <system:String x:Key="string_missingAssets">Missing assets</system:String>
+    <system:String x:Key="string_failedToDownloadStaticFiles">Failed to download static files</system:String>
+    <system:String x:Key="string_downloadingStaticFiles">Downloading static files</system:String>
+    <system:String x:Key="string_staticFilesDownloaded">Static files downloaded</system:String>
+    <system:String x:Key="string_dialogTurningOffTelemetry">Disabling telemetry makes it more difficult to fix bugs and develop new features for ME3Tweaks Mod Manager. Telemetry data collected is used to identify crashes, errors, see what demand there is for various mod support, and see what tasks are difficult for users (such as lack of guidance on a particular enforced rule of modding).\n\nYou can continue to turn it off, but it provides valuable metrics to the developers of this program and to the modding scene.\n\nTurn off telemetry?</system:String>
+    <system:String x:Key="string_turningOffTelemetry">Turning off telemetry</system:String>
+    <system:String x:Key="string_selectModLibraryFolder">Select mod library folder</system:String>
+    <system:String x:Key="string_runningAutoTOC">Running AutoTOC</system:String>
+    <system:String x:Key="string_ranAutoTOC">Ran AutoTOC</system:String>
+    <system:String x:Key="string_nonModManagerModFound">Non-Mod Manager mod found</system:String>
+    <system:String x:Key="string_dialogCriticalFilesMissing">"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks Discord.</system:String>
+    <system:String x:Key="string_requiredFilesNotDownloaded">Required files unable to be downloaded</system:String>
+    <system:String x:Key="string_checkingWritePermissions">Checking write permissions</system:String>
+    <system:String x:Key="string_checkedUserWritePermissions">Checked user write permissions</system:String>
+    <system:String x:Key="string_loadingPackageInfoDatabases">Loading package information databases</system:String>
+    <system:String x:Key="string_loadedPackageInfoDatabases">Loaded package information databases</system:String>
+    <system:String x:Key="string_loadingTipsService">Loading tips service</system:String>
+    <system:String x:Key="string_loadedTipsService">Loaded tips service</system:String>
+    <system:String x:Key="string_loadingThirdPartyServices">Loading Third Party services</system:String>
+    <system:String x:Key="string_loadedThirdPartyServices">Loaded Third Party services</system:String>
+
+    <system:String x:Key="string_loadingDynamicHelp">Loading Dynamic Help</system:String>
+    <system:String x:Key="string_confirmUnendorsement">Confirm Unendorsement</system:String>
+    <system:String x:Key="string_loadedDynamicHelp">Loaded Dynamic Help</system:String>
+    <system:String x:Key="string_selectModArchive">Select mod archive</system:String>
+    <system:String x:Key="string_selectGameExecutable">Select game executable</system:String>
 
 
 </ResourceDictionary>

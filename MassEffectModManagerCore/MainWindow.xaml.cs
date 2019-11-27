@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using AdonisUI;
@@ -74,19 +75,19 @@ namespace MassEffectModManagerCore
         {
             get
             {
-                var retvar = "Select a mod on the left to view it's description.";
-                //TODO: Implement Tips Service
+                var retvar = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
+                //TODO: Implement Localized Tips Service
                 if (LoadedTips.Count > 0)
                 {
                     var randomTip = LoadedTips.RandomElement();
-                    retvar += $@"\n\n---------------------------------------------\n{randomTip}";
+                    retvar += $"\n\n---------------------------------------------\n{randomTip}"; //this does not need localized. Ignore resharper warning.
                 }
 
                 return retvar;
             }
         }
 
-        public string NexusLoginInfoString { get; set; } = "Log in to NexusMods to enable Endorsements";
+        public string NexusLoginInfoString { get; set; } = M3L.GetString(M3L.string_loginToNexusModsToEnableEndorsements);
 
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
@@ -109,7 +110,7 @@ namespace MassEffectModManagerCore
             LoadCommands();
             if (NexusModsUtilities.HasAPIKey)
             {
-                NexusLoginInfoString = "Endorsements enabled (authenticated to NexusMods)";
+                NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabledAuthenicatedToNexusMods);
                 AuthToNexusMods();
             }
             InitializeComponent();
@@ -239,7 +240,7 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod.IsEndorsed)
             {
-                var unendorseresult = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unendorse " + SelectedMod.ModName + "?", "Confirm unendorsement", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var unendorseresult = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unendorse " + SelectedMod.ModName + "?", M3L.GetString(M3L.string_confirmUnendorsement), MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (unendorseresult == MessageBoxResult.Yes)
                 {
                     UnendorseMod();
@@ -258,7 +259,7 @@ namespace MassEffectModManagerCore
             if (SelectedMod != null)
             {
                 Log.Information(@"Endorsing mod: " + SelectedMod.ModName);
-                CurrentModEndorsementStatus = "Endorsing";
+                CurrentModEndorsementStatus = M3L.GetString(M3L.string_endorsing);
                 IsEndorsingMod = true;
                 SelectedMod.EndorseMod(EndorsementCallback, true, NexusUserID);
             }
@@ -269,7 +270,7 @@ namespace MassEffectModManagerCore
             if (SelectedMod != null)
             {
                 Log.Information(@"Unendorsing mod: " + SelectedMod.ModName);
-                CurrentModEndorsementStatus = "Unendorsing";
+                CurrentModEndorsementStatus = M3L.GetString(M3L.string_unendorsing);
                 IsEndorsingMod = true;
                 SelectedMod.EndorseMod(EndorsementCallback, false, NexusUserID);
             }
@@ -326,10 +327,10 @@ namespace MassEffectModManagerCore
                             engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey=Tilde"));
                         }
 
-                        var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == "TypeKey");
+                        var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
                         if (typeKey == null)
                         {
-                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry("TypeKey=Tab"));
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey=Tab"));
                         }
 
 
@@ -337,14 +338,14 @@ namespace MassEffectModManagerCore
                         {
                             File.WriteAllText(iniFile, ini.ToString());
                             Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"true" } });
-                            Xceed.Wpf.Toolkit.MessageBox.Show(this, "Console enabled.\nPress ~ to open the full size console.\nPress TAB to open the mini console.", "Console enabled");
+                            Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialogConsoleEnabled), M3L.GetString(M3L.string_consoleEnabled));
                         }
                         catch (Exception e)
                         {
                             Log.Error(@"Unable to enable console: " + e.Message);
                             Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"false" } });
                             Crashes.TrackError(e);
-                            Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to modify bioinput.ini: " + e.Message, "Could not enable console", MessageBoxButton.OK, MessageBoxImage.Error);
+                            Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to modify bioinput.ini: " + e.Message, M3L.GetString(M3L.string_couldNotEnableConsole), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                 }
@@ -402,7 +403,7 @@ namespace MassEffectModManagerCore
         {
             OpenFileDialog m = new OpenFileDialog
             {
-                Title = "Select mod archive"
+                Title = M3L.GetString(M3L.string_selectModArchive)
             };
             var result = m.ShowDialog(this);
             if (result.Value)
@@ -423,7 +424,7 @@ namespace MassEffectModManagerCore
 
         private void DeleteModFromLibrary()
         {
-            var confirmationResult = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Delete {SelectedMod.ModName} from your mod library? This only deletes the mod from your local Mod Manager library, it does not remove it from any game installations.", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var confirmationResult = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Delete {SelectedMod.ModName} from your mod library? This only deletes the mod from your local Mod Manager library, it does not remove it from any game installations.", M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (confirmationResult == MessageBoxResult.Yes)
             {
                 Log.Information(@"Deleting mod from library: " + SelectedMod.ModPath);
@@ -442,7 +443,7 @@ namespace MassEffectModManagerCore
         private void ShowUpdateCompletedPane()
         {
             var message = $"Mod Manager has been updated from build {App.UpdatedFrom} to version {App.AppVersionAbout}.";
-            var archiveDeploymentPane = new UpdateCompletedPanel("Update completed", message);
+            var archiveDeploymentPane = new UpdateCompletedPanel(M3L.GetString(M3L.string_updateCompleted), message);
             archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(archiveDeploymentPane);
         }
@@ -650,7 +651,7 @@ namespace MassEffectModManagerCore
         /// <returns></returns>
         private int UpdateBootTarget(GameTarget target)
         {
-            string exe = "reg";
+            string exe = @"reg";
             var args = new List<string>();
             string regPath = null;
             switch (target.Game)
@@ -732,7 +733,7 @@ namespace MassEffectModManagerCore
                 if (target == null) return; //can't toggle this
                 if (Utilities.IsGameRunning(game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install the binkw32 DLC bypass while {Utilities.GetGameName(game)} is running.", "Game running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install the binkw32 DLC bypass while {Utilities.GetGameName(game)} is running.", M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -796,7 +797,7 @@ namespace MassEffectModManagerCore
         {
             Log.Information(@"User is adding new modding target");
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = "Select game executable";
+            ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
             string filter = $"Game executable|MassEffect.exe;MassEffect2.exe;MassEffect3.exe"; //only partially localizable.
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
@@ -816,7 +817,7 @@ namespace MassEffectModManagerCore
                     //Test for cmmvanilla
                     if (File.Exists(Path.Combine(result, @"cmmvanilla")))
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target because it has been marked as a backup (cmmvanilla file detected).", "Error adding target", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogCannotAddTargetCmmVanilla), M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -843,7 +844,7 @@ namespace MassEffectModManagerCore
                             {@"Supported", pendingTarget.Supported.ToString()}
                         });
                         Log.Error(@"Could not add target: " + failureReason);
-                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target:\n" + failureReason, "Error adding target", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show("Unable to add this directory as a target:\n" + failureReason, M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
 
@@ -886,7 +887,7 @@ namespace MassEffectModManagerCore
                     {
                         if (modInstaller.InstallationCancelled)
                         {
-                            modInstallTask.finishedUiText = "Installation aborted";
+                            modInstallTask.finishedUiText = M3L.GetString(M3L.string_installationAborted);
                             ReleaseBusyControl();
                             backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                             return;
@@ -901,7 +902,7 @@ namespace MassEffectModManagerCore
                     if (SelectedGameTarget.Game == Mod.MEGame.ME3)
                     {
                         var autoTocUI = new AutoTOC(SelectedGameTarget);
-                        autoTocUI.Close += (a, b) =>
+                        autoTocUI.Close += (a1, b1) =>
                         {
                             ReleaseBusyControl();
                             backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
@@ -920,7 +921,7 @@ namespace MassEffectModManagerCore
             else
             {
                 Log.Error($@"Blocking install of {mod.ModName} because {Utilities.GetGameName(mod.Game)} is running.");
-                Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mods while {Utilities.GetGameName(mod.Game)} is running.", "Cannot install mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mods while {Utilities.GetGameName(mod.Game)} is running.", M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -962,7 +963,7 @@ namespace MassEffectModManagerCore
                 {
                     Log.Information(@"Some game paths/keys are not writable. Prompting user.");
                     bool result = false;
-                    Application.Current.Dispatcher.Invoke(delegate { result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Some game directories/registry keys are not writable by your user account. ME3Tweaks Mod Manager can grant write access to these directories for you for easier modding. Grant write access to these folders?", "Some targets/keys write-protected", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes; });
+                    Application.Current.Dispatcher.Invoke(delegate { result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialogUACPreConsent), M3L.GetString(M3L.string_someTargetsKeysWriteProtected), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes; });
                     if (result)
                     {
                         Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
@@ -983,13 +984,13 @@ namespace MassEffectModManagerCore
                 }
                 else
                 {
-                    Analytics.TrackEvent("Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
+                    Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
                     Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
                 }
             }
             else if (showDialogEvenIfNone)
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(this, "All game directory roots appear to be writable.", "Targets writable", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_allTargetsWritable), M3L.GetString(M3L.string_targetsWritable), MessageBoxButton.YesNo, MessageBoxImage.Information);
             }
         }
 
@@ -1095,7 +1096,7 @@ namespace MassEffectModManagerCore
             {
                 Log.Error(@"Unable to ensure mod directories: " + e.Message);
                 Crashes.TrackError(e);
-                Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to create mod library directory: " + e.Message + ".\nChoose a mod directory that you have write permissions to.", "Error creating mod library", MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to create mod library directory: " + e.Message + ".\nChoose a mod directory that you have write permissions to.", M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                 var folderPicked = ChooseModLibraryPath(false);
                 if (folderPicked)
                 {
@@ -1104,7 +1105,8 @@ namespace MassEffectModManagerCore
                 else
                 {
                     Log.Error(@"Unable to create mod library. Mod Manager will now exit.");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(this, "Unable to create mod library. Mod Manager will now close.");
+                    Crashes.TrackError(new Exception(@"Unable to create mod library"), new Dictionary<string, string>() { { @"Executable location", App.ExecutableLocation } });
+                    Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_unableToCreateModLibrary), M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                     Environment.Exit(1);
                 }
 
@@ -1123,7 +1125,7 @@ namespace MassEffectModManagerCore
             {
                 bool canCheckForModUpdates = Utilities.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
-                var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", "Loading mods", "Loaded mods");
+                var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 CLog.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory(), Settings.LogModStartup);
                 var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: Mod.MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: Mod.MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
@@ -1201,7 +1203,7 @@ namespace MassEffectModManagerCore
 
         private void CheckModsForUpdates(List<Mod> updatableMods, bool restoreMode = false)
         {
-            BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModCheckForUpdates", "Checking mods for updates", "Mod update check completed");
+            BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModCheckForUpdates", M3L.GetString(M3L.string_checkingModsForUpdates), M3L.GetString(M3L.string_modUpdateCheckCompleted));
             var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode);
             if (allModsInManifest != null)
             {
@@ -1226,7 +1228,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                bgTask.finishedUiText = "Error checking for mod updates";
+                bgTask.finishedUiText = M3L.GetString(M3L.string_errorCheckingForModUpdates);
             }
 
             backgroundTaskEngine.SubmitJobCompletion(bgTask);
@@ -1517,20 +1519,20 @@ namespace MassEffectModManagerCore
 
                 if (firstStartupCheck)
                 {
-                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", "Downloading required files", "Required files downloaded");
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
                     if (!OnlineContent.EnsureCriticalFiles())
                     {
                         //Critical files not loaded!
 
                         b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
-                        bgTask.finishedUiText = "Failed to acquire required files";
+                        bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadRequiredFiles);
                         backgroundTaskEngine.SubmitJobCompletion(bgTask);
                         return;
                     }
 
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                    var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", "Checking for Mod Manager updates", "Completed Mod Manager update check");
+                    var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
                         //var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
@@ -1592,45 +1594,43 @@ namespace MassEffectModManagerCore
                     {
                         //Error checking for updates!
                         Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
-                        updateCheckTask.finishedUiText = "Failed to check for updates";
+                        updateCheckTask.finishedUiText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
 
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
                 }
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", "Downloading static files", "Static files downloaded");
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
                 success = OnlineContent.EnsureStaticAssets();
                 if (!success)
                 {
-                    Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(this, "Could not download static supporting files to ME3Tweaks Mod Manager. Mod Manager may be unstable due to these files not being present. Ensure you are able to connect to Github.com so these assets may be downloaded.", "Missing assets", MessageBoxButton.OK, MessageBoxImage.Error); });
-                    bgTask.finishedUiText = "Failed to download static files";
+                    Crashes.TrackError(new Exception(@"Could not download static supporting files"));
+                    Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialogCouldNotDownloadStaticAssets), M3L.GetString(M3L.string_missingAssets), MessageBoxButton.OK, MessageBoxImage.Error); });
+                    bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadStaticFiles);
                 }
 
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", "Loading dynamic help", "Loaded dynamic help");
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
                 var helpItemsLoading = OnlineContent.FetchLatestHelp(!firstStartupCheck);
                 bw.ReportProgress(0, helpItemsLoading);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyIdentificationServiceFetch", "Loading Third Party Identification Service", "Loaded Third Party Identification Service");
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
                 App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!firstStartupCheck);
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadThirdPartyImportingService", "Loading Third Party Importing Service", "Loaded Third Party Importing Service");
                 App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", "Loading tips service", "Loaded tips service");
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
                 LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!firstStartupCheck));
                 OnPropertyChanged(nameof(NoModSelectedText));
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 if (firstStartupCheck)
                 {
-                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadObjectInfo", "Loading package information database", "Loaded package information database");
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadObjectInfo", M3L.GetString(M3L.string_loadingPackageInfoDatabases), M3L.GetString(M3L.string_loadedPackageInfoDatabases));
 
                     ME3UnrealObjectInfo.loadfromJSON();
                     ME2UnrealObjectInfo.loadfromJSON();
@@ -1638,7 +1638,7 @@ namespace MassEffectModManagerCore
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 
-                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", "Checking write permissions", "Checked user write permissions");
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }
@@ -1655,7 +1655,8 @@ namespace MassEffectModManagerCore
                         switch (i)
                         {
                             case STARTUP_FAIL_CRITICAL_FILES_MISSING:
-                                var res = Xceed.Wpf.Toolkit.MessageBox.Show($"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.", $"Required files unable to be downloaded", MessageBoxButton.OK, MessageBoxImage.Error);
+                                var res = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialogCriticalFilesMissing), M3L.GetString(M3L.string_requiredFilesNotDownloaded), MessageBoxButton.OK, MessageBoxImage.Error);
+                                Environment.Exit(1);
                                 break;
                         }
                     }
@@ -1799,10 +1800,7 @@ namespace MassEffectModManagerCore
             ShowBusyControl(logUploaderUI);
         }
 
-        public Visibility BusyProgressBarVisibility { get; set; } = Visibility.Visible;
-        public ulong BusyProgressBarMaximum { get; set; } = 100;
-        public ulong BusyProgressBarValue { get; set; } = 0;
-        public bool BusyProgressBarIndeterminate { get; set; } = true;
+
         public string CurrentModEndorsementStatus { get; private set; } = M3L.GetString(M3L.string_endorseMod);
         public bool IsEndorsingMod { get; private set; }
         public string NexusUsername { get; set; }
@@ -1831,7 +1829,7 @@ namespace MassEffectModManagerCore
                     case ".mod":
                     case ".mem":
                         Analytics.TrackEvent(@"User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"{ext} files can be installed with ALOT Installer or Mass Effect Modder (MEM), both available in the tools menu.\n\nWARNING: These types of mods change game file pointers. They must be installed AFTER all other DLC/content mods. Installing content/DLC mods after will cause various issues in the game. Once these types of mods are installed, ME3Tweaks Mod Manager will refuse to install further mods without a restore of the game.", "Non-Mod Manager mod found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"{ext} files can be installed with ALOT Installer or Mass Effect Modder (MEM), both available in the tools menu.\n\nWARNING: These types of mods change game file pointers. They must be installed AFTER all other DLC/content mods. Installing content/DLC mods after will cause various issues in the game. Once these types of mods are installed, ME3Tweaks Mod Manager will refuse to install further mods without a restore of the game.", M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
                     case ".me2mod":
                         Analytics.TrackEvent(@"User opened me2mod file", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
@@ -1864,7 +1862,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mod: {compressedModToInstall.Game} is not installed.", "Game not installed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Cannot install mod: {compressedModToInstall.Game} is not installed.", M3L.GetString(M3L.string_gameNotInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
                         ReleaseBusyControl();
                     }
                 }
@@ -1901,7 +1899,7 @@ namespace MassEffectModManagerCore
             var target = GetCurrentTarget(Mod.MEGame.ME3);
             if (target != null)
             {
-                var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", "Running AutoTOC", "Ran AutoTOC");
+                var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
                 var autoTocUI = new AutoTOC(target);
                 autoTocUI.Close += (a, b) =>
                 {
@@ -1939,9 +1937,7 @@ namespace MassEffectModManagerCore
             else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
             {
                 //user trying to turn it off 
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Disabling telemetry makes it more difficult to fix bugs and develop new features for ME3Tweaks Mod Manager. " +
-                                                                     "Telemetry data collected is used to identify crashes, errors, see what demand there is for various mod support, and see what tasks are difficult for users (such as lack of guidance on a particular enforced rule of modding).\n\n" +
-                                                                     "Telemetry data is deleted automatically after 90 days. You can continue to turn it off, but it provides valuable metrics to the developers of this program.\n\nTurn off telemetry?", "Turning off telemetry", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialogTurningOffTelemetry), M3L.GetString(M3L.string_turningOffTelemetry), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     Settings.EnableTelemetry = true; //keep on.
@@ -1980,7 +1976,7 @@ namespace MassEffectModManagerCore
             {
                 IsFolderPicker = true,
                 EnsurePathExists = true,
-                Title = "Select mod library folder"
+                Title = M3L.GetString(M3L.string_selectModLibraryFolder)
             };
             if (m.ShowDialog(this) == CommonFileDialogResult.Ok)
             {

@@ -66,7 +66,7 @@
             <Menu DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
                 <MenuItem Header="{DynamicResource string_Actions}" Padding="4">
                     <MenuItem Header="{DynamicResource string_CreateaME3modonModMaker}" IsEnabled="False" />
-                    <MenuItem Header="{DynamicResource string_OpenME3Tweaks.com}" IsEnabled="True" Click="OpenME3Tweaks_Click" ToolTip="{DynamicResource string_OpensME3Tweaks.com}" />
+                    <MenuItem Header="{DynamicResource string_OpenME3Tweaks}" IsEnabled="True" Click="OpenME3Tweaks_Click" ToolTip="{DynamicResource string_OpensME3Tweaks}" />
                     <MenuItem Header="{DynamicResource string_OpenMemoryAnalyzer}" IsEnabled="True" Click="OpenMemoryAnalyzer_Click" Visibility="{x:Static local:App.IsDebugVisibility}" />
                     <MenuItem Header="{DynamicResource string_Options}">
                         <MenuItem Header="{DynamicResource string_ModManager}" Style="{StaticResource MenuItemHeaderStyle}" />
@@ -79,10 +79,29 @@
                         <MenuItem Name="LogMixinStartup_MenuItem" Header="{DynamicResource string_LogMixinStartup}" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True" />
                         <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True" />
                         <MenuItem Header="{DynamicResource string_Language}">
-                            <MenuItem Name="LanguageINT_MenuItem" Header="English" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
-                            <MenuItem Name="LanguageRUS_MenuItem" Header="русский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
-                            <MenuItem Name="LanguagePOL_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
-                            <MenuItem Name="LanguageDEU_MenuItem" Header="Deutsch" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True"/>
+                            <MenuItem.Icon>
+                                <Image Source="/modmanager/localizations/icons/languageselector.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </MenuItem.Icon>
+                            <MenuItem Name="LanguageINT_MenuItem" Header="English" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                                <MenuItem.Icon>
+                                    <Image Source="/modmanager/localizations/icons/english.png"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Name="LanguageRUS_MenuItem" Header="русский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                                <MenuItem.Icon>
+                                    <Image Source="/modmanager/localizations/icons/russian.png"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Name="LanguagePOL_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                                <MenuItem.Icon>
+                                    <Image Source="/modmanager/localizations/icons/polish.png"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Name="LanguageDEU_MenuItem" Header="Deutsch" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                                <MenuItem.Icon>
+                                    <Image Source="/modmanager/localizations/icons/german.png"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuItem>
                     </MenuItem>
                     <Separator />
@@ -93,7 +112,7 @@
                 <MenuItem Header="{DynamicResource string_ModManagement}" Padding="4">
                     <MenuItem Header="{DynamicResource string_ImportMod}">
                         <MenuItem Header="{DynamicResource string_HeaderDragDropFaster}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Header="{DynamicResource string_Importmodfrom.7z/.rar/.zip}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
+                        <MenuItem Header="{DynamicResource string_ImportmodfromArchive}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
                         <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" IsEnabled="False" />
                     </MenuItem>
                     <MenuItem Header="{DynamicResource string_DownloadModMakermod}" IsEnabled="False" />
@@ -102,7 +121,7 @@
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
                     <MenuItem Header="{DynamicResource string_BatchModInstaller}" IsEnabled="False" />
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
-                    <MenuItem Header="{DynamicResource string_Mixins(forME3)}" IsEnabled="False">
+                    <MenuItem Header="{DynamicResource string_MixinsForME3}" IsEnabled="False">
                         <MenuItem Header="{DynamicResource string_MixInLibrary}" />
                         <MenuItem Header="{DynamicResource string_ClearMixinCache}" />
                     </MenuItem>
@@ -112,7 +131,7 @@
                             <Image Source="/modmanager/nexusmodsintegration/nexusmods_icon.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    </MenuItem>
+                </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
                     <MenuItem Header="{DynamicResource string_Checkforupdates}" Command="{Binding SelectedModCheckForUpdatesCommand}" />
@@ -377,7 +396,7 @@
                 <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="3">
                     <DockPanel DockPanel.Dock="Top">
                         <Button Content="{Binding CurrentModEndorsementStatus, FallbackValue=Endorse mod}" DockPanel.Dock="Right" Visibility="{Binding SelectedMod, Converter={StaticResource NullHiddenConverter}}" Command="{Binding EndorseSelectedModCommand}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
-                            <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold" Height="18"/>
+                        <TextBlock DockPanel.Dock="Top" Text="Mod Description" FontWeight="Bold" Height="18"/>
                     </DockPanel>
                     <StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
@@ -386,7 +405,7 @@
                         </Hyperlink>
                     </TextBlock>
                     </StackPanel>
-                    <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                    <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                          TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AllowDrop="True" PreviewDragOver="Window_DragOver" VerticalContentAlignment="Top"
                              adonisExtensions:CursorSpotlightExtension.BackgroundBrush="Transparent" adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"  adonisExtensions:CursorSpotlightExtension.MaxBlurRadius="0">
                         <TextBox.Text>

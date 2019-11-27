@@ -83,8 +83,16 @@ namespace LocalizationHelper
             var m3llines = File.ReadAllLines(m3lTemplateFile).ToList();
 
             var doc = XDocument.Load(intfile);
-
-
+            XNamespace xnamespace = "clr-namespace:System;assembly=System.Runtime";
+            XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+            var keys = doc.Descendants(xnamespace + "String");
+            Debug.WriteLine(keys.Count());
+            foreach (var key in keys)
+            {
+                var keyStr = key.Attribute(x + "Key").Value;
+                m3llines.Add($"\t\tpublic static readonly string {keyStr} = \"{keyStr}\";");
+                Debug.WriteLine(keyStr);
+            }
             //Write end of .cs file lines
             m3llines.Add("\t}");
             m3llines.Add("}");

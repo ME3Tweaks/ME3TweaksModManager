@@ -130,8 +130,9 @@
                                                   IsHitTestVisible="False"
                                                   Visibility="Collapsed"/>
 
+                                <!--HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"-->
                                 <ScrollViewer x:Name="PART_ContentHost"
-                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              HorizontalAlignment="Stretch"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                               Template="{StaticResource TextBoxScrollViewerTemplate}"/>
                             </Grid>

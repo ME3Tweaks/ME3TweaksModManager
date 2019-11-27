@@ -67,6 +67,12 @@
     <None Remove="modmanager\gamemd5\me1pl.bin" />
     <None Remove="modmanager\gamemd5\me2.bin" />
     <None Remove="modmanager\gamemd5\me3.bin" />
+    <None Remove="modmanager\localizations\icons\english.png" />
+    <None Remove="modmanager\localizations\icons\french.png" />
+    <None Remove="modmanager\localizations\icons\german.png" />
+    <None Remove="modmanager\localizations\icons\languageselector.png" />
+    <None Remove="modmanager\localizations\icons\polish.png" />
+    <None Remove="modmanager\localizations\icons\russian.png" />
     <None Remove="modmanager\me3tweaks\PermissionsGranter.exe" />
     <None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
     <None Remove="modmanager\starterkit\BlankTlkFile.upk" />
@@ -171,6 +177,12 @@
     <Resource Include="images\loadingspinner.png" />
     <Resource Include="images\origin.png" />
     <EmbeddedResource Include="modmanager\executables\vpat.exe" />
+    <Resource Include="modmanager\localizations\icons\english.png" />
+    <Resource Include="modmanager\localizations\icons\french.png" />
+    <Resource Include="modmanager\localizations\icons\german.png" />
+    <Resource Include="modmanager\localizations\icons\languageselector.png" />
+    <Resource Include="modmanager\localizations\icons\polish.png" />
+    <Resource Include="modmanager\localizations\icons\russian.png" />
     <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
     <Resource Include="modmanager\toolicons\alot_32.png" />
     <Resource Include="modmanager\toolicons\alot_big.png" />
