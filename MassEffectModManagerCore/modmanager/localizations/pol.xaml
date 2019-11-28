@@ -1,18 +1,19 @@
 ﻿<ResourceDictionary   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <!-- Main Window -->
     <system:String x:Key="string_AvailableMods">Dostępne Mody</system:String>
     <system:String x:Key="string_Language">Język</system:String>
     <system:String x:Key="string_Actions">Działania</system:String>
     <system:String x:Key="string_CreateaME3modonModMaker">Tworzenie modu do ME3 z ModMaker</system:String>
-    <system:String x:Key="string_OpenME3Tweaks.com">Otwórz ME3Tweaks.com</system:String>
-    <system:String x:Key="string_OpensME3Tweaks.com">Otwiera ME3Tweaks.com</system:String>
+    <system:String x:Key="string_OpenME3Tweaks">Otwórz ME3Tweaks.com</system:String>
+    <system:String x:Key="string_OpensME3Tweaks">Otwiera ME3Tweaks.com</system:String>
     <system:String x:Key="string_OpenMemoryAnalyzer">Otwórz Memory Analyzer</system:String>
     <system:String x:Key="string_Options">Opcje</system:String>
     <system:String x:Key="string_ModManager">Manager Modów</system:String>
     <system:String x:Key="string_Setmodlibrarypath">Ustaw ścieżkę biblioteki modów</system:String>
     <system:String x:Key="string_Developermode">Tryb deweloperski</system:String>
-    <system:String x:Key="string_Enabledeveloper-orientedfeatures">Włącz funkcje deweloperskie</system:String>
+    <system:String x:Key="string_EnableDeveloperOrientedFeatures">Włącz funkcje deweloperskie</system:String>
     <system:String x:Key="string_Darktheme">Ciemny motyw</system:String>
     <system:String x:Key="string_SwitchUItodarktheme">Przełącz interfejs na ciemny motyw</system:String>
     <system:String x:Key="string_Logging">Rejestrowanie</system:String>
@@ -96,7 +97,6 @@
     <system:String x:Key="string_CreateTestingArchive">Stwórz archiwum testowe dla modu</system:String>
     <system:String x:Key="string_CreateTestingArchiveTooltip">Tworzy archiwum zawierające puste wersje wszystkich plików dla tego modu. Przydatne do debugowania aplikacji</system:String>
     <system:String x:Key="string_startingUp">Uruchamianie</system:String>
-
     <system:String x:Key="string_selectModOnLeftToGetStarted">Wybierz mod po lewej stronie aby rozpocząć.</system:String>
     <system:String x:Key="string_applyMod">Zastosuj mod</system:String>
     <system:String x:Key="string_addTarget">Dodaj cel</system:String>
@@ -115,7 +115,6 @@
     <system:String x:Key="string_gettingEndorsementStatus">Uzyskiwanie statusu poparć</system:String>
     <system:String x:Key="string_endorseMod">Poprzyj mod</system:String>
     <system:String x:Key="string_modEndorsed">&#x1F44D; Mod poparty</system:String>
-
     <system:String x:Key="string_loginToNexusModsToEnableEndorsements">Zaloguj się do NexusMods, aby włączyć Poparcia</system:String>
     <system:String x:Key="string_endorsementsEnabledAuthenicatedToNexusMods">Poparcia włączone (uwierzytelnione w NexusMods)</system:String>
     <system:String x:Key="string_endorsing">Popieranie</system:String>
@@ -168,7 +167,6 @@
     <system:String x:Key="string_loadedTipsService">Załadowana usługa porad</system:String>
     <system:String x:Key="string_loadingThirdPartyServices">Ładowanie usług innych podmiotów</system:String>
     <system:String x:Key="string_loadedThirdPartyServices">Załadowano usługi innych podmiotów</system:String>
-
     <system:String x:Key="string_loadingDynamicHelp">Ładowanie dynamicznej pomocy</system:String>
     <system:String x:Key="string_confirmUnendorsement">Potwierdź cofnięcie Poparcia</system:String>
     <system:String x:Key="string_loadedDynamicHelp">Załadowana Pomoc Dynamiczna</system:String>
@@ -176,7 +174,6 @@
     <system:String x:Key="string_selectGameExecutable">Wybierz plik wykonywalny gry</system:String>
     <system:String x:Key="string_interp_unendorseMod">Cofnąć Poparcie {0}?</system:String>
     <system:String x:Key="string_interp_unableToModifyBioinputIni">Nie można zmodyfikować bioinput.ini: {0}</system:String>
-
     <system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">Usunąć {0} z biblioteki modów? To tylko usuwa mod z lokalnej biblioteki Mod Managera, nie usuwa go z instalacji gier.</system:String>
     <system:String x:Key="string_interp_modManagerHasBeenUpdatedTo">Mod Manager został zaktualizowany z kompilacji {0} do wersji {1}.</system:String>
     <system:String x:Key="string_interp_launching">Uruchamianie {0}</system:String>
@@ -192,6 +189,7 @@
     <system:String x:Key="string_interp_dialogUnableToAddGameTarget">Nie można dodać tej gry jako celu:\n{0}</system:String>
     <system:String x:Key="string_gameExecutable">Plik wykonywalny gry</system:String>
     <system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Nie można modyfikować plików binkw32 podczas działania {0}.</system:String>
+    <!-- 0 = Name of game (Mass Effect (2/3)) -->
     <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Uruchom aktualnie wybrany cel.&#10;Jeśli jest to kopia z Origin, gra może zostać ponownie uruchomiona do celu Origin</system:String>
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Zastosuj ten mod do gry</system:String>
     <system:String x:Key="string_tooltip_currentTarget">Aktualny cel modowania</system:String>
@@ -202,15 +200,50 @@
     <system:String x:Key="string_tooltip_someModsFailed">Nie udało się załadować niektórych modów, kliknij, aby zobaczyć dlaczego</system:String>
     <system:String x:Key="string_tooltip_addAdditionalTarget">Dodaj dodatkowy cel instalacji</system:String>
     <system:String x:Key="string_tooltip_targetInfo">Przeglądaj zainstalowane mody i pliki dla tego celu i zarządzaj nimi</system:String>
-    <!--<system:String x:Key="string_tooltip_"></system:String>
-    <system:String x:Key="string_tooltip_"></system:String>
-    <system:String x:Key="string_tooltip_"></system:String>
-    <system:String x:Key="string_tooltip_"></system:String>
-    <system:String x:Key="string_tooltip_"></system:String>
-    <system:String x:Key="string_tooltip_"></system:String>
-    <system:String x:Key="string_tooltip_"></system:String>-->
-
     <system:String x:Key="string_targetInfo">Informacje o celu</system:String>
     <system:String x:Key="string_modDescription">Opis Modu</system:String>
 
+    <!-- Mod Installer Panel -->
+    <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
+    <system:String x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
+    <system:String x:Key="string_brokenTexturesWarning">Broken Textures Warning</system:String>
+    <system:String x:Key="string_installing">Installing</system:String>
+    <system:String x:Key="string_loadingModArchive">Loading mod archive</system:String>
+    <system:String x:Key="string_installingSupportFiles">Installing support files</system:String>
+    <system:String x:Key="string_installed">Installed</system:String>
+    <system:String x:Key="string_interp_dialogOfficialTargetDLCNotInstalled">{0} installs files into {1} ({2}) DLC, which is not installed.</system:String>
+    <!-- 0 =  Mod Name, 1 = DLC folder name, 2 = TPMI lookup (human readable dlc name) -->
+    <system:String x:Key="string_dialogJobDescriptionMessageHeader">\n\nThe mod lists the following reason for this task:</system:String>
+    <system:String x:Key="string_dialogJobDescriptionMessageFooter">\n\nThe mod might not function properly without this DLC installed first. Continue installing anyways?</system:String>
+    <system:String x:Key="string_dialogJobDescriptionMessageTitle">{0} DLC not installed</system:String>
+    <!-- 0 is name of official (english only) name of DLC that is not installed (e.g. Bring Down The Sky) -->
+    <system:String x:Key="string_dialogOutdatedDLCHeader">The following DLC mods are listed as outdated/no longer relevant by {0} and will be removed upon installation:\n</system:String>
+    <!-- 0 = name of mod being installed -->
+    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\nClick yes to continue installing {0}, or click no to abort installation.</system:String>
+    <!-- 0 = Name of mod being installed -->
+    <system:String x:Key="string_outdatedDLCDetected">Outdated DLC detected</system:String>
+    <system:String x:Key="string_dialogIncompatibleDLCDetectedHeader">The following DLC mods are listed as incompatible with {0}:\n</system:String>
+    <!-- 0 = Name of mod being installed -->
+    <system:String x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nIn order to install {0}, the above listed Custom DLC mods must be removed first.\nYou can manage installed Custom DLC by clicking Target Info button.</system:String>
+    <!-- 0 = Name of mod being installed -->
+    <system:String x:Key="string_incompatibleDLCDetected">Incompatible DLC detected</system:String>
+    <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
+    <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
+    <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
+    <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
+    <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{dlcText}</system:String>
+    <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
+    <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.</system:String>
+    <system:String x:Key="string_dialogInstallationBlockedByALOT">Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.</system:String>
+    <system:String x:Key="string_installationBlocked">Installation blocked</system:String>
+    <system:String x:Key="string_installationSucceededMaybe">Installation succeeded, maybe</system:String>
+    <system:String x:Key="string_dialogRunGameOnceFirst">Mods that modify configuration files require that Mass Effect be run at least once before they are installed. This is to ensure the game does not overwrite the files on first boot.</system:String>
+    <system:String x:Key="string_gameMustBeRunAtLeastOnce">Game must be run at least once</system:String>
+    <system:String x:Key="string_ui_allAlternatesAreAutomatic">All installation options for this mod are automatic. Ensure you have the listed relevant DLC (mods or official) installed before installing this mod if you plan to use them.</system:String>
+    <system:String x:Key="string_ui_title_selectInstallationOptions">Select installation options</system:String>
+    <system:String x:Key="string_install">Install</system:String>
+    <system:String x:Key="string_cancel">Cancel</system:String>
+    <system:String x:Key="string_installMod">Install mod</system:String>
+    <system:String x:Key="string_abortInstallingMod">Abort installing this mod</system:String>
+    <system:String x:Key="string_dialogInvalidRCWFile">The .me2mod file that this mod uses is not valid or cannot be safely applied to your game installation. Installation has been aborted. Check the Mod Manager logs from the Help menu for more information.</system:String>
 </ResourceDictionary>

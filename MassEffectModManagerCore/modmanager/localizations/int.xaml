@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:system="clr-namespace:System;assembly=System.Runtime">
-
     <!-- Main Window -->
     <system:String x:Key="string_AvailableMods">Available Mods</system:String>
     <system:String x:Key="string_Language">Language</system:String>
@@ -240,7 +239,6 @@
     <system:String x:Key="string_installationSucceededMaybe">Installation succeeded, maybe</system:String>
     <system:String x:Key="string_dialogRunGameOnceFirst">Mods that modify configuration files require that Mass Effect be run at least once before they are installed. This is to ensure the game does not overwrite the files on first boot.</system:String>
     <system:String x:Key="string_gameMustBeRunAtLeastOnce">Game must be run at least once</system:String>
-
     <system:String x:Key="string_ui_allAlternatesAreAutomatic">All installation options for this mod are automatic. Ensure you have the listed relevant DLC (mods or official) installed before installing this mod if you plan to use them.</system:String>
     <system:String x:Key="string_ui_title_selectInstallationOptions">Select installation options</system:String>
     <system:String x:Key="string_install">Install</system:String>
@@ -248,13 +246,4 @@
     <system:String x:Key="string_installMod">Install mod</system:String>
     <system:String x:Key="string_abortInstallingMod">Abort installing this mod</system:String>
     <system:String x:Key="string_dialogInvalidRCWFile">The .me2mod file that this mod uses is not valid or cannot be safely applied to your game installation. Installation has been aborted. Check the Mod Manager logs from the Help menu for more information.</system:String>
-    <!--<system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>-->
-
-
-
 </ResourceDictionary>

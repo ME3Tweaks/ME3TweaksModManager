@@ -98,6 +98,50 @@ namespace LocalizationHelper
             m3llines.Add("}");
 
             File.WriteAllLines(m3lFile, m3llines); //write back updated file
+
+            //Update all of the other xaml files
+            var localizationMapping = Directory.GetFiles(localizationsFolder, "*.xaml").Where(y => Path.GetFileName(y) != "int.xaml").ToDictionary(y => y, y => File.ReadAllLines(y).ToList());
+            var intlines = File.ReadAllLines(intfile);
+            for (int i = 3; i < intlines.Length - 1; i++) //-1 to avoid resource dictionary line
+            {
+                var line = intlines[i];
+                if (!line.StartsWith("    <system:String ")) continue;
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (line == "</ResourceDictionary>") continue; //EOF
+
+                (bool preserveWhitespace, string key) strInfo = extractInfo(line);
+                foreach (var l in localizationMapping)
+                {
+                    if (l.Value.Count > i)
+                    {
+                        var lline = l.Value[i];
+                        if (string.IsNullOrWhiteSpace(lline)) continue;
+                        if (lline == "</ResourceDictionary>") continue; //EOF
+                        var lstrInfo = extractInfo(lline);
+                        if (strInfo.preserveWhitespace != lstrInfo.preserveWhitespace)
+                        {
+                            Debug.WriteLine(lstrInfo.key + " " + l.Key + " whitespace is wrong for key " + l);
+                        }
+                        if (strInfo.key != lstrInfo.key)
+                        {
+                            Debug.WriteLine(lstrInfo.key + " " + l.Key + " mismatches int key! should be " + strInfo.key);
+                        }
+
+                    }
+                }
+            }
+
+        }
+
+        private (bool preserveWhitespace, string key) extractInfo(string line)
+        {
+            var closingTagIndex = line.IndexOf(">");
+            var strInfo = line.Substring(0, closingTagIndex).Trim();
+            bool preserveWhitespace = strInfo.Contains("xml:space=\"preserve\"");
+            int keyPos = strInfo.IndexOf("x:Key=\"");
+            string keyVal = strInfo.Substring(keyPos + "x:Key=\"".Length);
+            keyVal = keyVal.Substring(0, keyVal.IndexOf("\""));
+            return (preserveWhitespace, keyVal);
         }
     }
 }
