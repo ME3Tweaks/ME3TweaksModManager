@@ -28,6 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             window = Window.GetWindow(this);
             mainwindow = window as MainWindow;
             window.KeyDown += HandleKeyPress;
+            OnPanelVisible();
         }
 
         public abstract void HandleKeyPress(object sender, KeyEventArgs e);
@@ -41,7 +42,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Unloading.");
             window.KeyDown -= HandleKeyPress;
             window = null; //lose reference
         }

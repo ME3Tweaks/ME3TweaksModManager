@@ -103,7 +103,7 @@ namespace MassEffectModManagerCore
 
         private BackgroundTaskEngine backgroundTaskEngine;
 
-        //private ModLoader modLoader;
+        //private ModLoader modLoadSer;
         public MainWindow()
         {
             DataContext = this;
@@ -114,7 +114,19 @@ namespace MassEffectModManagerCore
                 AuthToNexusMods();
             }
             InitializeComponent();
-            languageMenuItems = new[] { LanguageINT_MenuItem, LanguageRUS_MenuItem, LanguagePOL_MenuItem, LanguageDEU_MenuItem };
+            languageMenuItems = new Dictionary<string, MenuItem>()
+            {
+                {"int", LanguageINT_MenuItem},
+                {"rus", LanguageRUS_MenuItem},
+                {"pol", LanguagePOL_MenuItem},
+                {"deu", LanguageDEU_MenuItem}
+            };
+
+            //Change language if not INT
+            if (App.InitialLanguage != @"int")
+            {
+                SetLanguage(App.InitialLanguage);
+            }
             PopulateTargets();
             AttachListeners();
             SetTheme();
@@ -474,7 +486,6 @@ namespace MassEffectModManagerCore
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
                 IsBusy = true;
-                control.OnPanelVisible();
                 BusyContent = control;
 
             }
@@ -498,7 +509,7 @@ namespace MassEffectModManagerCore
             else
             {
                 var control = queuedUserControls.Dequeue();
-                control.OnPanelVisible();
+                //control.OnPanelVisible();
                 BusyContent = control;
             }
         }
@@ -1015,7 +1026,7 @@ namespace MassEffectModManagerCore
                 ShowUpdateCompletedPane();
             }
 
-            if (!Settings.ShowedPreviewPanel)
+            if (Settings.ShowedPreviewPanel)
             {
                 ShowPreviewPanel();
             }
@@ -1765,7 +1776,7 @@ namespace MassEffectModManagerCore
         }
 
         private bool RepopulatingTargets;
-        private MenuItem[] languageMenuItems;
+        private Dictionary<string, MenuItem> languageMenuItems;
 
         private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -2065,7 +2076,6 @@ namespace MassEffectModManagerCore
         private void ChangeLanguage_Clicked(object sender, RoutedEventArgs e)
         {
             string lang = @"int";
-            MenuItem clicked = sender as MenuItem;
             if (sender == LanguageINT_MenuItem)
             {
                 lang = @"int";
@@ -2083,9 +2093,17 @@ namespace MassEffectModManagerCore
                 lang = @"deu";
             }
 
+            Settings.Language = lang;
+            Settings.Save();
+            SetLanguage(lang);
+        }
+
+        public void SetLanguage(string lang)
+        {
+            Log.Information(@"Setting language to " + lang);
             foreach (var item in languageMenuItems)
             {
-                item.IsChecked = item == clicked;
+                item.Value.IsChecked = item.Key == lang;
             }
 
             //Set language.
@@ -2094,7 +2112,6 @@ namespace MassEffectModManagerCore
                 // Pick uri from configuration
                 Source = new Uri($@"pack://application:,,,/ME3TweaksModManager;component/modmanager/localizations/{lang}.xaml", UriKind.Absolute)
             };
-
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
         }
     }

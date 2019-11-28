@@ -91,6 +91,14 @@ namespace MassEffectModManagerCore.modmanager
             get => _modLibraryPath;
             set => SetProperty(ref _modLibraryPath, value);
         }
+
+        private static string _language;
+        public static string Language
+        {
+            get => _language;
+            set => SetProperty(ref _language, value);
+        }
+
         public static DateTime LastContentCheck { get; internal set; }
 
         private static bool _showedPreviewPanel;
@@ -110,6 +118,9 @@ namespace MassEffectModManagerCore.modmanager
 
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage", false);
+            ModLibraryPath = LoadSettingString(settingsIni, "ModManager", "Language", "int");
+            LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
+
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
             EnableTelemetry = LoadSettingBool(settingsIni, "Logging", "EnableTelemetry", true);
@@ -117,7 +128,6 @@ namespace MassEffectModManagerCore.modmanager
             ModLibraryPath = LoadSettingString(settingsIni, "ModLibrary", "LibraryPath", null);
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
-            LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             Loaded = true;
         }
 
@@ -189,6 +199,7 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
             SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
+            SaveSettingString(settingsIni, "ModManager", "Language", Language);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
             SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage", ShowedPreviewPanel);
             try

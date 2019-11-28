@@ -12,7 +12,6 @@ using System.Windows;
 using CommandLine;
 using System.Windows.Controls;
 using System.Diagnostics;
-
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -61,7 +60,7 @@ namespace MassEffectModManagerCore
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            #if !DEBUG
+#if !DEBUG
 
             if (APIKeys.HasAppCenterKey)
             {
@@ -121,7 +120,7 @@ namespace MassEffectModManagerCore
                 //Parsed<Options> parsedCommandLineArgs = null;
                 string updateDestinationPath = null;
 
-#region Command line
+                #region Command line
                 if (args.Length > 1)
                 {
                     var result = Parser.Default.ParseArguments<Options>(args);
@@ -168,7 +167,7 @@ namespace MassEffectModManagerCore
                         }
                     }
                 }
-#endregion
+                #endregion
 
 
 
@@ -184,7 +183,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Application boot: " + DateTime.UtcNow.ToString());
                 Log.Information("Executable location: " + ExecutableLocation);
 
-#region Update mode boot
+                #region Update mode boot
                 if (updateDestinationPath != null)
                 {
                     Log.Information(" >> In update mode. Update destination: " + updateDestinationPath);
@@ -229,7 +228,7 @@ namespace MassEffectModManagerCore
                     Environment.Exit(0);
                     Current.Shutdown();
                 }
-#endregion
+                #endregion
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                new FrameworkPropertyMetadata(true));
 
@@ -242,6 +241,12 @@ namespace MassEffectModManagerCore
                     Analytics.SetEnabledAsync(false);
                     Crashes.SetEnabledAsync(false);
                 }
+
+                if (Settings.Language != "int" && SupportedLanguages.Contains(Settings.Language))
+                {
+                    InitialLanguage = Settings.Language;
+                }
+
                 Log.Information("Ensuring mod directories");
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
                 MEPackageHandler.Initialize();
@@ -254,6 +259,7 @@ namespace MassEffectModManagerCore
             }
         }
 
+        private static string[] SupportedLanguages = { "int", "pol", "rus", "deu" };
         public static Dictionary<string, string> ServerManifest { get; set; }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
@@ -265,6 +271,7 @@ namespace MassEffectModManagerCore
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
         public static bool BootingUpdate;
         public static int UpdatedFrom = 0;
+        public static string InitialLanguage = "int";
 
         public static string AppVersion
         {

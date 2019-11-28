@@ -87,7 +87,7 @@
                                     <Image Source="/modmanager/localizations/icons/english.png"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguageRUS_MenuItem" Header="русский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem Name="LanguageRUS_MenuItem" Header="русский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" IsEnabled="False">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/russian.png"/>
                                 </MenuItem.Icon>
@@ -273,8 +273,8 @@
                 <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                     <StackPanel Orientation="Horizontal" >
                         <Image Name="BottomBarGameID_Image" Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0"/>
-                        <Button MinWidth="70" Padding="10,7" Content="{Binding ApplyModButtonText}" Command="{Binding ApplyModCommand}"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}"/>
-                        <Button MinWidth="70" Padding="10,7" Content="{Binding StartGameButtonText, FallbackValue=Start Game}" Command="{Binding StartGameCommand}" Margin="5,0,0,0"
+                        <Button MinWidth="70" Padding="10,7" Content="{DynamicResource string_applyMod}" Command="{Binding ApplyModCommand}"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}"/>
+                        <Button MinWidth="70" Padding="10,7" Content="{DynamicResource string_startGame}" Command="{Binding StartGameCommand}" Margin="5,0,0,0"
                                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}"/>
                     </StackPanel>
                 </StatusBarItem>
@@ -326,7 +326,7 @@
                         </Style>
                     </ComboBox.ItemContainerStyle>-->
 
-                <Button Content="{Binding AddTargetButtonText, FallbackValue=Add Target}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}"/>
+                <Button Content="{DynamicResource string_addTarget}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}"/>
                 <Button Content="{DynamicResource string_targetInfo}" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0"  BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_targetInfo}"/>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">

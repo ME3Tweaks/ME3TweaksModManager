@@ -53,5 +53,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             CloseInternal();
         }
+
+        private void ChangeLang_DEU_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage("deu");
+
+        }
+
+        private void ChangeLang_RUS_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage("pol");
+        }
+
+        private void ChangeLang_POL_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage("pol");
+        }
+
+        private void ChangeLanguage(string lang)
+        {
+            mainwindow.SetLanguage(lang);
+        }
+
+        private void ChangeLang_INT_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage("int");
+        }
     }
 }

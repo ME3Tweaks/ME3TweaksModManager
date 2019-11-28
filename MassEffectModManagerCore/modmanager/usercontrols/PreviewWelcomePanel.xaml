@@ -9,14 +9,55 @@
                        MaxWidth="400">
     <StackPanel Margin="5">
         <TextBlock Text="Welcome to ME3Tweaks Mod Manager" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10"/>
-        <TextBlock TextWrapping="Wrap" Text="Thanks for downloading the preview of ME3Tweaks Mod Manager, the next generation of Mod Manager. This preview version is a work in progress and will have stability issues and missing features that are being worked on.
-                   &#10;&#10;If you are working with Mass Effect 3, I suggest staying with Mass Effect 3 Mod Manager as it is stable and has more features. ME3Tweaks Mod Manager will replace Mass Effect 3 Mod Manager once it is at feature parity.
-                   &#10;&#10;Please direct all feedback to the ME3Tweaks Discord, where you can have your voice heard for feature requests and bug fixes."/>
+        <TextBlock TextWrapping="Wrap" Text="{DynamicResource string_previewPanelIntro}"/>
+
+        <TextBlock Text="Select your language" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
+        <Grid HorizontalAlignment="Center" Margin="0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Button Margin="2" Click="ChangeLang_INT_Clicked">
+                <StackPanel>
+                    <Image Source="/modmanager/localizations/icons/english.png"/>
+                    <TextBlock Text="English" TextAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Column="1" Margin="2" Click="ChangeLang_POL_Clicked">
+                <StackPanel >
+                    <Image Source="/modmanager/localizations/icons/polish.png"/>
+                    <TextBlock Text="Polski" TextAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Column="2" Margin="2" Click="ChangeLang_RUS_Clicked" IsEnabled="False" ToolTip="Translation is in progress but is not yet available">
+                <StackPanel>
+                    <Image Source="/modmanager/localizations/icons/russian.png"/>
+                    <TextBlock Text="Russian" TextAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Column="3" Margin="2" Click="ChangeLang_DEU_Clicked">
+                <StackPanel>
+                    <Image Source="/modmanager/localizations/icons/german.png"/>
+                    <TextBlock Text="Deutch" TextAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+        <TextBlock Text="{DynamicResource string_howToChangeLanguage}" TextWrapping="Wrap"/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
 
-            <Button Content="Join the ME3Tweaks Discord" Click="JoinDiscord_Click" Padding="7,4" Margin="4,0"/>
-            <Button Content="Close" Click="Close_Clicked" Padding="7,4"/>
+            <Button Content="{DynamicResource string_joinDiscord}" Click="JoinDiscord_Click" Padding="7,4" Margin="4,0"/>
+            <Button Content="{DynamicResource string_close}" Click="Close_Clicked" Padding="7,4"/>
 
         </StackPanel>
     </StackPanel>

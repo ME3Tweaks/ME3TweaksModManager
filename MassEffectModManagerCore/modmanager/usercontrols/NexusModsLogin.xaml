@@ -19,6 +19,8 @@
     <TextBlock Text="Providing your NexusMods API key to ME3Tweaks Mod Manager will allow you to perform a limited set of NexusMods actions within Mod Manager, such as endorsing mods." TextWrapping="Wrap"/>
     <TextBlock Text="Directions" FontWeight="Bold" Margin="0,10,0,0"/>
     <TextBlock Text="You can get your API key by logging into your NexusMods account, selecting 'Preferences' from the drop down menu when clicking your profile icon, then going to the 'API' tab. At the bottom of this page is your personal API key - paste that value here." TextWrapping="Wrap"/>
+    <TextBlock Text="Caution" FontWeight="Bold" Margin="0,10,0,0"/>
+    <TextBlock Text="Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password." TextWrapping="Wrap"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>

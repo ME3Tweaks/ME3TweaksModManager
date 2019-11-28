@@ -41,16 +41,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public NexusModsLogin()
         {
             DataContext = this;
-            string currentKey = NexusModsUtilities.DecryptNexusmodsAPIKeyFromDisk();
-            if (currentKey != null)
-            {
-                APIKeyText = currentKey;
-                SetAuthorized(true);
-            }
-            else
-            {
-                SetAuthorized(false);
-            }
             LoadCommands();
             InitializeComponent();
         }
@@ -134,7 +124,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            //throw new NotImplementedException();
+            string currentKey = NexusModsUtilities.DecryptNexusmodsAPIKeyFromDisk();
+            if (currentKey != null)
+            {
+                APIKeyText = currentKey;
+                SetAuthorized(true);
+            }
+            else
+            {
+                SetAuthorized(false);
+            }
         }
     }
 }
