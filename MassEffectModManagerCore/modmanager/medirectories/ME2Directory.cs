@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.GameDirectories
         }
 
         public static string bioGamePath => gamePath != null ? gamePath.Contains("biogame", StringComparison.OrdinalIgnoreCase) ? gamePath : Path.Combine(gamePath, @"BioGame\") : null;
-        public static string cookedPath => gamePath != null ? Path.Combine(gamePath,  @"BioGame\CookedPC\") : "Not Found";
+        public static string cookedPath => gamePath != null ? Path.Combine(gamePath, @"BioGame\CookedPC\") : "Not Found";
         public static string CookedPath(GameTarget target) => Path.Combine(target.TargetPath, @"BioGame\CookedPC");
 
 
@@ -116,5 +116,15 @@ namespace MassEffectModManagerCore.GameDirectories
             "DLC_CON_Pack02", //380
             "DLC_EXP_Part02", //400
         };
+
+        /// <summary>
+        /// Gets path to Coalesced.ini file for the specified target. The existence of this file is not checked
+        /// </summary>
+        /// <param name="gameTarget"></param>
+        /// <returns></returns>
+        internal static string CoalescedPath(GameTarget gameTarget)
+        {
+            return Path.Combine(gameTarget.TargetPath, @"BioGame\Config\PC\Cooked\Coalesced.ini");
+        }
     }
 }

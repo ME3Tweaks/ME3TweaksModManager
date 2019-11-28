@@ -16,14 +16,14 @@
     </local:MMBusyPanelBase.Resources>
     <StackPanel VerticalAlignment="Center">
         <DockPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}" VerticalAlignment="Center">
-            <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Select installation options" Margin="0,5,0,0" DockPanel.Dock="Top" />
+            <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="{DynamicResource string_ui_title_selectInstallationOptions}" Margin="0,5,0,0" DockPanel.Dock="Top" />
             <TextBlock TextAlignment="Center" Text="{Binding ModBeingInstalled.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
             <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,15,0,0">
                 <TextBlock Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap" MaxWidth="350" HorizontalAlignment="Left" 
-                           Text="All installation options for this mod are automatic. Ensure you have the listed relevant DLC (mods or official) installed before installing this mod if you plan to use them."/>
+                           Text="{DynamicResource string_ui_allAlternatesAreAutomatic}"/>
 
-                <Button Content="Install" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click" Margin="0,10,0,0"/>
-                <Button Content="Cancel" DockPanel.Dock="Right" Padding="5" Margin="0,10,5,0" Click="InstallCancel_Click"/>
+                <Button Content="{DynamicResource string_install}" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click" Margin="0,10,0,0" ToolTip="{DynamicResource string_installMod}"/>
+                <Button Content="{DynamicResource string_cancel}" DockPanel.Dock="Right" Padding="5" Margin="0,10,5,0" Click="InstallCancel_Click" ToolTip="{DynamicResource string_abortInstallingMod}"/>
             </DockPanel>
             <ScrollViewer MaxHeight="300" BorderThickness="2" Padding="0" Focusable="False">
                 <ItemsControl ItemsSource="{Binding AlternateOptions}">
@@ -81,8 +81,8 @@
         <StackPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center">
             <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10"/>
             <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
-            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Installing Mod}" TextWrapping="Wrap" TextAlignment="Center"/>
-            <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding ModBeingInstalled.ModName, FallbackValue=SP Controller Support}" TextWrapping="Wrap" TextAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=ActionPlaceholder}" TextWrapping="Wrap" TextAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding ModBeingInstalled.ModName, FallbackValue=ModBeingInstalledPlaceholder}" TextWrapping="Wrap" TextAlignment="Center"/>
         </StackPanel>
     </StackPanel>
 </local:MMBusyPanelBase>
