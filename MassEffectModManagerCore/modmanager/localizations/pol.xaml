@@ -93,14 +93,14 @@
     <system:String x:Key="string_ReferenceinformationModdesc">Informacje referencyjne na temat specyfikacji moddesc.ini</system:String>
     <system:String x:Key="string_AboutME3TweaksModManager">O Managerze Modów ME3Tweaks</system:String>
     <system:String x:Key="string_Aboutthisprogram">O tym programie</system:String>
-    <system:String x:Key="string_CreateTestingArchive">Stwórz archiwum testowe dla mod</system:String>
+    <system:String x:Key="string_CreateTestingArchive">Stwórz archiwum testowe dla modu</system:String>
     <system:String x:Key="string_CreateTestingArchiveTooltip">Tworzy archiwum zawierające puste wersje wszystkich plików dla tego modu. Przydatne do debugowania aplikacji</system:String>
     <system:String x:Key="string_startingUp">Uruchamianie</system:String>
 
     <system:String x:Key="string_selectModOnLeftToGetStarted">Wybierz mod po lewej stronie aby rozpocząć.</system:String>
     <system:String x:Key="string_applyMod">Zastosuj mod</system:String>
     <system:String x:Key="string_addTarget">Dodaj cel</system:String>
-    <system:String x:Key="string_startGame">Rozpocznij grę</system:String>
+    <system:String x:Key="string_startGame">Uruchom grę</system:String>
     <system:String x:Key="string_installationTarget">Cel instalacji:</system:String>
     <system:String x:Key="string_binkAsiBypassNotInstalled">Binkw32 ASI bypass nie jest zainstalowany</system:String>
     <system:String x:Key="string_binkAsiBypassInstalled">Zainstalowano bypass Binkw32 ASI</system:String>
@@ -108,7 +108,7 @@
     <system:String x:Key="string_binkAsiLoaderInstalled">Zainstalowano moduł ładujący Binkw32 ASI</system:String>
     <system:String x:Key="string_gameNotInstalled">Gra nie jest zainstalowana</system:String>
     <system:String x:Key="string_otherSavedTargets">Inne zapisane cele</system:String>
-    <system:String x:Key="string_cannotEndorseMod">Nie można poprzeć mod</system:String>
+    <system:String x:Key="string_cannotEndorseMod">Nie można poprzeć modu</system:String>
     <system:String x:Key="string_cannotEndorseOwnMod">Nie można poprzeć własnego modu</system:String>
     <system:String x:Key="string_notLinkedToNexusMods">niepowiązany z NexusMods</system:String>
     <system:String x:Key="string_notAuthenticated">nie uwierzytelniony</system:String>
@@ -125,7 +125,7 @@
     <system:String x:Key="string_couldNotEnableConsole">Nie można włączyć konsoli</system:String>
     <system:String x:Key="string_confirmDeletion">Potwierdź usunięcie</system:String>
     <system:String x:Key="string_updateCompleted">Aktualizacja zakończona</system:String>
-    <system:String x:Key="string_gameRunning">Gra działa</system:String>
+    <system:String x:Key="string_gameRunning">Gra jest obecnie uruchomiona</system:String>
     <system:String x:Key="string_errorAddingTarget">Błąd podczas dodawania celu</system:String>
     <system:String x:Key="string_dialogCannotAddTargetCmmVanilla">Nie można dodać tego katalogu jako celu, ponieważ został on oznaczony jako zapasowy (wykryto plik cmmvanilla).</system:String>
     <system:String x:Key="string_installationAborted">Instalacja przerwana</system:String>
@@ -174,7 +174,7 @@
     <system:String x:Key="string_loadedDynamicHelp">Załadowana Pomoc Dynamiczna</system:String>
     <system:String x:Key="string_selectModArchive">Wybierz archiwum modu</system:String>
     <system:String x:Key="string_selectGameExecutable">Wybierz plik wykonywalny gry</system:String>
-    <system:String x:Key="string_interp_unendorseMod">Cofnij Poparcie {0}?</system:String>
+    <system:String x:Key="string_interp_unendorseMod">Cofnąć Poparcie {0}?</system:String>
     <system:String x:Key="string_interp_unableToModifyBioinputIni">Nie można zmodyfikować bioinput.ini: {0}</system:String>
 
     <system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">Usunąć {0} z biblioteki modów? To tylko usuwa mod z lokalnej biblioteki Mod Managera, nie usuwa go z instalacji gier.</system:String>
@@ -192,7 +192,7 @@
     <system:String x:Key="string_interp_dialogUnableToAddGameTarget">Nie można dodać tej gry jako celu:\n{0}</system:String>
     <system:String x:Key="string_gameExecutable">Plik wykonywalny gry</system:String>
     <system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Nie można modyfikować plików binkw32 podczas działania {0}.</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Uruchom aktualnie wybrany cel.&#10;Jeśli jest to kopia źródłowa, gra może zostać ponownie uruchomiona do celu Origin</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Uruchom aktualnie wybrany cel.&#10;Jeśli jest to kopia z Origin, gra może zostać ponownie uruchomiona do celu Origin</system:String>
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Zastosuj ten mod do gry</system:String>
     <system:String x:Key="string_tooltip_currentTarget">Aktualny cel modowania</system:String>
     <system:String x:Key="string_tooltip_reloadModsFromLibrary">Przeładuj mody z biblioteki modów</system:String>
