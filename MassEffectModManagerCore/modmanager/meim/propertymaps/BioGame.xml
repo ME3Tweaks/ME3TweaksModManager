@@ -1,0 +1,1608 @@
+<properties>
+  <Section name="BIOC_Base.BioCharacterImporter">
+    <enumproperty propertyname="m_femaleActorType" friendlyname="Female Shepard model" notes="Change which character you play as. Anyone but Shepard will cause some loss of functionality - bugs may occur.">
+      <enumvalue friendlyname="Female Shepard">BIOG_Female_Player_C.Human.Human_Female</enumvalue>
+      <enumvalue friendlyname="Male Shepard">BIOG_Male_Player_C.Human.Human_Male</enumvalue>
+      <enumvalue friendlyname="Ashley">BIOG_HumanFemale_Hench_C.hench_humanfemale</enumvalue>
+      <enumvalue friendlyname="Kaidan">BIOG_HumanMale_Hench_C. hench_humanmale </enumvalue>
+      <enumvalue friendlyname="Garrus">BIOG_Turian_Hench_C.hench_turian</enumvalue>
+      <enumvalue friendlyname="Wrex">BIOG_Krogan_Hench_C.hench_krogan</enumvalue>
+      <enumvalue friendlyname="Tali">BIOG_Quarian_Hench_C.hench_quarian</enumvalue>
+      <enumvalue friendlyname="Liara">BIOG_Asari_Hench_C.hench_asari</enumvalue>
+      <enumvalue friendlyname="Jenkins">BIOG_Jenkins_Hench_C.hench_jenkins</enumvalue>
+    </enumproperty>
+    <enumproperty propertyname="m_MaleActorType" friendlyname="Male Shepard model" notes="Change which character you play as. Anyone but Shepard will cause some loss of functionality - bugs may occur.">
+      <!--
+      <enumvalue friendlyname="Female Shepard">BIOG_Female_Player_C.Human.Human_Female</enumvalue>
+
+	  <enumvalue friendlyname="Female Shepard: Naked">BIOG_Female_Player_C.Human.Human_Female_Naked</enumvalue>
+	  <enumvalue friendlyname="Male Shepard: Naked">BIOG_Male_Player_C.Human.Human_Male_Naked</enumvalue>
+	  <enumvalue friendlyname="Saren" notes="Has no running animations.">BIOA_STA_C.TUR.sta90_saren</enumvalue>
+
+	  <enumvalue friendlyname="Geth Destroyer" notes="Requires Pinnacle Station.">BIOG_Geth_C.Geth.MIN_GethAntiTank</enumvalue>
+	  <enumvalue friendlyname="Turian Rocket Soldier">BIOA_PRC2_SIM_C.Mercenary.PRC2_ELT_MercenaryTurianRocketSoldier</enumvalue>-->
+    <enumvalue friendlyname="Male Shepard">BIOG_Male_Player_C.Human.Human_Male</enumvalue>
+    <enumvalue friendlyname="Female Shepard">BIOG_Female_Player_C.Human.human_female</enumvalue>
+
+    <enumvalue friendlyname="Ashley">BIOG_HumanFemale_Hench_C.hench_humanfemale</enumvalue>
+    <enumvalue friendlyname="Kaidan">BIOG_HumanMale_Hench_C. hench_humanmale </enumvalue>
+    <enumvalue friendlyname="Garrus">BIOG_Turian_Hench_C.hench_turian</enumvalue>
+    <enumvalue friendlyname="Wrex">BIOG_Krogan_Hench_C.hench_krogan</enumvalue>
+    <enumvalue friendlyname="Tali">BIOG_Quarian_Hench_C.hench_quarian</enumvalue>
+    <enumvalue friendlyname="Liara">BIOG_Asari_Hench_C.hench_asari</enumvalue>
+    <enumvalue friendlyname="Jenkins">BIOG_Jenkins_Hench_C.hench_jenkins</enumvalue>
+    <enumvalue friendlyname="Joker" notes="Missing most animations.">BIOG_Pilot_Hench_C.hench_pilot</enumvalue>
+    <enumvalue friendlyname="Kaidan: Naked">BIOA_NOR_C.HMM.hench_humanmale_nkd</enumvalue>
+    <enumvalue friendlyname="Liara: Naked">BIOA_NOR_C.ASA.hench_asari_nkd</enumvalue>
+    <enumvalue friendlyname="Ashley: Naked">BIOA_NOR_C.HMF.hench_humanFemale_nkd</enumvalue>
+
+      <enumvalue friendlyname="Asari Councilor" notes="Cannot draw weapons. Cannot use powers.">BIOA_END_C.ASA.end95_asari_councilor</enumvalue>
+      <enumvalue friendlyname="Captain Anderson" notes="Cannot throw grenades.">BIOA_END_C.HMM.end95_captain</enumvalue>
+      <enumvalue friendlyname="Councilor Udina" notes="Cannot use weapons, powers, or grenades.">BIOA_END_C.HMM.end95_human_ambassador</enumvalue>
+
+      <enumvalue friendlyname="Salarian Councilor" notes="">BIOA_END_C.SAL.end95_salarian_councilor</enumvalue>
+      <enumvalue friendlyname="Executor Pallin" notes="">BIOA_END_C.TUR.end95_executor</enumvalue>
+      <enumvalue friendlyname="Turian Councilor" notes="">BIOA_END_C.TUR.end95_turian_councilor</enumvalue>
+      <enumvalue friendlyname="Turian Commander" notes="">BIOA_END_C.TUR.end95_Turian_Commander</enumvalue>
+      <enumvalue friendlyname="Turian Officer" notes="">BIOA_END_C.TUR.end95_Turian_Officer</enumvalue>
+      <enumvalue friendlyname="Asari DA Commander" notes="Cannot draw weapons.">BIOA_END_C.ASA.end95_asari_DA_Commander</enumvalue>
+      <enumvalue friendlyname="Asari DA Officer" notes="Cannot draw weapons.">BIOA_END_C.ASA.end95_asari_DA_Officer</enumvalue>
+      <enumvalue friendlyname="Joker" notes="T-posed. Cannot move well. Can draw weapons.">BIOG_Pilot_Hench_C.hench_pilot</enumvalue>
+      <enumvalue friendlyname="Keeper" notes="Camera is lower. T-poses when moving. Can draw weapons.">BIOA_END_C.AMB.Keeper</enumvalue>
+
+      <enumvalue friendlyname="Avina" notes="Cannot draw weapons.">BIOA_STA_C.ASA.sta20_avina</enumvalue>
+      <enumvalue friendlyname="Male VI" notes="Cannot draw weapons.">BIOA_WAR_C.VI.war50_vi</enumvalue>
+
+      <enumvalue friendlyname="Husk" notes="No backwards movement animation. No aiming animations.">BIOA_UNC_C.Zombie.ELT_ZombieHusk</enumvalue>
+      <enumvalue friendlyname="Zombie Test Subject" notes="No backwards movement animation. No aiming animations. Strange cutscene head movement.">BIOA_UNC_C.Zombie.ELT_TestSubject</enumvalue>
+
+      <enumvalue friendlyname="Shifty Looking Space Cow" notes="Needs testing.">BIOG_Ambient_C.AMB_Cow</enumvalue>
+
+      <enumvalue friendlyname="Geth Trooper" notes="Has issues running without weapons equipped. Flashlight for eye is not properly aligned.">BIOG_Geth_C.Geth.MIN_GethTrooper</enumvalue>
+      <enumvalue friendlyname="Geth Shock Trooper" notes="Has issues running without weapons equipped. Flashlight for eye is not properly aligned.">BIOG_Geth_C.Geth.ELT_GethShockTrooper</enumvalue>
+      <enumvalue friendlyname="Geth Destroyer" notes="Has issues running without weapons equipped. Flashlight for eye is not properly aligned. Can run faster than normal Shepard.">BIOG_Geth_C.Geth.ELT_GethDestroyer</enumvalue>
+      <enumvalue friendlyname="Geth Rocket Trooper" notes="Has issues running without weapons equipped. Flashlight for eye is not properly aligned.">BIOG_Geth_C.Geth.MIN_GethAntiTank</enumvalue>
+      <enumvalue friendlyname="Geth Sniper" notes="Has issues running without weapons equipped. Flashlight for eye is not properly aligned.">BIOG_Geth_C.Geth.MIN_GethSniper</enumvalue>
+      <enumvalue friendlyname="Geth Juggernaut" notes="Has issues running without weapons equipped. Flashlight for eye is not properly aligned. So big the camera has issues seeing around him.">BIOG_Geth_C.Geth.SUB_GethJuggernaut</enumvalue>
+      <enumvalue friendlyname="Geth Armature" notes="Movement is very slow. No backwards movement animation. Camera has problems due to the size.">BIOG_Geth_C.armature.SUB_GethArmature</enumvalue>
+
+      <enumvalue friendlyname="Krogan Warlord (White)" notes="Has issues running without weapons equipped. So big zooming weapons is an issue. ">BIOG_Terminus_C.Krogan.SUB_KroganWarlord</enumvalue>
+      <enumvalue friendlyname="Krogan Warrior (Red)" notes="Has issues running without weapons equipped. ">BIOG_Terminus_C.Krogan.ELT_KroganWarrior</enumvalue>
+      <enumvalue friendlyname="Krogan Battlemaster" notes="Has issues running without weapons equipped. ">BIOG_Terminus_C.Krogan.BOS_KroganBattlemaster</enumvalue>
+      <enumvalue friendlyname="Inamorda" notes="So large may cover camera a bit.">BIOA_ICE_C.KRO.ice20_inamorda</enumvalue>
+      <enumvalue friendlyname="Noveria Krogan Sniper (White)" notes="Has issues running without weapons equipped. ">BIOA_ICE_C.KRO.ice50_krogansniper</enumvalue>
+
+      <enumvalue friendlyname="Saren" notes="">BIOA_END_C.TUR.saren</enumvalue>
+      <enumvalue friendlyname="Saren (on flyer)" notes="Has no animations.">BIOG_Saren_C.BOS_SarenFlyer</enumvalue>
+      <enumvalue friendlyname="Reaper Saren (Cutscene)" notes="Creepy and T-posed always. Do not use.">BIOG_Saren_C.BOS_SarenMonster_Custcene</enumvalue>
+      <enumvalue friendlyname="Reaper Saren" notes="Camera is off center. Do not use.">BIOG_Saren_C.BOS_SarenMonster_InGame</enumvalue>
+
+      <enumvalue friendlyname="C-Sec Human" notes="">BIOA_END_C.HMM.end95_security</enumvalue>
+
+      <enumvalue friendlyname="Lunar Alliance Anti-Vehicle Turret" notes="It’s a turret. What do you expect. It’s horribly broken.">BIOG_Turret_C.AntiVehicle.SUB_AllianceTurret</enumvalue>
+      <enumvalue friendlyname="Geth Anti-Vehicle Turret" notes="It’s a turret. What do you expect. It’s horribly broken">BIOG_Turret_C.AntiVehicle.SUB_GethTurret</enumvalue>
+
+
+      <enumvalue friendlyname="Rachni Soldier" notes="Cutscene animations are messed up. Camera is a bit low.">BIOG_Rachni_C.Soldier.ELT_RachniSoldier</enumvalue>
+      <enumvalue friendlyname="Rachni Overseer" notes="Huge purple cockroach. Cutscene animations are messed up. Cannot move backwards. Use only if you like having nightmares.">BIOG_Rachni_C.Queen.BOS_RachniOverseer</enumvalue>
+
+      <enumvalue friendlyname="Biotic Terrorist Female 1" notes="">BIOA_UNC_C.Unique.FRE32_ELT_BioticTerroristFemale1</enumvalue>
+      <enumvalue friendlyname="Biotic Terrorist Female 2" notes="">BIOA_UNC_C.Unique.FRE32_ELT_BioticTerroristFemale2</enumvalue>
+      <enumvalue friendlyname="Biotic Terrorist Male 1" notes="">BIOA_UNC_C.Unique.FRE32_ELT_BioticTerroristMale1</enumvalue>
+      <enumvalue friendlyname="Biotic Terrorist Male 2" notes="">BIOA_UNC_C.Unique.FRE32_ELT_BioticTerroristMale2</enumvalue>
+      <enumvalue friendlyname="Chairman" notes="">BIOA_UNC_C.Unique.FRE32_MIN_Chairman</enumvalue>
+      <enumvalue friendlyname="Biotic Leader" notes="">BIOA_UNC_C.Unique.FRE32_SUB_BioticLeader</enumvalue>
+      <enumvalue friendlyname="Comatosed" notes="">BIOA_UNC_C.Unique.FRE33_MIN_Comatosed</enumvalue>
+      <enumvalue friendlyname="Julia" notes="">BIOA_UNC_C.Unique.FRE33_SUB_Julia</enumvalue>
+      <enumvalue friendlyname="Salarian Doctor" notes="">BIOA_UNC_C.Unique.FRE34_SalarianDoctor</enumvalue>
+
+      <enumvalue friendlyname="Rachni Destructor" notes="camera angle is lower, when shift is pressed, the angle is beneath ground">BIOG_Rachni_C.Drone.MIN_RachniDestructor</enumvalue>
+
+      <enumvalue friendlyname="Noveria Customs Agent" notes="T-posed. Cannot draw weapons. Lacks animations.">BIOA_ICE_AMB_C.HMM.ice20_customsagent</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza NPC 2" notes="T-posed. Cannot draw weapons. Lacks animations.">BIOA_ICE_AMB_C.HMM.ice_amb_plaza_man2</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza NPC 3" notes="T-posed. Cannot draw weapons. Lacks animations.">BIOA_ICE_AMB_C.HMM.ice_amb_plaza_man3</enumvalue>
+      <enumvalue friendlyname="Gianna Parasini" notes="Cannot draw weapons.">BIOA_ICE_C.HMF.ice20_giannaparasini</enumvalue>
+      <enumvalue friendlyname="Kaira Stirling" notes="">BIOA_ICE_C.HMF.ice20_kairastirling</enumvalue>
+      <enumvalue friendlyname="Maeko Matsuo" notes="Cannot draw weapons.">BIOA_ICE_C.HMF.ice20_maekomatsuo</enumvalue>
+
+      <enumvalue friendlyname="Turian ECRS Guard 1" notes="Has issues running without weapons equipped. ">BIOA_ICE_C.TUR.ice_ercs_guard1</enumvalue>
+      <enumvalue friendlyname="Assault Drone Turret" notes="Lacks animations, but can draw weapons.">BIOG_Turret_C.AssaultDrone.ELT_AssaultDrone</enumvalue>
+      <enumvalue friendlyname="Noveria Investigator NPC" notes="T-posed. Lacks animation.">BIOA_ICE_C.HMF.ice_hmf_investigator</enumvalue>
+      <enumvalue friendlyname="Anoleis" notes="T-posed. Lacks animation.">BIOA_ICE_C.SAL.ice20_anoleis</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza Woman 4" notes="T-posed. Lacks animation.">BIOA_ICE_AMB_C.HMF.ice_amb_plaza_woman4</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza Man 4" notes="T-posed. Lacks animation.">BIOA_ICE_AMB_C.HMM.ice_amb_plaza_man4</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza Salarian 1" notes="T-posed. Lacks animation.">BIOA_ICE_AMB_C.SAL.ice20_amb_plaza_salarian1</enumvalue>
+      <enumvalue friendlyname="Opold" notes="Hanar - moves incredibly slow, animations don’t work properly but can be used.">BIOA_ICE_C.NCA.ice20_opold</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza Woman 1" notes="T-posed. Lacks animation.">BIOA_ICE_AMB_C.HMF.ice_amb_plaza_woman1</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza Woman 2" notes="T-posed. Lacks animation.">BIOA_ICE_AMB_C.HMF.ice_amb_plaza_woman2</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza Woman 3" notes="T-posed. Lacks animation.">BIOA_ICE_AMB_C.HMF.ice_amb_plaza_woman3</enumvalue>
+      <enumvalue friendlyname="Noveria Plaza Woman 3" notes="T-posed. Lacks animation.">BIOA_ICE_AMB_C.HMM.ice_amb_plaza_man1</enumvalue>
+      <enumvalue friendlyname="Noveria Businessman" notes="T-posed. Lacks animation.">BIOA_ICE_C.HMM.ice_hmm_businessman</enumvalue>
+      <enumvalue friendlyname="Noveria Businessman (Mobile" notes="Cannot draw weapon.">BIOA_ICE_C.HMM.ice_hmm_businessman_mobile</enumvalue>
+      <enumvalue friendlyname="Noveria ERCS Plaza Guard" notes="T-posed. Lacks animation.">BIOA_ICE_C.TUR.ice_ercs_plazaGuard</enumvalue>
+      <enumvalue friendlyname="Noveria ERCS Plaza Guard (Mobile)" notes="Cannot draw weapons.">BIOA_ICE_C.TUR.ice_ercs_plazaGuardMobile</enumvalue>
+      <enumvalue friendlyname="Lilihierax" notes="T-posed. Lacks animation.">BIOA_ICE_C.TUR.ice20_lilihierax</enumvalue>
+      <enumvalue friendlyname="Noveria ERCS Guard 3" notes="Has issues running without weapons equipped.">BIOA_ICE_C.HMF.ice_ercs_guard3</enumvalue>
+      <enumvalue friendlyname="Noveria ERCS Sniper" notes="Has issues running without weapons equipped.">BIOA_ICE_C.HMF.ice_ercs_sniper</enumvalue>
+      <enumvalue friendlyname="ERCS Elite Engineer" notes="Has issues running without weapons equipped.">BIOA_ICE_C.HMM.ice_ercs_elite_engineer</enumvalue>
+      <enumvalue friendlyname="Ercs Elite Sniper" notes="Has issues running without weapons equipped. ">BIOA_ICE_C.HMM.ice_ercs_elite_sniper</enumvalue>
+      <enumvalue friendlyname="Ercs Guard 2" notes="Has issues running without weapons equipped. ">BIOA_ICE_C.HMM.ice_ercs_guard2</enumvalue>
+      <enumvalue friendlyname="Ercs Rocket" notes="">BIOA_ICE_C.TUR.ice_ercs_rocket</enumvalue>
+      <enumvalue friendlyname="Mallene Calis" notes="T-posed. Lacks animations.">BIOA_ICE_C.ASA.ice20_mallenecalis</enumvalue>
+      <enumvalue friendlyname="Ambient Interviewee Female" notes="T-posed. Lacks animations.">BIOA_ICE_C.HMF.ice20_ambient_intervieweefemale</enumvalue>
+      <enumvalue friendlyname="Noveria Ambient Interviewee male" notes="T-posed. Lacks animations.">BIOA_ICE_C.HMM.ice20_ambient_intervieweemale</enumvalue>
+      <enumvalue friendlyname="Rafael Vargas" notes="T-posed. Lacks animations.">BIOA_ICE_C.HMM.ice20_rafaelvargas</enumvalue>
+      <enumvalue friendlyname="Ambient Interviewee Salarian" notes="T-posed. Lacks animations.">BIOA_ICE_C.SAL.ice20_ambient_interviewee_salarian</enumvalue>
+      <enumvalue friendlyname="Sal Doorman" notes="T-posed. Lacks animations.">BIOA_ICE_C.SAL.ice_sal_doorman</enumvalue>
+      <enumvalue friendlyname="Lorik Qui’in" notes="T-posed. Lacks animations.">BIOA_ICE_C.TUR.ice20_lorikquiin</enumvalue>
+      <enumvalue friendlyname="Ercs Guard 4" notes="Has issues running without weapons equipped.">BIOA_ICE_C.HMF.ice_ercs_guard4</enumvalue>
+      <enumvalue friendlyname="Geth Sapper" notes="Head points towards what is being targeted. Camera is a little low.">BIOG_Geth_C.Hopper.ELT_GethSapper</enumvalue>
+      <enumvalue friendlyname="Krogan Decon" notes="Has issues running without weapons equipped.">BIOA_ICE_C.KRO.ice50_kroganDecon</enumvalue>
+      <enumvalue friendlyname="Geth Repair Drone" notes="">BIOG_Geth_C.Drone.MIN_GethRepairDrone</enumvalue>
+      <enumvalue friendlyname="Mira" notes="Cannot draw weapons.">BIOA_ICE_C.HMF.ice_hmf_mira</enumvalue>
+      <enumvalue friendlyname="Salarian Dead" notes="Has issues running without weapons equipped.">BIOA_ICE_C.SAL.ice_sal_dead</enumvalue>
+      <enumvalue friendlyname="Juleth Ventralis" notes="">BIOA_ICE_C.HMM.ice60_julethventralis</enumvalue>
+      <enumvalue friendlyname="Noveria Human Male Scientist" notes="Has issues running without weapons equipped.">BIOA_ICE_AMB_C.HMM.ice_hmm_scientist</enumvalue>
+      <enumvalue friendlyname="Turian Scientist" notes="Has issues running without weapons equipped.">BIOA_ICE_AMB_C.TUR.ice_tur_scientist</enumvalue>
+      <enumvalue friendlyname="Asari Commando" notes="Has issues running without weapons equipped.">BIOA_ICE_C.ASA.npch_asari_commando</enumvalue>
+      <enumvalue friendlyname="Hanolar" notes="Has issues running without weapons equipped.">BIOA_ICE_C.NCA.ice60_hanolar</enumvalue>
+      <enumvalue friendlyname="Noveria Sick NPC 2" notes="T-posed. Lacks animations.">BIOA_ICE_AMB_C.HMF.ice60_ambient_sick2</enumvalue>
+      <enumvalue friendlyname="Noveria SIck NPC 1" notes="T-posed. Lacks animations.">BIOA_ICE_AMB_C.HMM.ice60_ambient_sick1</enumvalue>
+      <enumvalue friendlyname="Talin Somaai (Noveria Scientist)" notes="T-posed. Lacks animations.">BIOA_ICE_C.HMM.ice60_talinsomaai</enumvalue>
+      <enumvalue friendlyname="Noveria Female Scientist" notes="T-posed. Lacks animations.">BIOA_ICE_AMB_C.HMF.ice_hmf_scientist</enumvalue>
+      <enumvalue friendlyname="Alestia Iallis" notes="Has issues running without weapons equipped.">BIOA_ICE_C.ASA.ice60_alestiaiallis</enumvalue>
+      <enumvalue friendlyname="Petozi" notes="Has no animations.">BIOA_ICE_C.NCA.ice60_petozi</enumvalue>
+      <enumvalue friendlyname="Palron" notes="T-posed. Lacks animations.">BIOA_ICE_C.SAL.ice60_palon</enumvalue>
+      <enumvalue friendlyname="Matriarch Benezia" notes="Has a faster than normal movement speed.">BIOA_ICE_C.ASA.ice60_matriarch</enumvalue>
+      <enumvalue friendlyname="Rachni Queen" notes="Cannot draw weapons.">BIOG_Rachni_C.Queen.AMB_RachniQueen</enumvalue>
+      <enumvalue friendlyname="Yaroslev Tartakovsky" notes="T-posed. Lacks animations.">BIOA_ICE_C.HMM.ice70_tartakovsky</enumvalue>
+      <enumvalue friendlyname="Virmire Normandy Male 3" notes="">BIOA_JUG_C.HMM.nor_hmm_crew3</enumvalue>
+      <enumvalue friendlyname="Crab… thing" notes="Cannot draw weapons. Looks like a mini praetorian, possibly coffee table.">BIOG_Ambient_C.AMB_Crab</enumvalue>
+
+
+      <enumvalue friendlyname="Geth Assault Drone Turret" notes="Lacks animations, but can draw weapons.">BIOG_Geth_C.Drone.ELT_GethAssaultDrone</enumvalue>
+      <enumvalue friendlyname="Geth Rocket Drone Turret" notes="Lacks animations, but can draw weapons.">BIOG_Geth_C.Drone.ELT_GethRocketDrone</enumvalue>
+      <enumvalue friendlyname="Geth Trooper (Juggernaut Camo)" notes="Has issues running without weapons equipped.">BIOG_Geth_C.Geth.MIN_GethTrooper_JugCamo</enumvalue>
+      <enumvalue friendlyname="Geth Ghost" notes="Head points towards what is being targeted. Camera is a little low.">BIOG_Geth_C.Hopper.ELT_GethGhost</enumvalue>
+      <enumvalue friendlyname="Geth Colossus" notes="Moves slow, has high HP. Has significant difficulty due to the camera. Should probably not use.">BIOG_Geth_C.armature.BOS_GethColossus</enumvalue>
+      <enumvalue friendlyname="Captain Kirrahe" notes="">BIOA_JUG_C.SAL.jug20_sal_captainkirrahe</enumvalue>
+      <enumvalue friendlyname="Virmire Salarian (Comstore)" notes="">BIOA_JUG_C.SAL.jug20_sal_comstore</enumvalue>
+      <enumvalue friendlyname="Virmire Salarian Soldier" notes="">BIOA_JUG_C.SAL.JUG20_SAL_Soldier</enumvalue>
+      <enumvalue friendlyname="Virmire Salairan (Indoctrinated)" notes="">BIOA_JUG_C.SAL.npch_Sal_Indoctrinate</enumvalue>
+      <enumvalue friendlyname="Virmire Salarian (Unarmed)" notes="">BIOA_JUG_C.SAL.npcn_Sal_unarmed</enumvalue>
+      <enumvalue friendlyname="Virmire Asari (Compale Thea ?)" notes="">BIOA_JUG_C.ASA.jug70_asa_compalethea</enumvalue>
+      <enumvalue friendlyname="Virmire Doctor Droyas" notes="">BIOA_JUG_C.KRO.jug70_kro_docdroyas</enumvalue>
+
+      <enumvalue friendlyname="Rana Thanoptis" notes="Listed as salarian for some reason in game files, but in game is asari.">BIOA_JUG_C.SAL.jug70_sal_psyrana</enumvalue>
+      <enumvalue friendlyname="Normandy Crew Male 1" notes="">BIOA_JUG_C.HMM.nor_hmm_crew1</enumvalue>
+      <enumvalue friendlyname="Normandy Crew Male 2" notes="">BIOA_JUG_C.HMM.nor_hmm_crew2</enumvalue>
+
+      <enumvalue friendlyname="Geth Boss" notes="Has issues running without weapons equipped. Very large, may not fit in some areas.">BIOG_Geth_C.Geth.BOS_GethHub</enumvalue>
+
+      <enumvalue friendlyname="Therum Krogan Battlemaster" notes="">BIOA_LAV_C.KRO.lav70_kroganboss</enumvalue>
+      <enumvalue friendlyname="Endgame Dead Asari Officer" notes="Cannot draw weapons.">BIOA_END_C.ASA.end95_asari_dead_officer</enumvalue>
+      <enumvalue friendlyname="Geth Hopper (White)" notes="Head points towards what is being targeted. Camera is a little low.">BIOG_Geth_C.Hopper.MIN_GethHopper</enumvalue>
+      <enumvalue friendlyname="Geth Colossus" notes="Huge, slow, and can indeed take damage. Do not use.">BIOG_Geth_C.armature.BOS_GethColossus_NoDamage</enumvalue>
+      <enumvalue friendlyname="Normandy Crew Female - Lieutenant" notes="Has no animations.">BIOA_NOR_C.HMF.nor_hmf_as_crew_lt</enumvalue>
+      <enumvalue friendlyname="Normandy Crew Male - Light" notes="Has no animations.">BIOA_NOR_C.HMM.nor_hmm_crew_light</enumvalue>
+      <enumvalue friendlyname="Nihlus - Pacifist" notes="Cannot draw weapons or use powers">BIOA_NOR_C.TUR.nor10_nihlus</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMF.nor_hmf_as_crew</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMF.nor10_doctor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor10_jenkins</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor10_navigator</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor10_pacer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor_hmm_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor_hmm_marine1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor10_captain</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.hench_humanmale</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.hench_jenkins</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.TUR.nor20_nihlus</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.TUR.pro20_nihlus</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.ASA.hench_asari</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.hench_quarian</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMF.hench_humanfemale</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMF.hench_humanFemale_nkd</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Female_Player_C.Human.Human_Female_Naked</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Male_Player_C.Human.Human_Male_Naked</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.hench_humanmale_nkd</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.ASA.hench_asari_nkd</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.KRO.hench_krogan</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.TUR.hench_turian</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_asari_councilor_holo</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta20_salarian_councilor_holo</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta20_turian_councilor_holo</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMF.nor_hmf_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor20_req_officer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.SAL.nor20_sal_captainkirrahe</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.SAL.nor20_sal_comstore</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.SAL.nor20_sal_Soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_NOR_C.HMM.nor10_engineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.ASA.pro20_matriarch</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Ambient_C.AMB_Floater</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Geth_C.Drone.MIN_GethReconDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Jenkins_Hench_C.hench_jenkins</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.HMF.hench_humanfemale</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.HMM.pro20_m_farmer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.HMF.pro10_headscientist</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.HMM.pro10_m_scientist02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.TUR.pro20_saren</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.HMF.pro20_f_farmer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.HMM.pro20_cole</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRO_C.HMM.pro20_powell</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta60_amb_cop02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_captainFlux</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta30_csec_salarian</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_amb_cop01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.AMB.Keeper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_presidium_asa04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_presidium_asa07</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_presidium_asa08</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta20_presidium_hmf01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta20_presidium_hmf02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta20_presidium_hmm02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta20_presidium_hmm03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta20_presidium_hmm04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta20_presidium_sal01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta20_presidium_sal03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta20_presidium_sal05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta20_presidium_sal06</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_presidium_tur02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_presidium_tur05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_presidium_tur06</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_hanar_religious</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta20_turian_religious</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_presidium_asa01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_presidium_asa05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta20_presidium_sal02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_presidium_tur03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.rp114_sarah</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sp109_crimeboss</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp114_michael</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_presidium_asa06</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta20_presidium_hmf04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta20_presidium_sal04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta20_amb_wealthy01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta20_amb_wealthy02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_presidium_asa02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta20_presidium_hmm01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_presidium_tur01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_presidium_tur04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_banker</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_emporium_shopkeep</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_asari_employee04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta20_asari_client03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_asari_employee03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_isauria</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_isauria_nude</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta20_amb_consortCustomer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta20_gigolo02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_asari_employee01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta20_asari_employee02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_asari_client02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta20_asari_client01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_receptionist</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp110_samesh</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_lounge_turian1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta20_female_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_elcor_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_lounge_asari1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_lounge_asari2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta20_lounge_asari3</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta20_lounge_turian2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_sp108_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp110_bosker</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta20_bartender</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta20_male_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_recruit01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_recruit02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_recruit03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta20_executor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta20_captain</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta20_human_ambassador</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_elcor_ambassador</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_volus_ambassador</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta20_xeltan</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.sta60_quarian</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta30_amb_civilian03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta30_amb_civilian01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta30_amb_csec01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta30_amb_csec02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta30_amb_csec06</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta30_amb_csec03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta30_amb_csec05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta30_khalisah</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta30_officer_01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.KRO.hench_krogan</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.hench_turian</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta30_officer_02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp115_admiral</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.rp112_csec01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.rp112_talitha</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp112_girard</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta30_requisition_officer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.NCA.sta30_amb_csec04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta30_jahleed</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta30_chellik</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta30_normandy_mechanic</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_asari02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_asari03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta60_amb_destinyviewer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta60_amb_genericwoman01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta60_amb_genericwoman02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_destinyviewer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_genericmale01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.NCA.sta30_amb_civilian02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta60_citizen02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta60_citizen01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_genericmale02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_salarian01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_salarian02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.rp104_amb_riot1_female</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp104_amb_riot1_male</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp104_terra_firma</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.rp105a_emilywong</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta60_amb_buyer02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp102_conradverner_sta3060</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_amb_buyer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta60_amb_market_buyer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta60_expat</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_amb_buyer02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_amb_seller01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.KRO.sta60_amb_kro_buyer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_salarian03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta60_amb_buyer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta60_amb_buyer03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.KRO.sta60_jax</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.KRO.sta60_threatens_doctor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_black_market</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_chorban</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_chorban_guards</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_chorban_noncombat</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_jax_goon</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_assassin_04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_assassin</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp113_finch</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_assassin_02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_den_bartender</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_den_bartender_02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_den_cust01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_den_bartender01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_den_cust_salarian01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_den_cust_salarian02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta60_amb_den_cust_turian01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta60_amb_den_cust_turian02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_harkin</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.KRO.sta60_amb_choras_cust04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.KRO.sta60_fists_guards01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_amb_choras_cust02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.rp113_turian_guard</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_amb_choras_cust03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_chellik</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta60_septimus</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_bartender_01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_bartender_02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_denGuard</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_denGuard_02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_denGuard_03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_denGuard_04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_denGuard_05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_denGuard_06</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_denGuard_07</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fists_guard02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fists_guard03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_chorasdancer01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_chorasdancer03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta60_amb_chorasdancer02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta60_jenna</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HDR.sta60_fist_turret</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_noncombat</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.rp107_keeler</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_schells</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_bodyguard</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.NCA.sta60_doran</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_flux_cust08</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta60_doctor_michel</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_fist_thug</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta60_friendly_security</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_flux_cust11</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_flux_cust13</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta60_amb_flux_cust07</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta60_amb_flux_cust10</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta60_amb_flux_cust14</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_flux_cust05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta60_amb_flux_cust15</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_flux_bartender</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_flux_cust04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_flux_cust12</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta60_amb_flux_cust16</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta60_amb_flux_cust02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta60_jenna_flux</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta60_rita</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_amb_flux_cust01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta60_amb_flux_cust03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_flux_cust09</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_asari01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta60_amb_csec02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta20_zabaleta</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta70_tower30</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta70_tower31</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.ASA.sta70_tower32</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta70_tower20</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta70_tower21</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta70_tower10</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta70_tower40</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta70_tower41</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.SAL.sta70_tower42</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta70_tower01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta70_tower02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta70_induction06</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.rp105a_emilywong_sta20</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMF.sta70_induction04</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta20_kahoku</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta70_induction01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta70_induction02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta70_induction03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta70_induction08</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.HMM.sta70_sp101_garoth</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta20_chorban</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta70_amb_diplomat02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta70_induction07</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta70_amb_diplomat03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta70_garrus</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta70_induction05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.ASA.sta20_asari_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.SAL.sta20_salarian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta20_turian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_C.TUR.sta90_saren</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMF.sta70_tower22</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.HMM.sta70_tower12</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_STA_AMB_C.TUR.sta70_tower03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC_MIN_LeagueOfOne</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC10_SUB_CrimeBoss</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Monster.unc_cbt_maw</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Monster.unc_cbt_ten</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC11_MIN_Brother</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC13_SUB_CrimeBoss</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanMaleAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryTurianRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryHumanMaleRocketSoldier</enumvalue>
+
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Legacy.unc_hmm_marine</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC25_MIN_AllianceMarineMale</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanFemaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanMaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_ELT_BioticTerroristFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_ELT_BioticTerroristFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_ELT_BioticTerroristMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_ELT_BioticTerroristMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_MIN_ScientistFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_MIN_ScientistFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_MIN_ScientistMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_MIN_ScientistMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC30_SUB_BioticLeader</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenarySalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC31_SUB_CrimeBoss</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.MIN_PirateHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC42_SUB_Darius</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC51_ELT_AssaultDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC51_ELT_RocketDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanFemaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryHumanFemaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.MIN_MercenaryTurianRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.ELT_PirateHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.ELT_PirateKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.MIN_PirateHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.MIN_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC53_SUB_Nemesis</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC53_SUB_NemesisHolo</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenaryHumanMaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Mercenary.ELT_MercenarySalarianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_ELT_CultistFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_ELT_CultistFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_ELT_CultistMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_ELT_CultistMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_MIN_CultistFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_MIN_CultistFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_MIN_CultistMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_MIN_CultistMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC54_MIN_MajorKyle</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.ELT_PirateTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.MIN_PirateTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.ELT_PirateTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.SUB_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC61_TONNACTUS</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Cerberus.ELT_CerberusHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Cerberus.ELT_CerberusHumanMaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Cerberus.ELT_CerberusHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Cerberus.ELT_CerberusHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Cerberus.ELT_CerberusHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Monster.UNC73_ELT_RachniSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Monster.UNC73_MIN_RachniDestructor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC73_ELT_AllianceLieutenantDurand</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC73_ELT_AllianceMarineFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC73_ELT_AllianceMarineMale2</enumvalue>
+
+      <enumvalue friendlyname="" notes="">BIOG_Thorian_C.Zombie.MIN_ZombieThorian</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC80_MIN_ScientistFemale</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC80_MIN_ScientistMale</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Ambient_C.AMB_Beetle</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Ambient_C.AMB_BigBeetle</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC82_sp120_doctor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC82_sp120_toombs</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC84_MIN_Monkey</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.ELT_PirateHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.ELT_PirateSalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.MIN_PirateHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Pirate.MIN_PirateSalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Unique.UNC90_SUB_SlaverQueen</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_UNC_C.Cerberus.ELT_CerberusScientistMale</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Plot.war20_badraltalaqani</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.ASR.war30_asaricommando02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Ambient.war40_ambmilitia_female01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Ambient.war40_ambrefugee_female01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Ambient.war40_ambrefugee_female02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war20_arcelia</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war40_juliannabaynham</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war50_lizbeth</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_ambmilitia_male01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_ambmilitia_male02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_ambrefugee_male01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_ambrefugee_male02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_ambrefugee_male03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Plot.war40_gunman</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Plot.war40_heajeong</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Ambient.war20_ambientmain02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war20_calanthablake</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war20_gretaandersson</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war20_hanamurakami</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war20_machadoyle</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Plot.war20_mayoconnell</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_ambiencommando01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_ambientbunker01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_ambientbunker02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Plot.war20_davinandersson</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Plot.war20_hollisblake</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Plot.war20_iannewstead</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Plot.war20_faizhou</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.SAL.war20_inoste_merchant</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Ambient.war20_InjuredColonist02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_InjuredColonist01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_InjuredColonist03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_RandomColonist02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Ambient.war20_gethcoming03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.CBT.war_var_alphaVarren</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.CBT.war_var_genericVarren</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.ASR.war30_asaricommando01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Thorian_C.Thorian.BOS_Thorian</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_Smuggler1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_Smuggler2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMF.Ambient.war40_ambsecurity_female01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_ambsecurity_male01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war40_ambsecurity_male02</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_ambientbunker03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.HMM.Ambient.war20_ambientmain03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.KRO.Plot.war50_krogan</enumvalue>
+
+      <enumvalue friendlyname="" notes="">BIOA_WAR_C.KRO.Ambient.war_kro_goons</enumvalue>
+      <enumvalue friendlyname="" notes="">MissingResources.Missing_Creature_Class_</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.end95_asari_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.end95_asari_DA_Commander</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.end95_asari_DA_Officer</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.end95_asari_dead_officer</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.end90_amb_diplomat02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.end95_captain</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.end95_human_ambassador</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.end95_security</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.END80_SAL_Soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.end95_salarian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.jug20_sal_captainkirrahe</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.end95_executor</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.end95_Turian_Commander</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.end95_turian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.end95_turian_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.end95_Turian_Officer</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.saren</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice60_ambient_sick2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_amb_plaza_woman1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_amb_plaza_woman2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_amb_plaza_woman3</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_amb_plaza_woman4</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_hmf_scientist</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice20_customsagent</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice60_ambient_sick1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_amb_plaza_man1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_amb_plaza_man2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_amb_plaza_man3</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_amb_plaza_man4</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_hmm_scientist</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_hmm_scientist2</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.ice20_amb_plaza_salarian1</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.ice_tur_scientist</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.ice20_mallenecalis</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.ice60_alestiaiallis</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.ice60_matriarch</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.npch_asari_commando</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice20_ambient_intervieweefemale</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice20_giannaparasini</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice20_kairastirling</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice20_maekomatsuo</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_ercs_guard3</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_ercs_guard4</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_ercs_sniper</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_hmf_businesswoman</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_hmf_investigator</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_hmf_maekoguard</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.ice_hmf_mira</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice20_ambient_intervieweemale</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice20_rafaelvargas</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice60_julethventralis</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice60_talinsomaai</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice70_tartakovsky</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_ercs_elite_engineer</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_ercs_elite_sniper</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_ercs_guard2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_hmm_businessman</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.ice_hmm_businessman_mobile</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.ice20_inamorda</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.ice50_kroganDecon</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.ice50_krogansniper</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.ice20_opold</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.ice60_hanolar</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.ice60_petozi</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.ice20_ambient_interviewee_salarian</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.ice20_anoleis</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.ice60_palon</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.ice_sal_dead</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.ice_sal_doorman</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.ice20_lilihierax</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.ice20_lorikquiin</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.ice_ercs_guard1</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.ice_ercs_plazaGuard</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.ice_ercs_plazaGuardMobile</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.ice_ercs_rocket</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.jug70_asa_compalethea</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.hench_humanfemale</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.hench_humanmale</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor_hmm_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor_hmm_crew2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor_hmm_crew3</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.hench_krogan</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.jug70_kro_docdroyas</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.jug20_sal_comstore</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.JUG20_SAL_Soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.jug70_sal_psyrana</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.jug80_sal_captainkirrahe</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.npch_Sal_Indoctrinate</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.npcn_Sal_unarmed</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.jug80_saren</enumvalue>
+      <enumvalue friendlyname="" notes="">Zombie.ELT_ZombieHusk</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.lav70_kroganboss</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.hench_asari</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.hench_asari_nkd</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.nor20_asari_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">hench_quarian</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.hench_humanFemale_nkd</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.nor10_doctor</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.nor_hmf_as_crew</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.nor_hmf_as_crew_lt</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.nor_hmf_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.hench_humanmale_nkd</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.hench_pilot</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor10_captain</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor10_engineer</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor10_jenkins</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor10_navigator</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor10_pacer</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor20_req_officer</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor_hmm_crew_light</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.nor_hmm_marine1</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.nor20_sal_captainkirrahe</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.nor20_sal_comstore</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.nor20_sal_Soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.nor20_salarian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.hench_turian</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.nor10_nihlus</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.nor20_turian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB.pro_gas_gasbag1</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB.pro_SpaceCow</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.pro20_matriarch</enumvalue>
+      <enumvalue friendlyname="" notes="">CUT.pro_sargent</enumvalue>
+      <enumvalue friendlyname="" notes="">CUT.pro_soldier_female_helm</enumvalue>
+      <enumvalue friendlyname="" notes="">CUT.pro_soldier_male_helm</enumvalue>
+      <enumvalue friendlyname="" notes="">CUT.pro_soldier_male_nohelm</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.pro10_headscientist</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.pro20_f_farmer01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro10_cut_redshirt1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro10_cut_redshirt2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro10_cut_redshirt3</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro10_cut_redshirt4</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro10_m_deadscientist</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro10_m_scientist02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro20_cole</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro20_m_farmer01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro20_m_farmer_dead</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro20_powell</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.pro20_rabbit</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.nor20_nihlus</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.pro20_nihlus</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.pro20_saren</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_asari_employee04</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_lounge_asari1</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_lounge_asari2</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_lounge_asari3</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa02</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa03</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa04</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa05</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa06</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa07</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_presidium_asa08</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_asari01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_asari02</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_asari03</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_chorasdancer01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_chorasdancer03</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_chorasskydancer01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_csec02</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_flux_cust08</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_flux_cust09</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_flux_cust13</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta70_control04</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta70_tower30</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta70_tower31</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta70_tower32</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_amb_consortCustomer01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_presidium_hmf01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_presidium_hmf02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_presidium_hmf03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_presidium_hmf04</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta30_amb_civilian03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_chorasdancer02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_csec01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_destinyviewer01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_flux_cust07</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_flux_cust10</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_flux_cust14</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_genericwoman01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_amb_genericwoman02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta70_control02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta70_tower20</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta70_tower21</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta70_tower22</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp112_csec01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_asari_client03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_gigolo01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_gigolo03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_presidium_hmm01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_presidium_hmm02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_presidium_hmm03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_presidium_hmm04</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta30_amb_civilian01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta30_amb_csec01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_den_bartender</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_den_bartender_02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_den_cust01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_destinyviewer01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_flux_cust05</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_flux_cust11</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_flux_cust15</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_genericmale01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_genericmale02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_control03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_tower10</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_tower11</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_tower12</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.sta60_amb_kro_buyer01</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta30_amb_civilian02</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta30_amb_csec04</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta60_amb_flux_cust06</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_asari_client04</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_gigolo02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_presidium_sal01</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_presidium_sal02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_presidium_sal03</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_presidium_sal04</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_presidium_sal05</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_presidium_sal06</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta30_amb_csec02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta30_amb_csec06</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_den_bartender01</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_den_cust_salarian01</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_den_cust_salarian02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_flux_bartender</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_flux_cust04</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_flux_cust12</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_flux_cust16</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_salarian01</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_salarian02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_salarian03</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta70_tower40</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta70_tower41</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta70_tower42</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_lounge_turian1</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_lounge_turian2</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_presidium_tur01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_presidium_tur02</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_presidium_tur03</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_presidium_tur04</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_presidium_tur05</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_presidium_tur06</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta30_amb_csec03</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta30_amb_csec05</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_buyer01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_buyer02</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_buyer03</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_den_cust_turian01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_den_cust_turian02</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta70_control01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta70_tower01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta70_tower02</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta70_tower03</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB.Keeper_Walking</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_asari_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_asari_councilor_holo</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_asari_employee01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_asari_employee03</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_avina</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_isauria</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_isauria_nude</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_receptionist</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta20_sp108_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_cop02</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta60_amb_flux_cust02</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta70_amb_diplomat01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.sta70_induction06</enumvalue>
+      <enumvalue friendlyname="" notes="">HDR.sta60_fist_turret</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.rp104_amb_riot1_female</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.rp105a_emilywong</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.rp105a_emilywong_sta20</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.rp112_talitha</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.rp114_sarah</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sp109_crimeboss</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_amb_wealthy01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_asari_employee02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta20_female_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta30_khalisah</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta30_normandy_mechanic</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_citizen02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_doctor_michel</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_jenna</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_jenna_flux</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta60_rita</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.sta70_induction04</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp102_conradverner</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp102_conradverner_sta20</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp102_conradverner_sta3060</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp104_amb_riot1_male</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp104_terra_firma</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp107_keeler</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp110_bosker</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp110_samesh</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp112_girard</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp113_finch</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp114_michael</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.rp115_admiral</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_bartender</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_captain</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_human_ambassador</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_kahoku</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_male_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta20_zabaleta</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta30_officer_01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_amb_buyer01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_bodyguard</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_captainFlux</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_bartender_01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_bartender_02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard_02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard_03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard_04</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard_05</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard_06</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard_07</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_denGuard_08</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_noncombat</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fist_thug</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fists_guard02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_fists_guard03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_friendly_security</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_harkin</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_recruit01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_recruit02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta60_recruit03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_induction01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_induction02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_induction03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_induction08</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.sta70_sp101_garoth</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.sta60_amb_choras_cust04</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.sta60_fists_guards01</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.sta60_foil_4_wrex</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.sta60_jax</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.sta60_threatens_doctor</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_asari_client02</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_banker</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_elcor_ambassador</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_elcor_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_emporium_shopkeep</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_hanar_religious</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_volus_ambassador</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_volus_diplomat</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta20_xeltan</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta30_jahleed</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta60_amb_choras_cust01</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta60_amb_market_buyer</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta60_citizen01</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta60_doran</enumvalue>
+      <enumvalue friendlyname="" notes="">NCA.sta60_expat</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_amb_wealthy02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_asari_client01</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_chorban</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_salarian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta20_salarian_councilor_holo</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta30_csec_salarian</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_choras_cust02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_flux_cust01</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_amb_flux_cust03</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_assassin_04</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_black_market</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_chorban</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_chorban_guards</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_chorban_noncombat</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta60_schells</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta70_amb_diplomat02</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.sta70_induction07</enumvalue>
+      <enumvalue friendlyname="" notes="">sta60_quarian</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.rp113_turian_guard</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_executor</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_turian_councilor</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_turian_councilor_holo</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta20_turian_religious</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta30_chellik</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta30_officer_02</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta30_requisition_officer</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_choras_cust03</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_cop01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_amb_seller01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_assassin</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_assassin_01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_assassin_02</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_chellik</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_jax_goon</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_septimus</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta60_snails</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta70_amb_diplomat03</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta70_garrus</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta70_induction05</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.sta90_saren</enumvalue>
+      <enumvalue friendlyname="" notes="">Cerberus.ELT_CerberusHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Cerberus.ELT_CerberusHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Cerberus.ELT_CerberusHumanMaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Cerberus.ELT_CerberusHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Cerberus.ELT_CerberusHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Cerberus.ELT_CerberusScientistMale</enumvalue>
+      <enumvalue friendlyname="" notes="">Human.unc_female_scientist</enumvalue>
+      <enumvalue friendlyname="" notes="">Human.unc_male_scientist</enumvalue>
+      <enumvalue friendlyname="" notes="">Legacy.unc_hmm_blackops</enumvalue>
+      <enumvalue friendlyname="" notes="">Legacy.unc_hmm_marine</enumvalue>
+      <enumvalue friendlyname="" notes="">Legacy.unc_hmm_mercenary</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryAsariAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryAsariSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanFemaleVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryHumanMaleVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenarySalarianEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenarySalarianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenarySalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryTurianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryTurianRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.ELT_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanFemaleVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryHumanMaleVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenarySalarianEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenarySalarianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenarySalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryTurianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryTurianRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.MIN_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryAsariAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryAsariSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryAsariVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanFemaleAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanFemaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanFemaleInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanFemaleSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanFemaleVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanMaleAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanMaleEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanMaleInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanMaleSentinel</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryHumanMaleVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryKroganVanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenarySalarianEngineer</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenarySalarianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryTurianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Mercenary.SUB_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Monster.UNC73_ELT_RachniSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Monster.UNC73_MIN_RachniDestructor</enumvalue>
+      <enumvalue friendlyname="" notes="">Monster.unc_cbt_maw</enumvalue>
+      <enumvalue friendlyname="" notes="">Monster.unc_cbt_ten</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateSalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.ELT_PirateTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.MIN_PirateHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.MIN_PirateHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.MIN_PirateHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.MIN_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.MIN_PirateSalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.MIN_PirateTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.MIN_PirateTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateHumanFemaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateHumanMaleSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateSalarianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Pirate.SUB_PirateTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE32_ELT_BioticTerroristFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE32_ELT_BioticTerroristFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE32_ELT_BioticTerroristMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE32_ELT_BioticTerroristMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE32_MIN_Chairman</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE32_SUB_BioticLeader</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE33_MIN_Comatosed</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE33_SUB_Julia</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.FRE34_SalarianDoctor</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC10_SUB_CrimeBoss</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC11_MIN_Brother</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC13_SUB_CrimeBoss</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC25_MIN_AllianceMarineMale</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_ELT_BioticTerroristFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_ELT_BioticTerroristFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_ELT_BioticTerroristMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_ELT_BioticTerroristMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_MIN_ScientistFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_MIN_ScientistFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_MIN_ScientistMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_MIN_ScientistMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC30_SUB_BioticLeader</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC31_SUB_CrimeBoss</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC42_SUB_Darius</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC51_ELT_AssaultDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC51_ELT_RocketDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC53_SUB_Nemesis</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC53_SUB_NemesisHolo</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_ELT_CultistFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_ELT_CultistFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_ELT_CultistMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_ELT_CultistMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_MIN_CultistFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_MIN_CultistFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_MIN_CultistMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_MIN_CultistMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC54_MIN_MajorKyle</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC61_TONNACTUS</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC73_ELT_AllianceLieutenantDurand</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC73_ELT_AllianceMarineFemale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC73_ELT_AllianceMarineFemale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC73_ELT_AllianceMarineMale1</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC73_ELT_AllianceMarineMale2</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC80_MIN_ScientistFemale</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC80_MIN_ScientistMale</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC82_sp120_doctor</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC82_sp120_toombs</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC84_MIN_Monkey</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC90_SUB_SlaverQueen</enumvalue>
+      <enumvalue friendlyname="" notes="">Unique.UNC_MIN_LeagueOfOne</enumvalue>
+      <enumvalue friendlyname="" notes="">Zombie.ELT_TestSubject</enumvalue>
+      <enumvalue friendlyname="" notes="">ASR.war30_asaricommando01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASR.war30_asaricommando02</enumvalue>
+      <enumvalue friendlyname="" notes="">CBT.war_var_alphaVarren</enumvalue>
+      <enumvalue friendlyname="" notes="">CBT.war_var_genericVarren</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Ambient.war20_ambientmain02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Ambient.war20_gethcoming03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Ambient.war20_InjuredColonist02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Ambient.war40_ambmilitia_female01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Ambient.war40_ambrefugee_female01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Ambient.war40_ambrefugee_female02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Ambient.war40_ambsecurity_female01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war20_arcelia</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war20_calanthablake</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war20_gretaandersson</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war20_hanamurakami</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war20_machadoyle</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war20_mayoconnell</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war40_juliannabaynham</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.Plot.war50_lizbeth</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_ambiencommando01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_ambientbunker01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_ambientbunker02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_ambientbunker03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_ambientmain03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_deadcolonist</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_InjuredColonist01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_InjuredColonist03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war20_RandomColonist02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_ambmilitia_male01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_ambmilitia_male02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_ambrefugee_male01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_ambrefugee_male02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_ambrefugee_male03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_ambsecurity_male01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_ambsecurity_male02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_colonist</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_Smuggler1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Ambient.war40_Smuggler2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Plot.war20_badraltalaqani</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Plot.war20_davinandersson</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Plot.war20_faizhou</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Plot.war20_hollisblake</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Plot.war20_iannewstead</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Plot.war40_gunman</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.Plot.war40_heajeong</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.Ambient.war_kro_goons</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.Plot.war50_krogan</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.war20_inoste_merchant</enumvalue>
+      <enumvalue friendlyname="" notes="">VI.war50_vi</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB_Beetle</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB_BigBeetle</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB_Cow</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB_Crab</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB_Floater</enumvalue>
+      <enumvalue friendlyname="" notes="">AMB_Monkey</enumvalue>
+      <enumvalue friendlyname="" notes="">hench_asari</enumvalue>
+      <enumvalue friendlyname="" notes="">Human.human_female</enumvalue>
+      <enumvalue friendlyname="" notes="">Human.Human_Female_Naked</enumvalue>
+      <enumvalue friendlyname="" notes="">armature.BOS_GethColossus</enumvalue>
+      <enumvalue friendlyname="" notes="">armature.BOS_GethColossus_NoDamage</enumvalue>
+      <enumvalue friendlyname="" notes="">armature.SUB_GethArmature</enumvalue>
+      <enumvalue friendlyname="" notes="">Drone.ELT_GethAssaultDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Drone.ELT_GethRocketDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Drone.MIN_GethReconDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Drone.MIN_GethRepairDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Drone.SUB_GethAssaultCraft</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.BOS_GethHub</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.ELT_GethDestroyer</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.ELT_GethShockTrooper</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.MIN_GethAntiTank</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.MIN_GethSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.MIN_GethTrooper</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.MIN_GethTrooper_JugCamo</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.SUB_GethJuggernaut</enumvalue>
+      <enumvalue friendlyname="" notes="">Hopper.ELT_GethGhost</enumvalue>
+      <enumvalue friendlyname="" notes="">Hopper.ELT_GethSapper</enumvalue>
+      <enumvalue friendlyname="" notes="">Hopper.MIN_GethHopper</enumvalue>
+      <enumvalue friendlyname="" notes="">Codex</enumvalue>
+      <enumvalue friendlyname="" notes="">hench_humanfemale</enumvalue>
+      <enumvalue friendlyname="" notes="">hench_krogan</enumvalue>
+      <enumvalue friendlyname="" notes="">Human.human_male</enumvalue>
+      <enumvalue friendlyname="" notes="">Human.Human_Male_Naked</enumvalue>
+      <enumvalue friendlyname="" notes="">hench_pilot</enumvalue>
+      <enumvalue friendlyname="" notes="">Drone.MIN_RachniDestructor</enumvalue>
+      <enumvalue friendlyname="" notes="">Queen.AMB_RachniQueen</enumvalue>
+      <enumvalue friendlyname="" notes="">Queen.BOS_RachniOverseer</enumvalue>
+      <enumvalue friendlyname="" notes="">Soldier.ELT_RachniSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BOS_Saren</enumvalue>
+      <enumvalue friendlyname="" notes="">BOS_SarenFlyer</enumvalue>
+      <enumvalue friendlyname="" notes="">BOS_SarenFlyer_JUG</enumvalue>
+      <enumvalue friendlyname="" notes="">BOS_SarenMonster_Custcene</enumvalue>
+      <enumvalue friendlyname="" notes="">BOS_SarenMonster_InGame</enumvalue>
+      <enumvalue friendlyname="" notes="">Damping.Beacon_Damping01</enumvalue>
+      <enumvalue friendlyname="" notes="">Damping.Beacon_Damping02</enumvalue>
+      <enumvalue friendlyname="" notes="">Damping.Beacon_Damping03</enumvalue>
+      <enumvalue friendlyname="" notes="">Damping.Beacon_Damping04</enumvalue>
+      <enumvalue friendlyname="" notes="">Overload.Beacon_Overload01</enumvalue>
+      <enumvalue friendlyname="" notes="">Overload.Beacon_Overload02</enumvalue>
+      <enumvalue friendlyname="" notes="">Overload.Beacon_Overload03</enumvalue>
+      <enumvalue friendlyname="" notes="">Overload.Beacon_Overload04</enumvalue>
+      <enumvalue friendlyname="" notes="">Sabotage.Beacon_Sabotage01</enumvalue>
+      <enumvalue friendlyname="" notes="">Sabotage.Beacon_Sabotage02</enumvalue>
+      <enumvalue friendlyname="" notes="">Sabotage.Beacon_Sabotage03</enumvalue>
+      <enumvalue friendlyname="" notes="">Sabotage.Beacon_Sabotage04</enumvalue>
+      <enumvalue friendlyname="" notes="">Asari.ELT_AsariAdept</enumvalue>
+      <enumvalue friendlyname="" notes="">Asari.SUB_AsariCommando</enumvalue>
+      <enumvalue friendlyname="" notes="">Krogan.BOS_KroganBattlemaster</enumvalue>
+      <enumvalue friendlyname="" notes="">Krogan.ELT_KroganWarrior</enumvalue>
+      <enumvalue friendlyname="" notes="">Krogan.MIN_KroganHound</enumvalue>
+      <enumvalue friendlyname="" notes="">Krogan.SUB_KroganWarlord</enumvalue>
+      <enumvalue friendlyname="" notes="">Turian.ELT_TurianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">Turian.ELT_TurianMarine</enumvalue>
+      <enumvalue friendlyname="" notes="">Turian.MIN_TurianMedic</enumvalue>
+      <enumvalue friendlyname="" notes="">Turian.MIN_TurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">Turian.MIN_TurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">Thorian.BOS_Thorian</enumvalue>
+      <enumvalue friendlyname="" notes="">Zombie.MIN_ZombieThorian</enumvalue>
+      <enumvalue friendlyname="" notes="">hench_turian</enumvalue>
+      <enumvalue friendlyname="" notes="">AntiVehicle.SUB_AllianceTurret</enumvalue>
+      <enumvalue friendlyname="" notes="">AntiVehicle.SUB_GethTurret</enumvalue>
+      <enumvalue friendlyname="" notes="">AssaultDrone.ELT_AssaultDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">AssaultDrone.ELT_RocketDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Human_Male_Med_Armor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.AntiVehicle.SUB_AllianceTurret</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.Drones.AssaultDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMF.prc1_hmf_dead</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMM.prc1_hmm_dead</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_surface_rocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_surface_soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_batarian_infiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_batarian_soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.CBT.warDog</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMF.prc1_kate</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMM.prc1_brother</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMM.prc1_hmm_sc1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMM.prc1_hmm_sc3</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMM.prc1_surveyor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_balak_pistol</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_base_tough_eng</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_btrn_SUBengineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_lieutenant</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOG_Turret_C.AssaultDrone.ELT_RocketDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_base_soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_base_vanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_balak</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_base_engineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_batarian_bodyguard2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.BAT.prc1_batarian_coward</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.Drones.RocketDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PR1_C.HMF.prc1_hmf_sci1</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_balak</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_balak_pistol</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_base_engineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_base_infiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_base_soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_base_tough_eng</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_base_vanguard</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_batarian_bodyguard1</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_batarian_bodyguard2</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_batarian_coward</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_batarian_infiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_batarian_soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_btrn_engineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_btrn_SUBengineer</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_lieutenant</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_surface_rocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BAT.prc1_surface_soldier</enumvalue>
+      <enumvalue friendlyname="" notes="">CBT.warDog</enumvalue>
+      <enumvalue friendlyname="" notes="">Drones.AssaultDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">Drones.RocketDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.pr1_kate</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.prc1_computer</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.prc1_hmf_dead</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.prc1_hmf_sci1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.prc1_kate</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc1_brother</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc1_hmm_dead</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc1_hmm_sc1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc1_hmm_sc3</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc1_hmm_sci2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc1_surveyor</enumvalue>
+      <enumvalue friendlyname="" notes="">Drones.BombDrone</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_ELT_MercenaryTurianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_ELT_MercenaryTurianRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_ELT_MercenaryTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_ELT_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_MIN_MercenaryHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_MIN_MercenaryTurianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_MIN_MercenaryTurianRocketSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_MIN_MercenaryTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_MIN_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_SUB_MercenaryKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_SUB_MercenaryTurianInfiltrator</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Mercenary.PRC2_SUB_MercenaryTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Monster.PRC2_MIN_RachniSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_ELT_PirateKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_ELT_PirateTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_MIN_PirateHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_MIN_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_MIN_PirateTurianSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_SUB_PirateHumanFemaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_SUB_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_MIN_PirateTurianSniper</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_SUB_PirateKroganSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.TUR.PRC2_TUR_Guard03</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.TUR.PRC2_TUR_Guard05</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.HMM.PRC2_HMM_YoungWarrior</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.HMM.PRC2_HUM_Ahern</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.TUR.BIOA_PRC2_TUR_Guard01</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.TUR.prc2_tur_jerk</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.TUR.PRC2_TUR_OldWarrior</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.HMF.prc2_hmf_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.HMF.prc2_hmf_crew2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.HMM.prc2_hmm_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.HMM.prc2_hmm_crew2</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.ASA.PRC2_ASA_Rival_CSell</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.ASA.PRC2_ASA_Rival_Minket</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.SAL.PRC2_SAL_Rival_Chior</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.TUR.PRC2_TUR_Rival_Prochor</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.TUR.PRC2_TUR_Rival_Sophomin</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.KRO.PRC2_KRO_FratBoy</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_C.SAL.PRC2_SAL_Ocren</enumvalue>
+      <enumvalue friendlyname="" notes="">BIOA_PRC2_SIM_C.Pirate.PRC2_ELT_PirateHumanMaleSoldier</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.PRC2_ASA_Guard01</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.PRC2_ASA_Rival_CSell</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.PRC2_ASA_Rival_Minket</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.PRC2_ASA_Rival_Thaidi</enumvalue>
+      <enumvalue friendlyname="" notes="">ASA.PRC2_ASA_YoungCommando</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.prc2_hmf_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.prc2_hmf_crew2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.PRC2_HMF_Guard01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.PRC2_HMF_Guard02</enumvalue>
+      <enumvalue friendlyname="" notes="">HMF.PRC2_HMF_Guard03</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc2_hmm_crew1</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.prc2_hmm_crew2</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.PRC2_HMM_Guard01</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.PRC2_HMM_YoungWarrior</enumvalue>
+      <enumvalue friendlyname="" notes="">HMM.PRC2_HUM_Ahern</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.PRC2_KRO_FratBoy</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.PRC2_KRO_Guard01</enumvalue>
+      <enumvalue friendlyname="" notes="">KRO.PRC2_KRO_Rival_Tahoka</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.PRC2_SAL_Guard01</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.PRC2_SAL_Ocren</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.PRC2_SAL_Rival_Chior</enumvalue>
+      <enumvalue friendlyname="" notes="">SAL.PRC2_SAL_Rival_FreNatha</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.BIOA_PRC2_TUR_Guard01</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_Guard02</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_Guard03</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_Guard04</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_Guard05</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.prc2_tur_jerk</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_OldWarrior</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_Rival_Mimanox</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_Rival_Prochor</enumvalue>
+      <enumvalue friendlyname="" notes="">TUR.PRC2_TUR_Rival_Sophomin</enumvalue>
+      <enumvalue friendlyname="" notes="">CBT.prc2_var_genericVarren</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.ELT_GethAntiTank_Dup</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.ELT_GethTrooper_Dup</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.SUB_GethDestroyer_Dup</enumvalue>
+      <enumvalue friendlyname="" notes="">Geth.SUB_GethShockTrooper_Dup</enumvalue>
+
+    </enumproperty>    
+  </Section>
+  <Section name="Engine.HUD">
+    <!-- <floatproperty propertyname="HudCanvasScale" friendlyname="HudCanvasScale" notes="Unknown at this time">0.95</floatproperty>-->
+    <boolproperty propertyname="bShowHud" friendlyname="Show HUD" notes="Turning this off will turn off almost all of the interface (not menus). Good luck!">true</boolproperty>
+  </Section>
+  <Section name="Engine.WorldInfo">
+    <floatproperty propertyname="DefaultGravityZ" friendlyname="Default gravity" notes="Value is in centimeters per second squared. Negative is down. Default is Earth gravity. Do not set to a value >= 0.">-981</floatproperty>
+    <floatproperty propertyname="RBPhysicsGravityScaling" friendlyname="Rigid body gravity scaling" notes="Multiplier value for gravity on rigid body. A rigid body is defined as a body on which the distance between two points never changes whatever be the force applied on it.">1</floatproperty>
+    <!--<floatproperty propertyname="SquintModeKernelSize" friendlyname="SquintModeKernelSize" notes="Unknown at this time">128</floatproperty>-->
+  </Section>
+  <Section name="Engine.Pawn">
+    <boolproperty propertyname="m_bBioHesitationOn" friendlyname="m_bBioHesitationOn" notes="Unknown at this time">TRUE</boolproperty>
+    <floatproperty propertyname="MaxStepHeight" friendlyname="Max step height" notes="Max Z difference between two planes that a pawn can transition up onto. Settings this to a high value can lead to some ridiculous (and buggy feeling) results">40</floatproperty>
+    <intproperty propertyname="VehicleCheckRadius" friendlyname="VehicleCheckRadius" notes="Unknown at this time">500</intproperty>
+  </Section>
+  <Section name="BIOC_Base.BioWorldInfo">
+    <intproperty propertyname="m_nScalePawnsToCharacterLevel" friendlyname="m_nScalePawnsToCharacterLevel" notes="This is a boolean value. Set to 0 for false, 1 for true.">0</intproperty>
+    <boolproperty propertyname="m_bAdvancedDifficultyScaling" friendlyname="m_bAdvancedDifficultyScaling" notes="Unknown at this time">TRUE</boolproperty>
+    <floatproperty propertyname="m_fGameOverPauseTime" friendlyname="m_fGameOverPauseTime" notes="Unknown at this time">3</floatproperty>
+    <floatproperty propertyname="m_fConversationInterruptDistance" friendlyname="m_fConversationInterruptDistance" notes="Unknown at this time">2500</floatproperty>
+    <floatproperty propertyname="m_fIdleCameraSpeed" friendlyname="m_fIdleCameraSpeed" notes="Unknown at this time">1</floatproperty>
+    <boolproperty propertyname="m_bForceDisableTutorials" friendlyname="Disable tutorials" notes="Unknown at this time">FALSE</boolproperty>
+    <boolproperty propertyname="m_bPartyMembersImmuneToExternalForce" friendlyname="Party members immune to external force" notes="Unknown at this time">TRUE</boolproperty>
+  </Section>
+  <!--<Section name="BIOC_Base.BioPlayerController">
+    <boolproperty propertyname="m_bUpdateRadarHud" friendlyname="m_bUpdateRadarHud" notes="Unknown at this time">FALSE</boolproperty>
+    <floatproperty propertyname="m_fRadarGUISize" friendlyname="m_fRadarGUISize" notes="Unknown at this time">76.5</floatproperty>
+  </Section>-->
+  <Section name="BIOC_Base.BioAIController">
+    <floatproperty propertyname="m_fPartyCoverSearchRadius" friendlyname="m_fPartyCoverSearchRadius" notes="Unknown at this time">750</floatproperty>
+    <boolproperty propertyname="m_bDesignerClearAllActionsDisplay" friendlyname="m_bDesignerClearAllActionsDisplay" notes="Unknown at this time">FALSE</boolproperty>
+    <boolproperty propertyname="m_bPawnTeleportOnFailure" friendlyname="m_bPawnTeleportOnFailure" notes="Unknown at this time">FALSE</boolproperty>
+    <floatproperty propertyname="m_AIWeaponTargetStepoutBiases" friendlyname="m_AIWeaponTargetStepoutBiases" notes="Unknown at this time">0.5</floatproperty>
+    <floatproperty propertyname="m_AIPowerTargetStepoutBiases" friendlyname="m_AIPowerTargetStepoutBiases" notes="Unknown at this time">1</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioCameraUtility">
+    <intproperty propertyname="m_bDoCamShake" friendlyname="m_bDoCamShake" notes="Unknown at this time">1</intproperty>
+  </Section>
+  
+  <Section name="BIOC_Base.BioSPGame">
+    <enumproperty propertyname="m_sDefaultPlayerActorType" friendlyname="Default player type" notes="Default player type. Same as male/female shepard model.">
+      <enumvalue friendlyname="Male Shepard">BIOG_Male_Player_C.Human.Human_Male</enumvalue>
+	  <enumvalue friendlyname="Female Shepard">BIOG_Female_Player_C.Human.Human_Female</enumvalue>
+      <enumvalue friendlyname="Ashley">BIOG_HumanFemale_Hench_C.hench_humanfemale</enumvalue>
+      <enumvalue friendlyname="Kaidan">BIOG_HumanMale_Hench_C. hench_humanmale </enumvalue>
+      <enumvalue friendlyname="Garrus">BIOG_Turian_Hench_C.hench_turian</enumvalue>
+      <enumvalue friendlyname="Wrex">BIOG_Krogan_Hench_C.hench_krogan</enumvalue>
+      <enumvalue friendlyname="Tali">BIOG_Quarian_Hench_C.hench_quarian</enumvalue>
+      <enumvalue friendlyname="Liara">BIOG_Asari_Hench_C.hench_asari</enumvalue>
+      <enumvalue friendlyname="Jenkins">BIOG_Jenkins_Hench_C.hench_jenkins</enumvalue>
+    </enumproperty>  
+  </Section>
+  <Section name="BIOC_Base.BioActorBehavior">
+    <boolproperty propertyname="m_bAreShieldsDisabled" friendlyname="m_bAreShieldsDisabled" notes="Unknown at this time">FALSE</boolproperty>
+    <boolproperty propertyname="AllowFriendlyCollateral" friendlyname="Friendly fire" notes="Turns friendly fire on or off. This also affects NPCs. Killing a quest NPC will effectively softlock your game.">FALSE</boolproperty>
+    <floatproperty propertyname="m_fFiringObsticalAbortPercentage" friendlyname="m_fFiringObsticalAbortPercentage" notes="Unknown at this time">0.33</floatproperty>
+    <floatproperty propertyname="m_fFiringAbortCutoffRadius" friendlyname="m_fFiringAbortCutoffRadius" notes="Unknown at this time">300</floatproperty>
+    <boolproperty propertyname="m_bPhysicsDamageEnabled" friendlyname="Physics damage" notes="Unknown at this time">TRUE</boolproperty>
+    <boolproperty propertyname="m_bPhysicsDamageLoggingEnabled" friendlyname="m_bPhysicsDamageLoggingEnabled" notes="Unknown at this time">FALSE</boolproperty>
+    <floatproperty propertyname="m_fPhysicsDamagePerRelVel" friendlyname="m_fPhysicsDamagePerRelVel" notes="Unknown at this time">0.02</floatproperty>
+    <floatproperty propertyname="m_fPhysicsDamageImpulsePerRelVel" friendlyname="m_fPhysicsDamageImpulsePerRelVel" notes="Unknown at this time">0.01</floatproperty>
+    <floatproperty propertyname="m_fHenchAimLagFactor" friendlyname="m_fHenchAimLagFactor" notes="Unknown at this time">0.25</floatproperty>
+    <floatproperty propertyname="m_fMaxHenchAimDist" friendlyname="m_fMaxHenchAimDist" notes="Unknown at this time">300</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioBaseSquad">
+    <floatproperty propertyname="m_fGrimeIncGrime" friendlyname="m_fGrimeIncGrime" notes="Unknown at this time">0.0025</floatproperty>
+    <floatproperty propertyname="m_fGrimeIncDirt" friendlyname="m_fGrimeIncDirt" notes="Unknown at this time">0.00125</floatproperty>
+    <floatproperty propertyname="m_fGrimeIncPeriod" friendlyname="m_fGrimeIncPeriod" notes="Unknown at this time">0.5</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioSquadAI">
+    <floatproperty propertyname="m_nPerceptionFrequency" friendlyname="m_nPerceptionFrequency" notes="Amount of time in seconds it takes the entire squad to update perception versus the player squad">1</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioInventory">
+    <intproperty propertyname="m_nMaxCredits" friendlyname="Max credits" notes="Max number of credits you can carry">9999999</intproperty>
+    <intproperty propertyname="m_nMaxGrenades" friendlyname="Max grenades" notes="Max number of grenades you can carry">5</intproperty>
+    <intproperty propertyname="m_fMaxSalvage" friendlyname="Max salvage" notes="Max number of omni-gel you can carry">999</intproperty>
+    <intproperty propertyname="m_fMaxMedigel" friendlyname="Max medigel" notes="Max number of medigel you can carry">5</intproperty>
+  </Section>
+  <Section name="BIOC_Base.BioItem">
+    <floatproperty propertyname="m_fSalvageMultiplier" friendlyname="Item breakdown multiplier" notes="How much omnigel you get back from breaking down an item">0.1</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioConversation">
+    <floatproperty propertyname="m_fSubtitleTimingModifier" friendlyname="m_fSubtitleTimingModifier" notes="Unknown at this time">0.5</floatproperty>
+    <floatproperty propertyname="m_fSubtitleTimingMinimum" friendlyname="m_fSubtitleTimingMinimum" notes="Unknown at this time">2</floatproperty>
+    <boolproperty propertyname="m_bEnableLookAtWithStage" friendlyname="m_bEnableLookAtWithStage" notes="Unknown at this time">TRUE</boolproperty>
+    <boolproperty propertyname="m_bRemoveWeapons" friendlyname="Remove weapons during conversations" notes="Unknown at this time">TRUE</boolproperty>
+    <floatproperty propertyname="m_fVOInterruptRampDownTime" friendlyname="m_fVOInterruptRampDownTime" notes="Unknown at this time">1</floatproperty>
+    <floatproperty propertyname="m_fTutorialDelay" friendlyname="Tutorial delay" notes="Unknown at this time">10</floatproperty>
+    <boolproperty propertyname="m_bNextLinePreLoadEnabled" friendlyname="Preload next line" notes="Unknown at this time">TRUE</boolproperty>
+  </Section>
+  <Section name="BIOC_Base.BioPawnBehavior">
+    <floatproperty propertyname="m_fStabilityAtMaxError" friendlyname="m_fStabilityAtMaxError" notes="Unknown at this time">0</floatproperty>
+    <floatproperty propertyname="m_fStabilityAtMinError" friendlyname="m_fStabilityAtMinError" notes="Unknown at this time">1</floatproperty>
+    <intproperty propertyname="m_bDrawReiculeSimDebugCircles" friendlyname="m_bDrawReiculeSimDebugCircles" notes="Unknown at this time">0</intproperty>
+    <boolproperty propertyname="m_bEnableLeaning" friendlyname="m_bEnableLeaning" notes="Unknown at this time">FALSE</boolproperty>
+    <floatproperty propertyname="m_fPainSoundDamageThreshold" friendlyname="m_fPainSoundDamageThreshold" notes="Unknown at this time">1</floatproperty>
+    <boolproperty propertyname="m_bAllowPhysicsOnDeadBodies" friendlyname="Dead body physics" notes="Allows dead bodies to have physics applied to them. Can significantly reduce game performance.">FALSE</boolproperty>
+    <floatproperty propertyname="m_fMeshAdjCheckFrequency" friendlyname="m_fMeshAdjCheckFrequency" notes="Unknown at this time">0.15</floatproperty>
+    <floatproperty propertyname="m_fMeshAdjFarCheckFrequency" friendlyname="m_fMeshAdjFarCheckFrequency" notes="Unknown at this time">1</floatproperty>
+    <floatproperty propertyname="m_fMeshAdjFarCheckDistance" friendlyname="m_fMeshAdjFarCheckDistance" notes="Unknown at this time">2000</floatproperty>
+    <floatproperty propertyname="m_fBleedOutThreshold" friendlyname="m_fBleedOutThreshold" notes="Unknown at this time">0.25</floatproperty>
+    <floatproperty propertyname="m_fBleedOutMinDamageResistance" friendlyname="m_fBleedOutMinDamageResistance" notes="Unknown at this time">0.25</floatproperty>
+    <floatproperty propertyname="m_fBleedOutCasualMinDamageResistance" friendlyname="m_fBleedOutCasualMinDamageResistance" notes="Unknown at this time">0.1</floatproperty>
+    <floatproperty propertyname="m_fHardCoreEnemyDamageReduction" friendlyname="m_fHardCoreEnemyDamageReduction" notes="Unknown at this time">0.75</floatproperty>
+    <floatproperty propertyname="m_fInsanityEnemyDamageReduction" friendlyname="m_fInsanityEnemyDamageReduction" notes="Unknown at this time">0.5</floatproperty>
+    <floatproperty propertyname="m_fBleedOutMinHealthRegenRate" friendlyname="m_fBleedOutMinHealthRegenRate" notes="Unknown at this time">0.0017</floatproperty>
+    <floatproperty propertyname="m_fCasualBonusHealthRegenRate" friendlyname="m_fCasualBonusHealthRegenRate" notes="Unknown at this time">2</floatproperty>
+    <floatproperty propertyname="m_fBleedOutSoundDurationStart" friendlyname="m_fBleedOutSoundDurationStart" notes="Unknown at this time">2</floatproperty>
+    <floatproperty propertyname="m_fBleedOutSoundDurationEnd" friendlyname="m_fBleedOutSoundDurationEnd" notes="Unknown at this time">1</floatproperty>
+    <floatproperty propertyname="m_fBleedOutSoundVolumeStart" friendlyname="m_fBleedOutSoundVolumeStart" notes="Unknown at this time">0.5</floatproperty>
+    <floatproperty propertyname="m_fBleedOutSoundVolumeEnd" friendlyname="m_fBleedOutSoundVolumeEnd" notes="Unknown at this time">1</floatproperty>
+    <nameproperty propertyname="m_nmBleedOutVFXParameter" friendlyname="m_nmBleedOutVFXParameter" notes="Unknown at this time">fb_Damage</nameproperty>
+    <intproperty propertyname="m_fDeathCapabilityActivationTime" friendlyname="m_fDeathCapabilityActivationTime" notes="Unknown at this time">2</intproperty>
+    <floatproperty propertyname="m_fVehicleExpScaleFactor" friendlyname="m_fVehicleExpScaleFactor" notes="Unknown at this time">0.4</floatproperty>
+    <floatproperty propertyname="m_fHenchDamageResistance" friendlyname="m_fHenchDamageResistance" notes="Unknown at this time">0.75</floatproperty>
+    <floatproperty propertyname="m_fHenchCasualDamageResistance" friendlyname="m_fHenchCasualDamageResistance" notes="Unknown at this time">0.5</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioItemWeaponRanged">
+    <floatproperty propertyname="m_fBestRangeConst" friendlyname="m_fBestRangeConst" notes="Unknown at this time">10</floatproperty>
+    <floatproperty propertyname="m_fMinRangeConst" friendlyname="m_fMinRangeConst" notes="Unknown at this time">4000</floatproperty>
+    <floatproperty propertyname="m_fMaxRangeConst" friendlyname="m_fMaxRangeConst" notes="Unknown at this time">60</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioWeaponRanged">
+    <floatproperty propertyname="m_fProjectilesSpreadModifier" friendlyname="m_fProjectilesSpreadModifier" notes="Unknown at this time">0.2</floatproperty>
+    <intproperty propertyname="m_nTraceFireTestType" friendlyname="m_nTraceFireTestType" notes="Unknown at this time">0</intproperty>
+    <intproperty propertyname="m_fOverlapRecurseBreakoutDistance" friendlyname="m_fOverlapRecurseBreakoutDistance" notes="Unknown at this time">50</intproperty>
+    <intproperty propertyname="m_nTotalNumberStrips" friendlyname="m_nTotalNumberStrips" notes="Unknown at this time">10</intproperty>
+    <intproperty propertyname="m_nTotalNumberCloseStrips" friendlyname="m_nTotalNumberCloseStrips" notes="Unknown at this time">2</intproperty>
+    <intproperty propertyname="m_nCloseStripLength" friendlyname="m_nCloseStripLength" notes="Unknown at this time">1500</intproperty>
+    <intproperty propertyname="m_nWeaponVFXLevel" friendlyname="m_nWeaponVFXLevel" notes="Unknown at this time">0</intproperty>
+    <intproperty propertyname="m_fVehicleFireDistance" friendlyname="m_fVehicleFireDistance" notes="Unknown at this time">60000</intproperty>
+    <intproperty propertyname="m_fWeaponFireDistance" friendlyname="m_fWeaponFireDistance" notes="Unknown at this time">20000</intproperty>
+    <intproperty propertyname="m_fSniperFireDistance" friendlyname="m_fSniperFireDistance" notes="Unknown at this time">40000</intproperty>
+    <!--<floatproperty propertyname="PortArmsPistolDistance" friendlyname="PortArmsPistolDistance" notes="Unknown at this time">15</floatproperty>
+    <floatproperty propertyname="PortArmsShotgunDistance" friendlyname="PortArmsShotgunDistance" notes="Unknown at this time">10</floatproperty>
+    <floatproperty propertyname="PortArmsAssaultDistance" friendlyname="PortArmsAssaultDistance" notes="Unknown at this time">10</floatproperty>
+    <floatproperty propertyname="PortArmsSniperDistance" friendlyname="PortArmsSniperDistance" notes="Unknown at this time">35</floatproperty>-->
+    <floatproperty propertyname="m_fMaxVFXIntensity" friendlyname="m_fMaxVFXIntensity" notes="Unknown at this time">6</floatproperty>
+    <floatproperty propertyname="m_fMinVFXIntensity" friendlyname="m_fMinVFXIntensity" notes="Unknown at this time">0</floatproperty>
+    <floatproperty propertyname="m_fMaxVFXDecalIntensity" friendlyname="m_fMaxVFXDecalIntensity" notes="Unknown at this time">1</floatproperty>
+    <floatproperty propertyname="m_fMinVFXDecalIntensity" friendlyname="m_fMinVFXDecalIntensity" notes="Unknown at this time">0</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioPower">
+    <floatproperty propertyname="m_fBestRangeConst" friendlyname="m_fBestRangeConst" notes="Unknown at this time">40</floatproperty>
+    <floatproperty propertyname="m_fAreaAttackThresholdConst" friendlyname="m_fAreaAttackThresholdConst" notes="Unknown at this time">100</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioArtPlaceable">
+    <floatproperty propertyname="CoverSearchRadius" friendlyname="CoverSearchRadius" notes="Unknown at this time">500</floatproperty>
+    <intproperty propertyname="CoverSearchRadiusSlotSize_XY" friendlyname="CoverSearchRadiusSlotSize_XY" notes="Unknown at this time">20</intproperty>
+    <intproperty propertyname="CoverSearchRadiusSlotSize_Z" friendlyname="CoverSearchRadiusSlotSize_Z" notes="Unknown at this time">90</intproperty>
+    <floatproperty propertyname="m_fMaxRelevancyDistance" friendlyname="m_fMaxRelevancyDistance" notes="Unknown at this time">6250000</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioPawn">
+    <boolproperty propertyname="m_isCameraShakeEnabled" friendlyname="Camera shake enabled" notes="Allows camera to shake in response to moving, shooting, etc.">TRUE</boolproperty>
+    <floatproperty propertyname="m_fWeaponLOSThreshold" friendlyname="m_fWeaponLOSThreshold" notes="Unknown at this time">0.666</floatproperty>
+    <floatproperty propertyname="CoverPlayerInterval" friendlyname="CoverPlayerInterval" notes="Player cover update interval - length of time between cover updates">0.1</floatproperty>
+    <floatproperty propertyname="CoverNPCInterval" friendlyname="CoverNPCInterval" notes="NPC cover update interval - length of time between cover updates">0.2</floatproperty>
+    <floatproperty propertyname="m_fEnableCCDMultiplierThreshold" friendlyname="Distance based corpse cleanup multiplier" notes="Unknown at this time">10</floatproperty>
+    <intproperty propertyname="m_nMaxCorpseVisibilityCleanupAttempts" friendlyname="Max onscreen corpse cleanup attempts" notes="If after this many tries, the body has not gone off screen, use the distance threshold">4</intproperty>
+    <floatproperty propertyname="m_fCorpseCleanupFirstAttemptTime" friendlyname="Corpse cleanup first attempt delay" notes="How many seconds to wait until the first corpse cleanup attempt">5</floatproperty>
+    <floatproperty propertyname="m_fCorpseCleanupAttemptRetryTime" friendlyname="Corpse cleanup reattempt delay" notes="How many seconds to wait between cleanup tries">2</floatproperty>
+    <floatproperty propertyname="m_fMaxCorpseCleanupDistanceThreshold" friendlyname="NSM: Corpse cleanup distance" notes="FOR NON SKELETAL MESH CORPSES: Distance the corpse must be from the camera before it is cleaned up even if it is in view (in centimeters)">4000</floatproperty>
+    <floatproperty propertyname="m_fMaxCorpseCleanupScreenSizeThreshold" friendlyname="SM: Corpse cleanup on-screen percent" notes="FOR SKELETAL MESH CORPSES: The corpse must take up this much screen space or less before it is cleaned up even if it is in view">0.1</floatproperty>
+  </Section>
+  <Section name="BIOC_Base.BioActivePower">
+    <boolproperty propertyname="m_bSkipPowerCooldown" friendlyname="Disable power cooldown" notes="Turn to true to disable cooldown on powers. Turning this off will cause AI to constantly spam powers which may make them overpowered or worthless in battle.">FALSE</boolproperty>
+    <floatproperty propertyname="m_fLeanDelayTime" friendlyname="m_fLeanDelayTime" notes="Unknown at this time">0.5</floatproperty>
+    <floatproperty propertyname="m_fLeanDelayVarianceTime" friendlyname="m_fLeanDelayVarianceTime" notes="Unknown at this time">0.5</floatproperty>
+  </Section>
+  <Section name="Cover">
+    <intproperty propertyname="DefaultStandingHeight" friendlyname="DefaultStandingHeight" notes="Unknown at this time">88</intproperty>
+    <intproperty propertyname="DefaultCrouchedHeight" friendlyname="DefaultCrouchedHeight" notes="Unknown at this time">55</intproperty>
+    <intproperty propertyname="DefaultRadius" friendlyname="DefaultRadius" notes="Unknown at this time">30</intproperty>
+    <intproperty propertyname="DefaultLeanLeftDistance" friendlyname="DefaultLeanLeftDistance" notes="Unknown at this time">60</intproperty>
+    <intproperty propertyname="DefaultLeanRightDistance" friendlyname="DefaultLeanRightDistance" notes="Unknown at this time">60</intproperty>
+  </Section>
+  <Section name="DynamicCover">
+    <intproperty propertyname="m_fStandingCoverHeight" friendlyname="m_fStandingCoverHeight" notes="Unknown at this time">170</intproperty>
+    <intproperty propertyname="m_fMidLevelCoverHeight" friendlyname="m_fMidLevelCoverHeight" notes="Unknown at this time">120</intproperty>
+    <intproperty propertyname="m_fLowLevelCoverHeight" friendlyname="m_fLowLevelCoverHeight" notes="Unknown at this time">70</intproperty>
+  </Section>
+  <Section name="BIOC_Base.BioSaveGame">
+    <boolproperty propertyname="m_bUseNewSaveSystem" friendlyname="m_bUseNewSaveSystem" notes="Unknown at this time">TRUE</boolproperty>
+    <boolproperty propertyname="m_bIgnoreDLCRequirements" friendlyname="m_bIgnoreDLCRequirements" notes="Unknown at this time">FALSE</boolproperty>
+    <floatproperty propertyname="m_fAutoSaveTime" friendlyname="m_fAutoSaveTime" notes="Unknown at this time">300</floatproperty>
+    <intproperty propertyname="m_nNumSaveSlots" friendlyname="m_nNumSaveSlots" notes="Unknown at this time">5</intproperty>
+    <floatproperty propertyname="m_fAutoSaveAttemptDelay" friendlyname="m_fAutoSaveAttemptDelay" notes="Unknown at this time">2</floatproperty>
+    <boolproperty propertyname="m_bFilterCharacterSaves" friendlyname="m_bFilterCharacterSaves" notes="Unknown at this time">true</boolproperty>
+    <boolproperty propertyname="m_bDissableAutoSave" friendlyname="Disable auto save" notes="Turns autosave on or off">TRUE</boolproperty>
+    <boolproperty propertyname="m_bEnableLimitedSaves" friendlyname="Limit amount of saves" notes="Limits the amount of saves to the 'Max save games' amount">FALSE</boolproperty>
+    <intproperty propertyname="m_nMaxSaveGames" friendlyname="Max save games" notes="Unknown at this time">999</intproperty>
+  </Section>
+</properties>

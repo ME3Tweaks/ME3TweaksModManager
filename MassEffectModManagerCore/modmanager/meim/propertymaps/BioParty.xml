@@ -1,0 +1,19 @@
+<properties>
+  <Section name="BIOC_Base.BioPlayerSquad">
+    <intproperty propertyname="SquadReformRange" friendlyname="Squad reform range" notes="Range squad must be within when the reform command is used">3400</intproperty>
+    <boolproperty propertyname="UseMoreAdvancedCover" friendlyname="Use more advanced cover" notes="Unknown at this time">FALSE</boolproperty>
+    <enumproperty propertyname="m_eGameOverCondition" friendlyname="Game over condition" notes="Condition that must be met to signal game over">
+        <enumvalue friendlyname="Shepard dies" default="true">BIO_GAME_OVER_CONDITION_PLAYER_PAWN_DIES</enumvalue>
+        <enumvalue friendlyname="All squad members die">BIO_GAME_OVER_CONDITION_PLAYER_SQUAD_DIES</enumvalue>
+    </enumproperty>
+    <intproperty propertyname="m_fInCombatMaxRange" friendlyname="Combat max range" notes="Maximum range a pawn can be from a hostile to still be considered in combat">4500</intproperty>
+    <intproperty propertyname="m_fRevivalRange" friendlyname="Revive range" notes="Range of revival">2500</intproperty>
+    <intproperty propertyname="m_fVehicleInCombatMaxRange" friendlyname="Vehicle combat range" notes="Maximum range a vehicle can be from a hostile to be in combat">41000</intproperty>
+    <intproperty propertyname="m_fCombatCooldownTime" friendlyname="Combat cooldown time" notes="Time after all enemies are dead that combat mode ends">5</intproperty>
+    <floatproperty propertyname="m_fCoverDelayTime" friendlyname="Cover delay time" notes="Unknown at this time">2</floatproperty>
+    <floatproperty propertyname="m_fPercentHealthOnResurrection" friendlyname="Percent health on revive" notes="% of total health when revived from being downed">0.2</floatproperty>
+    <floatproperty propertyname="m_fPerceptionTolerance" friendlyname="Perception tolerance" notes="Unknown at this time">5</floatproperty>
+    <intproperty propertyname="m_nMaxInventoryItems" friendlyname="Max inventory size" notes="Maximum amount of inventory space">150</intproperty>
+    <intproperty propertyname="m_nMaxInventoryWarningThreshold" friendlyname="Max inventory warning threshold" notes="Number of items in inventory &gt; will trigger warning">135</intproperty>
+  </Section>
+</properties>

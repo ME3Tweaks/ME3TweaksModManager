@@ -199,6 +199,7 @@ namespace MassEffectModManagerCore
         public ICommand LoginToNexusCommand { get; set; }
         public GenericCommand EndorseSelectedModCommand { get; set; }
         public ICommand CreateTestArchiveCommand { get; set; }
+        public ICommand LaunchIniModderCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -225,6 +226,12 @@ namespace MassEffectModManagerCore
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
+            LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
+        }
+
+        private void OpenMEIM()
+        {
+            new ME1IniModder().Show();
         }
 
         private bool CanCreateTestArchive() => SelectedMod != null && SelectedMod.GetJob(ModJob.JobHeader.ME2_RCWMOD) == null;
@@ -1731,7 +1738,6 @@ namespace MassEffectModManagerCore
             string tool = null;
             if (sender == ALOTInstaller_MenuItem) tool = ExternalToolLauncher.ALOTInstaller;
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
-            if (sender == MassEffectIniModder_MenuItem) tool = ExternalToolLauncher.MEIM;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
             LaunchExternalTool(tool);
@@ -1805,6 +1811,24 @@ namespace MassEffectModManagerCore
         public bool IsEndorsingMod { get; private set; }
         public string NexusUsername { get; set; }
         public int NexusUserID { get; set; }
+
+        public bool CanOpenMEIM()
+        {
+            //ensure not already open
+            foreach (var window in Application.Current.Windows)
+            {
+                if (window is ME1IniModder) return false;
+            }
+
+            var installed = InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1);
+            if (installed)
+            {
+                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOGame.ini");
+                return File.Exists(iniFile);
+            }
+
+            return false;
+        }
 
         private void Window_Drop(object sender, DragEventArgs e)
         {

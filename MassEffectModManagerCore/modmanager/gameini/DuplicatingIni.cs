@@ -1,14 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
+    [Localizable(false)]
     public class DuplicatingIni
     {
         public List<Section> Sections = new List<Section>();
+
+        public IniEntry GetValue(string sectionname, string key)
+        {
+            var section = GetSection(sectionname);
+            return section?.GetValue(key);
+        }
+
+        public Section GetSection(string sectionname)
+        {
+            return Sections.FirstOrDefault(x => x.Header == sectionname);
+        }
+
         public static DuplicatingIni LoadIni(string iniFile)
         {
             return ParseIni(File.ReadAllText(iniFile));
@@ -84,6 +99,11 @@ namespace MassEffectModManagerCore.modmanager.gameini
         {
             public string Header;
             public List<IniEntry> Entries = new List<IniEntry>();
+
+            public IniEntry GetValue(string key)
+            {
+                return Entries.FirstOrDefault(x => x.Key == key);
+            }
         }
 
         public class IniEntry
