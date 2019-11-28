@@ -30,6 +30,11 @@ namespace MassEffectModManagerCore.modmanager.gameini
             }
         }
 
+        /// <summary>
+        /// Serializes this coalesced file to disk.
+        /// </summary>
+        /// <param name="outputfile">File to write to. If this is null the input filepath is used instead.</param>
+        /// <returns>True if serialization succeeded (always).</returns>
         public bool Serialize(string outputfile = null)
         {
             string outfile = outputfile ?? Inputfile;

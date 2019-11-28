@@ -2,15 +2,18 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using MassEffectModManagerCore.modmanager.helpers;
 using static MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
+    [Localizable(false)]
     [DebuggerDisplay("RCWMod {ModName} by {Author}, {Files.Count} files")]
     public class RCWMod
     {
@@ -31,7 +34,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             }
             else
             {
-                author = author.Substring("###Author:".Length);
+                author = author.Substring("###Author:".Length).Trim();
             }
 
             var nummods = lines.Count(x => x.StartsWith("###MOD:", StringComparison.InvariantCultureIgnoreCase));
@@ -58,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                         {
                             mods.Add(m);
                         }
-                        m = new RCWMod(author, fname + " " + line.Substring("###MOD:".Length), lines, ref i);
+                        m = new RCWMod(author, fname + " " + line.Substring("###MOD:".Length).Trim(), lines, ref i);
                     }
                 }
 
@@ -69,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             }
             else
             {
-                int pos = -1; //headers always pre-advance by 1.
+                int pos = Array.FindIndex(lines, c => c.StartsWith("###MOD:")); //headers always pre-advance by 1. If mod is not found it'll return -1 which is OK.
                 m = new RCWMod(author, fname, lines, ref pos);
                 if (m.Files.Count > 0)
                 {
@@ -104,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                     {
                         Files.Add(currentFile);
                     }
-                    currentFile = new CoalescedFile(line.Substring("###FILE:".Length), lines, ref linepos);
+                    currentFile = new CoalescedFile(line.Substring("###FILE:".Length).Trim(), lines, ref linepos);
                 }
 
             }
@@ -117,50 +120,6 @@ namespace MassEffectModManagerCore.modmanager.gameini
         public string ModName;
         public string Author;
         public List<CoalescedFile> Files = new List<CoalescedFile>();
-
-        public void ApplyToTarget(GameTarget target)
-        {
-            if (target.Game != Mod.MEGame.ME2)
-            {
-                throw new Exception("Cannot apply RCW mod to game target that is not ME2.");
-            }
-            var coalescedFile = Path.Combine(target.TargetPath, "BioGame", "Config", "PC", "Cooked", "Coalesced.ini");
-            if (File.Exists(coalescedFile))
-            {
-                ME2Coalesced me2c = new ME2Coalesced(coalescedFile);
-                foreach (var file in Files)
-                {
-                    if (me2c.Inis.TryGetValue(file.FileName, out var ini))
-                    {
-                        foreach (var section in file.Sections)
-                        {
-                            var targetIniSection = ini.Sections.FirstOrDefault(x => x.Header == section.SectionName);
-                            if (targetIniSection != null)
-                            {
-                                for (int i = targetIniSection.Entries.Count; i > 0; i--)
-                                {
-                                    var entry = targetIniSection.Entries[i];
-
-                                    var key = entry.Key;
-                                }
-                            }
-                            else
-                            {
-                                Log.Error("Ini section to apply to not present in file: " + file.FileName + " " + section.SectionName);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Log.Error("Ini to apply to not present in coalesced: " + file.FileName);
-                    }
-                }
-            }
-            else
-            {
-                Log.Error("Game coalesced file was not found! Should be at " + coalescedFile);
-            }
-        }
 
 
         [DebuggerDisplay("RCWMod CoalescedFile {FileName}, {Sections.Count} sections")]
@@ -192,6 +151,11 @@ namespace MassEffectModManagerCore.modmanager.gameini
                         }
                         currentSection = new Section(line.Trim('[', ']'), lines, ref linepos);
                     }
+                }
+
+                if (currentSection != null)
+                {
+                    Sections.Add(currentSection);
                 }
             }
 
