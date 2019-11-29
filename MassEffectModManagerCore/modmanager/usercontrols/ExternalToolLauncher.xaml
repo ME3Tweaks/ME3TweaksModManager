@@ -5,15 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
-                          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
-             mc:Ignorable="d"
+         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        mc:Ignorable="d"
         Height="Auto" Width="300">
     <StackPanel VerticalAlignment="Center">
         <Image Source="{Binding ToolImageSource, FallbackValue='/modmanager/toolicons/alot_big.png'}" Width="128" Height="128"/>
         <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10"/>
         <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding PercentDownloaded, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
-        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Downloading ALOT Installer}"/>
+        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Downloading Placeholder}"/>
     </StackPanel>
 </local:MMBusyPanelBase>

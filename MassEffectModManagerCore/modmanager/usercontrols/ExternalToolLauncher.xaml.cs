@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Octokit;
@@ -26,15 +27,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class ExternalToolLauncher : MMBusyPanelBase
     {
         //have to be const apparently
-        public const string ME3Explorer = "ME3Explorer";
-        public const string ALOTInstaller = "ALOT Installer";
-        public const string MEIM = "Mass Effect INI Modder";
-        public const string MEM = "Mass Effect Modder";
-        public const string MER = "Mass Effect Randomizer";
-        public const string ME3EXP_ASIMANAGER = "JUMPLIST_ASIMANAGER";
-        public const string ME3EXP_DLCUNPACKER = "JUMPLIST_DLCUNPACKER";
-        public const string ME3EXP_MOUNTEDITOR = "JUMPLIST_MOUNTEDITOR";
-        public const string ME3EXP_PACKAGEDUMPER = "JUMPLIST_PACKAGEDUMPER";
+        public const string ME3Explorer = @"ME3Explorer";
+        public const string ALOTInstaller = @"ALOT Installer";
+        public const string MEIM = @"Mass Effect INI Modder";
+        public const string MEM = @"Mass Effect Modder";
+        public const string MER = @"Mass Effect Randomizer";
+        public const string ME3EXP_ASIMANAGER = @"JUMPLIST_ASIMANAGER";
+        public const string ME3EXP_DLCUNPACKER = @"JUMPLIST_DLCUNPACKER";
+        public const string ME3EXP_MOUNTEDITOR = @"JUMPLIST_MOUNTEDITOR";
+        public const string ME3EXP_PACKAGEDUMPER = @"JUMPLIST_PACKAGEDUMPER";
         private string tool;
 
         private static List<string> ToolsCheckedForUpdatesInThisSession = new List<string>();
@@ -51,15 +52,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 switch (tool)
                 {
                     case ALOTInstaller:
-                        return "/modmanager/toolicons/alot_big.png";
+                        return @"/modmanager/toolicons/alot_big.png";
                     case MER:
-                        return "/modmanager/toolicons/masseffectrandomizer_big.png";
+                        return @"/modmanager/toolicons/masseffectrandomizer_big.png";
                     case ME3Explorer:
-                        return "/modmanager/toolicons/me3explorer_big.png";
+                        return @"/modmanager/toolicons/me3explorer_big.png";
                     case MEM:
-                        return "/modmanager/toolicons/masseffectmodder_big.png";
+                        return @"/modmanager/toolicons/masseffectmodder_big.png";
                     case MEIM:
-                        return "/modmanager/toolicons/masseffectinimodder_big.png";
+                        return @"/modmanager/toolicons/masseffectinimodder_big.png";
                     default:
                         return null;
                 }
@@ -76,20 +77,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void DownloadTool(string localToolFolderName, Release latestRelease, string executable)
         {
-            Analytics.TrackEvent("Downloading new external tool", new Dictionary<string, string>()
+            Analytics.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
             {
-                {"Tool name", Path.GetFileName(executable) },
-                {"Version", latestRelease.TagName}
+                {@"Tool name", Path.GetFileName(executable) },
+                {@"Version", latestRelease.TagName}
             });
-            var toolName = tool.Replace(" ", "");
-            Action = "Downloading " + tool;
+            var toolName = tool.Replace(@" ", "");
+            Action = M3L.GetString(M3L.string_interp_downloadingX, tool);
             PercentVisibility = Visibility.Visible;
             PercentDownloaded = 0;
 
             WebClient downloadClient = new WebClient();
 
-            downloadClient.Headers["Accept"] = "application/vnd.github.v3+json";
-            downloadClient.Headers["user-agent"] = "MassEffectModManager";
+            downloadClient.Headers[@"Accept"] = @"application/vnd.github.v3+json";
+            downloadClient.Headers[@"user-agent"] = @"ME3TweaksModManager";
             string temppath = Path.GetTempPath();
             downloadClient.DownloadProgressChanged += (s, e) =>
             {
@@ -105,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var outputDiretory = Directory.CreateDirectory(Path.GetDirectoryName(executable)).FullName;
                 switch (extension)
                 {
-                    case ".exe":
+                    case @".exe":
                         if (File.Exists(executable))
                         {
                             File.Delete(executable);
@@ -114,12 +115,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         File.Move(downloadPath, executable);
                         LaunchTool(executable);
                         break;
-                    case ".rar":
-                    case ".7z":
-                    case ".zip":
+                    case @".rar":
+                    case @".7z":
+                    case @".zip":
                         using (var archiveFile = new SevenZipExtractor(downloadPath))
                         {
-                            Action = "Extracting " + tool;
+                            Action = M3L.GetString(M3L.string_interp_extractingX, tool);
                             PercentDownloaded = 0;
                             void progressCallback(object sender, ProgressEventArgs progress)
                             {
@@ -137,14 +138,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LaunchTool(string localExecutable)
         {
-            Action = "Launching " + tool;
-            Analytics.TrackEvent("Launching tool", new Dictionary<string, string>()
+            Action = M3L.GetString(M3L.string_interp_launching, tool);
+            Analytics.TrackEvent(@"Launching tool", new Dictionary<string, string>()
             {
-                {"Tool name", Path.GetFileName(localExecutable) }
+                {@"Tool name", Path.GetFileName(localExecutable) }
             });
             PercentVisibility = Visibility.Collapsed;
             PercentDownloaded = 0;
-            Log.Information($"Launching: {localExecutable} {arguments}");
+            Log.Information($@"Launching: {localExecutable} {arguments}");
             Process.Start(localExecutable, arguments);
             Thread.Sleep(2500);
             OnClosing(DataEventArgs.Empty);
@@ -159,37 +160,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             switch (tool)
             {
                 case ALOTInstaller:
-                    toolGithubOwner = "ME3Tweaks";
-                    toolGithubRepoName = "ALOTInstaller";
+                    toolGithubOwner = @"ME3Tweaks";
+                    toolGithubRepoName = @"ALOTInstaller";
                     break;
                 case MER:
-                    toolGithubOwner = "ME3Tweaks";
-                    toolGithubRepoName = "MassEffectRandomizer";
+                    toolGithubOwner = @"ME3Tweaks";
+                    toolGithubRepoName = @"MassEffectRandomizer";
                     break;
                 case ME3Explorer:
-                    toolGithubOwner = "ME3Tweaks";
-                    toolGithubRepoName = "ME3Explorer";
+                    toolGithubOwner = @"ME3Tweaks";
+                    toolGithubRepoName = @"ME3Explorer";
                     break;
                 case MEM:
-                    toolGithubOwner = "MassEffectModder";
-                    toolGithubRepoName = "MassEffectModderLegacy";
+                    toolGithubOwner = @"MassEffectModder";
+                    toolGithubRepoName = @"MassEffectModderLegacy";
                     break;
                 case MEIM:
-                    toolGithubOwner = "ME3Tweaks";
-                    toolGithubRepoName = "MassEffectIniModder";
+                    toolGithubOwner = @"ME3Tweaks";
+                    toolGithubRepoName = @"MassEffectIniModder";
                     break;
 
             }
 
 
-            Log.Information($"Checking for application updates from github ({toolGithubOwner}, {toolGithubRepoName})");
-            var client = new GitHubClient(new ProductHeaderValue("MassEffectModManager"));
+            Log.Information($@"Checking for application updates from github ({toolGithubOwner}, {toolGithubRepoName})");
+            var client = new GitHubClient(new ProductHeaderValue(@"ME3TweaksModManager"));
             try
             {
                 var releases = await client.Repository.Release.GetAll(toolGithubOwner, toolGithubRepoName);
                 if (releases.Count > 0)
                 {
-                    Log.Information("Parsing release information from github");
+                    Log.Information(@"Parsing release information from github");
 
                     //The release we want to check is always the latest with assets that is not a pre-release
                     return releases.FirstOrDefault(x => !x.Prerelease && x.Assets.Count > 0);
@@ -197,7 +198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Log.Error("Error checking for tool update: " + e);
+                Log.Error(@"Error checking for tool update: " + e);
             }
 
             return null;
@@ -215,8 +216,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.DoWork += async (a, b) =>
             {
                 var toolName = tool.Replace(" ", "");
-                var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), "ExternalTools", toolName);
-                var localExecutable = Path.Combine(localToolFolderName, toolName + ".exe");
+                var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", toolName);
+                var localExecutable = Path.Combine(localToolFolderName, toolName + @".exe");
                 bool needsDownloading = !File.Exists(localExecutable);
 
                 if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
@@ -225,7 +226,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     LaunchTool(localExecutable);
                     return;
                 }
-                Action = "Checking for updates";
+                Action = M3L.GetString(M3L.string_checkingForUpdates);
                 var latestRelease = await FetchLatestRelease();
 
 
@@ -241,8 +242,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //Must run on UI thread
                         //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
-                        Log.Error("Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
-                        Action = "Failed to download " + tool;
+                        Log.Error(@"Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
+                        Action = M3L.GetString(M3L.string_interp_failedToDownloadX, tool);
                         PercentVisibility = Visibility.Collapsed;
                         PercentDownloaded = 0;
                         Thread.Sleep(5000);
@@ -273,7 +274,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         Version serverVersion = new Version(latestRelease.TagName);
-                        Version localVersion = new Version(string.Format("{0}.{1}.{2}.{3}", fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart));
+                        Version localVersion = new Version(string.Format(@"{0}.{1}.{2}.{3}", fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart));
                         if (serverVersion > localVersion)
                         {
                             needsUpdated = true;

@@ -302,7 +302,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_customDLCMissingLocalizedTLK = "string_interp_customDLCMissingLocalizedTLK";
 		public static readonly string string_errorFindingString = "string_errorFindingString";
 		public static readonly string string_interp_tlkDifference = "string_interp_tlkDifference";
-		public static readonly string string_interp_languageCheckInProgressPercent = "string_interp_languageCheckInProgressPercent";
 		public static readonly string string_noLanguageIssuesDetected = "string_noLanguageIssuesDetected";
 		public static readonly string string_checkingSFARFilesSizes = "string_checkingSFARFilesSizes";
 		public static readonly string string_modDoesNotUseSFARs = "string_modDoesNotUseSFARs";
@@ -350,5 +349,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_inconsistentDLCDetectedUnofficialGame = "string_inconsistentDLCDetectedUnofficialGame";
 		public static readonly string string_movies = "string_movies";
 		public static readonly string string_basegame = "string_basegame";
+		public static readonly string string_interp_downloadingX = "string_interp_downloadingX";
+		public static readonly string string_interp_extractingX = "string_interp_extractingX";
+		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";
+		public static readonly string string_interp_dialogUnableToDownloadX = "string_interp_dialogUnableToDownloadX";
+		public static readonly string string_interp_failedToDownloadX = "string_interp_failedToDownloadX";
 	}
 }
