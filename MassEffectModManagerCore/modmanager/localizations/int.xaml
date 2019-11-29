@@ -425,9 +425,17 @@
     <system:String x:Key="string_clickToOpenALOTInstaller">Click to open ALOT Installer</system:String>
     <system:String x:Key="string_manageTexturesWithALOTInstaller">Manage textures with ALOT Installer</system:String>
 
+    <!-- Log uploader-->
+    <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
+    <system:String x:Key="string_collectingLogInformation">Collecting log information</system:String>
+    <system:String x:Key="string_interp_serverRejectedTheUpload">The server rejected the upload. The response was: {0}</system:String>  <!-- 0 = error message-->
+    <system:String x:Key="string_interp_logWasUnableToUpload">The log was unable to upload:\n{0}.\nPlease come to the ME3Tweaks Discord for assistance.</system:String> <!-- 0 = error message-->
+    <system:String x:Key="string_interp_requestTimedOutUploading">Request timed out while uploading log.</system:String>
+    <system:String x:Key="string_logUploadFailed">Log upload failed</system:String>
+    <system:String x:Key="string_loguploader">Log uploader</system:String>
+    <system:String x:Key="string_uploadToLogViewer">Upload to log viewer</system:String>
 
-
-    <!-- Extras -->
+        <!-- Extras -->
     <!--<system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>

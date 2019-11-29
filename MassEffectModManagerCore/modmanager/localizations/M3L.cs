@@ -403,5 +403,28 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_installedByModManager = "string_installedByModManager";
 		public static readonly string string_interp_installedByX = "string_interp_installedByX";
 		public static readonly string string_notInstalledByModManager = "string_notInstalledByModManager";
+		public static readonly string string_installationInformation = "string_installationInformation";
+		public static readonly string string_installationInformationSubheader = "string_installationInformationSubheader";
+		public static readonly string string_installedDLCmods = "string_installedDLCmods";
+		public static readonly string string_delete = "string_delete";
+		public static readonly string string_modifiedBasegameFiles = "string_modifiedBasegameFiles";
+		public static readonly string string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles = "string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles";
+		public static readonly string string_restoreallmodifiedbasegamefiles = "string_restoreallmodifiedbasegamefiles";
+		public static readonly string string_modifiedDLCarchivesSFAR = "string_modifiedDLCarchivesSFAR";
+		public static readonly string string_willAttemptToRestoreAllModifiedSFARs = "string_willAttemptToRestoreAllModifiedSFARs";
+		public static readonly string string_restoreAllModifiedSFARs = "string_restoreAllModifiedSFARs";
+		public static readonly string string_inconsistencyDetected = "string_inconsistencyDetected";
+		public static readonly string string_removeTargetFromM3 = "string_removeTargetFromM3";
+		public static readonly string string_openInExplorer = "string_openInExplorer";
+		public static readonly string string_clickToOpenALOTInstaller = "string_clickToOpenALOTInstaller";
+		public static readonly string string_manageTexturesWithALOTInstaller = "string_manageTexturesWithALOTInstaller";
+		public static readonly string string_selectALogToView = "string_selectALogToView";
+		public static readonly string string_collectingLogInformation = "string_collectingLogInformation";
+		public static readonly string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
+		public static readonly string string_interp_logWasUnableToUpload = "string_interp_logWasUnableToUpload";
+		public static readonly string string_interp_requestTimedOutUploading = "string_interp_requestTimedOutUploading";
+		public static readonly string string_logUploadFailed = "string_logUploadFailed";
+		public static readonly string string_loguploader = "string_loguploader";
+		public static readonly string string_uploadToLogViewer = "string_uploadToLogViewer";
 	}
 }

@@ -8,6 +8,7 @@ using System.Windows.Input;
 using ByteSizeLib;
 using Flurl.Http;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
@@ -22,8 +23,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class LogUploader : MMBusyPanelBase
     {
         public bool UploadingLog { get; private set; }
-        private const string LogUploaderEndpoint = "https://me3tweaks.com/modmanager/loguploader";
-        public string TopText { get; private set; } = "Select a log to view on log viewing service";
+        public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
         public LogUploader()
         {
@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             AvailableLogs.ClearEx();
             var directory = new DirectoryInfo(App.LogDir);
-            var logfiles = directory.GetFiles("modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
+            var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
             if (LogSelector_ComboBox.Items.Count > 0)
             {
@@ -73,8 +73,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void StartLogUpload(bool isPreviousCrashLog = false)
         {
             UploadingLog = true;
-            TopText = "Collecting log information";
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("LogUpload");
+            TopText = M3L.GetString(M3L.string_collectingLogInformation);
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"LogUpload");
             bw.DoWork += (a, b) =>
             {
                 string logUploadText = LogCollector.CollectLogs(SelectedLog.filepath);
@@ -100,7 +100,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
-                        string responseString = "https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
                         Uri uriResult;
                         bool result = Uri.TryCreate(responseString, UriKind.Absolute, out uriResult)
                                       && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
@@ -109,63 +109,64 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             //should be valid URL.
                             //diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_Upload));
                             //e.Result = responseString;
-                            Log.Information("Result from server for log upload: " + responseString);
+                            Log.Information(@"Result from server for log upload: " + responseString);
                             b.Result = responseString;
                             return;
                         }
                         else
                         {
-                            Log.Error("Error uploading log. The server responded with: " + responseString);
-                            b.Result = "The server rejected the upload. The response was: " + responseString;
+                            Log.Error(@"Error uploading log. The server responded with: " + responseString);
+                            b.Result = M3L.GetString(M3L.string_interp_serverRejectedTheUpload, responseString);
                         }
                     }
                     catch (AggregateException e)
                     {
                         Exception ex = e.InnerException;
-                        b.Result = "The log was unable to upload:\n" + ex.Message + ".\nPlease come to the ME3Tweaks Discord for assistance.";
+                        string exmessage = ex.Message;
+                        b.Result = M3L.GetString(M3L.string_interp_logWasUnableToUpload, exmessage);
                     }
                     catch (FlurlHttpTimeoutException)
                     {
                         // FlurlHttpTimeoutException derives from FlurlHttpException; catch here only
                         // if you want to handle timeouts as a special case
-                        Log.Error("Request timed out while uploading log.");
-                        b.Result = "Request timed out while uploading log.";
+                        Log.Error(@"Request timed out while uploading log.");
+                        b.Result = M3L.GetString(M3L.string_interp_requestTimedOutUploading);
 
                     }
                     catch (Exception ex)
                     {
                         // ex.Message contains rich details, inclulding the URL, verb, response status,
                         // and request and response bodies (if available)
-                        Log.Error("Handled error uploading log: " + App.FlattenException(ex));
+                        Log.Error(@"Handled error uploading log: " + App.FlattenException(ex));
                         string exmessage = ex.Message;
-                        var index = exmessage.IndexOf("Request body:");
+                        var index = exmessage.IndexOf(@"Request body:");
                         if (index > 0)
                         {
                             exmessage = exmessage.Substring(0, index);
                         }
 
-                        b.Result = "The log was unable to upload. The error message is: " + exmessage + " Please come to the ME3Tweaks Discord for assistance.";
+                        b.Result = M3L.GetString(M3L.string_interp_logWasUnableToUpload, exmessage);
                     }
                 }
 
             };
             bw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Result is string response)
                 {
-                    if (b.Result is string response)
+                    if (response.StartsWith(@"http"))
                     {
-                        if (response.StartsWith("http"))
-                        {
-                            Utilities.OpenWebpage(response);
-                        }
-                        else
-                        {
-                            OnClosing(DataEventArgs.Empty);
-                            var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), response, $"Log upload failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
+                        Utilities.OpenWebpage(response);
                     }
-                    OnClosing(DataEventArgs.Empty);
-                };
+                    else
+                    {
+                        OnClosing(DataEventArgs.Empty);
+                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                }
+                OnClosing(DataEventArgs.Empty);
+            };
             bw.RunWorkerAsync();
         }
 
@@ -198,7 +199,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public override string ToString()
             {
-                return Path.GetFileName(filepath) + " - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
+                return Path.GetFileName(filepath) + @" - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
             }
         }
     }

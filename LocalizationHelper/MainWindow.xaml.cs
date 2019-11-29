@@ -76,7 +76,7 @@ namespace LocalizationHelper
                 StringBuilder sb = new StringBuilder();
                 foreach (var v in localizations)
                 {
-                    sb.AppendLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:string>");
+                    sb.AppendLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:String>");
                 }
                 StringsTextBox.Text = sb.ToString();
             }
@@ -164,7 +164,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\InstallationInformation.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\LogUploader.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -206,7 +206,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\InstallationInformation.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\LogUploader.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -274,7 +274,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\InstallationInformation.xaml");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\LogUploader.xaml");
             string[] attributes = { "Header", "ToolTip", "Content", "Text" };
             try
             {
