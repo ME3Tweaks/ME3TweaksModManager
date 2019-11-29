@@ -384,11 +384,53 @@
     <system:String x:Key="string_patchingFiles">Patching files</system:String>
     <system:String x:Key="string_interp_patchedXY">Patched {0} {1}</system:String> <!-- 0 = number, 1 = plural files/singular file-->
     
-    
+    <!-- Installation Information -->
+    <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Restoring files while ALOT is installed is not allowed as it will introduce invalid texture pointers into the installation.</system:String>
+    <system:String x:Key="string_cannotRestoreSfarFiles">Cannot restore SFAR files</system:String>
+    <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Restoring files while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. Please ensure you know what you are doing before continuing.</system:String>
+    <system:String x:Key="string_invalidTexturePointersWarning">Invalid texture pointers warning</system:String>
+    <system:String x:Key="string_restoreAllModifiedFilesQuestion">Restore all modified files?</system:String>
+    <system:String x:Key="string_confirmRestoration">Confirm restoration</system:String>
+    <system:String x:Key="string_restoringSfarsAlotBlocked">Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
+    <system:String x:Key="string_restoringSfarsAlotDevMode">Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.</system:String>
+    <system:String x:Key="string_restoreAllModifiedSfarsQuestion">Restore all modified SFARs?</system:String>
+    <system:String x:Key="string_interp_backupAtX">Backup at {0}</system:String> <!-- 0 = filepath -->
+    <system:String x:Key="string_noBackupForThisGame">No backup for this game</system:String>
+    <system:String x:Key="string_interp_cannotDeleteModsWhileXIsRunning">Cannot delete mods while {0} is running.</system:String> <!-- 0 = gamename -->
+    <system:String x:Key="string_interp_deletingXwhileAlotInstalledUnsupported">Deleting {0} while ALOT is installed will not cause the game to become broken, however you will not be able to install updates to ALOT without a full reinstallation (unsupported configuration).\n\nAre you sure you want to delete the DLC mod?</system:String> <!-- 0 = mod name-->
+    <system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Deleting will put ALOT in unsupported configuration</system:String>
+    <system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">Remove {0} from the game installation?</system:String> <!-- 0 = modname of dlc -->
+    <system:String x:Key="string_interp_cannotRestoreFilesWhileXIsRunning">Cannot restore files while {0} is running.</system:String> <!-- 0 = game name-->
+    <system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Restoring {0} while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String> <!-- 0 = filename-->
+    <system:String x:Key="string_cannotRestorePackageFiles">Cannot restore package files</system:String>
+    <system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Restoring {0} while ALOT is installed will very likely introduce invalid texture pointers into the installation, which may cause black textures or game crashes due to empty mips. Please ensure you know what you are doing before continuing.</system:String> <!-- 0 = filename-->
+    <system:String x:Key="string_interp_restoreXquestion">Restore {0}?</system:String> <!-- 0 = item (filename, dlc name)-->
+    <system:String x:Key="string_installedByModManager">Installed by Mod Manager</system:String>
+    <system:String x:Key="string_interp_installedByX">Installed by {0}</system:String> <!-- 0 = noun of tool (alot installer, mod manager, etc)-->
+    <system:String x:Key="string_notInstalledByModManager">Not installed by Mod Manager</system:String>
+
+    <system:String x:Key="string_installationInformation">Installation Information</system:String>
+    <system:String x:Key="string_installationInformationSubheader">Files installed into the basegame or official DLC directories cannot be tracked</system:String>
+    <system:String x:Key="string_installedDLCmods">Installed DLC mods</system:String>
+    <system:String x:Key="string_delete">Delete</system:String>
+    <system:String x:Key="string_modifiedBasegameFiles">Modified basegame files</system:String>
+    <system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Will attempt to restore all modified basegame + unpacked DLC (ME2) files.</system:String>
+    <system:String x:Key="string_restoreallmodifiedbasegamefiles">Restore all modified basegame files</system:String>
+    <system:String x:Key="string_modifiedDLCarchivesSFAR">Modified DLC archives (SFAR)</system:String>
+    <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Will attempt to restore all modified SFARs. Will delete unpacked files too.</system:String>
+    <system:String x:Key="string_restoreAllModifiedSFARs">Restore all modified SFARs</system:String>
+    <system:String x:Key="string_inconsistencyDetected">Inconsistency detected</system:String>
+    <system:String x:Key="string_removeTargetFromM3">Remove target from M3</system:String>
+    <system:String x:Key="string_openInExplorer">Open in Explorer</system:String>
+    <system:String x:Key="string_clickToOpenALOTInstaller">Click to open ALOT Installer</system:String>
+    <system:String x:Key="string_manageTexturesWithALOTInstaller">Manage textures with ALOT Installer</system:String>
+
+
+
     <!-- Extras -->
+    <!--<system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>
+    <system:String x:Key="string_"></system:String>-->
 
 </ResourceDictionary>

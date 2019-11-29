@@ -380,9 +380,28 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_decompressingData = "string_decompressingData";
 		public static readonly string string_patchingFiles = "string_patchingFiles";
 		public static readonly string string_interp_patchedXY = "string_interp_patchedXY";
-		public static readonly string string_ = "string_";
-		public static readonly string string_ = "string_";
-		public static readonly string string_ = "string_";
-		public static readonly string string_ = "string_";
+		public static readonly string string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed = "string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed";
+		public static readonly string string_cannotRestoreSfarFiles = "string_cannotRestoreSfarFiles";
+		public static readonly string string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode = "string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode";
+		public static readonly string string_invalidTexturePointersWarning = "string_invalidTexturePointersWarning";
+		public static readonly string string_restoreAllModifiedFilesQuestion = "string_restoreAllModifiedFilesQuestion";
+		public static readonly string string_confirmRestoration = "string_confirmRestoration";
+		public static readonly string string_restoringSfarsAlotBlocked = "string_restoringSfarsAlotBlocked";
+		public static readonly string string_restoringSfarsAlotDevMode = "string_restoringSfarsAlotDevMode";
+		public static readonly string string_restoreAllModifiedSfarsQuestion = "string_restoreAllModifiedSfarsQuestion";
+		public static readonly string string_interp_backupAtX = "string_interp_backupAtX";
+		public static readonly string string_noBackupForThisGame = "string_noBackupForThisGame";
+		public static readonly string string_interp_cannotDeleteModsWhileXIsRunning = "string_interp_cannotDeleteModsWhileXIsRunning";
+		public static readonly string string_interp_deletingXwhileAlotInstalledUnsupported = "string_interp_deletingXwhileAlotInstalledUnsupported";
+		public static readonly string string_deletingWillPutAlotInUnsupportedConfig = "string_deletingWillPutAlotInUnsupportedConfig";
+		public static readonly string string_interp_removeXFromTheGameInstallationQuestion = "string_interp_removeXFromTheGameInstallationQuestion";
+		public static readonly string string_interp_cannotRestoreFilesWhileXIsRunning = "string_interp_cannotRestoreFilesWhileXIsRunning";
+		public static readonly string string_interp_restoringXWhileAlotInstalledIsNotAllowed = "string_interp_restoringXWhileAlotInstalledIsNotAllowed";
+		public static readonly string string_cannotRestorePackageFiles = "string_cannotRestorePackageFiles";
+		public static readonly string string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode = "string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode";
+		public static readonly string string_interp_restoreXquestion = "string_interp_restoreXquestion";
+		public static readonly string string_installedByModManager = "string_installedByModManager";
+		public static readonly string string_interp_installedByX = "string_interp_installedByX";
+		public static readonly string string_notInstalledByModManager = "string_notInstalledByModManager";
 	}
 }

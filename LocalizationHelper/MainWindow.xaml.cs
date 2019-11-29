@@ -37,13 +37,15 @@ namespace LocalizationHelper
             try
             {
                 XDocument doc = XDocument.Parse(SourceTextbox.Text);
-                var menuitems = doc.Descendants("MenuItem").ToList();
+                var menuitems = doc.Descendants().ToList();
                 Dictionary<string, string> localizations = new Dictionary<string, string>();
 
                 foreach (var item in menuitems)
                 {
                     string header = (string)item.Attribute("Header");
                     string tooltip = (string)item.Attribute("ToolTip");
+                    string content = (string)item.Attribute("Content");
+                    string text = (string)item.Attribute("Text");
 
                     if (header != null && !header.StartsWith("{"))
                     {
@@ -56,13 +58,25 @@ namespace LocalizationHelper
                         localizations[tooltip] = $"string_{tooltip.Replace(" ", "")}";
                         item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
+
+                    if (content != null && !content.StartsWith("{"))
+                    {
+                        localizations[content] = $"string_{content.Replace(" ", "")}";
+                        item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
+                    }
+
+                    if (text != null && !text.StartsWith("{"))
+                    {
+                        localizations[text] = $"string_{text.Replace(" ", "")}";
+                        item.Attribute("Text").Value = $"{{DynamicResource {localizations[text]}}}";
+                    }
                 }
 
                 ResultTextBox.Text = doc.ToString();
                 StringBuilder sb = new StringBuilder();
                 foreach (var v in localizations)
                 {
-                    sb.AppendLine("\t<system:string x:Key=\"" + v.Value + "\">" + v.Key + "</system:string>");
+                    sb.AppendLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:string>");
                 }
                 StringsTextBox.Text = sb.ToString();
             }
@@ -150,22 +164,146 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\GUICompatibilityGenerator.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\InstallationInformation.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
             var filetext = File.ReadAllText(file);
             var matches = r.Matches(filetext);
             var strings = new List<string>();
+            HashSet<string> s = new HashSet<string>();
             foreach (var match in matches)
             {
                 var str = match.ToString();
                 if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
+                var strname = "string_";
+                if (str.StartsWith("$")) strname = "string_interp_";
                 var newStr = match.ToString().TrimStart('$').Trim('"');
                 if (newStr.Length > 1)
                 {
-                    Debug.WriteLine($"    <system:String x:Key=\"string_\">{newStr}</system:String>");
+                    s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
                 }
+            }
+            foreach (var str in s)
+            {
+                Debug.WriteLine(str);
+            }
+
+        }
+
+        private void PushLocalizedStrings_Clicked(object sender, RoutedEventArgs e)
+        {
+            var text = SourceTextbox.Text;
+            text = "<ResourceDictionary xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"  xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" xmlns:system=\"clr-namespace:System;assembly=System.Runtime\" >" + text + "</ResourceDictionary>";
+            XDocument xdoc = XDocument.Parse(text);
+            XNamespace system = "clr-namespace:System;assembly=System.Runtime";
+            XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+            var lstrings = xdoc.Root.Descendants(system + "String");
+            foreach (var str in lstrings)
+            {
+                Debug.WriteLine(str.Value);
+            }
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
+
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\InstallationInformation.xaml.cs");
+
+            var regex = "([$@]*(\".+?\"))";
+            Regex r = new Regex(regex);
+            StringBuilder sb = new StringBuilder();
+
+            var lines = File.ReadAllLines(file);
+            foreach (var line in lines)
+            {
+                var newline = line;
+                var matches = r.Matches(line);
+                var strings = new List<string>();
+                foreach (var match in matches)
+                {
+                    var str = match.ToString();
+                    if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
+                    var strippedStr = str.Trim('$', '"');
+
+                    var localizedMatch = lstrings.FirstOrDefault(x => x.Value == strippedStr);
+                    if (localizedMatch != null)
+                    {
+                        var m3lcodestr = "M3L.GetString(M3L." + localizedMatch.Attribute(x + "Key").Value;
+
+                        int pos = 0;
+                        int openbracepos = -1;
+                        List<string> substitutions = new List<string>();
+                        while (pos < str.Length - 1)
+                        {
+                            if (openbracepos == -1)
+                            {
+                                if (str[pos] == '{')
+                                {
+                                    openbracepos = pos;
+                                    continue;
+                                }
+                            }
+                            else if (str[pos] == '}')
+                            {
+                                //closing!
+                                substitutions.Add(str.Substring(openbracepos + 1, pos - (openbracepos + +1)));
+                                openbracepos = -1;
+                            }
+                            pos++;
+                        }
+                        foreach (var subst in substitutions)
+                        {
+                            m3lcodestr += ", " + subst;
+                        }
+                        m3lcodestr += ")";
+                        newline = newline.Replace(str, m3lcodestr);
+                    }
+                }
+                sb.AppendLine(newline);
+            }
+            ResultTextBox.Text = sb.ToString();
+        }
+
+        private void PushXamlStrings_Clicked(object sender, RoutedEventArgs e)
+        {
+            var sourceStringsXaml = SourceTextbox.Text;
+            sourceStringsXaml = "<ResourceDictionary xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"  xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" xmlns:system=\"clr-namespace:System;assembly=System.Runtime\" >" + sourceStringsXaml + "</ResourceDictionary>";
+            XDocument xdoc = XDocument.Parse(sourceStringsXaml);
+            XNamespace system = "clr-namespace:System;assembly=System.Runtime";
+            XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+            var lstrings = xdoc.Root.Descendants(system + "String");
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
+
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\InstallationInformation.xaml");
+            string[] attributes = { "Header", "ToolTip", "Content", "Text" };
+            try
+            {
+                XDocument doc = XDocument.Load(file);
+                var xamlItems = doc.Descendants().ToList();
+                Dictionary<string, string> localizations = new Dictionary<string, string>();
+
+                foreach (var item in xamlItems)
+                {
+                    foreach (var attribute in attributes)
+                    {
+                        string attributeText = (string)item.Attribute(attribute);
+
+                        if (!string.IsNullOrWhiteSpace(attributeText) && !attributeText.StartsWith("{"))
+                        {
+                            var matchingStr = lstrings.FirstOrDefault(x => x.Value == attributeText);
+                            if (matchingStr != null)
+                            {
+                                item.Attribute(attribute).Value = "{DynamicResource " + matchingStr.Attribute(x + "Key").Value + "}";
+                            }
+                        }
+                    }
+                }
+                ResultTextBox.Text = doc.ToString();
+
+            }
+            catch (Exception ex)
+            {
+
             }
 
         }

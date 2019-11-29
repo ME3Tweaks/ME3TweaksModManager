@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using Serilog;
 
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -60,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RemoveTarget()
         {
             Utilities.RemoveCachedTarget(SelectedTarget);
-            OnClosing(new DataEventArgs("ReloadTargets"));
+            OnClosing(new DataEventArgs(@"ReloadTargets"));
         }
 
         private void ClosePanel()
@@ -84,24 +85,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (!Settings.DeveloperMode)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore SFAR files", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 else
                 {
-                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring files while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     restore = res == MessageBoxResult.Yes;
 
                 }
             }
             else
             {
-                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore all modified files?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoreAllModifiedFilesQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
 
             }
             if (restore)
             {
-                NamedBackgroundWorker bw = new NamedBackgroundWorker("RestoreAllBasegameFilesThread");
+                NamedBackgroundWorker bw = new NamedBackgroundWorker(@"RestoreAllBasegameFilesThread");
                 bw.DoWork += (a, b) =>
                 {
                     RestoreAllBasegameInProgress = true;
@@ -132,19 +133,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (!Settings.DeveloperMode)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore SFAR files", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 else
                 {
-                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     restore = res == MessageBoxResult.Yes;
 
                 }
             }
             else
             {
-                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore all modified SFARs?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoreAllModifiedSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
 
             }
             if (restore)
@@ -173,11 +174,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var backupLoc = Utilities.GetGameBackupPath(SelectedTarget.Game);
                 if (backupLoc != null)
                 {
-                    BackupLocationString = "Backup at " + backupLoc;
+                    BackupLocationString = M3L.GetString(M3L.string_interp_backupAtX, backupLoc);
                 }
                 else
                 {
-                    BackupLocationString = "No backup for this game";
+                    BackupLocationString = M3L.GetString(M3L.string_noBackupForThisGame);
                 }
             }
             else
@@ -195,15 +196,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(SelectedTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Cannot delete mods while {Utilities.GetGameName(SelectedTarget.Game)} is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
                 if (SelectedTarget.ALOTInstalled)
                 {
-                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Deleting {mod.ModName} while ALOT is installed will not cause the game to become broken, however you will not be able to install updates to ALOT without a full reinstallation (unsupported configuration).\n\nAre you sure you want to delete the DLC mod?", $"Deleting will put ALOT in unsupported configuration", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_deletingXwhileAlotInstalledUnsupported, mod.ModName), M3L.GetString(M3L.string_deletingWillPutAlotInUnsupportedConfig), MessageBoxButton.YesNo, MessageBoxImage.Error);
                     return res == MessageBoxResult.Yes;
                 }
-                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Remove {mod.ModName} from the game installation?", $"Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_removeXFromTheGameInstallationQuestion, mod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
             void notifyDeleted()
             {
@@ -215,31 +216,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(SelectedTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Cannot restore files while {Utilities.GetGameName(SelectedTarget.Game)} is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
                 if (SelectedTarget.ALOTInstalled && filepath.RepresentsPackageFilePath())
                 {
                     if (!Settings.DeveloperMode)
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring {Path.GetFileName(filepath)} while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore package files", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXWhileAlotInstalledIsNotAllowed, Path.GetFileName(filepath)), M3L.GetString(M3L.string_cannotRestorePackageFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
                     else
                     {
-                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring {Path.GetFileName(filepath)} while ALOT is installed will very likely introduce invalid texture pointers into the installation, which may cause black textures or game crashes due to empty mips. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode, Path.GetFileName(filepath)), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         return res == MessageBoxResult.Yes;
 
                     }
                 }
-                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore {Path.GetFileName(filepath)}?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             bool restoreSfarConfirmationCallback(string sfarPath)
             {
                 if (Utilities.IsGameRunning(SelectedTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Cannot restore files while {Utilities.GetGameName(SelectedTarget.Game)} is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
 
@@ -247,18 +248,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (!Settings.DeveloperMode)
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.", $"Cannot restore SFAR files", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
                     else
                     {
-                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.", $"Invalid texture pointers warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         return res == MessageBoxResult.Yes;
 
                     }
                 }
                 //Todo: warn of unpacked file deletion
-                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Restore {sfarPath}?", $"Confirm restoration", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             void notifyStartingSfarRestoreCallback()
@@ -359,10 +360,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     ModName = DLCFolderName;
                 }
-                var metaFile = Path.Combine(dlcFolderPath, "_metacmm.txt");
+                var metaFile = Path.Combine(dlcFolderPath, @"_metacmm.txt");
                 if (File.Exists(metaFile))
                 {
-                    InstalledBy = "Installed by Mod Manager"; //Default value when finding metacmm.
+                    InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
                     //Parse MetaCMM
                     var lines = File.ReadAllLines(metaFile).ToList();
                     int i = 0;
@@ -374,7 +375,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             case 0:
                                 if (line != ModName)
                                 {
-                                    DLCFolderNameString += $" ({ModName})";
+                                    DLCFolderNameString += $@" ({ModName})";
                                     ModName = line;
                                 }
                                 break;
@@ -385,18 +386,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 InstallerInstanceBuild = line;
                                 if (int.TryParse(InstallerInstanceBuild, out var mmver))
                                 {
-                                    InstalledBy = "Installed by Mod Manager";
+                                    InstalledBy = M3L.GetString(M3L.string_installedByModManager);
                                 }
                                 else
                                 {
-                                    InstalledBy = "Installed by " + InstallerInstanceBuild;
+                                    InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
                                 }
                                 break;
                             case 3:
                                 InstallerInstanceGUID = line;
                                 break;
                             default:
-                                Log.Error("Unsupported line number in _metacmm.txt: " + i);
+                                Log.Error($@"Unsupported line number in _metacmm.txt: {i}");
                                 break;
                         }
                         i++;
@@ -404,7 +405,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    InstalledBy = "Not installed by Mod Manager";
+                    InstalledBy = M3L.GetString(M3L.string_notInstalledByModManager);
                 }
                 this.deleteConfirmationCallback = deleteConfirmationCallback;
                 this.notifyDeleted = notifyDeleted;
@@ -425,7 +426,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var confirmDelete = deleteConfirmationCallback?.Invoke(this);
                     if (confirmDelete.HasValue && confirmDelete.Value)
                     {
-                        Log.Information("Deleting DLC mod from target: " + dlcFolderPath);
+                        Log.Information(@"Deleting DLC mod from target: " + dlcFolderPath);
                         Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
                         notifyDeleted?.Invoke();
                     }
@@ -436,7 +437,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenALOTInstaller_Click(object sender, RequestNavigateEventArgs e)
         {
-            OnClosing(new DataEventArgs("ALOTInstaller"));
+            OnClosing(new DataEventArgs(@"ALOTInstaller"));
         }
 
         private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
