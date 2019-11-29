@@ -359,8 +359,36 @@
     <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load. Select each mod to see why.</system:String>
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
+    
+    <!-- GUI Compatibility Generator -->
+    <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
+    <system:String x:Key="string_pleaseWait">Please wait</system:String>
+    <system:String x:Key="string_dialogWhatGuiCompatPackIsFor">A GUI compatibility mod is used to make SP Controller Support, Interface Scaling Mod and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. This is a critical step when using UI mods or you may experience softlocks or incorrect interfaces on screen.\n\nGenerate a GUI compatibility pack ONLY when you have installed all other non-texture mods as it is built against your current installation.\n\nGenerate compatibility pack?</system:String>
+    <system:String x:Key="string_confirmGeneration">Confirm generation</system:String>
+    <system:String x:Key="string_dialogNoUiModsAreInstalled">No UI mods are installed. GUI compatibility generator only works with SP Controller Mod, Interface Scaling Mod, and Interface Scaling Add-On.</system:String>
+    <system:String x:Key="string_noUiModsAreInstalled">No UI mods installed</system:String>
+    <system:String x:Key="string_preparingCompatGenerator">Preparing compatibility generator</system:String>
+    <system:String x:Key="string_dialogCannotGenerateCompatPackInvalidConfig">Cannot generate a compatibility pack: Both Interface Scaling Mod and SP Controller support are installed. These mods are not compatible with each other. You must use one or the other.</system:String>
+    <system:String x:Key="string_invalidConfiguration">Invalid configuration</system:String>
+    <system:String x:Key="string_downloadingUiLibrary">Downloading UI library</system:String>
+    <system:String x:Key="string_cannotGeneratorCompatPackCouldNotDownload">Cannot generate a compatibility pack: The required UI library could not be downloaded from ME3Tweaks. See the log for more information.</system:String>
+    <system:String x:Key="string_couldNotAcquireUiLibrary">Could not acquire UI library</system:String>
+    <system:String x:Key="string_scanningForGuiExports">Scanning for GUI exports</system:String>
+    <system:String x:Key="string_singularFile">file</system:String> <!-- Singular version of file-->
+    <system:String x:Key="string_pluralFiles">files</system:String> <!-- Plural version of file-->
+    <system:String x:Key="string_interp_XFilesNeedToBePatched">{0} {1} need to be patched</system:String> <!-- 0 = number, 1 = singular/plural version of file -->
+    <system:String x:Key="string_interp_compatPackModDescription">User generated compatibility pack made to inject proper interface files into other DLC mods from the game configuration. This pack was built against the following mods and should not be used against any other configuration.\n - {0}\n\nThis compatibility pack was generated at {1}</system:String> <!-- 0 = bulleted dlc list, 1 = date time-->
+    <system:String x:Key="string_guiCompatibilityPack">GUI Compatibility Pack</system:String>
+    <system:String x:Key="string_preparingUiLibrary">Preparing UI library</system:String>
+    <system:String x:Key="string_decompressingData">Decompressing data</system:String>
+    <system:String x:Key="string_patchingFiles">Patching files</system:String>
+    <system:String x:Key="string_interp_patchedXY">Patched {0} {1}</system:String> <!-- 0 = number, 1 = plural files/singular file-->
+    
+    
+    <!-- Extras -->
     <system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>
+
 </ResourceDictionary>

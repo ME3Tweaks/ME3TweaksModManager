@@ -28,6 +28,7 @@ using static MassEffectModManagerCore.modmanager.windows.StarterKitGeneratorWind
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -39,15 +40,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private GameTarget target;
         public int Percent { get; set; } = 0;
 
-        public string ActionString { get; set; } = "Preparing to scan game";
+        public string ActionString { get; set; } = M3L.GetString(M3L.string_preparingToScanGame);
 
-        public string ActionSubstring { get; set; } = "Please wait";
+        public string ActionSubstring { get; set; } = M3L.GetString(M3L.string_pleaseWait);
 
         //CEM (not sure why I had this). Will enable if required
-        private string[] doNotPatchFiles = { "BioD_CitCas.pcc" };
+        private string[] doNotPatchFiles = { @"BioD_CitCas.pcc" };
         public GUICompatibilityGenerator(GameTarget target)
         {
-            if (target.Game != MEGame.ME3) throw new Exception("Cannot generate compatibility mods for " + target.Game);
+            if (target.Game != MEGame.ME3) throw new Exception($@"Cannot generate compatibility mods for {target.Game}");
             DataContext = this;
             this.target = target;
             InitializeComponent();
@@ -64,10 +65,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var uiModInstalled = installedDLCMods.Intersect(DLCUIModFolderNames).Any();
             if (uiModInstalled)
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, "A GUI compatibility mod is used to make SP Controller Support, Interface Scaling Mod and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. " +
-                                                                   "This is a critical step when using UI mods or you may experience softlocks or incorrect interfaces on screen.\n\n" +
-                                                                   "Generate a GUI compatibility pack ONLY when you have installed all other non-texture mods as it is built against your current installation.\n\nGenerate compatibility pack?",
-                "Confirm generation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialogWhatGuiCompatPackIsFor), M3L.GetString(M3L.string_confirmGeneration), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     OnClosing(DataEventArgs.Empty);
@@ -78,24 +76,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(window, "No UI mods are installed. GUI compatibility generator only works with SP Controller Mod, Interface Scaling Mod, and Interface Scaling Add-On.", "No UI mods installed", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Information(@"No UI mods are installed. Cannot run GUI Compat Generator");
+                Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialogNoUiModsAreInstalled), M3L.GetString(M3L.string_noUiModsAreInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
                 OnClosing(DataEventArgs.Empty);
             }
         }
 
         private static readonly string[] DLCUIModFolderNames =
         {
-            "DLC_CON_XBX",
-            "DLC_MOD_UIScaling",
-            "DLC_MOD_UIScaling_Shared"
+            @"DLC_CON_XBX",
+            @"DLC_MOD_UIScaling",
+            @"DLC_MOD_UIScaling_Shared"
         };
 
         private static readonly string[] DLCUIModFolderNamesIncludingPatch =
         {
-            "DLC_CON_XBX",
-            "DLC_MOD_UIScaling",
-            "DLC_MOD_UIScaling_Shared",
-            "DLC_MOD_GUICompatibilityPack"
+            @"DLC_CON_XBX",
+            @"DLC_MOD_UIScaling",
+            @"DLC_MOD_UIScaling_Shared",
+            @"DLC_MOD_GUICompatibilityPack"
         };
 
         public enum GUICompatibilityThreadResult
@@ -146,8 +145,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        private static readonly string M3_UILIBRARY_ROOT = "https://me3tweaks.com/modmanager/tools/uilibrary/m3/";
-        private readonly string UI_MOD_NAME = "GUICompatibilityPack";
+        private static readonly string M3_UILIBRARY_ROOT = @"https://me3tweaks.com/modmanager/tools/uilibrary/m3/";
+        private readonly string UI_MOD_NAME = @"GUICompatibilityPack";
 
         /// <summary>
         /// Gets the path to the GUI library specified by the DLC name. Returns null if the library is not found and could not be downloaded.
@@ -158,8 +157,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <returns>Path to library, null if it does not exist.</returns>
         public static string GetUILibraryPath(string dlcname, bool download, Action<long, long> progressCallback = null)
         {
-            string libraryFolder = Path.Combine(Utilities.GetAppDataFolder(), "UIModLibrary");
-            string libraryPath = Path.Combine(libraryFolder, dlcname + ".zip");
+            string libraryFolder = Path.Combine(Utilities.GetAppDataFolder(), @"UIModLibrary");
+            string libraryPath = Path.Combine(libraryFolder, dlcname + @".zip");
             if (File.Exists(libraryPath)) return libraryPath;
 
             if (!Directory.Exists(libraryFolder) && !download) return null;
@@ -168,17 +167,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (download)
             {
                 Directory.CreateDirectory(libraryFolder);
-                Log.Information("Downloading UI library for " + dlcname);
-                var downloaded = OnlineContent.DownloadToMemory(M3_UILIBRARY_ROOT + dlcname + ".zip", progressCallback);
+                Log.Information(@"Downloading UI library for " + dlcname);
+                var downloaded = OnlineContent.DownloadToMemory(M3_UILIBRARY_ROOT + dlcname + @".zip", progressCallback);
                 if (downloaded.errorMessage == null)
                 {
                     File.WriteAllBytes(libraryPath, downloaded.result.ToArray());
-                    Log.Information("Downloaded UI library for " + dlcname);
+                    Log.Information(@"Downloaded UI library for " + dlcname);
                     return libraryPath;
                 }
                 else
                 {
-                    Log.Error("Error downloading UI library: " + downloaded.errorMessage);
+                    Log.Error(@"Error downloading UI library: " + downloaded.errorMessage);
                     return null;
                 }
             }
@@ -188,12 +187,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartGuiCompatibilityScanner()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("GUICompatibilityScanner");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"GUICompatibilityScanner");
             bw.DoWork += (a, b) =>
             {
                 Percent = 0;
-                ActionString = "Preparing compatibility generator";
-                ActionSubstring = "Please wait";
+                ActionString = M3L.GetString(M3L.string_preparingCompatGenerator);
+                ActionSubstring = M3L.GetString(M3L.string_pleaseWait);
                 var installedDLCMods = VanillaDatabaseService.GetInstalledDLCMods(target);
                 var numTotalDLCMods = installedDLCMods.Count;
                 var uiModInstalled = installedDLCMods.Intersect(DLCUIModFolderNames).Any();
@@ -205,15 +204,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (nonUIinstalledDLCMods.Count < numTotalDLCMods && nonUIinstalledDLCMods.Count > 0)
                     {
                         //Get UI library
-                        bool xbxLibrary = installedDLCMods.Contains("DLC_CON_XBX");
-                        bool uiscalinglibrary = installedDLCMods.Contains("DLC_CON_UIScaling");
-                        if (!xbxLibrary && !uiscalinglibrary) uiscalinglibrary = installedDLCMods.Contains("DLC_CON_UIScaling_Shared");
+                        bool xbxLibrary = installedDLCMods.Contains(@"DLC_CON_XBX");
+                        bool uiscalinglibrary = installedDLCMods.Contains(@"DLC_CON_UIScaling");
+                        if (!xbxLibrary && !uiscalinglibrary) uiscalinglibrary = installedDLCMods.Contains(@"DLC_CON_UIScaling_Shared");
                         if (xbxLibrary && uiscalinglibrary)
                         {
                             //can't have both! Not supported.
                             Application.Current.Dispatcher.Invoke(delegate
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show(window, "Cannot generate a compatibility pack: Both Interface Scaling Mod and SP Controller support are installed. These mods are not compatible with each other. You must use one or the other.", "Invalid configuration", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Log.Error(@"Cannot make compat pack: Both ISM and SP Controller are installed, this is not supported.");
+                                Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialogCannotGenerateCompatPackInvalidConfig), M3L.GetString(M3L.string_invalidConfiguration), MessageBoxButton.OK, MessageBoxImage.Error);
                                 OnClosing(DataEventArgs.Empty);
                             });
                             b.Result = GUICompatibilityThreadResult.INVALID_UI_MOD_CONFIG;
@@ -222,17 +222,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         void progressCallback(long done, long total)
                         {
-                            ActionString = "Downloading UI library";
-                            ActionSubstring = xbxLibrary ? "DLC_CON_XBX" : "DLC_CON_UIScaling";
+                            ActionString = M3L.GetString(M3L.string_downloadingUiLibrary);
+                            ActionSubstring = xbxLibrary ? @"DLC_CON_XBX" : @"DLC_CON_UIScaling";
                             Percent = getPercent(done, total);
                         }
 
-                        var uiLibraryPath = GetUILibraryPath(xbxLibrary ? "DLC_CON_XBX" : "DLC_CON_UIScaling", true, progressCallback);
+                        var uiLibraryPath = GetUILibraryPath(xbxLibrary ? @"DLC_CON_XBX" : @"DLC_CON_UIScaling", true, progressCallback);
                         if (uiLibraryPath == null)
                         {
+                            Log.Error(@"Required UI library could not be downloaded.");
                             Application.Current.Dispatcher.Invoke(delegate
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show(window, "Cannot generate a compatibility pack: The required UI library could not be downloaded from ME3Tweaks. See the log for more information.", "Could not acquire UI library", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_cannotGeneratorCompatPackCouldNotDownload), M3L.GetString(M3L.string_couldNotAcquireUiLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                                 OnClosing(DataEventArgs.Empty);
                             });
                             b.Result = GUICompatibilityThreadResult.NO_UI_LIBRARY;
@@ -249,10 +250,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Find GUIs
 
                         ConcurrentDictionary<string, string> filesToBePatched = new ConcurrentDictionary<string, string>(); //Dictionary because there is no ConcurrentList. Keys and values are idenitcal.
-                        ActionString = "Scanning for GUI exports";
-                        ActionSubstring = "Please wait";
+                        ActionString = M3L.GetString(M3L.string_scanningForGuiExports);
+                        ActionSubstring = M3L.GetString(M3L.string_pleaseWait);
                         Percent = 0;
                         int done = 0;
+                        string singlesuffix = M3L.GetString(M3L.string_singularFile);
+                        string pluralsuffix = M3L.GetString(M3L.string_pluralFiles);
                         Parallel.ForEach(supercedanceList, new ParallelOptions() { MaxDegreeOfParallelism = 4 }, (pair) =>
                         {
                             var firstNonUIModDlc = pair.Value.FirstOrDefault(x => !DLCUIModFolderNamesIncludingPatch.Contains(x));
@@ -260,11 +263,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (firstNonUIModDlc != null)
                             {
                                 //Scan file.
-                                var packagefile = Path.Combine(dlcRoot, firstNonUIModDlc, target.Game == MEGame.ME3 ? "CookedPCConsole" : "CookedPC", pair.Key);
-                                Log.Information("Scanning file for GFXMovieInfo exports: " + packagefile);
-                                if (!File.Exists(packagefile)) throw new Exception("Package file for inspecting GUIs in was not found: " + packagefile);
+                                var packagefile = Path.Combine(dlcRoot, firstNonUIModDlc, target.Game == MEGame.ME3 ? @"CookedPCConsole" : @"CookedPC", pair.Key);
+                                Log.Information(@"Scanning file for GFXMovieInfo exports: " + packagefile);
+                                if (!File.Exists(packagefile)) throw new Exception($@"Package file for inspecting GUIs in was not found: {packagefile}");
                                 var package = MEPackageHandler.OpenMEPackage(packagefile);
-                                var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == "GFxMovieInfo").ToList();
+                                var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == @"GFxMovieInfo").ToList();
                                 if (guiExports.Count > 0)
                                 {
                                     //potential item needing replacement
@@ -275,17 +278,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         {
                                             //match
                                             filesToBePatched[packagefile] = packagefile;
-                                            ActionSubstring = $"{filesToBePatched.Count} file{(filesToBePatched.Count == 1 ? "" : "s")} need to be patched";
-
-                                            Log.Information(firstNonUIModDlc + " " + pair.Key + " has GUI export that is in UI library, marking for patching. Trigger: " + export.GetFullPath);
+                                            ActionSubstring = M3L.GetString(M3L.string_interp_XFilesNeedToBePatched, filesToBePatched.Count.ToString(), filesToBePatched.Count == 1 ? singlesuffix : pluralsuffix);
+                                            Log.Information($@"{firstNonUIModDlc} {pair.Key} has GUI export that is in UI library, marking for patching. Trigger: {export.GetFullPath}");
                                             break;
                                         }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                Debug.WriteLine("Found null item in the list. May be that gui compat and gui mod are the only installed mods.");
                             }
                             Interlocked.Increment(ref done);
                             Percent = getPercent(done, supercedanceList.Count);
@@ -293,7 +291,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         if (filesToBePatched.Count > 0)
                         {
-                            Log.Information("A GUI compatibility patch is required for this game configuration");
+                            Log.Information(@"A GUI compatibility patch is required for this game configuration");
                             b.Result = GUICompatibilityThreadResult.REQUIRED;
                             var generatedMod = GenerateCompatibilityPackForFiles(nonUIinstalledDLCMods, filesToBePatched.Keys.ToList(), libraryArchive);
                             b.Result = GUICompatibilityThreadResult.GENERATED_PACK;
@@ -301,12 +299,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
 
-                    Log.Information("A GUI compatibility patch is not required for this game configuration");
+                    Log.Information(@"A GUI compatibility patch is not required for this game configuration");
                     b.Result = GUICompatibilityThreadResult.NOT_REQUIRED;
                 }
                 else
                 {
-                    Log.Information("No UI mods are installed - no GUI compatibility pack required");
+                    Log.Information(@"No UI mods are installed - no GUI compatibility pack required");
                     b.Result = GUICompatibilityThreadResult.NO_UI_MODS_INSTALLED;
                 }
             };
@@ -314,12 +312,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Result is GUICompatibilityThreadResult gctr)
                 {
-                    Analytics.TrackEvent("Generated a UI compatibillity pack", new Dictionary<string, string>() { { "Result", gctr.ToString() } });
+                    Analytics.TrackEvent(@"Generated a UI compatibillity pack", new Dictionary<string, string>() { { @"Result", gctr.ToString() } });
                     OnClosing(DataEventArgs.Empty);
                 }
                 else
                 {
-                    throw new Exception("GUI Compatibility generator thread did not return a result!");
+                    throw new Exception(@"GUI Compatibility generator thread did not return a result! Please report this to ME3Tweaks");
                 }
             };
             bw.RunWorkerAsync();
@@ -335,17 +333,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (tpmi == null) return x;
                 return tpmi.modname;
             }).ToList();
-            string description = "User generated compatibility pack made to inject proper interface files into other DLC mods from the game configuration. This pack was built against the following mods and should not be used against any other configuration.\n - ";
-            description += string.Join("\n - ", dlcModList);
-            description += "\n\nThis compatibility pack was generated at " + DateTime.Now;
+            string dlcs = string.Join(@"\n - ", dlcModList);
+
             StarterKitOptions sko = new StarterKitOptions
             {
-                ModName = "GUI Compatibility Pack",
-                ModDescription = description,
+                ModName = M3L.GetString(M3L.string_guiCompatibilityPack),
+                ModDescription = M3L.GetString(M3L.string_interp_compatPackModDescription, dlcs, DateTime.Now.ToString()),
                 ModDeveloper = App.AppVersionHR,
                 ModDLCFolderName = UI_MOD_NAME,
                 ModGame = MEGame.ME3,
-                ModInternalName = "UI Mod Compatibility Pack",
+                ModInternalName = @"UI Mod Compatibility Pack",
                 ModInternalTLKID = 1420400890,
                 ModMountFlag = EMountFileFlag.ME3_SPOnly_NoSaveFileDependency,
                 ModMountPriority = 31050,
@@ -377,33 +374,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Mod has been generated.
 
-            string outputPath = Path.Combine(generatedMod.ModPath, "DLC_MOD_" + UI_MOD_NAME, "CookedPCConsole");
-            ActionString = "Preparing UI library";
-            ActionSubstring = "Decompressing data";
+            string outputPath = Path.Combine(generatedMod.ModPath, @"DLC_MOD_" + UI_MOD_NAME, @"CookedPCConsole");
+            ActionString = M3L.GetString(M3L.string_preparingUiLibrary);
+            ActionSubstring = M3L.GetString(M3L.string_decompressingData);
+
             int done = 0;
 
             CaseInsensitiveDictionary<byte[]> uiLibraryData = new CaseInsensitiveDictionary<byte[]>();
-            var filesToDecompress = uiArchive.ArchiveFileData.Where(x => x.FileName.EndsWith(".swf")).ToList();
+            var filesToDecompress = uiArchive.ArchiveFileData.Where(x => x.FileName.EndsWith(@".swf")).ToList();
             foreach (var f in filesToDecompress)
             {
                 MemoryStream decompressedStream = new MemoryStream();
                 uiArchive.ExtractFile(f.Index, decompressedStream);
                 string fname = f.FileName.Substring(f.FileName.IndexOf('\\') + 1);
-                fname = fname.Substring(0, fname.IndexOf(".swf", StringComparison.InvariantCultureIgnoreCase));
+                fname = fname.Substring(0, fname.IndexOf(@".swf", StringComparison.InvariantCultureIgnoreCase));
 
                 uiLibraryData[fname] = decompressedStream.ToArray();
                 done++;
                 Percent = getPercent(done, filesToDecompress.Count);
             }
 
-            ActionString = "Patching files";
+            ActionString = M3L.GetString(M3L.string_patchingFiles);
             Percent = 0;
             done = 0;
-            ActionSubstring = $"Patched {done} file{(done == 1 ? "" : "s")}";
+            string singlesuffix = M3L.GetString(M3L.string_singularFile);
+            string pluralsuffix = M3L.GetString(M3L.string_pluralFiles);
+            ActionSubstring = M3L.GetString(M3L.string_interp_patchedXY, done.ToString(), done == 1 ? singlesuffix : pluralsuffix);
             foreach (var file in filesToBePatched)
             {
                 var package = MEPackageHandler.OpenMEPackage(file);
-                var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == "GFxMovieInfo").ToList();
+                var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == @"GFxMovieInfo").ToList();
                 if (guiExports.Count > 0)
                 {
                     //potential item needing replacement
@@ -414,36 +414,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             //Patching this export.
                             var exportProperties = export.GetProperties();
-                            var rawData = exportProperties.GetProp<ArrayProperty<ByteProperty>>("RawData");
+                            var rawData = exportProperties.GetProp<ArrayProperty<ByteProperty>>(@"RawData");
                             rawData.Clear();
                             rawData.AddRange(newData.Select(x => new ByteProperty(x))); //This will be terribly slow. Need to port over new ME3Exp binary data handler
                             export.WriteProperties(exportProperties);
                         }
                         else
                         {
-                            Debug.WriteLine("Not patching gui export, file not in library: " + export.GetFullPath);
+                            Debug.WriteLine(@"Not patching gui export, file not in library: " + export.GetFullPath);
                         }
                     }
 
                     var outpath = Path.Combine(outputPath, Path.GetFileName(package.FilePath));
                     if (package.IsModified)
                     {
-                        Log.Information("Saving patched package to " + outpath);
+                        Log.Information(@"Saving patched package to " + outpath);
                         package.save(outpath);
                         done++;
-                        ActionSubstring = $"Patched {done} file{(done == 1 ? "" : "s")}";
+                        ActionSubstring = M3L.GetString(M3L.string_interp_patchedXY, done.ToString(), done == 1 ? singlesuffix : pluralsuffix);
                     }
                     else
                     {
                         done++;
-                        Log.Information("File was patched but data did not change! " + outpath);
+                        Log.Information(@"File was patched but data did not change! " + outpath);
                     }
 
                     Percent = getPercent(done, filesToBePatched.Count);
                 }
                 else
                 {
-                    throw new Exception($"Error: {Path.GetFileName(file)} doesn't contain GUI exports! This shouldn't have been possible.");
+                    throw new Exception($@"Error: {Path.GetFileName(file)} doesn't contain GUI exports! This shouldn't have been possible.");
                 }
             }
 

@@ -354,5 +354,35 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";
 		public static readonly string string_interp_dialogUnableToDownloadX = "string_interp_dialogUnableToDownloadX";
 		public static readonly string string_interp_failedToDownloadX = "string_interp_failedToDownloadX";
+		public static readonly string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
+		public static readonly string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
+		public static readonly string string_failedMods = "string_failedMods";
+		public static readonly string string_failureInformation = "string_failureInformation";
+		public static readonly string string_preparingToScanGame = "string_preparingToScanGame";
+		public static readonly string string_pleaseWait = "string_pleaseWait";
+		public static readonly string string_dialogWhatGuiCompatPackIsFor = "string_dialogWhatGuiCompatPackIsFor";
+		public static readonly string string_confirmGeneration = "string_confirmGeneration";
+		public static readonly string string_dialogNoUiModsAreInstalled = "string_dialogNoUiModsAreInstalled";
+		public static readonly string string_noUiModsAreInstalled = "string_noUiModsAreInstalled";
+		public static readonly string string_preparingCompatGenerator = "string_preparingCompatGenerator";
+		public static readonly string string_dialogCannotGenerateCompatPackInvalidConfig = "string_dialogCannotGenerateCompatPackInvalidConfig";
+		public static readonly string string_invalidConfiguration = "string_invalidConfiguration";
+		public static readonly string string_downloadingUiLibrary = "string_downloadingUiLibrary";
+		public static readonly string string_cannotGeneratorCompatPackCouldNotDownload = "string_cannotGeneratorCompatPackCouldNotDownload";
+		public static readonly string string_couldNotAcquireUiLibrary = "string_couldNotAcquireUiLibrary";
+		public static readonly string string_scanningForGuiExports = "string_scanningForGuiExports";
+		public static readonly string string_singularFile = "string_singularFile";
+		public static readonly string string_pluralFiles = "string_pluralFiles";
+		public static readonly string string_interp_XFilesNeedToBePatched = "string_interp_XFilesNeedToBePatched";
+		public static readonly string string_interp_compatPackModDescription = "string_interp_compatPackModDescription";
+		public static readonly string string_guiCompatibilityPack = "string_guiCompatibilityPack";
+		public static readonly string string_preparingUiLibrary = "string_preparingUiLibrary";
+		public static readonly string string_decompressingData = "string_decompressingData";
+		public static readonly string string_patchingFiles = "string_patchingFiles";
+		public static readonly string string_interp_patchedXY = "string_interp_patchedXY";
+		public static readonly string string_ = "string_";
+		public static readonly string string_ = "string_";
+		public static readonly string string_ = "string_";
+		public static readonly string string_ = "string_";
 	}
 }
