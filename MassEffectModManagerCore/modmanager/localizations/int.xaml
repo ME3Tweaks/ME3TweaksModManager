@@ -354,4 +354,13 @@
     <system:String x:Key="string_interp_dialogUnableToDownloadX">Unable to download {0}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_interp_failedToDownloadX">Failed to download {0}</system:String>
 
+    <!-- Failed mods panel -->
+    <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
+    <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load. Select each mod to see why.</system:String>
+    <system:String x:Key="string_failedMods">Failed mods</system:String>
+    <system:String x:Key="string_failureInformation">Failure information</system:String>
+    <system:String x:Key="string_"></system:String>
+    <system:String x:Key="string_"></system:String>
+    <system:String x:Key="string_"></system:String>
+    <system:String x:Key="string_"></system:String>
 </ResourceDictionary>

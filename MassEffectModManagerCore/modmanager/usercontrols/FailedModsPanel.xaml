@@ -15,8 +15,8 @@
     <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0" >
 
-                    <Button MinWidth="70" Content="Restore from ME3Tweaks" Margin="5,0,0,0" Command="{Binding RestoreSelectedModCommand}" Padding="7,4"/>
-                    <Button MinWidth="70" Content="Close" Margin="5,0,0,0" Click="Close_Clicked" Padding="7,4"/>
+                    <Button MinWidth="70" Content="{DynamicResource string_restoreFromME3Tweaks}" Margin="5,0,0,0" Command="{Binding RestoreSelectedModCommand}" Padding="7,4"/>
+                    <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Click="Close_Clicked" Padding="7,4"/>
                 </StackPanel>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -38,10 +38,10 @@
             </Grid.RowDefinitions>
             <!-- Header Panel -->
 
-            <TextBlock Text="The following mods failed to load. Select each mod to see why." Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" />
+            <TextBlock Text="{DynamicResource string_theFollowingModsFailedToLoad}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" />
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="1">
-                <TextBlock DockPanel.Dock="Top" Text="Failed Mods" FontWeight="Bold"/>
+                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_failedMods}" FontWeight="Bold"/>
                 <ListBox Name="ModsList_ListBox" ItemsSource="{Binding FailedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -55,7 +55,7 @@
             </DockPanel>
             <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch" />
             <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2">
-                <TextBlock DockPanel.Dock="Top" Text="Failure Information" FontWeight="Bold"/>
+                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_failureInformation}" FontWeight="Bold"/>
                 <!--<StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                     <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
                         <Hyperlink Command="{Binding OpenWebsiteCommand}" RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
