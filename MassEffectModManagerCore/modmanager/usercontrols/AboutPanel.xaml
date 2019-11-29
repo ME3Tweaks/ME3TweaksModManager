@@ -22,7 +22,7 @@
                 <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" Text="ME3Tweaks Mod Manager" FontWeight="Light" />
                     <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" FontWeight="Light" Text="{Binding Path=(modmanagercore:App.AppVersionAbout), Mode=OneTime, StringFormat='Version {0}'}" />
                 <Image HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" Cursor="Hand" MouseDown="Image_ME3Tweaks_Click" ToolTip="Software developed with love by ME3Tweaks" />
-            <Button Content="Close" HorizontalAlignment="Left" Margin="8,0,0,0" Click="ClosePanel"/>
+            <Button Content="{DynamicResource string_close}" HorizontalAlignment="Left" Margin="8,0,0,0" Click="ClosePanel"/>
 
             </StackPanel>
             <ScrollViewer Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto">

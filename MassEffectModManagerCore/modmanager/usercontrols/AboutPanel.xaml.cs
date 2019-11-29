@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void Navigate_Click(object sender, RequestNavigateEventArgs e)
         {
-            Utilities.OpenWebpage(e.Target);
+            Utilities.OpenWebpage(e.Uri.AbsoluteUri);
         }
 
         private void ClosePanel(object sender, RoutedEventArgs e)
