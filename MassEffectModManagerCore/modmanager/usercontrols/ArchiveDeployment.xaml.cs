@@ -30,6 +30,7 @@ using Brushes = System.Windows.Media.Brushes;
 using UserControl = System.Windows.Controls.UserControl;
 using Microsoft.Win32;
 using MassEffectModManagerCore.gamefileformats;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -41,31 +42,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private MainWindow mainWindow;
 
         public Mod ModBeingDeployed { get; }
-        public string Header { get; set; } = "Prepare mod for distribution";
+        public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
         public ArchiveDeployment(Mod mod, MainWindow mainWindow)
         {
-            Analytics.TrackEvent("Started deployment panel for mod", new Dictionary<string, string>()
+            Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
-                { "Mod name" , mod.ModName + " " + mod.ParsedModVersion}
+                { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
             });
             DataContext = this;
             this.mainWindow = mainWindow;
             ModBeingDeployed = mod;
             string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
-            string versionFormat = mod.ModDescTargetVersion < 6 ? "X.X" : "X.X[.X[.X]]";
-            string checklistItemText = mod.ParsedModVersion != null ? "Verify mod version is correct" : $"Recommended version format not followed ({versionFormat})";
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = $"{checklistItemText}: {versionString}", ValidationFunction = ManualValidation });
+            string versionFormat = mod.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
+            string checklistItemText = mod.ParsedModVersion != null ? M3L.GetString(M3L.string_verifyModVersion) : M3L.GetString(M3L.string_recommendedVersionFormatNotFollowed, versionFormat);
+            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = $@"{checklistItemText}: {versionString}", ValidationFunction = ManualValidation });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
-                ItemText = "Verify URL is correct: " + mod.ModWebsite,
+                ItemText = $@"{M3L.GetString(M3L.string_verifyURLIsCorrect)} {mod.ModWebsite}",
                 ValidationFunction = URLValidation,
-                ErrorsMessage = "Validation failed when attempting to validate the mod URL. A mod URL makes it easy for users to find your mod after importing it in the event they need assistance or want to endorse your mod.",
-                ErrorsTitle = "Mod URL errors were found",
+                ErrorsMessage = M3L.GetString(M3L.string_validation_badUrl),
+                ErrorsTitle = M3L.GetString(M3L.string_modUrlErrorsWereFound)
             });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
-                ItemText = "Verify mod description accuracy",
+                ItemText = M3L.GetString(M3L.string_verifyModDescription),
                 ValidationFunction = ManualValidation
 
             });
@@ -73,10 +74,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                 {
-                    ItemText = "SFAR files check",
+                    ItemText = M3L.GetString(M3L.string_sfarFilesCheck),
                     ModToValidateAgainst = mod,
-                    ErrorsMessage = "The following SFAR files are not 32 bytes, which is the only supported SFAR size in modding tools for Custom DLC mods.",
-                    ErrorsTitle = "Wrong SFAR sizes found errors in mod",
+                    ErrorsMessage = M3L.GetString(M3L.string_invalidSfarSize),
+                    ErrorsTitle = M3L.GetString(M3L.string_wrongSfarSizesFound),
                     ValidationFunction = CheckModSFARs
                 });
             }
@@ -93,11 +94,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                         {
-                            ItemText = "Language support check",
+                            ItemText = M3L.GetString(M3L.string_languageSupportCheck),
                             ModToValidateAgainst = mod,
                             ValidationFunction = CheckLocalizationsME3,
-                            ErrorsMessage = "The language support check detected the following issues. Review these issues and fix them if applicable before deployment.",
-                            ErrorsTitle = "Language support issues detected in mod"
+                            ErrorsMessage = M3L.GetString(M3L.string_languageSupportCheckDetectedFollowingIssues),
+                            ErrorsTitle = M3L.GetString(M3L.string_languageSupportIssuesDetectedInMod)
                         });
                     }
                 }
@@ -106,19 +107,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                 {
-                    ItemText = "Audio check",
+                    ItemText = M3L.GetString(M3L.string_audioCheck),
                     ModToValidateAgainst = mod,
                     ValidationFunction = CheckModForAFCCompactability,
-                    ErrorsMessage = "The audio check detected errors while attempting to verify all referenced audio will be usable by end users. Review these issues and fix them if applicable before deployment.",
-                    ErrorsTitle = "Audio issues detected in mod"
+                    ErrorsMessage = M3L.GetString(M3L.string_audioCheckDetectedErrors),
+                    ErrorsTitle = M3L.GetString(M3L.string_audioIssuesDetectedInMod)
                 });
             }
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
-                ItemText = "Textures check",
+                ItemText = M3L.GetString(M3L.string_texturesCheck),
                 ModToValidateAgainst = mod,
-                ErrorsMessage = "The textures check detected errors while attempting to load all textures in the mod. Review these issues and fix them before deployment.",
-                ErrorsTitle = "Texture errors in mod",
+                ErrorsMessage = M3L.GetString(M3L.string_texturesCheckDetectedErrors),
+                ErrorsTitle = M3L.GetString(M3L.string_textureErrorsInMod),
                 ValidationFunction = CheckModForTFCCompactability
             });
             LoadCommands();
@@ -135,17 +136,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 obj.HasError = true;
                 obj.Icon = FontAwesomeIcon.TimesCircle;
                 obj.Foreground = Brushes.Red;
-                obj.Errors = new List<string>(new[] { $"The URL ({ModBeingDeployed.ModWebsite ?? "null"}) is not a valid URL. Update the modsite descriptor in moddesc.ini to point to your mod's page so users can easily find your mod after import." });
-                obj.ItemText = "Empty or invalid mod URL";
-                obj.ToolTip = "Validation failed";
+                string url = ModBeingDeployed.ModWebsite ?? @"null";
+                obj.Errors = new List<string>(new[] { M3L.GetString(M3L.string_interp_urlIsNotValid, url) });
+                obj.ItemText = M3L.GetString(M3L.string_emptyOrInvalidModUrl);
+                obj.ToolTip = M3L.GetString(M3L.string_validationFailed);
 
             }
             else
             {
                 obj.Icon = FontAwesomeIcon.CheckCircle;
                 obj.Foreground = Brushes.Green;
-                obj.ItemText = "Mod URL OK: " + ModBeingDeployed.ModWebsite;
-                obj.ToolTip = "Validation OK";
+                obj.ItemText = M3L.GetString(M3L.string_interp_modURLOK, ModBeingDeployed.ModWebsite);
+                obj.ToolTip = M3L.GetString(M3L.string_validationOK);
             }
         }
 
@@ -156,16 +158,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
             var languages = StarterKitGeneratorWindow.me3languages;
             List<string> errors = new List<string>();
-            obj.ItemText = "Language check in progress";
+            obj.ItemText = M3L.GetString(M3L.string_languageCheckInProgress);
             foreach (var customDLC in customDLCFolders)
             {
                 if (_closed) return;
-                var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, "CookedPCConsole", customDLC);
+                var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, @"CookedPCConsole", customDLC);
                 Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
                 foreach (var language in languages)
                 {
                     if (_closed) return;
-                    var tlkLangPath = tlkBasePath + "_" + language.filecode + ".tlk";
+                    var tlkLangPath = tlkBasePath + @"_" + language.filecode + @".tlk";
                     if (File.Exists(tlkLangPath))
                     {
                         //inspect
@@ -175,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        errors.Add(customDLC + " is missing a localized TLK for language " + language.filecode + ". This DLC will not load if the user's game language is set to this. Some versions of the game cannot have their language changed, so this will effectively lock the user out from using this mod.");
+                        errors.Add(M3L.GetString(M3L.string_interp_customDLCMissingLocalizedTLK, customDLC, language.filecode)); ;
                     }
                 }
                 if (tlkMappings.Count > 1)
@@ -196,13 +198,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
                             foreach (var difference in differences)
                             {
-                                var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? "<error finding string>";
-                                errors.Add($"TLKStringID {difference} is present in {mapping1.Key}  but is not present in {mapping2.Key}. Even if this mod is not truly localized to another language, the strings should be copied into other language TLK files to ensure users of that language will see strings instead of string references.\n{str}");
+                                var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? M3L.GetString(M3L.string_errorFindingString);
+                                errors.Add(M3L.GetString(M3L.string_interp_tlkDifference, difference.ToString(), mapping1.Key, mapping2.Key, str));
                             }
 
                             numDone++;
                             double percent = (numDone * 100.0) / numLoops;
-                            obj.ItemText = $"Language check in progress {percent:0.00}%";
+                            obj.ItemText = $@"{M3L.GetString(M3L.string_languageCheckInProgress)} {percent:0.00}%";
                         }
                     }
                     //use INT as master. Not sure if any mods are not-english based
@@ -215,16 +217,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 obj.Icon = FontAwesomeIcon.Warning;
                 obj.Foreground = Brushes.Orange;
                 obj.Errors = errors;
-                obj.ItemText = "Language check detected issues";
-                obj.ToolTip = "Validation failed";
+                obj.ItemText = M3L.GetString(M3L.string_languageCheckDetectedIssues);
+                obj.ToolTip = M3L.GetString(M3L.string_validationFailed);
 
             }
             else
             {
                 obj.Icon = FontAwesomeIcon.CheckCircle;
                 obj.Foreground = Brushes.Green;
-                obj.ItemText = "No language issues detected";
-                obj.ToolTip = "Validation OK";
+                obj.ItemText = M3L.GetString(M3L.string_noLanguageIssuesDetected);
+                obj.ToolTip = M3L.GetString(M3L.string_validationOK);
             }
         }
 
@@ -232,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             bool hasError = false;
             item.HasError = false;
-            item.ItemText = "Checking SFAR files sizes";
+            item.ItemText = M3L.GetString(M3L.string_checkingSFARFilesSizes);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
             GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
@@ -245,7 +247,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var f in referencedFiles)
             {
                 if (_closed) return;
-                if (Path.GetExtension(f) == ".sfar")
+                if (Path.GetExtension(f) == @".sfar")
                 {
                     hasSFARs = true;
                     if (new FileInfo(f).Length != 32)
@@ -265,8 +267,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 item.Foreground = Brushes.Green;
                 item.Icon = FontAwesomeIcon.CheckCircle;
-                item.ItemText = "Mod does not use SFARs";
-                item.ToolTip = "Validation passed";
+                item.ItemText = M3L.GetString(M3L.string_modDoesNotUseSFARs);
+                item.ToolTip = M3L.GetString(M3L.string_validationOK);
             }
             else
             {
@@ -274,14 +276,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     item.Foreground = Brushes.Green;
                     item.Icon = FontAwesomeIcon.CheckCircle;
-                    item.ItemText = "No SFAR size issues were detected";
-                    item.ToolTip = "Validation passed";
+                    item.ItemText = M3L.GetString(M3L.string_noSFARSizeIssuesWereDetected);
+                    item.ToolTip = M3L.GetString(M3L.string_validationOK);
                 }
                 else
                 {
                     item.Errors = errors;
-                    item.ItemText = "Some SFAR files are the incorrect size";
-                    item.ToolTip = "Validation failed";
+                    item.ItemText = M3L.GetString(M3L.string_someSFARSizesAreTheIncorrectSize);
+                    item.ToolTip = M3L.GetString(M3L.string_validationFailed);
                 }
 
                 item.HasError = hasError;
@@ -292,14 +294,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             item.Foreground = Brushes.Gray;
             item.Icon = FontAwesomeIcon.CheckCircle;
-            item.ToolTip = "This item must be manually checked by you";
+            item.ToolTip = M3L.GetString(M3L.string_thisItemMustBeManuallyCheckedByYou);
         }
 
         private void CheckModForAFCCompactability(DeploymentChecklistItem item)
         {
             bool hasError = false;
             item.HasError = false;
-            item.ItemText = "Checking audio references in mod";
+            item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
             GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
@@ -312,19 +314,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (_closed) return;
                 numChecked++;
-                item.ItemText = $"Checking audio references in mod [{numChecked}/{referencedFiles.Count}]";
+                item.ItemText = $"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
                 {
                     var package = MEPackageHandler.OpenMEPackage(f);
-                    var wwiseStreams = package.Exports.Where(x => x.ClassName == "WwiseStream" && !x.IsDefaultObject).ToList();
+                    var wwiseStreams = package.Exports.Where(x => x.ClassName == @"WwiseStream" && !x.IsDefaultObject).ToList();
                     foreach (var wwisestream in wwiseStreams)
                     {
                         if (_closed) return;
                         //Check each reference.
-                        var afcNameProp = wwisestream.GetProperty<NameProperty>("Filename");
+                        var afcNameProp = wwisestream.GetProperty<NameProperty>(@"Filename");
                         if (afcNameProp != null)
                         {
-                            string afcNameWithExtension = afcNameProp + ".afc";
+                            string afcNameWithExtension = afcNameProp + @".afc";
                             int audioSize = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 8);
                             int audioOffset = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 4);
 
@@ -370,7 +372,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Could not find referenced audio file cache: {afcNameProp}");
+                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath, afcNameProp.ToString()));
                                     continue;
                                 }
                             }
@@ -383,13 +385,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             try
                             {
                                 audioStream.Seek(audioOffset, SeekOrigin.Begin);
-                                if (audioStream.ReadStringASCIINull(4) != "RIFF")
+                                if (audioStream.ReadStringASCIINull(4) != @"RIFF")
                                 {
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Invalid audio pointer, does not point to RIFF header");
+                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointer, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath));
                                     if (audioStream is FileStream) audioStream.Close();
                                     continue;
                                 }
@@ -404,7 +406,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(validationTarget, afcPath.Substring(validationTarget.TargetPath.Length + 1));
                                     if (vanillaInfo == null)
                                     {
-                                        Crashes.TrackError(new Exception("Vanilla information was null when performing vanilla file check for " + afcPath.Substring(validationTarget.TargetPath.Length + 1)));
+                                        Crashes.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(validationTarget.TargetPath.Length + 1)}"));
                                     }
                                     if (audioOffset >= vanillaInfo[0].size)
                                     {
@@ -412,7 +414,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         item.Icon = FontAwesomeIcon.TimesCircle;
                                         item.Foreground = Brushes.Red;
                                         item.Spinning = false;
-                                        errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.");
+                                        errors.Add(M3L.GetString(M3L.string_interp_audioStoredInOfficialAFC, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath));
                                     }
                                 }
                                 if (audioStream is FileStream) audioStream.Close();
@@ -423,7 +425,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 item.Icon = FontAwesomeIcon.TimesCircle;
                                 item.Foreground = Brushes.Red;
                                 item.Spinning = false;
-                                errors.Add($"{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Error validating audio reference: {e.Message}");
+                                errors.Add(M3L.GetString(M3L.string_errorValidatingAudioReference, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath, e.Message));
                                 continue;
                             }
                         }
@@ -436,14 +438,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 item.Foreground = Brushes.Green;
                 item.Icon = FontAwesomeIcon.CheckCircle;
-                item.ItemText = "No audio issues were detected";
-                item.ToolTip = "Validation passed";
+                item.ItemText = M3L.GetString(M3L.string_noAudioIssuesWereDetected);
+                item.ToolTip = M3L.GetString(M3L.string_validationOK);
             }
             else
             {
                 item.Errors = errors;
-                item.ItemText = "Audio issues were detected";
-                item.ToolTip = "Validation failed";
+                item.ItemText = M3L.GetString(M3L.string_audioIssuesWereDetected);
+                item.ToolTip = M3L.GetString(M3L.string_validationFailed);
             }
             item.HasError = hasError;
             cachedAudio.Clear();
@@ -455,7 +457,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //{
             bool hasError = false;
             item.HasError = false;
-            item.ItemText = "Checking textures in mod";
+            item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
             GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
@@ -464,7 +466,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (_closed) return;
                 numChecked++;
-                item.ItemText = $"Checking textures in mod [{numChecked}/{referencedFiles.Count}]";
+                item.ItemText = $@"{M3L.GetString(M3L.string_checkingTexturesInMod)} [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
                 {
                     var package = MEPackageHandler.OpenMEPackage(f);
@@ -472,7 +474,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     foreach (var texture in textures)
                     {
                         if (_closed) return;
-                        var cache = texture.GetProperty<NameProperty>("TextureFileCacheName");
+                        var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
                         if (cache != null)
                         {
                             if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
@@ -489,7 +491,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add($"{texture.FileRef.FilePath} - {texture.GetInstancedFullPath}: Could not load texture data: {e.Message}");
+                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
                                 }
                             }
                         }
@@ -501,24 +503,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 item.Foreground = Brushes.Green;
                 item.Icon = FontAwesomeIcon.CheckCircle;
-                item.ItemText = "No broken textures were found";
-                item.ToolTip = "Validation passed";
+                item.ItemText = M3L.GetString(M3L.string_noBrokenTexturesWereFound);
+                item.ToolTip = M3L.GetString(M3L.string_validationOK);
             }
             else
             {
                 item.Errors = errors;
-                item.ItemText = "Texture issues were detected";
-                item.ToolTip = "Validation failed";
+                item.ItemText = M3L.GetString(M3L.string_textureIssuesWereDetected);
+                item.ToolTip = M3L.GetString(M3L.string_validationFailed);
             }
             item.HasError = hasError;
-            //}
-            //} else
-            //{
-            //    item.Foreground = Brushes.Green;
-            //    item.Icon = FontAwesomeIcon.CheckCircle;
-            //    item.ItemText = "Textures are not ";
-            //    item.ToolTip = "Validation passed";
-            //}
         }
 
         public ICommand DeployCommand { get; set; }
@@ -541,13 +535,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             SaveFileDialog d = new SaveFileDialog
             {
-                Filter = "7-zip archive file|*.7z",
-                FileName = Utilities.SanitizePath($"{ModBeingDeployed.ModName}_{ModBeingDeployed.ModVersionString}".Replace(" ", ""), true)
+                Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",
+                FileName = Utilities.SanitizePath($@"{ModBeingDeployed.ModName}_{ModBeingDeployed.ModVersionString}".Replace(@" ", ""), true)
             };
             var result = d.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                NamedBackgroundWorker bw = new NamedBackgroundWorker("ModDeploymentThread");
+                NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModDeploymentThread");
                 bw.DoWork += Deployment_BackgroundThread;
                 bw.RunWorkerCompleted += (a, b) =>
                 {
@@ -581,12 +575,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (buildingFolderList != "")
                     {
-                        buildingFolderList += "\\";
+                        buildingFolderList += @"\\";
                     }
                     buildingFolderList += relativeFolder;
                     if (directories.Add(buildingFolderList))
                     {
-                        Debug.WriteLine("7z folder: " + buildingFolderList);
                         archiveMapping[buildingFolderList] = null;
                     }
                 }
@@ -597,15 +590,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             var compressor = new SevenZip.SevenZipCompressor();
             //compressor.CompressionLevel = CompressionLevel.Ultra;
-            compressor.CustomParameters.Add("s", "on");
+            compressor.CustomParameters.Add(@"s", @"on");
             if (!MultithreadedCompression)
             {
-                compressor.CustomParameters.Add("mt", "off");
+                compressor.CustomParameters.Add(@"mt", @"off");
             }
-            compressor.CustomParameters.Add("yx", "9");
+            compressor.CustomParameters.Add(@"yx", @"9");
             //compressor.CustomParameters.Add("x", "9");
-            compressor.CustomParameters.Add("d", "28");
-            string currentDeploymentStep = "Mod";
+            compressor.CustomParameters.Add(@"d", @"28");
+            string currentDeploymentStep = M3L.GetString(M3L.string_mod);
             compressor.Progressing += (a, b) =>
             {
                 //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
@@ -615,24 +608,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
                 {
                     //Don't update UI too often. Once per second is enough.
-                    string percent = (ProgressValue * 100.0 / ProgressMax).ToString("0.00");
-                    OperationText = $"[{currentDeploymentStep}] Deployment in progress... {percent}%";
+                    string percent = (ProgressValue * 100.0 / ProgressMax).ToString(@"0.00");
+                    OperationText = $"[{currentDeploymentStep}] {M3L.GetString(M3L.string_deploymentInProgress)} {percent}%";
                     lastPercentUpdateTime = now;
                 }
                 //Debug.WriteLine(ProgressValue + "/" + ProgressMax);
             };
             compressor.FileCompressionStarted += (a, b) => { Debug.WriteLine(b.FileName); };
             compressor.CompressFileDictionary(archiveMapping, archivePath);
-            Debug.WriteLine("Now compressing moddesc.ini...");
             compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
             compressor.CompressionMode = CompressionMode.Append;
             compressor.CompressionLevel = CompressionLevel.None;
-            currentDeploymentStep = "moddesc.ini";
+            currentDeploymentStep = @"moddesc.ini";
             compressor.CompressFiles(archivePath, new string[]
             {
-                Path.Combine(ModBeingDeployed.ModPath, "moddesc.ini")
+                Path.Combine(ModBeingDeployed.ModPath, @"moddesc.ini")
             });
-            OperationText = "Deployment succeeded";
+            OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
             Utilities.HighlightInExplorer(archivePath);
         }
 
@@ -646,7 +638,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool DeploymentInProgress { get; private set; }
         public ulong ProgressMax { get; set; } = 100;
         public ulong ProgressValue { get; set; } = 0;
-        public string OperationText { get; set; } = "Verify above items before deployment";
+        public string OperationText { get; set; } = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
 
         private DateTime lastPercentUpdateTime;
         private bool _closed;
@@ -685,14 +677,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Icon = FontAwesomeIcon.Spinner;
                 Spinning = true;
                 Foreground = Application.Current.FindResource(AdonisUI.Brushes.DisabledAccentForegroundBrush) as SolidColorBrush;
-                ToolTip = "Validation in progress...";
+                ToolTip = M3L.GetString(M3L.string_validationInProgress);
             }
 
             public void ExecuteValidationFunction()
             {
                 Foreground = Application.Current.FindResource(AdonisUI.Brushes.HyperlinkBrush) as SolidColorBrush;
                 ValidationFunction?.Invoke(this);
-                Debug.WriteLine("Invoke finished");
+                //Debug.WriteLine("Invoke finished");
                 Spinning = false;
             }
         }
@@ -704,7 +696,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ListDialog ld = new ListDialog(dcli.Errors, dcli.ErrorsTitle, dcli.ErrorsMessage, Window.GetWindow(hl));
                 ld.ShowDialog();
             }
-            Debug.WriteLine("Request navigate.");
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -718,7 +709,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             lastPercentUpdateTime = DateTime.Now;
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("DeploymentValidation");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"DeploymentValidation");
             bw.DoWork += (a, b) =>
             {
                 foreach (var checkItem in DeploymentChecklistItems)

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -142,6 +143,31 @@ namespace LocalizationHelper
             string keyVal = strInfo.Substring(keyPos + "x:Key=\"".Length);
             keyVal = keyVal.Substring(0, keyVal.IndexOf("\""));
             return (preserveWhitespace, keyVal);
+        }
+
+        private void PullStrings_Clicked(object sender, RoutedEventArgs e)
+        {
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
+
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ArchiveDeployment.xaml.cs");
+
+            var regex = "([$@]*(\".+?\"))";
+            Regex r = new Regex(regex);
+            var filetext = File.ReadAllText(file);
+            var matches = r.Matches(filetext);
+            var strings = new List<string>();
+            foreach (var match in matches)
+            {
+                var str = match.ToString();
+                if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
+                var newStr = match.ToString().TrimStart('$').Trim('"');
+                if (newStr.Length > 1)
+                {
+                    Debug.WriteLine($"    <system:String x:Key=\"string_\">{newStr}</system:String>");
+                }
+            }
+
         }
     }
 }

@@ -17,15 +17,15 @@
         <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" HorizontalAlignment="Center"/>
         <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}" HorizontalAlignment="Center"/>
 
-        <TextBlock Text="Deployment Checklist" FontSize="14" FontWeight="Bold"/>
+        <TextBlock Text="{DynamicResource string_deploymentChecklist}" FontSize="14" FontWeight="Bold"/>
         <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                       AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="2" ToolTip="{Binding ToolTip}">
                         <fa:ImageAwesome Icon="{Binding Icon}" Foreground="{Binding Foreground}" Spin="{Binding Spinning}" SpinDuration="1.2" Width="16"/>
-                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding ItemText}" Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"/>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}">           
+                        <TextBlock FontSize="12" Text="{Binding ItemText}" Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock  Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}">           
                             <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="Hyperlink_RequestNavigate">
                                 <TextBlock Text="{Binding ItemText}"/>
                             </Hyperlink>
@@ -47,11 +47,11 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-        <CheckBox Content="Multi-threaded compression" ToolTip="Multi-threaded compression is significantly faster than single threaded, but at the cost of more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory" IsChecked="{Binding MultithreadedCompression}" Margin="0,5"/>
+        <CheckBox Content="{DynamicResource string_multiThreadedCompression}" ToolTip="{DynamicResource string_tooltip_multithreadDeployment}" IsChecked="{Binding MultithreadedCompression}" Margin="0,5"/>
         <ProgressBar Height="16" IsIndeterminate="{Binding ProgressIndeterminate}" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"/>
         <DockPanel Margin="0,4">
-            <Button DockPanel.Dock="Right" Content="Deploy" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="7,5"/>
-            <Button DockPanel.Dock="Right" Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="5" Margin="4,0"/>
+            <Button DockPanel.Dock="Right" Content="{DynamicResource string_deploy}" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="7,5"/>
+            <Button DockPanel.Dock="Right" Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="5" Margin="4,0"/>
             <TextBlock Text="{Binding OperationText, FallbackValue=Verify above items before deployment}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
         </DockPanel>
     </StackPanel>

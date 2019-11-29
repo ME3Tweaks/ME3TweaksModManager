@@ -253,5 +253,71 @@
     <system:String x:Key="string_howToChangeLanguage">You can change your language at any time from the Actions > Options menu. Note that all support is provided in English only.</system:String>
     <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Thanks for downloading the preview of ME3Tweaks Mod Manager, the next generation of Mod Manager. This preview version is a work in progress and will have stability issues and missing features that are being worked on.&#10;&#10;ME3Tweaks Mod Manager will replace Mass Effect 3 Mod Manager once it is at feature parity.&#10;&#10;Please direct all feedback to the ME3Tweaks Discord, where you can have your voice heard for feature requests and bug fixes.</system:String>
     <system:String x:Key="string_joinDiscord">Join the ME3Tweaks Discord</system:String>
-    <system:String x:Key="string_close">Close</system:String><!-- Close (as in close dialog) -->
+    <system:String x:Key="string_close">Close</system:String>
+    <!-- Close (as in close dialog) -->
+
+    <!-- Deployment panel -->
+    <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
+    <system:String x:Key="string_multiThreadedCompression">Multi-threaded compression</system:String>
+    <system:String x:Key="string_deploy">Deploy</system:String>
+    <system:String x:Key="string_deploymentChecklist">Deployment checklist</system:String>
+    <system:String x:Key="string_prepareModForDistribution">Prepare mod for distribution</system:String>
+    <system:String x:Key="string_compressiongModForDistribution">Compressing mod for distribution</system:String>
+    <system:String x:Key="string_verifyModVersion">Verify mod version is correct</system:String>
+    <system:String x:Key="string_recommendedVersionFormatNotFollowed">Recommended version format not followed ({0})</system:String>
+    <!-- 0 = X.X or X.X[.X[.X]] (literal string) -->
+
+    <system:String x:Key="string_verifyURLIsCorrect">Verify URL is correct:</system:String>
+    <system:String x:Key="string_validation_badUrl">Validation failed when attempting to validate the mod URL. A mod URL makes it easy for users to find your mod after importing it in the event they need assistance. A valid NexusMods URL to your mod is required if you want to have in-app endorsement support without using the [ModInfo] NexusCode descriptor.</system:String>
+    <system:String x:Key="string_modUrlErrorsWereFound">Mod URL errors were found</system:String>
+    <system:String x:Key="string_verifyModDescription">Verify mod description accuracy</system:String>
+    <system:String x:Key="string_sfarFilesCheck">SFAR files check</system:String>
+    <system:String x:Key="string_invalidSfarSize">The following SFAR files are not 32 bytes, which is the only supported SFAR size in modding tools for Custom DLC mods.</system:String>
+    <system:String x:Key="string_wrongSfarSizesFound">Wrong SFAR sizes found errors in mod</system:String>
+    <system:String x:Key="string_languageSupportCheck">Language support check</system:String>
+    <system:String x:Key="string_languageSupportCheckDetectedFollowingIssues">The language support check detected the following issues. Review these issues and fix them if applicable before deployment.</system:String>
+    <system:String x:Key="string_languageSupportIssuesDetectedInMod">Language support issues detected in mod</system:String>
+    <system:String x:Key="string_audioCheck">Audio check</system:String>
+    <system:String x:Key="string_audioCheckDetectedErrors">The audio check detected errors while attempting to verify all referenced audio will be usable by end users. Review these issues and fix them if applicable before deployment.</system:String>
+    <system:String x:Key="string_audioIssuesDetectedInMod">Audio issues detected in mod</system:String>
+    <system:String x:Key="string_texturesCheck">Textures check</system:String>
+    <system:String x:Key="string_texturesCheckDetectedErrors">The textures check detected errors while attempting to load all textures in the mod. Review these issues and fix them before deployment.</system:String>
+    <system:String x:Key="string_textureErrorsInMod">Texture errors in mod</system:String>
+    <system:String x:Key="string_interp_urlIsNotValid">The URL ({url}) is not a valid URL. Update the modsite descriptor in moddesc.ini to point to your mod's page so users can easily find your mod after import.</system:String>
+    <system:String x:Key="string_emptyOrInvalidModUrl">Empty or invalid mod URL</system:String>
+    <system:String x:Key="string_validationFailed">Validation failed</system:String>
+    <system:String x:Key="string_interp_modURLOK">Mod URL OK: {0}</system:String> <!-- 0 = Mod URL-->
+    <system:String x:Key="string_validationOK">Validation OK</system:String>
+    <system:String x:Key="string_languageCheckInProgress">Language check in progress</system:String>
+    <system:String x:Key="string_interp_customDLCMissingLocalizedTLK">{customDLC} is missing a localized TLK for language { language.filecode }. This DLC will not load if the user's game language is set to this. Some versions of the game cannot have their language changed, so this will effectively lock the user out from using this mod.</system:String>
+    <system:String x:Key="string_errorFindingString">&lt;error finding string&gt;</system:String>
+    <system:String x:Key="string_interp_tlkDifference">TLKStringID {difference} is present in {mapping1.Key}  but is not present in {mapping2.Key}. Even if this mod is not truly localized to another language, the strings should be copied into other language TLK files to ensure users of that language will see strings instead of string references.\n{str}</system:String>
+    <system:String x:Key="string_interp_languageCheckInProgressPercent">Language check in progress {percent:0.00}%</system:String>
+    <system:String x:Key="string_noLanguageIssuesDetected">No language issues detected</system:String>
+    <system:String x:Key="string_checkingSFARFilesSizes">Checking SFAR files sizes</system:String>
+    <system:String x:Key="string_modDoesNotUseSFARs">Mod does not use SFARs</system:String>
+    <system:String x:Key="string_noSFARSizeIssuesWereDetected">No SFAR size issues were detected</system:String>
+    <system:String x:Key="string_someSFARSizesAreTheIncorrectSize">Some SFAR files are the incorrect size</system:String>
+    <system:String x:Key="string_thisItemMustBeManuallyCheckedByYou">This item must be manually checked by you</system:String>
+    <system:String x:Key="string_checkingAudioReferencesInMod">Checking audio references in mod</system:String>
+    <system:String x:Key="string_interp_couldNotFindReferencedAFC">{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Could not find referenced audio file cache: {afcNameProp}</system:String>
+    <system:String x:Key="string_interp_invalidAudioPointer">{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Invalid audio pointer, does not point to RIFF header</system:String>
+    <system:String x:Key="string_interp_audioStoredInOfficialAFC">{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.</system:String>
+    <system:String x:Key="string_errorValidatingAudioReference">{wwisestream.FileRef.FilePath} - {wwisestream.GetInstancedFullPath}: Error validating audio reference: {e.Message}</system:String>
+    <system:String x:Key="string_noAudioIssuesWereDetected">No audio issues were detected</system:String>
+    <system:String x:Key="string_audioIssuesWereDetected">Audio issues were detected</system:String>
+    <system:String x:Key="string_checkingTexturesInMod">Checking textures in mod</system:String>
+    <system:String x:Key="string_interp_couldNotLoadTextureData">{texture.FileRef.FilePath} - {texture.GetInstancedFullPath}: Could not load texture data: {e.Message}</system:String>
+    <system:String x:Key="string_noBrokenTexturesWereFound">No broken textures were found</system:String>
+    <system:String x:Key="string_textureIssuesWereDetected">Texture issues were detected</system:String>
+    <system:String x:Key="string_7zipArchiveFile">7-zip archive file|*.7z</system:String>
+    <system:String x:Key="string_deploymentInProgress">Deployment in progress...</system:String>
+    <system:String x:Key="string_deploymentSucceeded">Deployment succeeded</system:String>
+    <system:String x:Key="string_verifyAboveItemsBeforeDeployment">Verify above items before deployment</system:String>
+    <system:String x:Key="string_validationInProgress">Validation in progress...</system:String>
+    <system:String x:Key="string_languageCheckDetectedIssues">Language check detected issues</system:String>
+    <system:String x:Key="string_mod">Mod</system:String>
+
+
+
 </ResourceDictionary>

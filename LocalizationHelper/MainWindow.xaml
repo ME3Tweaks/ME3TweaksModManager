@@ -19,7 +19,8 @@
         <TextBox Grid.RowSpan="2" Name="SourceTextbox" TextWrapping="Wrap" AcceptsReturn="True"/>
         <TextBox  Grid.Column="2" Name="ResultTextBox" IsReadOnly="True" TextWrapping="Wrap"/>
         <TextBox  Grid.Column="2" Grid.Row="1" Name="StringsTextBox" IsReadOnly="True" TextWrapping="Wrap"/>
-        <Button Grid.Row="2" Content="Convert" Click="Convert_Clicked"/>
+        <!--<Button Grid.Row="2" Content="Convert" Click="Convert_Clicked"/>-->
+        <Button Grid.Row="2" Content="Pull strings to xaml text" Click="PullStrings_Clicked"/>
         <Button Grid.Row="2" Grid.Column="1" Content="Synchronize localizations" Click="Synchronize_Clicked"/>
     </Grid>
 </Window>
