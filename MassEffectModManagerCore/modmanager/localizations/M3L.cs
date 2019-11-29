@@ -327,5 +327,28 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_validationInProgress = "string_validationInProgress";
 		public static readonly string string_languageCheckDetectedIssues = "string_languageCheckDetectedIssues";
 		public static readonly string string_mod = "string_mod";
+		public static readonly string string_backupsAreShared = "string_backupsAreShared";
+		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
+		public static readonly string string_backUp = "string_backUp";
+		public static readonly string string_backupsAreUsedToRestoreYourGame = "string_backupsAreUsedToRestoreYourGame";
+		public static readonly string string_interp_cannotBackupGameWhileRunning = "string_interp_cannotBackupGameWhileRunning";
+		public static readonly string string_validatingBackupSource = "string_validatingBackupSource";
+		public static readonly string string_waitingForUserInput = "string_waitingForUserInput";
+		public static readonly string string_selectBackupDestination = "string_selectBackupDestination";
+		public static readonly string string_directoryIsNotEmptyMustBeEmpty = "string_directoryIsNotEmptyMustBeEmpty";
+		public static readonly string string_directoryNotEmpty = "string_directoryNotEmpty";
+		public static readonly string string_interp_backingUpX = "string_interp_backingUpX";
+		public static readonly string string_creatingBackup = "string_creatingBackup";
+		public static readonly string string_cannotBackupModifiedGame = "string_cannotBackupModifiedGame";
+		public static readonly string string_followingFilesDoNotMatchTheVanillaDatabase = "string_followingFilesDoNotMatchTheVanillaDatabase";
+		public static readonly string string_inconsistentDLCDetected = "string_inconsistentDLCDetected";
+		public static readonly string string_dialogTheFollowingDLCAreInAnInconsistentState = "string_dialogTheFollowingDLCAreInAnInconsistentState";
+		public static readonly string string_dlcModsAreInstalled = "string_dlcModsAreInstalled";
+		public static readonly string string_dialogDLCModsWereDetectedCannotBackup = "string_dialogDLCModsWereDetectedCannotBackup";
+		public static readonly string string_backedUp = "string_backedUp";
+		public static readonly string string_notBackedUp = "string_notBackedUp";
+		public static readonly string string_inconsistentDLCDetectedUnofficialGame = "string_inconsistentDLCDetectedUnofficialGame";
+		public static readonly string string_movies = "string_movies";
+		public static readonly string string_basegame = "string_basegame";
 	}
 }

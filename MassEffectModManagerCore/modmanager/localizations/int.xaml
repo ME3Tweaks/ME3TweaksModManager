@@ -286,7 +286,8 @@
     <system:String x:Key="string_interp_urlIsNotValid">The URL ({url}) is not a valid URL. Update the modsite descriptor in moddesc.ini to point to your mod's page so users can easily find your mod after import.</system:String>
     <system:String x:Key="string_emptyOrInvalidModUrl">Empty or invalid mod URL</system:String>
     <system:String x:Key="string_validationFailed">Validation failed</system:String>
-    <system:String x:Key="string_interp_modURLOK">Mod URL OK: {0}</system:String> <!-- 0 = Mod URL-->
+    <system:String x:Key="string_interp_modURLOK">Mod URL OK: {0}</system:String>
+    <!-- 0 = Mod URL-->
     <system:String x:Key="string_validationOK">Validation OK</system:String>
     <system:String x:Key="string_languageCheckInProgress">Language check in progress</system:String>
     <system:String x:Key="string_interp_customDLCMissingLocalizedTLK">{customDLC} is missing a localized TLK for language { language.filecode }. This DLC will not load if the user's game language is set to this. Some versions of the game cannot have their language changed, so this will effectively lock the user out from using this mod.</system:String>
@@ -317,6 +318,32 @@
     <system:String x:Key="string_validationInProgress">Validation in progress...</system:String>
     <system:String x:Key="string_languageCheckDetectedIssues">Language check detected issues</system:String>
     <system:String x:Key="string_mod">Mod</system:String>
+
+    <!-- Backup Creator-->
+    <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
+    <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
+    <system:String x:Key="string_backUp">Back up</system:String>
+    <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder. To restore from backup, use the Target Info button from the main window.&#10;&#10;Backups are also used for pulling files from for certain operations and are required for others.</system:String>
+    <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Cannot backup {0} while it is running.</system:String> <!-- 0 = game name-->
+    <system:String x:Key="string_validatingBackupSource">Validating backup source</system:String>
+    <system:String x:Key="string_waitingForUserInput">Waiting for user input</system:String>
+    <system:String x:Key="string_selectBackupDestination">Select backup destination (must be empty)</system:String>
+    <system:String x:Key="string_directoryIsNotEmptyMustBeEmpty">Directory is not empty. A backup destination must be empty.</system:String>
+    <system:String x:Key="string_directoryNotEmpty">Directory not empty</system:String>
+    <system:String x:Key="string_interp_backingUpX">Backing up {0}</system:String> <!-- 0 = string (name of DLC, BASEGAME, or Movies)-->
+    <system:String x:Key="string_creatingBackup">Creating backup</system:String>
+    <system:String x:Key="string_cannotBackupModifiedGame">Cannot backup modified game</system:String>
+    <system:String x:Key="string_followingFilesDoNotMatchTheVanillaDatabase">The following files do not match the vanilla database and appear to be modified. Due to these files being modified, a backup cannot be taken of this installation.</system:String>
+    <system:String x:Key="string_inconsistentDLCDetected">Inconsistent DLC detected</system:String>
+    <system:String x:Key="string_dialogTheFollowingDLCAreInAnInconsistentState">The following DLC are in an inconsistent state; they have a packed SFAR file but contain unpacked game files. The configuration of these DLC are not supported, the unpacked files must be manually removed.</system:String>
+    <system:String x:Key="string_dlcModsAreInstalled">DLC mods are installed</system:String>
+    <system:String x:Key="string_dialogDLCModsWereDetectedCannotBackup">The following DLC folders were detected that are not part of the official game by BioWare. Backups cannot include DLC mods - the game must be unmodified.</system:String>
+    <system:String x:Key="string_backedUp">Backed up</system:String>
+    <system:String x:Key="string_notBackedUp">Not backed up</system:String>
+    <system:String x:Key="string_inconsistentDLCDetectedUnofficialGame">Inconsistent DLC was detected. This may be due to using an unofficial copy of the game.</system:String>
+
+    <system:String x:Key="string_movies">Movies</system:String>
+    <system:String x:Key="string_basegame">Basegame</system:String>
 
 
 

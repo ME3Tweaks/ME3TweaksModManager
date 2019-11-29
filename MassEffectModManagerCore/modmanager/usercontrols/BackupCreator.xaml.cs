@@ -18,6 +18,7 @@ using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -81,16 +82,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 switch (Game)
                 {
                     case Mod.MEGame.ME1:
-                        GameTitle = "Mass Effect";
-                        GameIconSource = "/images/gameicons/ME1_48.ico";
+                        GameTitle = @"Mass Effect";
+                        GameIconSource = @"/images/gameicons/ME1_48.ico";
                         break;
                     case Mod.MEGame.ME2:
-                        GameTitle = "Mass Effect 2";
-                        GameIconSource = "/images/gameicons/ME2_48.ico";
+                        GameTitle = @"Mass Effect 2";
+                        GameIconSource = @"/images/gameicons/ME2_48.ico";
                         break;
                     case Mod.MEGame.ME3:
-                        GameTitle = "Mass Effect 3";
-                        GameIconSource = "/images/gameicons/ME3_48.ico";
+                        GameTitle = @"Mass Effect 3";
+                        GameIconSource = @"/images/gameicons/ME3_48.ico";
                         break;
                 }
                 ResetBackupStatus();
@@ -110,17 +111,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(BackupSourceTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(window, $"Cannot backup {Utilities.GetGameName(BackupSourceTarget.Game)} while it is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_interp_cannotBackupGameWhileRunning, Utilities.GetGameName(BackupSourceTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + "Backup");
+                NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + @"Backup");
                 bw.DoWork += (a, b) =>
                 {
                     BackupInProgress = true;
                     List<string> nonVanillaFiles = new List<string>();
                     void nonVanillaFileFoundCallback(string filepath)
                     {
-                        Log.Error("Non-vanilla file found: " + filepath);
+                        Log.Error($@"Non-vanilla file found: {filepath}");
                         nonVanillaFiles.Add(filepath);
                     }
 
@@ -129,17 +130,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (BackupSourceTarget.Supported)
                         {
-                            Log.Error("DLC is in an inconsistent state: " + filepath);
+                            Log.Error($@"DLC is in an inconsistent state: {filepath}");
                             inconsistentDLC.Add(filepath);
                         }
                         else
                         {
-                            Log.Error("Detected an inconsistent DLC, likely due to an unofficial copy of the game");
+                            Log.Error(@"Detected an inconsistent DLC, likely due to an unofficial copy of the game");
                         }
                     }
                     ProgressVisible = true;
                     ProgressIndeterminate = true;
-                    BackupStatus = "Validating backup source";
+                    BackupStatus = M3L.GetString(M3L.string_validatingBackupSource);
                     VanillaDatabaseService.LoadDatabaseFor(Game);
                     bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(BackupSourceTarget, nonVanillaFileFoundCallback);
                     bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(BackupSourceTarget, inconsistentDLCCallback: inconsistentDLCFoundCallback);
@@ -148,16 +149,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (isVanilla && isDLCConsistent && dlcModsInstalled.Count == 0)
                     {
-                        BackupStatus = "Waiting for user input";
-                        string backupPath = null;
+                        BackupStatus = M3L.GetString(M3L.string_waitingForUserInput);
+ 
+                         string backupPath = null;
                         bool end = false;
                         Application.Current.Dispatcher.Invoke(delegate
                         {
+                            Log.Error(@"Prompting user to select backup destination");
+
                             CommonOpenFileDialog m = new CommonOpenFileDialog
                             {
                                 IsFolderPicker = true,
                                 EnsurePathExists = true,
-                                Title = "Select backup destination"
+                                Title = M3L.GetString(M3L.string_selectBackupDestination)
                             };
                             if (m.ShowDialog() == CommonFileDialogResult.Ok)
                             {
@@ -168,7 +172,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     if (Directory.GetFiles(backupPath).Length > 0 || Directory.GetDirectories(backupPath).Length > 0)
                                     {
                                         //Directory not empty
-                                        MessageBox.Show("Directory is not empty. A backup destination must be empty.");
+                                        Log.Error(@"Selected backup directory is not empty.");
+                                        Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_directoryIsNotEmptyMustBeEmpty), M3L.GetString(M3L.string_directoryNotEmpty), MessageBoxButton.OK, MessageBoxImage.Error);
                                         end = true;
                                         EndBackup();
                                         return;
@@ -197,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         int dlcSubStringLen = dlcFolderpath.Length;
                         bool aboutToCopyCallback(string file)
                         {
-                            if (file.Contains("\\cmmbackup\\")) return false; //do not copy cmmbackup files
+                            if (file.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
                             if (file.StartsWith(dlcFolderpath))
                             {
                                 //It's a DLC!
@@ -205,27 +210,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 dlcname = dlcname.Substring(0, dlcname.IndexOf('\\'));
                                 if (MEDirectories.OfficialDLCNames(BackupSourceTarget.Game).TryGetValue(dlcname, out var hrName))
                                 {
-                                    BackupStatusLine2 = "Backing up " + hrName;
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, hrName);
                                 }
                                 else
                                 {
-                                    BackupStatusLine2 = "Backing up " + dlcname;
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, dlcname);
                                 }
                             }
                             else
                             {
                                 //It's basegame
-                                if (file.EndsWith(".bik"))
+                                if (file.EndsWith(@".bik"))
                                 {
-                                    BackupStatusLine2 = "Backing up Movies";
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, M3L.string_movies);
                                 }
                                 else if (new FileInfo(file).Length > 52428800)
                                 {
-                                    BackupStatusLine2 = "Backing up " + Path.GetFileName(file);
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, Path.GetFileName(file));
                                 }
                                 else
                                 {
-                                    BackupStatusLine2 = "Backing up BASEGAME";
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, M3L.string_basegame);
                                 }
                             }
                             return true;
@@ -238,26 +243,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressMax = total;
                         }
                         #endregion
-                        BackupStatus = "Creating backup";
+                        BackupStatus = M3L.GetString(M3L.string_creatingBackup);
+ 
 
-                        CopyDir.CopyAll_ProgressBar(new DirectoryInfo(BackupSourceTarget.TargetPath), new DirectoryInfo(backupPath),
+                         CopyDir.CopyAll_ProgressBar(new DirectoryInfo(BackupSourceTarget.TargetPath), new DirectoryInfo(backupPath),
                             totalItemsToCopyCallback: totalFilesToCopyCallback,
                             aboutToCopyCallback: aboutToCopyCallback,
                             fileCopiedCallback: fileCopiedCallback,
-                            ignoredExtensions: new[] { "*.pdf", "*.mp3" });
+                            ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
                         switch (Game)
                         {
                             case Mod.MEGame.ME1:
                             case Mod.MEGame.ME2:
-                                Utilities.WriteRegistryKey(App.BACKUP_REGISTRY_KEY, Game + "VanillaBackupLocation", backupPath);
+                                Utilities.WriteRegistryKey(App.BACKUP_REGISTRY_KEY, Game + @"VanillaBackupLocation", backupPath);
                                 break;
                             case Mod.MEGame.ME3:
-                                Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3CMM, "VanillaCopyLocation", backupPath);
+                                Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation", backupPath);
                                 break;
                         }
-                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
-                            { "Game", Game.ToString() },
-                            { "Result", "Success" }
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>() {
+                            { @"Game", Game.ToString() },
+                            { @"Result", @"Success" }
                         });
 
                         EndBackup();
@@ -267,34 +273,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (!isVanilla)
                     {
                         //Show UI for non vanilla
-                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
-                            { "Game", Game.ToString() },
-                            { "Result", "Failure, Game modified" }
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>() {
+                            { @"Game", Game.ToString() },
+                            { @"Result", @"Failure, Game modified" }
                         });
-                        b.Result = (nonVanillaFiles, "Cannot backup modified game", "The following files do not match the vanilla database and appear to be modified. Due to these files being modified, a backup cannot be taken of this installation.");
+                        b.Result = (nonVanillaFiles, M3L.GetString(M3L.string_cannotBackupModifiedGame), M3L.GetString(M3L.string_followingFilesDoNotMatchTheVanillaDatabase));
                     }
                     else if (!isDLCConsistent)
                     {
-                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
-                            { "Game", Game.ToString() },
-                            { "Result", "Failure, DLC inconsistent" }
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>() {
+                            { @"Game", Game.ToString() },
+                            { @"Result", @"Failure, DLC inconsistent" }
                         });
                         if (BackupSourceTarget.Supported)
                         {
-                            b.Result = (inconsistentDLC, "Inconsistent DLC detected", "The following DLC are in an inconsistent state; they have a packed SFAR file but contain unpacked game files. The configuration of these DLC are not supported, the unpacked files must be manually removed.");
+                            b.Result = (inconsistentDLC, M3L.GetString(M3L.string_inconsistentDLCDetected), M3L.GetString(M3L.string_dialogTheFollowingDLCAreInAnInconsistentState));
                         }
                         else
                         {
-                            b.Result = ("Inconsistent DLC detected", "Inconsistent DLC was detected. This may be due to using an unofficial copy of the game.");
+                            b.Result = (M3L.GetString(M3L.string_inconsistentDLCDetected), M3L.GetString(M3L.string_inconsistentDLCDetectedUnofficialGame));
                         }
                     }
                     else if (dlcModsInstalled.Count > 0)
                     {
-                        Analytics.TrackEvent("Created a backup", new Dictionary<string, string>() {
-                            { "Game", Game.ToString() },
-                            { "Result", "Failure, DLC mods found" }
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>() {
+                            { @"Game", Game.ToString() },
+                            { @"Result", @"Failure, DLC mods found" }
                         });
-                        b.Result = (dlcModsInstalled, "DLC mods are installed", "The following DLC folders were detected that are not part of the official game by BioWare. Backups cannot include DLC mods - the game must be unmodified.");
+                        b.Result = (dlcModsInstalled, M3L.GetString(M3L.string_dlcModsAreInstalled), M3L.GetString(M3L.string_dialogDLCModsWereDetectedCannotBackup));
                     }
                     EndBackup();
                 };
@@ -327,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private void ResetBackupStatus()
             {
                 BackupLocation = Utilities.GetGameBackupPath(Game);
-                BackupStatus = BackupLocation != null ? "Backed up" : "Not backed up";
+                BackupStatus = BackupLocation != null ? M3L.GetString(M3L.string_backedUp) : M3L.GetString(M3L.string_notBackedUp);
                 BackupStatusLine2 = BackupLocation;
             }
 

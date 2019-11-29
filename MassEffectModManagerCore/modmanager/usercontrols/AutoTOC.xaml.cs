@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public AutoTOC(GameTarget target)
         {
-            if (target == null) throw new Exception("Null target specified for AutoTOC");
+            if (target == null) throw new Exception(@"Null target specified for AutoTOC");
             DataContext = this;
             this.gameWideModeTarget = target;
             InitializeComponent();
@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             //TODO: Implement this. Possibly make it static.
             DataContext = this;
-            if (mod.Game != Mod.MEGame.ME3) throw new Exception("AutoTOC cannot be run on mods not designed for Mass Effect 3.");
+            if (mod.Game != Mod.MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");
             this.modModeMod = mod;
             InitializeComponent();
 
@@ -63,14 +63,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool RunGameWideAutoTOC()
         {
-          Debug.WriteLine("FULL AUTOTOC MODE - Updating Unpacked and SFAR TOCs");
+          Debug.WriteLine(@"FULL AUTOTOC MODE - Updating Unpacked and SFAR TOCs");
 
             //get toc target folders, ensuring we clean up the inputs a bit.
-            string baseDir = Path.GetFullPath(Path.Combine(gameWideModeTarget.TargetPath, "BIOGame"));
-            string dlcDirRoot = Path.GetFullPath(Path.Combine(baseDir, "DLC"));
+            string baseDir = Path.GetFullPath(Path.Combine(gameWideModeTarget.TargetPath, @"BIOGame"));
+            string dlcDirRoot = MEDirectories.DLCPath(gameWideModeTarget);
             if (!Directory.Exists(dlcDirRoot))
             {
-                Log.Error("Specified game directory does not appear to be a Mass Effect 3 root game directory (DLC folder missing).");
+                Log.Error(@"Specified game directory does not appear to be a Mass Effect 3 root game directory (DLC folder missing).");
                 return false;
             }
 
@@ -78,32 +78,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             tocTargets.Add(baseDir);
             tocTargets.Add(Path.Combine(gameWideModeTarget.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar"));
 
-            //.Select(d => d.FullName + "\\").Where(x => x.StartsWith(dlcDir + "DLC_", StringComparison.OrdinalIgnoreCase)).ToList();
-            Debug.WriteLine("Found TOC Targets:");
+            //Debug.WriteLine("Found TOC Targets:");
             tocTargets.ForEach(x => Debug.WriteLine(x));
-            Debug.WriteLine("=====Generating TOC Files=====");
-            //Parallel.ForEach(tocTargets, (currentfolder) =>
-            //{
+            //Debug.WriteLine("=====Generating TOC Files=====");
             int done = 0;
 
             foreach (var tocTarget in tocTargets)
             {
                 string sfar = Path.Combine(tocTarget, SFAR_SUBPATH);
-                if (tocTarget.EndsWith(".sfar"))
+                if (tocTarget.EndsWith(@".sfar"))
                 {
                     //TestPatch
-                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    var watch = Stopwatch.StartNew();
                     DLCPackage dlc = new DLCPackage(tocTarget);
                     var tocResult = dlc.UpdateTOCbin();
                     watch.Stop();
                     if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY)
                     {
-                        Log.Information("TOC is already up to date in " + tocTarget);
+                        Log.Information($@"TOC is already up to date in {tocTarget}");
                     }
                     else if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATED)
                     {
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Log.Information($"{tocTarget} - Ran SFAR TOC, took {elapsedMs}ms");
+                        Log.Information($@"{tocTarget} - Ran SFAR TOC, took {elapsedMs}ms");
                     }
                 }
                 else if (ME3Directory.OfficialDLCNames.ContainsKey(Path.GetFileName(tocTarget)))
@@ -129,12 +126,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             else if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY)
                             {
-                                Log.Information("TOC is already up to date in " + tocTarget);
+                                Log.Information($@"TOC is already up to date in {tocTarget}");
                             }
                             else if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATED)
                             {
                                 var elapsedMs = watch.ElapsedMilliseconds;
-                                Log.Information($"{Path.GetFileName(tocTarget)} - Ran SFAR TOC, took {elapsedMs}ms");
+                                Log.Information($@"{Path.GetFileName(tocTarget)} - Ran SFAR TOC, took {elapsedMs}ms");
                             }
                         }
                     }
@@ -159,16 +156,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
             if (ms != null)
             {
-                string tocPath = Path.Combine(dlcDirectory, "PCConsoleTOC.bin");
+                string tocPath = Path.Combine(dlcDirectory, @"PCConsoleTOC.bin");
                 File.WriteAllBytes(tocPath, ms.ToArray());
                 ms.Close();
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
-                Log.Information($"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
+                Log.Information($@"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
             }
             else
             {
-                Log.Warning("Did not create TOC for " + dlcDirectory);
+                Log.Warning(@"Did not create TOC for " + dlcDirectory);
                 watch.Stop();
             }
         }
@@ -216,16 +213,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("AutoTOC");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"AutoTOC");
             bw.DoWork += (a, b) =>
             {
                 if (mode == AutoTOCMode.MODE_GAMEWIDE)
                 {
                     RunGameWideAutoTOC();
-                }
-                else if (mode == AutoTOCMode.MODE_MOD)
-                {
-                    RunModAutoTOC();
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>

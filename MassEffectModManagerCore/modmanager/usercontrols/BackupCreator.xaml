@@ -17,10 +17,8 @@
         <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
     </UserControl.Resources>
     <StackPanel>
-        <StackPanel.Resources>
-        </StackPanel.Resources>
-        <TextBlock Text="Backup" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
-        <TextBlock Text="Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder. To restore from backup, use the Target Info button from the main window." TextWrapping="Wrap" MaxWidth="400"/>
+        <TextBlock Text="{DynamicResource string_Backup}" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
+        <TextBlock Text="{DynamicResource string_backupsAreUsedToRestoreYourGame}" TextWrapping="Wrap" MaxWidth="400"/>
         <ItemsControl ItemsSource="{Binding GameBackups}">
             <ItemsControl.ItemContainerStyle>
                 <Style>
@@ -49,15 +47,15 @@
                         <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Name="InstallationTargetsME3_ComboBox" ItemsSource="{Binding AvailableBackupSources}" 
                                   SelectedItem="{Binding BackupSourceTarget}" HorizontalContentAlignment="Stretch" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
                                   ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
-                        <Button Content="Back up" Padding="3,0" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                        <Button Content="{DynamicResource string_backUp}" Padding="3,0" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
                         <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding ProgressValue}" Height="10" Maximum="{Binding ProgressMax}" Visibility="{Binding ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TextBlock Text="Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer." TextWrapping="Wrap" MaxWidth="400" Margin="0,5"/>
-        <TextBlock Text="Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported." TextWrapping="Wrap" MaxWidth="400" Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <Button Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin ="0,5,0,0"/>
+        <TextBlock Text="{DynamicResource string_backupsAreShared}" TextWrapping="Wrap" MaxWidth="400" Margin="0,5"/>
+        <TextBlock Text="{DynamicResource string_backupsMustBeCreatedFresh}" TextWrapping="Wrap" MaxWidth="400" Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin ="0,5,0,0"/>
     </StackPanel>
 </local:MMBusyPanelBase>
