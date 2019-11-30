@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
@@ -34,10 +35,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public bool AnyGameMissingBackup => !BackupService.ME1BackedUp || !BackupService.ME2BackedUp || !BackupService.ME3BackedUp;
         public ObservableCollectionExtended<GameRestoreObject> GameRestoreControllers { get; } = new ObservableCollectionExtended<GameRestoreObject>();
-
-        //public GameBackup ME3Backup { get; set; }
-        //public GameBackup ME2Backup { get; set; }
-        //public GameBackup ME1Backup { get; set; }
         private List<GameTarget> targetsList;
 
         public RestorePanel(List<GameTarget> targetsList, GameTarget selectedTarget)
@@ -93,21 +90,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.window = window;
                 this.Game = game;
                 this.AvailableBackupSources.AddRange(availableBackupSources);
-                AvailableBackupSources.Add(new GameTarget(Game, "Restore to custom location", false, true));
+                AvailableBackupSources.Add(new GameTarget(Game, M3L.GetString(M3L.string_restoreToCustomLocation), false, true));
                 LoadCommands();
                 switch (Game)
                 {
                     case Mod.MEGame.ME1:
-                        GameTitle = "Mass Effect";
-                        GameIconSource = "/images/gameicons/ME1_48.ico";
+                        GameTitle = @"Mass Effect";
+                        GameIconSource = @"/images/gameicons/ME1_48.ico";
                         break;
                     case Mod.MEGame.ME2:
-                        GameTitle = "Mass Effect 2";
-                        GameIconSource = "/images/gameicons/ME2_48.ico";
+                        GameTitle = @"Mass Effect 2";
+                        GameIconSource = @"/images/gameicons/ME2_48.ico";
                         break;
                     case Mod.MEGame.ME3:
-                        GameTitle = "Mass Effect 3";
-                        GameIconSource = "/images/gameicons/ME3_48.ico";
+                        GameTitle = @"Mass Effect 3";
+                        GameIconSource = @"/images/gameicons/ME3_48.ico";
                         break;
                 }
 
@@ -136,10 +133,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(window, $"Cannot restore {Utilities.GetGameName(Game)} while it is running.", $"Game is running", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_interp_dialogCannotRestoreXWhileItIsRunning, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + "Backup");
+                NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + M3L.GetString(M3L.string_backup));
                 bw.DoWork += (a, b) =>
                 {
                     RestoreInProgress = true;
@@ -147,12 +144,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     string restoreTargetPath = b.Argument as string;
                     string backupPath = BackupLocation;
-                    BackupStatusLine2 = "Deleting existing game installation";
+                    BackupStatusLine2 = M3L.GetString(M3L.string_deletingExistingGameInstallation);
                     if (Directory.Exists(restoreTargetPath))
                     {
                         if (Directory.GetFiles(restoreTargetPath).Any() || Directory.GetDirectories(restoreTargetPath).Any())
                         {
-                            Log.Information("Deleting existing game directory: " + restoreTargetPath);
+                            Log.Information(@"Deleting existing game directory: " + restoreTargetPath);
                             try
                             {
                                 bool deletedDirectory = Utilities.DeleteFilesAndFoldersRecursively(restoreTargetPath);
@@ -165,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             catch (Exception ex)
                             {
                                 //todo: handle this better
-                                Log.Error("Exception deleting game directory: " + restoreTargetPath + ": " + ex.Message);
+                                Log.Error($@"Exception deleting game directory: {restoreTargetPath}: {ex.Message}");
                                 b.Result = RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY;
                                 return;
                             }
@@ -173,25 +170,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Error("Game directory not found! Was it removed while the app was running?");
+                        Log.Error(@"Game directory not found! Was it removed while the app was running?");
                     }
 
                     //Todo: Revert LODs, remove IndirectSound settings (MEUITM)
-                    //Log.Information("Reverting lod settings");
-                    //string exe = BINARY_DIRECTORY + MEM_EXE_NAME;
-                    //string args = "--remove-lods --gameid " + BACKUP_THREAD_GAME;
-                    //Utilities.runProcess(exe, args);
-
-                    //if (BACKUP_THREAD_GAME == 1)
-                    //{
-                    //    string iniPath = IniSettingsHandler.GetConfigIniPath(1);
-                    //    if (File.Exists(iniPath))
-                    //    {
-                    //        Log.Information("Reverting Indirect Sound ini fix for ME1");
-                    //        IniFile engineConf = new IniFile(iniPath);
-                    //        engineConf.DeleteKey("DeviceName", "ISACTAudio.ISACTAudioDevice");
-                    //    }
-                    //}
 
                     var created = Utilities.CreateDirectoryWithWritePermission(restoreTargetPath);
                     if (!created)
@@ -199,7 +181,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         b.Result = RestoreResult.ERROR_COULD_NOT_CREATE_DIRECTORY;
                         return;
                     }
-                    BackupStatusLine2 = "Restoring game from backup";
+                    BackupStatusLine2 = M3L.GetString(M3L.string_restoringGameFromBackup);
                     if (restoreTargetPath != null)
                     {
                         //callbacks
@@ -211,11 +193,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         string dlcFolderpath = MEDirectories.DLCPath(backupPath, Game) + '\\'; //\ at end makes sure we are restoring a subdir
                         int dlcSubStringLen = dlcFolderpath.Length;
-                        Debug.WriteLine("DLC Folder: " + dlcFolderpath);
-                        Debug.Write("DLC Fodler path len:" + dlcFolderpath);
+                        Debug.WriteLine(@"DLC Folder: " + dlcFolderpath);
+                        Debug.Write(@"DLC Fodler path len:" + dlcFolderpath);
                         bool aboutToCopyCallback(string fileBeingCopied)
                         {
-                            if (fileBeingCopied.Contains("\\cmmbackup\\")) return false; //do not copy cmmbackup files
+                            if (fileBeingCopied.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
                             Debug.WriteLine(fileBeingCopied);
                             if (fileBeingCopied.StartsWith(dlcFolderpath, StringComparison.InvariantCultureIgnoreCase))
                             {
@@ -227,37 +209,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     dlcname = dlcname.Substring(0, index);
                                     if (MEDirectories.OfficialDLCNames(RestoreTarget.Game).TryGetValue(dlcname, out var hrName))
                                     {
-                                        BackupStatusLine2 = "Restoring " + hrName;
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_restoringX, hrName);
                                     }
                                     else
                                     {
-                                        BackupStatusLine2 = "Restoring " + dlcname;
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_restoringX, dlcname);
                                     }
                                 }
                                 catch (Exception e)
                                 {
                                     Crashes.TrackError(e, new Dictionary<string, string>()
                                     {
-                                        { "Source", "Restore UI display callback" },
-                                        { "Value", fileBeingCopied },
-                                        { "DLC Folder path", dlcFolderpath }
+                                        { @"Source", @"Restore UI display callback" },
+                                        { @"Value", fileBeingCopied },
+                                        { @"DLC Folder path", dlcFolderpath }
                                     });
                                 }
                             }
                             else
                             {
                                 //It's basegame
-                                if (fileBeingCopied.EndsWith(".bik"))
+                                if (fileBeingCopied.EndsWith(@".bik"))
                                 {
-                                    BackupStatusLine2 = "Restoring Movies";
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_restoringMovies);
                                 }
                                 else if (new FileInfo(fileBeingCopied).Length > 52428800)
                                 {
-                                    BackupStatusLine2 = "Restoring " + Path.GetFileName(fileBeingCopied);
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_restoringX, Path.GetFileName(fileBeingCopied));
                                 }
                                 else
                                 {
-                                    BackupStatusLine2 = "Restoring BASEGAME";
+                                    BackupStatusLine2 = M3L.GetString(M3L.string_restoringBasegame);
                                 }
                             }
                             return true;
@@ -270,67 +252,67 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressMax = total;
                         }
                         #endregion
-                        BackupStatus = "Restoring game";
-                        Log.Information("Copying backup to game directory: " + backupPath + " -> " + restoreTargetPath);
+                        BackupStatus = M3L.GetString(M3L.string_restoringGame);
+                        Log.Information($@"Copying backup to game directory: {backupPath} -> {restoreTargetPath}");
                         CopyDir.CopyAll_ProgressBar(new DirectoryInfo(backupPath), new DirectoryInfo(restoreTargetPath),
                             totalItemsToCopyCallback: totalFilesToCopyCallback,
                             aboutToCopyCallback: aboutToCopyCallback,
                             fileCopiedCallback: fileCopiedCallback,
-                            ignoredExtensions: new[] { "*.pdf", "*.mp3" });
-                        Log.Information("Restore of game data has completed");
+                            ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
+                        Log.Information(@"Restore of game data has completed");
                     }
 
                     //Check for cmmvanilla file and remove it present
 
-                    string cmmVanilla = Path.Combine(restoreTargetPath, "cmm_vanilla");
+                    string cmmVanilla = Path.Combine(restoreTargetPath, @"cmm_vanilla");
                     if (File.Exists(cmmVanilla))
                     {
-                        Log.Information("Removing cmm_vanilla file");
+                        Log.Information(@"Removing cmm_vanilla file");
                         File.Delete(cmmVanilla);
                     }
 
-                    Log.Information("Restore thread wrapping up");
+                    Log.Information(@"Restore thread wrapping up");
                     b.Result = RestoreResult.RESTORE_OK;
                 };
                 bw.RunWorkerCompleted += (a, b) =>
+                {
+                    if (b.Result is RestoreResult result)
                     {
-                        if (b.Result is RestoreResult result)
+                        switch (result)
                         {
-                            switch (result)
-                            {
-                                case RestoreResult.ERROR_COULD_NOT_CREATE_DIRECTORY:
-                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
-                                        { "Game", Game.ToString() },
-                                        { "Result", "Failure, Could not create target directory" }
+                            case RestoreResult.ERROR_COULD_NOT_CREATE_DIRECTORY:
+                                Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {
+                                        { @"Game", Game.ToString() },
+                                        { @"Result", @"Failure, Could not create target directory" }
                                     });
-                                    Xceed.Wpf.Toolkit.MessageBox.Show("Could not create the game directory after it was deleted due to an error. View the logs from the help menu for more information.", "Error restoring game", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    break;
-                                case RestoreResult.ERROR_COULD_NOT_DELETE_GAME_DIRECTORY:
-                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
-                                        { "Game", Game.ToString() },
-                                        { "Result", "Failure, Could not delete existing game directory" }
+                                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogCouldNotCreateGameDirectoryAfterDeletion), M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
+                                break;
+                            case RestoreResult.ERROR_COULD_NOT_DELETE_GAME_DIRECTORY:
+                                Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {
+                                        { @"Game", Game.ToString() },
+                                        { @"Result", @"Failure, Could not delete existing game directory" }
                                     });
-                                    Xceed.Wpf.Toolkit.MessageBox.Show("Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted. View the logs from the help menu for more information.", "Error restoring game", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    break;
-                                case RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY:
-                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
-                                        { "Game", Game.ToString() },
-                                        { "Result", "Failure, Excpetion deleting existing game directory" }
+                                Xceed.Wpf.Toolkit.MessageBox.Show("Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted. View the logs from the help menu for more information.", M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
+                                break;
+                            case RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY:
+                                Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {
+                                        { @"Game", Game.ToString() },
+                                        { @"Result", @"Failure, Excpetion deleting existing game directory" }
                                     });
-                                    Xceed.Wpf.Toolkit.MessageBox.Show("An error occured while deleting the game directory. View the logs from the help menu for more information.", "Error restoring game", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    break;
-                                case RestoreResult.RESTORE_OK:
-                                    Analytics.TrackEvent("Restored game", new Dictionary<string, string>() {
-                                        { "Game", Game.ToString() },
-                                        { "Result", "Success" }
+                                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogErrorOccuredDeletingGameDirectory), M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
+                                break;
+                            case RestoreResult.RESTORE_OK:
+                                Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {
+                                        { @"Game", Game.ToString() },
+                                        { @"Result", @"Success" }
                                     });
-                                    break;
-                            }
+                                break;
                         }
+                    }
 
-                        EndRestore();
-                        CommandManager.InvalidateRequerySuggested();
-                    };
+                    EndRestore();
+                    CommandManager.InvalidateRequerySuggested();
+                };
                 var restTarget = RestoreTarget.TargetPath;
                 if (RestoreTarget.IsCustomOption)
                 {
@@ -338,7 +320,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         IsFolderPicker = true,
                         EnsurePathExists = true,
-                        Title = "Select new restore destination"
+                        Title = M3L.GetString(M3L.string_selectNewRestoreDestination)
                     };
                     if (m.ShowDialog() == CommonFileDialogResult.Ok)
                     {
@@ -349,12 +331,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (Directory.GetFiles(restTarget).Length > 0 || Directory.GetDirectories(restTarget).Length > 0)
                             {
                                 //Directory not empty
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Directory is not empty. Location to restore to must be empty.", "Cannot restore to this location", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty), M3L.GetString(M3L.string_cannotRestoreToThisLocation), MessageBoxButton.OK, MessageBoxImage.Error);
                                 return;
                             }
+                            //TODO: PREVENT RESTORING TO DOCUMENTS/BIOWARE
                         }
 
-                        Analytics.TrackEvent("Chose to restore game to custom location", new Dictionary<string, string>() { { "Game", Game.ToString() } });
+                        Analytics.TrackEvent(@"Chose to restore game to custom location", new Dictionary<string, string>() { { @"Game", Game.ToString() } });
 
                     }
                     else
@@ -379,7 +362,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private void ResetRestoreStatus()
             {
                 BackupLocation = Utilities.GetGameBackupPath(Game);
-                BackupStatus = BackupLocation != null ? "Backed up" : "Not backed up";
+                BackupStatus = BackupLocation != null ? M3L.GetString(M3L.string_backedUp) : M3L.GetString(M3L.string_notBackedUp);
                 BackupStatusLine2 = BackupLocation;
             }
 
@@ -402,10 +385,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 get
                 {
-                    if (RestoreTarget != null && BackupLocation != null) return "Restore this target";
-                    if (RestoreTarget == null && BackupLocation != null) return "Select target";
-                    if (BackupLocation == null) return "No backup";
-                    return "Error!";
+                    if (RestoreTarget != null && BackupLocation != null) return M3L.GetString(M3L.string_restoreThisTarget);
+                    if (RestoreTarget == null && BackupLocation != null) return M3L.GetString(M3L.string_selectTarget);
+                    if (BackupLocation == null) return M3L.GetString(M3L.string_noBackup);
+                    return M3L.GetString(M3L.string_error);
                 }
             }
         }

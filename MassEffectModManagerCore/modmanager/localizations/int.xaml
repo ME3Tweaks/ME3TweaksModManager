@@ -524,6 +524,33 @@
     <system:String x:Key="string_viewChangelog">View changelog</system:String>
     <system:String x:Key="string_installUpdate">Install update</system:String>
 
+    <!-- Restore panel -->
+    <system:String x:Key="string_restoreToCustomLocation">Restore to custom location</system:String>
+    <system:String x:Key="string_interp_dialogCannotRestoreXWhileItIsRunning">Cannot restore {0} while it is running.</system:String> <!-- 0 = game name-->
+    <system:String x:Key="string_backup">Backup</system:String>
+    <system:String x:Key="string_deletingExistingGameInstallation">Deleting existing game installation</system:String>
+    <system:String x:Key="string_restoringGameFromBackup">Restoring game from backup</system:String>
+    <system:String x:Key="string_interp_restoringX">Restoring {0}</system:String> <!-- 0 = filename or item like DLC name -->
+    <system:String x:Key="string_restoringMovies">Restoring Movies</system:String>
+    <system:String x:Key="string_restoringBasegame">Restoring Basegame</system:String>
+    <system:String x:Key="string_restoringGame">Restoring game</system:String>
+    <system:String x:Key="string_dialogCouldNotCreateGameDirectoryAfterDeletion">Could not create the game directory after it was deleted due to an error. You can try to restore to a custom location to restore the game to the original location. View the logs from the help menu for more information.</system:String>
+    <system:String x:Key="string_errorRestoringGame">Error restoring game</system:String>
+    <system:String x:Key="string_dialogcouldNotFullyDeleteGameDirectory">Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted, but you can try again using the restore to custom location option after manually removing the rest of the game directory. View the logs from the help menu for more information.</system:String>
+    <system:String x:Key="string_dialogErrorOccuredDeletingGameDirectory">An error occured while deleting the game directory. View the logs from the help menu for more information.</system:String>
+    <system:String x:Key="string_selectNewRestoreDestination">Select new restore destination</system:String>
+    <system:String x:Key="string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty">Directory is not empty. Location to restore to must be empty.</system:String>
+    <system:String x:Key="string_cannotRestoreToThisLocation">Cannot restore to this location</system:String>
+    <system:String x:Key="string_restoreThisTarget">Restore this target</system:String>
+    <system:String x:Key="string_selectTarget">Select target</system:String>
+    <system:String x:Key="string_noBackup">No backup</system:String>
+    <system:String x:Key="string_error">Error!</system:String>
+
+    <system:String x:Key="string_fullGameRestore">Full game restore</system:String>
+    <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Changing the active boot target to one with ALOT installed will prompt you enable high resolution texture settings again.</system:String>
+    <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods, restoring specific files or SFARs, use the restore options from the Target Info button instead.</system:String>
+    <system:String x:Key="string_youMaySeeElevationPromptOnRestore">You may see an elevation prompt when trying to restore your game. This is ME3Tweaks Mod Manager granting your user account permission to the new game directory after the old one has been deleted.</system:String>
+
 
     <!-- Extras -->
     <!--<system:String x:Key="string_"></system:String>
