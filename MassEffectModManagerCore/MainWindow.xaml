@@ -318,7 +318,7 @@
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">
                         <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="2" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}">
-                            <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}"/>
+                            <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
                         </Button>
                         <Button Content ="ME3" DockPanel.Dock="Right" BorderThickness="2" Click="ToggleME3Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME3}">
                             <Button.Style>

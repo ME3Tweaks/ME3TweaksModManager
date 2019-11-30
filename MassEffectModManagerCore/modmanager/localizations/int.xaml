@@ -317,7 +317,7 @@
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noBrokenTexturesWereFound">No broken textures were found</system:String>
     <system:String x:Key="string_textureIssuesWereDetected">Texture issues were detected</system:String>
-    <system:String x:Key="string_7zipArchiveFile">7-zip archive file|*.7z</system:String>
+    <system:String x:Key="string_7zipArchiveFile">7-zip archive file</system:String>
     <system:String x:Key="string_deploymentInProgress">Deployment in progress...</system:String>
     <system:String x:Key="string_deploymentSucceeded">Deployment succeeded</system:String>
     <system:String x:Key="string_verifyAboveItemsBeforeDeployment">Verify above items before deployment</system:String>
@@ -428,7 +428,6 @@
     <system:String x:Key="string_interp_installedByX">Installed by {0}</system:String>
     <!-- 0 = noun of tool (alot installer, mod manager, etc)-->
     <system:String x:Key="string_notInstalledByModManager">Not installed by Mod Manager</system:String>
-
     <system:String x:Key="string_installationInformation">Installation Information</system:String>
     <system:String x:Key="string_installationInformationSubheader">Files installed into the basegame or official DLC directories cannot be tracked</system:String>
     <system:String x:Key="string_installedDLCmods">Installed DLC mods</system:String>
@@ -463,7 +462,6 @@
     <system:String x:Key="string_compressPackages">Compress packages</system:String>
     <system:String x:Key="string_unselectAll">Unselect all</system:String>
     <system:String x:Key="string_selectAll">Select all</system:String>
-
     <system:String x:Key="string_selectAModOnTheLeftToViewItsDescription">Select a mod on the left to view its description</system:String>
     <system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Select mods to import into Mod Manager library</system:String>
     <system:String x:Key="string_noCompatibleModsFoundInArchive">No compatible mods found in archive</system:String>
@@ -501,7 +499,7 @@
     <system:String x:Key="string_interp_errorUpdatingX">Error updating {ui.mod.ModName}</system:String>
     <system:String x:Key="string_updated">Updated</system:String>
 
-    <!-- Program update -->
+    <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
     <system:String x:Key="string_downloadingUpdate">Downloading update</system:String>
     <system:String x:Key="string_preparingToApplyUpdate">Preparing to apply update</system:String>
@@ -513,7 +511,6 @@
     <system:String x:Key="string_applyingUpdate">Applying update</system:String>
     <system:String x:Key="string_restartingModManager">Restarting Mod Manager</system:String>
     <system:String x:Key="string_unableToApplyUpdateME3TweaksExeNotFound">Unable to apply update: ME3TweaksModManager.exe was not found in the archive.</system:String>
-
     <system:String x:Key="string_updateAvailable">Update available</system:String>
     <system:String x:Key="string_currentVersion">Current version:</system:String>
     <system:String x:Key="string_updateVersion">Update version:</system:String>
@@ -547,7 +544,6 @@
     <system:String x:Key="string_selectTarget">Select target</system:String>
     <system:String x:Key="string_noBackup">No backup</system:String>
     <system:String x:Key="string_error">Error!</system:String>
-
     <system:String x:Key="string_fullGameRestore">Full game restore</system:String>
     <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Changing the active boot target to one with ALOT installed will prompt you enable high resolution texture settings again.</system:String>
     <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods, restoring specific files or SFARs, use the restore options from the Target Info button instead.</system:String>
@@ -557,10 +553,20 @@
     <system:String x:Key="string_hashingFiles">Hashing files</system:String>
     <system:String x:Key="string_creatingArchive">Creating archive</system:String>
 
-    <!-- Extras -->
-    
-<!--
-    <system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>-->
-
+    <!-- Telemetry submission form (for mod developers) -->
+    <system:String x:Key="string_submitToME3Tweaks">Submit to ME3Tweaks</system:String>
+    <system:String x:Key="string_submitting">Submitting...</system:String>
+    <system:String x:Key="string_submitted">Submitted</system:String>
+    <system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 does not support mount flags in M3 currently</system:String>
+    <system:String x:Key="string_mE3TweaksTPMISubmission">ME3Tweaks TPMI submission</system:String>
+    <system:String x:Key="string_telemetryPanelHeader">Submitting your mod information to the Third Party Mod Identification database allows ME3Tweaks to provide better services to the modding scene.</system:String>
+    <system:String x:Key="string_dLCFolderNameColon">DLC folder name:</system:String>
+    <system:String x:Key="string_nameColon">Name:</system:String>
+    <system:String x:Key="string_gameColon">Game:</system:String>
+    <system:String x:Key="string_developerColon">Developer:</system:String>
+    <system:String x:Key="string_modSiteColon">Mod site:</system:String>
+    <system:String x:Key="string_tLKIDColon">TLK ID:</system:String>
+    <system:String x:Key="string_mountPriorityColon">Mount Priority:</system:String>
+    <system:String x:Key="string_mountFlagColon">Mount Flag:</system:String>
+    <system:String x:Key="string_moduleNumberColon">Module Number:</system:String>
 </ResourceDictionary>

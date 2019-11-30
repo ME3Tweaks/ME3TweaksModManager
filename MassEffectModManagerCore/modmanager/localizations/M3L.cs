@@ -504,5 +504,20 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_youMaySeeElevationPromptOnRestore = "string_youMaySeeElevationPromptOnRestore";
 		public static readonly string string_hashingFiles = "string_hashingFiles";
 		public static readonly string string_creatingArchive = "string_creatingArchive";
+		public static readonly string string_submitToME3Tweaks = "string_submitToME3Tweaks";
+		public static readonly string string_submitting = "string_submitting";
+		public static readonly string string_submitted = "string_submitted";
+		public static readonly string string_me1MountFlagsNotSupportedInM3 = "string_me1MountFlagsNotSupportedInM3";
+		public static readonly string string_mE3TweaksTPMISubmission = "string_mE3TweaksTPMISubmission";
+		public static readonly string string_telemetryPanelHeader = "string_telemetryPanelHeader";
+		public static readonly string string_dLCFolderNameColon = "string_dLCFolderNameColon";
+		public static readonly string string_nameColon = "string_nameColon";
+		public static readonly string string_gameColon = "string_gameColon";
+		public static readonly string string_developerColon = "string_developerColon";
+		public static readonly string string_modSiteColon = "string_modSiteColon";
+		public static readonly string string_tLKIDColon = "string_tLKIDColon";
+		public static readonly string string_mountPriorityColon = "string_mountPriorityColon";
+		public static readonly string string_mountFlagColon = "string_mountFlagColon";
+		public static readonly string string_moduleNumberColon = "string_moduleNumberColon";
 	}
 }

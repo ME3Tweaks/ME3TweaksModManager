@@ -8,7 +8,7 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="400" Width="400">
+             d:DesignHeight="450" d:DesignWidth="400" Width="500">
     <UserControl.Resources>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
@@ -18,7 +18,7 @@
     </UserControl.Resources>
     <StackPanel>
         <TextBlock Text="{DynamicResource string_Backup}" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
-        <TextBlock Text="{DynamicResource string_backupsAreUsedToRestoreYourGame}" TextWrapping="Wrap" MaxWidth="400"/>
+        <TextBlock Text="{DynamicResource string_backupsAreUsedToRestoreYourGame}" TextWrapping="Wrap"/>
         <ItemsControl ItemsSource="{Binding GameBackups}">
             <ItemsControl.ItemContainerStyle>
                 <Style>
@@ -54,8 +54,8 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TextBlock Text="{DynamicResource string_backupsAreShared}" TextWrapping="Wrap" MaxWidth="400" Margin="0,5"/>
-        <TextBlock Text="{DynamicResource string_backupsMustBeCreatedFresh}" TextWrapping="Wrap" MaxWidth="400" Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <TextBlock Text="{DynamicResource string_backupsAreShared}" TextWrapping="Wrap" Margin="0,5"/>
+        <TextBlock Text="{DynamicResource string_backupsMustBeCreatedFresh}" TextWrapping="Wrap" Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}"/>
         <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin ="0,5,0,0"/>
     </StackPanel>
 </local:MMBusyPanelBase>
