@@ -251,7 +251,7 @@
     <!-- Startup preview panel -->
     <system:String x:Key="string_previewPanelTitle">Witaj w ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Wybierz swój język</system:String>
-    <system:String x:Key="string_howToChangeLanguage">Możesz zmienić swój język w dowolnej chwili z menu Akcje -> Opcje. Pamiętaj, że jakiekolwiek wsparcie jest udzielone tylko w języku angielskim.</system:String>
+    <system:String x:Key="string_howToChangeLanguage">Możesz zmienić swój język w dowolnej chwili z menu Działania -> Opcje. Pamiętaj, że jakiekolwiek wsparcie jest udzielone tylko w języku angielskim.</system:String>
     <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Dzięki za pobranie ME3Tweaks Mod Manager, następnej generacji Mod Managera. Prace nad tą wersją zapoznawczą wciąż trwają. Z tego powodu, może ona posiadać problemy ze stabilnością oraz brakujące funkcje, nad którymi wciąż trwają prace.&#10;&#10;ME3Tweaks Mod Manager zastąpi Mass Effect 3 Mod Managera kiedy będzie posiadać wszystkie jego funkcje.&#10;&#10;Proszę skierować wszelkie uwagi do Discorda ME3Tweaks, gdzie twoje zgłoszenia błędów oraz propozycje nowych funkcji zostaną wysłuchane.</system:String>
     <system:String x:Key="string_joinDiscord">Dołącz do Discorda ME3Tweaks</system:String>
     <system:String x:Key="string_close">Zamknij</system:String>
