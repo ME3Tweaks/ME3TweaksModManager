@@ -502,5 +502,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_restoringTextureLODs = "string_restoringTextureLODs";
 		public static readonly string string_entireGameDirectoryWillBeDeleted = "string_entireGameDirectoryWillBeDeleted";
 		public static readonly string string_youMaySeeElevationPromptOnRestore = "string_youMaySeeElevationPromptOnRestore";
+		public static readonly string string_hashingFiles = "string_hashingFiles";
+		public static readonly string string_creatingArchive = "string_creatingArchive";
 	}
 }

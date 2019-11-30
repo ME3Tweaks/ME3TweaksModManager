@@ -526,11 +526,13 @@
 
     <!-- Restore panel -->
     <system:String x:Key="string_restoreToCustomLocation">Restore to custom location</system:String>
-    <system:String x:Key="string_interp_dialogCannotRestoreXWhileItIsRunning">Cannot restore {0} while it is running.</system:String> <!-- 0 = game name-->
+    <system:String x:Key="string_interp_dialogCannotRestoreXWhileItIsRunning">Cannot restore {0} while it is running.</system:String>
+    <!-- 0 = game name-->
     <system:String x:Key="string_backup">Backup</system:String>
     <system:String x:Key="string_deletingExistingGameInstallation">Deleting existing game installation</system:String>
     <system:String x:Key="string_restoringGameFromBackup">Restoring game from backup</system:String>
-    <system:String x:Key="string_interp_restoringX">Restoring {0}</system:String> <!-- 0 = filename or item like DLC name -->
+    <system:String x:Key="string_interp_restoringX">Restoring {0}</system:String>
+    <!-- 0 = filename or item like DLC name -->
     <system:String x:Key="string_restoringMovies">Restoring Movies</system:String>
     <system:String x:Key="string_restoringBasegame">Restoring Basegame</system:String>
     <system:String x:Key="string_restoringGame">Restoring game</system:String>
@@ -551,10 +553,13 @@
     <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods, restoring specific files or SFARs, use the restore options from the Target Info button instead.</system:String>
     <system:String x:Key="string_youMaySeeElevationPromptOnRestore">You may see an elevation prompt when trying to restore your game. This is ME3Tweaks Mod Manager granting your user account permission to the new game directory after the old one has been deleted.</system:String>
 
+    <!-- Test archive generator-->
+    <system:String x:Key="string_hashingFiles">Hashing files</system:String>
+    <system:String x:Key="string_creatingArchive">Creating archive</system:String>
 
     <!-- Extras -->
-    <!--<system:String x:Key="string_"></system:String>
-    <system:String x:Key="string_"></system:String>
+    
+<!--
     <system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>-->
 

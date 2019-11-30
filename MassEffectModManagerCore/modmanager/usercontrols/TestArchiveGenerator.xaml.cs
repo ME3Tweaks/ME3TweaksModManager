@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
 using Microsoft.Win32;
 using Serilog;
@@ -47,19 +48,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             SaveFileDialog d = new SaveFileDialog
             {
-                Filter = "7-zip archive file|*.7z",
+                Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",
                 FileName = Utilities.SanitizePath($@"{ModForArchive.ModName}_{ModForArchive.ModVersionString}".Replace(@" ", ""), true)
             };
             var outputarchive = d.ShowDialog();
             if (outputarchive.HasValue && outputarchive.Value)
             {
-                var bw = new NamedBackgroundWorker("TestArchiveGenerator");
+                var bw = new NamedBackgroundWorker(@"TestArchiveGenerator");
                 bw.DoWork += (a, b) =>
                 {
-                    var stagingPath = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), "TestGenerator")).FullName;
+                    var stagingPath = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"TestGenerator")).FullName;
                     var referencedFiles = ModForArchive.GetAllRelativeReferences();
                     int numdone = 0;
-                    ActionText = "Hashing files";
+                    ActionText = M3L.GetString(M3L.string_hashingFiles);
+
                     Parallel.ForEach(referencedFiles, new ParallelOptions() { MaxDegreeOfParallelism = 3 }, (x) =>
                       {
                           var sourcefile = Path.Combine(ModForArchive.ModPath, x);
@@ -80,7 +82,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Mod testmod = new Mod(Path.Combine(stagingPath, @"moddesc.ini"), Mod.MEGame.Unknown);
                     if (testmod.ValidMod)
                     {
-                        ActionText = "Creating archive";
+                        ActionText = M3L.GetString(M3L.string_creatingArchive);
+
                         SevenZipCompressor svc = new SevenZipCompressor();
                         svc.Progressing += (o, details) => { Percent = (int)(details.AmountCompleted * 100.0 / details.TotalAmount); };
                         svc.CompressDirectory(stagingPath, d.FileName);
