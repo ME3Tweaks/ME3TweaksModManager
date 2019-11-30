@@ -21,6 +21,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
             {
                 if (!resourceKey.StartsWith(@"string_")) throw new Exception(@"Localization keys must start with a string_ identifier!");
                 var str = (string)Application.Current.FindResource(resourceKey);
+                str = str.Replace(@"\n", Environment.NewLine);
                 return string.Format(str, interpolationItems);
             }
             catch (Exception e)
