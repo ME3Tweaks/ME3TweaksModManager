@@ -213,7 +213,7 @@
     <system:String x:Key="string_installed">Installed</system:String>
     <system:String x:Key="string_interp_dialogOfficialTargetDLCNotInstalled">{0} installs files into {1} ({2}) DLC, which is not installed.</system:String>
     <!-- 0 =  Mod Name, 1 = DLC folder name, 2 = TPMI lookup (human readable dlc name) -->
-    <system:String x:Key="string_dialogJobDescriptionMessageHeader">\n\nThe mod lists the following reason for this task:</system:String>
+    <system:String x:Key="string_dialogJobDescriptionMessageHeader">\n\nThe mod lists the following reason for modifying this DLC:</system:String>
     <system:String x:Key="string_dialogJobDescriptionMessageFooter">\n\nThe mod might not function properly without this DLC installed first. Continue installing anyways?</system:String>
     <system:String x:Key="string_dialogJobDescriptionMessageTitle">{0} DLC not installed</system:String>
     <!-- 0 is name of official (english only) name of DLC that is not installed (e.g. Bring Down The Sky) -->

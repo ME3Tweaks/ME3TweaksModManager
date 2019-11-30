@@ -20,7 +20,6 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.VisualBasic;
 using Serilog;
 using SevenZip;
-
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
