@@ -113,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             Application.Current.Dispatcher.Invoke(delegate
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), errorMessage, M3L.GetString(M3L.string_errorDownloadingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(Window.GetWindow(this), errorMessage, M3L.GetString(M3L.string_errorDownloadingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
                 OnClosing(DataEventArgs.Empty);
             });
         }
@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error(@"The update file is not signed. Update will be aborted.");
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_unableToApplyUpdateNotSigned), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_unableToApplyUpdateNotSigned), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
                         OnClosing(DataEventArgs.Empty);
                     });
                     return;
@@ -181,7 +181,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Error(@"Could not find ME3TweaksModManager.exe! Update will be aborted.");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_unableToApplyUpdateME3TweaksExeNotFound), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_unableToApplyUpdateME3TweaksExeNotFound), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
                     OnClosing(DataEventArgs.Empty);
                 });
             }

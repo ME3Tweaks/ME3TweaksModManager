@@ -85,19 +85,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (!Settings.DeveloperMode)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 else
                 {
-                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     restore = res == MessageBoxResult.Yes;
 
                 }
             }
             else
             {
-                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoreAllModifiedFilesQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                restore = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoreAllModifiedFilesQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
 
             }
             if (restore)
@@ -133,19 +133,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (!Settings.DeveloperMode)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 else
                 {
-                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     restore = res == MessageBoxResult.Yes;
 
                 }
             }
             else
             {
-                restore = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoreAllModifiedSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                restore = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoreAllModifiedSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
 
             }
             if (restore)
@@ -196,15 +196,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(SelectedTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
                 if (SelectedTarget.ALOTInstalled)
                 {
-                    var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_deletingXwhileAlotInstalledUnsupported, mod.ModName), M3L.GetString(M3L.string_deletingWillPutAlotInUnsupportedConfig), MessageBoxButton.YesNo, MessageBoxImage.Error);
+                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_deletingXwhileAlotInstalledUnsupported, mod.ModName), M3L.GetString(M3L.string_deletingWillPutAlotInUnsupportedConfig), MessageBoxButton.YesNo, MessageBoxImage.Error);
                     return res == MessageBoxResult.Yes;
                 }
-                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_removeXFromTheGameInstallationQuestion, mod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_removeXFromTheGameInstallationQuestion, mod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
             void notifyDeleted()
             {
@@ -216,31 +216,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(SelectedTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
                 if (SelectedTarget.ALOTInstalled && filepath.RepresentsPackageFilePath())
                 {
                     if (!Settings.DeveloperMode)
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXWhileAlotInstalledIsNotAllowed, Path.GetFileName(filepath)), M3L.GetString(M3L.string_cannotRestorePackageFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXWhileAlotInstalledIsNotAllowed, Path.GetFileName(filepath)), M3L.GetString(M3L.string_cannotRestorePackageFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
                     else
                     {
-                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode, Path.GetFileName(filepath)), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode, Path.GetFileName(filepath)), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         return res == MessageBoxResult.Yes;
 
                     }
                 }
-                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             bool restoreSfarConfirmationCallback(string sfarPath)
             {
                 if (Utilities.IsGameRunning(SelectedTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
 
@@ -248,18 +248,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (!Settings.DeveloperMode)
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
                     else
                     {
-                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         return res == MessageBoxResult.Yes;
 
                     }
                 }
                 //Todo: warn of unpacked file deletion
-                return Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             void notifyStartingSfarRestoreCallback()

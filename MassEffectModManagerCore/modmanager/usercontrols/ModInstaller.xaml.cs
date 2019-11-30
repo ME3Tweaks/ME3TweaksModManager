@@ -147,7 +147,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         bool cancel = false;
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_devModeAlotInstalledWarning, ModBeingInstalled.ModName), M3L.GetString(M3L.string_brokenTexturesWarning), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                            var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_devModeAlotInstalledWarning, ModBeingInstalled.ModName), M3L.GetString(M3L.string_brokenTexturesWarning), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                             cancel = res == MessageBoxResult.No;
                         });
                         if (cancel)
@@ -612,7 +612,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Application.Current.Dispatcher.Invoke(() =>
                         {
 
-                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRunGameOnceFirst), M3L.GetString(M3L.string_gameMustBeRunAtLeastOnce), MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogRunGameOnceFirst), M3L.GetString(M3L.string_gameMustBeRunAtLeastOnce), MessageBoxButton.OK, MessageBoxImage.Error);
                             cancel = true;
                             return;
                         });
@@ -640,7 +640,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
 
                         message += M3L.GetString(M3L.string_dialogJobDescriptionMessageFooter);
-                        MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(message, M3L.GetString(M3L.string_dialogJobDescriptionMessageTitle, MEDirectories.OfficialDLCNames(ModBeingInstalled.Game)[ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]]), MessageBoxButton.YesNo, MessageBoxImage.Error);
+                        MessageBoxResult result = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_dialogJobDescriptionMessageTitle, MEDirectories.OfficialDLCNames(ModBeingInstalled.Game)[ModJob.GetHeadersToDLCNamesMap(ModBeingInstalled.Game)[job.Header]]), MessageBoxButton.YesNo, MessageBoxImage.Error);
                         if (result == MessageBoxResult.No)
                         {
                             cancel = true;
@@ -682,16 +682,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
                 {
                     InstallationCancelled = true;
-                    Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogInstallationBlockedByALOT), M3L.GetString(M3L.string_installationBlocked), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationBlockedByALOT), M3L.GetString(M3L.string_installationBlocked), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck), M3L.GetString(M3L.string_installationSucceededMaybe), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck), M3L.GetString(M3L.string_installationSucceededMaybe), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE)
                 {
                     InstallationCancelled = true;
-                    Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Warning);
 
                 }
                 else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES)
@@ -721,7 +721,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
                         InstallationCancelled = true;
-                        Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                 }
             }
@@ -781,7 +781,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //needs write permissions
                 InstallationCancelled = true;
-                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogNoWritePermissions), M3L.GetString(M3L.string_cannotWriteToGameDirectory), MessageBoxButton.OK, MessageBoxImage.Warning);
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogNoWritePermissions), M3L.GetString(M3L.string_cannotWriteToGameDirectory), MessageBoxButton.OK, MessageBoxImage.Warning);
                 OnClosing(DataEventArgs.Empty);
                 return;
             }
@@ -815,7 +815,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     message += string.Join('\n', incompatibleDLC);
                     message += M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedFooter, ModBeingInstalled.ModName);
                     InstallationCancelled = true;
-                    Xceed.Wpf.Toolkit.MessageBox.Show(message, M3L.GetString(M3L.string_incompatibleDLCDetected), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, message, M3L.GetString(M3L.string_incompatibleDLCDetected), MessageBoxButton.OK, MessageBoxImage.Error);
                     OnClosing(DataEventArgs.Empty);
                     return;
                 }
@@ -849,7 +849,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     message += string.Join('\n', outdatedDLC);
                     message += M3L.GetString(M3L.string_dialogOutdatedDLCFooter, ModBeingInstalled.ModName);
                     InstallationCancelled = true;
-                    var result = Xceed.Wpf.Toolkit.MessageBox.Show(message, M3L.GetString(M3L.string_outdatedDLCDetected), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    var result = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_outdatedDLCDetected), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     if (result == MessageBoxResult.No)
                     {
                         InstallationCancelled = true;

@@ -570,4 +570,10 @@
     <system:String x:Key="string_mountPriorityColon">Mount Priority:</system:String>
     <system:String x:Key="string_mountFlagColon">Mount Flag:</system:String>
     <system:String x:Key="string_moduleNumberColon">Module Number:</system:String>
+    
+    <!-- Messageboxes (cancel is defined previously) -->
+    <system:String x:Key="string_no">No</system:String>
+    <system:String x:Key="string_ok">OK</system:String>
+    <system:String x:Key="string_yes">Yes</system:String>
+
 </ResourceDictionary>

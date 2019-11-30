@@ -65,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var uiModInstalled = installedDLCMods.Intersect(DLCUIModFolderNames).Any();
             if (uiModInstalled)
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialogWhatGuiCompatPackIsFor), M3L.GetString(M3L.string_confirmGeneration), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogWhatGuiCompatPackIsFor), M3L.GetString(M3L.string_confirmGeneration), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     OnClosing(DataEventArgs.Empty);
@@ -77,7 +77,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 Log.Information(@"No UI mods are installed. Cannot run GUI Compat Generator");
-                Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialogNoUiModsAreInstalled), M3L.GetString(M3L.string_noUiModsAreInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogNoUiModsAreInstalled), M3L.GetString(M3L.string_noUiModsAreInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
                 OnClosing(DataEventArgs.Empty);
             }
         }
@@ -213,7 +213,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Application.Current.Dispatcher.Invoke(delegate
                             {
                                 Log.Error(@"Cannot make compat pack: Both ISM and SP Controller are installed, this is not supported.");
-                                Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialogCannotGenerateCompatPackInvalidConfig), M3L.GetString(M3L.string_invalidConfiguration), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogCannotGenerateCompatPackInvalidConfig), M3L.GetString(M3L.string_invalidConfiguration), MessageBoxButton.OK, MessageBoxImage.Error);
                                 OnClosing(DataEventArgs.Empty);
                             });
                             b.Result = GUICompatibilityThreadResult.INVALID_UI_MOD_CONFIG;
@@ -233,7 +233,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Log.Error(@"Required UI library could not be downloaded.");
                             Application.Current.Dispatcher.Invoke(delegate
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_cannotGeneratorCompatPackCouldNotDownload), M3L.GetString(M3L.string_couldNotAcquireUiLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_cannotGeneratorCompatPackCouldNotDownload), M3L.GetString(M3L.string_couldNotAcquireUiLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                                 OnClosing(DataEventArgs.Empty);
                             });
                             b.Result = GUICompatibilityThreadResult.NO_UI_LIBRARY;

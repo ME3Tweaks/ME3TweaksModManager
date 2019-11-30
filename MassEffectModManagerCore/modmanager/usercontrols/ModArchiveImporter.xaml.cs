@@ -547,7 +547,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     bool abort = false;
                     Application.Current.Dispatcher.Invoke(delegate
                     {
-                        var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_dialogImportingModWillDeleteExistingMod, sanitizedPath), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                        var result = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_dialogImportingModWillDeleteExistingMod, sanitizedPath), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                         if (result == MessageBoxResult.No)
                         {
                             e.Result = USER_ABORTED_IMPORT;
@@ -561,7 +561,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 Log.Error(@"Could not delete existing mod directory.");
                                 e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                                 abort = true;
                                 return;
                             }
@@ -571,7 +571,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             //I don't think this can be triggered but will leave as failsafe anyways.
                             Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
-                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_errorOccuredDeletingExistingModX, ex.Message), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_errorOccuredDeletingExistingModX, ex.Message), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                             e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                             abort = true;
                         }

@@ -16,6 +16,7 @@ using IniParser.Model;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
@@ -299,7 +300,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     string conflicts = "";
                     sameModuleNumberItems.ForEach(x => conflicts += "\n - " + x.modname);
-                    var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"The DLC module number for this mod conflicts with existing DLC:{conflicts}\n\nModule numbers are used to determine filenames in the mod, such as the TLK. Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC module numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                    var result = M3L.ShowDialog(this, $"The DLC module number for this mod conflicts with existing DLC:{conflicts}\n\nModule numbers are used to determine filenames in the mod, such as the TLK. Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC module numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                     if (result == MessageBoxResult.No) return;
                 }
             }
@@ -309,27 +310,27 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
                 string conflicts = "";
                 sameMountPriorityItems.ForEach(x => conflicts += "\n - " + x.modname);
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"The DLC mount priority for this mod conflicts with existing DLC:{conflicts}\n\nMount priority numbers are used to determine which files to use in case of ambiguous package names (same-named file exists in multiple locations). Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC mount priority numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                var result = M3L.ShowDialog(this, $"The DLC mount priority for this mod conflicts with existing DLC:{conflicts}\n\nMount priority numbers are used to determine which files to use in case of ambiguous package names (same-named file exists in multiple locations). Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC mount priority numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
             }
 
             if (ModMountFlag.Flag == EMountFileFlag.ME1_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME2_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency)
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"You have chosen to make this mod be required by the savegame. When a user removes your mod (by choice or by repair), saves that were made while this DLC is installed will not be usable by the user. In almost all circumstances this is not desirable for the end user. You should only pick this option if you really know what you're doing.\n\nUse this mount flag anyways?", "Undesirable mount flag", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                var result = M3L.ShowDialog(this, $"You have chosen to make this mod be required by the savegame. When a user removes your mod (by choice or by repair), saves that were made while this DLC is installed will not be usable by the user. In almost all circumstances this is not desirable for the end user. You should only pick this option if you really know what you're doing.\n\nUse this mount flag anyways?", "Undesirable mount flag", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
             }
 
             var outputDirectory = Path.Combine(Utilities.GetModDirectoryForGame(Game), Utilities.SanitizePath(ModName));
             if (Directory.Exists(outputDirectory))
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Creating this mod will delete an existing directory in the mod library:\n{outputDirectory}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                var result = M3L.ShowDialog(this, $"Creating this mod will delete an existing directory in the mod library:\n{outputDirectory}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
                 try
                 {
                     if (!Utilities.DeleteFilesAndFoldersRecursively(outputDirectory))
                     {
                         Log.Error("Could not delete existing output directory.");
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(this, $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -338,7 +339,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     //I don't think this can be triggered but will leave as failsafe anyways.
                     Log.Error("Error while deleting existing output directory: " + App.FlattenException(e));
-                    Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Error occured while deleting existing mod directory:\n{e.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(this, $"Error occured while deleting existing mod directory:\n{e.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }

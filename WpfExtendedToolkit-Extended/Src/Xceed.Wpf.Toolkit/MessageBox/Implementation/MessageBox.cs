@@ -678,7 +678,7 @@ namespace Xceed.Wpf.Toolkit
     /// <param name="button">The button.</param>
     /// <param name="image">The image.</param>
     /// <param name="defaultResult">The MessageBox result as default.</param>
-    protected void InitializeMessageBox( Window owner, IntPtr ownerHandle, string text, string caption, MessageBoxButton button, MessageBoxImage image, MessageBoxResult defaultResult )
+    public void InitializeMessageBox( Window owner, IntPtr ownerHandle, string text, string caption, MessageBoxButton button, MessageBoxImage image, MessageBoxResult defaultResult )
     {
       Text = text;
       Caption = caption;

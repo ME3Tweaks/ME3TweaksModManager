@@ -161,7 +161,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         OnClosing(DataEventArgs.Empty);
-                        var res = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                 }

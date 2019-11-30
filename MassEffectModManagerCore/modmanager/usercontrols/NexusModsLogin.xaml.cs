@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
@@ -97,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 catch (ApiException apiException)
                 {
                     Log.Error("Error authenticating to NexusMods: " + apiException.ToString());
-                    Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(window, "NexusMods return an error:\n" + apiException.ToString(), "Error authenticating to NexusMods", MessageBoxButton.OK, MessageBoxImage.Error); });
+                    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, "NexusMods return an error:\n" + apiException.ToString(), "Error authenticating to NexusMods", MessageBoxButton.OK, MessageBoxImage.Error); });
                 }
 
                 IsAuthorizing = false;

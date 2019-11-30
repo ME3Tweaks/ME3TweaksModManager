@@ -133,7 +133,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_interp_dialogCannotRestoreXWhileItIsRunning, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogCannotRestoreXWhileItIsRunning, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + M3L.GetString(M3L.string_backup));
@@ -285,21 +285,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         { @"Game", Game.ToString() },
                                         { @"Result", @"Failure, Could not create target directory" }
                                     });
-                                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogCouldNotCreateGameDirectoryAfterDeletion), M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogCouldNotCreateGameDirectoryAfterDeletion), M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
                                 break;
                             case RestoreResult.ERROR_COULD_NOT_DELETE_GAME_DIRECTORY:
                                 Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {
                                         { @"Game", Game.ToString() },
                                         { @"Result", @"Failure, Could not delete existing game directory" }
                                     });
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted. View the logs from the help menu for more information.", M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, "Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted. View the logs from the help menu for more information.", M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
                                 break;
                             case RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY:
                                 Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {
                                         { @"Game", Game.ToString() },
                                         { @"Result", @"Failure, Excpetion deleting existing game directory" }
                                     });
-                                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogErrorOccuredDeletingGameDirectory), M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogErrorOccuredDeletingGameDirectory), M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
                                 break;
                             case RestoreResult.RESTORE_OK:
                                 Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {
@@ -331,7 +331,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (Directory.GetFiles(restTarget).Length > 0 || Directory.GetDirectories(restTarget).Length > 0)
                             {
                                 //Directory not empty
-                                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty), M3L.GetString(M3L.string_cannotRestoreToThisLocation), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty), M3L.GetString(M3L.string_cannotRestoreToThisLocation), MessageBoxButton.OK, MessageBoxImage.Error);
                                 return;
                             }
                             //TODO: PREVENT RESTORING TO DOCUMENTS/BIOWARE

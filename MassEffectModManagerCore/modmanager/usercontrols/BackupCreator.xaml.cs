@@ -111,7 +111,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(BackupSourceTarget.Game))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_interp_cannotBackupGameWhileRunning, Utilities.GetGameName(BackupSourceTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotBackupGameWhileRunning, Utilities.GetGameName(BackupSourceTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 NamedBackgroundWorker bw = new NamedBackgroundWorker(Game.ToString() + @"Backup");
@@ -173,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         //Directory not empty
                                         Log.Error(@"Selected backup directory is not empty.");
-                                        Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_directoryIsNotEmptyMustBeEmpty), M3L.GetString(M3L.string_directoryNotEmpty), MessageBoxButton.OK, MessageBoxImage.Error);
+                                        M3L.ShowDialog(window, M3L.GetString(M3L.string_directoryIsNotEmptyMustBeEmpty), M3L.GetString(M3L.string_directoryNotEmpty), MessageBoxButton.OK, MessageBoxImage.Error);
                                         end = true;
                                         EndBackup();
                                         return;
@@ -314,7 +314,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else if (b.Result is (string errortitle, string message))
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(message, errortitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window,message, errortitle, MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     CommandManager.InvalidateRequerySuggested();
                 };

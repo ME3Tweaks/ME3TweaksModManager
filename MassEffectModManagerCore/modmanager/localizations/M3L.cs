@@ -15,13 +15,46 @@ namespace MassEffectModManagerCore.modmanager.localizations
     [Localizable(false)]
     public static class M3L
     {
+	    internal static MessageBoxResult ShowDialog(Window owner, string message, string caption)
+        {
+            return ShowDialog(owner, message, caption, MessageBoxButton.OK);
+        }
+
+        private static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons)
+        {
+            return ShowDialog(owner, message, caption, buttons, MessageBoxImage.None);
+        }
+
+        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
+        {
+            return ShowDialog(owner, message, caption, buttons, image, MessageBoxResult.None);
+        }
+
+        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult)
+        {
+            var msgBox = new Xceed.Wpf.Toolkit.MessageBox();
+            msgBox.InitializeMessageBox(owner, IntPtr.Zero, message, caption, buttons, image, defaultResult);
+
+            //// Setting the style to null will inhibit any implicit styles      
+            //if (messageBoxStyle != null)
+            //{
+            //    msgBox.Style = messageBoxStyle;
+            //}
+            msgBox.YesButtonContent = GetString(string_yes);
+            msgBox.NoButtonContent = GetString(string_no);
+            msgBox.OkButtonContent = GetString(string_ok);
+            msgBox.CancelButtonContent = GetString(string_cancel);
+            msgBox.ShowDialog();
+            return msgBox.MessageBoxResult;
+        }
+
         internal static string GetString(string resourceKey, params string[] interpolationItems)
         {
             try
             {
                 if (!resourceKey.StartsWith(@"string_")) throw new Exception(@"Localization keys must start with a string_ identifier!");
                 var str = (string)Application.Current.FindResource(resourceKey);
-                str = str.Replace(@"\n", Environment.NewLine);
+				str = str.Replace(@"\n", Environment.NewLine);
                 return string.Format(str, interpolationItems);
             }
             catch (Exception e)
@@ -520,5 +553,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_mountPriorityColon = "string_mountPriorityColon";
 		public static readonly string string_mountFlagColon = "string_mountFlagColon";
 		public static readonly string string_moduleNumberColon = "string_moduleNumberColon";
+		public static readonly string string_no = "string_no";
+		public static readonly string string_ok = "string_ok";
+		public static readonly string string_yes = "string_yes";
 	}
 }
