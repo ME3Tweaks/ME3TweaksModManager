@@ -90,7 +90,7 @@
     <system:String x:Key="string_ModManagerLogsDiagnostics">Logi Mod Managera i Diagnostyka</system:String>
     <system:String x:Key="string_TroubleshootingtoolsforME3Tweaks">Narzędzia do rozwiązywania problemów dla ME3Tweaks</system:String>
     <system:String x:Key="string_About">O</system:String>
-    <system:String x:Key="string_moddescfileformatspecification">specyfikacja formatu pliku moddesc.ini</system:String>
+    <system:String x:Key="string_moddescfileformatspecification">Specyfikacja formatu pliku moddesc.ini</system:String>
     <system:String x:Key="string_ReferenceinformationModdesc">Informacje referencyjne na temat specyfikacji moddesc.ini</system:String>
     <system:String x:Key="string_AboutME3TweaksModManager">O Managerze Modów ME3Tweaks</system:String>
     <system:String x:Key="string_Aboutthisprogram">O tym programie</system:String>
@@ -199,60 +199,63 @@
     <system:String x:Key="string_tooltip_filterME3">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect 3</system:String>
     <system:String x:Key="string_tooltip_someModsFailed">Nie udało się załadować niektórych modów, kliknij, aby zobaczyć dlaczego</system:String>
     <system:String x:Key="string_tooltip_addAdditionalTarget">Dodaj dodatkowy cel instalacji</system:String>
-    <system:String x:Key="string_tooltip_targetInfo">Przeglądaj zainstalowane mody i pliki dla tego celu i zarządzaj nimi</system:String>
+    <system:String x:Key="string_tooltip_targetInfo">Przeglądaj zainstalowane mody i pliki dla tego celu oraz zarządzaj nimi</system:String>
     <system:String x:Key="string_targetInfo">Informacje o celu</system:String>
     <system:String x:Key="string_modDescription">Opis Modu</system:String>
 
     <!-- Mod Installer Panel -->
-    <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
-    <system:String x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
-    <system:String x:Key="string_brokenTexturesWarning">Broken Textures Warning</system:String>
-    <system:String x:Key="string_installing">Installing</system:String>
-    <system:String x:Key="string_loadingModArchive">Loading mod archive</system:String>
-    <system:String x:Key="string_installingSupportFiles">Installing support files</system:String>
-    <system:String x:Key="string_installed">Installed</system:String>
-    <system:String x:Key="string_interp_dialogOfficialTargetDLCNotInstalled">{0} installs files into {1} ({2}) DLC, which is not installed.</system:String>
+    <system:String x:Key="string_preparingToInstall">Przygotowanie do instalacji</system:String>
+    <system:String x:Key="string_interp_devModeAlotInstalledWarning">ALOT jest zainstalowany, a ten mod instaluje pliki pakietów. Kontynuowanie instalacji tego modu prawdopodobnie spowoduje uszkodzenie tekstur lub crashe gry spowodowane błędnymi wskaźnikami tesktur oraz prawdopodobnie pustymi mipami. Twoja instalacja ALOT nie będzie również dalej wspierana. \n\nKontynuować instalację {0}? Zostałeś ostrzeżony.</system:String>
+    <system:String x:Key="string_brokenTexturesWarning">Ostrzeżenie o Uszkodzonych Teksturach</system:String>
+    <system:String x:Key="string_installing">Instalowanie</system:String>
+    <system:String x:Key="string_loadingModArchive">Wczytywanie archiwum pliku</system:String>
+    <system:String x:Key="string_installingSupportFiles">Instalowanie plików wspierających</system:String>
+    <system:String x:Key="string_installed">Zainstalowano</system:String>
+    <system:String x:Key="string_interp_dialogOfficialTargetDLCNotInstalled">{0} instaluje pliki do DLC {1} ({2}), który to nie jest zainstalowy.</system:String>
     <!-- 0 =  Mod Name, 1 = DLC folder name, 2 = TPMI lookup (human readable dlc name) -->
-    <system:String x:Key="string_dialogJobDescriptionMessageHeader">\n\nThe mod lists the following reason for this task:</system:String>
-    <system:String x:Key="string_dialogJobDescriptionMessageFooter">\n\nThe mod might not function properly without this DLC installed first. Continue installing anyways?</system:String>
-    <system:String x:Key="string_dialogJobDescriptionMessageTitle">{0} DLC not installed</system:String>
+    <system:String x:Key="string_dialogJobDescriptionMessageHeader">\n\nMod podaje następujący powód dla modyfikacji tego DLC:</system:String>
+    <system:String x:Key="string_dialogJobDescriptionMessageFooter">\n\nMod może nie działać prawidłowo bez tego DLC zainstalowanego wcześniej. Kontynuować instalację pomimo to?</system:String>
+    <system:String x:Key="string_dialogJobDescriptionMessageTitle">DLC {0} nie jest zainstalowany</system:String>
     <!-- 0 is name of official (english only) name of DLC that is not installed (e.g. Bring Down The Sky) -->
-    <system:String x:Key="string_dialogOutdatedDLCHeader">The following DLC mods are listed as outdated/no longer relevant by {0} and will be removed upon installation:\n</system:String>
+    <system:String x:Key="string_dialogOutdatedDLCHeader">Następujące mody DLC są oznaczone jako przestarzałe / już nie ważne przez {0} i będą usunięte podczas instalacji:\n</system:String>
     <!-- 0 = name of mod being installed -->
-    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\nClick yes to continue installing {0}, or click no to abort installation.</system:String>
+    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\nNaciśnij Tak aby kontynuować instalowanie {0}, albo Nie aby przerwać instalację.</system:String>
     <!-- 0 = Name of mod being installed -->
-    <system:String x:Key="string_outdatedDLCDetected">Outdated DLC detected</system:String>
-    <system:String x:Key="string_dialogIncompatibleDLCDetectedHeader">The following DLC mods are listed as incompatible with {0}:\n</system:String>
+    <system:String x:Key="string_outdatedDLCDetected">Znaleziono przestarzałe DLC</system:String>
+    <system:String x:Key="string_dialogIncompatibleDLCDetectedHeader">Następujące mody DLC zostały oznaczone jako niekompatybilne z {0}:\n</system:String>
     <!-- 0 = Name of mod being installed -->
-    <system:String x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nIn order to install {0}, the above listed Custom DLC mods must be removed first.\nYou can manage installed Custom DLC by clicking Target Info button.</system:String>
+    <system:String x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nAby zainstalować {0}, wymienione wyżej niestandardowe mody muszą zostać najpierw usunięte.\nMożesz zarządzać zainstalowanymi niestandardowymi modami naciskając przycisk Informacje o celu.</system:String>
     <!-- 0 = Name of mod being installed -->
-    <system:String x:Key="string_incompatibleDLCDetected">Incompatible DLC detected</system:String>
-    <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
+    <system:String x:Key="string_incompatibleDLCDetected">Wykryto niekompatybilne DLC</system:String>
+    <system:String x:Key="string_dialogNoWritePermissions">Twoje konto użytkownika nie ma uprawnień zapisu do katalogu gry. Możesz przydzielić kontu te uprawnienia używając opcji "Udziel dostępu do zapisu dla katalogów gier" w menu narzędzi.</system:String>
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
-    <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
-    <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
-    <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{dlcText}</system:String>
+    <system:String x:Key="string_cannotWriteToGameDirectory">Nie można modyfikować plików w katalogu gry.</system:String>
+    <system:String x:Key="string_requiredContentMissing">Brakująca wymagana zawartość</system:String>
+    <system:String x:Key="string_dialogRequiredContentMissing">Ten mod wymaga, aby następujące DLC/mody były wcześniej zainstalowane:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
-    <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.</system:String>
-    <system:String x:Key="string_dialogInstallationBlockedByALOT">Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.</system:String>
-    <system:String x:Key="string_installationBlocked">Installation blocked</system:String>
-    <system:String x:Key="string_installationSucceededMaybe">Installation succeeded, maybe</system:String>
-    <system:String x:Key="string_dialogRunGameOnceFirst">Mods that modify configuration files require that Mass Effect be run at least once before they are installed. This is to ensure the game does not overwrite the files on first boot.</system:String>
-    <system:String x:Key="string_gameMustBeRunAtLeastOnce">Game must be run at least once</system:String>
-    <system:String x:Key="string_ui_allAlternatesAreAutomatic">All installation options for this mod are automatic. Ensure you have the listed relevant DLC (mods or official) installed before installing this mod if you plan to use them.</system:String>
-    <system:String x:Key="string_ui_title_selectInstallationOptions">Select installation options</system:String>
-    <system:String x:Key="string_install">Install</system:String>
-    <system:String x:Key="string_cancel">Cancel</system:String>
-    <system:String x:Key="string_installMod">Install mod</system:String>
-    <system:String x:Key="string_abortInstallingMod">Abort installing this mod</system:String>
-    <system:String x:Key="string_dialogInvalidRCWFile">The .me2mod file that this mod uses is not valid or cannot be safely applied to your game installation. Installation has been aborted. Check the Mod Manager logs from the Help menu for more information.</system:String>
+    <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod został zainstalowany, ale nie przeszedł weryfikacji ilości zainstalowanych elementów. Prawdopodobnie jest to błąd w Mod Managerze, proszę zgłosić to do Mgamerza na Discordzie.</system:String>
+    <system:String x:Key="string_dialogInstallationBlockedByALOT">Instalowanie modów zawierających pliki pakietów do celów, w których ALOT został już zainstalowany nie jest dozwolone. Pliki pakietów muszą być zainstalowane przed ALOT.</system:String>
+    <system:String x:Key="string_installationBlocked">Instalacja zablokowana</system:String>
+    <system:String x:Key="string_installationSucceededMaybe">Instalacja pomyślna, może</system:String>
+    <system:String x:Key="string_dialogRunGameOnceFirst">Mody zmieniające pliki konfiguracyjne wymagają, aby Mass Effect został uruchomiony przynajmniej raz zanim zostaną one zainstalowane. Jest to wymagane dla pewności, że gra nie nadpisze tych plików podczas swojego pierwszego uruchomienia.</system:String>
+    <system:String x:Key="string_gameMustBeRunAtLeastOnce">Gra musi zostać uruchomiona przynajmniej raz</system:String>
 
+    <system:String x:Key="string_ui_allAlternatesAreAutomatic">Wszystkie opcje instalacyjne dla tego modu są automatyczne. Upewnij się, że wymienione DLC (mody bądź te oficjalne) są zainstalowane już przed rozpoczęciem instalacji tego modu, jeśli planujesz ich używać.</system:String>
+    <system:String x:Key="string_ui_title_selectInstallationOptions">Wybierz opcje instalacji</system:String>
+    <system:String x:Key="string_install">Zainstaluj</system:String>
+    <system:String x:Key="string_cancel">Anuluj</system:String>
+    <system:String x:Key="string_installMod">Zainstaluj mod</system:String>
+    <system:String x:Key="string_abortInstallingMod">Przerwij instalację tego modu</system:String>
+    <system:String x:Key="string_dialogInvalidRCWFile">Plik .me2mod używany przez tego moda nie jest poprawny bądź nie może być bezpiecznie zastosowany do twojej instalacji gry. Instalacja została przerwana. Sprawdź logi Mod Managera z menu Pomocy po więcej informacji.</system:String>
+    
     <!-- Startup preview panel -->
-    <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
-    <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
-    <system:String x:Key="string_howToChangeLanguage">You can change your language at any time from the Actions > Options menu. Note that all support is provided in English only.</system:String>
-    <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Thanks for downloading the preview of ME3Tweaks Mod Manager, the next generation of Mod Manager. This preview version is a work in progress and will have stability issues and missing features that are being worked on.&#10;&#10;ME3Tweaks Mod Manager will replace Mass Effect 3 Mod Manager once it is at feature parity.&#10;&#10;Please direct all feedback to the ME3Tweaks Discord, where you can have your voice heard for feature requests and bug fixes.</system:String>
-    <system:String x:Key="string_joinDiscord">Join the ME3Tweaks Discord</system:String>
-    <system:String x:Key="string_close">Close</system:String>
+    <system:String x:Key="string_previewPanelTitle">Witaj w ME3Tweaks Mod Manager</system:String>
+    <system:String x:Key="string_selectYourLanguage">Wybierz swój język</system:String>
+    <system:String x:Key="string_howToChangeLanguage">Możesz zmienić swój język w dowolnej chwili z menu Działania -> Opcje. Pamiętaj, że jakiekolwiek wsparcie jest udzielane tylko w języku angielskim.</system:String>
+    <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Dzięki za pobranie ME3Tweaks Mod Manager, następnej generacji Mod Managera. Prace nad tą wersją zapoznawczą wciąż trwają. Z tego powodu, może ona posiadać problemy ze stabilnością oraz brakujące funkcje, nad którymi wciąż trwają prace.&#10;&#10;ME3Tweaks Mod Manager zastąpi Mass Effect 3 Mod Managera kiedy będzie posiadać wszystkie jego funkcje.&#10;&#10;Proszę skierować wszelkie uwagi do Discorda ME3Tweaks, gdzie twoje zgłoszenia błędów oraz propozycje nowych funkcji zostaną wysłuchane.</system:String>
+    <system:String x:Key="string_joinDiscord">Dołącz do Discorda ME3Tweaks</system:String>
+    <system:String x:Key="string_close">Zamknij</system:String>
     <!-- Close (as in close dialog) -->
+
+
 </ResourceDictionary>
