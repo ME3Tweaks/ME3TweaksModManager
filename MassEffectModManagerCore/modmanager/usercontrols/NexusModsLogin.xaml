@@ -1,45 +1,31 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusModsLogin"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Width="450">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusModsLogin" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="450">
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
-        <Image Source="/images/nexusmods_scenethemed.png" Height="64"  VerticalAlignment="Center"/>
-        <TextBlock Text="+" FontSize="40"/>
-        <Image Source="/appicon.ico" Height="64" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center" />
-
+            <Image Source="/images/nexusmods_scenethemed.png" Height="64" VerticalAlignment="Center" />
+            <TextBlock Text="+" FontSize="40" />
+            <Image Source="/appicon.ico" Height="64" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center" />
         </StackPanel>
-
-<StackPanel>
-    <TextBlock Text="Providing your NexusMods API key to ME3Tweaks Mod Manager will allow you to perform a limited set of NexusMods actions within Mod Manager, such as endorsing mods." TextWrapping="Wrap"/>
-    <TextBlock Text="Directions" FontWeight="Bold" Margin="0,10,0,0"/>
-    <TextBlock Text="You can get your API key by logging into your NexusMods account, selecting 'Preferences' from the drop down menu when clicking your profile icon, then going to the 'API' tab. At the bottom of this page is your personal API key - paste that value here." TextWrapping="Wrap"/>
-    <TextBlock Text="Caution" FontWeight="Bold" Margin="0,10,0,0"/>
-    <TextBlock Text="Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password." TextWrapping="Wrap"/>
-
+        <StackPanel>
+            <TextBlock Text="{DynamicResource string_nexusModsLoginHeader}" TextWrapping="Wrap" />
+            <TextBlock Text="{DynamicResource string_directions}" FontWeight="Bold" Margin="0,10,0,0" />
+            <TextBlock Text="{DynamicResource string_nexusModsDirections}" TextWrapping="Wrap" />
+            <TextBlock Text="{DynamicResource string_caution}" FontWeight="Bold" Margin="0,10,0,0" />
+            <TextBlock Text="{DynamicResource string_doNotShareAPIKeyWarning}" TextWrapping="Wrap" />
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <xctk:WatermarkTextBox Watermark="Paste your API key here" Text="{Binding APIKeyText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0"  />
+                <xctk:WatermarkTextBox Watermark="{DynamicResource string_pasteYourAPIKeyHere}" Text="{Binding APIKeyText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0" />
                 <Button Content="{Binding AuthorizeToNexusText}" Command="{Binding AuthorizeCommand}" Grid.Column="1" Margin="0,5,0,0" />
-                <Button Content="Unlink Mod Manager from NexusMods" Command="{Binding UnlinkCommand}" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2"/>
-                <Button Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin="0,5,0,0" Grid.Row="2" Grid.Column="2"/>
-
+                <Button Content="{DynamicResource string_unlinkModManagerFromNexusMods}" Command="{Binding UnlinkCommand}" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
+                <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin="0,5,0,0" Grid.Row="2" Grid.Column="2" />
             </Grid>
-
-</StackPanel>
-
+        </StackPanel>
     </DockPanel>
 </local:MMBusyPanelBase>

@@ -556,5 +556,18 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_no = "string_no";
 		public static readonly string string_ok = "string_ok";
 		public static readonly string string_yes = "string_yes";
+		public static readonly string string_authenticateToNexusMods = "string_authenticateToNexusMods";
+		public static readonly string string_interp_authenticatedAsX = "string_interp_authenticatedAsX";
+		public static readonly string string_checkingKey = "string_checkingKey";
+		public static readonly string string_authenticatedToNexusMods = "string_authenticatedToNexusMods";
+		public static readonly string string_interp_nexusModsReturnedAnErrorX = "string_interp_nexusModsReturnedAnErrorX";
+		public static readonly string string_errorAuthenticatingToNexusMods = "string_errorAuthenticatingToNexusMods";
+		public static readonly string string_nexusModsLoginHeader = "string_nexusModsLoginHeader";
+		public static readonly string string_directions = "string_directions";
+		public static readonly string string_nexusModsDirections = "string_nexusModsDirections";
+		public static readonly string string_caution = "string_caution";
+		public static readonly string string_doNotShareAPIKeyWarning = "string_doNotShareAPIKeyWarning";
+		public static readonly string string_unlinkModManagerFromNexusMods = "string_unlinkModManagerFromNexusMods";
+		public static readonly string string_pasteYourAPIKeyHere = "string_pasteYourAPIKeyHere";
 	}
 }

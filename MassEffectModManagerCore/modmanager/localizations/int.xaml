@@ -576,4 +576,21 @@
     <system:String x:Key="string_ok">OK</system:String>
     <system:String x:Key="string_yes">Yes</system:String>
 
+    <!-- NexusMods Login Panel -->
+    <system:String x:Key="string_authenticateToNexusMods">Authenticate to NexusMods</system:String>
+    <system:String x:Key="string_interp_authenticatedAsX">Authenticated as {0}</system:String> <!-- 0 = username -->
+    <system:String x:Key="string_checkingKey">Checking key...</system:String>
+    <system:String x:Key="string_authenticatedToNexusMods">Authenticated to NexusMods</system:String>
+    <system:String x:Key="string_interp_nexusModsReturnedAnErrorX">NexusMods returned an error:\n{0}</system:String> <!-- 0 = error message-->
+    <system:String x:Key="string_errorAuthenticatingToNexusMods">Error authenticating to NexusMods</system:String>
+
+    <system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager can integrate with NexusMods to allow you to endorse mods, letting the developer know you appreciate their work. ME3Tweaks Mod Manager needs your NexusMods API key in order to do this.</system:String>
+    <system:String x:Key="string_directions">Directions</system:String>
+    <system:String x:Key="string_nexusModsDirections">You can get your API key by logging into your NexusMods account, selecting 'Preferences' from the drop down menu when clicking your profile icon, then going to the 'API' tab. At the bottom of this page is your personal API key - paste that value here.</system:String>
+    <system:String x:Key="string_caution">Caution</system:String>
+    <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
+    <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>
+    <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
+
+
 </ResourceDictionary>

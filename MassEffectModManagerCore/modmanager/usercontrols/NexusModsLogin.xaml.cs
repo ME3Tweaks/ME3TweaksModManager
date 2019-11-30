@@ -49,7 +49,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SetAuthorized(bool v)
         {
             IsAuthorized = v;
-            AuthorizeToNexusText = v ? "Authenticated " + (mainwindow.NexusUsername != null ? "as " + mainwindow.NexusUsername : "to NexusMods") : "Authenticate to NexusMods";
+            string authenticatedString = M3L.GetString(M3L.string_authenticateToNexusMods);
+            if (v && mainwindow.NexusUsername != null)
+            {
+                authenticatedString = M3L.GetString(M3L.string_interp_authenticatedAsX, mainwindow.NexusUsername);
+            }
+
+            AuthorizeToNexusText = authenticatedString;
         }
 
         public ICommand AuthorizeCommand { get; set; }
@@ -76,11 +82,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private async void AuthorizeWithNexus()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("NexusAPICredentialsCheck");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"NexusAPICredentialsCheck");
             bw.DoWork += async (a, b) =>
             {
                 //Check api key
-                AuthorizeToNexusText = "Checking key...";
+                AuthorizeToNexusText = M3L.GetString(M3L.string_checkingKey);
                 IsAuthorizing = true;
                 try
                 {
@@ -91,14 +97,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         mainwindow.NexusUsername = authInfo.Name;
                         mainwindow.NexusUserID = authInfo.UserID;
                         SetAuthorized(true);
-                        Analytics.TrackEvent("Authenticated to NexusMods");
+                        Analytics.TrackEvent(M3L.GetString(M3L.string_authenticatedToNexusMods));
 
                     }
                 }
                 catch (ApiException apiException)
                 {
-                    Log.Error("Error authenticating to NexusMods: " + apiException.ToString());
-                    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, "NexusMods return an error:\n" + apiException.ToString(), "Error authenticating to NexusMods", MessageBoxButton.OK, MessageBoxImage.Error); });
+                    Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
+                    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
                 }
 
                 IsAuthorizing = false;
