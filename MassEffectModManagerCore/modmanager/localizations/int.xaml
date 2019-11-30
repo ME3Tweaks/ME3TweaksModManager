@@ -231,7 +231,7 @@
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
     <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
     <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
-    <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{dlcText}</system:String>
+    <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
     <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.</system:String>
     <system:String x:Key="string_dialogInstallationBlockedByALOT">Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.</system:String>
@@ -313,7 +313,7 @@
     <system:String x:Key="string_noAudioIssuesWereDetected">No audio issues were detected</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Audio issues were detected</system:String>
     <system:String x:Key="string_checkingTexturesInMod">Checking textures in mod</system:String>
-    <system:String x:Key="string_interp_couldNotLoadTextureData">{0} - {1}: Could not load texture data: {e.Message}</system:String>
+    <system:String x:Key="string_interp_couldNotLoadTextureData">{0} - {1}: Could not load texture data: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noBrokenTexturesWereFound">No broken textures were found</system:String>
     <system:String x:Key="string_textureIssuesWereDetected">Texture issues were detected</system:String>
@@ -484,7 +484,7 @@
     <system:String x:Key="string_modAlreadyExists">Mod already exists</system:String>
     <system:String x:Key="string_dialogErrorOccuredDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.</system:String>
     <system:String x:Key="string_errorDeletingExistingMod">Error deleting existing mod</system:String>
-    <system:String x:Key="string_interp_errorOccuredDeletingExistingModX">Error occured while deleting existing mod directory:\n{ex.Message}</system:String>
+    <system:String x:Key="string_interp_errorOccuredDeletingExistingModX">Error occured while deleting existing mod directory:\n{0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_exeModsMustBeImportedBeforeInstall">Exe mods must be imported before install</system:String>
     <system:String x:Key="string_interp_installX">Install {0}</system:String>
@@ -496,7 +496,8 @@
     <system:String x:Key="string_downloading">Downloading</system:String>
     <system:String x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage">Error occured while updating {0}:\n{1}</system:String>
     <!-- 0 = mod name, 1 = error message -->
-    <system:String x:Key="string_interp_errorUpdatingX">Error updating {ui.mod.ModName}</system:String>
+    <system:String x:Key="string_interp_errorUpdatingX">Error updating {0}</system:String>
+    <!-- 0 = mod name-->
     <system:String x:Key="string_updated">Updated</system:String>
 
     <!-- Program updater -->
