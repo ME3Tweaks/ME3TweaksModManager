@@ -435,7 +435,13 @@
     <system:String x:Key="string_loguploader">Log uploader</system:String>
     <system:String x:Key="string_uploadToLogViewer">Upload to log viewer</system:String>
 
-        <!-- Extras -->
+    <!-- Mod Archive Importer-->
+    <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>
+    <system:String x:Key="string_importMods">Import mods</system:String>
+    <system:String x:Key="string_compressPackages">Compress packages</system:String>
+    <system:String x:Key="string_unselectAll">Unselect all</system:String>
+    <system:String x:Key="string_selectAll">Select all</system:String>
+    <!-- Extras -->
     <!--<system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>

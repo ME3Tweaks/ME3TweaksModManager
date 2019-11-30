@@ -22,6 +22,7 @@ using System.Xml.Linq;
 using SevenZip.EventArguments;
 using Threading;
 using MassEffectModManagerCore.modmanager.gameini;
+using System.Windows.Media.Animation;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -75,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InspectArchiveFile(string filepath)
         {
             ScanningFile = Path.GetFileName(filepath);
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("ModArchiveInspector");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModArchiveInspector");
             bw.DoWork += InspectArchiveBackgroundThread;
             ProgressValue = 0;
             ProgressMaximum = 100;
@@ -85,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (CompressedMods.Count > 0)
                 {
-                    ActionText = $"Select mods to import into Mod Manager library";
+                    ActionText = "Select mods to import into Mod Manager library";
                     if (CompressedMods.Count == 1)
                     {
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
@@ -125,7 +126,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             hack_PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
-
+        private bool openedMultipanel = false;
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
             TaskRunning = true;
@@ -137,6 +138,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Application.Current.Dispatcher.Invoke(delegate
                 {
                     CompressedMods.Add(m);
+                    if (CompressedMods.Count > 1 && !openedMultipanel)
+                    {
+                        Storyboard sb = FindResource(@"OpenWebsitePanel") as Storyboard;
+                        if (sb.IsSealed)
+                        {
+                            sb = sb.Clone();
+                        }
+                        Storyboard.SetTarget(sb, MultipleModsPopupPanel);
+                        sb.Begin();
+                        openedMultipanel = true;
+                    }
                     CompressedMods.Sort(x => x.ModName);
                 });
             }
@@ -147,7 +159,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
 
-            if (Path.GetExtension(archive) == ".me2mod")
+            if (Path.GetExtension(archive) == @".me2mod")
             {
                 //RCW
                 var RCWMods = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(archive), File.ReadAllText(archive));
@@ -168,7 +180,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     SevenZipExtractor sve = new SevenZipExtractor(archive);
                     string embeddedExePath = null;
-                    Log.Information("This file may contain a known exe-based mod.");
+                    Log.Information(@"This file may contain a known exe-based mod.");
                     foreach (var importingInfo in knownModsOfThisSize)
                     {
                         if (importingInfo.zippedexepath == null) continue;
@@ -182,11 +194,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 var importingInfo2 = ThirdPartyServices.GetImportingInfosBySize((long)exedata.Size);
                                 if (importingInfo2.Count == 0)
                                 {
-                                    Log.Warning("zip wrapper for this file has importing information but the embedded exe does not!");
+                                    Log.Warning(@"zip wrapper for this file has importing information but the embedded exe does not!");
                                     break; //no importing info
                                 }
 
-                                Log.Information("Reading embedded executable file in archive: " + embeddedExePath);
+                                Log.Information(@"Reading embedded executable file in archive: " + embeddedExePath);
                                 ActionText = "Reading zipped executable";
                                 pathOverride = Path.Combine(Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
                                 using var outstream = new FileStream(pathOverride, FileMode.Create);
@@ -221,16 +233,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <param name="forcedOverrideData">Override data about archive. Used for testing only</param>
         public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<Mod> failedToLoadModeCallback = null, Action<string> currentOperationTextCallback = null, string forcedMD5 = null, int forcedSize = -1)
         {
-            string relayVersionResponse = "-1";
+            string relayVersionResponse = @"-1";
             List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
-            var isExe = filepath.EndsWith(".exe");
+            var isExe = filepath.EndsWith(@".exe");
             var archiveFile = isExe ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
             using (archiveFile)
             {
 #if DEBUG
                 foreach (var v in archiveFile.ArchiveFileData)
                 {
-                    Debug.WriteLine(v.FileName + " | Index " + v.Index + " | Size " + v.Size);
+                    Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size}");
                 }
 #endif
                 var moddesciniEntries = new List<ArchiveFileInfo>();
@@ -240,21 +252,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 foreach (var entry in archiveFile.ArchiveFileData)
                 {
                     string fname = Path.GetFileName(entry.FileName);
-                    if (!entry.IsDirectory && fname.Equals("moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
+                    if (!entry.IsDirectory && fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
                     {
                         moddesciniEntries.Add(entry);
                     }
-                    else if (!entry.IsDirectory && fname.Equals("Default.sfar", StringComparison.InvariantCultureIgnoreCase))
+                    else if (!entry.IsDirectory && fname.Equals(@"Default.sfar", StringComparison.InvariantCultureIgnoreCase))
                     {
                         //for unofficial lookups
                         sfarEntries.Add(entry);
                     }
-                    else if (!entry.IsDirectory && fname.Equals("BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
+                    else if (!entry.IsDirectory && fname.Equals(@"BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
                     {
                         //for unofficial lookups
                         bioengineEntries.Add(entry);
                     }
-                    else if (!entry.IsDirectory && Path.GetExtension(fname) == ".me2mod")
+                    else if (!entry.IsDirectory && Path.GetExtension(fname) == @".me2mod")
                     {
                         //for unofficial lookups
                         me2mods.Add(entry);
@@ -290,7 +302,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         StreamReader reader = new StreamReader(ms);
                         string text = reader.ReadToEnd();
                         var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
-                        foreach(var rcw in rcwModsForFile)
+                        foreach (var rcw in rcwModsForFile)
                         {
                             Mod m = new Mod(rcw);
                             addCompressedModCallback?.Invoke(m);
@@ -300,8 +312,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Information("Querying third party importing service for information about this file");
-                    currentOperationTextCallback?.Invoke($"Querying Third Party Importing Service");
+                    Log.Information(@"Querying third party importing service for information about this file");
+                    currentOperationTextCallback?.Invoke("Querying Third Party Importing Service");
                     var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
                     long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
                     var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
@@ -309,7 +321,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (importingInfo == null && isExe)
                     {
-                        Log.Error("EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
+                        Log.Error(@"EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
                         return;
                     }
 
@@ -317,7 +329,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //Partially supported unofficial third party mod
                         //Mod has a custom written moddesc.ini stored on ME3Tweaks
-                        Log.Information("Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
+                        Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
                         string custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
                         Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virutal mod
                         if (virutalCustomMod.ValidMod)
@@ -328,7 +340,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error("Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                            Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
                             return;
                         }
                     }
@@ -336,7 +348,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ExeTransform transform = null;
                     if (importingInfo?.exetransform != null)
                     {
-                        Log.Information("TPIS lists exe transform for this mod: " + importingInfo.exetransform);
+                        Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
                         transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
                     }
 
@@ -380,13 +392,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //If no version information, check ME3Tweaks to see if it's been added recently
                         //see if server has information on version number
-                        currentOperationTextCallback?.Invoke($"Getting additional information about file from ME3Tweaks");
-                        Log.Information("Querying ME3Tweaks for additional information");
+                        currentOperationTextCallback?.Invoke("Getting additional information about file from ME3Tweaks");
+                        Log.Information(@"Querying ME3Tweaks for additional information");
                         var modInfo = OnlineContent.QueryModRelay(md5, size);
                         //todo: make this work offline.
-                        if (modInfo != null && modInfo.TryGetValue("version", out string value))
+                        if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
                         {
-                            Log.Information("ME3Tweaks reports version number for this file is: " + value);
+                            Log.Information(@"ME3Tweaks reports version number for this file is: " + value);
                             foreach (Mod compressedMod in internalModList)
                             {
                                 compressedMod.ModVersionString = value;
@@ -397,7 +409,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Information("ME3Tweaks does not have additional version information for this file");
+                            Log.Information(@"ME3Tweaks does not have additional version information for this file");
                         }
                     }
 
@@ -428,32 +440,32 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Information($"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
                         //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build an feed it a virtual one.
                         IniData virtualModDesc = new IniData();
-                        virtualModDesc["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
-                        virtualModDesc["ModInfo"]["modname"] = thirdPartyInfo.modname;
-                        virtualModDesc["ModInfo"]["moddev"] = thirdPartyInfo.moddev;
-                        virtualModDesc["ModInfo"]["modsite"] = thirdPartyInfo.modsite;
-                        virtualModDesc["ModInfo"]["moddesc"] = thirdPartyInfo.moddesc;
-                        virtualModDesc["ModInfo"]["unofficial"] = "true";
+                        virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
+                        virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
+                        virtualModDesc[@"ModInfo"][@"moddev"] = thirdPartyInfo.moddev;
+                        virtualModDesc[@"ModInfo"][@"modsite"] = thirdPartyInfo.modsite;
+                        virtualModDesc[@"ModInfo"][@"moddesc"] = thirdPartyInfo.moddesc;
+                        virtualModDesc[@"ModInfo"][@"unofficial"] = @"true";
                         if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
                         {
-                            virtualModDesc["ModInfo"]["updatecode"] = updatecode.ToString();
-                            virtualModDesc["ModInfo"]["modver"] = 0.001.ToString(); //This will force mod to check for update after reload
+                            virtualModDesc[@"ModInfo"][@"updatecode"] = updatecode.ToString();
+                            virtualModDesc[@"ModInfo"][@"modver"] = 0.001.ToString(); //This will force mod to check for update after reload
                         }
                         else
                         {
-                            virtualModDesc["ModInfo"]["modver"] = 0.0.ToString(); //Will attempt to look up later after mods have parsed.
+                            virtualModDesc[@"ModInfo"][@"modver"] = 0.0.ToString(); //Will attempt to look up later after mods have parsed.
                         }
 
-                        virtualModDesc["CUSTOMDLC"]["sourcedirs"] = dlcFolderName;
-                        virtualModDesc["CUSTOMDLC"]["destdirs"] = dlcFolderName;
-                        virtualModDesc["UPDATES"]["originalarchivehash"] = md5;
+                        virtualModDesc[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
+                        virtualModDesc[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
+                        virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
 
                         var archiveSize = new FileInfo(archive.FileName).Length;
                         var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
                         if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
                         {
                             OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
-                            virtualModDesc["ModInfo"]["requireddlc"] = importingInfos[0].requireddlc;
+                            virtualModDesc[@"ModInfo"][@"requireddlc"] = importingInfos[0].requireddlc;
                         }
 
                         return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
@@ -461,7 +473,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Information($"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
+                    Log.Information($@"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
                 }
             }
 
@@ -471,7 +483,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void BeginImportingMods()
         {
             var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("ModExtractor");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModExtractor");
             bw.DoWork += ExtractModsBackgroundThread;
             bw.RunWorkerCompleted += (a, b) =>
             {
@@ -520,7 +532,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var mod in mods)
             {
                 //Todo: Extract files
-                Log.Information("Extracting mod: " + mod.ModName);
+                Log.Information(@"Extracting mod: " + mod.ModName);
                 ActionText = $"Extracting {mod.ModName}";
                 ProgressValue = 0;
                 ProgressMaximum = 100;
@@ -546,7 +558,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (!Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath))
                             {
-                                Log.Error("Could not delete existing mod directory.");
+                                Log.Error(@"Could not delete existing mod directory.");
                                 e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                                 Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
                                 abort = true;
@@ -565,7 +577,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     });
                     if (abort)
                     {
-                        Log.Warning("Aborting mod import.");
+                        Log.Warning(@"Aborting mod import.");
                         return;
                     }
                 }
@@ -575,7 +587,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Check if RCW mod
                 if (mod.InstallationJobs.Count == 1 && mod.InstallationJobs[0].Header == ModJob.JobHeader.ME2_RCWMOD)
                 {
-                    Log.Information("Generating M3 wrapper moddesc.ini for " + mod.ModName);
+                    Log.Information(@"Generating M3 wrapper moddesc.ini for " + mod.ModName);
                     mod.ExtractRCWModToM3LibraryMod(sanitizedPath);
                     extractedMods.Add(mod);
                 }
@@ -597,23 +609,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public ExeTransform(string xml)
             {
                 var doc = XDocument.Parse(xml);
-                VPatches.ReplaceAll(doc.Root.Elements("vpatch")
+                VPatches.ReplaceAll(doc.Root.Elements(@"vpatch")
                     .Select(d => new VPatchDirective
                     {
-                        inputfile = (string)d.Attribute("inputfile"),
-                        outputfile = (string)d.Attribute("outputfile"),
-                        patchfile = (string)d.Attribute("patchfile")
+                        inputfile = (string)d.Attribute(@"inputfile"),
+                        outputfile = (string)d.Attribute(@"outputfile"),
+                        patchfile = (string)d.Attribute(@"patchfile")
                     }).ToList());
-                PatchRedirects.ReplaceAll(doc.Root.Elements("patchredirect")
-                    .Select(d => ((int)d.Attribute("index"), (string)d.Attribute("outfile"))).ToList());
+                PatchRedirects.ReplaceAll(doc.Root.Elements(@"patchredirect")
+                    .Select(d => ((int)d.Attribute(@"index"), (string)d.Attribute(@"outfile"))).ToList());
 
                 AlternateRedirects.ReplaceAll(doc.Root.Elements("alternateredirect")
-                    .Select(d => ((int)d.Attribute("index"), (string)d.Attribute("outfile"))).ToList());
+                    .Select(d => ((int)d.Attribute(@"index"), (string)d.Attribute(@"outfile"))).ToList());
 
-                NoExtractIndexes.ReplaceAll(doc.Root.Elements("noextract")
-                    .Select(d => (int)d.Attribute("index")).ToList());
+                NoExtractIndexes.ReplaceAll(doc.Root.Elements(@"noextract")
+                    .Select(d => (int)d.Attribute(@"index")).ToList());
 
-                var postTransform = doc.Root.Elements("posttransformmoddesc");
+                var postTransform = doc.Root.Elements(@"posttransformmoddesc");
                 if (postTransform.Count() == 1)
                 {
                     PostTransformModdesc = (string)postTransform.First();
@@ -670,7 +682,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         return "Exe mods must be imported before install";
                     }
-                    return "Install " + SelectedMod.ModName;
+                    return $"Install {SelectedMod.ModName}";
                 }
 
                 return "Install";
@@ -719,6 +731,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InspectArchiveFile(ArchiveFilePath);
+        }
+
+        private void CheckAll_Click(object sender, RoutedEventArgs e)
+        {
+            checkAll(true);
+        }
+
+        private void UncheckAll_Click(object sender, RoutedEventArgs e)
+        {
+            checkAll(false);
+        }
+
+        private void checkAll(bool check)
+        {
+            foreach (var mod in CompressedMods)
+            {
+                mod.SelectedForImport = check;
+            }
         }
     }
 }

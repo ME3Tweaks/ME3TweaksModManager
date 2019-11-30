@@ -178,6 +178,10 @@ namespace MassEffectModManagerCore
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             Storyboard sb = this.FindResource(isopening ? @"OpenWebsitePanel" : @"CloseWebsitePanel") as Storyboard;
+                            if (sb.IsSealed)
+                            {
+                                sb = sb.Clone();
+                            }
                             Storyboard.SetTarget(sb, FailedModsPopupPanel);
                             sb.Begin();
                         });
@@ -1436,6 +1440,10 @@ namespace MassEffectModManagerCore
         private void SetWebsitePanelVisibility(bool open)
         {
             Storyboard sb = this.FindResource(open ? @"OpenWebsitePanel" : @"CloseWebsitePanel") as Storyboard;
+            if (sb.IsSealed)
+            {
+                sb = sb.Clone();
+            }
             Storyboard.SetTarget(sb, VisitWebsitePanel);
             sb.Begin();
         }
