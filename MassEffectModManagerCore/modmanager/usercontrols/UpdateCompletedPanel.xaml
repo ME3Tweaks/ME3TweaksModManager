@@ -10,6 +10,6 @@
     <StackPanel>
         <TextBlock Text="{Binding UpdateTitle}" FontWeight="Bold" FontSize="20" TextAlignment="Center"/>
         <TextBlock Text="{Binding UpdateMessage}" TextWrapping="Wrap"/>
-        <Button Content="Close" Click="Close_Clicked" HorizontalAlignment="Right" Padding="7,4" Margin="0,40,0,0"/>
+        <Button Content="{DynamicResource string_close}" Click="Close_Clicked" HorizontalAlignment="Right" Padding="7,4" Margin="0,40,0,0"/>
     </StackPanel>
 </local:MMBusyPanelBase>
