@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 
@@ -29,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             modsWithUpdates.ForEach(x =>
             {
                 x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
-                x.DownloadButtonText = "Download update";
+                x.DownloadButtonText = M3L.GetString(M3L.string_downloadUpdate);
             });
             UpdatableMods.AddRange(modsWithUpdates);
             LoadCommands();
@@ -49,12 +50,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (obj is OnlineContent.ModUpdateInfo ui)
             {
-                NamedBackgroundWorker bw = new NamedBackgroundWorker("ModUpdaterThread-" + ui.mod.ModName);
+                NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModUpdaterThread-" + ui.mod.ModName);
                 bw.DoWork += (a, b) =>
                 {
                     ui.UpdateInProgress = true;
                     ui.Indeterminate = false;
-                    ui.DownloadButtonText = "Downloading";
+                    ui.DownloadButtonText = M3L.GetString(M3L.string_downloading);
                     //void updateProgressCallback(long bytesReceived, long totalBytes)
                     //{
                     //    ui.By
@@ -65,7 +66,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (!errorShown)
                         {
                             errorShown = true;
-                            Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show($"Error occured while updating {ui.mod.ModName}:\n{message}", $"Error updating {ui.mod.ModName}", MessageBoxButton.OK, MessageBoxImage.Error); }
+                            Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_errorOccuredWhileUpdatingXErrorMessage, ui.mod.ModName, message), M3L.GetString(M3L.string_interp_errorUpdatingX, ui.mod.ModName), MessageBoxButton.OK, MessageBoxImage.Error); }
                             );
                         }
                     }
@@ -74,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ui.UpdateInProgress = false;
                     ui.CanUpdate = !modUpdated;
                     AnyModUpdated |= modUpdated;
-                    ui.DownloadButtonText = ui.CanUpdate ? "Download update" : "Updated";
+                    ui.DownloadButtonText = ui.CanUpdate ? M3L.GetString(M3L.string_downloadUpdate) : M3L.GetString(M3L.string_updated);
                     Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
                 };
                 bw.RunWorkerCompleted += (a, b) => { CommandManager.InvalidateRequerySuggested(); };

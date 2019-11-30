@@ -95,7 +95,7 @@
     <system:String x:Key="string_AboutME3TweaksModManager">About ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_Aboutthisprogram">About this program</system:String>
     <system:String x:Key="string_CreateTestingArchive">Create testing archive for mod</system:String>
-    <system:String x:Key="string_CreateTestingArchiveTooltip">Creates an archive that has blank versions of all files for this mod. Useful for debugging the application</system:String>
+    <system:String x:Key="string_CreateTestingArchiveTooltip">Creates an archive that has blank versions of all files for this mod. Useful for debugging Mod Manager</system:String>
     <system:String x:Key="string_startingUp">Starting up</system:String>
     <system:String x:Key="string_selectModOnLeftToGetStarted">Select a mod on the left to get started.</system:String>
     <system:String x:Key="string_applyMod">Apply Mod</system:String>
@@ -303,14 +303,18 @@
     <system:String x:Key="string_someSFARSizesAreTheIncorrectSize">Some SFAR files are the incorrect size</system:String>
     <system:String x:Key="string_thisItemMustBeManuallyCheckedByYou">This item must be manually checked by you</system:String>
     <system:String x:Key="string_checkingAudioReferencesInMod">Checking audio references in mod</system:String>
-    <system:String x:Key="string_interp_couldNotFindReferencedAFC">{0} - {1}: Could not find referenced audio file cache: {2}</system:String> <!-- 0 = filepath, 1=export path in-package, 2=AFC cache name (like wwise_biosnd_end002) -->
+    <system:String x:Key="string_interp_couldNotFindReferencedAFC">{0} - {1}: Could not find referenced audio file cache: {2}</system:String>
+    <!-- 0 = filepath, 1=export path in-package, 2=AFC cache name (like wwise_biosnd_end002) -->
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Invalid audio pointer, does not point to RIFF header</system:String>
-    <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.</system:String> <!-- 0 = filepath, 1=export path in-package -->
-    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Error validating audio reference: {e.Message}</system:String> <!-- 0 = filepath, 1=export path in-package, 2=error message -->
+    <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.</system:String>
+    <!-- 0 = filepath, 1=export path in-package -->
+    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Error validating audio reference: {e.Message}</system:String>
+    <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noAudioIssuesWereDetected">No audio issues were detected</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Audio issues were detected</system:String>
     <system:String x:Key="string_checkingTexturesInMod">Checking textures in mod</system:String>
-    <system:String x:Key="string_interp_couldNotLoadTextureData">{0} - {1}: Could not load texture data: {e.Message}</system:String> <!-- 0 = filepath, 1=export path in-package, 2=error message -->
+    <system:String x:Key="string_interp_couldNotLoadTextureData">{0} - {1}: Could not load texture data: {e.Message}</system:String>
+    <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noBrokenTexturesWereFound">No broken textures were found</system:String>
     <system:String x:Key="string_textureIssuesWereDetected">Texture issues were detected</system:String>
     <system:String x:Key="string_7zipArchiveFile">7-zip archive file|*.7z</system:String>
@@ -326,13 +330,15 @@
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
     <system:String x:Key="string_backUp">Back up</system:String>
     <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder. To restore from backup, use the Target Info button from the main window.&#10;&#10;Backups are also used for as a file source for certain operations. Some advanced features require a backup as an unmodified file must be available.</system:String>
-    <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Cannot backup {0} while it is running.</system:String> <!-- 0 = game name-->
+    <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Cannot backup {0} while it is running.</system:String>
+    <!-- 0 = game name-->
     <system:String x:Key="string_validatingBackupSource">Validating backup source</system:String>
     <system:String x:Key="string_waitingForUserInput">Waiting for user input</system:String>
     <system:String x:Key="string_selectBackupDestination">Select backup destination (must be empty)</system:String>
     <system:String x:Key="string_directoryIsNotEmptyMustBeEmpty">Directory is not empty. A backup destination must be empty.</system:String>
     <system:String x:Key="string_directoryNotEmpty">Directory not empty</system:String>
-    <system:String x:Key="string_interp_backingUpX">Backing up {0}</system:String> <!-- 0 = string (name of DLC, BASEGAME, or Movies)-->
+    <system:String x:Key="string_interp_backingUpX">Backing up {0}</system:String>
+    <!-- 0 = string (name of DLC, BASEGAME, or Movies)-->
     <system:String x:Key="string_creatingBackup">Creating backup</system:String>
     <system:String x:Key="string_cannotBackupModifiedGame">Cannot backup modified game</system:String>
     <system:String x:Key="string_followingFilesDoNotMatchTheVanillaDatabase">The following files do not match the vanilla database and appear to be modified. Due to these files being modified, a backup cannot be taken of this installation.</system:String>
@@ -359,7 +365,7 @@
     <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load. Select each mod to see why.</system:String>
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
-    
+
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
     <system:String x:Key="string_pleaseWait">Please wait</system:String>
@@ -374,16 +380,21 @@
     <system:String x:Key="string_cannotGeneratorCompatPackCouldNotDownload">Cannot generate a compatibility pack: The required UI library could not be downloaded from ME3Tweaks. See the log for more information.</system:String>
     <system:String x:Key="string_couldNotAcquireUiLibrary">Could not acquire UI library</system:String>
     <system:String x:Key="string_scanningForGuiExports">Scanning for GUI exports</system:String>
-    <system:String x:Key="string_singularFile">file</system:String> <!-- Singular version of file-->
-    <system:String x:Key="string_pluralFiles">files</system:String> <!-- Plural version of file-->
-    <system:String x:Key="string_interp_XFilesNeedToBePatched">{0} {1} need to be patched</system:String> <!-- 0 = number, 1 = singular/plural version of file -->
-    <system:String x:Key="string_interp_compatPackModDescription">User generated compatibility pack made to inject proper interface files into other DLC mods from the game configuration. This pack was built against the following mods and should not be used against any other configuration.\n - {0}\n\nThis compatibility pack was generated at {1}</system:String> <!-- 0 = bulleted dlc list, 1 = date time-->
+    <system:String x:Key="string_singularFile">file</system:String>
+    <!-- Singular version of file-->
+    <system:String x:Key="string_pluralFiles">files</system:String>
+    <!-- Plural version of file-->
+    <system:String x:Key="string_interp_XFilesNeedToBePatched">{0} {1} need to be patched</system:String>
+    <!-- 0 = number, 1 = singular/plural version of file -->
+    <system:String x:Key="string_interp_compatPackModDescription">User generated compatibility pack made to inject proper interface files into other DLC mods from the game configuration. This pack was built against the following mods and should not be used against any other configuration.\n - {0}\n\nThis compatibility pack was generated at {1}</system:String>
+    <!-- 0 = bulleted dlc list, 1 = date time-->
     <system:String x:Key="string_guiCompatibilityPack">GUI Compatibility Pack</system:String>
     <system:String x:Key="string_preparingUiLibrary">Preparing UI library</system:String>
     <system:String x:Key="string_decompressingData">Decompressing data</system:String>
     <system:String x:Key="string_patchingFiles">Patching files</system:String>
-    <system:String x:Key="string_interp_patchedXY">Patched {0} {1}</system:String> <!-- 0 = number, 1 = plural files/singular file-->
-    
+    <system:String x:Key="string_interp_patchedXY">Patched {0} {1}</system:String>
+    <!-- 0 = number, 1 = plural files/singular file-->
+
     <!-- Installation Information -->
     <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Restoring files while ALOT is installed is not allowed as it will introduce invalid texture pointers into the installation.</system:String>
     <system:String x:Key="string_cannotRestoreSfarFiles">Cannot restore SFAR files</system:String>
@@ -394,19 +405,28 @@
     <system:String x:Key="string_restoringSfarsAlotBlocked">Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
     <system:String x:Key="string_restoringSfarsAlotDevMode">Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.</system:String>
     <system:String x:Key="string_restoreAllModifiedSfarsQuestion">Restore all modified SFARs?</system:String>
-    <system:String x:Key="string_interp_backupAtX">Backup at {0}</system:String> <!-- 0 = filepath -->
+    <system:String x:Key="string_interp_backupAtX">Backup at {0}</system:String>
+    <!-- 0 = filepath -->
     <system:String x:Key="string_noBackupForThisGame">No backup for this game</system:String>
-    <system:String x:Key="string_interp_cannotDeleteModsWhileXIsRunning">Cannot delete mods while {0} is running.</system:String> <!-- 0 = gamename -->
-    <system:String x:Key="string_interp_deletingXwhileAlotInstalledUnsupported">Deleting {0} while ALOT is installed will not cause the game to become broken, however you will not be able to install updates to ALOT without a full reinstallation (unsupported configuration).\n\nAre you sure you want to delete the DLC mod?</system:String> <!-- 0 = mod name-->
+    <system:String x:Key="string_interp_cannotDeleteModsWhileXIsRunning">Cannot delete mods while {0} is running.</system:String>
+    <!-- 0 = gamename -->
+    <system:String x:Key="string_interp_deletingXwhileAlotInstalledUnsupported">Deleting {0} while ALOT is installed will not cause the game to become broken, however you will not be able to install updates to ALOT without a full reinstallation (unsupported configuration).\n\nAre you sure you want to delete the DLC mod?</system:String>
+    <!-- 0 = mod name-->
     <system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Deleting will put ALOT in unsupported configuration</system:String>
-    <system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">Remove {0} from the game installation?</system:String> <!-- 0 = modname of dlc -->
-    <system:String x:Key="string_interp_cannotRestoreFilesWhileXIsRunning">Cannot restore files while {0} is running.</system:String> <!-- 0 = game name-->
-    <system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Restoring {0} while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String> <!-- 0 = filename-->
+    <system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">Remove {0} from the game installation?</system:String>
+    <!-- 0 = modname of dlc -->
+    <system:String x:Key="string_interp_cannotRestoreFilesWhileXIsRunning">Cannot restore files while {0} is running.</system:String>
+    <!-- 0 = game name-->
+    <system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Restoring {0} while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
+    <!-- 0 = filename-->
     <system:String x:Key="string_cannotRestorePackageFiles">Cannot restore package files</system:String>
-    <system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Restoring {0} while ALOT is installed will very likely introduce invalid texture pointers into the installation, which may cause black textures or game crashes due to empty mips. Please ensure you know what you are doing before continuing.</system:String> <!-- 0 = filename-->
-    <system:String x:Key="string_interp_restoreXquestion">Restore {0}?</system:String> <!-- 0 = item (filename, dlc name)-->
+    <system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Restoring {0} while ALOT is installed will very likely introduce invalid texture pointers into the installation, which may cause black textures or game crashes due to empty mips. Please ensure you know what you are doing before continuing.</system:String>
+    <!-- 0 = filename-->
+    <system:String x:Key="string_interp_restoreXquestion">Restore {0}?</system:String>
+    <!-- 0 = item (filename, dlc name)-->
     <system:String x:Key="string_installedByModManager">Installed by Mod Manager</system:String>
-    <system:String x:Key="string_interp_installedByX">Installed by {0}</system:String> <!-- 0 = noun of tool (alot installer, mod manager, etc)-->
+    <system:String x:Key="string_interp_installedByX">Installed by {0}</system:String>
+    <!-- 0 = noun of tool (alot installer, mod manager, etc)-->
     <system:String x:Key="string_notInstalledByModManager">Not installed by Mod Manager</system:String>
 
     <system:String x:Key="string_installationInformation">Installation Information</system:String>
@@ -428,8 +448,10 @@
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
     <system:String x:Key="string_collectingLogInformation">Collecting log information</system:String>
-    <system:String x:Key="string_interp_serverRejectedTheUpload">The server rejected the upload. The response was: {0}</system:String>  <!-- 0 = error message-->
-    <system:String x:Key="string_interp_logWasUnableToUpload">The log was unable to upload:\n{0}.\nPlease come to the ME3Tweaks Discord for assistance.</system:String> <!-- 0 = error message-->
+    <system:String x:Key="string_interp_serverRejectedTheUpload">The server rejected the upload. The response was: {0}</system:String>
+    <!-- 0 = error message-->
+    <system:String x:Key="string_interp_logWasUnableToUpload">The log was unable to upload:\n{0}.\nPlease come to the ME3Tweaks Discord for assistance.</system:String>
+    <!-- 0 = error message-->
     <system:String x:Key="string_interp_requestTimedOutUploading">Request timed out while uploading log.</system:String>
     <system:String x:Key="string_logUploadFailed">Log upload failed</system:String>
     <system:String x:Key="string_loguploader">Log uploader</system:String>
@@ -447,22 +469,60 @@
     <system:String x:Key="string_noCompatibleModsFoundInArchive">No compatible mods found in archive</system:String>
     <system:String x:Key="string_executableModsMustBeValidatedByME3Tweaks">Executable installer based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.</system:String>
     <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
-    <system:String x:Key="string_interp_scanningX">Scanning {Path.GetFileName(filepath)}</system:String>
+    <system:String x:Key="string_interp_scanningX">Scanning {0}</system:String>
+    <!-- 0 = filename -->
     <system:String x:Key="string_interp_openingX">Opening {ScanningFile}</system:String>
-    <system:String x:Key="string_interp_XfailedToLoadY">\n\n{m.ModName} failed to load: {m.LoadFailedReason}</system:String>
+    <system:String x:Key="string_interp_XfailedToLoadY">\n\n{0} failed to load: {1}</system:String>
+    <!-- 0 = mod name 1 = load failure reason -->
     <system:String x:Key="string_readingZippedExecutable">Reading zipped executable</system:String>
-    <system:String x:Key="string_interp_readingX">Reading {entry.FileName}</system:String>
+    <system:String x:Key="string_interp_readingX">Reading {0}</system:String>
+    <!-- 0 = filename -->
     <system:String x:Key="string_queryingThirdPartyImportingService">Querying Third Party Importing Service</system:String>
     <system:String x:Key="string_gettingAdditionalInformationAboutFileFromME3Tweaks">Getting additional information about file from ME3Tweaks</system:String>
     <system:String x:Key="string_selectModsToImportOrInstall">Select mods to import or install</system:String>
     <system:String x:Key="string_errorUnableToDeleteExistingModDirectory">Error: Unable to delete existing mod directory</system:String>
-    <system:String x:Key="string_interp_dialogImportingModWillDeleteExistingMod">Importing this mod will delete an existing mod directory in the mod library:\n{sanitizedPath}\n\nContinue?</system:String>
+    <system:String x:Key="string_interp_dialogImportingModWillDeleteExistingMod">Importing this mod will delete an existing mod directory in the mod library:\n{0}\n\nContinue?</system:String>
+    <!-- 0 = full mod path -->
     <system:String x:Key="string_modAlreadyExists">Mod already exists</system:String>
-    <system:String x:Key="string_interp_dialogErrorOccuredDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.</system:String>
+    <system:String x:Key="string_dialogErrorOccuredDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.</system:String>
     <system:String x:Key="string_errorDeletingExistingMod">Error deleting existing mod</system:String>
     <system:String x:Key="string_interp_errorOccuredDeletingExistingModX">Error occured while deleting existing mod directory:\n{ex.Message}</system:String>
+    <!-- 0 = error message -->
     <system:String x:Key="string_exeModsMustBeImportedBeforeInstall">Exe mods must be imported before install</system:String>
-    <system:String x:Key="string_interp_installX">Install {SelectedMod.ModName}</system:String>
+    <system:String x:Key="string_interp_installX">Install {0}</system:String>
+    <!-- 0 = noun (mod name, etc) -->
+
+    <!-- Mod updater -->
+    <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
+    <system:String x:Key="string_downloadUpdate">Download update</system:String>
+    <system:String x:Key="string_downloading">Downloading</system:String>
+    <system:String x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage">Error occured while updating {0}:\n{1}</system:String>
+    <!-- 0 = mod name, 1 = error message -->
+    <system:String x:Key="string_interp_errorUpdatingX">Error updating {ui.mod.ModName}</system:String>
+    <system:String x:Key="string_updated">Updated</system:String>
+
+    <!-- Program update -->
+    <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
+    <system:String x:Key="string_downloadingUpdate">Downloading update</system:String>
+    <system:String x:Key="string_preparingToApplyUpdate">Preparing to apply update</system:String>
+    <system:String x:Key="string_errorDownloadingUpdate">Error downloading update</system:String>
+    <system:String x:Key="string_update">Update</system:String>
+    <system:String x:Key="string_verifyingUpdate">Verifying update</system:String>
+    <system:String x:Key="string_unableToApplyUpdateNotSigned">Unable to apply update: ME3TweaksModManager.exe in the update archive is not signed and is therefore not trusted.</system:String>
+    <system:String x:Key="string_errorApplyingUpdate">Error applying update</system:String>
+    <system:String x:Key="string_applyingUpdate">Applying update</system:String>
+    <system:String x:Key="string_restartingModManager">Restarting Mod Manager</system:String>
+    <system:String x:Key="string_unableToApplyUpdateME3TweaksExeNotFound">Unable to apply update: ME3TweaksModManager.exe was not found in the archive.</system:String>
+
+    <system:String x:Key="string_updateAvailable">Update available</system:String>
+    <system:String x:Key="string_currentVersion">Current version:</system:String>
+    <system:String x:Key="string_updateVersion">Update version:</system:String>
+    <system:String x:Key="string_releaseNotes">Release notes</system:String>
+    <system:String x:Key="string_updateInProgress">Update in progress</system:String>
+    <system:String x:Key="string_modManagerWillAutomaticallyRestart">Mod Manager will automatically restart to apply the update. It may take a few seconds once the window has closed.</system:String>
+    <system:String x:Key="string_notNow">Not now</system:String>
+    <system:String x:Key="string_viewChangelog">View changelog</system:String>
+    <system:String x:Key="string_installUpdate">Install update</system:String>
 
 
     <!-- Extras -->

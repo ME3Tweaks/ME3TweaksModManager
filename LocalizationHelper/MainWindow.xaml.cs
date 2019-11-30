@@ -49,25 +49,25 @@ namespace LocalizationHelper
 
                     if (header != null && !header.StartsWith("{"))
                     {
-                        localizations[header] = $"string_{header.Replace(" ", "")}";
+                        localizations[header] = $"string_{toCamelCase(header)}";
                         item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
                     if (tooltip != null && !tooltip.StartsWith("{"))
                     {
-                        localizations[tooltip] = $"string_{tooltip.Replace(" ", "")}";
+                        localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
                         item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
                     if (content != null && !content.StartsWith("{"))
                     {
-                        localizations[content] = $"string_{content.Replace(" ", "")}";
+                        localizations[content] = $"string_{toCamelCase(content)}";
                         item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
                     if (text != null && !text.StartsWith("{"))
                     {
-                        localizations[text] = $"string_{text.Replace(" ", "")}";
+                        localizations[text] = $"string_{toCamelCase(text)}";
                         item.Attribute("Text").Value = $"{{DynamicResource {localizations[text]}}}";
                     }
                 }
@@ -164,7 +164,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ModArchiveImporter.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ProgramUpdateNotification.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -251,7 +251,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ModArchiveImporter.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ProgramUpdateNotification.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -319,7 +319,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ModArchiveImporter.xaml");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ProgramUpdateNotification.xaml");
             string[] attributes = { "Header", "ToolTip", "Content", "Text" };
             try
             {

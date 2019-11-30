@@ -19,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
@@ -33,21 +34,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ProgramUpdateNotification : MMBusyPanelBase
     {
-        public string CurrentVersion => $"{App.AppVersion} Build {App.BuildNumber}";
+        public string CurrentVersion => $@"{App.AppVersion} Build {App.BuildNumber}";
         public string LatestVersion { get; set; }
         public string Changelog { get; set; }
         public string PrimaryDownloadLink { get; }
         public string BackupDownloadLink { get; }
-        public string UpdateMessage { get; set; } = "An update to ME3Tweaks Mod Manager is available.";
+        public string UpdateMessage { get; set; } = M3L.GetString(M3L.string_anUpdateToME3TweaksModManagerIsAvailable);
         private string ChangelogLink;
         public ProgramUpdateNotification()
         {
             DataContext = this;
-            LatestVersion = $"{App.ServerManifest["latest_version_hr"]} Build {App.ServerManifest["latest_build_number"]}";
-            Changelog = GetPlainTextFromHtml(App.ServerManifest["release_notes"]);
-            PrimaryDownloadLink = App.ServerManifest["download_link2"];
-            BackupDownloadLink = App.ServerManifest["download_link"];
-            App.ServerManifest.TryGetValue("changelog_link", out ChangelogLink);
+            LatestVersion = $@"{App.ServerManifest[@"latest_version_hr"]} Build {App.ServerManifest[@"latest_build_number"]}"; //Do not localize this string.
+            Changelog = GetPlainTextFromHtml(App.ServerManifest[@"release_notes"]);
+            PrimaryDownloadLink = App.ServerManifest[@"download_link2"];
+            BackupDownloadLink = App.ServerManifest[@"download_link"];
+            App.ServerManifest.TryGetValue(@"changelog_link", out ChangelogLink);
             LoadCommands();
             InitializeComponent();
         }
@@ -55,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool UpdateInProgress { get; set; }
         public long ProgressValue { get; set; }
         public long ProgressMax { get; set; } = 100;
-        public string ProgressText { get; set; } = "Downloading update";
+        public string ProgressText { get; set; } = M3L.GetString(M3L.string_downloadingUpdate);
         public bool ProgressIndeterminate { get; private set; }
         public ICommand NotNowCommand { get; set; }
         public ICommand StartUpdateCommand { get; set; }
@@ -77,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartUpdate()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("ProgramUpdater");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ProgramUpdater");
             bw.DoWork += DownloadAndApplyUpdate;
             bw.RunWorkerAsync();
             UpdateInProgress = true;
@@ -89,16 +90,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ProgressValue = done;
                 ProgressMax = total;
-                ProgressText = $"Downloading update {ByteSize.FromBytes(done)} / {ByteSize.FromBytes(total)}";
+                ProgressText = M3L.GetString(M3L.string_downloadingUpdate) + $@" {ByteSize.FromBytes(done)} / {ByteSize.FromBytes(total)}";
             }
-            //debug
             var downloadLinks = new string[] { PrimaryDownloadLink, BackupDownloadLink };
-            // string l = "https://github.com/ME3Tweaks/ME3TweaksModManager/releases/download/0.0.0.1/UpdateTest2.7z";
             string errorMessage = null;
             foreach (var downloadLink in downloadLinks)
             {
                 var updateFile = OnlineContent.DownloadToMemory(downloadLink, pCallback);
-                ProgressText = "Preparing to apply update";
+                ProgressText = M3L.GetString(M3L.string_preparingToApplyUpdate);
                 ProgressIndeterminate = true;
                 if (updateFile.errorMessage == null)
                 {
@@ -107,14 +106,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Error("Error downloading update: " + updateFile.errorMessage);
-                    Analytics.TrackEvent("Error downloading update", new Dictionary<string, string>() { { "Error message", updateFile.errorMessage } });
+                    Log.Error(@"Error downloading update: " + updateFile.errorMessage);
+                    Analytics.TrackEvent(@"Error downloading update", new Dictionary<string, string>() { { @"Error message", updateFile.errorMessage } });
                     errorMessage = updateFile.errorMessage;
                 }
             }
             Application.Current.Dispatcher.Invoke(delegate
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), errorMessage, "Error downloading update", MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), errorMessage, M3L.GetString(M3L.string_errorDownloadingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
                 OnClosing(DataEventArgs.Empty);
             });
         }
@@ -122,30 +121,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ApplyUpdateFromStream(MemoryStream updatearchive)
         {
-            Log.Information("Extracting update from memory");
+            Log.Information(@"Extracting update from memory");
             ; SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
-            var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), "Update")).FullName;
+            var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), M3L.GetString(M3L.string_update))).FullName;
             sve.ExtractArchive(outDirectory);
-            var updaterExe = Path.Combine(outDirectory, "ME3TweaksUpdater.exe");
-            Utilities.ExtractInternalFile("MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
-            var updateExecutablePath = Directory.GetFiles(outDirectory, "ME3TweaksModManager.exe", SearchOption.AllDirectories).FirstOrDefault();
+            var updaterExe = Path.Combine(outDirectory, @"ME3TweaksUpdater.exe");
+            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
+            var updateExecutablePath = Directory.GetFiles(outDirectory, @"ME3TweaksModManager.exe", SearchOption.AllDirectories).FirstOrDefault();
             if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updaterExe))
             {
-                ProgressText = "Verifying update";
+                ProgressText = M3L.GetString(M3L.string_verifyingUpdate);
                 var isTrusted = AuthenticodeHelper.IsTrusted(updateExecutablePath);
                 if (!isTrusted)
                 {
-                    Log.Error("The update file is not signed. Update will be aborted.");
+                    Log.Error(@"The update file is not signed. Update will be aborted.");
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Unable to apply update: ME3TweaksModManager.exe in the update archive is not signed and is therefore not trusted.", "Error applying update", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_unableToApplyUpdateNotSigned), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
                         OnClosing(DataEventArgs.Empty);
                     });
                     return;
                 }
-                ProgressText = "Applying update";
-                string args = $"--update-boot";
-                Log.Information("Running new mod manager in update mode: " + updateExecutablePath + " " + args);
+                ProgressText = M3L.GetString(M3L.string_applyingUpdate);
+
+                string args = @"--update-boot";
+                Log.Information($@"Running new mod manager in update mode: {updateExecutablePath} {args}");
 
                 Process process = new Process();
                 // Stop the process from opening a new window
@@ -158,11 +158,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 process.Start();
                 process.WaitForExit();
 
-                ProgressText = "Restarting Mod Manager";
+                ProgressText = M3L.GetString(M3L.string_restartingModManager);
                 Thread.Sleep(2000);
-
-                args = $"--update-from {App.BuildNumber} --update-source-path \"{updateExecutablePath}\" --update-dest-path \"{App.ExecutableLocation}\"";
-                Log.Information("Running updater: " + updaterExe + " " + args);
+                args = $"--update-from {App.BuildNumber} --update-source-path \"{updateExecutablePath}\" --update-dest-path \"{App.ExecutableLocation}\""; //Do not localize
+                Log.Information($@"Running updater: {updaterExe} {args}");
 
                 process = new Process();
                 // Stop the process from opening a new window
@@ -173,16 +172,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 process.StartInfo.FileName = updaterExe;
                 process.StartInfo.Arguments = args;
                 process.Start();
-                Log.Information("Stopping Mod Manager to apply update");
+                Log.Information(@"Stopping Mod Manager to apply update");
                 Log.CloseAndFlush();
                 Environment.Exit(0);
             }
             else
             {
-                Log.Error("Could not find ME3TweaksModManager.exe! Update will be aborted.");
+                Log.Error(@"Could not find ME3TweaksModManager.exe! Update will be aborted.");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Unable to apply update: ME3TweaksModManager.exe was not found in the archive.", "Error applying update", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_unableToApplyUpdateME3TweaksExeNotFound), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
                     OnClosing(DataEventArgs.Empty);
                 });
             }
@@ -209,12 +208,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <returns>stripped and parsed string</returns>
         private string GetPlainTextFromHtml(string htmlString)
         {
-            string htmlTagPattern = "<.*?>";
-            var regexCss = new Regex("(\\<script(.+?)\\</script\\>)|(\\<style(.+?)\\</style\\>)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            string htmlTagPattern = @"<.*?>";
+            var regexCss = new Regex(@"(\<script(.+?)\</script\>)|(\<style(.+?)\</style\>)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             htmlString = regexCss.Replace(htmlString, string.Empty);
             htmlString = Regex.Replace(htmlString, htmlTagPattern, string.Empty);
             htmlString = Regex.Replace(htmlString, @"^\s+$[\r\n]*", "", RegexOptions.Multiline);
-            htmlString = htmlString.Replace("&nbsp;", string.Empty);
+            htmlString = htmlString.Replace(@"&nbsp;", string.Empty);
 
             return htmlString;
         }
