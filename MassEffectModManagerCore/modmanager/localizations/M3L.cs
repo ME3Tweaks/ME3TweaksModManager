@@ -426,5 +426,32 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_logUploadFailed = "string_logUploadFailed";
 		public static readonly string string_loguploader = "string_loguploader";
 		public static readonly string string_uploadToLogViewer = "string_uploadToLogViewer";
+		public static readonly string string_importModsFromArchiveFile = "string_importModsFromArchiveFile";
+		public static readonly string string_importMods = "string_importMods";
+		public static readonly string string_compressPackages = "string_compressPackages";
+		public static readonly string string_unselectAll = "string_unselectAll";
+		public static readonly string string_selectAll = "string_selectAll";
+		public static readonly string string_selectAModOnTheLeftToViewItsDescription = "string_selectAModOnTheLeftToViewItsDescription";
+		public static readonly string string_selectModsToImportIntoModManagerLibrary = "string_selectModsToImportIntoModManagerLibrary";
+		public static readonly string string_noCompatibleModsFoundInArchive = "string_noCompatibleModsFoundInArchive";
+		public static readonly string string_executableModsMustBeValidatedByME3Tweaks = "string_executableModsMustBeValidatedByME3Tweaks";
+		public static readonly string string_noCompatibleModsFoundInArchiveExtended = "string_noCompatibleModsFoundInArchiveExtended";
+		public static readonly string string_interp_scanningX = "string_interp_scanningX";
+		public static readonly string string_interp_openingX = "string_interp_openingX";
+		public static readonly string string_interp_XfailedToLoadY = "string_interp_XfailedToLoadY";
+		public static readonly string string_readingZippedExecutable = "string_readingZippedExecutable";
+		public static readonly string string_interp_readingX = "string_interp_readingX";
+		public static readonly string string_queryingThirdPartyImportingService = "string_queryingThirdPartyImportingService";
+		public static readonly string string_gettingAdditionalInformationAboutFileFromME3Tweaks = "string_gettingAdditionalInformationAboutFileFromME3Tweaks";
+		public static readonly string string_selectModsToImportOrInstall = "string_selectModsToImportOrInstall";
+		public static readonly string string_errorUnableToDeleteExistingModDirectory = "string_errorUnableToDeleteExistingModDirectory";
+		public static readonly string string_interp_dialogImportingModWillDeleteExistingMod = "string_interp_dialogImportingModWillDeleteExistingMod";
+		public static readonly string string_modAlreadyExists = "string_modAlreadyExists";
+		public static readonly string string_interp_dialogErrorOccuredDeletingExistingMod = "string_interp_dialogErrorOccuredDeletingExistingMod";
+		public static readonly string string_errorDeletingExistingMod = "string_errorDeletingExistingMod";
+		public static readonly string string_errorWhileDeletingExistingOutputDirectory = "string_errorWhileDeletingExistingOutputDirectory";
+		public static readonly string string_interp_errorOccuredDeletingExistingModX = "string_interp_errorOccuredDeletingExistingModX";
+		public static readonly string string_exeModsMustBeImportedBeforeInstall = "string_exeModsMustBeImportedBeforeInstall";
+		public static readonly string string_interp_installX = "string_interp_installX";
 	}
 }

@@ -23,6 +23,7 @@ using SevenZip.EventArguments;
 using Threading;
 using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -32,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class ModArchiveImporter : MMBusyPanelBase
     {
         public bool TaskRunning { get; private set; }
-        public string NoModSelectedText { get; set; } = "Select a mod on the left to view its description";
+        public string NoModSelectedText { get; set; } = M3L.GetString(M3L.string_selectAModOnTheLeftToViewItsDescription);
         public bool ArchiveScanned { get; set; }
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -51,7 +52,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private string ArchiveFilePath;
 
-        public string ScanningFile { get; private set; } = "Please wait";
+        public string ScanningFile { get; private set; } = M3L.GetString(M3L.string_pleaseWait);
         public string ActionText { get; private set; }
         public long ProgressValue { get; private set; }
         public long ProgressMaximum { get; private set; }
@@ -86,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (CompressedMods.Count > 0)
                 {
-                    ActionText = "Select mods to import into Mod Manager library";
+                    ActionText = M3L.GetString(M3L.string_selectModsToImportIntoModManagerLibrary);
                     if (CompressedMods.Count == 1)
                     {
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
@@ -97,14 +98,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    ActionText = "No compatible mods found in archive";
-                    if (filepath.EndsWith(".exe"))
+                    ActionText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchive);
+                    if (filepath.EndsWith(@".exe"))
                     {
-                        NoModSelectedText = "Executable installer based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.";
+                        NoModSelectedText = M3L.GetString(M3L.string_executableModsMustBeValidatedByME3Tweaks);
                     }
                     else
                     {
-                        NoModSelectedText = "No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.";
+                        NoModSelectedText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchiveExtended);
                     }
                 }
 
@@ -113,7 +114,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 TaskRunning = false;
                 CommandManager.InvalidateRequerySuggested();
             };
-            ActionText = $"Scanning {Path.GetFileName(filepath)}";
+            ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
 
             bw.RunWorkerAsync(filepath);
         }
@@ -130,7 +131,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
             TaskRunning = true;
-            ActionText = $"Opening {ScanningFile}";
+            ActionText = M3L.GetString(M3L.string_interp_openingX, ScanningFile);
 
             var archive = e.Argument as string;
             void AddCompressedModCallback(Mod m)
@@ -154,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             void CompressedModFailedCallback(Mod m)
             {
-                Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += $"\n\n{m.ModName} failed to load: {m.LoadFailedReason}"; });
+                Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += M3L.GetString(M3L.string_interp_XfailedToLoadY, m.ModName, m.LoadFailedReason); });
             }
 
 
@@ -199,10 +200,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
 
                                 Log.Information(@"Reading embedded executable file in archive: " + embeddedExePath);
-                                ActionText = "Reading zipped executable";
+                                ActionText = M3L.GetString(M3L.string_readingZippedExecutable);
                                 pathOverride = Path.Combine(Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
                                 using var outstream = new FileStream(pathOverride, FileMode.Create);
-                                sve.Extracting += (o, pea) => { ActionText = $"Reading zipped executable {pea.PercentDone}%"; };
+                                sve.Extracting += (o, pea) => { ActionText = $@"{M3L.GetString(M3L.string_readingZippedExecutable)} {pea.PercentDone}%"; };
                                 sve.ExtractFile(embeddedExePath, outstream);
                                 ArchiveFilePath = pathOverride; //set new path so further extraction calls use correct archive path.
                                 break;
@@ -277,7 +278,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     foreach (var entry in moddesciniEntries)
                     {
-                        currentOperationTextCallback?.Invoke($"Reading {entry.FileName}");
+                        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
                         Mod m = new Mod(entry, archiveFile);
                         if (m.ValidMod)
                         {
@@ -295,7 +296,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //found some .me2mod files.
                     foreach (var entry in me2mods)
                     {
-                        currentOperationTextCallback?.Invoke($"Reading {entry.FileName}");
+                        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
                         MemoryStream ms = new MemoryStream();
                         archiveFile.ExtractFile(entry.Index, ms);
                         ms.Position = 0;
@@ -313,7 +314,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     Log.Information(@"Querying third party importing service for information about this file");
-                    currentOperationTextCallback?.Invoke("Querying Third Party Importing Service");
+                    currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
                     var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
                     long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
                     var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
@@ -388,11 +389,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             compressedMod.ParsedModVersion = parsedValue;
                         }
                     }
-                    else if (relayVersionResponse == "-1")
+                    else if (relayVersionResponse == @"-1")
                     {
                         //If no version information, check ME3Tweaks to see if it's been added recently
                         //see if server has information on version number
-                        currentOperationTextCallback?.Invoke("Getting additional information about file from ME3Tweaks");
+                        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
                         Log.Information(@"Querying ME3Tweaks for additional information");
                         var modInfo = OnlineContent.QueryModRelay(md5, size);
                         //todo: make this work offline.
@@ -416,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         //Try straight up TPMI import?
-                        Log.Warning($"No importing information is available for file with hash {md5}. No mods could be found.");
+                        Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
                     }
                 }
             }
@@ -437,7 +438,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var thirdPartyInfo = ThirdPartyServices.GetThirdPartyModInfo(dlcFolderName, game);
                     if (thirdPartyInfo != null)
                     {
-                        Log.Information($"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
+                        Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
                         //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build an feed it a virtual one.
                         IniData virtualModDesc = new IniData();
                         virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
@@ -500,7 +501,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         ProgressValue = 0;
                         ProgressMaximum = 100;
                         ProgressIndeterminate = false;
-                        ActionText = "Select mods to import or install";
+                        ActionText = M3L.GetString(M3L.string_selectModsToImportOrInstall);
                         return; //Don't do anything.
                     }
                     if (resultcode == ERROR_COULD_NOT_DELETE_EXISTING_DIR)
@@ -508,7 +509,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         ProgressValue = 0;
                         ProgressMaximum = 100;
                         ProgressIndeterminate = false;
-                        ActionText = "Error: Unable to delete existing mod directory";
+                        ActionText = M3L.GetString(M3L.string_errorUnableToDeleteExistingModDirectory);
                         return; //Don't do anything.
                     }
                 }
@@ -533,7 +534,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Todo: Extract files
                 Log.Information(@"Extracting mod: " + mod.ModName);
-                ActionText = $"Extracting {mod.ModName}";
+                ActionText = M3L.GetString(M3L.string_interp_extractingX, mod.ModName);
                 ProgressValue = 0;
                 ProgressMaximum = 100;
                 ProgressIndeterminate = true;
@@ -546,7 +547,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     bool abort = false;
                     Application.Current.Dispatcher.Invoke(delegate
                     {
-                        var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Importing this mod will delete an existing mod directory in the mod library:\n{sanitizedPath}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                        var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_dialogImportingModWillDeleteExistingMod, sanitizedPath), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                         if (result == MessageBoxResult.No)
                         {
                             e.Result = USER_ABORTED_IMPORT;
@@ -560,7 +561,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 Log.Error(@"Could not delete existing mod directory.");
                                 e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                                 abort = true;
                                 return;
                             }
@@ -569,8 +570,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         catch (Exception ex)
                         {
                             //I don't think this can be triggered but will leave as failsafe anyways.
-                            Log.Error("Error while deleting existing output directory: " + App.FlattenException(ex));
-                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), $"Error occured while deleting existing mod directory:\n{ex.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                            Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
+                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), M3L.GetString(M3L.string_interp_errorOccuredDeletingExistingModX, ex.Message), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                             e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                             abort = true;
                         }
@@ -619,7 +620,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 PatchRedirects.ReplaceAll(doc.Root.Elements(@"patchredirect")
                     .Select(d => ((int)d.Attribute(@"index"), (string)d.Attribute(@"outfile"))).ToList());
 
-                AlternateRedirects.ReplaceAll(doc.Root.Elements("alternateredirect")
+                AlternateRedirects.ReplaceAll(doc.Root.Elements(@"alternateredirect")
                     .Select(d => ((int)d.Attribute(@"index"), (string)d.Attribute(@"outfile"))).ToList());
 
                 NoExtractIndexes.ReplaceAll(doc.Root.Elements(@"noextract")
@@ -680,12 +681,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (SelectedMod.ExeExtractionTransform != null)
                     {
-                        return "Exe mods must be imported before install";
+                        return M3L.GetString(M3L.string_exeModsMustBeImportedBeforeInstall);
                     }
-                    return $"Install {SelectedMod.ModName}";
+                    return M3L.GetString(M3L.string_interp_installX, SelectedMod.ModName);
                 }
 
-                return "Install";
+                return M3L.GetString(M3L.string_install);
             }
         }
 

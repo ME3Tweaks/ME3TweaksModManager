@@ -441,6 +441,30 @@
     <system:String x:Key="string_compressPackages">Compress packages</system:String>
     <system:String x:Key="string_unselectAll">Unselect all</system:String>
     <system:String x:Key="string_selectAll">Select all</system:String>
+
+    <system:String x:Key="string_selectAModOnTheLeftToViewItsDescription">Select a mod on the left to view its description</system:String>
+    <system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Select mods to import into Mod Manager library</system:String>
+    <system:String x:Key="string_noCompatibleModsFoundInArchive">No compatible mods found in archive</system:String>
+    <system:String x:Key="string_executableModsMustBeValidatedByME3Tweaks">Executable installer based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.</system:String>
+    <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
+    <system:String x:Key="string_interp_scanningX">Scanning {Path.GetFileName(filepath)}</system:String>
+    <system:String x:Key="string_interp_openingX">Opening {ScanningFile}</system:String>
+    <system:String x:Key="string_interp_XfailedToLoadY">\n\n{m.ModName} failed to load: {m.LoadFailedReason}</system:String>
+    <system:String x:Key="string_readingZippedExecutable">Reading zipped executable</system:String>
+    <system:String x:Key="string_interp_readingX">Reading {entry.FileName}</system:String>
+    <system:String x:Key="string_queryingThirdPartyImportingService">Querying Third Party Importing Service</system:String>
+    <system:String x:Key="string_gettingAdditionalInformationAboutFileFromME3Tweaks">Getting additional information about file from ME3Tweaks</system:String>
+    <system:String x:Key="string_selectModsToImportOrInstall">Select mods to import or install</system:String>
+    <system:String x:Key="string_errorUnableToDeleteExistingModDirectory">Error: Unable to delete existing mod directory</system:String>
+    <system:String x:Key="string_interp_dialogImportingModWillDeleteExistingMod">Importing this mod will delete an existing mod directory in the mod library:\n{sanitizedPath}\n\nContinue?</system:String>
+    <system:String x:Key="string_modAlreadyExists">Mod already exists</system:String>
+    <system:String x:Key="string_interp_dialogErrorOccuredDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.</system:String>
+    <system:String x:Key="string_errorDeletingExistingMod">Error deleting existing mod</system:String>
+    <system:String x:Key="string_interp_errorOccuredDeletingExistingModX">Error occured while deleting existing mod directory:\n{ex.Message}</system:String>
+    <system:String x:Key="string_exeModsMustBeImportedBeforeInstall">Exe mods must be imported before install</system:String>
+    <system:String x:Key="string_interp_installX">Install {SelectedMod.ModName}</system:String>
+
+
     <!-- Extras -->
     <!--<system:String x:Key="string_"></system:String>
     <system:String x:Key="string_"></system:String>

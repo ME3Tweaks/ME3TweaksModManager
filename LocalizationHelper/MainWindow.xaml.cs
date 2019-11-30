@@ -168,27 +168,72 @@ namespace LocalizationHelper
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
-            var filetext = File.ReadAllText(file);
-            var matches = r.Matches(filetext);
-            var strings = new List<string>();
+            var filelines = File.ReadAllLines(file);
             HashSet<string> s = new HashSet<string>();
-            foreach (var match in matches)
+
+            foreach (var line in filelines)
             {
-                var str = match.ToString();
-                if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
-                var strname = "string_";
-                if (str.StartsWith("$")) strname = "string_interp_";
-                var newStr = match.ToString().TrimStart('$').Trim('"');
-                if (newStr.Length > 1)
+                var commentIndex = line.IndexOf("//");
+                var matches = r.Matches(line);
+                foreach (var match in matches)
                 {
-                    s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+                    var matchIndex = line.IndexOf(match.ToString());
+                    if (commentIndex >= 0 && matchIndex > commentIndex) continue; //this is a comment
+                    var str = match.ToString();
+                    if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
+                    var strname = "string_";
+                    if (str.StartsWith("$")) strname = "string_interp_";
+                    var newStr = match.ToString().TrimStart('$').Trim('"');
+                    if (newStr.Length > 1)
+                    {
+                        strname += toCamelCase(newStr);
+                        s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+                    }
                 }
             }
+
             foreach (var str in s)
             {
                 Debug.WriteLine(str);
             }
 
+        }
+
+        private string toCamelCase(string str)
+        {
+            var words = str.Split();
+            var res = "";
+            bool first = true;
+            foreach (var word in words)
+            {
+                var cleanedWord = word.Replace(".", "");
+                cleanedWord = cleanedWord.Replace("?", "Question");
+                cleanedWord = cleanedWord.Replace("(", "");
+                cleanedWord = cleanedWord.Replace(")", "");
+                cleanedWord = cleanedWord.Replace(":", "");
+                if (first)
+                {
+                    res += caseFirst(cleanedWord, false);
+                    first = false;
+                }
+                else
+                {
+                    res += caseFirst(cleanedWord, true);
+                }
+            }
+
+            return res;
+        }
+
+        static string caseFirst(string s, bool upper)
+        {
+            // Check for empty string.
+            if (string.IsNullOrEmpty(s))
+            {
+                return string.Empty;
+            }
+            // Return char and concat substring.
+            return (upper ? char.ToUpper(s[0]) : char.ToLower(s[0])) + s.Substring(1);
         }
 
         private void PushLocalizedStrings_Clicked(object sender, RoutedEventArgs e)
