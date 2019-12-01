@@ -591,6 +591,4 @@
     <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
-
-
 </ResourceDictionary>
