@@ -169,7 +169,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                       {
                                           UpdateGroupId = (int)e.Attribute(@"groupid"),
                                           Game = intToGame((int)e.Attribute(@"game")),
-                                          IsHidden = e.Attribute(@"hidden") != null ? (bool)e.Attribute(@"hidden") : false,
+                                          IsHidden = e.Attribute(@"hidden") != null && (bool)e.Attribute(@"hidden"),
                                           ASIModVersions = e.Elements(@"asimod").Select(z => new ASIMod
                                           {
                                               Name = (string)z.Element(@"name"),
@@ -187,11 +187,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Must run on UI thread
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Games.ToList().ForEach(x => x.ASIModUpdateGroups = ASIModUpdateGroups);
-                    ME1DisplayedASIMods.ReplaceAll(ASIModUpdateGroups.Where(x => x.Game == Mod.MEGame.ME1 && !x.IsHidden).Select(x => x.ASIModVersions.MaxBy(y => y.Version)).OrderBy(x => x.Name)); //latest
-                    ME2DisplayedASIMods.ReplaceAll(ASIModUpdateGroups.Where(x => x.Game == Mod.MEGame.ME2 && !x.IsHidden).Select(x => x.ASIModVersions.MaxBy(y => y.Version)).OrderBy(x => x.Name)); //latest
-                    ME3DisplayedASIMods.ReplaceAll(ASIModUpdateGroups.Where(x => x.Game == Mod.MEGame.ME3 && !x.IsHidden).Select(x => x.ASIModVersions.MaxBy(y => y.Version)).OrderBy(x => x.Name)); //latest
-
+                    foreach(var g in Games)
+                    {
+                        g.SetUpdateGroups(ASIModUpdateGroups);
+                    }
                     RefreshASIStates();
                 });
                 if (isStaged)
@@ -573,6 +572,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     InstallASI(asi);
                 }
+            }
+
+            internal void SetUpdateGroups(List<ASIModUpdateGroup> asiUpdateGroups)
+            {
+                ASIModUpdateGroups = asiUpdateGroups;
+                DisplayedASIMods.ReplaceAll(ASIModUpdateGroups.Where(x => x.Game == Game && !x.IsHidden).Select(x => x.ASIModVersions.MaxBy(y => y.Version)).OrderBy(x => x.Name)); //latest
             }
         }
     }

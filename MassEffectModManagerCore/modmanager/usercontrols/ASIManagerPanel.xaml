@@ -23,7 +23,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Name}"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Version, StringFormat='v{0}'}"/>
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Foreground="Gray"  Text="{Binding Path=Author}"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Opacity="0.6"  Text="{Binding Path=Author}"/>
             </Grid>
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:ASIManagerPanel+InstalledASIMod}">
@@ -33,7 +33,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Filename}" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Foreground="Gray"  Text="Unknown ASI mod"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Opacity=".8"  Text="Unknown ASI mod"/>
             </Grid>
         </DataTemplate>
         <Style x:Key="StretchNoPaddingStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
@@ -95,7 +95,7 @@
                       ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding ASILoaderText}"/>
-                        <ListBox Grid.Row="3" Grid.Column="2" BorderThickness="1" Name="ME3_InstalledASIs_List" ItemsSource="{Binding ASIMods}"
+                        <ListBox Grid.Row="3" Grid.Column="2" BorderThickness="1" Name="ME3_InstalledASIs_List" ItemsSource="{Binding DisplayedASIMods}"
                              ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
                              HorizontalContentAlignment="Stretch" SelectionChanged="ASIManagerLists_SelectedChanged" />
 
