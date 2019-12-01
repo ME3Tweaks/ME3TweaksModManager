@@ -212,6 +212,9 @@
     <Page Update="modmanager\localizations\deu.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="modmanager\localizations\fra.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="modmanager\localizations\pol.xaml">
       <SubType>Designer</SubType>
     </Page>

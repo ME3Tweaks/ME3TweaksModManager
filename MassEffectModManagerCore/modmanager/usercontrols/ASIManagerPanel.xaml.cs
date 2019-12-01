@@ -44,11 +44,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string SelectedASIName { get; set; }
         public bool InstallInProgress { get; set; }
         public string InstallButtonText { get; set; }
-        public ObservableCollectionExtended<object> ME1DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();
-        public ObservableCollectionExtended<object> ME2DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();
-        public ObservableCollectionExtended<object> ME3DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();
 
-        private List<InstalledASIMod> InstalledASIs;
 
         public bool ME1LoaderInstalled { get; set; }
         public bool ME2LoaderInstalled { get; set; }
@@ -64,13 +60,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ObservableCollectionExtended<ASIGame> Games { get; } = new ObservableCollectionExtended<ASIGame>();
 
-        public ObservableCollectionExtended<GameTarget> ME1InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
-        public ObservableCollectionExtended<GameTarget> ME2InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
-        public ObservableCollectionExtended<GameTarget> ME3InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
-
-        public string ME1ASIDirectory => ME1Target != null ? MEDirectories.ASIPath(ME1Target) : null;
-        public string ME2ASIDirectory => ME2Target != null ? MEDirectories.ASIPath(ME2Target) : null;
-        public string ME3ASIDirectory => ME3Target != null ? MEDirectories.ASIPath(ME3Target) : null;
 
 
         /// <summary>
@@ -110,6 +99,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             bw.RunWorkerAsync();
         }
+
         public ICommand InstallCommand { get; private set; }
         public ICommand SourceCodeCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
@@ -146,12 +136,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else if (SelectedASIObject is ASIMod asi)
             {
-                Games.First(x => x.Game == asi.Game).ApplyASI(asi);
-                
+
+                InstallInProgress = true;
+                Games.First(x => x.Game == asi.Game).ApplyASI(asi, () => { InstallInProgress = false; });
             }
         }
 
-       
+
         private bool ASIIsSelected() => SelectedASIObject != null;
 
         private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod;
@@ -165,32 +156,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 //I Love Linq
                 var ASIModUpdateGroups = (from e in rootElement.Elements(@"updategroup")
-                                      select new ASIModUpdateGroup
-                                      {
-                                          UpdateGroupId = (int)e.Attribute(@"groupid"),
-                                          Game = intToGame((int)e.Attribute(@"game")),
-                                          IsHidden = e.Attribute(@"hidden") != null && (bool)e.Attribute(@"hidden"),
-                                          ASIModVersions = e.Elements(@"asimod").Select(z => new ASIMod
+                                          select new ASIModUpdateGroup
                                           {
-                                              Name = (string)z.Element(@"name"),
-                                              InstalledPrefix = (string)z.Element(@"installedname"),
-                                              Author = (string)z.Element(@"author"),
-                                              Version = (string)z.Element(@"version"),
-                                              Description = (string)z.Element(@"description"),
-                                              Hash = (string)z.Element(@"hash"),
-                                              SourceCodeLink = (string)z.Element(@"sourcecode"),
-                                              DownloadLink = (string)z.Element(@"downloadlink"),
-                                              Game = intToGame((int)e.Attribute(@"game")) // use e element to pull from outer group
-                                          }).ToList()
-                                      }).ToList();
+                                              UpdateGroupId = (int)e.Attribute(@"groupid"),
+                                              Game = intToGame((int)e.Attribute(@"game")),
+                                              IsHidden = e.Attribute(@"hidden") != null && (bool)e.Attribute(@"hidden"),
+                                              ASIModVersions = e.Elements(@"asimod").Select(z => new ASIMod
+                                              {
+                                                  Name = (string)z.Element(@"name"),
+                                                  InstalledPrefix = (string)z.Element(@"installedname"),
+                                                  Author = (string)z.Element(@"author"),
+                                                  Version = (string)z.Element(@"version"),
+                                                  Description = (string)z.Element(@"description"),
+                                                  Hash = (string)z.Element(@"hash"),
+                                                  SourceCodeLink = (string)z.Element(@"sourcecode"),
+                                                  DownloadLink = (string)z.Element(@"downloadlink"),
+                                                  Game = intToGame((int)e.Attribute(@"game")) // use e element to pull from outer group
+                                              }).ToList()
+                                          }).ToList();
 
                 //Must run on UI thread
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    foreach(var g in Games)
+                    foreach (var g in Games)
                     {
                         g.SetUpdateGroups(ASIModUpdateGroups);
                     }
+
                     RefreshASIStates();
                 });
                 if (isStaged)
@@ -206,6 +198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     LoadManifest(ManifestLocation, false);
                     return;
                 }
+
                 RefreshASIStates();
                 throw new Exception(@"Error parsing the ASI Manifest: " + e.Message);
             }
@@ -214,7 +207,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void RefreshASIStates()
         {
-            foreach(var game in Games)
+            foreach (var game in Games)
             {
                 game.RefreshASIStates();
             }
@@ -225,6 +218,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         public class ASIMod : INotifyPropertyChanged
         {
+            private static Brush installedBrush = new SolidColorBrush(Color.FromArgb(0x33, 0, 0xFF, 0));
+            private static Brush outdatedBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0));
             public string DownloadLink { get; internal set; }
             public string SourceCodeLink { get; internal set; }
             public string Hash { get; internal set; }
@@ -239,8 +234,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public bool UIOnly_Installed { get; set; }
             public bool UIOnly_Outdated { get; set; }
+            public string InstallStatus => UIOnly_Outdated ? "Installed, outdated" : (UIOnly_Installed ? "Installed" : "");
             public InstalledASIMod InstalledInfo { get; set; }
+
+            public Brush BackgroundColor
+            {
+                get
+                {
+                    if (UIOnly_Outdated)
+                    {
+                        return outdatedBrush;
+                    }
+                    else if (UIOnly_Installed)
+                    {
+                        return installedBrush;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
         }
+
 
         /// <summary>
         /// Object describing an installed ASI file. It is not a general ASI mod object but it can be mapped to one
@@ -377,6 +393,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public ObservableCollectionExtended<object> DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();
             public GameTarget SelectedTarget { get; set; }
             public object SelectedASI { get; set; }
+
             public bool LoaderInstalled { get; set; }
             public string GameName => Utilities.GetGameName(Game);
             public List<ASIModUpdateGroup> ASIModUpdateGroups { get; internal set; }
@@ -391,7 +408,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void RefreshBinkStatuses()
             {
-                LoaderInstalled = SelectedTarget != null ? Utilities.CheckIfBinkw32ASIIsInstalled(SelectedTarget) : false;
+                LoaderInstalled = SelectedTarget != null && Utilities.CheckIfBinkw32ASIIsInstalled(SelectedTarget);
             }
 
             private void MapInstalledASIs()
@@ -464,7 +481,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Directory.CreateDirectory(asiDirectory);
                             return results; //It won't have anything in it if we are creating it
                         }
-                        var asiFiles = Directory.GetFiles(asiDirectory, "*.asi");
+                        var asiFiles = Directory.GetFiles(asiDirectory, @"*.asi");
                         foreach (var asiFile in asiFiles)
                         {
                             results.Add(new InstalledASIMod(asiFile, game));
@@ -494,7 +511,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return null;
             }
 
-            private void InstallASI(ASIMod asiToInstall, InstalledASIMod oldASIToRemoveOnSuccess = null)
+            private void InstallASI(ASIMod asiToInstall, InstalledASIMod oldASIToRemoveOnSuccess = null, Action operationCompletedCallback = null)
             {
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (a, b) =>
@@ -512,6 +529,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (md5 == asiToInstall.Hash)
                         {
                             File.Copy(cachedPath, finalPath);
+                            operationCompletedCallback?.Invoke();
                             return;
                         }
                     }
@@ -521,7 +539,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     MemoryStream memoryStream = new MemoryStream();
                     response.GetResponseStream().CopyTo(memoryStream);
                     //MD5 check on file for security
-                    md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(memoryStream.ToArray())).Replace("-", "").ToLower();
+                    md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(memoryStream.ToArray())).Replace(@"-", "").ToLower();
                     if (md5 != asiToInstall.Hash)
                     {
                         //ERROR!
@@ -544,12 +562,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 worker.RunWorkerCompleted += (a, b) =>
                 {
                     RefreshASIStates();
+                    operationCompletedCallback?.Invoke();
                 };
 
                 worker.RunWorkerAsync();
             }
 
-            internal void ApplyASI(ASIMod asi)
+            internal void ApplyASI(ASIMod asi, Action operationCompletedCallback)
             {
                 //Check if this is actually installed or not (or outdated)
                 var installedInfo = asi.InstalledInfo;
@@ -559,18 +578,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (correspondingAsi != asi)
                     {
                         //Outdated - update mod
-                        InstallASI(asi, installedInfo);
+                        InstallASI(asi, installedInfo, operationCompletedCallback);
                     }
                     else
                     {
                         //Up to date - delete mod
                         File.Delete(installedInfo.InstalledPath);
                         RefreshASIStates();
+                        operationCompletedCallback?.Invoke();
                     }
                 }
                 else
                 {
-                    InstallASI(asi);
+                    InstallASI(asi, operationCompletedCallback: operationCompletedCallback);
                 }
             }
 

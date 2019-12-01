@@ -12,19 +12,22 @@
              Width="730">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type local:ASIManagerPanel+ASIMod}">
-            <Grid Margin="3" HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="20"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Name}"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Version, StringFormat='v{0}'}"/>
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Opacity="0.6"  Text="{Binding Path=Author}"/>
-            </Grid>
+            <Border Background="{Binding BackgroundColor}">
+                <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Name}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Version, StringFormat='v{0}'}" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6"  Text="{Binding Path=Author}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding InstallStatus}"/>
+                </Grid>
+            </Border>
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:ASIManagerPanel+InstalledASIMod}">
             <Grid Margin="3">
@@ -44,23 +47,26 @@
     <DockPanel>
         <TextBlock Text="ASI Manager" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top"/>
         <TextBlock DockPanel.Dock="Top" Padding="5" TextAlignment="Center" Text="ASI mods are native code mods that are loaded at game startup. They allow modification of the game in ways that are beyond what you can do with package files. ASI mods should not be part of typical mod distributions and cannot be included in Mod Manager mods.&#10;Mod Manager will automatically install required ASI mods for mods that modify the ME3 Balance Changes and for ME1 DLC mods." TextWrapping="Wrap"/>
-        <DockPanel DockPanel.Dock="Right">
-            <Button Content="{DynamicResource string_close}" Margin="0,3,3,0" Padding="7,5"  HorizontalAlignment="Right" DockPanel.Dock="Bottom" Command="{Binding CloseCommand}"/>
+        <DockPanel DockPanel.Dock="Right" Width="300" Margin="5,0,0,0">
+            <DockPanel DockPanel.Dock="Bottom">
+                <Button Content="{DynamicResource string_close}" Margin="0,3,3,0" Padding="7,5"  HorizontalAlignment="Right" DockPanel.Dock="Right" Command="{Binding CloseCommand}"/>
+                <TextBlock Text="Installing..." VerticalAlignment="Center" MinWidth="100" DockPanel.Dock="Left" Margin="3,3,0,0" Visibility="{Binding InstallInProgress, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <ProgressBar IsIndeterminate="True"  VerticalAlignment="Stretch" Margin="0,3,3,0"  VerticalContentAlignment="Center" Visibility="{Binding InstallInProgress, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            </DockPanel>
+
             <Border DockPanel.Dock="Right" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" Background="LightGray" BorderThickness="1" Margin="3,26,3,0">
-                <DockPanel Width="300" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" >
+                <DockPanel Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" >
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="3,5">
-                        <Button Grid.Row="2" Grid.Column="3" Margin="3,0" Padding="7,5" Content="View source code" Command="{Binding SourceCodeCommand}"/>
-                        <Button Grid.Row="2" Grid.Column="4" Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText, FallbackValue='Install ASI'}" Command="{Binding InstallCommand}"/>
+                        <Button Margin="3,0" Padding="7,5" Content="View source code" Command="{Binding SourceCodeCommand}"/>
+                        <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText, FallbackValue='Install ASI'}" Command="{Binding InstallCommand}"/>
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Margin="0,10,0,0" Text="{Binding SelectedASIName, FallbackValue='Placeholder title'}" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"/>
                         <TextBlock Text="{Binding SelectedASISubtext, FallbackValue='Placeholder'}" TextWrapping="Wrap"  TextAlignment="Center"/>
                         <TextBlock Margin="5,0" Text="{Binding SelectedASIDescription}" TextWrapping="Wrap" />
                     </StackPanel>
-
                 </DockPanel>
             </Border>
-
         </DockPanel>
 
         <TabControl SelectionChanged="TabControl_SelectionChanged" ItemsSource="{Binding Games}">
