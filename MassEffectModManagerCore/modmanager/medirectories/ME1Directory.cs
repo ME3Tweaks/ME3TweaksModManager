@@ -37,6 +37,8 @@ namespace MassEffectModManagerCore.GameDirectories
         public static string BioWareDocPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"\BioWare\Mass Effect\");
         public static string GamerSettingsIniFile => Path.Combine(BioWareDocPath, @"BIOGame\Config\GamerSettings.ini");
 
+        internal static string ASIPath(GameTarget target) => Path.Combine(target.TargetPath, "Binaries", "asi");
+
         static ME1Directory()
         {
             ReloadActivePath();

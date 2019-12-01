@@ -486,7 +486,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (restore.HasValue && restore.Value)
                 {
                     //Todo: Background thread this maybe?
-                    var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
+                    var backupPath = Utilities.GetGameBackupPath(target.Game);
+                    var backupFile = Path.Combine(backupPath, FilePath);
                     var targetFile = Path.Combine(target.TargetPath, FilePath);
                     try
                     {

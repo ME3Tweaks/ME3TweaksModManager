@@ -32,6 +32,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         }
 
+
+
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
@@ -66,6 +68,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
             return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+        }
+
+        public static string FetchRemoteString(string url)
+        {
+            try
+            {
+                using var wc = new System.Net.WebClient();
+                return wc.DownloadStringAwareOfEncoding(url);
+            } catch (Exception e)
+            {
+                Log.Error("Error downloading string: " + e.Message);
+                return null;
+            }
         }
 
         public static string FetchThirdPartyModdesc(string name)
@@ -234,6 +249,36 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             return true;
+        }
+
+        public static (MemoryStream result, string errorMessage) FetchString(string url)
+        {
+            using var wc = new System.Net.WebClient();
+            string downloadError = null;
+            MemoryStream responseStream = null;
+            wc.DownloadDataCompleted += (a, args) =>
+            {
+                downloadError = args.Error?.Message;
+                if (downloadError == null)
+                {
+                    responseStream = new MemoryStream(args.Result);
+                }
+                lock (args.UserState)
+                {
+                    //releases blocked thread
+                    Monitor.Pulse(args.UserState);
+                }
+            };
+            var syncObject = new Object();
+            lock (syncObject)
+            {
+                Debug.WriteLine("Download file to memory: " + url);
+                wc.DownloadDataAsync(new Uri(url), syncObject);
+                //This will block the thread until download completes
+                Monitor.Wait(syncObject);
+            }
+
+            return (responseStream, downloadError);
         }
 
         public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null)

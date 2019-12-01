@@ -37,6 +37,10 @@ namespace MassEffectModManagerCore.GameDirectories
         // "C:\...\MyDocuments\BioWare\Mass Effect 3\" folder
         public static string BioWareDocPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"\BioWare\Mass Effect 3\");
         public static string GamerSettingsIniFile => Path.Combine(BioWareDocPath, @"BIOGame\Config\GamerSettings.ini");
+
+        internal static string ASIPath(GameTarget target) => Path.Combine(target.TargetPath, "Binaries", "win32", "asi");
+
+
         public static string ExecutablePath(string gameRoot) => Path.Combine(gameRoot, "Binaries", "win32", "MassEffect3.exe");
 
         static ME3Directory()

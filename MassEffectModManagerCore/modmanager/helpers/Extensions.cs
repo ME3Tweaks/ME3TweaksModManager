@@ -271,6 +271,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 binaryWriter.Write(value);
         }
 
+        public static T MaxBy<T, R>(this IEnumerable<T> en, Func<T, R> evaluate) where R : IComparable<R>
+        {
+            return en.Select(t => (obj: t, key: evaluate(t)))
+                .Aggregate((max, next) => next.key.CompareTo(max.key) > 0 ? next : max).obj;
+        }
+
+        public static T MinBy<T, R>(this IEnumerable<T> en, Func<T, R> evaluate) where R : IComparable<R>
+        {
+            return en.Select(t => (obj: t, key: evaluate(t)))
+                .Aggregate((max, next) => next.key.CompareTo(max.key) < 0 ? next : max).obj;
+        }
+
         /// <summary>
         /// Writes string to stream. Terminated by a null char, and optionally writes string length at start of string. (Pascal strings?)
         /// </summary>

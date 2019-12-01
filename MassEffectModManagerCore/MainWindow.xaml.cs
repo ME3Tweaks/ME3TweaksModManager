@@ -1780,7 +1780,11 @@ namespace MassEffectModManagerCore
 
         private void ASIModManager_Click(object sender, RoutedEventArgs e)
         {
-            LaunchExternalTool(ExternalToolLauncher.ME3Explorer, ExternalToolLauncher.ME3EXP_ASIMANAGER);
+            Analytics.TrackEvent(@"Launched ASI Manager");
+            var exLauncher = new ASIManagerPanel();
+            exLauncher.Close += (a, b) => { ReleaseBusyControl(); };
+            //Todo: Update Busy UI Content
+            ShowBusyControl(exLauncher);
         }
 
         private bool RepopulatingTargets;

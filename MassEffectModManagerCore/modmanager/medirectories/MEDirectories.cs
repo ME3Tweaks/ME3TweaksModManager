@@ -38,6 +38,22 @@ namespace MassEffectModManagerCore.GameDirectories
                     throw new ArgumentOutOfRangeException(nameof(target.Game), target.Game, null);
             }
         }
+
+        public static string ASIPath(GameTarget target)
+        {
+            switch (target.Game)
+            {
+                case Mod.MEGame.ME1:
+                    return ME1Directory.ASIPath(target);
+                case Mod.MEGame.ME2:
+                    return ME2Directory.ASIPath(target);
+                case Mod.MEGame.ME3:
+                    return ME3Directory.ASIPath(target);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(target.Game), target.Game, null);
+            }
+        }
+
         public static string GamePath(Mod.MEGame game)
         {
             switch (game)
