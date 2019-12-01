@@ -50,87 +50,87 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Libraries" TextAlignment="Center" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"  Margin="0,0,0,10" />
+                <TextBlock Text="Libraries" Foreground="White" TextAlignment="Center" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"  Margin="0,0,0,10" />
                 <TextBlock ToolTip="Compression and decompression library&#10;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="1" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/squid-box/SevenZipSharp">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/squid-box/SevenZipSharp" Foreground="#FF87CEFA">
                             <TextBlock Text="SevenZipSharp"/>
                         </Hyperlink>
                     </TextBlock>
 
                 <TextBlock ToolTip="Library for dark/white themes in WPF&#10;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="1" Grid.Column="1" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/benruehl/adonis-ui">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/benruehl/adonis-ui" Foreground="#FF87CEFA">
                             <TextBlock Text="AdonisUI"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="Library for parsing INI files in C#&#10;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="1" Grid.Column="2" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/rickyah/ini-parser">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/rickyah/ini-parser" Foreground="#FF87CEFA">
                             <TextBlock Text="ini-parser"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="Utility library for converting byte sizes" Grid.Row="2" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/omar/ByteSize">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/omar/ByteSize" Foreground="#FF87CEFA">
                             <TextBlock Text="ByteSize"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="Modern asynchronous HTTP client library" Grid.Row="2" Grid.Column="1" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://flurl.dev/">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://flurl.dev/" Foreground="#FF87CEFA">
                             <TextBlock Text="Flurl"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="IL weaver system that removes huge amounts of boilerplate" Grid.Row="2" Grid.Column="2" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/Fody/Fody">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/Fody/Fody" Foreground="#FF87CEFA">
                             <TextBlock Text="Fody"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="Vector icon pack" Grid.Row="3" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/charri/Font-Awesome-WPF">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/charri/Font-Awesome-WPF" Foreground="#FF87CEFA">
                             <TextBlock Text="FontAwesome.WPF"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="Telemetry library for use with Microsoft Azure" Grid.Row="3" Grid.Column="1" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://appcenter.ms">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://appcenter.ms" Foreground="#FF87CEFA">
                             <TextBlock Text="AppCenter"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="Lightweight validation framework" Grid.Row="3" Grid.Column="2" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/pglazkov/MvvmValidation">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/pglazkov/MvvmValidation" Foreground="#FF87CEFA">
                             <TextBlock Text="MvvmValidation"/>
                         </Hyperlink>
                     </TextBlock>
 
 
                 <TextBlock ToolTip="Fast and flexible json parser" Grid.Row="4" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://www.newtonsoft.com/json">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://www.newtonsoft.com/json" Foreground="#FF87CEFA">
                             <TextBlock Text="Newtonsoft.Json"/>
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock ToolTip="GitHub API client" Grid.Row="4" Grid.Column="1" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/octokit/octokit.net">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/octokit/octokit.net" Foreground="#FF87CEFA">
                             <TextBlock Text="Octokit"/>
                         </Hyperlink>
                     </TextBlock>
 
-                    <TextBlock ToolTip="Highly extensible logger" Grid.Row="4" Grid.Column="2" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://serilog.net/">
+                <TextBlock ToolTip="Highly extensible logger" Grid.Row="4" Grid.Column="2" TextAlignment="Center" Foreground="#FF87CEFA">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://serilog.net/" Foreground="#FF87CEFA">
                             <TextBlock Text="Serilog"/>
                         </Hyperlink>
                     </TextBlock>
 
                 <TextBlock ToolTip="Additional useful WPF controls&#10;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="5" Grid.Column="0" TextAlignment="Center">
-                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/dotnetprojects/WpfExtendedToolkit">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/dotnetprojects/WpfExtendedToolkit" Foreground="#FF87CEFA">
                             <TextBlock Text="WPF Extended Toolkit"/>
                         </Hyperlink>
                     </TextBlock>
 
-                    <TextBlock Text="Translators" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
+                <TextBlock Text="Translators" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
                     <TextBlock Foreground="White" Grid.Row="7" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
                     <TextBlock Foreground="White" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="Russian" TextAlignment="Center" FontWeight="Bold" />
                     <TextBlock Foreground="White" Grid.Row="7" Grid.Column="2" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" />
@@ -148,7 +148,7 @@
                     <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="N/A" TextAlignment="Center" />
 
 
-                    <TextBlock Text="License" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
+                <TextBlock Text="License" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
                     <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="13" TextWrapping="Wrap" Text="Copyright (C) 2012 - 2019 ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts." />
 
                 </Grid>
