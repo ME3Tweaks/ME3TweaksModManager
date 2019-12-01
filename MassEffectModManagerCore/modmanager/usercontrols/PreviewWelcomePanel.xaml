@@ -48,7 +48,7 @@
             <Button Grid.Column="3" Margin="2" Click="ChangeLang_DEU_Clicked">
                 <StackPanel>
                     <Image Source="/modmanager/localizations/icons/german.png"/>
-                    <TextBlock Text="Deutch" TextAlignment="Center"/>
+                    <TextBlock Text="Deutsch" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
         </Grid>
