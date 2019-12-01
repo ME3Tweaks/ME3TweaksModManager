@@ -681,6 +681,7 @@ namespace SevenZip
             callback.FileExtractionStarted -= FileExtractionStartedEventProxy;
             callback.FileExtractionFinished -= FileExtractionFinishedEventProxy;
             callback.Extracting -= ExtractingEventProxy;
+            callback.Progressing -= ProgressingEventProxy;
             callback.FileExists -= FileExistsEventProxy;
         }
         #endregion        

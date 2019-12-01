@@ -860,6 +860,7 @@ namespace SevenZip
         {
             callback.FileCompressionStarted -= FileCompressionStartedEventProxy;
             callback.Compressing -= CompressingEventProxy;
+            callback.Progressing -= ProgressingEventProxy;
             callback.FileCompressionFinished -= FileCompressionFinishedEventProxy;
         }
 

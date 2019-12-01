@@ -361,7 +361,6 @@ namespace SevenZip
         public void SetTotal(ulong total)
         {
             _total = total;
-            Debug.WriteLine("TOTAL: " + total);
         }
 
         /// <summary>
