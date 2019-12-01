@@ -5,7 +5,7 @@
     <system:String x:Key="string_AvailableMods">Verfügbare Mods</system:String>
     <system:String x:Key="string_Language">Sprache</system:String>
     <system:String x:Key="string_Actions">Aktionen</system:String>
-    <system:String x:Key="string_CreateaME3modonModMaker">Einen ME3 Mod mit ModMaker erstellen</system:String>
+    <system:String x:Key="string_CreateaME3modonModMaker">Erstelle einen ME3 Mod mit ModMaker</system:String>
     <system:String x:Key="string_OpenME3Tweaks">Öffne ME3Tweaks.com</system:String>
     <system:String x:Key="string_OpensME3Tweaks">Öffnet ME3Tweaks.com</system:String>
     <system:String x:Key="string_OpenMemoryAnalyzer">Öffne Memory Analyzer</system:String>
@@ -36,7 +36,7 @@
     <system:String x:Key="string_ASIModManager">ASI Mod Manager</system:String>
     <system:String x:Key="string_ASIManagerTooltip">Verwalte ASI Mods. Nur für erfahrene Benutzer.</system:String>
     <system:String x:Key="string_CustomDLCConflictDetector">Custom DLC Kollisionserkennung</system:String>
-    <system:String x:Key="string_GUICompact">Interface Scaling/Controller Mod Kompatibilitätspack Generator (ME3)</system:String>
+    <system:String x:Key="string_GUICompact">Interface Scaling/Controller Mod Kompatibilitätspack-Generator (ME3)</system:String>
     <system:String x:Key="string_GUICompactTooltip">Durchsucht ME3 Mods nach Exporten die Teil von Benutzeroberflächen-Mods sind und generiert nötigenfalls einen Patch.</system:String>
     <system:String x:Key="string_BatchModInstaller">Mehrere Mods auf einmal installieren</system:String>
     <system:String x:Key="string_Openmodslibrarydirectory">Öffne den Mod-Bibliothek Ordner</system:String>
@@ -74,15 +74,15 @@
     <system:String x:Key="string_MassEffectINIModder">Mass Effect INI Modder</system:String>
     <system:String x:Key="string_MEIMTooltip">Werkzeug zum Konfigurieren vieler verschiedener Einstellungen für Mass Effect</system:String>
     <system:String x:Key="string_MassEffectModder">Mass Effect Modder</system:String>
-    <system:String x:Key="string_Texturebrowserandinstaller">Textur-Browser und Installer</system:String>
+    <system:String x:Key="string_Texturebrowserandinstaller">Textur-Browser und -Installer</system:String>
     <system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
     <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Ein zufallsgeneriertes Erlebnis für das erste Mass Effect Spiel</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip">Werkzeuge zum Entwickeln von Mods für die Mass Effect Trilogie</system:String>
-    <system:String x:Key="string_BackupRestore">Backup &amp; Wiederhestellen</system:String>
+    <system:String x:Key="string_BackupRestore">Backup &amp; Wiederherstellen</system:String>
     <system:String x:Key="string_Backup">Backup</system:String>
     <system:String x:Key="string_Createentiregamebackups">Erstelle Backups vom kompletten Spiel</system:String>
-    <system:String x:Key="string_Restore">Wiederhestellen</system:String>
+    <system:String x:Key="string_Restore">Wiederherstellen</system:String>
     <system:String xml:space="preserve" x:Key="string_Restoreagamefrombackup">Stelle eine Installation aus einem Backup wieder her.&#10;Nutze die Wiederherstellungsoptionen unter Ziel-Info für detaillierte Optionen.</system:String>
     <system:String x:Key="string_Help">Hilfe</system:String>
     <system:String x:Key="string_DynamicHelp">Hilfe</system:String>
@@ -94,11 +94,11 @@
     <system:String x:Key="string_ReferenceinformationModdesc">Referenzinformationen über die moddesc.ini Spezifikation</system:String>
     <system:String x:Key="string_AboutME3TweaksModManager">Über ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_Aboutthisprogram">Über dieses Programm</system:String>
-    <system:String x:Key="string_CreateTestingArchive">Testarchiv für Mod erstellen</system:String>
-    <system:String x:Key="string_CreateTestingArchiveTooltip">Erstellt ein Archiv mit leeren Versionen aller Dateien dieses Mods. Nützlich zum Debugging des Mod Manager</system:String>
+    <system:String x:Key="string_CreateTestingArchive">Testarchivdatei für Mod erstellen</system:String>
+    <system:String x:Key="string_CreateTestingArchiveTooltip">Erstellt eine Archivdatei mit leeren Versionen aller Dateien dieses Mods. Nützlich zum Debugging des Mod Managers</system:String>
     <system:String x:Key="string_startingUp">Starte</system:String>
     <system:String x:Key="string_selectModOnLeftToGetStarted">Wähle auf der linken Seite einen Mod aus, um zu beginnen.</system:String>
-    <system:String x:Key="string_applyMod">Installiere Mod</system:String>
+    <system:String x:Key="string_applyMod">Mod installieren</system:String>
     <system:String x:Key="string_addTarget">Zielinstallation hinzufügen</system:String>
     <system:String x:Key="string_startGame">Spiel starten</system:String>
     <system:String x:Key="string_installationTarget">Installationsziel:</system:String>
@@ -170,7 +170,7 @@
     <system:String x:Key="string_loadingDynamicHelp">Lade dynamische Hilfe</system:String>
     <system:String x:Key="string_confirmUnendorsement">Zurückziehen der Empfehlung bestätigen</system:String>
     <system:String x:Key="string_loadedDynamicHelp">Dynamische Hilfe geladen</system:String>
-    <system:String x:Key="string_selectModArchive">Wähle Mod-Archiv</system:String>
+    <system:String x:Key="string_selectModArchive">Wähle eine Mod-Archivdatei</system:String>
     <system:String x:Key="string_selectGameExecutable">Wähle ausführbare Datei (.exe) des Spiels</system:String>
     <system:String x:Key="string_interp_unendorseMod">Empfehlung für {0} zurückziehen?</system:String>
     <system:String x:Key="string_interp_unableToModifyBioinputIni">Kann bioinput.ini nicht verändern: {0}</system:String>
@@ -194,9 +194,9 @@
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Installiere diesen Mod</system:String>
     <system:String x:Key="string_tooltip_currentTarget">Aktuelles Modding-Ziel</system:String>
     <system:String x:Key="string_tooltip_reloadModsFromLibrary">Lade Mods erneut aus der Mod-Bibliothek</system:String>
-    <system:String x:Key="string_tooltip_filterME1">Klicke, um die Anzeige von Mods für Mass Effect zu (de)aktivieren</system:String>
-    <system:String x:Key="string_tooltip_filterME2">Klicke, um die Anzeige von Mods für Mass Effect 2 zu (de)aktivieren</system:String>
-    <system:String x:Key="string_tooltip_filterME3">Klicke, um die Anzeige von Mods für Mass Effect 3 zu (de)aktivieren</system:String>
+    <system:String x:Key="string_tooltip_filterME1">Mods für Mass Effect ein/ausblenden</system:String>
+    <system:String x:Key="string_tooltip_filterME2">Mods für Mass Effect 2 ein/ausblenden</system:String>
+    <system:String x:Key="string_tooltip_filterME3">Mods für Mass Effect 3 ein/ausblenden</system:String>
     <system:String x:Key="string_tooltip_someModsFailed">Das Laden einiger Mods ist fehlgeschlagen, klicke hier um den Grund dazu anzuzeigen</system:String>
     <system:String x:Key="string_tooltip_addAdditionalTarget">Ein zusätzliches Installationsziel hinzufügen</system:String>
     <system:String x:Key="string_tooltip_targetInfo">Mods und Dateien dieses Ziels anzeigen und verwalten</system:String>
