@@ -190,7 +190,7 @@
     <system:String x:Key="string_gameExecutable">Game executable</system:String>
     <system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Cannot modify binkw32 files while {0} is running.</system:String>
     <!-- 0 = Name of game (Mass Effect (2/3)) -->
-    <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Launch the currently selected target.&#10;If this is an origin copy, the game may reboot to the Origin target</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Launch the currently selected target.&#10;If this is an Origin copy, the game may reboot to the Origin target</system:String>
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Apply this mod to the game</system:String>
     <system:String x:Key="string_tooltip_currentTarget">Current modding target</system:String>
     <system:String x:Key="string_tooltip_reloadModsFromLibrary">Reload mods from mod library</system:String>
