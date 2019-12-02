@@ -49,7 +49,10 @@
                     <TextBlock Text="BioGame" ToolTip="Attributes that modify gameplay"/>
                 </TabItem.Header>
                 <ScrollViewer>
-                <ItemsControl ItemsSource="{Binding BioGameEntries}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <ItemsControl ItemsSource="{Binding BioGameEntries}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                              VirtualizingStackPanel.IsVirtualizing="True"
+                              ScrollViewer.CanContentScroll="True"
+                              VirtualizingStackPanel.VirtualizationMode="Recycling">
                     <ItemsControl.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>

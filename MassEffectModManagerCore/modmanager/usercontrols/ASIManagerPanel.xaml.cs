@@ -225,7 +225,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public bool UIOnly_Installed { get; set; }
             public bool UIOnly_Outdated { get; set; }
-            public string InstallStatus => UIOnly_Outdated ? "Installed, outdated" : (UIOnly_Installed ? "Installed" : "");
+            public string InstallStatus => UIOnly_Outdated ? "Outdated version installed" : (UIOnly_Installed ? "Installed" : "");
             public InstalledASIMod InstalledInfo { get; set; }
 
             public Brush BackgroundColor
@@ -401,11 +401,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public List<ASIModUpdateGroup> ASIModUpdateGroups { get; internal set; }
 
             private List<InstalledASIMod> InstalledASIs;
+
+            public ICommand InstallLoaderCommand { get; }
             public ASIGame(Mod.MEGame game, List<GameTarget> targets)
             {
                 Game = game;
                 GameTargets.ReplaceAll(targets);
                 SelectedTarget = targets.FirstOrDefault(x => x.RegistryActive);
+                InstallLoaderCommand = new GenericCommand(InstallLoader, CanInstallLoader);
+            }
+
+            private bool CanInstallLoader() => SelectedTarget != null && !LoaderInstalled;
+
+
+            private void InstallLoader()
+            {
+                Utilities.InstallBinkBypass(SelectedTarget);
+                RefreshBinkStatus();
             }
 
             private void RefreshBinkStatus()
