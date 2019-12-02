@@ -45,18 +45,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool InstallInProgress { get; set; }
         public string InstallButtonText { get; set; }
 
+        public string InstallLoaderText { get; set; }
 
-        public bool ME1LoaderInstalled { get; set; }
-        public bool ME2LoaderInstalled { get; set; }
-        public bool ME3LoaderInstalled { get; set; }
-
-        public string ME1LoaderStatusText => ME1LoaderInstalled ? "ASI Loader Installed" : "ASI Loader Not Installed";
-        public string ME2LoaderStatusText => ME2LoaderInstalled ? "ASI Loader Installed" : "ASI Loader Not Installed";
-        public string ME3LoaderStatusText => ME3LoaderInstalled ? "ASI Loader Installed" : "ASI Loader Not Installed";
-
-        public GameTarget ME1Target { get; set; }
-        public GameTarget ME2Target { get; set; }
-        public GameTarget ME3Target { get; set; }
 
         public ObservableCollectionExtended<ASIGame> Games { get; } = new ObservableCollectionExtended<ASIGame>();
 
@@ -184,6 +174,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     RefreshASIStates();
+                    UpdateSelectionTexts(null);
                 });
                 if (isStaged)
                 {
@@ -372,6 +363,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Games.Add(new ASIGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1).ToList()));
             Games.Add(new ASIGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2).ToList()));
             Games.Add(new ASIGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3).ToList()));
+            UpdateSelectionTexts(null);
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -393,6 +385,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public ObservableCollectionExtended<object> DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();
             public GameTarget SelectedTarget { get; set; }
             public object SelectedASI { get; set; }
+            public string InstallLoaderText { get; set; }
+
+            public string ASILoaderText
+            {
+                get
+                {
+                    if (LoaderInstalled) return "ASI loader installed. ASI mods will load";
+                    return "ASI loader not installed. ASI mods will not load";
+                }
+            }
 
             public bool LoaderInstalled { get; set; }
             public string GameName => Utilities.GetGameName(Game);
@@ -406,9 +408,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SelectedTarget = targets.FirstOrDefault(x => x.RegistryActive);
             }
 
-            private void RefreshBinkStatuses()
+            private void RefreshBinkStatus()
             {
                 LoaderInstalled = SelectedTarget != null && Utilities.CheckIfBinkw32ASIIsInstalled(SelectedTarget);
+                InstallLoaderText = LoaderInstalled ? "Loader installed" : "Install loader";
             }
 
             private void MapInstalledASIs()
@@ -509,6 +512,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (asi != null) return updateGroup;
                 }
                 return null;
+            }
+
+
+            //Do not delete - fody will link this
+            public void OnSelectedTargetChanged()
+            {
+                if (SelectedTarget != null)
+                {
+                    RefreshBinkStatus();
+                }
             }
 
             private void InstallASI(ASIMod asiToInstall, InstalledASIMod oldASIToRemoveOnSuccess = null, Action operationCompletedCallback = null)

@@ -79,5 +79,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             ChangeLanguage("int");
         }
+
+        private void ChangeLang_FRA_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage("fra");
+        }
+
+        private void ChangeLang_CZE_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage("fra");
+        }
+
+        private void ChangeLang_ESN_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage("esn");
+        }
     }
 }

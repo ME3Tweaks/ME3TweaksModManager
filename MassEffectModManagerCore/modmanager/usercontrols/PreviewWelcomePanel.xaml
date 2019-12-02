@@ -6,14 +6,15 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-                       MaxWidth="400">
+                       MaxWidth="450">
     <StackPanel Margin="5">
-        <TextBlock Text="Welcome to ME3Tweaks Mod Manager" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10"/>
+        <TextBlock Text="{DynamicResource string_previewPanelTitle}" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10"/>
         <TextBlock TextWrapping="Wrap" Text="{DynamicResource string_previewPanelIntro}"/>
 
-        <TextBlock Text="Select your language" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
+        <TextBlock Text="{DynamicResource string_selectYourLanguage}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
         <Grid HorizontalAlignment="Center" Margin="0,5">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -24,33 +25,39 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Button Margin="2" Click="ChangeLang_INT_Clicked">
+            <Button Grid.Column="0" Margin="2" Click="ChangeLang_DEU_Clicked">
+                <StackPanel>
+                    <Image Source="/modmanager/localizations/icons/german.png"/>
+                    <TextBlock Text="Deutsch" TextAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Margin="2" Click="ChangeLang_INT_Clicked">
                 <StackPanel>
                     <Image Source="/modmanager/localizations/icons/english.png"/>
                     <TextBlock Text="English" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
-
-            <Button Grid.Column="1" Margin="2" Click="ChangeLang_POL_Clicked">
+            <Button Grid.Column="2" Margin="2" Click="ChangeLang_FRA_Clicked">
+                <StackPanel>
+                    <Image Source="/modmanager/localizations/icons/french.png"/>
+                    <TextBlock Text="French" TextAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="3" Margin="2" Click="ChangeLang_POL_Clicked">
                 <StackPanel >
                     <Image Source="/modmanager/localizations/icons/polish.png"/>
                     <TextBlock Text="Polski" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="2" Margin="2" Click="ChangeLang_RUS_Clicked" IsEnabled="False" ToolTip="Translation is in progress but is not yet available">
+            <Button Grid.Column="4" Margin="2" Click="ChangeLang_RUS_Clicked" IsEnabled="False" ToolTip="Translation is in progress but is not yet available">
                 <StackPanel>
                     <Image Source="/modmanager/localizations/icons/russian.png"/>
                     <TextBlock Text="Russian" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="3" Margin="2" Click="ChangeLang_DEU_Clicked">
-                <StackPanel>
-                    <Image Source="/modmanager/localizations/icons/german.png"/>
-                    <TextBlock Text="Deutsch" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
+            
         </Grid>
         <TextBlock Text="{DynamicResource string_howToChangeLanguage}" TextWrapping="Wrap"/>
 

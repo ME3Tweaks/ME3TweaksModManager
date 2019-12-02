@@ -2104,6 +2104,18 @@ namespace MassEffectModManagerCore
             {
                 lang = @"deu";
             }
+            else if (sender == LanguageESN_MenuItem)
+            {
+                lang = @"esn";
+            }
+            else if (sender == LanguageFRA_MenuItem)
+            {
+                lang = @"fra";
+            }
+            else if (sender == LanguageCZE_MenuItem)
+            {
+                lang = @"cze";
+            }
 
             Settings.Language = lang;
             Settings.Save();

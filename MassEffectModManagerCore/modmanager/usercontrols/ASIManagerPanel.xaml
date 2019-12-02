@@ -54,9 +54,9 @@
                 <ProgressBar IsIndeterminate="True"  VerticalAlignment="Stretch" Margin="0,3,3,0"  VerticalContentAlignment="Center" Visibility="{Binding InstallInProgress, Converter={StaticResource BoolToVisibilityConverter}}"/>
             </DockPanel>
 
-            <Border DockPanel.Dock="Right" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" Background="LightGray" BorderThickness="1" Margin="3,26,3,0">
+            <Border DockPanel.Dock="Right" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" Background="LightGray" BorderThickness="1,5,1,1" Margin="3,26,3,0">
                 <DockPanel Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" >
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="3,5">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="3,5" Background="Pink">
                         <Button Margin="3,0" Padding="7,5" Content="View source code" Command="{Binding SourceCodeCommand}"/>
                         <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText, FallbackValue='Install ASI'}" Command="{Binding InstallCommand}"/>
                     </StackPanel>
@@ -92,7 +92,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <ComboBox Grid.Row="1" Grid.Column="2"
+                      <ComboBox Grid.Row="1" Grid.Column="2"
                       IsEnabled="{Binding InstallInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                       ItemsSource="{Binding GameTargets}" 
                       SelectedItem="{Binding SelectedTarget}" 
@@ -100,8 +100,13 @@
                       ItemTemplate="{StaticResource TargetSelectorTemplate}" 
                       ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding ASILoaderText}"/>
-                        <ListBox Grid.Row="3" Grid.Column="2" BorderThickness="1" Name="ME3_InstalledASIs_List" ItemsSource="{Binding DisplayedASIMods}"
+                        <DockPanel Grid.Row ="2" Margin="0,5">
+                            <Button Content="{Binding InstallLoaderText}" DockPanel.Dock="Right" IsEnabled="{Binding LoaderInstalled, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
+                            <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center"/>
+
+                        </DockPanel>
+
+                      <ListBox Grid.Row="3" Grid.Column="2" BorderThickness="1" Name="ME3_InstalledASIs_List" ItemsSource="{Binding DisplayedASIMods}"
                              ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
                              HorizontalContentAlignment="Stretch" SelectionChanged="ASIManagerLists_SelectedChanged" />
 

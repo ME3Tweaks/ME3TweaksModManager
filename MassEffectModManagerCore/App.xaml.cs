@@ -259,7 +259,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private static string[] SupportedLanguages = { "int", "pol", "rus", "deu" };
+        private static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra" };
         public static Dictionary<string, string> ServerManifest { get; set; }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;

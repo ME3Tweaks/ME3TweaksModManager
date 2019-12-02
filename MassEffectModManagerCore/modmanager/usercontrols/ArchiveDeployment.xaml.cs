@@ -31,6 +31,7 @@ using UserControl = System.Windows.Controls.UserControl;
 using Microsoft.Win32;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.localizations;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -469,6 +470,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 item.ItemText = $@"{M3L.GetString(M3L.string_checkingTexturesInMod)} [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
                 {
+                    Log.Information(@"Checking file for broken textures: " + f);
                     var package = MEPackageHandler.OpenMEPackage(f);
                     var textures = package.Exports.Where(x => x.IsTexture()).ToList();
                     foreach (var texture in textures)
@@ -487,6 +489,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 catch (Exception e)
                                 {
+                                    Log.Information(@"Found broken texture: " + texture.GetInstancedFullPath);
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
