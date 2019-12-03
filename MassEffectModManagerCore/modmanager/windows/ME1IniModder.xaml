@@ -90,8 +90,8 @@
         <DockPanel Grid.Row="1" HorizontalAlignment="Stretch" Margin="3">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right" VerticalAlignment="Center">
                 <TextBlock Name="TextBlock_Status" Text="Make sure to press save to save your changes" VerticalAlignment="Center"/>
-                <Button Content="Reset All" Click="Reset_Click" Padding="4" Margin="10,0,0,0" ToolTip="Resets all properties that this tool can modify to default values"/>
-                <Button Content="Save" Click="Save_Click" Padding="4" Margin="10,0,5,0" ToolTip="Commits your edits to Mass Effect's configuration files"/>
+                <Button Content="Reset All" Click="Reset_Click" Padding="10,4" Margin="10,0,0,0" ToolTip="Resets all properties that this tool can modify to default values"/>
+                <Button Content="Save" Click="Save_Click" Padding="10,4" Margin="10,0,5,0" ToolTip="Commits your edits to Mass Effect's configuration files"/>
             </StackPanel>
         </DockPanel>
     </Grid>

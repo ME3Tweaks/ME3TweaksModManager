@@ -334,7 +334,7 @@
                         <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="2" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}">
                             <fa:ImageAwesome  Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
                         </Button>
-                        <Button Content ="ME3" DockPanel.Dock="Right" BorderThickness="2,2,2,0" Click="ToggleME3Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME3}">
+                        <Button Content ="ME3" DockPanel.Dock="Right" Click="ToggleME3Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME3}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
                                     <Style.Triggers>
@@ -342,18 +342,20 @@
                                             <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"/>
                                             <Setter  Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
                                             <Setter  Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
-
+                                            <Setter  Property="BorderThickness" Value="1"/>
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding ME3ModsVisible}" Value="True">
                                             <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}"/>
                                             <Setter  Property="Foreground" Value="White"/>
                                             <Setter  Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
+                                            <Setter  Property="BorderThickness" Value="2,2,2,1"/>
+
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content ="ME2" DockPanel.Dock="Right" BorderThickness="2,2,2,0" Click="ToggleME2Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME2}">
+                        <Button Content ="ME2" DockPanel.Dock="Right" Click="ToggleME2Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME2}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
                                     <Style.Triggers>
@@ -361,17 +363,19 @@
                                             <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"/>
                                             <Setter  Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
                                             <Setter  Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                                            <Setter  Property="BorderThickness" Value="1"/>
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding ME2ModsVisible}" Value="True">
                                             <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}"/>
                                             <Setter  Property="Foreground" Value="White"/>
                                             <Setter  Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
+                                            <Setter  Property="BorderThickness" Value="2,2,2,1"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content ="ME1" DockPanel.Dock="Right" BorderThickness="2,2,2,0" Click="ToggleME1Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME1}">
+                        <Button Content ="ME1" DockPanel.Dock="Right" Click="ToggleME1Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME1}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
                                     <Style.Triggers>
@@ -379,11 +383,14 @@
                                             <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"/>
                                             <Setter  Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
                                             <Setter  Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                                            <Setter  Property="BorderThickness" Value="1"/>
+
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding ME1ModsVisible}" Value="True">
                                             <Setter  Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}"/>
                                             <Setter  Property="Foreground" Value="White"/>
                                             <Setter  Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
+                                            <Setter  Property="BorderThickness" Value="2,2,2,1"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
