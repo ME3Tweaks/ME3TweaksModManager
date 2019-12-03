@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager
             var sfarInstallationJobs = new List<(ModJob job, string sfarPath, Dictionary<string, string> installationMapping)>();
             foreach (var job in InstallationJobs)
             {
-                Log.Information($"Preprocessing installation job: {job.Header}");
+                Log.Information($@"Preprocessing installation job: {job.Header}");
                 var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected).ToList();
                 var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
@@ -70,11 +70,11 @@ namespace MassEffectModManagerCore.modmanager
                                     switch (altFile.Operation)
                                     {
                                         case AlternateFile.AltFileOperation.OP_NOINSTALL:
-                                            CLog.Information($"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                            CLog.Information($@"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
                                             altApplied = true;
                                             break;
                                         case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                                            CLog.Information($"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                            CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
                                             installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
                                             altApplied = true;
                                             break;
@@ -99,7 +99,7 @@ namespace MassEffectModManagerCore.modmanager
                                 foreach (var fileToAdd in filesToAdd)
                                 {
                                     var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.Substring(altdlc.AlternateDLCFolder.Length).TrimStart('\\', '/'));
-                                    CLog.Information($"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
+                                    CLog.Information($@"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
                                     installationMapping[destFile] = fileToAdd;
                                 }
@@ -127,7 +127,6 @@ namespace MassEffectModManagerCore.modmanager
 
                     if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
-                        Debug.WriteLine("Building installation queue for header: " + job.Header);
                         string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], "CookedPCConsole", "Default.sfar");
 
 
@@ -167,7 +166,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
                     else
                     {
-                        Log.Warning($"DLC not installed, skipping: {job.Header}");
+                        Log.Warning($@"DLC not installed, skipping: {job.Header}");
                     }
 
                     #endregion
@@ -175,7 +174,7 @@ namespace MassEffectModManagerCore.modmanager
                 else
                 {
                     //?? Header
-                    throw new Exception("Unsupported installation job header! " + job.Header);
+                    throw new Exception(@"Unsupported installation job header! " + job.Header);
                 }
             }
 
@@ -184,7 +183,7 @@ namespace MassEffectModManagerCore.modmanager
 
         private void buildInstallationQueue(ModJob job, Dictionary<string, string> installationMapping, bool isSFAR)
         {
-            CLog.Information("Building installation queue for " + job.Header, Settings.LogModInstallation);
+            CLog.Information(@"Building installation queue for " + job.Header, Settings.LogModInstallation);
             foreach (var entry in job.FilesToInstall)
             {
                 //Key is destination, value is source file
@@ -201,11 +200,11 @@ namespace MassEffectModManagerCore.modmanager
                         switch (altFile.Operation)
                         {
                             case AlternateFile.AltFileOperation.OP_NOINSTALL:
-                                CLog.Information($"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                CLog.Information($@"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
                                 altApplied = true;
                                 break;
                             case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                                CLog.Information($"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
                                 installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
                                 altApplied = true;
                                 break;
@@ -219,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                 installationMapping[destFile] = sourceFile;
-                CLog.Information($"Adding {job.Header} file to installation {(isSFAR ? "SFAR" : "unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation);
+                CLog.Information($@"Adding {job.Header} file to installation {(isSFAR ? @"SFAR" : @"unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation);
 
             }
         }
@@ -233,7 +232,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             if (gameTarget.Game != Game)
             {
-                throw new Exception("Cannot validate a mod against a gametarget that is not for its game");
+                throw new Exception(@"Cannot validate a mod against a gametarget that is not for its game");
             }
 
             var requiredDLC = RequiredDLC.Select(x =>

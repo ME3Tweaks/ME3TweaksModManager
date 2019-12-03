@@ -23,9 +23,9 @@ namespace MassEffectModManagerCore.modmanager
             if (!NexusModsUtilities.HasAPIKey) return false;
             if (checkedEndorsementStatus) return IsEndorsed;
             var client = NexusModsUtilities.GetClient();
-            string gamename = "masseffect";
-            if (Game == MEGame.ME2) gamename += "2";
-            if (Game == MEGame.ME3) gamename += "3";
+            string gamename = @"masseffect";
+            if (Game == MEGame.ME2) gamename += @"2";
+            if (Game == MEGame.ME3) gamename += @"3";
             var modinfo = await client.Mods.GetMod(gamename, NexusModID);
             if (modinfo.User.MemberID == currentuserid)
             {
@@ -65,33 +65,33 @@ namespace MassEffectModManagerCore.modmanager
             bw.DoWork += (a, b) =>
             {
                 var client = NexusModsUtilities.GetClient();
-                string gamename = "masseffect";
-                if (Game == MEGame.ME2) gamename += "2";
-                if (Game == MEGame.ME3) gamename += "3";
+                string gamename = @"masseffect";
+                if (Game == MEGame.ME2) gamename += @"2";
+                if (Game == MEGame.ME3) gamename += @"3";
                 string telemetryOverride = null;
                 try
                 {
                     if (endorse)
                     {
-                        client.Mods.Endorse(gamename, NexusModID, "1.0").Wait();
+                        client.Mods.Endorse(gamename, NexusModID, @"1.0").Wait();
                     }
                     else
                     {
-                        client.Mods.Unendorse(gamename, NexusModID, "1.0").Wait();
+                        client.Mods.Unendorse(gamename, NexusModID, @"1.0").Wait();
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error endorsing/unendorsing: " + e.ToString());
+                    Log.Error(@"Error endorsing/unendorsing: " + e.ToString());
                     telemetryOverride = e.ToString();
                 }
 
                 checkedEndorsementStatus = false;
                 IsEndorsed = GetEndorsementStatus(currentuserid).Result ?? false;
-                Analytics.TrackEvent("Set endorsement for mod", new Dictionary<string, string>
+                Analytics.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
-                    {"Endorsed", endorse.ToString() },
-                    {"Succeeded", telemetryOverride ?? (endorse == IsEndorsed).ToString() }
+                    {@"Endorsed", endorse.ToString() },
+                    {@"Succeeded", telemetryOverride ?? (endorse == IsEndorsed).ToString() }
                 });
 
             };

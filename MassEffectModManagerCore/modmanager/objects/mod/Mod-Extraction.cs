@@ -32,9 +32,9 @@ namespace MassEffectModManagerCore.modmanager
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
             Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
         {
-            if (!IsInArchive) throw new Exception("Cannot extract a mod that is not part of an archive.");
+            if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
             compressPackages &= Game == MEGame.ME3; //ME3 ONLY FOR NOW
-            var archiveFile = archivePath.EndsWith(".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+            var archiveFile = archivePath.EndsWith(@".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
             using (archiveFile)
             {
                 var fileIndicesToExtract = new List<int>();
@@ -42,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (!IsVirtualized)
                 {
-                    referencedFiles.Add("moddesc.ini");
+                    referencedFiles.Add(@"moddesc.ini");
                 }
                 //unsure if this is required?? doesn't work for MEHEM EXE
                 //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     if (referencedFiles.Contains(info.FileName))
                     {
-                        Log.Information("Adding file to extraction list: " + info.FileName);
+                        Log.Information(@"Adding file to extraction list: " + info.FileName);
                         fileIndicesToExtract.Add(info.Index);
                     }
                 }
@@ -156,20 +156,20 @@ namespace MassEffectModManagerCore.modmanager
                     string entryPath = entryInfo.FileName;
                     if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                     {
-                        Log.Information("Extracting vpatch file at index " + entryInfo.Index);
+                        Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
                         return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                     }
 
                     if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
                     {
-                        Log.Information("Extracting file to trash (not used): " + entryPath);
-                        return Path.Combine(Utilities.GetTempPath(), "Trash", "trashfile");
+                        Log.Information(@"Extracting file to trash (not used): " + entryPath);
+                        return Path.Combine(Utilities.GetTempPath(), @"Trash", @"trashfile");
                     }
 
                     if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
                     {
                         var outfile = ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile;
-                        Log.Information("Extracting file with redirection: " + entryPath + " to " + outfile);
+                        Log.Information($@"Extracting file with redirection: {entryPath} {outfile}");
                         return Path.Combine(outputFolderPath, outfile);
                     }
 
@@ -193,7 +193,7 @@ namespace MassEffectModManagerCore.modmanager
                 NamedBackgroundWorker compressionThread;
                 if (compressPackages)
                 {
-                    compressionThread = new NamedBackgroundWorker("ImportingCompressionThread");
+                    compressionThread = new NamedBackgroundWorker(@"ImportingCompressionThread");
                     compressionThread.DoWork += (a, b) =>
                     {
                         try
@@ -215,12 +215,12 @@ namespace MassEffectModManagerCore.modmanager
                                 if (!shouldNotCompress)
                                 {
                                     compressedPackageCallback?.Invoke($"Compressing {Path.GetFileName(package)}", compressedPackageCount, numberOfPackagesToCompress);
-                                    Log.Information("Compressing package: " + package);
+                                    Log.Information(@"Compressing package: " + package);
                                     p.save(true);
                                 }
                                 else
                                 {
-                                    Log.Information("Not compressing package due to file containing compressed textures: " + package);
+                                    Log.Information(@"Not compressing package due to file containing compressed textures: " + package);
                                 }
 
 
@@ -239,7 +239,7 @@ namespace MassEffectModManagerCore.modmanager
                     };
                     compressionThread.RunWorkerAsync();
                 }
-                archiveFile.FileExtractionFinished += async (sender, args) =>
+                archiveFile.FileExtractionFinished += (sender, args) =>
                 {
                     if (compressPackages)
                     {
@@ -256,11 +256,11 @@ namespace MassEffectModManagerCore.modmanager
 
 
                 archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
-                Log.Information("File extraction completed.");
+                Log.Information(@"File extraction completed.");
                 compressionQueue?.CompleteAdding();
                 if (compressPackages && numberOfPackagesToCompress > 0 && numberOfPackagesToCompress > compressedPackageCount)
                 {
-                    Log.Information("Waiting for compression of packages to complete.");
+                    Log.Information(@"Waiting for compression of packages to complete.");
                     while (!compressionQueue.IsCompleted)
                     {
                         lock (compressionCompletedSignaler)
@@ -269,21 +269,21 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    Log.Information("Package compression has completed.");
+                    Log.Information(@"Package compression has completed.");
                 }
                 ModPath = outputFolderPath;
                 if (IsVirtualized)
                 {
                     var parser = new IniDataParser().Parse(VirtualizedIniText);
-                    parser["ModInfo"]["modver"] = ModVersionString; //In event relay service resolved this
-                    File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), parser.ToString());
+                    parser[@"ModInfo"][@"modver"] = ModVersionString; //In event relay service resolved this
+                    File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), parser.ToString());
                     IsVirtualized = false; //no longer virtualized
                 }
 
                 if (ExeExtractionTransform != null)
                 {
-                    var vpat = Utilities.GetCachedExecutablePath("vpat.exe");
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
+                    var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");
+                    Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
 
                     //Handle VPatching
                     foreach (var transform in ExeExtractionTransform.VPatches)
@@ -292,19 +292,19 @@ namespace MassEffectModManagerCore.modmanager
                         var inputfile = Path.Combine(ModPath, transform.inputfile);
                         var outputfile = Path.Combine(ModPath, transform.outputfile);
 
-                        var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\"";
+                        var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\""; //do not localize
                         Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
-                        Log.Information("Vpatching file into alternate: " + inputfile + " to " + outputfile);
-                        updateTextCallback?.Invoke("VPatching into alternate: " + Path.GetFileName(inputfile));
+                        Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
+                        updateTextCallback?.Invoke($"VPatching into alternate: {Path.GetFileName(inputfile)}");
                         Utilities.RunProcess(vpat, args, true, false, false, true);
                     }
 
                     if (ExeExtractionTransform.PostTransformModdesc != null)
                     {
                         //fetch online moddesc for this mod.
-                        Log.Information("Fetching post-transform third party moddesc.");
+                        Log.Information(@"Fetching post-transform third party moddesc.");
                         var moddesc = OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
-                        File.WriteAllText(Path.Combine(ModPath, "moddesc.ini"), moddesc);
+                        File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), moddesc);
                     }
                 }
 
@@ -335,25 +335,25 @@ namespace MassEffectModManagerCore.modmanager
             if (rcw != null)
             {
                 //Write RCW
-                rcw.WriteToFile(Path.Combine(modpath, ModName + ".me2mod"));
+                rcw.WriteToFile(Path.Combine(modpath, ModName + @".me2mod"));
 
                 //Write moddesc.ini
                 IniData ini = new IniData();
-                ini["ModManager"]["cmmver"] = App.HighestSupportedModDesc.ToString();
-                ini["ModInfo"]["game"] = "ME2";
-                ini["ModInfo"]["modname"] = ModName;
-                ini["ModInfo"]["moddev"] = ModDeveloper;
-                ini["ModInfo"]["moddesc"] = Utilities.ConvertNewlineToBr(ModDescription);
-                ini["ModInfo"]["modver"] = "1.0"; //Not going to bother looking this up to match the source
+                ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
+                ini[@"ModInfo"][@"game"] = @"ME2";
+                ini[@"ModInfo"][@"modname"] = ModName;
+                ini[@"ModInfo"][@"moddev"] = ModDeveloper;
+                ini[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(ModDescription);
+                ini[@"ModInfo"][@"modver"] = @"1.0"; //Not going to bother looking this up to match the source
 
-                ini["ME2_RCWMOD"]["modfile"] = ModName + ".me2mod";
-                var modDescPath = Path.Combine(modpath, "moddesc.ini");
+                ini[@"ME2_RCWMOD"][@"modfile"] = ModName + @".me2mod";
+                var modDescPath = Path.Combine(modpath, @"moddesc.ini");
                 new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
             }
             else
             {
-                Log.Error("Tried to extract RCW mod to M3 mod but the job was empty.");
-                Crashes.TrackError(new Exception("Tried to extract RCW mod to M3 mod but the job was empty."));
+                Log.Error(@"Tried to extract RCW mod to M3 mod but the job was empty.");
+                Crashes.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
             }
         }
     }
