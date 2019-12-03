@@ -69,6 +69,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     ALOTInstalled = true;
                     ALOTVersion = alotInfo.ToString();
+                    if (alotInfo.MEUITMVER > 0)
+                    {
+                        MEUITMInstalled = true;
+                        MEUITMVersion = alotInfo.MEUITMVER;
+                    }
                 }
                 Log.Information("Getting game source for target " + TargetPath);
                 var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
@@ -308,6 +313,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return "Removes this target from Mod Manager's list of available targets for modding";
             }
         }
+
+        public bool MEUITMInstalled { get; }
+        public int MEUITMVersion { get; }
 
         public override int GetHashCode()
         {

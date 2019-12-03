@@ -24,6 +24,11 @@ namespace MassEffectModManagerCore.modmanager.gameini
             return Sections.FirstOrDefault(x => x.Header == sectionname);
         }
 
+        public Section GetSection(Section section)
+        {
+            return Sections.FirstOrDefault(x => x.Header == section.Header);
+        }
+
         public static DuplicatingIni LoadIni(string iniFile)
         {
             return ParseIni(File.ReadAllText(iniFile));

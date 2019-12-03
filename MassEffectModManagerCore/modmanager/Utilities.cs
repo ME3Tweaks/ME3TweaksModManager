@@ -1052,8 +1052,9 @@ namespace MassEffectModManagerCore
                  || s.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
-        internal static bool SetLODs(Mod.MEGame game, bool highres, bool limit2k, bool softshadows)
+        internal static bool SetLODs(GameTarget target, bool highres, bool limit2k, bool softshadows)
         {
+            var game = target.Game;
             if (game != Mod.MEGame.ME1 && (softshadows || limit2k))
             {
                 throw new Exception("Cannot use softshadows or limit2k parameter of SetLODs() with a game that is not ME1");
@@ -1087,6 +1088,7 @@ namespace MassEffectModManagerCore
             DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
             if (game > Mod.MEGame.ME1)
             {
+                #region setting systemsetting for me2/3
                 string operation = null;
                 var iniList = game == Mod.MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
                 var section = ini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
@@ -1115,6 +1117,9 @@ namespace MassEffectModManagerCore
                             section.Entries.Add(newItem); //doesn't exist, add new item.
                         }
                     }
+
+
+
                     operation = "Set high-res lod settings in gamersettings.ini";
 
                 }
@@ -1123,7 +1128,26 @@ namespace MassEffectModManagerCore
                     //section exists, downgrading
                     section.Entries.RemoveAll(x => iniList.Any(i => i.Key == x.Key));
                     operation = "Removed high-res lod settings from gamersettings.ini";
+                }
+                #endregion
 
+                //Update GFx (non LOD) settings
+                if (highres)
+                {
+                    var hqKeys = target.Game == Mod.MEGame.ME2 ? ME2HQGraphicsSettings : ME3HQGraphicsSettings;
+                    var hqSection = ini.GetSection(@"SystemSettings");
+                    foreach (var entry in hqKeys)
+                    {
+                        var matchingKey = hqSection.Entries.FirstOrDefault(x => x.Key == entry.Key);
+                        if (matchingKey != null)
+                        {
+                            matchingKey.Value = entry.Value; //overwrite value
+                        }
+                        else
+                        {
+                            hqSection.Entries.Add(entry); //doesn't exist, add new item.
+                        }
+                    }
                 }
 
                 File.WriteAllText(settingspath, ini.ToString());
@@ -1154,8 +1178,38 @@ namespace MassEffectModManagerCore
                     }
                 }
 
+                //Update GFx (non LOD) settings
+                if (highres)
+                {
+                    var me1hq = GetME1HQSettings(target.MEUITMInstalled, softshadows);
+                    foreach (var hqSection in me1hq)
+                    {
+                        var existingSect = ini.GetSection(hqSection);
+                        if (existingSect != null)
+                        {
+                            foreach (var item in hqSection.Entries)
+                            {
+                                var matchingKey = existingSect.Entries.FirstOrDefault(x => x.Key == item.Key);
+                                if (matchingKey != null)
+                                {
+                                    matchingKey.Value = item.Value; //overwrite value
+                                }
+                                else
+                                {
+                                    section.Entries.Add(item); //doesn't exist, add new item.
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //!!! Error
+                            Log.Error(@"Error: Could not find ME1 high quality settings key in bioengine.ini: " + hqSection.Header);
+                        }
+                    }
+                }
                 File.WriteAllText(settingspath, ini.ToString());
                 Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
+
             }
 
             return true;

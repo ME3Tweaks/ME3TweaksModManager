@@ -332,7 +332,7 @@ namespace MassEffectModManagerCore
             return false;
         }
 
-        private void EnableME1Console()
+        private void EnableME1Console(string consoleKeyValue = @"Tilde", string typeKeyValue = @"Tab")
         {
             var installed = InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1);
             if (installed)
@@ -347,15 +347,14 @@ namespace MassEffectModManagerCore
                         var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
                         if (consoleKey == null)
                         {
-                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey=Tilde"));
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey=" + consoleKeyValue));
                         }
 
                         var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
                         if (typeKey == null)
                         {
-                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey=Tab"));
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey=" + typeKeyValue));
                         }
-
 
                         try
                         {
@@ -1804,8 +1803,11 @@ namespace MassEffectModManagerCore
                         if (hresult == -3) return; //do nothing.
                         if (hresult == 0)
                         {
+
                             //rescan
                             PopulateTargets(SelectedGameTarget);
+
+                            UpdateLODsForTarget(SelectedGameTarget);
                         }
 
                         Analytics.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
@@ -1818,6 +1820,38 @@ namespace MassEffectModManagerCore
                     {
                         Log.Warning(@"Win32 exception occured updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
                     }
+                }
+            }
+        }
+
+        private void UpdateLODsForTarget(GameTarget selectedGameTarget, bool me12k = false)
+        {
+            if (!selectedGameTarget.ALOTInstalled)
+            {
+                Utilities.SetLODs(selectedGameTarget, false, false, false);
+            }
+            else
+            {
+                if (selectedGameTarget.Game == Mod.MEGame.ME1)
+                {
+                    if (selectedGameTarget.MEUITMInstalled)
+                    {
+                        //detect soft shadows/meuitm
+                        var branchingPCFCommon = Path.Combine(selectedGameTarget.TargetPath, @"Engine", @"Shaders", @"BranchingPCFCommon.usf");
+                        if (File.Exists(branchingPCFCommon))
+                        {
+                            var md5 = Utilities.CalculateMD5(branchingPCFCommon);
+                            Utilities.SetLODs(selectedGameTarget, true, me12k, md5 == @"10db76cb98c21d3e90d4f0ffed55d424");
+                            return;
+                        }
+                    }
+                    //set default HQ lod
+                    Utilities.SetLODs(selectedGameTarget, true, me12k, false);
+                }
+                else
+                {
+                    //me2/3
+                    Utilities.SetLODs(selectedGameTarget, true, false, false);
                 }
             }
         }
