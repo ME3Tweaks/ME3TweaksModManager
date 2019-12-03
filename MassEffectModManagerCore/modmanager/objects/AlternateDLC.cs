@@ -10,7 +10,7 @@ using System.Configuration;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
-    [DebuggerDisplay("AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
+    [DebuggerDisplay(@"AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
     public class AlternateDLC : INotifyPropertyChanged
     {
         public enum AltDLCOperation
@@ -64,36 +64,36 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
             //todo: if statements to check these.
-            if (properties.TryGetValue("FriendlyName", out string friendlyName))
+            if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
             {
                 FriendlyName = friendlyName;
             }
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
-                Log.Error($"Alternate DLC does not specify FriendlyName. Mods targeting moddesc >= 6.0 require FriendlyName");
+                Log.Error($@"Alternate DLC does not specify FriendlyName. Mods targeting moddesc >= 6.0 require FriendlyName");
                 ValidAlternate = false;
                 LoadFailedReason = $"At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.";
                 return;
             }
 
-            if (!Enum.TryParse(properties["Condition"], out Condition))
+            if (!Enum.TryParse(properties[@"Condition"], out Condition))
             {
-                Log.Error("Alternate DLC specifies unknown/unsupported condition: "+ properties["Condition"]);
+                Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}");
                 ValidAlternate = false;
-                LoadFailedReason = "Alternate DLC specifies unknown/unsupported condition: " + properties["Condition"];
+                LoadFailedReason = "Alternate DLC specifies unknown/unsupported condition: " + properties[@"Condition"];
                 return;
             }
 
-            if (!Enum.TryParse(properties["ModOperation"], out Operation))
+            if (!Enum.TryParse(properties[@"ModOperation"], out Operation))
             {
-                Log.Error("Alternate DLC specifies unknown/unsupported operation: " + properties["ModOperation"]);
+                Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}");
                 ValidAlternate = false;
-                LoadFailedReason = "Alternate DLC specifies unknown/unsupported operation: " + properties["ModOperation"];
+                LoadFailedReason = $"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}";
                 return;
             }
 
-            if (properties.TryGetValue("Description", out string description))
+            if (properties.TryGetValue(@"Description", out string description))
             {
                 Description = description;
             }
@@ -106,32 +106,32 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
-            if (properties.TryGetValue("ModAltDLC", out string altDLCFolder))
+            if (properties.TryGetValue(@"ModAltDLC", out string altDLCFolder))
             {
                 AlternateDLCFolder = altDLCFolder.Replace('/', '\\');
             }
             else
             {
-                Log.Error("Alternate DLC does not specify ModAltDLC but is required");
+                Log.Error(@"Alternate DLC does not specify ModAltDLC but is required");
                 ValidAlternate = false;
                 LoadFailedReason = $"Alternate DLC {FriendlyName} does not declare ModAltDLC but it is required for all Alternate DLC.";
                 return;
             }
 
-            if (properties.TryGetValue("ModDestDLC", out string destDLCFolder))
+            if (properties.TryGetValue(@"ModDestDLC", out string destDLCFolder))
             {
                 DestinationDLCFolder = destDLCFolder.Replace('/', '\\');
             }
             else
             {
-                Log.Error("Alternate DLC does not specify ModDestDLC but is required");
+                Log.Error(@"Alternate DLC does not specify ModDestDLC but is required");
                 ValidAlternate = false;
                 LoadFailedReason = $"Alternate DLC {FriendlyName} does not declare ModDestDLC but it is required for all Alternate DLC.";
                 return;
             }
             //todo: Validate target in mod folder
 
-            if (properties.TryGetValue("ConditionalDLC", out string conditionalDlc))
+            if (properties.TryGetValue(@"ConditionalDLC", out string conditionalDlc))
             {
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 foreach (var dlc in conditionalList)
@@ -144,9 +144,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                         continue;
                     }
                     //}
-                    if (!dlc.StartsWith("DLC_"))
+                    if (!dlc.StartsWith(@"DLC_"))
                     {
-                        Log.Error("An item in Alternate DLC's ConditionalDLC doesn't start with DLC_");
+                        Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header");
                         LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.";
                         return;
                     }
@@ -154,19 +154,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         ConditionalDLC.Add(dlc);
                     }
-
                 }
             }
-            ApplicableAutoText = properties.TryGetValue("ApplicableAutoText", out string applicableText) ? applicableText : "Auto Applied";
+            ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : "Auto Applied";
 
-            NotApplicableAutoText = properties.TryGetValue("NotApplicableAutoText", out string notApplicableText) ? notApplicableText : "Not applicable";
+            NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : "Not applicable";
 
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {
-                GroupName = properties.TryGetValue("OptionGroup", out string groupName) ? groupName : null;
+                GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
             }
 
-            if (Condition == AltDLCCondition.COND_MANUAL && properties.TryGetValue("CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
+            if (Condition == AltDLCCondition.COND_MANUAL && properties.TryGetValue(@"CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
             {
                 CheckedByDefault = cbd;
             }
@@ -174,14 +173,14 @@ namespace MassEffectModManagerCore.modmanager.objects
             //Validation
             if (string.IsNullOrWhiteSpace(AlternateDLCFolder))
             {
-                Log.Error("Alternate DLC directory (ModAltDLC) not specified");
+                Log.Error($@"Alternate DLC directory (ModAltDLC) not specified for { FriendlyName}");
                 LoadFailedReason = $"Alternate DLC for AltDLC ({FriendlyName}) is specified, but source directory (ModAltDLC) was not specified.";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(DestinationDLCFolder))
             {
-                Log.Error("Destination DLC directory (ModDestDLC) not specified");
+                Log.Error($@"Destination DLC directory (ModDestDLC) not specified for {FriendlyName}");
                 LoadFailedReason = $"Destination DLC for AltDLC ({FriendlyName}) is specified, but source directory (ModDestDLC) was not specified.";
                 return;
             }
@@ -192,7 +191,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             var localAltDlcDir = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AlternateDLCFolder);
             if (!FilesystemInterposer.DirectoryExists(localAltDlcDir, modForValidating.Archive))
             {
-                Log.Error("Alternate DLC directory (ModAltDLC) does not exist: " + AlternateDLCFolder);
+                Log.Error($@"Alternate DLC directory (ModAltDLC) does not exist: {AlternateDLCFolder}");
                 LoadFailedReason = $"Alternate DLC ({FriendlyName}) is specified, but source for alternate DLC directory does not exist: {AlternateDLCFolder}";
                 return;
             }

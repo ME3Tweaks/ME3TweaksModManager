@@ -19,6 +19,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         //Todo: Maybe support MEUITM. 
-        public override string ToString() => $"{ALOTVER}.{ALOTUPDATEVER}";
+        public override string ToString() => $@"{ALOTVER}.{ALOTUPDATEVER}";
     }
 }

@@ -9,7 +9,7 @@ using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
-    [DebuggerDisplay("AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
+    [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
     public class AlternateFile : INotifyPropertyChanged
     {
         public enum AltFileOperation
@@ -75,28 +75,28 @@ namespace MassEffectModManagerCore.modmanager.objects
         public AlternateFile(string alternateFileText, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
-            if (properties.TryGetValue("FriendlyName", out string friendlyName))
+            if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
             {
                 FriendlyName = friendlyName;
             }
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
-                Log.Error($"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
+                Log.Error($@"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
                 ValidAlternate = false;
                 LoadFailedReason = $"At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.";
                 return;
             }
 
-            if (!Enum.TryParse(properties["Condition"], out Condition))
+            if (!Enum.TryParse(properties[@"Condition"], out Condition))
             {
-                Log.Error("Alternate File specifies unknown/unsupported condition: " + properties["Condition"]);
+                Log.Error($@"Alternate File specifies unknown/unsupported condition: {properties[@"Condition"]}");
                 ValidAlternate = false;
-                LoadFailedReason = "Alternate File specifies unknown/unsupported condition: " + properties["Condition"];
+                LoadFailedReason = "Alternate File specifies unknown/unsupported condition: " + properties[@"Condition"];
                 return;
             }
 
-            if (properties.TryGetValue("ConditionalDLC", out string conditionalDlc))
+            if (properties.TryGetValue(@"ConditionalDLC", out string conditionalDlc))
             {
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 foreach (var dlc in conditionalList)
@@ -111,7 +111,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //}
                     if (!dlc.StartsWith("DLC_"))
                     {
-                        Log.Error("An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
+                        Log.Error(@"An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
                         LoadFailedReason = $"Alternate File ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.";
                         return;
                     }
@@ -123,15 +123,15 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            if (!Enum.TryParse(properties["ModOperation"], out Operation))
+            if (!Enum.TryParse(properties[@"ModOperation"], out Operation))
             {
-                Log.Error("Alternate File specifies unknown/unsupported operation: " + properties["ModOperation"]);
+                Log.Error(@"Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"]);
                 ValidAlternate = false;
-                LoadFailedReason = "Alternate File specifies unknown/unsupported operation: " + properties["ModOperation"];
+                LoadFailedReason = "Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"];
                 return;
             }
 
-            if (properties.TryGetValue("Description", out string description))
+            if (properties.TryGetValue(@"Description", out string description))
             {
                 Description = description;
             }
@@ -139,38 +139,39 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
-                Log.Error($"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing description");
+                Log.Error($@"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing description");
                 ValidAlternate = false;
                 LoadFailedReason = $"Alternate File  {FriendlyName} does not specify a Description, which is required for mods targeting cmmver >= 6.0.";
                 return;
             }
 
-            if (properties.TryGetValue("ModFile", out string modfile))
+            if (properties.TryGetValue(@"ModFile", out string modfile))
             {
                 ModFile = modfile.TrimStart('\\', '/');
             }
             else
             {
-                Log.Error("Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files");
+                Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files. Friendlyname: {FriendlyName}");
                 ValidAlternate = false;
                 LoadFailedReason = $"Alternate file {FriendlyName} does not declare ModFile but it is required for all Alternate Files.";
                 return;
             }
 
-            if (properties.TryGetValue("MultiMappingFile", out string multifilemapping))
+            //todo: implement multimap
+            if (properties.TryGetValue(@"MultiMappingFile", out string multifilemapping))
             {
                 MultiMappingFile = multifilemapping.TrimStart('\\', '/');
             }
 
-            if (properties.TryGetValue("AltFile", out string altfile))
+            if (properties.TryGetValue(@"AltFile", out string altfile))
             {
                 AltFile = altfile;
             }
-            else if (AltFile == null && properties.TryGetValue("ModAltFile", out string maltfile))
+            else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
             {
                 AltFile = maltfile;
             }
-            properties.TryGetValue("SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
+            properties.TryGetValue(@"SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
 
             //workaround for 4.5
             if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
@@ -194,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var altFileSourceExists = FilesystemInterposer.FileExists(altPath, modForValidating.Archive);
                     if (!altFileSourceExists)
                     {
-                        Log.Error("Alternate file source (AltFile) does not exist: " + AltFile);
+                        Log.Error(@"Alternate file source (AltFile) does not exist: " + AltFile);
                         ValidAlternate = false;
                         LoadFailedReason = $"Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}";
                         return;
@@ -210,22 +211,22 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            ApplicableAutoText = properties.TryGetValue("ApplicableAutoText", out string applicableText) ? applicableText : "Auto Applied";
+            ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : "Auto Applied";
 
-            NotApplicableAutoText = properties.TryGetValue("NotApplicableAutoText", out string notApplicableText) ? notApplicableText : "Not applicable";
+            NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : "Not applicable";
 
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {
-                GroupName = properties.TryGetValue("OptionGroup", out string groupName) ? groupName : null;
+                GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
             }
 
 
-            if (Condition == AltFileCondition.COND_MANUAL && properties.TryGetValue("CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
+            if (Condition == AltFileCondition.COND_MANUAL && properties.TryGetValue(@"CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
             {
                 CheckedByDefault = cbd;
             }
 
-            CLog.Information($"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
+            CLog.Information($@"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;
         }
 
