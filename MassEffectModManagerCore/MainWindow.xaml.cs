@@ -238,11 +238,17 @@ namespace MassEffectModManagerCore
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new GenericCommand(RunAutoTOCOnTarget, HasME3Target);
             ME3UICompatibilityPackGeneratorCommand = new GenericCommand(RunCompatGenerator, CanRunCompatGenerator);
-            EnableME1ConsoleCommand = new GenericCommand(EnableME1Console, CanEnableME1Console);
+            EnableME1ConsoleCommand = new GenericCommand(EnableME1ConsoleWrapper, CanEnableME1Console);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
+        }
+
+        private void EnableME1ConsoleWrapper()
+        {
+            //TODO: Add way to change keys
+            EnableME1Console();
         }
 
         private void OpenMEIM()
