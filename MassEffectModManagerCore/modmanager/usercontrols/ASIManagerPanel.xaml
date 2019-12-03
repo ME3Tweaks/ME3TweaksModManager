@@ -14,7 +14,7 @@
              Width="730">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type local:ASIManagerPanel+ASIMod}">
-            <Border Background="{Binding BackgroundColor}">
+            <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
                 <Grid Margin="3" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
