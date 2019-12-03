@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager
 {
+    [Localizable(false)]
     /// <summary>
     /// Contains methods useful for handling file paths both in and out of mod archives
     /// </summary>

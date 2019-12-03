@@ -7,7 +7,7 @@ using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.modmanager
 {
-    [DebuggerDisplay("ModJob for {Header}")]
+    [DebuggerDisplay(@"ModJob for {Header}")]
     public class ModJob
     {
         public enum JobHeader
@@ -78,25 +78,25 @@ namespace MassEffectModManagerCore.modmanager
 
         public static IReadOnlyDictionary<string, JobHeader> ME3OfficialDLCFolderToHeaderMapping = new Dictionary<string, JobHeader>()
         {
-            { "DLC_CON_MP1", JobHeader.RESURGENCE },
-            { "DLC_CON_MP2", JobHeader.REBELLION },
-            { "DLC_CON_MP3", JobHeader.EARTH },
-            { "DLC_CON_MP4", JobHeader.RETALIATION },
-            { "DLC_CON_MP5", JobHeader.RECKONING },
-            { "DLC_UPD_Patch01", JobHeader.PATCH1 },
-            { "DLC_UPD_Patch02", JobHeader.PATCH2 },
-            //{ "DLC_TestPatch", JobHeader.TESTPATCH }, //This is effectively not used.
-            { "DLC_HEN_PR", JobHeader.FROM_ASHES },
-            { "DLC_CON_END", JobHeader.EXTENDED_CUT },
-            { "DLC_EXP_Pack001", JobHeader.LEVIATHAN },
-            { "DLC_EXP_Pack002", JobHeader.OMEGA },
-            { "DLC_EXP_Pack003", JobHeader.CITADEL },
-            { "DLC_EXP_Pack003_Base", JobHeader.CITADEL_BASE },
-            { "DLC_CON_APP01", JobHeader.APPEARANCE },
-            { "DLC_CON_GUN01", JobHeader.FIREFIGHT },
-            { "DLC_CON_GUN02", JobHeader.GROUNDSIDE },
-            { "DLC_OnlinePassHidCE", JobHeader.COLLECTORS_EDITION },
-            { "DLC_CON_DH1", JobHeader.GENESIS2 }
+            { @"DLC_CON_MP1", JobHeader.RESURGENCE },
+            { @"DLC_CON_MP2", JobHeader.REBELLION },
+            { @"DLC_CON_MP3", JobHeader.EARTH },
+            { @"DLC_CON_MP4", JobHeader.RETALIATION },
+            { @"DLC_CON_MP5", JobHeader.RECKONING },
+            { @"DLC_UPD_Patch01", JobHeader.PATCH1 },
+            { @"DLC_UPD_Patch02", JobHeader.PATCH2 },
+            //{ @"DLC_TestPatch", JobHeader.TESTPATCH }, //This is effectively not used.
+            { @"DLC_HEN_PR", JobHeader.FROM_ASHES },
+            { @"DLC_CON_END", JobHeader.EXTENDED_CUT },
+            { @"DLC_EXP_Pack001", JobHeader.LEVIATHAN },
+            { @"DLC_EXP_Pack002", JobHeader.OMEGA },
+            { @"DLC_EXP_Pack003", JobHeader.CITADEL },
+            { @"DLC_EXP_Pack003_Base", JobHeader.CITADEL_BASE },
+            { @"DLC_CON_APP01", JobHeader.APPEARANCE },
+            { @"DLC_CON_GUN01", JobHeader.FIREFIGHT },
+            { @"DLC_CON_GUN02", JobHeader.GROUNDSIDE },
+            { @"DLC_OnlinePassHidCE", JobHeader.COLLECTORS_EDITION },
+            { @"DLC_CON_DH1", JobHeader.GENESIS2 }
         };
 
         /// <summary>
@@ -237,17 +237,17 @@ namespace MassEffectModManagerCore.modmanager
         private bool checkExtension(string sourceRelativePath, out string failReason)
         {
             var ext = Path.GetExtension(sourceRelativePath).ToLower();
-            if (ext == ".exe")
+            if (ext == @".exe")
             {
                 failReason = ".exe files are not allowed in M3 mods.";
                 return false;
             }
-            if (ext == ".dll")
+            if (ext == @".dll")
             {
                 failReason = ".dll files are not allowed in M3 mods.";
                 return false;
             }
-            if (ext == ".asi")
+            if (ext == @".asi")
             {
                 failReason = ".asi files are not allowed in M3 mods.";
                 return false;
@@ -319,58 +319,58 @@ namespace MassEffectModManagerCore.modmanager
 
         private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
-            [JobHeader.BRING_DOWN_THE_SKY] = "DLC_UNC",
-            [JobHeader.PINNACLE_STATION] = "DLC_Vegas"
+            [JobHeader.BRING_DOWN_THE_SKY] = @"DLC_UNC",
+            [JobHeader.PINNACLE_STATION] = @"DLC_Vegas"
         };
 
         private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
-            [JobHeader.AEGIS_PACK] = "DLC_CER_02",
-            [JobHeader.APPEARANCE_PACK_1] = "DLC_CON_Pack01",
-            [JobHeader.APPEARANCE_PACK_2] = "DLC_CON_Pack02",
-            [JobHeader.ARC_PROJECTOR] = "DLC_CER_Arc",
-            [JobHeader.ARRIVAL] = "DLC_EXP_Part02",
-            [JobHeader.BLOOD_DRAGON_ARMOR] = "DLC_PRE_DA",
-            [JobHeader.CERBERUS_WEAPON_ARMOR] = "DLC_PRE_Cerberus",
-            [JobHeader.COLLECTORS_WEAPON_ARMOR] = "DLC_PRE_Collectors",
-            [JobHeader.EQUALIZER_PACK] = "DLC_MCR_03",
-            [JobHeader.FIREPOWER_PACK] = "DLC_MCR_01",
-            [JobHeader.FIREWALKER] = "DLC_UNC_Hammer01",
-            [JobHeader.GENESIS] = "DLC_DHME1",
-            [JobHeader.INCISOR] = "DLC_PRE_Incisor",
-            [JobHeader.INFERNO_ARMOR] = "DLC_PRE_General",
-            [JobHeader.KASUMI] = "DLC_HEN_MT",
-            [JobHeader.LAIR_OF_THE_SHADOW_BROKER] = "DLC_EXP_Part01",
-            [JobHeader.NORMANDY_CRASH_SITE] = "DLC_UNC_Moment01",
-            [JobHeader.OVERLORD] = "DLC_UNC_Pack01",
-            [JobHeader.RECON_HOOD] = "DLC_PRO_Pepper02",
-            [JobHeader.SENTRY_INTERFACE] = "DLC_PRO_Gulp01",
-            [JobHeader.TERMINUS_WEAPON_ARMOR] = "DLC_PRE_Gamestop",
-            [JobHeader.UMBRA_VISOR] = "DLC_PRO_Pepper01",
-            [JobHeader.ZAEED] = "DLC_HEN_VT"
+            [JobHeader.AEGIS_PACK] = @"DLC_CER_02",
+            [JobHeader.APPEARANCE_PACK_1] = @"DLC_CON_Pack01",
+            [JobHeader.APPEARANCE_PACK_2] = @"DLC_CON_Pack02",
+            [JobHeader.ARC_PROJECTOR] = @"DLC_CER_Arc",
+            [JobHeader.ARRIVAL] = @"DLC_EXP_Part02",
+            [JobHeader.BLOOD_DRAGON_ARMOR] = @"DLC_PRE_DA",
+            [JobHeader.CERBERUS_WEAPON_ARMOR] = @"DLC_PRE_Cerberus",
+            [JobHeader.COLLECTORS_WEAPON_ARMOR] = @"DLC_PRE_Collectors",
+            [JobHeader.EQUALIZER_PACK] = @"DLC_MCR_03",
+            [JobHeader.FIREPOWER_PACK] = @"DLC_MCR_01",
+            [JobHeader.FIREWALKER] = @"DLC_UNC_Hammer01",
+            [JobHeader.GENESIS] = @"DLC_DHME1",
+            [JobHeader.INCISOR] = @"DLC_PRE_Incisor",
+            [JobHeader.INFERNO_ARMOR] = @"DLC_PRE_General",
+            [JobHeader.KASUMI] = @"DLC_HEN_MT",
+            [JobHeader.LAIR_OF_THE_SHADOW_BROKER] = @"DLC_EXP_Part01",
+            [JobHeader.NORMANDY_CRASH_SITE] = @"DLC_UNC_Moment01",
+            [JobHeader.OVERLORD] = @"DLC_UNC_Pack01",
+            [JobHeader.RECON_HOOD] = @"DLC_PRO_Pepper02",
+            [JobHeader.SENTRY_INTERFACE] = @"DLC_PRO_Gulp01",
+            [JobHeader.TERMINUS_WEAPON_ARMOR] = @"DLC_PRE_Gamestop",
+            [JobHeader.UMBRA_VISOR] = @"DLC_PRO_Pepper01",
+            [JobHeader.ZAEED] = @"DLC_HEN_VT"
         };
 
         private static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
         {
-            [JobHeader.COLLECTORS_EDITION] = "DLC_OnlinePassHidCE",
-            [JobHeader.RESURGENCE] = "DLC_CON_MP1",
-            [JobHeader.REBELLION] = "DLC_CON_MP2",
-            [JobHeader.EARTH] = "DLC_CON_MP3",
-            [JobHeader.RETALIATION] = "DLC_CON_MP4",
-            [JobHeader.RECKONING] = "DLC_CON_MP5",
-            [JobHeader.PATCH1] = "DLC_UPD_Patch01",
-            [JobHeader.PATCH2] = "DLC_UPD_Patch02",
-            [JobHeader.FROM_ASHES] = "DLC_HEN_PR",
-            [JobHeader.EXTENDED_CUT] = "DLC_CON_END",
-            [JobHeader.LEVIATHAN] = "DLC_EXP_Pack001",
-            [JobHeader.OMEGA] = "DLC_EXP_Pack002",
-            [JobHeader.CITADEL_BASE] = "DLC_EXP_Pack003_Base",
-            [JobHeader.CITADEL] = "DLC_EXP_Pack003",
-            [JobHeader.FIREFIGHT] = "DLC_CON_GUN01",
-            [JobHeader.GROUNDSIDE] = "DLC_CON_GUN02",
-            [JobHeader.APPEARANCE] = "DLC_CON_APP01",
-            [JobHeader.GENESIS2] = "DLC_CON_DH1",
-            [JobHeader.TESTPATCH] = "DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
+            [JobHeader.COLLECTORS_EDITION] = @"DLC_OnlinePassHidCE",
+            [JobHeader.RESURGENCE] = @"DLC_CON_MP1",
+            [JobHeader.REBELLION] = @"DLC_CON_MP2",
+            [JobHeader.EARTH] = @"DLC_CON_MP3",
+            [JobHeader.RETALIATION] = @"DLC_CON_MP4",
+            [JobHeader.RECKONING] = @"DLC_CON_MP5",
+            [JobHeader.PATCH1] = @"DLC_UPD_Patch01",
+            [JobHeader.PATCH2] = @"DLC_UPD_Patch02",
+            [JobHeader.FROM_ASHES] = @"DLC_HEN_PR",
+            [JobHeader.EXTENDED_CUT] = @"DLC_CON_END",
+            [JobHeader.LEVIATHAN] = @"DLC_EXP_Pack001",
+            [JobHeader.OMEGA] = @"DLC_EXP_Pack002",
+            [JobHeader.CITADEL_BASE] = @"DLC_EXP_Pack003_Base",
+            [JobHeader.CITADEL] = @"DLC_EXP_Pack003",
+            [JobHeader.FIREFIGHT] = @"DLC_CON_GUN01",
+            [JobHeader.GROUNDSIDE] = @"DLC_CON_GUN02",
+            [JobHeader.APPEARANCE] = @"DLC_CON_APP01",
+            [JobHeader.GENESIS2] = @"DLC_CON_DH1",
+            [JobHeader.TESTPATCH] = @"DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
 
         internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(Mod.MEGame game)
@@ -384,7 +384,7 @@ namespace MassEffectModManagerCore.modmanager
                 case Mod.MEGame.ME3:
                     return ME3HeadersToDLCNamesMap;
                 default:
-                    throw new Exception("Can't get supported list of headers for unknown game type.");
+                    throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }
         }
         public string RequirementText;
@@ -420,7 +420,7 @@ namespace MassEffectModManagerCore.modmanager
                 case Mod.MEGame.ME3:
                     return ME3SupportedNonCustomDLCJobHeaders;
                 default:
-                    throw new Exception("Can't get supported list of headers for unknown game type.");
+                    throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }
         }
     }

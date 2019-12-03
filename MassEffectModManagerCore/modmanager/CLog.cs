@@ -1,7 +1,9 @@
 ﻿using Serilog;
+using System.ComponentModel;
 
 namespace MassEffectModManagerCore.modmanager
 {
+    [Localizable(false)]
     /// <summary>
     /// Conditional logging extension for Serilog. Pass a bool that will be evaluated. If the bool passed is true, the log item will be written.
     /// This class is used to reduce code a log clutter with if statements for conditional logging and unnecessary verbosity.

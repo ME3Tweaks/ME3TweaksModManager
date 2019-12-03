@@ -10,6 +10,7 @@ using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
 {
+    [Localizable(false)]
     public static class Settings
     {
         #region Static Property Changed

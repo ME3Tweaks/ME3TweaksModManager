@@ -1,10 +1,12 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Linq;
 
 namespace MassEffectModManagerCore.modmanager
 {
+    [Localizable(false)]
     public class BackgroundTaskEngine
     {
         //No real concurrent list so i guess we'll use a dictionary
