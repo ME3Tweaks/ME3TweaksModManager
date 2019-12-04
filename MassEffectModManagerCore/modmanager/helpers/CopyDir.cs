@@ -10,7 +10,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// Helper class for copying a directory with progress
     /// Copied and modified from ALOT Installer
     /// </summary>
-    [Localizable(false)
+    [Localizable(false)]
     public static class CopyDir
     {
 

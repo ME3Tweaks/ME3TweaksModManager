@@ -80,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanAuthorizeWithNexus() => !IsAuthorized && !IsAuthorizing && !string.IsNullOrWhiteSpace(APIKeyText);
 
 
-        private async void AuthorizeWithNexus()
+        private void AuthorizeWithNexus()
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"NexusAPICredentialsCheck");
             bw.DoWork += async (a, b) =>
