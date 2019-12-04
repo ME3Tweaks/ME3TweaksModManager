@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+    [Localizable(false)]
     public class ThirdPartyServices
     {
         /// <summary>
@@ -101,7 +102,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             if (App.ThirdPartyIdentificationService == null) return new List<ThirdPartyModInfo>(); //Not loaded
             var me2Values = App.ThirdPartyIdentificationService["ME2"];
-            return me2Values.Where(x => x.Value.modulenumber == modDLCModuleNumber.ToString()).Select(x=>x.Value).ToList();
+            return me2Values.Where(x => x.Value.modulenumber == modDLCModuleNumber.ToString()).Select(x => x.Value).ToList();
         }
 
         internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByMountPriority(Mod.MEGame game, int modMountPriority)

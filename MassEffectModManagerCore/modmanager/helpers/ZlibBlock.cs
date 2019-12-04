@@ -1,11 +1,13 @@
 ﻿using MassEffectModManagerCore.modmanager.helpers;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using ZlibHelper;
 
 namespace AmaroK86.MassEffect3.ZlibBlock
 {
+    [Localizable(false)]
     public static class ZBlock
     {
         public static readonly uint magic = 0x9E2A83C1;

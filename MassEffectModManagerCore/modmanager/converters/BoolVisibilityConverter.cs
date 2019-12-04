@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
+    [Localizable(false)]
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BoolToVisibilityConverter : IValueConverter
     {
@@ -24,6 +26,7 @@ namespace MassEffectModManagerCore.modmanager.converters
         }
     }
 
+    [Localizable(false)]
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BoolToHiddenVisibleConverter : IValueConverter
     {

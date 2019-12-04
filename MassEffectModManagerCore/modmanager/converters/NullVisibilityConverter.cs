@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
+    [Localizable(false)]
+
     public class NullVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

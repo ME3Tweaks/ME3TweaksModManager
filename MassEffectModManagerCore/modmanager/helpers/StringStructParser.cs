@@ -1,25 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
+    /// <summary>
+    /// Parser class for different types of string structs and list
+    /// </summary>
+    [Localizable(false)]
     public class StringStructParser
     {
-        public static string GetStringProperty(string inputString, string propertyName, bool isQuoted)
-        {
-            Debug.WriteLine(inputString);
-            return null;
-        }
-
+        /// <summary>
+        /// Gets a list of strings that are split by ;
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <returns></returns>
         public static List<string> GetSemicolonSplitList(string inputString)
         {
             inputString = inputString.Trim('(', ')');
             return inputString.Split(';').ToList();
         }
 
+        /// <summary>
+        /// Gets a dictionary of command split value keypairs. Can accept incoming string with 1 or 2 () outer parenthesis
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <returns></returns>
         public static Dictionary<string, string> GetCommaSplitValues(string inputString)
         {
             if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')
@@ -107,6 +116,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return values;
         }
 
+        /// <summary>
+        /// Gets a list of parenthesis splitvalues - items such as (...),(...),(...), the list of ... items are returned.
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <returns></returns>
         public static List<string> GetParenthesisSplitValues(string inputString)
         {
             //Trim ends if this is a list as ( ) will encapsulte a list of ( ) values, e.g. ((hello),(there)) => (hello),(there)

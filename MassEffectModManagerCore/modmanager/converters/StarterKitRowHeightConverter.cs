@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -7,6 +8,8 @@ using MassEffectModManagerCore.modmanager.windows;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
+    [Localizable(false)]
+
     public class StarterKitRowHeightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

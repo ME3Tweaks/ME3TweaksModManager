@@ -1,5 +1,8 @@
-﻿namespace MassEffectModManagerCore.modmanager
+﻿using System.ComponentModel;
+
+namespace MassEffectModManagerCore.modmanager
 {
+    [Localizable(false)]
     public static partial class APIKeys
     {
         public static bool HasAppCenterKey => typeof(APIKeys).GetProperty("Private_AppCenter") != null;

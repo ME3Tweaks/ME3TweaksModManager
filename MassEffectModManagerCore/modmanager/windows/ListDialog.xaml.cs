@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using MassEffectModManagerCore.modmanager.localizations;
 
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -45,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             catch (Exception ex)
             {
                 //yes, this actually happens sometimes...
-                MessageBox.Show("Could not set data to clipboard:\n" + ex.Message);
+                M3L.ShowDialog(this, "Could not set data to clipboard:\n" + ex.Message, "Error copying data to clipboard", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -290,6 +290,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     if (filesToDelete.Count != 1)
                     {
+                        //Todo: Requires localization
                         return filesToDelete.Count + " files will be deleted";
                     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,6 +14,7 @@ using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 {
+    [Localizable(false)]
     public class NexusModsUtilities
     {
 

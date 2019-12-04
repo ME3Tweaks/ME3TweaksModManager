@@ -17,7 +17,7 @@ namespace MassEffect3.CoalesceTool
     /// </summary>
     public partial class CoalescedEditor : NotifyPropertyChangedWindowBase
 	{
-		private string _destinationPath;
+		/*private string _destinationPath;
 		private CoalescedType _destinationType;
 		private string _sourcePath;
 		private CoalescedType _sourceType;
@@ -189,7 +189,7 @@ namespace MassEffect3.CoalesceTool
 								break;
 							}
 						}*/
-
+                        /*
 						break;
 					}
 				}
@@ -257,5 +257,6 @@ namespace MassEffect3.CoalesceTool
 		{
 			Application.Current.Shutdown();
 		}
+        */
 	}
 }

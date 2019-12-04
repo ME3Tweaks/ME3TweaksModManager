@@ -47,7 +47,7 @@ namespace MassEffectModManagerCore.ui
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             // ReSharper disable once PossibleUnintendedReferenceComparison
-            if (collection == Items) throw new Exception("Cannot remove range of same collection");
+            if (collection == Items) throw new Exception(@"Cannot remove range of same collection");
             int oldcount = Count;
             //Todo: catch reachspec crash when changing size
             foreach (var i in collection) Items.Remove(i);

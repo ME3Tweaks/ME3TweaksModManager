@@ -6,16 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using ME3Explorer.Packages;
 using static MassEffectModManagerCore.modmanager.Mod;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -45,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string ActionSubstring { get; set; } = M3L.GetString(M3L.string_pleaseWait);
 
         //CEM (not sure why I had this). Will enable if required
-        private string[] doNotPatchFiles = { @"BioD_CitCas.pcc" };
+        //private string[] doNotPatchFiles = { @"BioD_CitCas.pcc" };
         public GUICompatibilityGenerator(GameTarget target)
         {
             if (target.Game != MEGame.ME3) throw new Exception($@"Cannot generate compatibility mods for {target.Game}");
@@ -312,7 +305,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Result is GUICompatibilityThreadResult gctr)
                 {
-                    Analytics.TrackEvent(@"Generated a UI compatibillity pack", new Dictionary<string, string>() { { @"Result", gctr.ToString() } });
+                    Analytics.TrackEvent(@"Generated a UI compatibility pack", new Dictionary<string, string>() { { @"Result", gctr.ToString() } });
                     OnClosing(DataEventArgs.Empty);
                 }
                 else

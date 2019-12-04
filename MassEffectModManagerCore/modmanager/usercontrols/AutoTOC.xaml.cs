@@ -175,36 +175,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// This does not account for 1.6 TESTPATCH.
         /// </summary>
         /// <returns></returns>
-        static Dictionary<string, long> GetSFARSizeMap()
-        {
-            if (sfarSizeMap == null)
-            {
-                sfarSizeMap = new Dictionary<string, long>();
-                sfarSizeMap["DLC_CON_MP1"] = 220174473L;
-                sfarSizeMap["DLC_CON_MP2"] = 139851674L;
-                sfarSizeMap["DLC_CON_MP3"] = 198668075L;
-                sfarSizeMap["DLC_CON_MP4"] = 441856666L;
-                sfarSizeMap["DLC_CON_MP5"] = 208777784L;
+        //static Dictionary<string, long> GetSFARSizeMap()
+        //{
+        //    if (sfarSizeMap == null)
+        //    {
+        //        sfarSizeMap = new Dictionary<string, long>();
+        //        sfarSizeMap[@"DLC_CON_MP1"] = 220174473L;
+        //        sfarSizeMap[@"DLC_CON_MP2"] = 139851674L;
+        //        sfarSizeMap[@"DLC_CON_MP3"] = 198668075L;
+        //        sfarSizeMap[@"DLC_CON_MP4"] = 441856666L;
+        //        sfarSizeMap[@"DLC_CON_MP5"] = 208777784L;
 
-                sfarSizeMap["DLC_UPD_Patch01"] = 208998L;
-                sfarSizeMap["DLC_UPD_Patch02"] = 302772L;
-                sfarSizeMap["DLC_TestPatch"] = 2455154L; //1.6 also has a version
+        //        sfarSizeMap[@"DLC_UPD_Patch01"] = 208998L;
+        //        sfarSizeMap[@"DLC_UPD_Patch02"] = 302772L;
+        //        sfarSizeMap[@"DLC_TestPatch"] = 2455154L; //1.6 also has a version
 
-                sfarSizeMap["DLC_HEN_PR"] = 594778936L;
-                sfarSizeMap["DLC_CON_END"] = 1919137514L;
+        //        sfarSizeMap[@"DLC_HEN_PR"] = 594778936L;
+        //        sfarSizeMap[@"DLC_CON_END"] = 1919137514L;
 
-                sfarSizeMap["DLC_EXP_Pack001"] = 1561239503L;
-                sfarSizeMap["DLC_EXP_Pack002"] = 1849136836L;
-                sfarSizeMap["DLC_EXP_Pack003"] = 1886013531L;
-                sfarSizeMap["DLC_EXP_Pack003_Base"] = 1896814656L;
-                sfarSizeMap["DLC_CON_APP01"] = 53878606L;
-                sfarSizeMap["DLC_CON_GUN01"] = 18708500L;
-                sfarSizeMap["DLC_CON_GUN02"] = 17134896L;
-                sfarSizeMap["DLC_CON_DH1"] = 284862077L;
-                sfarSizeMap["DLC_OnlinePassHidCE"] = 56321927L;
-            }
-            return sfarSizeMap;
-        }
+        //        sfarSizeMap[@"DLC_EXP_Pack001"] = 1561239503L;
+        //        sfarSizeMap[@"DLC_EXP_Pack002"] = 1849136836L;
+        //        sfarSizeMap[@"DLC_EXP_Pack003"] = 1886013531L;
+        //        sfarSizeMap[@"DLC_EXP_Pack003_Base"] = 1896814656L;
+        //        sfarSizeMap[@"DLC_CON_APP01"] = 53878606L;
+        //        sfarSizeMap[@"DLC_CON_GUN01"] = 18708500L;
+        //        sfarSizeMap[@"DLC_CON_GUN02"] = 17134896L;
+        //        sfarSizeMap[@"DLC_CON_DH1"] = 284862077L;
+        //        sfarSizeMap[@"DLC_OnlinePassHidCE"] = 56321927L;
+        //    }
+        //    return sfarSizeMap;
+        //}
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {

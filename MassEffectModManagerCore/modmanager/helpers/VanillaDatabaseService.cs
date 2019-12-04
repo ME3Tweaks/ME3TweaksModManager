@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// <summary>
     /// Class for querying information about game and fetching vanilla files.
     /// </summary>
+    [Localizable(false)]
     public class VanillaDatabaseService
     {
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME1VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();

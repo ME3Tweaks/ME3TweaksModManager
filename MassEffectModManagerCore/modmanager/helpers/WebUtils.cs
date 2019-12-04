@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -8,6 +9,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// <summary>
     /// From https://stackoverflow.com/questions/4716470/webclient-downloadstring-returns-string-with-peculiar-characters
     /// </summary>
+    [Localizable(false)]
     public static class WebUtils
     {
         public static Encoding GetEncodingFrom(

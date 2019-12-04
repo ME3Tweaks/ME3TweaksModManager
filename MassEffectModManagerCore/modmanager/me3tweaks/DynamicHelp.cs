@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Xml;
 
@@ -8,6 +9,7 @@ using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+    [Localizable(false)]
     partial class OnlineContent
     {
         private static readonly string LatestHelpFileLink = StaticFilesBaseURL + "dynamichelp/latesthelp.xml";

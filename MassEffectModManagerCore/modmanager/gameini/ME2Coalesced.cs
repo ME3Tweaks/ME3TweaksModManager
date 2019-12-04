@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
+    [Localizable(false)]
     public class ME2Coalesced
     {
         public SortedDictionary<string, DuplicatingIni> Inis = new SortedDictionary<string, DuplicatingIni>();

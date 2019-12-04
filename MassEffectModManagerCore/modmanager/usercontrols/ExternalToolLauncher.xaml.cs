@@ -215,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += async (a, b) =>
             {
-                var toolName = tool.Replace(" ", "");
+                var toolName = tool.Replace(@" ", "");
                 var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", toolName);
                 var localExecutable = Path.Combine(localToolFolderName, toolName + @".exe");
                 bool needsDownloading = !File.Exists(localExecutable);

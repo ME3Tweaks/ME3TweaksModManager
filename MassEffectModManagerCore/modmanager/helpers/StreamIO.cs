@@ -22,11 +22,13 @@
  */
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
+    [Localizable(false)]
     public static class StreamHelpers
     {
         public static byte[] ReadToBuffer(this Stream stream, int count)

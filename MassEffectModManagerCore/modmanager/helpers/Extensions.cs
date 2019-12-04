@@ -3,6 +3,7 @@ using ME3Explorer.Unreal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// <summary>
     /// Extension methods for various things, both WPF and WinForms
     /// </summary>
+    [Localizable(false)]
     public static class Extensions
     {
         private static readonly char[] InvalidPathingChars;
@@ -681,6 +683,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         }
     }
 
+    [Localizable(false)]
     public static class StringExtensions
     {
         public static bool isNumericallyEqual(this string first, string second)
@@ -905,7 +908,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
 
-            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            comparer ??= EqualityComparer<TSource>.Default;
             var idx = startIndex;
 
             foreach (var item in collection.Skip(startIndex).TakeWhile((item, index) => index < count))
