@@ -3,12 +3,14 @@
     <boolproperty propertyname="bSmoothFrameRate" friendlyname="Cap framerate" notes="Setting this to true makes the 'Max framerate' property enforced. Turning this off uncaps it.">TRUE</boolproperty>
     <floatproperty propertyname="MaxSmoothedFrameRate" friendlyname="Max framerate" notes="Maximum framerate cap. Setting this to above 62 may cause issues as the tick time between frames is used in some calculations">62</floatproperty>
     <!--<boolproperty propertyname="bForceStaticTerrain" friendlyname="Force static terrain" notes="Unknown at this time">False</boolproperty>-->
-    <boolproperty propertyname="bDisablePhysXHardwareSupport" friendlyname="Disable PhysX on hardware" notes="Turning this on will make physics calculations run on the CPU. This only matters if you have an Nvidia graphics card">False</boolproperty>
     <!--
     <boolproperty propertyname="bEnableVSMShadows" friendlyname="Enable VSM shadows" notes="Toggle VSM (Variance Shadow Map) usage for projected shadows">False</boolproperty>
 
       <floatproperty propertyname="ModShadowFadeDistanceExponent" friendlyname="Shadow fading distance" notes="Set to 0 to show full shadows, set to 1 to disable all shadows. Values in-between will have shadows fade out">0.2</floatproperty>-->
   </Section>
+  <Section name="Engine.Engine">
+    <boolproperty propertyname="bDisablePhysXHardwareSupport" friendlyname="Disable PhysX on hardware" notes="Turning this on will make physics calculations run on the CPU. This only matters if you have an Nvidia graphics card">False</boolproperty>
+  </Section>"
   <Section name="WinDrv.WindowsClient">
     AudioDeviceClass=ISACTAudio.ISACTAudioDevice
     <boolproperty canautoreset="false" propertyname="StartupFullscreen" friendlyname="Fullscreen" notes="Setting this to false makes the application run in Windowed mode. There is no borderless windowed mode for Mass Effect">true</boolproperty>

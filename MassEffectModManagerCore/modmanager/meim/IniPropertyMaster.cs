@@ -92,7 +92,7 @@ namespace MassEffectIniModder.classes
 
         internal virtual string Validate(string columnName)
         {
-            if (columnName == "CurrentValue")
+            if (columnName == @"CurrentValue")
             {
                 // Validate property and return a string if there is an error
                 if (string.IsNullOrEmpty(CurrentValue))

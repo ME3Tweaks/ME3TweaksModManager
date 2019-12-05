@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -99,7 +100,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             return sb.ToString();
         }
 
-
+        [DebuggerDisplay("Ini Section [{Header}] with {Entries.Count} entries")]
         public class Section
         {
             public string Header;
@@ -110,6 +111,8 @@ namespace MassEffectModManagerCore.modmanager.gameini
                 return Entries.FirstOrDefault(x => x.Key == key);
             }
         }
+
+        [DebuggerDisplay("IniEntry {Key} = {Value}")]
 
         public class IniEntry
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ using System.Xml.Linq;
 using MassEffectIniModder.classes;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -23,12 +26,15 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class ME1IniModder : Window, INotifyPropertyChanged
     {
+        private bool doNotOpen;
+
         public ObservableCollectionExtended<IniPropertyMaster> BioEngineEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
         public ObservableCollectionExtended<IniPropertyMaster> BioGameEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
         public ObservableCollectionExtended<IniPropertyMaster> BioPartyEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
+        
         public ME1IniModder()
         {
-
+            Analytics.TrackEvent("Launched MEIM");
             DataContext = this;
             InitializeComponent();
 
@@ -129,9 +135,11 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
             else
             {
-                MessageBox.Show("Mass Effect Config directory is missing. It should be located at " + configFileFolder + ". Please run the game at least once to generate the default files.");
+                doNotOpen = true;
+                Xceed.Wpf.Toolkit.MessageBox.Show(null, $"Mass Effect Config directory is missing. It should be located at {configFileFolder}. Please run the game at least once to generate the default files.", "Cannot run Mass Effect Ini Modder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -153,7 +161,61 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
+            saveData();
+        }
 
+        private void saveData()
+        {
+            var saveMap = new Dictionary<string, List<IniPropertyMaster>>();
+            saveMap[@"BioEngine.ini"] = BioEngineEntries.ToList();
+            saveMap[@"BioGame.ini"] = BioGameEntries.ToList();
+            saveMap[@"BioParty.ini"] = BioPartyEntries.ToList();
+            string configFileFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\BioWare\Mass Effect\Config";
+
+            foreach (var kp in saveMap)
+            {
+                string configFileBeingUpdated = Path.Combine(configFileFolder, kp.Key);
+                if (File.Exists(configFileBeingUpdated))
+                {
+                    Log.Information("MEIM: Saving ini file: " + configFileBeingUpdated);
+
+                    //unset readonly
+                    File.SetAttributes(configFileBeingUpdated, File.GetAttributes(configFileBeingUpdated) & ~FileAttributes.ReadOnly);
+
+                    DuplicatingIni ini = DuplicatingIni.LoadIni(configFileBeingUpdated);
+                    foreach (IniPropertyMaster prop in kp.Value)
+                    {
+                        string validation = prop.Validate(@"CurrentValue");
+                        if (validation == null)
+                        {
+                            var itemToUpdate = ini.GetValue(prop.SectionName, prop.PropertyName);
+                            if (itemToUpdate != null)
+                            {
+                                itemToUpdate.Value = prop.ValueToWrite;
+                            }
+                            else
+                            {
+                                Log.Error($@"Could not find property to update in ini! [{prop.SectionName}] {prop.PropertyName}");
+                            }
+                        }
+                        else
+                        {
+                            Log.Error($@"Could not save property {prop.FriendlyPropertyName} because {validation}");
+                            Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Property not saved: {prop.FriendlyPropertyName}\n\nReason: {validation}", "Error saving properties", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    Analytics.TrackEvent(@"Saved game config in MEIM");
+                    File.WriteAllText(configFileBeingUpdated, ini.ToString());
+                }
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (doNotOpen)
+            {
+                Close();
+            }
         }
     }
 }

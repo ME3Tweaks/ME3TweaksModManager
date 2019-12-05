@@ -11,7 +11,7 @@
       <enumvalue friendlyname="Liara">BIOG_Asari_Hench_C.hench_asari</enumvalue>
       <enumvalue friendlyname="Jenkins">BIOG_Jenkins_Hench_C.hench_jenkins</enumvalue>
     </enumproperty>
-    <enumproperty propertyname="m_MaleActorType" friendlyname="Male Shepard model" notes="Change which character you play as. Anyone but Shepard will cause some loss of functionality - bugs may occur.">
+    <enumproperty propertyname="m_maleActorType" friendlyname="Male Shepard model" notes="Change which character you play as. Anyone but Shepard will cause some loss of functionality - bugs may occur.">
       <!--
       <enumvalue friendlyname="Female Shepard">BIOG_Female_Player_C.Human.Human_Female</enumvalue>
 
@@ -24,7 +24,7 @@
     <enumvalue friendlyname="Male Shepard">BIOG_Male_Player_C.Human.Human_Male</enumvalue>
     <enumvalue friendlyname="Female Shepard">BIOG_Female_Player_C.Human.human_female</enumvalue>
 
-    <enumvalue friendlyname="Ashley">BIOG_HumanFemale_Hench_C.hench_humanfemale</enumvalue>
+    <enumvalue friendlyname="Ashley">BIOG_HumanFemale_Hench_C.hench_humanfemale</enumvalue>C:\Users\Mgamerz\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\modmanager\meim\propertymaps\BioGame.xml
     <enumvalue friendlyname="Kaidan">BIOG_HumanMale_Hench_C. hench_humanmale </enumvalue>
     <enumvalue friendlyname="Garrus">BIOG_Turian_Hench_C.hench_turian</enumvalue>
     <enumvalue friendlyname="Wrex">BIOG_Krogan_Hench_C.hench_krogan</enumvalue>
