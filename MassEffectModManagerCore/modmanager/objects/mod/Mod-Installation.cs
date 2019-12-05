@@ -193,6 +193,7 @@ namespace MassEffectModManagerCore.modmanager
                 bool altApplied = false;
                 foreach (var altFile in job.AlternateFiles)
                 {
+                    if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOTHING) continue; //skip nothing
                     //todo: Support wildcards if OP_NOINSTALL
                     if (altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -252,11 +253,18 @@ namespace MassEffectModManagerCore.modmanager
             var list = new List<string>();
             foreach (var job in InstallationJobs)
             {
-                foreach (var item in job.ReadOnlyIndicators)
+                if (includeME1Config && job.Header == ModJob.JobHeader.ME1_CONFIG)
                 {
-                    var destPath = job.FilesToInstall.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
-                    if (destPath.Key == null) Log.Error("Error: Bug triggered: destPath for addreadonly files returned null!");
-                    list.Add(destPath.Key); //pathcombine?
+                    list.AddRange(job.FilesToInstall.Keys);
+                }
+                else
+                {
+                    foreach (var item in job.ReadOnlyIndicators)
+                    {
+                        var destPath = job.FilesToInstall.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
+                        if (destPath.Key == null) Log.Error(@"Error: Bug triggered: destPath for addreadonly files returned null!");
+                        list.Add(destPath.Key); //pathcombine?
+                    }
                 }
             }
             return list;

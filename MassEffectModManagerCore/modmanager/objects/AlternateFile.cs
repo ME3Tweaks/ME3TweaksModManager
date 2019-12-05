@@ -17,7 +17,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             INVALID_OPERATION,
             OP_SUBSTITUTE,
             OP_NOINSTALL,
-            OP_INSTALL
+            OP_INSTALL,
+            OP_NOTHING //Used for alt groups
         }
 
         public enum AltFileCondition
@@ -123,6 +124,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
+
             if (!Enum.TryParse(properties[@"ModOperation"], out Operation))
             {
                 Log.Error(@"Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"]);
@@ -145,69 +147,74 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
-            if (properties.TryGetValue(@"ModFile", out string modfile))
+            if (Operation != AltFileOperation.OP_NOTHING)
             {
-                ModFile = modfile.TrimStart('\\', '/');
-            }
-            else
-            {
-                Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files. Friendlyname: {FriendlyName}");
-                ValidAlternate = false;
-                LoadFailedReason = $"Alternate file {FriendlyName} does not declare ModFile but it is required for all Alternate Files.";
-                return;
-            }
-
-            //todo: implement multimap
-            if (properties.TryGetValue(@"MultiMappingFile", out string multifilemapping))
-            {
-                MultiMappingFile = multifilemapping.TrimStart('\\', '/');
-            }
-
-            if (properties.TryGetValue(@"AltFile", out string altfile))
-            {
-                AltFile = altfile;
-            }
-            else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
-            {
-                AltFile = maltfile;
-            }
-            properties.TryGetValue(@"SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
-
-            //workaround for 4.5
-            if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
-            {
-                AltFile = SubstituteFile;
-            }
-            if (!string.IsNullOrEmpty(AltFile))
-            {
-                AltFile = AltFile.Replace('/', '\\'); //Standardize paths
-            }
-
-            //This needs reworked from java's hack implementation
-            //Need to identify mods using substitution features
-
-            if (Operation == AltFileOperation.OP_INSTALL || Operation == AltFileOperation.OP_SUBSTITUTE)
-            {
-                if (MultiMappingFile == null)
+                if (properties.TryGetValue(@"ModFile", out string modfile))
                 {
-                    //Validate file
-                    var altPath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AltFile);
-                    var altFileSourceExists = FilesystemInterposer.FileExists(altPath, modForValidating.Archive);
-                    if (!altFileSourceExists)
-                    {
-                        Log.Error(@"Alternate file source (AltFile) does not exist: " + AltFile);
-                        ValidAlternate = false;
-                        LoadFailedReason = $"Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}";
-                        return;
-                    }
-
-                    //Ensure it is not part of  DLC directory itself.
-                    var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
-                    //Todo
+                    ModFile = modfile.TrimStart('\\', '/');
                 }
                 else
                 {
-                    //Multimapping, Todo
+                    Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files. Friendlyname: {FriendlyName}");
+                    ValidAlternate = false;
+                    LoadFailedReason = $"Alternate file {FriendlyName} does not declare ModFile but it is required for all Alternate Files.";
+                    return;
+                }
+
+                //todo: implement multimap
+                if (properties.TryGetValue(@"MultiMappingFile", out string multifilemapping))
+                {
+                    MultiMappingFile = multifilemapping.TrimStart('\\', '/');
+                }
+
+                if (properties.TryGetValue(@"AltFile", out string altfile))
+                {
+                    AltFile = altfile;
+                }
+                else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
+                {
+                    AltFile = maltfile;
+                }
+
+                properties.TryGetValue(@"SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
+
+                //workaround for 4.5
+                if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
+                {
+                    AltFile = SubstituteFile;
+                }
+
+                if (!string.IsNullOrEmpty(AltFile))
+                {
+                    AltFile = AltFile.Replace('/', '\\'); //Standardize paths
+                }
+
+                //This needs reworked from java's hack implementation
+                //Need to identify mods using substitution features
+
+                if (Operation == AltFileOperation.OP_INSTALL || Operation == AltFileOperation.OP_SUBSTITUTE)
+                {
+                    if (MultiMappingFile == null)
+                    {
+                        //Validate file
+                        var altPath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AltFile);
+                        var altFileSourceExists = FilesystemInterposer.FileExists(altPath, modForValidating.Archive);
+                        if (!altFileSourceExists)
+                        {
+                            Log.Error(@"Alternate file source (AltFile) does not exist: " + AltFile);
+                            ValidAlternate = false;
+                            LoadFailedReason = $"Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}";
+                            return;
+                        }
+
+                        //Ensure it is not part of  DLC directory itself.
+                        var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
+                        //Todo
+                    }
+                    else
+                    {
+                        //Multimapping, Todo
+                    }
                 }
             }
 
@@ -233,19 +240,23 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool IsSelected { get; set; }
         public void SetupInitialSelection(GameTarget target)
         {
-            IsSelected = false; //Reset
+            IsSelected = CheckedByDefault; //Reset
+            if (Condition == AltFileCondition.COND_MANUAL)
+            {
+                IsSelected = CheckedByDefault;
+                return;
+            }
             if (Condition == AltFileCondition.COND_MANUAL) return;
             var installedDLC = MEDirectories.GetInstalledDLC(target);
             switch (Condition)
             {
                 case AltFileCondition.COND_DLC_NOT_PRESENT:
-                    //case AltFileCondition.COND_ANY_DLC_NOT_PRESENT:
                     IsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltFileCondition.COND_DLC_PRESENT:
-                    //case AltFileCondition.COND_ANY_DLC_PRESENT:
                     IsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
+                    //The following conditions don't exist right now
                     //case AltFileCondition.COND_ALL_DLC_NOT_PRESENT:
                     //    IsSelected = !ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     //    break;
