@@ -33,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
         public bool ModIsInstalling { get; set; }
         public bool AllOptionsAreAutomatic { get; private set; }
+        private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             DataContext = this;
@@ -118,6 +119,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues =
                 ModBeingInstalled.GetInstallationQueues(gameTarget);
 
+            var readOnlyTargets = ModBeingInstalled.GetAllRelativeReadonlyTargets(me1ConfigReadOnlyOption.IsSelected);
+
             if (gameTarget.ALOTInstalled)
             {
                 //Check if any packages are being installed. If there are, we will block this installation.
@@ -196,6 +199,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Dictionary<string, string> fullPathMappingDisk = new Dictionary<string, string>();
             Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
             SortedSet<string> customDLCsBeingInstalled = new SortedSet<string>();
+            List<string> mappedReadOnlyTargets = new List<string>();
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
                 foreach (var originalMapping in unpackedQueue.Value.fileMapping)
@@ -204,6 +208,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //if (unpackedQueue.Key == ModJob.JobHeader.CUSTOMDLC || unpackedQueue.Key == ModJob.JobHeader.BALANCE_CHANGES || unpackedQueue.Key == ModJob.JobHeader.BASEGAME)
                     //{
 
+                    //Resolve source file path
                     string sourceFile;
                     if (unpackedQueue.Key.JobDirectory == null)
                     {
@@ -218,7 +223,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (unpackedQueue.Key.Header == ModJob.JobHeader.ME1_CONFIG)
                     {
-
                         var destFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", originalMapping.Key);
                         if (ModBeingInstalled.IsInArchive)
                         {
@@ -263,14 +267,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 Log.Error($@"Archive Index is -1 for file {sourceFile}. This will probably throw an exception!");
                                 Debugger.Break();
                             }
-                            fullPathMappingDisk[sourceFile] = destFile; //used for redirection
                         }
-                        else
-                        {
-                            fullPathMappingDisk[sourceFile] = destFile;
-                        }
+                        fullPathMappingDisk[sourceFile] = destFile; //archive also uses this for redirection
                     }
 
+                    if (readOnlyTargets.Contains(originalMapping.Key))
+                    {
+                        CLog.Information("Adding resolved read only target: " + originalMapping.Key + " -> " + fullPathMappingDisk[sourceFile], Settings.LogModInstallation);
+                        mappedReadOnlyTargets.Add(fullPathMappingDisk[sourceFile]);
+                    }
                     //}
                 }
             }
@@ -298,6 +303,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            //Delete existing custom DLC mods with same name
             foreach (var cdbi in customDLCsBeingInstalled)
             {
                 var path = Path.Combine(gameDLCPath, cdbi);
@@ -343,19 +349,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Debug.WriteLine(numdone);
                 };
                 ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
-                //filesInstalled.Sort();
-                //filesToInstall.Sort();
-                //Debug.WriteLine("Files installed:");
-                //foreach (var f in filesInstalled)
-                //{
-                //    Debug.WriteLine(f);
-                //}
-                //Debug.WriteLine("Files expected:");
-                //foreach (var f in filesToInstall)
-                //{
-                //    Debug.WriteLine(f);
-                //}
-
             }
 
             //Write MetaCMM
@@ -383,6 +376,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CLog.Information(@"Main stage of mod installation has completed", Settings.LogModInstallation);
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
 
+            //Mark items read only
+            foreach (var readonlytarget in mappedReadOnlyTargets)
+            {
+                CLog.Information("Setting file to read-only: " + readonlytarget, Settings.LogModInstallation);
+                File.SetAttributes(readonlytarget, File.GetAttributes(readonlytarget) | FileAttributes.ReadOnly);
+            }
+
             //Remove outdated custom DLC
             foreach (var outdatedDLCFolder in ModBeingInstalled.OutdatedCustomDLC)
             {
@@ -401,6 +401,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CLog.Information(@"Installing supporting ASI files", Settings.LogModInstallation);
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
+                //Todo: Convert to ASI Manager installer
                 Utilities.InstallEmbeddedASI(@"ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget); //Todo: Switch to ASI Manager
             }
             else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
@@ -409,10 +410,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                //Todo: Port detection code from ME3Exp
-                //Utilities.InstallEmbeddedASI("ME3Logger_truncating-v1.0", 1.0, gameTarget);
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
+                    //Todo: Convert to ASI Manager installer
                     Utilities.InstallEmbeddedASI(@"BalanceChangesReplacer-v2.0", 2.0, gameTarget); //todo: Switch to ASI Manager
                 }
             }
@@ -769,6 +769,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     af.IsSelected = !af.IsSelected;
                 }
+                else if (dp.DataContext is ReadOnlyOption ro)
+                {
+                    ro.IsSelected = !ro.IsSelected;
+                }
             }
         }
 
@@ -861,6 +865,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //See if any alternate options are available and display them even if they are all autos
             AllOptionsAreAutomatic = true;
+            if (ModBeingInstalled.GetJob(ModJob.JobHeader.ME1_CONFIG) != null)
+            {
+                me1ConfigReadOnlyOption.IsSelected = true;
+                AlternateOptions.Add(me1ConfigReadOnlyOption);
+                AllOptionsAreAutomatic = false;
+            }
+
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
                 AlternateOptions.AddRange(job.AlternateDLCs);

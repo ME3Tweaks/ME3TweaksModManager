@@ -2178,5 +2178,10 @@ namespace MassEffectModManagerCore
             };
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
         }
+
+        private void ReloadSelectedMod_Click(object sender, RoutedEventArgs e)
+        {
+            Mod m = new Mod(SelectedMod.ModDescPath, Mod.MEGame.Unknown);
+        }
     }
 }

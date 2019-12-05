@@ -521,7 +521,7 @@ namespace MassEffectModManagerCore.modmanager
                     //Don't support add/remove files on anything except ME3, unless basegame.
                     List<string> addFilesSourceSplit = null;
                     List<string> addFilesTargetSplit = null;
-                    List<string> removeFilesSplit = new List<string>();
+                    List<string> addFilesReadOnlySplit = null;
                     if (Game == Mod.MEGame.ME3 || header == ModJob.JobHeader.BASEGAME)
                     {
 
@@ -542,7 +542,6 @@ namespace MassEffectModManagerCore.modmanager
                         }
 
                         //Add files read only targets
-                        List<string> addFilesReadOnlySplit = null;
                         if (addFilesTargetReadOnlyList != null)
                         {
                             addFilesReadOnlySplit = addFilesTargetList.Split(';').ToList();
@@ -661,13 +660,39 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    var removeFailureReason = headerJob.AddFilesToRemove(removeFilesSplit);
-                    if (removeFailureReason != null && !directoryMatchesGameStructure)
+                    //Build additions (vars will be null if these aren't supported by target version)
+                    if (addFilesSourceSplit != null && !directoryMatchesGameStructure)
                     {
-                        Log.Error($@"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}");
-                        LoadFailedReason = $"Error occured while parsing the remove files list for {headerAsString}: {removeFailureReason}";
-                        return;
+                        for (int i = 0; i < addFilesSourceSplit.Count; i++)
+                        {
+                            string destFile = addFilesTargetSplit[i];
+                            CLog.Information($@"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                            string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this); //add files are layered on top
+                            if (failurereason != null)
+                            {
+                                Log.Error($@"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
+                                LoadFailedReason = $"Error occured while parsing the add files lists for {headerAsString}: {failurereason}";
+                                return;
+                            }
+                        }
                     }
+
+                    if (addFilesReadOnlySplit != null && !directoryMatchesGameStructure)
+                    {
+                        for (int i = 0; i < addFilesReadOnlySplit.Count; i++)
+                        {
+                            CLog.Information($@"Adding read-only item to post-installation step): {addFilesSourceSplit[i]}", Settings.LogModStartup);
+
+                            string failurereason = headerJob.AddReadOnlyIndicatorForFile(addFilesSourceSplit[i], this);
+                            if (failurereason != null)
+                            {
+                                Log.Error($@"Error occured while parsing the addfilesreadonlytargtes list for {headerAsString}: {failurereason}");
+                                LoadFailedReason = $"Error occured while parsing the addfilesreadonlytargtes list for {headerAsString}: {failurereason}";
+                                return;
+                            }
+                        }
+                    }
+
 
                     //Altfiles: Mod Manager 4.2
                     string altfilesStr = (ModDescTargetVersion >= 4.2 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString][@"altfiles"] : null;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.objects;
 
@@ -390,24 +391,7 @@ namespace MassEffectModManagerCore.modmanager
         public string RequirementText;
         public List<AlternateFile> AlternateFiles = new List<AlternateFile>();
         public List<AlternateDLC> AlternateDLCs = new List<AlternateDLC>();
-
-        /// <summary>
-        /// Adds a file to the removal sequence. Checks to make sure the installation lists don't include any files that are added.
-        /// </summary>
-        /// <param name="filesToRemove">List of files to remove (in-game relative path)</param>
-        /// <returns>Failure string if any, null otherwise</returns>
-        internal string AddFilesToRemove(List<string> filesToRemove)
-        {
-            foreach (var f in filesToRemove)
-            {
-                if (FilesToInstall.ContainsKey(f))
-                {
-                    return $"Failed to file removal task mod job {Header}: {f} is marked for installation. A mod cannot specify both installation and removal of the same file.";
-                }
-                FilesToRemove.Add(f);
-            }
-            return null;
-        }
+        public List<string> ReadOnlyIndicators = new List<string>();
 
         internal static JobHeader[] GetSupportedNonCustomDLCHeaders(Mod.MEGame game)
         {
@@ -422,6 +406,18 @@ namespace MassEffectModManagerCore.modmanager
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }
+        }
+
+        internal string AddReadOnlyIndicatorForFile(string sourceRelativePath, Mod mod)
+        {
+            var checkingSourceFile = FilesToInstall.Any(x => x.Value.Equals(sourceRelativePath, StringComparison.InvariantCultureIgnoreCase));
+            if (!checkingSourceFile)
+            {
+                return $"Failed to mark file for setting read-only: {checkingSourceFile} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.";
+            }
+
+            ReadOnlyIndicators.Add(sourceRelativePath);
+            return null;
         }
     }
 }

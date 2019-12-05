@@ -45,6 +45,15 @@ namespace MassEffectModManagerCore
 
         public static Visibility IsDebugVisibility => IsDebug ? Visibility.Visible : Visibility.Collapsed;
 
+        public static Visibility DebugOnlyVisibility
+        {
+#if DEBUG
+            get { return Visibility.Visible; }
+#else
+        get { return Visibility.Collapsed; }
+#endif
+        }
+
 #if DEBUG
         public static bool IsDebug => true;
 #else

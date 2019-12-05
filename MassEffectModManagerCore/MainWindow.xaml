@@ -149,6 +149,10 @@
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Openmodfolder}" Click="OpenModFolder_Click" />
                     <MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" />
+
+                    <Separator Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem Header="Reload selected mod" Click="ReloadSelectedMod_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <!--<MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />-->
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_Tools}" Padding="4">
                     <MenuItem Header="{DynamicResource string_Runofficialgameconfigurationtool}">

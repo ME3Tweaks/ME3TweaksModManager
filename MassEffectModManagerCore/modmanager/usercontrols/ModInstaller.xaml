@@ -29,6 +29,25 @@
                 <ItemsControl ItemsSource="{Binding AlternateOptions}">
                     <!-- ItemTemplateSelector="{StaticResource ModInstaller_AlternateDataTemplateSelector}"-->
                     <ItemsControl.Resources>
+                        <DataTemplate DataType="{x:Type objects:ReadOnlyOption}">
+                            <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp" Opacity="{Binding UIOpacity}">
+                                <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <DockPanel DockPanel.Dock="Top">
+                                    <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
+                                <DockPanel.Style>
+                                    <Style TargetType="{x:Type DockPanel}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DockPanel.Style>
+                            </DockPanel>
+                        </DataTemplate>
                         <DataTemplate DataType="{x:Type objects:AlternateDLC}">
                             <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp" Opacity="{Binding UIOpacity}">
                                 <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"  DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>

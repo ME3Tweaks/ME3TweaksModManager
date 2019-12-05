@@ -246,5 +246,20 @@ namespace MassEffectModManagerCore.modmanager
             var installedDLC = MEDirectories.GetInstalledDLC(gameTarget);
             return requiredDLC.Except(installedDLC).ToList();
         }
+
+        internal List<string> GetAllRelativeReadonlyTargets(bool includeME1Config)
+        {
+            var list = new List<string>();
+            foreach (var job in InstallationJobs)
+            {
+                foreach (var item in job.ReadOnlyIndicators)
+                {
+                    var destPath = job.FilesToInstall.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
+                    if (destPath.Key == null) Log.Error("Error: Bug triggered: destPath for addreadonly files returned null!");
+                    list.Add(destPath.Key); //pathcombine?
+                }
+            }
+            return list;
+        }
     }
 }
