@@ -44,7 +44,7 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 
         public MemoryAnalyzer()
         {
-            AddTrackedMemoryItem("Memory Analyzer", new WeakReference(this));
+            AddTrackedMemoryItem(@"Memory Analyzer", new WeakReference(this));
 
             DataContext = this;
             Refresh();

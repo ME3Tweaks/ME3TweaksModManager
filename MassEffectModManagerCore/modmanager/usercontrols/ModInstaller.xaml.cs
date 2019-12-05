@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
@@ -36,6 +37,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
+            MemoryAnalyzer.AddTrackedMemoryItem("Mod Installer", new WeakReference(this));
+            Log.Information(@"Starting mod installer for mod: " + modBeingInstalled.ModName + " for game " + modBeingInstalled.Game);
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;

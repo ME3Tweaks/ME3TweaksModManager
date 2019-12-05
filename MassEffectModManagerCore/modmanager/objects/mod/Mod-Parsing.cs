@@ -10,6 +10,7 @@ using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Packages;
 using Serilog;
@@ -191,6 +192,7 @@ namespace MassEffectModManagerCore.modmanager
             ModJob rcwJob = new ModJob(ModJob.JobHeader.ME2_RCWMOD);
             rcwJob.RCW = rcw;
             InstallationJobs.Add(rcwJob);
+            MemoryAnalyzer.AddTrackedMemoryItem("Mod (RCW) - " + ModName, new WeakReference(this));
         }
 
         /// <summary>
@@ -217,6 +219,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 LoadFailedReason = $"Error occured parsing archive moddesc.ini {moddescArchiveEntry.FileName}: {e.Message}";
             }
+            MemoryAnalyzer.AddTrackedMemoryItem("Mod (Archive) - " + ModName, new WeakReference(this));
 
             //Retain reference to archive as we might need this.
             //Archive = null; //dipose of the mod
@@ -239,6 +242,8 @@ namespace MassEffectModManagerCore.modmanager
             {
                 LoadFailedReason = $"Error occured parsing {filePath}: {e.Message}";
             }
+            MemoryAnalyzer.AddTrackedMemoryItem("Mod (Disk) - " + ModName, new WeakReference(this));
+
         }
 
         /// <summary>
@@ -264,6 +269,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 LoadFailedReason = $"Error occured parsing virtualized moddesc.ini: {e.Message}";
             }
+            MemoryAnalyzer.AddTrackedMemoryItem("Mod (Virtualized) - " + ModName, new WeakReference(this));
         }
 
         private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp" };

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -111,8 +112,10 @@ namespace AdonisUI.Controls
             Window parentWindow = Window.GetWindow(clickEventSource);
             if (parentWindow != null)
             {
-                parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
-                parentWindow.Deactivated += ParentWindowOnDeactivated;
+                //Debug.WriteLine("Add ripple layer");
+                //not sure if this is usful, so we're 
+                //parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+                //parentWindow.Deactivated += ParentWindowOnDeactivated;
             }
 
             IsVisibleChanged += (s, e) => Reset();
@@ -128,6 +131,7 @@ namespace AdonisUI.Controls
             Window parentWindow = Window.GetWindow(clickEventSource);
             if (parentWindow != null)
             {
+                Debug.WriteLine("Clear ripple layer");
                 parentWindow.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
                 parentWindow.Deactivated -= ParentWindowOnDeactivated;
             }
