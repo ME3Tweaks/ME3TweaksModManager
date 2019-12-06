@@ -29,8 +29,8 @@
     <system:String x:Key="string_ModManagement">Mod Management</system:String>
     <system:String x:Key="string_ImportMod">Import Mod</system:String>
     <system:String x:Key="string_HeaderDragDropFaster">Use drag and drop for faster import</system:String>
-    <system:String x:Key="string_ImportmodfromArchive">Import mod from .7z/.rar/.zip</system:String>
-    <system:String xml:space="preserve" x:Key="string_ImportModFromArchiveTooltip">Opens a file browser for selecting mods stored in archive files.&#10;You can drag and drop files onto the interface to import them faster.</system:String>
+    <system:String x:Key="string_ImportmodfromArchive">Import mod from .7z/.rar/.zip/.exe/.me2mod</system:String>
+    <system:String xml:space="preserve" x:Key="string_ImportModFromArchiveTooltip">Opens a file browser for selecting mods stored in archive files, executables, and RCW's ME2 Mod Manager .me2mod files.&#10;You can drag and drop files onto the interface to import them faster.</system:String>
     <system:String x:Key="string_ImportalreadyinstalledCustomDLCmod">Import already installed Custom DLC mod</system:String>
     <system:String x:Key="string_DownloadModMakermod">Download ModMaker mod</system:String>
     <system:String x:Key="string_ASIModManager">ASI Mod Manager</system:String>
