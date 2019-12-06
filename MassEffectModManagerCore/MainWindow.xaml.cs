@@ -435,7 +435,8 @@ namespace MassEffectModManagerCore
         {
             OpenFileDialog m = new OpenFileDialog
             {
-                Title = M3L.GetString(M3L.string_selectModArchive)
+                Title = M3L.GetString(M3L.string_selectModArchive),
+                Filter = "Supported files" + @"|*.zip;*.rar;*.7z;*.exe"
             };
             var result = m.ShowDialog(this);
             if (result.Value)
