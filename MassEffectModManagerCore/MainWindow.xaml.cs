@@ -1021,7 +1021,7 @@ namespace MassEffectModManagerCore
             }
             else if (showDialogEvenIfNone)
             {
-                M3L.ShowDialog(this, M3L.GetString(M3L.string_allTargetsWritable), M3L.GetString(M3L.string_targetsWritable), MessageBoxButton.YesNo, MessageBoxImage.Information);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_allTargetsWritable), M3L.GetString(M3L.string_targetsWritable), MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

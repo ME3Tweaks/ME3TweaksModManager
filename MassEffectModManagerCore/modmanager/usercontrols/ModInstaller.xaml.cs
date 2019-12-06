@@ -401,11 +401,40 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Todo: Upgrade to version detection code from ME3EXP to prevent conflicts
 
             Action = M3L.GetString(M3L.string_installingSupportFiles);
+            PercentVisibility = Visibility.Collapsed;
             CLog.Information(@"Installing supporting ASI files", Settings.LogModInstallation);
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
                 //Todo: Convert to ASI Manager installer
-                Utilities.InstallEmbeddedASI(@"ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget); //Todo: Switch to ASI Manager
+                var asigame = new ASIManagerPanel.ASIGame(gameTarget);
+                ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] { asigame }));
+                var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == 16); //DLC mod enabler is group 16
+                if (dlcModEnabler != null)
+                {
+                    Log.Information("Installing DLC enabler ASI");
+                    var asiLockObject = new object();
+                    void asiInstalled()
+                    {
+                        lock (asiLockObject)
+                        {
+                            Monitor.Pulse(asiLockObject);
+                        }
+                    }
+                    var asiNotInstalledAlready = asigame.ApplyASI(dlcModEnabler.GetLatestVersion(), asiInstalled);
+                    if (asiNotInstalledAlready)
+                    {
+                        lock (asiLockObject)
+                        {
+                            Monitor.Wait(asiLockObject, 3500); //3.5 seconds max time.
+                        }
+                    }
+                }
+                else
+                {
+                    Log.Error("Could not install DLC Enabler ASI!!");
+                }
+
+                //Utilities.InstallEmbeddedASI(@"ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget); //Todo: Switch to ASI Manager
             }
             else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
             {

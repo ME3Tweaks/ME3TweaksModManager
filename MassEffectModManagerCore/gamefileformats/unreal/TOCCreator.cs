@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using MassEffectModManagerCore.modmanager.helpers;
+using Serilog;
 
 namespace ME3Explorer.Unreal
 {
@@ -55,30 +56,35 @@ namespace ME3Explorer.Unreal
         {
             var files = GetFiles(directory);
             var originalFilesList = files;
-            //Strip the non-relative path information
-            string file0fullpath = files[0];
-            int dlcFolderStartSubStrPos = file0fullpath.IndexOf("DLC_", StringComparison.InvariantCultureIgnoreCase);
-            if (dlcFolderStartSubStrPos > 0)
+            if (files.Count > 0)
             {
-                files = files.Select(x => x.Substring(dlcFolderStartSubStrPos)).ToList();
-                files = files.Select(x => x.Substring(x.IndexOf('\\') + 1)).ToList(); //remove first slash
-            }
-            else
-            {
-                int biogameStrPos = file0fullpath.IndexOf("BIOGame", StringComparison.InvariantCultureIgnoreCase);
-                if (biogameStrPos > 0)
+                //Strip the non-relative path information
+                string file0fullpath = files[0];
+                int dlcFolderStartSubStrPos = file0fullpath.IndexOf("DLC_", StringComparison.InvariantCultureIgnoreCase);
+                if (dlcFolderStartSubStrPos > 0)
                 {
-                    files = files.Select(x => x.Substring(biogameStrPos)).ToList();
+                    files = files.Select(x => x.Substring(dlcFolderStartSubStrPos)).ToList();
+                    files = files.Select(x => x.Substring(x.IndexOf('\\') + 1)).ToList(); //remove first slash
                 }
-            }
+                else
+                {
+                    int biogameStrPos = file0fullpath.IndexOf("BIOGame", StringComparison.InvariantCultureIgnoreCase);
+                    if (biogameStrPos > 0)
+                    {
+                        files = files.Select(x => x.Substring(biogameStrPos)).ToList();
+                    }
+                }
 
-            var entries = new List<(string file, int size)>();
-            for (int i = 0; i < originalFilesList.Count; i++)
-            {
-                entries.Add((files[i], (int)new FileInfo(originalFilesList[i]).Length));
-            }
+                var entries = new List<(string file, int size)>();
+                for (int i = 0; i < originalFilesList.Count; i++)
+                {
+                    entries.Add((files[i], (int)new FileInfo(originalFilesList[i]).Length));
+                }
 
-            return CreateTOCForEntries(entries);
+                return CreateTOCForEntries(entries);
+            }
+            Log.Error(@"There are no tocable fies in directory " + directory);
+            return null;
         }
 
         /// <summary>

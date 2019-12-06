@@ -37,8 +37,11 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -129,6 +132,11 @@
                             <TextBlock Text="WPF Extended Toolkit"/>
                         </Hyperlink>
                     </TextBlock>
+                <TextBlock ToolTip="Mass Effect trilogy package handling and file handlers" Grid.Row="5" Grid.Column="1" TextAlignment="Center">
+                        <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/ME3Tweaks/ME3Explorer" Foreground="#FF87CEFA">
+                            <TextBlock Text="ME3Explorer"/>
+                        </Hyperlink>
+                    </TextBlock>
 
                 <TextBlock Text="Translators" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
                     <TextBlock Foreground="White" Grid.Row="7" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
@@ -147,9 +155,15 @@
                     <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="CreeperLava" TextAlignment="Center" />
                     <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="N/A" TextAlignment="Center" />
 
+                <TextBlock Text="Special thanks" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="11" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
+                <TextBlock Foreground="White" Grid.Row="12" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Kinkojiro" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="SirCxytryx" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="Erik JS" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="aquadran" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="14" Grid.Column="0" TextWrapping="Wrap" Grid.ColumnSpan="3" Text="You, the end user, for making this software worth developing" TextAlignment="Center" FontWeight="Bold" />
 
-                <TextBlock Text="License" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
-                    <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="13" TextWrapping="Wrap" Text="Copyright (C) 2012 - 2019 ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts." />
+                <TextBlock Text="License" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="16" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="17" TextWrapping="Wrap" Text="Copyright (C) 2012 - 2019 ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts." />
 
                 </Grid>
             </ScrollViewer>

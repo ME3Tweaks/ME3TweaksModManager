@@ -4,6 +4,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,9 +35,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, "manifest.xml");
         public static readonly string StagedManifestLocation = Path.Combine(CachedASIsFolder, "manifest_staged.xml");
-        private bool DeselectingDueToOtherList;
-
-
 
         private object SelectedASIObject;
         public string SelectedASIDescription { get; set; }
@@ -63,31 +61,58 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ASIManagerPanel()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"ASI Manager", new WeakReference(this));
+            Log.Information(@"Opening ASI Manager");
+
             DataContext = this;
             Directory.CreateDirectory(CachedASIsFolder);
             LoadCommands();
             InitializeComponent();
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += (a, b) =>
+
+            //This has to be done here as the manifest loader references the games list.
+            Games.Add(new ASIGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1).ToList()));
+            Games.Add(new ASIGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2).ToList()));
+            Games.Add(new ASIGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3).ToList()));
+            LoadManifest(true, Games.ToList(), UpdateSelectionTexts);
+        }
+
+        public static void LoadManifest(bool async, List<ASIGame> games, Action<object> selectionStateUpdateCallback = null)
+        {
+            Log.Information(@"Loading ASI manager manifest. Async mode: " + async);
+
+            if (async)
             {
-                using WebClient wc = new WebClient();
-                var onlineManifest = OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
-                if (onlineManifest != null)
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.DoWork += (a, b) =>
                 {
-                    File.WriteAllText(StagedManifestLocation, onlineManifest);
-                    LoadManifest(StagedManifestLocation, true);
-                }
-                else if (File.Exists(ManifestLocation))
-                {
-                    LoadManifest(ManifestLocation, false);
-                }
-                else
-                {
-                    //can't get manifest or local manifest.
-                    //Todo: some sort of handling here as we are running in panel startup
-                }
-            };
-            bw.RunWorkerAsync();
+                    internalLoadManifest(games, selectionStateUpdateCallback);
+                };
+                bw.RunWorkerAsync();
+            }
+            else
+            {
+                internalLoadManifest(games, selectionStateUpdateCallback);
+            }
+        }
+
+        private static void internalLoadManifest(List<ASIGame> games, Action<object> selectionStateUpdateCallback = null)
+        {
+            using WebClient wc = new WebClient();
+            var onlineManifest = OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
+            if (onlineManifest != null)
+            {
+                File.WriteAllText(StagedManifestLocation, onlineManifest);
+                ParseManifest(StagedManifestLocation, games, true, selectionStateUpdateCallback);
+            }
+            else if (File.Exists(ManifestLocation))
+            {
+                Log.Information(@"Loading ASI local manifest");
+                ParseManifest(ManifestLocation, games, false, selectionStateUpdateCallback);
+            }
+            else
+            {
+                //can't get manifest or local manifest.
+                //Todo: some sort of handling here as we are running in panel startup
+            }
         }
 
         public ICommand InstallCommand { get; private set; }
@@ -126,9 +151,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else if (SelectedASIObject is ASIMod asi)
             {
-
                 InstallInProgress = true;
-                Games.First(x => x.Game == asi.Game).ApplyASI(asi, () => { InstallInProgress = false; });
+                var alreadyUpToDate = Games.First(x => x.Game == asi.Game).ApplyASI(asi, () => { InstallInProgress = false; });
+                if (alreadyUpToDate)
+                {
+                    Games.First(x => x.Game == asi.Game).DeleteASI(asi); //UI doesn't allow you to install on top of an already installed ASI that is up to date. So we delete ith ere.
+                }
             }
         }
 
@@ -138,7 +166,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod;
 
 
-        private void LoadManifest(string manifestToLoad, bool isStaged = false)
+        private static void ParseManifest(string manifestToLoad, List<ASIGame> Games, bool isStaged = false, Action<object> selectionStateUpdateCallback = null)
         {
             try
             {
@@ -173,8 +201,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         g.SetUpdateGroups(ASIModUpdateGroups);
                     }
 
-                    RefreshASIStates();
-                    UpdateSelectionTexts(null);
+                    foreach (var game in Games)
+                    {
+                        game.RefreshASIStates();
+                    }
+                    selectionStateUpdateCallback?.Invoke(null);
                 });
                 if (isStaged)
                 {
@@ -186,11 +217,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (isStaged && File.Exists(ManifestLocation))
                 {
                     //try cached instead
-                    LoadManifest(ManifestLocation, false);
+                    ParseManifest(ManifestLocation, Games, false);
                     return;
                 }
 
-                RefreshASIStates();
+                foreach (var game in Games)
+                {
+                    game.RefreshASIStates();
+                }
                 throw new Exception(@"Error parsing the ASI Manifest: " + e.Message);
             }
 
@@ -275,9 +309,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public int UpdateGroupId { get; internal set; }
             public Mod.MEGame Game { get; internal set; }
             public bool IsHidden { get; set; }
+
+            public ASIMod GetLatestVersion()
+            {
+                return ASIModVersions.MaxBy(x => x.Version);
+            }
         }
 
-        private Mod.MEGame intToGame(int i)
+        private static Mod.MEGame intToGame(int i)
         {
             switch (i)
             {
@@ -360,9 +399,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            Games.Add(new ASIGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1).ToList()));
-            Games.Add(new ASIGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2).ToList()));
-            Games.Add(new ASIGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3).ToList()));
             UpdateSelectionTexts(null);
         }
 
@@ -409,6 +445,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 GameTargets.ReplaceAll(targets);
                 SelectedTarget = targets.FirstOrDefault(x => x.RegistryActive);
                 InstallLoaderCommand = new GenericCommand(InstallLoader, CanInstallLoader);
+            }
+
+            /// <summary>
+            /// Makes an ASI game for the specific target
+            /// </summary>
+            /// <param name="target"></param>
+            public ASIGame(GameTarget target)
+            {
+                Game = target.Game;
+                GameTargets.ReplaceAll(new[] { target });
+                SelectedTarget = target;
             }
 
             private bool CanInstallLoader() => SelectedTarget != null && !LoaderInstalled;
@@ -553,12 +600,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(cachedPath))).Replace("-", "").ToLower();
                         if (md5 == asiToInstall.Hash)
                         {
+                            Log.Information($@"Copying local ASI from libary to destination: {cachedPath} -> {finalPath}");
+
                             File.Copy(cachedPath, finalPath);
                             operationCompletedCallback?.Invoke();
                             return;
                         }
                     }
                     WebRequest request = WebRequest.Create(asiToInstall.DownloadLink);
+                    Log.Information(@"Fetching remote ASI from server");
 
                     using WebResponse response = request.GetResponse();
                     MemoryStream memoryStream = new MemoryStream();
@@ -568,15 +618,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (md5 != asiToInstall.Hash)
                     {
                         //ERROR!
+                        Log.Error("Downloaded ASI did not match the manifest! It has the wrong hash.");
                     }
                     else
                     {
+                        Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
 
                         File.WriteAllBytes(finalPath, memoryStream.ToArray());
                         if (!Directory.Exists(CachedASIsFolder))
                         {
                             Directory.CreateDirectory(CachedASIsFolder);
                         }
+                        Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
                         File.WriteAllBytes(cachedPath, memoryStream.ToArray()); //cache it
                         if (oldASIToRemoveOnSuccess != null)
                         {
@@ -593,8 +646,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 worker.RunWorkerAsync();
             }
 
-            internal void ApplyASI(ASIMod asi, Action operationCompletedCallback)
+            internal void DeleteASI(ASIMod asi)
             {
+                var installedInfo = asi.InstalledInfo;
+                if (installedInfo != null)
+                {
+                    //Up to date - delete mod
+                    Log.Information(@"Deleting installed ASI: " + installedInfo.InstalledPath);
+                    File.Delete(installedInfo.InstalledPath);
+                    RefreshASIStates();
+                }
+            }
+
+            /// <summary>
+            /// Attempts to apply the ASI. If the ASI is already up to date, false is returned.
+            /// </summary>
+            /// <param name="asi">ASI to apply or update</param>
+            /// <param name="operationCompletedCallback">Callback when operation is done</param>
+            /// <returns></returns>
+            internal bool ApplyASI(ASIMod asi, Action operationCompletedCallback)
+            {
+                Log.Information($@"Installing {asi.Name} v{asi.Version} to target {SelectedTarget.TargetPath}");
                 //Check if this is actually installed or not (or outdated)
                 var installedInfo = asi.InstalledInfo;
                 if (installedInfo != null)
@@ -607,16 +679,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        //Up to date - delete mod
-                        File.Delete(installedInfo.InstalledPath);
-                        RefreshASIStates();
-                        operationCompletedCallback?.Invoke();
+                        Log.Information("The installed version of this ASI is already up to date.");
+                        return false;
                     }
                 }
                 else
                 {
                     InstallASI(asi, operationCompletedCallback: operationCompletedCallback);
                 }
+                return true;
             }
 
             internal void SetUpdateGroups(List<ASIModUpdateGroup> asiUpdateGroups)
