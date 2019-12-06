@@ -116,10 +116,11 @@ namespace MassEffectModManagerCore
             InitializeComponent();
             languageMenuItems = new Dictionary<string, MenuItem>()
             {
-                {"int", LanguageINT_MenuItem},
-                {"rus", LanguageRUS_MenuItem},
-                {"pol", LanguagePOL_MenuItem},
-                {"deu", LanguageDEU_MenuItem}
+                {@"int", LanguageINT_MenuItem},
+                {@"rus", LanguageRUS_MenuItem},
+                {@"pol", LanguagePOL_MenuItem},
+                {@"deu", LanguageDEU_MenuItem},
+                {@"fra", LanguageFRA_MenuItem}
             };
 
             //Change language if not INT
@@ -136,7 +137,10 @@ namespace MassEffectModManagerCore
                 InstallationTargets_ComboBox.SelectedItem = InstallationTargets[0];
             }
 
-            backgroundTaskEngine = new BackgroundTaskEngine((updateText) => CurrentOperationText = updateText,
+            backgroundTaskEngine = new BackgroundTaskEngine((updateText) =>
+                {
+                    Application.Current.Dispatcher.Invoke(() => { CurrentOperationText = updateText; });
+                },
                 () =>
                 {
                     Application.Current.Dispatcher.Invoke(delegate
@@ -575,7 +579,7 @@ namespace MassEffectModManagerCore
                 }
             };
             ShowBusyControl(installationInformation); //Todo: Support the progress bar updates in the queue
-            //installationInformation.ShowInfo();
+                                                      //installationInformation.ShowInfo();
         }
 
         private bool CanShowInstallInfo()
@@ -841,7 +845,7 @@ namespace MassEffectModManagerCore
 
                     if (gameSelected == Mod.MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32 directory.
-                    //Test for cmmvanilla
+                                                                //Test for cmmvanilla
                     if (File.Exists(Path.Combine(result, @"cmmvanilla")))
                     {
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCannotAddTargetCmmVanilla), M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1023,10 +1027,6 @@ namespace MassEffectModManagerCore
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyname = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
-        }
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
@@ -1192,11 +1192,13 @@ namespace MassEffectModManagerCore
                     args.Result = VisibleFilteredMods.FirstOrDefault(x => x.ModPath == modToHighlight.ModPath);
                 }
 
+
+                //should this be here?
                 UpdateBinkStatus(Mod.MEGame.ME1);
                 UpdateBinkStatus(Mod.MEGame.ME2);
                 UpdateBinkStatus(Mod.MEGame.ME3);
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
-                OnPropertyChanged(nameof(NoModSelectedText));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
                 //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
                 if (canCheckForModUpdates)
@@ -1657,7 +1659,7 @@ namespace MassEffectModManagerCore
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
                 LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!firstStartupCheck));
-                OnPropertyChanged(nameof(NoModSelectedText));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 if (firstStartupCheck)
                 {

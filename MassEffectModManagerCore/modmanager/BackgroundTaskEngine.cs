@@ -15,6 +15,8 @@ namespace MassEffectModManagerCore.modmanager
         private Action showIndicatorDelegate;
         private Action hideIndicatorDelegate;
         private int nextJobID = 1;
+        private static object lockSubmitJob = new object();
+        private static object lockReleaseJob = new object();
 
         public BackgroundTaskEngine(Action<string> updateTextDelegate, Action showIndicatorDelegate, Action hideIndicatorDelegate)
         {
@@ -25,38 +27,46 @@ namespace MassEffectModManagerCore.modmanager
 
         public BackgroundTask SubmitBackgroundJob(string taskName, string uiText = null, string finishedUiText = null)
         {
-            if (uiText != null && finishedUiText == null || uiText == null && finishedUiText != null)
+            lock (lockSubmitJob)
             {
-                throw new Exception("Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
+                if (uiText != null && finishedUiText == null || uiText == null && finishedUiText != null)
+                {
+                    throw new Exception("Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
+                }
+
+                BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
+                backgroundJobs.TryAdd(bt.jobID, bt);
+                if (uiText != null)
+                {
+                    updateTextDelegate(uiText);
+                }
+
+                showIndicatorDelegate();
+                Log.Information("Submitted a background task to engine: " + taskName);
+                return bt;
             }
-            BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
-            backgroundJobs.TryAdd(bt.jobID, bt);
-            if (uiText != null)
-            {
-                updateTextDelegate(uiText);
-            }
-            showIndicatorDelegate();
-            Log.Information("Submitted a background task to engine: " + taskName);
-            return bt;
         }
 
         public void SubmitJobCompletion(BackgroundTask task)
         {
-            if (backgroundJobs.TryRemove(task.jobID, out BackgroundTask t))
+            lock (lockReleaseJob)
             {
-                Log.Information("Completed a background task: " + t.taskName);
-                if (backgroundJobs.Count <= 0)
+                if (backgroundJobs.TryRemove(task.jobID, out BackgroundTask t))
                 {
-                    hideIndicatorDelegate();
-                    if (task.finishedUiText != null)
+                    Log.Information("Completed a background task: " + t.taskName);
+                    if (backgroundJobs.Count <= 0)
                     {
-                        updateTextDelegate(task.finishedUiText);
-                    }
+                        hideIndicatorDelegate();
+                        if (task.finishedUiText != null)
+                        {
+                            updateTextDelegate(task.finishedUiText);
+                        }
 
-                    else
-                    {
-                        backgroundJobs.First().Value.active = true;
-                        updateTextDelegate(backgroundJobs.First().Value.uiText);
+                        else
+                        {
+                            backgroundJobs.First().Value.active = true;
+                            updateTextDelegate(backgroundJobs.First().Value.uiText);
+                        }
                     }
                 }
             }

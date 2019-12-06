@@ -272,7 +272,7 @@
                                         Height="32"/>
                 </StatusBarItem>
                 <StatusBarItem>
-                    <TextBlock Text="{Binding CurrentOperationText, FallbackValue=Welcome To Mod Manager}"/>
+                    <TextBlock Text="{Binding CurrentOperationText, Mode=OneWay}"/>
                 </StatusBarItem>
                 <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
                     <StackPanel Orientation="Horizontal" >

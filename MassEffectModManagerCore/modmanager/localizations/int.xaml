@@ -469,7 +469,7 @@
     <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
     <system:String x:Key="string_interp_scanningX">Scanning {0}</system:String>
     <!-- 0 = filename -->
-    <system:String x:Key="string_interp_openingX">Opening {ScanningFile}</system:String>
+    <system:String x:Key="string_interp_openingX">Opening {0}</system:String> <!-- 0 = file being scanned -->
     <system:String x:Key="string_interp_XfailedToLoadY">\n\n{0} failed to load: {1}</system:String>
     <!-- 0 = mod name 1 = load failure reason -->
     <system:String x:Key="string_readingZippedExecutable">Reading zipped executable</system:String>
