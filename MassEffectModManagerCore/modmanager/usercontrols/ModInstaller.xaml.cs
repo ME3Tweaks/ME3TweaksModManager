@@ -406,33 +406,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
                 //Todo: Convert to ASI Manager installer
-                var asigame = new ASIManagerPanel.ASIGame(gameTarget);
-                ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] { asigame }));
-                var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == 16); //DLC mod enabler is group 16
-                if (dlcModEnabler != null)
-                {
-                    Log.Information("Installing DLC enabler ASI");
-                    var asiLockObject = new object();
-                    void asiInstalled()
-                    {
-                        lock (asiLockObject)
-                        {
-                            Monitor.Pulse(asiLockObject);
-                        }
-                    }
-                    var asiNotInstalledAlready = asigame.ApplyASI(dlcModEnabler.GetLatestVersion(), asiInstalled);
-                    if (asiNotInstalledAlready)
-                    {
-                        lock (asiLockObject)
-                        {
-                            Monitor.Wait(asiLockObject, 3500); //3.5 seconds max time.
-                        }
-                    }
-                }
-                else
-                {
-                    Log.Error("Could not install DLC Enabler ASI!!");
-                }
+                Utilities.InstallASIByGroupID(gameTarget, "@DLC Mod Enabler", 16); //16 = DLC Mod Enabler
 
                 //Utilities.InstallEmbeddedASI(@"ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget); //Todo: Switch to ASI Manager
             }
@@ -444,8 +418,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    //Todo: Convert to ASI Manager installer
-                    Utilities.InstallEmbeddedASI(@"BalanceChangesReplacer-v2.0", 2.0, gameTarget); //todo: Switch to ASI Manager
+                    Utilities.InstallASIByGroupID(gameTarget, @"Balance Changes Replacer", 5);
+                    //Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 5);
+                    //Utilities.InstallEmbeddedASI(@"BalanceChangesReplacer-v2.0", 2.0, gameTarget); //todo: Switch to ASI Manager
                 }
             }
 

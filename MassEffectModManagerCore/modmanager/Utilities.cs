@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using Microsoft.Win32;
 using Serilog;
 using static MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
@@ -556,6 +557,37 @@ namespace MassEffectModManagerCore
         internal static string GetTipsServiceFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
+        }
+
+        internal static void InstallASIByGroupID(GameTarget gameTarget, string nameForLogging, int updateGroup)
+        {
+            var asigame = new ASIManagerPanel.ASIGame(gameTarget);
+            ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] { asigame }));
+            var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == updateGroup); //DLC mod enabler is group 16
+            if (dlcModEnabler != null)
+            {
+                Log.Information($"Installing {nameForLogging} ASI");
+                var asiLockObject = new object();
+                void asiInstalled()
+                {
+                    lock (asiLockObject)
+                    {
+                        Monitor.Pulse(asiLockObject);
+                    }
+                }
+                var asiNotInstalledAlready = asigame.ApplyASI(dlcModEnabler.GetLatestVersion(), asiInstalled);
+                if (asiNotInstalledAlready)
+                {
+                    lock (asiLockObject)
+                    {
+                        Monitor.Wait(asiLockObject, 3500); //3.5 seconds max time.
+                    }
+                }
+            }
+            else
+            {
+                Log.Error($"Could not install {nameForLogging} ASI!!");
+            }
         }
 
         internal static string GetThirdPartyImportingCachedFile()
