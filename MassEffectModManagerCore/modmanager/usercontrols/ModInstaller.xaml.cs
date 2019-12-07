@@ -336,7 +336,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (requiredSpaceToInstall * 1000.05 > freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
             {
                 string driveletter = Path.GetPathRoot(gameTarget.TargetPath);
-                Log.Error($@"Insufficient disk space to install mod. Required: {ByteSize.FromBytes(requiredSpaceToInstall)}, available on {driveletter}: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}" +);
+                Log.Error($@"Insufficient disk space to install mod. Required: {ByteSize.FromBytes(requiredSpaceToInstall)}, available on {driveletter}: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     string message = $"There is not enough space on {driveletter} to install {ModBeingInstalled.ModName}.\nRequired space: {ByteSize.FromBytes(requiredSpaceToInstall)}\nAvailable space: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}";
