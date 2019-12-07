@@ -107,12 +107,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
                     Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
                 }
-                Debug.WriteLine("Done authing");
                 IsAuthorizing = false;
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
-                Debug.WriteLine("Finished"); 
                 CommandManager.InvalidateRequerySuggested();
             };
             bw.RunWorkerAsync();

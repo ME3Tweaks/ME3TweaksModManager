@@ -64,9 +64,16 @@ namespace MassEffectModManagerCore
         public bool ME1ModsVisible { get; set; } = true;
         public bool ME2ModsVisible { get; set; } = true;
         public bool ME3ModsVisible { get; set; } = true;
+
+        public bool ME1NexusEndorsed { get; set; }
+        public bool ME2NexusEndorsed { get; set; }
+        public bool ME3NexusEndorsed { get; set; }
+
+
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
         public string ME3ASILoaderText { get; set; }
+        public string EndorseM3String { get; set; } = "Endorse ME3Tweaks Mod Manager on NexusMods";
 
         private int lastHintIndex = -1;
         private int oldFailedBindableCount = 0;
@@ -168,14 +175,35 @@ namespace MassEffectModManagerCore
             else
             {
                 NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
+                NexusUsername = null;
+                NexusUserID = 0;
+                ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = false;
+                EndorseM3String = "Endorse ME3Tweaks Mod Manager on NexusMods";
             }
         }
 
         private async void AuthToNexusMods()
         {
             var userInfo = await NexusModsUtilities.AuthToNexusMods();
-            NexusUsername = userInfo.Name;
-            NexusUserID = userInfo.UserID;
+            if (userInfo != null)
+            {
+                NexusUsername = userInfo.Name;
+                NexusUserID = userInfo.UserID;
+
+                //ME1
+                var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile("masseffect", 149, NexusUserID);
+                ME1NexusEndorsed = me1Status ?? true;
+
+                //ME2
+                var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile("masseffect2", 248, NexusUserID);
+                ME2NexusEndorsed = me2Status ?? false;
+
+                //ME3
+                var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile("masseffect3", 373, NexusUserID);
+                ME3NexusEndorsed = me3Status ?? false;
+
+                EndorseM3String = (ME1NexusEndorsed && ME2NexusEndorsed && ME3NexusEndorsed) ? "Endorsed ME3Tweaks Mod Manager on NexusMods :)" : "Endorse ME3Tweaks Mod Manager on NexusMods";
+            }
         }
 
         private void AttachListeners()
@@ -229,6 +257,7 @@ namespace MassEffectModManagerCore
         public GenericCommand EndorseSelectedModCommand { get; set; }
         public ICommand CreateTestArchiveCommand { get; set; }
         public ICommand LaunchIniModderCommand { get; set; }
+        public ICommand EndorseM3OnNexusCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -256,6 +285,31 @@ namespace MassEffectModManagerCore
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
+            EndorseM3OnNexusCommand = new GenericCommand(EndorseM3, CanEndorseM3);
+        }
+
+        private bool CanEndorseM3()
+        {
+            return NexusUserID != 0 && (!ME1NexusEndorsed || !ME2NexusEndorsed || !ME3NexusEndorsed);
+        }
+
+        private void EndorseM3()
+        {
+            if (!ME1NexusEndorsed)
+            {
+                Log.Information(@"Endorsing M3 (ME1)");
+                NexusModsUtilities.EndorseFile("masseffect", true, 149, NexusUserID, (newStatus) => ME1NexusEndorsed = newStatus);
+            }
+            if (!ME2NexusEndorsed)
+            {
+                Log.Information(@"Endorsing M3 (ME2)");
+                NexusModsUtilities.EndorseFile("masseffect2", true, 248, NexusUserID, (newStatus) => ME2NexusEndorsed = newStatus);
+            }
+            if (!ME3NexusEndorsed)
+            {
+                Log.Information(@"Endorsing M3 (ME3)");
+                NexusModsUtilities.EndorseFile("masseffect3", true, 373, NexusUserID, (newStatus) => ME3NexusEndorsed = newStatus);
+            }
         }
 
         private void EnableME1ConsoleWrapper()

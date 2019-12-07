@@ -84,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             if (File.Exists(keyPath) && File.Exists(entropyf))
             {
                 var entropy = File.ReadAllBytes(entropyf);
-                using FileStream fs = new FileStream(keyPath, FileMode.Open);
+                using MemoryStream fs = new MemoryStream(File.ReadAllBytes(keyPath));
                 return Encoding.Unicode.GetString(DecryptDataFromStream(entropy, DataProtectionScope.CurrentUser, fs, (int)fs.Length));
             }
 
@@ -102,6 +102,84 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             if (key == null) return null; //no key to use
             return new NexusClient(key, "ME3Tweaks Mod Manager", App.BuildNumber.ToString());
         }
+
+        public static async Task<bool?> GetEndorsementStatusForFile(string gamedomain, int fileid, int currentuserid)
+        {
+            if (!NexusModsUtilities.HasAPIKey) return false;
+            var client = NexusModsUtilities.GetClient();
+            var modinfo = await client.Mods.GetMod(gamedomain, fileid);
+            if (modinfo.User.MemberID == currentuserid)
+            {
+                return null; //cannot endorse your own mods
+            }
+            var endorsementstatus = modinfo.Endorsement;
+            if (endorsementstatus != null)
+            {
+                if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Undecided || endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Abstained)
+                {
+                    return false;
+                }
+
+                if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Endorsed)
+                {
+                    return true;
+                }
+            }
+            return null; //Cannot endorse this (could not get endorsement status)
+        }
+
+        /// <summary>
+        /// Asynchronously endorses a file. This call does not wait for a result of the operation.
+        /// </summary>
+        /// <param name="gamedomain"></param>
+        /// <param name="endorse"></param>
+        /// <param name="fileid"></param>
+        /// <param name="currentuserid"></param>
+        public static void EndorseFile(string gamedomain, bool endorse, int fileid, int currentuserid, Action<bool> newEndorsementStatusCallback = null)
+        {
+            if (!NexusModsUtilities.HasAPIKey) return;
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += (a, b) =>
+            {
+                var client = NexusModsUtilities.GetClient();
+                string telemetryOverride = null;
+                try
+                {
+                    if (endorse)
+                    {
+                        client.Mods.Endorse(gamedomain, fileid, @"1.0").Wait();
+                    }
+                    else
+                    {
+                        client.Mods.Unendorse(gamedomain, fileid, @"1.0").Wait();
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    Log.Error(@"Error endorsing/unendorsing: " + e.ToString());
+                    telemetryOverride = e.ToString();
+                }
+
+                var newStatus = GetEndorsementStatusForFile(gamedomain, fileid, currentuserid).Result;
+
+                Analytics.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
+                {
+                    {@"Endorsed", endorse.ToString() },
+                    {@"Succeeded", telemetryOverride ?? (endorse == newStatus).ToString() }
+                });
+                b.Result = newStatus;
+            };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Result is bool val)
+                {
+                    newEndorsementStatusCallback?.Invoke(val);
+                }
+            };
+            bw.RunWorkerAsync();
+        }
+
 
         private static int EncryptDataToStream(byte[] Buffer, byte[] Entropy, DataProtectionScope Scope, Stream S)
         {

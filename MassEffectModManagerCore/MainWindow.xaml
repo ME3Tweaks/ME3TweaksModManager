@@ -33,8 +33,6 @@
                     Value="True" />
             <Setter Property="BorderThickness"
                     Value="0" />
-            <Setter Property="Background"
-                        Value="{DynamicResource {x:Static adonisUi:Brushes.WindowButtonHighlightBrush}}" />
         </Style>
         <Storyboard x:Key="OpenLoadingSpinner" Storyboard.TargetProperty="(FrameworkElement.Width)">
             <DoubleAnimation To="32" Duration="0:0:0.25"/>
@@ -241,6 +239,8 @@
                     <MenuItem Header="{DynamicResource string_ModManagerLogsDiagnostics}" Click="UploadLog_Click" ToolTip="{DynamicResource string_TroubleshootingtoolsforME3Tweaks}" />
                     <Separator />
                     <MenuItem Header="{DynamicResource string_About}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{Binding EndorseM3String}" Command="{Binding EndorseM3OnNexusCommand}"/>
+
                     <MenuItem Header="{DynamicResource string_moddescfileformatspecification}" Click="Documentation_Click" ToolTip="{DynamicResource string_ReferenceinformationModdesc}" />
                     <MenuItem Header="{DynamicResource string_AboutME3TweaksModManager}" Click="About_Click" ToolTip="{DynamicResource string_Aboutthisprogram}" />
                 </MenuItem>
