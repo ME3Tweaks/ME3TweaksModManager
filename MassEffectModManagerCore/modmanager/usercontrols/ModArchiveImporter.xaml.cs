@@ -17,18 +17,20 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
 using SevenZip.EventArguments;
 using Threading;
 using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
+using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic for ModArchiveImporter.xaml
+    /// Interaction logic foru ModArchiveImporter.xaml
     /// </summary>
     public partial class ModArchiveImporter : MMBusyPanelBase
     {
@@ -93,6 +95,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
                     ArchiveScanned = true;
+
                     //Initial release disables this.
                     CanCompressPackages = false && CompressedMods.Any() && CompressedMods.Any(x => x.Game == Mod.MEGame.ME3); //Change to include ME2 when support for LZO is improved
                 }
@@ -421,6 +424,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
             }
+
         }
 
 
@@ -439,7 +443,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (thirdPartyInfo != null)
                     {
                         Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
-                        //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build an feed it a virtual one.
+                        //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build and feed it a virtual one.
                         IniData virtualModDesc = new IniData();
                         virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
                         virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
@@ -450,11 +454,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
                         {
                             virtualModDesc[@"ModInfo"][@"updatecode"] = updatecode.ToString();
-                            virtualModDesc[@"ModInfo"][@"modver"] = 0.001.ToString(); //This will force mod to check for update after reload
+                            virtualModDesc[@"ModInfo"][@"modver"] = 0.001.ToString(CultureInfo.InvariantCulture); //This will force mod to check for update after reload
                         }
                         else
                         {
-                            virtualModDesc[@"ModInfo"][@"modver"] = 0.0.ToString(); //Will attempt to look up later after mods have parsed.
+                            virtualModDesc[@"ModInfo"][@"modver"] = 0.0.ToString(CultureInfo.InvariantCulture); //Will attempt to look up later after mods have parsed.
                         }
 
                         virtualModDesc[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
@@ -494,24 +498,49 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     OnClosing(new DataEventArgs(modList));
                     return;
                 }
-                if (b.Result is int resultcode)
+
+
+                long requiredSpace = 0;
+                ModImportResult result = ModImportResult.None;
+                if (b.Result is (long spaceRequired, ModImportResult res))
                 {
-                    if (resultcode == USER_ABORTED_IMPORT)
-                    {
-                        ProgressValue = 0;
-                        ProgressMaximum = 100;
-                        ProgressIndeterminate = false;
-                        ActionText = M3L.GetString(M3L.string_selectModsToImportOrInstall);
-                        return; //Don't do anything.
-                    }
-                    if (resultcode == ERROR_COULD_NOT_DELETE_EXISTING_DIR)
-                    {
-                        ProgressValue = 0;
-                        ProgressMaximum = 100;
-                        ProgressIndeterminate = false;
-                        ActionText = M3L.GetString(M3L.string_errorUnableToDeleteExistingModDirectory);
-                        return; //Don't do anything.
-                    }
+                    result = res;
+                    requiredSpace = spaceRequired;
+                }
+
+                if (b.Result is ModImportResult res2)
+                {
+                    result = res2;
+                }
+
+                switch (result)
+                {
+                    case ModImportResult.USER_ABORTED_IMPORT:
+                        {
+                            ProgressValue = 0;
+                            ProgressMaximum = 100;
+                            ProgressIndeterminate = false;
+                            ActionText = M3L.GetString(M3L.string_selectModsToImportOrInstall);
+                            return; //Don't do anything.
+                        }
+                    case ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR:
+                        {
+                            ProgressValue = 0;
+                            ProgressMaximum = 100;
+                            ProgressIndeterminate = false;
+                            ActionText = M3L.GetString(M3L.string_errorUnableToDeleteExistingModDirectory);
+                            return; //Don't do anything.
+                        }
+                    case ModImportResult.ERROR_INSUFFICIENT_DISK_SPACE:
+                        {
+                            ProgressValue = 0;
+                            ProgressMaximum = 100;
+                            ProgressIndeterminate = false;
+                            ActionText = "Insufficient disk space to extract selected mods"; //localize me
+                            Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freeSpace);
+                            Xceed.Wpf.Toolkit.MessageBox.Show(window, $"There is not enough space on the disk to import the selected mods into your mod library.\nRequired space: {ByteSize.FromBytes(requiredSpace)}\nAvailable space: {ByteSize.FromBytes(freeSpace)}", "Insufficient disk space", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return; //Don't do anything.
+                        }
                 }
                 //Close.
                 OnClosing(DataEventArgs.Empty);
@@ -530,6 +559,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ActionText = x;
             }
 
+            //get total size requirement
+            long requiredDiskSpace = mods.Sum(x => x.GetRequiredSpaceForExtraction(ArchiveFilePath));
+            if (Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freespaceBytes))
+            {
+                requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
+                Log.Information($@"Selected mods require: {ByteSize.FromBytes(requiredDiskSpace)}");
+                if ((long)freespaceBytes < requiredDiskSpace)
+                {
+                    Log.Error(@"There is not enough free space on the disk to extract these mods.");
+                    Log.Error($@"Selected mods require: {ByteSize.FromBytes(requiredDiskSpace)} | Disk space available in library partition: {ByteSize.FromBytes(freespaceBytes)}");
+                    e.Result = (requiredDiskSpace, ModImportResult.ERROR_INSUFFICIENT_DISK_SPACE);
+                    return;
+                }
+
+            }
+            else
+            {
+                Log.Error(@"Unable to get amount of free space for mod library directory disk! We will continue anyways. Path: " + Utilities.GetModsDirectory());
+            }
+
+
+
             foreach (var mod in mods)
             {
                 //Todo: Extract files
@@ -541,6 +592,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Ensure directory
                 var modDirectory = Utilities.GetModDirectoryForGame(mod.Game);
                 var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(mod.ModName));
+
+
                 if (Directory.Exists(sanitizedPath))
                 {
                     //Will delete on import
@@ -550,7 +603,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var result = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_dialogImportingModWillDeleteExistingMod, sanitizedPath), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                         if (result == MessageBoxResult.No)
                         {
-                            e.Result = USER_ABORTED_IMPORT;
+                            e.Result = ModImportResult.USER_ABORTED_IMPORT;
                             abort = true;
                             return;
                         }
@@ -560,7 +613,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (!Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath))
                             {
                                 Log.Error(@"Could not delete existing mod directory.");
-                                e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                                e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                                 M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                                 abort = true;
                                 return;
@@ -572,7 +625,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             //I don't think this can be triggered but will leave as failsafe anyways.
                             Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
                             M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_errorOccuredDeletingExistingModX, ex.Message), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
-                            e.Result = ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                            e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                             abort = true;
                         }
                     });
@@ -698,9 +751,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InstallModCommand = new GenericCommand(InstallCompressedMod, CanInstallCompressedMod);
         }
 
-        private static ModJob.JobHeader[] CurrentlyDirectInstallSupportedJobs = { ModJob.JobHeader.BASEGAME, ModJob.JobHeader.BALANCE_CHANGES, ModJob.JobHeader.CUSTOMDLC };
-        private readonly int USER_ABORTED_IMPORT = 1;
-        private readonly int ERROR_COULD_NOT_DELETE_EXISTING_DIR = 2;
+        public enum ModImportResult
+        {
+            USER_ABORTED_IMPORT,ERROR_COULD_NOT_DELETE_EXISTING_DIR,
+            ERROR_INSUFFICIENT_DISK_SPACE,
+            None
+        }
 
         private bool CanInstallCompressedMod()
         {

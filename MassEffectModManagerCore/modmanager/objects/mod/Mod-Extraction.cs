@@ -29,6 +29,40 @@ namespace MassEffectModManagerCore.modmanager
 
         private BlockingCollection<string> compressionQueue;
         private object compressionCompletedSignaler = new object();
+
+        public long GetRequiredSpaceForExtraction(string archivePath)
+        {
+            var archiveFile = archivePath.EndsWith(@".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+
+            var itemsToExtract = new List<ArchiveFileInfo>();
+            var referencedFiles = GetAllRelativeReferences(archiveFile);
+
+            if (!IsVirtualized)
+            {
+                referencedFiles.Add(@"moddesc.ini");
+            }
+            //unsure if this is required?? doesn't work for MEHEM EXE
+            //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
+            foreach (var info in archiveFile.ArchiveFileData)
+            {
+                if (referencedFiles.Contains(info.FileName))
+                {
+                    //Log.Information(@"Adding file to extraction list: " + info.FileName);
+                    itemsToExtract.Add(info);
+                }
+            }
+
+            long requiredSize = 0;
+            foreach (var item in itemsToExtract)
+            {
+                requiredSize += (long)item.Size;
+                Debug.WriteLine("Add to size: " + item.Size + " " + item.FileName);
+            }
+
+
+            return requiredSize;
+        }
+
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
             Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
         {

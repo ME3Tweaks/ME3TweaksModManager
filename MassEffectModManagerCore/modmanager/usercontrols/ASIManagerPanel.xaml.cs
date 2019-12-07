@@ -67,12 +67,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Directory.CreateDirectory(CachedASIsFolder);
             LoadCommands();
             InitializeComponent();
-
-            //This has to be done here as the manifest loader references the games list.
-            Games.Add(new ASIGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1).ToList()));
-            Games.Add(new ASIGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2).ToList()));
-            Games.Add(new ASIGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3).ToList()));
-            LoadManifest(true, Games.ToList(), UpdateSelectionTexts);
         }
 
         public static void LoadManifest(bool async, List<ASIGame> games, Action<object> selectionStateUpdateCallback = null)
@@ -399,6 +393,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            //This has to be done here as mainwindow will not be available until this is called
+            Games.Add(new ASIGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1).ToList()));
+            Games.Add(new ASIGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2).ToList()));
+            Games.Add(new ASIGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3).ToList()));
+
+            //Technically this could load earlier, but it's not really worth the effort for the miniscule time saved
+            LoadManifest(true, Games.ToList(), UpdateSelectionTexts);
             UpdateSelectionTexts(null);
         }
 
