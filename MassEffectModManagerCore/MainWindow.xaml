@@ -49,6 +49,11 @@
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
             <Menu DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel HorizontalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
                 <MenuItem Header="{DynamicResource string_Actions}" Padding="4">
                     <MenuItem Header="{DynamicResource string_CreateaME3modonModMaker}" IsEnabled="False" />
                     <MenuItem Header="{DynamicResource string_OpenME3Tweaks}" IsEnabled="True" Click="OpenME3Tweaks_Click" ToolTip="{DynamicResource string_OpensME3Tweaks}" />
@@ -126,11 +131,6 @@
                         <MenuItem Header="{DynamicResource string_ClearMixinCache}" />
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="{Binding NexusLoginInfoString}" Command="{Binding LoginToNexusCommand}">
-                        <MenuItem.Icon>
-                            <Image Source="/modmanager/nexusmodsintegration/nexusmods_icon.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
-                        </MenuItem.Icon>
-                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
@@ -243,6 +243,11 @@
                     <MenuItem Header="{DynamicResource string_About}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_moddescfileformatspecification}" Click="Documentation_Click" ToolTip="{DynamicResource string_ReferenceinformationModdesc}" />
                     <MenuItem Header="{DynamicResource string_AboutME3TweaksModManager}" Click="About_Click" ToolTip="{DynamicResource string_Aboutthisprogram}" />
+                </MenuItem>
+                <MenuItem Style="{StaticResource MenuBarButton}"  Header="{Binding NexusLoginInfoString}" Command="{Binding LoginToNexusCommand}" HorizontalAlignment="Right" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" Padding="0" HorizontalContentAlignment="Right">
+                    <MenuItem.Icon>
+                        <Image Source="/modmanager/nexusmodsintegration/nexusmods_icon.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                    </MenuItem.Icon>
                 </MenuItem>
             </Menu>
             <StatusBar DockPanel.Dock="Bottom" Padding="5,0">

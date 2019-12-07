@@ -115,8 +115,8 @@
     <system:String x:Key="string_gettingEndorsementStatus">Getting endorsement status</system:String>
     <system:String x:Key="string_endorseMod">Endorse mod</system:String>
     <system:String x:Key="string_modEndorsed">&#x1F44D; Mod endorsed</system:String>
-    <system:String x:Key="string_loginToNexusModsToEnableEndorsements">Log in to NexusMods to enable Endorsements</system:String>
-    <system:String x:Key="string_endorsementsEnabledAuthenicatedToNexusMods">Endorsements enabled (authenticated to NexusMods)</system:String>
+    <system:String x:Key="string_loginToNexusMods">Login to NexusMods</system:String>
+    <system:String x:Key="string_endorsementsEnabled">Endorsements enabled</system:String>
     <system:String x:Key="string_endorsing">Endorsing</system:String>
     <system:String x:Key="string_unendorsing">Unendorsing</system:String>
     <system:String x:Key="string_dialogConsoleEnabled">Console enabled.\nPress ~ to open the full size console.\nPress TAB to open the mini console.</system:String>

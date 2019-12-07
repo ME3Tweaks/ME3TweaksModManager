@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        public string NexusLoginInfoString { get; set; } = M3L.GetString(M3L.string_loginToNexusModsToEnableEndorsements);
+        public string NexusLoginInfoString { get; set; } = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
@@ -108,11 +108,7 @@ namespace MassEffectModManagerCore
         {
             DataContext = this;
             LoadCommands();
-            if (NexusModsUtilities.HasAPIKey)
-            {
-                NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabledAuthenicatedToNexusMods);
-                AuthToNexusMods();
-            }
+            RefreshNexusStatus();
             InitializeComponent();
             languageMenuItems = new Dictionary<string, MenuItem>()
             {
@@ -160,6 +156,19 @@ namespace MassEffectModManagerCore
                     });
                 }
             );
+        }
+
+        public void RefreshNexusStatus()
+        {
+            if (NexusModsUtilities.HasAPIKey)
+            {
+                NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabled);
+                AuthToNexusMods();
+            }
+            else
+            {
+                NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
+            }
         }
 
         private async void AuthToNexusMods()

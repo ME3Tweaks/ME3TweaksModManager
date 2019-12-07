@@ -177,8 +177,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_gettingEndorsementStatus = "string_gettingEndorsementStatus";
 		public static readonly string string_endorseMod = "string_endorseMod";
 		public static readonly string string_modEndorsed = "string_modEndorsed";
-		public static readonly string string_loginToNexusModsToEnableEndorsements = "string_loginToNexusModsToEnableEndorsements";
-		public static readonly string string_endorsementsEnabledAuthenicatedToNexusMods = "string_endorsementsEnabledAuthenicatedToNexusMods";
+		public static readonly string string_loginToNexusMods = "string_loginToNexusMods";
+		public static readonly string string_endorsementsEnabled = "string_endorsementsEnabled";
 		public static readonly string string_endorsing = "string_endorsing";
 		public static readonly string string_unendorsing = "string_unendorsing";
 		public static readonly string string_dialogConsoleEnabled = "string_dialogConsoleEnabled";

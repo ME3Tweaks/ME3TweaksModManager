@@ -90,13 +90,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 IsAuthorizing = true;
                 try
                 {
-                    var authInfo = await NexusModsUtilities.AuthToNexusMods(APIKeyText);
+                    var authInfo = NexusModsUtilities.AuthToNexusMods(APIKeyText).Result;
                     if (authInfo != null)
                     {
                         NexusModsUtilities.EncryptAPIKeyToDisk(APIKeyText);
                         mainwindow.NexusUsername = authInfo.Name;
                         mainwindow.NexusUserID = authInfo.UserID;
                         SetAuthorized(true);
+                        mainwindow.RefreshNexusStatus();
                         Analytics.TrackEvent(M3L.GetString(M3L.string_authenticatedToNexusMods));
 
                     }
@@ -106,10 +107,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
                     Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
                 }
-
+                Debug.WriteLine("Done authing");
                 IsAuthorizing = false;
             };
-            bw.RunWorkerCompleted += (a, b) => { CommandManager.InvalidateRequerySuggested(); };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                Debug.WriteLine("Finished"); 
+                CommandManager.InvalidateRequerySuggested();
+            };
             bw.RunWorkerAsync();
         }
 
@@ -120,6 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             mainwindow.NexusUsername = null;
             mainwindow.NexusUserID = 0;
             SetAuthorized(false);
+            mainwindow.RefreshNexusStatus();
         }
 
         private bool CanUnlinkWithNexus() => IsAuthorized;
