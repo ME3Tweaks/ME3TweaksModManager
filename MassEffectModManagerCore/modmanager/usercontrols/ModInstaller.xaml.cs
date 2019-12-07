@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ByteSizeLib;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -62,7 +63,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_REQUIRED_DLC_MISSING,
             INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS,
             NO_RESULT_CODE,
-            INSTALL_FAILED_MALFORMED_RCW_FILE
+            INSTALL_FAILED_MALFORMED_RCW_FILE,
+            INSTALL_ABORTED_NOT_ENOUGH_SPACE
         }
 
 
@@ -199,6 +201,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Stage: Unpacked files build map
+
+
             Dictionary<string, string> fullPathMappingDisk = new Dictionary<string, string>();
             Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
             SortedSet<string> customDLCsBeingInstalled = new SortedSet<string>();
@@ -304,6 +308,42 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Debug.WriteLine($@"SFAR Disk Staging: {fileToInstall.Key} => {destFile}");
                     }
                 }
+            }
+
+            //Check we have enough disk space
+            long requiredSpaceToInstall = 0L;
+            if (ModBeingInstalled.IsInArchive)
+            {
+                foreach (var f in ModBeingInstalled.Archive.ArchiveFileData)
+                {
+                    if (fullPathMappingArchive.ContainsKey(f.Index))
+                    {
+                        //we are installing this file
+                        requiredSpaceToInstall += (long)f.Size;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var file in fullPathMappingDisk)
+                {
+                    requiredSpaceToInstall += new FileInfo(file.Key).Length;
+                }
+            }
+
+            Utilities.DriveFreeBytes(gameTarget.TargetPath, out var freeSpaceOnTargetDisk);
+            requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1000.05); //+5% for some overhead
+            if (requiredSpaceToInstall * 1000.05 > freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
+            {
+                string driveletter = Path.GetPathRoot(gameTarget.TargetPath);
+                Log.Error($@"Insufficient disk space to install mod. Required: {ByteSize.FromBytes(requiredSpaceToInstall)}, available on {driveletter}: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}" +);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    string message = $"There is not enough space on {driveletter} to install {ModBeingInstalled.ModName}.\nRequired space: {ByteSize.FromBytes(requiredSpaceToInstall)}\nAvailable space: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}";
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, message, "Insufficient disk space", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
+                e.Result = ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
+                return;
             }
 
             //Delete existing custom DLC mods with same name
@@ -701,7 +741,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Warning);
 
                 }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES)
+                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
                 {
                     InstallationCancelled = true;
                 }
