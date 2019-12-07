@@ -291,6 +291,8 @@ namespace MassEffectModManagerCore.modmanager
 
                 archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
                 Log.Information(@"File extraction completed.");
+
+
                 compressionQueue?.CompleteAdding();
                 if (compressPackages && numberOfPackagesToCompress > 0 && numberOfPackagesToCompress > compressedPackageCount)
                 {
@@ -331,6 +333,15 @@ namespace MassEffectModManagerCore.modmanager
                         Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
                         updateTextCallback?.Invoke($"VPatching into alternate: {Path.GetFileName(inputfile)}");
                         Utilities.RunProcess(vpat, args, true, false, false, true);
+                    }
+
+                    //Handle copyfile
+                    foreach (var copyfile in ExeExtractionTransform.CopyFiles)
+                    {
+                        string srcfile = Path.Combine(ModPath, copyfile.inputfile);
+                        string destfile = Path.Combine(ModPath, copyfile.outputfile);
+                        Log.Information($@"Applying transform copyfile: {srcfile} -> {destfile}");
+                        File.Copy(srcfile, destfile, true);
                     }
 
                     if (ExeExtractionTransform.PostTransformModdesc != null)

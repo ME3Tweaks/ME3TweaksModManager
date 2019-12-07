@@ -679,6 +679,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 NoExtractIndexes.ReplaceAll(doc.Root.Elements(@"noextract")
                     .Select(d => (int)d.Attribute(@"index")).ToList());
 
+                CopyFiles.ReplaceAll(doc.Root.Elements(@"copyfile")
+                    .Select(d => new CopyFile()
+                    {
+                        inputfile = (string) d.Attribute(@"source"),
+                        outputfile = (string) d.Attribute(@"destination"),
+                    }).ToList());
+
                 var postTransform = doc.Root.Elements(@"posttransformmoddesc");
                 if (postTransform.Count() == 1)
                 {
@@ -686,6 +693,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
             public List<VPatchDirective> VPatches = new List<VPatchDirective>();
+            public List<CopyFile> CopyFiles = new List<CopyFile>();
             public List<(int index, string outfile)> PatchRedirects = new List<(int index, string outfile)>();
             public List<(int index, string outfile)> AlternateRedirects = new List<(int index, string outfile)>();
             public List<int> NoExtractIndexes = new List<int>();
@@ -697,6 +705,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 public string inputfile;
                 public string outputfile;
                 public string patchfile;
+            }
+
+            public class CopyFile
+            {
+                public string inputfile;
+                public string outputfile;
             }
         }
 
@@ -753,7 +767,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public enum ModImportResult
         {
-            USER_ABORTED_IMPORT,ERROR_COULD_NOT_DELETE_EXISTING_DIR,
+            USER_ABORTED_IMPORT, ERROR_COULD_NOT_DELETE_EXISTING_DIR,
             ERROR_INSUFFICIENT_DISK_SPACE,
             None
         }
