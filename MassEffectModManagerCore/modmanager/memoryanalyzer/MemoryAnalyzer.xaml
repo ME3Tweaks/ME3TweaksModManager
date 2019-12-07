@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Closing="MemoryAnalyzer_Closing"
         SizeToContent="Width"
-        Title="Mod Manager Memory Analyzer" MinHeight="445" Height="440" MinWidth="500">
+        Title="Mod Manager Memory Analyzer" MinHeight="445" Height="440" Width="800" MinWidth="800">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>

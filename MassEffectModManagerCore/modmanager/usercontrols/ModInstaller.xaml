@@ -9,6 +9,7 @@
              xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
              mc:Ignorable="d" 
              Height="Auto" MinWidth="300" MaxWidth="480">
     <local:MMBusyPanelBase.Resources>

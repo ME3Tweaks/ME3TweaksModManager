@@ -48,19 +48,26 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         /// <returns></returns>
         public static async Task<User> AuthToNexusMods(string apiKey = null)
         {
-            var nexus = GetClient(apiKey);
-
-            Log.Information("Getting user information from NexusMods");
-
-            var userinfo = await nexus.Users.ValidateAsync();
-            if (userinfo.Name != null)
+            try
             {
-                Log.Information("API call returned valid data. API key is valid");
+                var nexus = GetClient(apiKey);
 
-                //Authorized OK.
+                Log.Information("Getting user information from NexusMods");
 
-                //Track how many users authenticate to nexusmods, but don't track who.
-                return userinfo;
+                var userinfo = await nexus.Users.ValidateAsync();
+                if (userinfo.Name != null)
+                {
+                    Log.Information("API call returned valid data. API key is valid");
+
+                    //Authorized OK.
+
+                    //Track how many users authenticate to nexusmods, but don't track who.
+                    return userinfo;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Exception while authenticating to nexusmods: "+e.Message);
             }
 
             return null;

@@ -202,7 +202,7 @@ namespace MassEffectModManagerCore
                 var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile("masseffect3", 373, NexusUserID);
                 ME3NexusEndorsed = me3Status ?? false;
 
-                EndorseM3String = (ME1NexusEndorsed && ME2NexusEndorsed && ME3NexusEndorsed) ? "Endorsed ME3Tweaks Mod Manager on NexusMods :)" : "Endorse ME3Tweaks Mod Manager on NexusMods";
+                EndorseM3String = (ME1NexusEndorsed && ME2NexusEndorsed && ME3NexusEndorsed ) ? "Endorsed ME3Tweaks Mod Manager on NexusMods :)" : "Endorse ME3Tweaks Mod Manager on NexusMods";
             }
         }
 

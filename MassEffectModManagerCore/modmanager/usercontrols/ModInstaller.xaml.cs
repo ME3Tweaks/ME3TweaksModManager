@@ -810,10 +810,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (dp.DataContext is AlternateDLC ad && ad.IsManual)
                 {
+                    if (ad.GroupName != null && ad.IsSelected) return; //Cannot deselect group
                     ad.IsSelected = !ad.IsSelected;
                 }
                 else if (dp.DataContext is AlternateFile af && af.IsManual)
                 {
+                    if (af.GroupName != null && af.IsSelected) return; //Cannot deselect group
                     af.IsSelected = !af.IsSelected;
                 }
                 else if (dp.DataContext is ReadOnlyOption ro)
@@ -825,7 +827,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            //Write check
+            GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
+
             //Write check
             var canWrite = Utilities.IsDirectoryWritable(gameTarget.TargetPath);
             if (!canWrite)
@@ -944,6 +947,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Just start installing mod
                 BeginInstallingMod();
             }
+        }
+
+        protected override void OnClosing(DataEventArgs e)
+        {
+            AlternateOptions.ClearEx(); //remove collection of items
+            base.OnClosing(DataEventArgs.Empty);
         }
     }
 }
