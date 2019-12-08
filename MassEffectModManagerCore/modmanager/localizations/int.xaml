@@ -766,4 +766,15 @@
     <!-- 0 = filepath -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod">Error occured while creating basegame job for legacy 1.0 mod: {0}</system:String>
     <!-- 0 = error message -->
+
+    <!-- About Panel -->
+    <system:String x:Key="string_tooltip_hello!">Hello!</system:String>
+    <system:String x:Key="string_tooltip_softwareDevelopedWithLoveByME3Tweaks">Software developed with love by ME3Tweaks</system:String>
+    <system:String x:Key="string_libraries">Libraries</system:String>
+    <system:String x:Key="string_translators">Translators</system:String>
+    <system:String x:Key="string_NA">N/A</system:String>
+    <system:String x:Key="string_specialThanks">Special thanks</system:String>
+    <system:String x:Key="string_youTheEndUser">You, the end user, for making this software worth developing</system:String>
+    <system:String x:Key="string_license">License</system:String>
+
 </ResourceDictionary>
