@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -83,9 +84,9 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
-                Log.Error($@"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
+                Log.Error(@"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
                 ValidAlternate = false;
-                LoadFailedReason = $"At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.";
+                LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6);
                 return;
             }
 
@@ -93,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error($@"Alternate File specifies unknown/unsupported condition: {properties[@"Condition"]}");
                 ValidAlternate = false;
-                LoadFailedReason = "Alternate File specifies unknown/unsupported condition: " + properties[@"Condition"];
+                LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_unknownCondition) + properties[@"Condition"];
                 return;
             }
 
@@ -113,7 +114,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (!dlc.StartsWith(@"DLC_"))
                     {
                         Log.Error(@"An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
-                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.";
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_conditionalDLCInvalidValue, FriendlyName);
                         return;
                     }
                     else
@@ -129,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error(@"Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"]);
                 ValidAlternate = false;
-                LoadFailedReason = "Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"];
+                LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_unknownOperation) + properties[@"ModOperation"];
                 return;
             }
 
@@ -143,7 +144,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 //Cannot be null.
                 Log.Error($@"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing description");
                 ValidAlternate = false;
-                LoadFailedReason = $"Alternate File  {FriendlyName} does not specify a Description, which is required for mods targeting cmmver >= 6.0.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_cmmver6RequiresDescription, FriendlyName);
                 return;
             }
 
@@ -157,7 +158,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files. Friendlyname: {FriendlyName}");
                     ValidAlternate = false;
-                    LoadFailedReason = $"Alternate file {FriendlyName} does not declare ModFile but it is required for all Alternate Files.";
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_noModFileDeclared, FriendlyName);
                     return;
                 }
 
@@ -203,7 +204,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         {
                             Log.Error(@"Alternate file source (AltFile) does not exist: " + AltFile);
                             ValidAlternate = false;
-                            LoadFailedReason = $"Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_specifiedAltFileDoesntExist, Operation.ToString(), AltFile);
                             return;
                         }
 
@@ -218,9 +219,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : "Auto Applied";
+            ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
 
-            NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : "Not applicable";
+            NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : M3L.GetString(M3L.string_notApplicable);
 
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {

@@ -581,5 +581,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_altdlc_sourceDirectoryDoesntExist = "string_interp_validation_altdlc_sourceDirectoryDoesntExist";
 		public static readonly string string_autoApplied = "string_autoApplied";
 		public static readonly string string_notApplicable = "string_notApplicable";
+		public static readonly string string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6";
+		public static readonly string string_validation_altfile_unknownCondition = "string_validation_altfile_unknownCondition";
+		public static readonly string string_validation_altfile_unknownOperation = "string_validation_altfile_unknownOperation";
+		public static readonly string string_validation_altfile_conditionalDLCInvalidValue = "string_validation_altfile_conditionalDLCInvalidValue";
+		public static readonly string string_interp_validation_altfile_cmmver6RequiresDescription = "string_interp_validation_altfile_cmmver6RequiresDescription";
+		public static readonly string string_interp_validation_altfile_noModFileDeclared = "string_interp_validation_altfile_noModFileDeclared";
+		public static readonly string string_interp_validation_altfile_specifiedAltFileDoesntExist = "string_interp_validation_altfile_specifiedAltFileDoesntExist";
 	}
 }

@@ -613,5 +613,14 @@
     <system:String x:Key="string_autoApplied">Auto Applied</system:String>
     <system:String x:Key="string_notApplicable">Not applicable</system:String>
 
+    <!-- Alternate File -->
+    <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <system:String x:Key="string_validation_altfile_unknownCondition">Alternate File specifies unknown/unsupported condition: </system:String>
+    <system:String x:Key="string_validation_altfile_unknownOperation">Alternate File specifies unknown/unsupported operation: </system:String>
+    <system:String x:Key="string_validation_altfile_conditionalDLCInvalidValue">Alternate File ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.</system:String>
+    <system:String x:Key="string_interp_validation_altfile_cmmver6RequiresDescription">Alternate File {FriendlyName} does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <system:String x:Key="string_interp_validation_altfile_noModFileDeclared">Alternate file ({FriendlyName}) does not declare ModFile but it is required for all Alternate Files.</system:String>
+    <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}</system:String>
+
 
 </ResourceDictionary>
