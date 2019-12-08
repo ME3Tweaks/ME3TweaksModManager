@@ -469,7 +469,8 @@
     <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
     <system:String x:Key="string_interp_scanningX">Scanning {0}</system:String>
     <!-- 0 = filename -->
-    <system:String x:Key="string_interp_openingX">Opening {0}</system:String> <!-- 0 = file being scanned -->
+    <system:String x:Key="string_interp_openingX">Opening {0}</system:String>
+    <!-- 0 = file being scanned -->
     <system:String x:Key="string_interp_XfailedToLoadY">\n\n{0} failed to load: {1}</system:String>
     <!-- 0 = mod name 1 = load failure reason -->
     <system:String x:Key="string_readingZippedExecutable">Reading zipped executable</system:String>
@@ -570,7 +571,7 @@
     <system:String x:Key="string_mountPriorityColon">Mount Priority:</system:String>
     <system:String x:Key="string_mountFlagColon">Mount Flag:</system:String>
     <system:String x:Key="string_moduleNumberColon">Module Number:</system:String>
-    
+
     <!-- Messageboxes (cancel is defined previously) -->
     <system:String x:Key="string_no">No</system:String>
     <system:String x:Key="string_ok">OK</system:String>
@@ -578,10 +579,12 @@
 
     <!-- NexusMods Login Panel -->
     <system:String x:Key="string_authenticateToNexusMods">Authenticate to NexusMods</system:String>
-    <system:String x:Key="string_interp_authenticatedAsX">Authenticated as {0}</system:String> <!-- 0 = username -->
+    <system:String x:Key="string_interp_authenticatedAsX">Authenticated as {0}</system:String>
+    <!-- 0 = username -->
     <system:String x:Key="string_checkingKey">Checking key...</system:String>
     <system:String x:Key="string_authenticatedToNexusMods">Authenticated to NexusMods</system:String>
-    <system:String x:Key="string_interp_nexusModsReturnedAnErrorX">NexusMods returned an error:\n{0}</system:String> <!-- 0 = error message-->
+    <system:String x:Key="string_interp_nexusModsReturnedAnErrorX">NexusMods returned an error:\n{0}</system:String>
+    <!-- 0 = error message-->
     <system:String x:Key="string_errorAuthenticatingToNexusMods">Error authenticating to NexusMods</system:String>
 
     <system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager can integrate with NexusMods to allow you to endorse mods, letting the developer know you appreciate their work. ME3Tweaks Mod Manager needs your NexusMods API key in order to do this.</system:String>
@@ -595,7 +598,7 @@
     <!-- Alternate DLC -->
     <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
     <system:String x:Key="string_validation_altdlc_unknownCondition">Alternate DLC specifies unknown/unsupported condition:</system:String>
-    <system:String x:Key="string_validation_altdlc_unknownOperation">Alternate DLC specifies unknown/unsupported operation: </system:String>
+    <system:String x:Key="string_validation_altdlc_unknownOperation">Alternate DLC specifies unknown/unsupported operation:</system:String>
     <system:String x:Key="string_interp_validation_altdlc_cmmver6RequiresDescription">Alternate DLC ({0}) does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
     <!-- 0 = Friendlyname -->
     <system:String x:Key="string_interp_validation_altdlc_missingModAltDLC">Alternate DLC ({0}) does not declare ModAltDLC but it is required for all Alternate DLC.</system:String>
@@ -615,17 +618,23 @@
 
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
-    <system:String x:Key="string_validation_altfile_unknownCondition">Alternate File specifies unknown/unsupported condition: </system:String>
-    <system:String x:Key="string_validation_altfile_unknownOperation">Alternate File specifies unknown/unsupported operation: </system:String>
-    <system:String x:Key="string_validation_altfile_conditionalDLCInvalidValue">Alternate File ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.</system:String>
-    <system:String x:Key="string_interp_validation_altfile_cmmver6RequiresDescription">Alternate File {FriendlyName} does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
-    <system:String x:Key="string_interp_validation_altfile_noModFileDeclared">Alternate file ({FriendlyName}) does not declare ModFile but it is required for all Alternate Files.</system:String>
-    <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}</system:String>
+    <system:String x:Key="string_validation_altfile_unknownCondition">Alternate File specifies unknown/unsupported condition:</system:String>
+    <system:String x:Key="string_validation_altfile_unknownOperation">Alternate File specifies unknown/unsupported operation:</system:String>
+    <system:String x:Key="string_validation_altfile_conditionalDLCInvalidValue">Alternate File ({0}) specifies conditional DLC but no values match the allowed headers or start with DLC_.</system:String>
+    <!-- 0 = friendlyname -->
+    <system:String x:Key="string_interp_validation_altfile_cmmver6RequiresDescription">Alternate File {0} does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <!-- 0 = friendlyname -->
+    <system:String x:Key="string_interp_validation_altfile_noModFileDeclared">Alternate file ({0}) does not declare ModFile but it is required for all Alternate Files.</system:String>
+    <!-- 0 = friendlyname -->
+    <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate file is specified with operation {0}, but required file doesn't exist: {1}</system:String>
+    <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
 
     <!-- GameTarget -->
-    <system:String x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {ALOTVersion}</system:String>
-    <system:String x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot Installed</system:String>
-    <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {Path.GetFileName(f)} was not found in game directory.</system:String>
+    <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
+    <!-- 0 = ALOT Version -->
+    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot Installed</system:String>
+    <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
+    <!-- 0 = filename of file that is not found in game dir but should be there -->
     <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_cannotRemoveActiveTarget">Cannot remove a target that is currently the active boot target.\nChange the active target in the main window dropdown to remove allow removing this target</system:String>
     <system:String x:Key="string_tooltip_removeTargetFromM3">Removes this target from Mod Manager's list of available targets for modding</system:String>
@@ -636,13 +645,17 @@
     <system:String x:Key="string_restoring">Restoring</system:String>
 
     <!-- ModJob -->
-    <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job</system:String>
+    <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {0} does not exist but is specified by the job.</system:String>
+    <!-- 0 = source file path in moddesc -->
     <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe files are not allowed in M3 mods.</system:String>
     <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll files are not allowed in M3 mods.</system:String>
     <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi files are not allowed in M3 mods.</system:String>
-    <system:String x:Key="string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist">Failed to add additional file to mod job: {checkingSourceFile} does not exist but is specified by the job</system:String>
-    <system:String x:Key="string_interp_validation_modjob_additionalFileAlreadyMarkedForModification">Failed to add additional file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.</system:String>
-    <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {checkingSourceFile} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist">Failed to add additional file to mod job: {0} does not exist but is specified by the job.</system:String>
+    <!-- 0 = source file path in moddesc -->
+    <system:String x:Key="string_interp_validation_modjob_additionalFileAlreadyMarkedForModification">Failed to add additional file to mod job: {0} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.</system:String>
+    <!-- 0 = destination file path in moddesc -->
+    <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {0} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
+    <!-- 0 = source file path in moddesc -->
 
     <!-- ReadOnlyOption -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
