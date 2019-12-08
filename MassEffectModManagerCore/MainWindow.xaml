@@ -46,7 +46,7 @@
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
-            <Menu DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
+            <Menu DockPanel.Dock="Top">
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
                         <DockPanel HorizontalAlignment="Stretch"/>
@@ -244,7 +244,7 @@
                     <MenuItem Header="{DynamicResource string_moddescfileformatspecification}" Click="Documentation_Click" ToolTip="{DynamicResource string_ReferenceinformationModdesc}" />
                     <MenuItem Header="{DynamicResource string_AboutME3TweaksModManager}" Click="About_Click" ToolTip="{DynamicResource string_Aboutthisprogram}" />
                 </MenuItem>
-                <MenuItem Style="{StaticResource MenuBarButton}"  Header="{Binding NexusLoginInfoString}" Command="{Binding LoginToNexusCommand}" HorizontalAlignment="Right" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" Padding="0" HorizontalContentAlignment="Right">
+                <MenuItem Style="{StaticResource MenuBarButton}"  Header="{Binding NexusLoginInfoString}"  Command="{Binding LoginToNexusCommand}" HorizontalAlignment="Right"  Padding="0" HorizontalContentAlignment="Right">
                     <MenuItem.Icon>
                         <Image Source="/modmanager/nexusmodsintegration/nexusmods_icon.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
                     </MenuItem.Icon>

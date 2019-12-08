@@ -426,6 +426,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 item.Icon = FontAwesomeIcon.TimesCircle;
                                 item.Foreground = Brushes.Red;
                                 item.Spinning = false;
+                                if (audioStream is FileStream) audioStream.Close();
                                 errors.Add(M3L.GetString(M3L.string_errorValidatingAudioReference, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath, e.Message));
                                 continue;
                             }

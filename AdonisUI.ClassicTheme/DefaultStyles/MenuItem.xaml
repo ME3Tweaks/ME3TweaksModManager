@@ -461,19 +461,14 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
-
-                        <Trigger Property="HasItems" Value="True">
-                            <Setter Property="Visibility" Value="Visible" TargetName="ArrowPresenter"/>
-                        </Trigger>
-
-                        <Trigger Property="Role" Value="TopLevelHeader">
+                        <Trigger Property="Role" Value="TopLevelItem">
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="Placement" TargetName="SubMenuPopup" Value="Bottom"/>
-                            <Setter Property="Visibility" Value="Collapsed" TargetName="IconPresenter"/>
+                            <Setter Property="Visibility" Value="Visible" TargetName="IconPresenter"/>
                             <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPresenter"/>
-                            <Setter Property="Width" Value="0" TargetName="IconColumn"/>
-                            <Setter Property="MinWidth" Value="0" TargetName="HeaderColumn"/>
-                            <Setter Property="Width" Value="0" TargetName="InputGestureColumn"/>
+                            <!--<Setter Property="Width" Value="0" TargetName="IconColumn"/>-->
+                            <!--<Setter Property="MinWidth" Value="0" TargetName="HeaderColumn"/>
+                            <Setter Property="Width" Value="0" TargetName="InputGestureColumn"/>-->
                             <Setter Property="Padding" Value="4, 2"/>
                             <Setter Property="CornerRadius" TargetName="Border" Value="{Binding (adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
                             <Setter Property="CornerRadius" TargetName="SpotlightLayer" Value="{Binding (adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
@@ -510,7 +505,7 @@
 
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="Role" Value="TopLevelHeader"/>
+                                <Condition Property="Role" Value="TopLevelItem"/>
                                 <Condition Property="IsHighlighted" Value="True"/>
                             </MultiTrigger.Conditions>
 
