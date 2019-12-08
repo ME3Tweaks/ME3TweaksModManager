@@ -851,7 +851,7 @@ namespace MassEffectModManagerCore
             var cacheFile = GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
-                SortedSet<GameTarget> targets = new SortedSet<GameTarget>();
+                OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
                 foreach (var file in File.ReadAllLines(cacheFile))
                 {
                     //Validate game directory
