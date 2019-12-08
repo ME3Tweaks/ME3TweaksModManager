@@ -80,6 +80,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
     }
 
+    [Localizable(false)]
     public class SortableHelpElement : IComparable<SortableHelpElement>
     {
         private string priority;

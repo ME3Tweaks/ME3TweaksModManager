@@ -127,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager
 
                     if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
-                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], "CookedPCConsole", "Default.sfar");
+                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
 
 
                         if (File.Exists(sfarPath))
@@ -150,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
                     else
                     {
-                        Log.Warning($"DLC not installed, skipping: {job.Header}");
+                        Log.Warning($@"DLC not installed, skipping: {job.Header}");
                     }
                     #endregion
                 }

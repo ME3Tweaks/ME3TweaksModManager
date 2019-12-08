@@ -1,8 +1,10 @@
-﻿using System.Windows.Input;
+﻿using System.ComponentModel;
+using System.Windows.Input;
 
 namespace MassEffect3.CoalesceTool
 {
-	public static class Commands
+    [Localizable(false)]
+    public static class Commands
 	{
 		static Commands()
 		{

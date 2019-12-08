@@ -15,6 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =============================================*/
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 
 namespace MassEffectIniModder.classes
 {
+    [Localizable(false)]
     public class IniPropertyEnum : IniPropertyMaster
     {
         public List<IniPropertyEnumValue> Choices { get; set; }

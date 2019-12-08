@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return false;
             }
 
-            var tocTargets = (new DirectoryInfo(dlcDirRoot)).GetDirectories().Select(x => x.FullName).Where(x => Path.GetFileName(x).StartsWith("DLC_", StringComparison.OrdinalIgnoreCase)).ToList();
+            var tocTargets = (new DirectoryInfo(dlcDirRoot)).GetDirectories().Select(x => x.FullName).Where(x => Path.GetFileName(x).StartsWith(@"DLC_", StringComparison.OrdinalIgnoreCase)).ToList();
             tocTargets.Add(baseDir);
             tocTargets.Add(Path.Combine(gameWideModeTarget.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar"));
 

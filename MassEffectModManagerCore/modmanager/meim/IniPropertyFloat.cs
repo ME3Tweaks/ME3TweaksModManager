@@ -24,6 +24,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 
 namespace MassEffectIniModder.classes
 {
+    [Localizable(false)]
     public class IniPropertyFloat : IniPropertyMaster
     {
         public override void LoadCurrentValue(DuplicatingIni configIni)

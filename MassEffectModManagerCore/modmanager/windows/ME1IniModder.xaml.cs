@@ -31,7 +31,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         public ObservableCollectionExtended<IniPropertyMaster> BioEngineEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
         public ObservableCollectionExtended<IniPropertyMaster> BioGameEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
         public ObservableCollectionExtended<IniPropertyMaster> BioPartyEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
-        
+
         public ME1IniModder()
         {
             Analytics.TrackEvent("Launched MEIM");
@@ -42,63 +42,63 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (Directory.Exists(configFileFolder))
             {
                 Dictionary<string, ObservableCollectionExtended<IniPropertyMaster>> loadingMap = new Dictionary<string, ObservableCollectionExtended<IniPropertyMaster>>();
-                loadingMap["BioEngine.xml"] = BioEngineEntries;
-                loadingMap["BioGame.xml"] = BioGameEntries;
-                loadingMap["BioParty.xml"] = BioPartyEntries;
+                loadingMap[@"BioEngine.xml"] = BioEngineEntries;
+                loadingMap[@"BioGame.xml"] = BioGameEntries;
+                loadingMap[@"BioParty.xml"] = BioPartyEntries;
 
 
                 foreach (var kp in loadingMap)
                 {
                     XElement rootElement = XElement.Parse(GetPropertyMap(kp.Key));
 
-                    var linqlist = (from e in rootElement.Elements("Section")
+                    var linqlist = (from e in rootElement.Elements(@"Section")
                                     select new IniSection
                                     {
-                                        SectionName = (string)e.Attribute("name"),
-                                        BoolProperties = e.Elements("boolproperty").Select(f => new IniPropertyBool
+                                        SectionName = (string)e.Attribute(@"name"),
+                                        BoolProperties = e.Elements(@"boolproperty").Select(f => new IniPropertyBool
                                         {
-                                            CanAutoReset = f.Attribute("canautoreset") != null ? (bool)f.Attribute("canautoreset") : true,
-                                            PropertyName = (string)f.Attribute("propertyname"),
-                                            FriendlyPropertyName = (string)f.Attribute("friendlyname"),
-                                            Notes = (string)f.Attribute("notes"),
+                                            CanAutoReset = f.Attribute(@"canautoreset") != null ? (bool)f.Attribute(@"canautoreset") : true,
+                                            PropertyName = (string)f.Attribute(@"propertyname"),
+                                            FriendlyPropertyName = (string)f.Attribute(@"friendlyname"),
+                                            Notes = (string)f.Attribute(@"notes"),
                                             OriginalValue = f.Value
 
                                         }).ToList(),
-                                        IntProperties = e.Elements("intproperty").Select(f => new IniPropertyInt
+                                        IntProperties = e.Elements(@"intproperty").Select(f => new IniPropertyInt
                                         {
-                                            CanAutoReset = f.Attribute("canautoreset") != null ? (bool)f.Attribute("canautoreset") : true,
-                                            PropertyName = (string)f.Attribute("propertyname"),
-                                            FriendlyPropertyName = (string)f.Attribute("friendlyname"),
-                                            Notes = (string)f.Attribute("notes"),
+                                            CanAutoReset = f.Attribute(@"canautoreset") != null ? (bool)f.Attribute(@"canautoreset") : true,
+                                            PropertyName = (string)f.Attribute(@"propertyname"),
+                                            FriendlyPropertyName = (string)f.Attribute(@"friendlyname"),
+                                            Notes = (string)f.Attribute(@"notes"),
                                             OriginalValue = f.Value
                                         }).ToList(),
-                                        FloatProperties = e.Elements("floatproperty").Select(f => new IniPropertyFloat
+                                        FloatProperties = e.Elements(@"floatproperty").Select(f => new IniPropertyFloat
                                         {
-                                            CanAutoReset = f.Attribute("canautoreset") != null ? (bool)f.Attribute("canautoreset") : true,
-                                            PropertyName = (string)f.Attribute("propertyname"),
-                                            FriendlyPropertyName = (string)f.Attribute("friendlyname"),
-                                            Notes = (string)f.Attribute("notes"),
+                                            CanAutoReset = f.Attribute(@"canautoreset") != null ? (bool)f.Attribute(@"canautoreset") : true,
+                                            PropertyName = (string)f.Attribute(@"propertyname"),
+                                            FriendlyPropertyName = (string)f.Attribute(@"friendlyname"),
+                                            Notes = (string)f.Attribute(@"notes"),
                                             OriginalValue = f.Value
                                         }).ToList(),
-                                        EnumProperties = e.Elements("enumproperty").Select(f => new IniPropertyEnum
+                                        EnumProperties = e.Elements(@"enumproperty").Select(f => new IniPropertyEnum
                                         {
-                                            CanAutoReset = f.Attribute("canautoreset") != null ? (bool)f.Attribute("canautoreset") : true,
-                                            PropertyName = (string)f.Attribute("propertyname"),
-                                            FriendlyPropertyName = (string)f.Attribute("friendlyname"),
-                                            Notes = (string)f.Attribute("notes"),
-                                            Choices = f.Elements("enumvalue").Select(g => new IniPropertyEnumValue
+                                            CanAutoReset = f.Attribute(@"canautoreset") != null ? (bool)f.Attribute(@"canautoreset") : true,
+                                            PropertyName = (string)f.Attribute(@"propertyname"),
+                                            FriendlyPropertyName = (string)f.Attribute(@"friendlyname"),
+                                            Notes = (string)f.Attribute(@"notes"),
+                                            Choices = f.Elements(@"enumvalue").Select(g => new IniPropertyEnumValue
                                             {
-                                                FriendlyName = (string)g.Attribute("friendlyname"),
-                                                Notes = (string)g.Attribute("notes"),
+                                                FriendlyName = (string)g.Attribute(@"friendlyname"),
+                                                Notes = (string)g.Attribute(@"notes"),
                                                 IniValue = g.Value
                                             }).ToList()
                                         }).ToList(),
-                                        NameProperties = e.Elements("nameproperty").Select(f => new IniPropertyName
+                                        NameProperties = e.Elements(@"nameproperty").Select(f => new IniPropertyName
                                         {
-                                            CanAutoReset = f.Attribute("canautoreset") != null ? (bool)f.Attribute("canautoreset") : true,
-                                            PropertyName = (string)f.Attribute("propertyname"),
-                                            FriendlyPropertyName = (string)f.Attribute("friendlyname"),
-                                            Notes = (string)f.Attribute("notes"),
+                                            CanAutoReset = f.Attribute(@"canautoreset") != null ? (bool)f.Attribute(@"canautoreset") : true,
+                                            PropertyName = (string)f.Attribute(@"propertyname"),
+                                            FriendlyPropertyName = (string)f.Attribute(@"friendlyname"),
+                                            Notes = (string)f.Attribute(@"notes"),
                                             OriginalValue = f.Value
                                         }).ToList(),
 
@@ -122,14 +122,14 @@ namespace MassEffectModManagerCore.modmanager.windows
                     }
                     else
                     {
-                        MessageBox.Show("Mass Effect Config file " + Path.GetFileNameWithoutExtension(kp.Key) + ".ini is missing. It should be located at " + inifilepath + ". Please run the game at least once to generate the default files.");
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Mass Effect Config file {Path.GetFileNameWithoutExtension(kp.Key)}.ini is missing. It should be located at {inifilepath}. Please run the game at least once to generate the default files.");
                         Environment.Exit(1);
                     }
 
 
                     kp.Value.ReplaceAll(items);
                     CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(kp.Value);
-                    PropertyGroupDescription groupDescription = new PropertyGroupDescription("SectionFriendlyName");
+                    PropertyGroupDescription groupDescription = new PropertyGroupDescription(@"SectionFriendlyName");
                     view.GroupDescriptions.Add(groupDescription);
                 }
             }

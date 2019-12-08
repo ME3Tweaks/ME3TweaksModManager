@@ -39,7 +39,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem("Mod Installer", new WeakReference(this));
-            Log.Information(@"Starting mod installer for mod: " + modBeingInstalled.ModName + " for game " + modBeingInstalled.Game);
+            Log.Information($@"Starting mod installer for mod: {modBeingInstalled.ModName} for game {modBeingInstalled.Game}");
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
@@ -778,7 +778,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             Analytics.TrackEvent(@"Installed a mod", new Dictionary<string, string>()
             {
-                { @"Mod name", $"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },
+                { @"Mod name", $@"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },
                 { @"Installed from", ModBeingInstalled.IsInArchive ? @"Archive" : @"Library" },
                 { @"Type", ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null ? @"RCW .me2mod" : @"Standard" },
                 { @"Game", ModBeingInstalled.Game.ToString() },

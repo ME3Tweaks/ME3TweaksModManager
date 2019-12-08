@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.ComponentModel;
 using System.Windows.Markup;
 
 namespace MassEffect3.CoalesceTool
 {
+    [Localizable(false)]
 	[MarkupExtensionReturnType(typeof (IEnumerable))]
 	public class EnumValuesExtension : MarkupExtension
 	{

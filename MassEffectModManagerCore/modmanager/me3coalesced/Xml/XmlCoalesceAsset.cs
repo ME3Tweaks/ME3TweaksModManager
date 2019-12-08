@@ -1,6 +1,7 @@
 ﻿using MassEffectModManagerCore.modmanager.helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,6 +9,7 @@ using System.Xml.Linq;
 
 namespace MassEffect3.Coalesce.Xml
 {
+    [Localizable(false)]
 	public class XmlCoalesceAsset : CoalesceAsset
 	{
 		//private static readonly Regex WhitespacePattern = new Regex("[\r\n\t]+", RegexOptions.Compiled);

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.ComponentModel;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
 
 {
+    [Localizable(false)]
     public static class ME3Directory
     {
         private static string _gamePath;

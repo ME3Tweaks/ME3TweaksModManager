@@ -17,6 +17,7 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
     /// <summary>
     /// Interaction logic for MemoryAnalyzer.xaml
     /// </summary>
+    [Localizable(false)]
     public partial class MemoryAnalyzer : Window, INotifyPropertyChanged
     {
 

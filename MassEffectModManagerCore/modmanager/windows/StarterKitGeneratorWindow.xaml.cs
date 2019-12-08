@@ -218,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     return RuleResult.Invalid("Mod name will not resolve to a usable filesystem path.\nPlease enter some alphanumeric values.");
                 }
-                if (sanitized.Contains(".."))
+                if (sanitized.Contains(@".."))
                 {
                     return RuleResult.Invalid("Mod name cannot contain double dots when path is sanitized");
                 }
@@ -523,16 +523,16 @@ namespace MassEffectModManagerCore.modmanager.windows
                     if (skOption.ModGame == Mod.MEGame.ME3)
                     {
                         //Extract Default.Sfar
-                        Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, "Default.sfar"), true);
+                        Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
 
                         //Generate Coalesced.bin for mod
-                        var memory = Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
+                        var memory = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
                         var files = MassEffect3.Coalesce.Converter.DecompileToMemory(memory);
                         //Modify coal files for this mod.
-                        files["BioEngine.xml"] = files["BioEngine.xml"].Replace("StarterKit", skOption.ModDLCFolderName); //update bioengine
+                        files[@"BioEngine.xml"] = files[@"BioEngine.xml"].Replace(@"StarterKit", skOption.ModDLCFolderName); //update bioengine
 
                         var newMemory = MassEffect3.Coalesce.Converter.CompileFromMemory(files);
-                        var outpath = Path.Combine(cookedDir, $"Default_{dlcFolderName}.bin");
+                        var outpath = Path.Combine(cookedDir, $@"Default_{dlcFolderName}.bin");
                         File.WriteAllBytes(outpath, newMemory.ToArray());
                     }
                     else
@@ -547,7 +547,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         //bioEngineIni["Engine.PackagesToAlwaysCook"]["!SeekFreePackage"] = "CLEAR";
 
                         //Todo: Find way to tell user what this is for and how to pick one. Used to determine TLK filename
-                        bioEngineIni["Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString();
+                        bioEngineIni[@"Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString();
 
                         bioEngineIni[@"DLCInfo"][@"Version"] = 0.ToString(); //unknown
                         bioEngineIni[@"DLCInfo"][@"Flags"] = ((int)skOption.ModMountFlag).ToString(); //unknown

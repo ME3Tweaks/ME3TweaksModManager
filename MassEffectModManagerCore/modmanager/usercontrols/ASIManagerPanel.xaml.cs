@@ -31,10 +31,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class ASIManagerPanel : MMBusyPanelBase
     {
 
-        public static readonly string CachedASIsFolder = Path.Combine(Utilities.GetAppDataFolder(), "CachedASIs");
+        public static readonly string CachedASIsFolder = Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs");
 
-        public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, "manifest.xml");
-        public static readonly string StagedManifestLocation = Path.Combine(CachedASIsFolder, "manifest_staged.xml");
+        public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, @"manifest.xml");
+        public static readonly string StagedManifestLocation = Path.Combine(CachedASIsFolder, @"manifest_staged.xml");
 
         private object SelectedASIObject;
         public string SelectedASIDescription { get; set; }
@@ -598,7 +598,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (File.Exists(cachedPath))
                     {
                         //Check hash first
-                        md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(cachedPath))).Replace("-", "").ToLower();
+                        md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(cachedPath))).Replace(@"-", "").ToLower();
                         if (md5 == asiToInstall.Hash)
                         {
                             Log.Information($@"Copying local ASI from libary to destination: {cachedPath} -> {finalPath}");
@@ -619,7 +619,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (md5 != asiToInstall.Hash)
                     {
                         //ERROR!
-                        Log.Error("Downloaded ASI did not match the manifest! It has the wrong hash.");
+                        Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
                     }
                     else
                     {
@@ -680,7 +680,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Information("The installed version of this ASI is already up to date.");
+                        Log.Information(@"The installed version of this ASI is already up to date.");
                         return false;
                     }
                 }

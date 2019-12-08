@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace MassEffect3.FileFormats.Huffman
 {
+    [Localizable(false)]
 	public class Encoder
 	{
 		private readonly Dictionary<char, BitArray> _codes = new Dictionary<char, BitArray>();

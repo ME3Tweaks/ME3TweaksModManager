@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace MassEffect3.Coalesce
 {
+    [Localizable(false)]
 	public class CoalesceSettings
 	{
 		public CoalesceSettings(IEnumerable<int> compileTypes = null, int overrideCompileValueTypes = -1)

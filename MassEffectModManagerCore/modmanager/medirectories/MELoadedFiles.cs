@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using IniParser.Parser;
@@ -8,6 +9,7 @@ using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
 {
+    [Localizable(false)]
     public static class MELoadedFiles
     {
         private static readonly string[] ME1FilePatterns = { "*.u", "*.upk", "*.sfm" };

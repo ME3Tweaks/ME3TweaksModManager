@@ -496,8 +496,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
-                    bool taskDoesSomething = replaceFilesSourceList != null && replaceFilesTargetList != null;
-                    if (addFilesSourceList != null && addFilesTargetList != null) taskDoesSomething = true;
+                    bool taskDoesSomething = (replaceFilesSourceList != null && replaceFilesTargetList != null) || (addFilesSourceList != null && addFilesTargetList != null);
 
                     if (!taskDoesSomething)
                     {
@@ -599,7 +598,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                     //Build replacements 
-                    int jobDirLength = jobSubdirectory == "." ? 0 : jobSubdirectory.Length;
+                    int jobDirLength = jobSubdirectory == @"." ? 0 : jobSubdirectory.Length;
                     if (replaceFilesSourceSplit != null)
                     {
                         for (int i = 0; i < replaceFilesSourceSplit.Count; i++)
@@ -794,7 +793,7 @@ namespace MassEffectModManagerCore.modmanager
                                 return;
                             }
 
-                            if (!f.StartsWith("DLC_"))
+                            if (!f.StartsWith(@"DLC_"))
                             {
                                 Log.Error($@"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.");
                                 LoadFailedReason = $"Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.";
@@ -810,7 +809,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                     //Altfiles: Mod Manager 4.2
-                    string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData[@"CUSTOMDLC"]["altfiles"] : null;
+                    string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData[@"CUSTOMDLC"][@"altfiles"] : null;
                     if (!string.IsNullOrEmpty(altfilesStr))
                     {
                         var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
@@ -856,7 +855,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
 
                     //Custom DLC names: Mod Manager 6 (but can be part of any spec as it's only cosmetic)
-                    HumanReadableCustomDLCNames = iniData[@"CUSTOMDLC"].Where(x => x.KeyName.StartsWith("DLC_")).ToDictionary(mc => mc.KeyName, mc => mc.Value);
+                    HumanReadableCustomDLCNames = iniData[@"CUSTOMDLC"].Where(x => x.KeyName.StartsWith(@"DLC_")).ToDictionary(mc => mc.KeyName, mc => mc.Value);
 
                     CLog.Information($@"Successfully made mod job for CUSTOMDLC", Settings.LogModStartup);
                     InstallationJobs.Add(customDLCjob);
@@ -1100,7 +1099,7 @@ namespace MassEffectModManagerCore.modmanager
                 foreach (var addlFolder in addlFolderSplit)
                 {
                     //Todo: Check to make sure this isn't contained by one of the jobs or alt files
-                    if (addlFolder.Contains("..") || addlFolder.Contains("/") || addlFolder.Contains("\\"))
+                    if (addlFolder.Contains(@"..") || addlFolder.Contains(@"/") || addlFolder.Contains(@"\"))
                     {
                         //Security violation: Cannot use .. / or \ in filepath
                         Log.Error($@"UPDATES header additionaldeploymentfolders includes directory ({addlFolder}) that contains a .., \\ or /, which are not permitted.");

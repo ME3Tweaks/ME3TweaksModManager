@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace MassEffect3.Coalesce
 {
-	public class CoalesceProperty : IList<CoalesceValue>
+    [Localizable(false)]
+    public class CoalesceProperty : IList<CoalesceValue>
 	{
 		public const int DefaultValueType = 2;
 		public const int NullValueType = 1;

@@ -24,6 +24,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 
 namespace MassEffectIniModder.classes
 {
+    [Localizable(false)]
     public abstract partial class IniPropertyMaster : INotifyPropertyChanged, IDataErrorInfo
     {
         public event PropertyChangedEventHandler PropertyChanged;

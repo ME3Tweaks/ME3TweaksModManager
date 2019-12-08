@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void CopyItemsToClipBoard_Click(object sender, RoutedEventArgs e)
         {
-            string toClipboard = string.Join("\n", items);
+            string toClipboard = string.Join(Environment.NewLine, items); 
             try
             {
                 Clipboard.SetText(toClipboard);

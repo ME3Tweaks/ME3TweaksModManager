@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace MassEffect3.Coalesce
 {
+    [Localizable(false)]
 	public class Namespace : IDictionary<string, Namespace>
 	{
 		private readonly IDictionary<string, Namespace> _subNamespaces;

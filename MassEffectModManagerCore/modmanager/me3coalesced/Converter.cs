@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +13,7 @@ using MassEffect3.FileFormats.Coalesced;
 
 namespace MassEffect3.Coalesce
 {
+    [Localizable(false)]
     public static class Converter
     {
         public static readonly SortedSet<string> ProperNames =

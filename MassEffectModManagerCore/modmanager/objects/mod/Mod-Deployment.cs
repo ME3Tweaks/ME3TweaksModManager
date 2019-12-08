@@ -30,13 +30,13 @@ namespace MassEffectModManagerCore.modmanager
 
                 foreach (var jobFile in job.FilesToInstall.Values)
                 {
-                    if (job.JobDirectory == ".")
+                    if (job.JobDirectory == @".")
                     {
                         references.Add(jobFile);
                     }
                     else
                     {
-                        references.Add(job.JobDirectory + "\\" + jobFile);
+                        references.Add(job.JobDirectory + @"\\" + jobFile);
                     }
                 }
                 foreach (var dlc in job.AlternateDLCs)

@@ -110,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         continue;
                     }
                     //}
-                    if (!dlc.StartsWith("DLC_"))
+                    if (!dlc.StartsWith(@"DLC_"))
                     {
                         Log.Error(@"An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
                         LoadFailedReason = $"Alternate File ({FriendlyName}) specifies conditional DLC but no values match the allowed headers or start with DLC_.";

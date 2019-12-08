@@ -15,6 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =============================================*/
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ using System.Windows;
 
 namespace MassEffectIniModder.classes
 {
+    [Localizable(false)]
     public class IniPropertyInt : IniPropertyMaster
     {
         public IniPropertyInt()

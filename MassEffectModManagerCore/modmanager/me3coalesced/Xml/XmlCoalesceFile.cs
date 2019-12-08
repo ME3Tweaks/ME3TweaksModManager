@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace MassEffect3.Coalesce.Xml
 {
-	public class XmlCoalesceFile : CoalesceFile
+    [Localizable(false)]
+    public class XmlCoalesceFile : CoalesceFile
 	{
 		public XmlCoalesceFile(string source = "", string name = "", string id = "", IList<CoalesceAsset> assets = null,
 			CoalesceSettings settings = null, IList<CoalesceInclude> includes = null)

@@ -315,7 +315,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (_closed) return;
                 numChecked++;
-                item.ItemText = $"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
+                item.ItemText = $@"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
                 {
                     var package = MEPackageHandler.OpenMEPackage(f);
@@ -356,7 +356,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 else if (MEDirectories.OfficialDLC(validationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
                                 {
-                                    var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase));
+                                    var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf(@"_", StringComparison.InvariantCultureIgnoreCase));
                                     var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(validationTarget, dlcName, afcNameWithExtension);
                                     if (audio != null)
                                     {
@@ -612,7 +612,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Don't update UI too often. Once per second is enough.
                     string percent = (ProgressValue * 100.0 / ProgressMax).ToString(@"0.00");
-                    OperationText = $"[{currentDeploymentStep}] {M3L.GetString(M3L.string_deploymentInProgress)} {percent}%";
+                    OperationText = $@"[{currentDeploymentStep}] {M3L.GetString(M3L.string_deploymentInProgress)} {percent}%";
                     lastPercentUpdateTime = now;
                 }
                 //Debug.WriteLine(ProgressValue + "/" + ProgressMax);
