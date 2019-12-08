@@ -569,5 +569,17 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_doNotShareAPIKeyWarning = "string_doNotShareAPIKeyWarning";
 		public static readonly string string_unlinkModManagerFromNexusMods = "string_unlinkModManagerFromNexusMods";
 		public static readonly string string_pasteYourAPIKeyHere = "string_pasteYourAPIKeyHere";
+		public static readonly string string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6";
+		public static readonly string string_validation_altdlc_unknownCondition = "string_validation_altdlc_unknownCondition";
+		public static readonly string string_validation_altdlc_unknownOperation = "string_validation_altdlc_unknownOperation";
+		public static readonly string string_interp_validation_altdlc_cmmver6RequiresDescription = "string_interp_validation_altdlc_cmmver6RequiresDescription";
+		public static readonly string string_interp_validation_altdlc_missingModAltDLC = "string_interp_validation_altdlc_missingModAltDLC";
+		public static readonly string string_interp_validation_altdlc_missingModDestDLC = "string_interp_validation_altdlc_missingModDestDLC";
+		public static readonly string string_interp_validation_altdlc_conditionalDLCInvalidValue = "string_interp_validation_altdlc_conditionalDLCInvalidValue";
+		public static readonly string string_interp_validation_altdlc_sourceDirectoryNotSpecifiedForModAltDLC = "string_interp_validation_altdlc_sourceDirectoryNotSpecifiedForModAltDLC";
+		public static readonly string string_interp_validation_altdlc_destinationDirectoryNotSpecifiedForModDestDLC = "string_interp_validation_altdlc_destinationDirectoryNotSpecifiedForModDestDLC";
+		public static readonly string string_interp_validation_altdlc_sourceDirectoryDoesntExist = "string_interp_validation_altdlc_sourceDirectoryDoesntExist";
+		public static readonly string string_autoApplied = "string_autoApplied";
+		public static readonly string string_notApplicable = "string_notApplicable";
 	}
 }

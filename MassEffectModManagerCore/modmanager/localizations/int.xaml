@@ -591,4 +591,27 @@
     <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
+
+    <!-- Alternate DLC -->
+    <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <system:String x:Key="string_validation_altdlc_unknownCondition">Alternate DLC specifies unknown/unsupported condition:</system:String>
+    <system:String x:Key="string_validation_altdlc_unknownOperation">Alternate DLC specifies unknown/unsupported operation: </system:String>
+    <system:String x:Key="string_interp_validation_altdlc_cmmver6RequiresDescription">Alternate DLC ({0}) does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_missingModAltDLC">Alternate DLC ({0}) does not declare ModAltDLC but it is required for all Alternate DLC.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_missingModDestDLC">Alternate DLC ({0}) does not declare ModDestDLC but it is required for all Alternate DLC.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_conditionalDLCInvalidValue">Alternate DLC ({0}) specifies conditional DLC but no values match the allowed headers or start with DLC_.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_sourceDirectoryNotSpecifiedForModAltDLC">Alternate DLC for AltDLC ({0}) is specified, but source directory (ModAltDLC) was not specified.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_destinationDirectoryNotSpecifiedForModDestDLC">Destination DLC for AltDLC ({0}) is specified, but source directory (ModDestDLC) was not specified.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_sourceDirectoryDoesntExist">Alternate DLC ({0}) is specified, but source for alternate DLC directory does not exist: {1}</system:String>
+    <!-- 0 = Friendlyname , 1 = specified folder path -->
+    <system:String x:Key="string_autoApplied">Auto Applied</system:String>
+    <system:String x:Key="string_notApplicable">Not applicable</system:String>
+
+
 </ResourceDictionary>

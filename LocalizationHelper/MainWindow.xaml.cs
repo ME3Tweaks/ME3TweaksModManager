@@ -114,6 +114,7 @@ namespace LocalizationHelper
 
             File.WriteAllLines(m3lFile, m3llines); //write back updated file
 
+            return;
             //Update all of the other xaml files
             var localizationMapping = Directory.GetFiles(localizationsFolder, "*.xaml").Where(y => Path.GetFileName(y) != "int.xaml").ToDictionary(y => y, y => File.ReadAllLines(y).ToList());
             var intlines = File.ReadAllLines(intfile);
@@ -164,7 +165,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\NexusModsLogin.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\objects\AlternateDLC.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -251,7 +252,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\NexusModsLogin.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\objects\AlternateDLC.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -319,7 +320,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\NexusModsLogin.xaml");
+            var file = Path.Combine(M3folder, @"modmanager\objects\AlternateDLC");
             string[] attributes = { "Header", "ToolTip", "Content", "Text" };
             try
             {
