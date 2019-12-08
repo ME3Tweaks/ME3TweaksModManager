@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using MassEffectModManagerCore.modmanager.gameini;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.modmanager
@@ -229,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             if (!FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
             {
-                return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
+                return M3L.GetString(M3L.string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist, checkingSourceFile);
             }
             FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath.Replace('/', '\\');
             return null;
@@ -240,17 +241,17 @@ namespace MassEffectModManagerCore.modmanager
             var ext = Path.GetExtension(sourceRelativePath).ToLower();
             if (ext == @".exe")
             {
-                failReason = ".exe files are not allowed in M3 mods.";
+                failReason = M3L.GetString(M3L.string_validation_modjob_exeFilesNotAllowed);
                 return false;
             }
             if (ext == @".dll")
             {
-                failReason = ".dll files are not allowed in M3 mods.";
+                failReason = M3L.GetString(M3L.string_validation_modjob_dllFilesNotAllowed);
                 return false;
             }
             if (ext == @".asi")
             {
-                failReason = ".asi files are not allowed in M3 mods.";
+                failReason = M3L.GetString(M3L.string_validation_modjob_asiFilesNotAllowed);
                 return false;
             }
 
@@ -279,7 +280,7 @@ namespace MassEffectModManagerCore.modmanager
             //}
             //if (!ignoreLoadErrors && !FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
             //{
-            //    return $"Failed to add replacement file to mod job: {checkingSourceFile} does not exist but is specified by the job";
+            //    return M3L.GetString(M3L.string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist, checkingSourceFile);
             //}
             //Security check
             if (!checkExtension(sourcePath, out string failReason))
@@ -307,11 +308,11 @@ namespace MassEffectModManagerCore.modmanager
             var checkingSourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, JobDirectory, sourceRelativePath);
             if (!FilesystemInterposer.FileExists(checkingSourceFile, mod.Archive))
             {
-                return $"Failed to add additional file to mod job: {checkingSourceFile} does not exist but is specified by the job";
+                return M3L.GetString(M3L.string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist, checkingSourceFile);
             }
             if (FilesToInstall.ContainsKey(destRelativePath))
             {
-                return $"Failed to add additional file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.";
+                return M3L.GetString(M3L.string_interp_validation_modjob_additionalFileAlreadyMarkedForModification, destRelativePath);
             }
             FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath.Replace('/', '\\');
             return null;
@@ -410,10 +411,9 @@ namespace MassEffectModManagerCore.modmanager
 
         internal string AddReadOnlyIndicatorForFile(string sourceRelativePath, Mod mod)
         {
-            var checkingSourceFile = FilesToInstall.Any(x => x.Value.Equals(sourceRelativePath, StringComparison.InvariantCultureIgnoreCase));
-            if (!checkingSourceFile)
+            if (!FilesToInstall.Any(x => x.Value.Equals(sourceRelativePath, StringComparison.InvariantCultureIgnoreCase)))
             {
-                return $"Failed to mark file for setting read-only: {checkingSourceFile} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.";
+                return M3L.GetString(M3L.string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList, sourceRelativePath);
             }
 
             ReadOnlyIndicators.Add(sourceRelativePath);

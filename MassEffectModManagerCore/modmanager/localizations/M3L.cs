@@ -599,5 +599,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_restored = "string_restored";
 		public static readonly string string_restore = "string_restore";
 		public static readonly string string_restoring = "string_restoring";
+		public static readonly string string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist = "string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist";
+		public static readonly string string_validation_modjob_exeFilesNotAllowed = "string_validation_modjob_exeFilesNotAllowed";
+		public static readonly string string_validation_modjob_dllFilesNotAllowed = "string_validation_modjob_dllFilesNotAllowed";
+		public static readonly string string_validation_modjob_asiFilesNotAllowed = "string_validation_modjob_asiFilesNotAllowed";
+		public static readonly string string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist = "string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist";
+		public static readonly string string_interp_validation_modjob_additionalFileAlreadyMarkedForModification = "string_interp_validation_modjob_additionalFileAlreadyMarkedForModification";
+		public static readonly string string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList = "string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList";
 	}
 }
