@@ -588,5 +588,16 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_altfile_cmmver6RequiresDescription = "string_interp_validation_altfile_cmmver6RequiresDescription";
 		public static readonly string string_interp_validation_altfile_noModFileDeclared = "string_interp_validation_altfile_noModFileDeclared";
 		public static readonly string string_interp_validation_altfile_specifiedAltFileDoesntExist = "string_interp_validation_altfile_specifiedAltFileDoesntExist";
+		public static readonly string string_interp_ui_alotInstalledVersion = "string_interp_ui_alotInstalledVersion";
+		public static readonly string string_ui_alotNotInstalled = "string_ui_alotNotInstalled";
+		public static readonly string string_interp_invalidTargetMissingFile = "string_interp_invalidTargetMissingFile";
+		public static readonly string string_invalidTargetProtectedByCmmvanilla = "string_invalidTargetProtectedByCmmvanilla";
+		public static readonly string string_dialog_cannotRemoveActiveTarget = "string_dialog_cannotRemoveActiveTarget";
+		public static readonly string string_tooltip_removeTargetFromM3 = "string_tooltip_removeTargetFromM3";
+		public static readonly string string_unpacked = "string_unpacked";
+		public static readonly string string_cleaningUp = "string_cleaningUp";
+		public static readonly string string_restored = "string_restored";
+		public static readonly string string_restore = "string_restore";
+		public static readonly string string_restoring = "string_restoring";
 	}
 }

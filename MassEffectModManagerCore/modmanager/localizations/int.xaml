@@ -622,5 +622,16 @@
     <system:String x:Key="string_interp_validation_altfile_noModFileDeclared">Alternate file ({FriendlyName}) does not declare ModFile but it is required for all Alternate Files.</system:String>
     <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate file is specified with operation {Operation}, but required file doesn't exist: {AltFile}</system:String>
 
-
+    <!-- GameTarget -->
+    <system:String x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {ALOTVersion}</system:String>
+    <system:String x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot Installed</system:String>
+    <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {Path.GetFileName(f)} was not found in game directory.</system:String>
+    <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_cannotRemoveActiveTarget">Cannot remove a target that is currently the active boot target.\nChange the active target in the main window dropdown to remove allow removing this target</system:String>
+    <system:String x:Key="string_tooltip_removeTargetFromM3">Removes this target from Mod Manager's list of available targets for modding</system:String>
+    <system:String x:Key="string_unpacked">Unpacked</system:String>
+    <system:String x:Key="string_cleaningUp">Cleaning up</system:String>
+    <system:String x:Key="string_restored">Restored</system:String>
+    <system:String x:Key="string_restore">Restore</system:String>
+    <system:String x:Key="string_restoring">Restoring</system:String>
 </ResourceDictionary>

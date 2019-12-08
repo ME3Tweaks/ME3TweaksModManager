@@ -9,6 +9,7 @@ using System.Windows.Media;
 
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using Serilog;
@@ -235,11 +236,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 if (ALOTInstalled)
                 {
-                    return "A Lot Of Textures (ALOT) is installed\nVersion {ALOTVersion}";
+                    return M3L.GetString(M3L.string_interp_ui_alotInstalledVersion, ALOTVersion);
                 }
                 else
                 {
-                    return "A Lot Of Textures (ALOT)\nNot Installed";
+                    return M3L.GetString(M3L.string_ui_alotNotInstalled);
                 }
             }
         }
@@ -258,35 +259,54 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return null;
             }
             IsValid = false; //set to invalid at first/s
+            string[] validationFiles = null;
             switch (Game)
             {
                 case Mod.MEGame.ME1:
-                    if (!File.Exists(Path.Combine(TargetPath, @"Binaries", @"MassEffect.exe"))) return "Invalid game directory: Game EXE not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Maps", @"EntryMenu.SFM"))) return "Invalid game directory: Entrymenu.sfm not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"BIOC_Base.u"))) return "Invalid game directory: BIOC_Base.u not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Packages", @"Textures", @"BIOA_GLO_00_A_Opening_FlyBy_T.upk"))) return "Invalid game directory: BIOA_GLO_00_A_Opening_FlyBy_T.upk not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Maps", @"WAR", @"LAY", @"BIOA_WAR20_05_LAY.SFM"))) return "Invalid game directory: Entrymenu.sfm not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"MEvisionSEQ3.bik"))) return "Invalid game directory: MEvisionSEQ3.bik not found";
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"MassEffect.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Maps", @"EntryMenu.SFM"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"BIOC_Base.u"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Packages", @"Textures", @"BIOA_GLO_00_A_Opening_FlyBy_T.upk"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Maps", @"WAR", @"LAY", @"BIOA_WAR20_05_LAY.SFM"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"MEvisionSEQ3.bik")
+                    };
                     break;
                 case Mod.MEGame.ME2:
-                    if (!File.Exists(Path.Combine(TargetPath, @"Binaries", @"MassEffect2.exe"))) return "Invalid game directory: Game EXE not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"BioA_BchLmL.pcc"))) return "Invalid game directory: BioA_BchLmL.pcc not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"Config", @"PC", @"Cooked", @"Coalesced.ini"))) return "Invalid game directory: Coalesced.ini not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Wwise_Jack_Loy_Music.afc"))) return "Invalid game directory: Wwise_Jack_Loy_Music.afc not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"WwiseAudio.pcc"))) return "Invalid game directory: WwiseAudio.pcc not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"Movies", @"Crit03_CollectArrive_Part2_1.bik"))) return "Invalid game directory: Crit03_CollectArrive_Part2_1.bik not found";
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"MassEffect2.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"BioA_BchLmL.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"Config", @"PC", @"Cooked", @"Coalesced.ini"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Wwise_Jack_Loy_Music.afc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"WwiseAudio.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"Movies", @"Crit03_CollectArrive_Part2_1.bik")
+                    };
                     break;
                 case Mod.MEGame.ME3:
-                    if (!File.Exists(Path.Combine(TargetPath, @"Binaries", @"win32", @"MassEffect3.exe"))) return "Invalid game directory: Game EXE not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures.tfc"))) return "Invalid game directory: Textures.tfc not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup.pcc"))) return "Invalid game directory: Startup.pcc not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin"))) return "Invalid game directory: Coalesced.bin not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"Patches", @"PCConsole", @"Patch_001.sfar"))) return "Invalid game directory: Patch_001.sfar not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures.tfc"))) return "Invalid game directory: Textures.tfc not found";
-                    if (!File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc"))) return "Invalid game directory: citwrd_rp1_bailey_m_D_Int.afc not found";
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"win32", @"MassEffect3.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin"),
+                        Path.Combine(TargetPath, @"BioGame", @"Patches", @"PCConsole", @"Patch_001.sfar"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc")
+                    };
                     break;
             }
-            if (File.Exists(Path.Combine(TargetPath, @"cmm_vanilla"))) return "Invalid target: Marked as backup protected with cmm_vanilla file";
+
+            if (validationFiles == null) return null; //Invalid game.
+            foreach (var f in validationFiles)
+            {
+                if (!File.Exists(f))
+                {
+                    return M3L.GetString(M3L.string_interp_invalidTargetMissingFile, Path.GetFileName(f));
+                }
+            }
+            if (File.Exists(Path.Combine(TargetPath, @"cmm_vanilla"))) return M3L.GetString(M3L.string_invalidTargetProtectedByCmmvanilla);
 
             IsValid = true;
             return null;
@@ -302,15 +322,15 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GameTarget) obj);
+            return Equals((GameTarget)obj);
         }
 
         public string RemoveTargetTooltipText
         {
             get
             {
-                if (RegistryActive) return "Cannot remove a target that is currently the active boot target.\nChange the active target in the main window dropdown to remove allow removing this target";
-                return "Removes this target from Mod Manager's list of available targets for modding";
+                if (RegistryActive) return M3L.GetString(M3L.string_dialog_cannotRemoveActiveTarget);
+                return M3L.GetString(M3L.string_tooltip_removeTargetFromM3);
             }
         }
 
@@ -344,7 +364,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     UIString = name;
                     if (Unpacked)
                     {
-                        UIString += @" - " + "Unpacked"; //is this even used?
+                        UIString += @" - " + M3L.GetString(M3L.string_unpacked);
                     }
                     var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
                     if (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin") && !Unpacked) Inconsistent = true;
@@ -386,9 +406,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
                         Restoring = true;
                         Log.Information($@"Restoring SFAR from backup: {backupFile} {targetFile}");
-                        XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = $"Restoring {pce.ProgressPercentage}%"; });
+                        XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringX, pce.ProgressPercentage.ToString()); });
                         var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
-                        RestoreButtonContent = "Cleaning up";
+                        RestoreButtonContent = M3L.GetString(M3L.string_cleaningUp);
                         foreach (var file in unpackedFiles)
                         {
                             if (!file.EndsWith(@".sfar"))
@@ -398,7 +418,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             }
                         }
                         Utilities.DeleteEmptySubdirectories(DLCDirectory);
-                        RestoreButtonContent = "Restored";
+                        RestoreButtonContent = M3L.GetString(M3L.string_restored);
                     };
                     bw.RunWorkerCompleted += (a, b) =>
                     {
@@ -438,7 +458,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             private Func<string, bool> RestoreConfirmationCallback;
 
-            public string RestoreButtonContent { get; set; } = "Restore";
+            public string RestoreButtonContent { get; set; } = M3L.GetString(M3L.string_restore);
 
             private Action restoreCompletedCallback, startingRestoreCallback;
             private readonly GameTarget target;
@@ -468,7 +488,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             public event PropertyChangedEventHandler PropertyChanged;
 
             public ICommand RestoreCommand { get; }
-            public bool Restoring { get;  set; }
+            public bool Restoring { get; set; }
 
             public ModifiedFileObject(string filePath, GameTarget target,
                 Func<string, bool> restoreBasegamefileConfirmationCallback,
@@ -514,7 +534,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            public string RestoreButtonText => Restoring ? "Restoring" : (CanRestoreFile() ? "Restore" : "No backup");
+            public string RestoreButtonText => Restoring ? M3L.GetString(M3L.string_restoring) : (CanRestoreFile() ? M3L.GetString(M3L.string_restore) : M3L.GetString(M3L.string_noBackup));
 
             private bool CanRestoreFile()
             {
