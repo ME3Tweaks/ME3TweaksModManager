@@ -606,5 +606,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist = "string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist";
 		public static readonly string string_interp_validation_modjob_additionalFileAlreadyMarkedForModification = "string_interp_validation_modjob_additionalFileAlreadyMarkedForModification";
 		public static readonly string string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList = "string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList";
+		public static readonly string string_descriptionSetConfigFilesReadOnly = "string_descriptionSetConfigFilesReadOnly";
+		public static readonly string string_makeConfigFilesReadonly = "string_makeConfigFilesReadonly";
 	}
 }

@@ -644,4 +644,7 @@
     <system:String x:Key="string_interp_validation_modjob_additionalFileAlreadyMarkedForModification">Failed to add additional file to mod job: {destRelativePath} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.</system:String>
     <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {checkingSourceFile} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
 
+    <!-- ReadOnlyOption -->
+    <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
+    <system:String x:Key="string_makeConfigFilesReadonly">Make config files read-only</system:String>
 </ResourceDictionary>

@@ -165,7 +165,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\objects\ModJob.cs");
+            var file = Path.Combine(M3folder, @"modmanager\objects\ReadOnlyOption.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -252,7 +252,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\objects\ModJob.cs");
+            var file = Path.Combine(M3folder, @"modmanager\objects\ReadOnlyOption.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -320,7 +320,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\objects\ModJob");
+            var file = Path.Combine(M3folder, @"modmanager\objects\ReadOnlyOption");
             string[] attributes = { "Header", "ToolTip", "Content", "Text" };
             try
             {

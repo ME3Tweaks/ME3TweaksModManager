@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
     public class ReadOnlyOption : INotifyPropertyChanged
     {
-        public string Description { get; } = "Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.";
+        public string Description { get; } = M3L.GetString(M3L.string_descriptionSetConfigFilesReadOnly);
         public bool IsSelected { get; set; }
-        public string FriendlyName { get; } = "Make config files read-only";
+        public string FriendlyName { get; } = M3L.GetString(M3L.string_makeConfigFilesReadonly);
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
