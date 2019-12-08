@@ -608,5 +608,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList = "string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList";
 		public static readonly string string_descriptionSetConfigFilesReadOnly = "string_descriptionSetConfigFilesReadOnly";
 		public static readonly string string_makeConfigFilesReadonly = "string_makeConfigFilesReadonly";
+		public static readonly string string_interp_compressingX = "string_interp_compressingX";
+		public static readonly string string_interp_compressedX = "string_interp_compressedX";
+		public static readonly string string_interp_vPatchingIntoAlternate = "string_interp_vPatchingIntoAlternate";
 	}
 }

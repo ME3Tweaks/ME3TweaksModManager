@@ -12,6 +12,7 @@ using IniParser.Model;
 using IniParser.Parser;
 using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3Explorer.Packages;
@@ -94,7 +95,7 @@ namespace MassEffectModManagerCore.modmanager
             //moddesc.ini
             if (info.FileName == ModDescPath)
             {
-                Debug.WriteLine("Add file to extraction list: " + info.FileName);
+                //Debug.WriteLine("Add file to extraction list: " + info.FileName);
                 fileIndicesToExtract.Add(info.Index);
                 continue;
             }
@@ -109,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, localCustomDLCFolder)))
                         {
-                            Debug.WriteLine("Add file to extraction list: " + info.FileName);
+                            //Debug.WriteLine("Add file to extraction list: " + info.FileName);
                             fileIndicesToExtract.Add(info.Index);
                             fileAdded = true;
                             break;
@@ -123,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
+                            //Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
                             fileIndicesToExtract.Add(info.Index);
                             fileAdded = true;
                             break;
@@ -137,7 +138,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AlternateDLCFolder), StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Debug.WriteLine("Add alternate dlc file to extraction list: " + info.FileName);
+                            //Debug.WriteLine("Add alternate dlc file to extraction list: " + info.FileName);
                             fileIndicesToExtract.Add(info.Index);
                             fileAdded = true;
                             break;
@@ -157,7 +158,7 @@ namespace MassEffectModManagerCore.modmanager
                         var inArchivePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, job.JobDirectory, inSubDirFile); //keep relative if unpacked mod, otherwise use full in-archive path for extraction
                         if (info.FileName.Equals(inArchivePath, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Debug.WriteLine("Add file to extraction list: " + info.FileName);
+                            //Debug.WriteLine("Add file to extraction list: " + info.FileName);
                             fileIndicesToExtract.Add(info.Index);
                             fileAdded = true;
                             break;
@@ -170,7 +171,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
+                            //Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
                             fileIndicesToExtract.Add(info.Index);
                             fileAdded = true;
                             break;
@@ -235,7 +236,7 @@ namespace MassEffectModManagerCore.modmanager
                             while (true)
                             {
                                 var package = compressionQueue.Take();
-                                //updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
+                                //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
                                 var p = MEPackageHandler.OpenMEPackage(package);
                                 //Check if any compressed textures.
                                 bool shouldNotCompress = false;
@@ -248,7 +249,7 @@ namespace MassEffectModManagerCore.modmanager
 
                                 if (!shouldNotCompress)
                                 {
-                                    compressedPackageCallback?.Invoke($"Compressing {Path.GetFileName(package)}", compressedPackageCount, numberOfPackagesToCompress);
+                                    compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
                                     Log.Information(@"Compressing package: " + package);
                                     p.save(true);
                                 }
@@ -259,7 +260,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                                 Interlocked.Increment(ref compressedPackageCount);
-                                compressedPackageCallback?.Invoke($"Compressed {Path.GetFileName(package)}", compressedPackageCount, numberOfPackagesToCompress);
+                                compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressedX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
                             }
                         }
                         catch (InvalidOperationException)
@@ -331,7 +332,7 @@ namespace MassEffectModManagerCore.modmanager
                         var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\""; //do not localize
                         Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
                         Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
-                        updateTextCallback?.Invoke($"VPatching into alternate: {Path.GetFileName(inputfile)}");
+                        updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
                         Utilities.RunProcess(vpat, args, true, false, false, true);
                     }
 
@@ -360,7 +361,7 @@ namespace MassEffectModManagerCore.modmanager
                 //    extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
                 //    foreach (var package in packages)
                 //    {
-                //        updateTextCallback?.Invoke($"Compressing {Path.GetFileName(package)}");
+                //        updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
                 //        Log.Information("Compressing package: " + package);
                 //        var p = MEPackageHandler.OpenMEPackage(package);
                 //        p.save(true);
