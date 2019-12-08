@@ -670,5 +670,35 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_validation_modparsing_loadfailed_cmm1CoalFileMissing = "string_validation_modparsing_loadfailed_cmm1CoalFileMissing";
 		public static readonly string string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing = "string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing";
 		public static readonly string string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod = "string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod";
+		public static readonly string string_tooltip_hello = "string_tooltip_hello";
+		public static readonly string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
+		public static readonly string string_libraries = "string_libraries";
+		public static readonly string string_translators = "string_translators";
+		public static readonly string string_NA = "string_NA";
+		public static readonly string string_specialThanks = "string_specialThanks";
+		public static readonly string string_youTheEndUser = "string_youTheEndUser";
+		public static readonly string string_license = "string_license";
+		public static readonly string string_outdatedVersionInstalled = "string_outdatedVersionInstalled";
+		public static readonly string string_interp_byXVersionY = "string_interp_byXVersionY";
+		public static readonly string string_installedOutdated = "string_installedOutdated";
+		public static readonly string string_updateASI = "string_updateASI";
+		public static readonly string string_installedUpToDate = "string_installedUpToDate";
+		public static readonly string string_uninstallASI = "string_uninstallASI";
+		public static readonly string string_notInstalled = "string_notInstalled";
+		public static readonly string string_installASI = "string_installASI";
+		public static readonly string string_unknownASIDescription = "string_unknownASIDescription";
+		public static readonly string string_SSINotPresentInManifest = "string_SSINotPresentInManifest";
+		public static readonly string string_selectAnASIToViewOptions = "string_selectAnASIToViewOptions";
+		public static readonly string string_noASISelected = "string_noASISelected";
+		public static readonly string string_aSILoaderInstalledASIModsWillLoad = "string_aSILoaderInstalledASIModsWillLoad";
+		public static readonly string string_aSILoaderNotInstalledASIModsWillNotLoad = "string_aSILoaderNotInstalledASIModsWillNotLoad";
+		public static readonly string string_loaderInstalled = "string_loaderInstalled";
+		public static readonly string string_installLoader = "string_installLoader";
+		public static readonly string string_unknownASIMod = "string_unknownASIMod";
+		public static readonly string string_ASIManager = "string_ASIManager";
+		public static readonly string string_ASIManagerTopDescription = "string_ASIManagerTopDescription";
+		public static readonly string string_installingEllipse = "string_installingEllipse";
+		public static readonly string string_tooltip_viewSourceCodeForThisASIMod = "string_tooltip_viewSourceCodeForThisASIMod";
+		public static readonly string string_viewSourceCode = "string_viewSourceCode";
 	}
 }

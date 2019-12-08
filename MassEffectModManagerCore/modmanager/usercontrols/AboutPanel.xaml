@@ -9,7 +9,7 @@
             <ColumnDefinition Width="130" />
             <ColumnDefinition Width="35*" />
         </Grid.ColumnDefinitions>
-        <Image Source="/appicon.ico" Grid.Row="0" Grid.Column="0" Margin="4" ToolTip="{DynamicResource string_tooltip_hello!}" RenderOptions.BitmapScalingMode="HighQuality" />
+        <Image Source="/appicon.ico" Grid.Row="0" Grid.Column="0" Margin="4" ToolTip="{DynamicResource string_tooltip_hello}" RenderOptions.BitmapScalingMode="HighQuality" />
         <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,3,0,0">
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" Text="ME3Tweaks Mod Manager" FontWeight="Light" />
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" FontWeight="Light" Text="{Binding Path=(modmanagercore:App.AppVersionAbout), Mode=OneTime, StringFormat='Version {0}'}" />

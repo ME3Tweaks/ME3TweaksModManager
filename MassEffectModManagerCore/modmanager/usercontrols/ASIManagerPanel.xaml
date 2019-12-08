@@ -1,43 +1,31 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ASIManagerPanel"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
-             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-             mc:Ignorable="d" 
-             Height="500"
-             Width="730">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ASIManagerPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" mc:Ignorable="d" Height="500" Width="730">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type local:ASIManagerPanel+ASIMod}">
             <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
                 <Grid Margin="3" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Name}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Version, StringFormat='v{0}'}" HorizontalAlignment="Right"/>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6"  Text="{Binding Path=Author}" />
-                    <TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding InstallStatus}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Name}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Version, StringFormat='v{0}'}" HorizontalAlignment="Right" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6" Text="{Binding Path=Author}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstallStatus}" />
                 </Grid>
             </Border>
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:ASIManagerPanel+InstalledASIMod}">
             <Grid Margin="3">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=Filename}" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Opacity=".8"  Text="Unknown ASI mod"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Opacity=".8" Text="{DynamicResource string_unknownASIMod}" />
             </Grid>
         </DataTemplate>
         <Style x:Key="StretchNoPaddingStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
@@ -46,84 +34,65 @@
         </Style>
     </UserControl.Resources>
     <DockPanel>
-        <TextBlock Text="ASI Manager" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top"/>
-        <TextBlock DockPanel.Dock="Top" Padding="5" TextAlignment="Center" Text="ASI mods are native code mods that are loaded at game startup. They allow modification of the game in ways that are beyond what you can do with package files. ASI mods should not be part of typical mod distributions and cannot be included in Mod Manager mods.&#10;Mod Manager will automatically install required ASI mods for mods that modify the ME3 Balance Changes and for ME1 DLC mods." TextWrapping="Wrap"/>
+        <TextBlock Text="{DynamicResource string_ASIManager}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
+        <TextBlock DockPanel.Dock="Top" Padding="5" TextAlignment="Center" Text="{DynamicResource string_ASIManagerTopDescription}" TextWrapping="Wrap" />
         <DockPanel DockPanel.Dock="Right" Width="300" Margin="5,0,0,0">
             <DockPanel DockPanel.Dock="Bottom">
-                <Button Content="{DynamicResource string_close}" Margin="0,3,3,0" Padding="7,5"  HorizontalAlignment="Right" DockPanel.Dock="Right" Command="{Binding CloseCommand}"/>
-                <TextBlock Text="Installing..." VerticalAlignment="Center" MinWidth="100" DockPanel.Dock="Left" Margin="3,3,0,0" Visibility="{Binding InstallInProgress, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                <ProgressBar IsIndeterminate="True"  VerticalAlignment="Stretch" Margin="0,3,3,0"  VerticalContentAlignment="Center" Visibility="{Binding InstallInProgress, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <Button Content="{DynamicResource string_close}" Margin="0,3,3,0" Padding="7,5" HorizontalAlignment="Right" DockPanel.Dock="Right" Command="{Binding CloseCommand}" />
+                <TextBlock Text="{DynamicResource string_installingEllipse}" VerticalAlignment="Center" MinWidth="100" DockPanel.Dock="Left" Margin="3,3,0,0" Visibility="{Binding InstallInProgress, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <ProgressBar IsIndeterminate="True" VerticalAlignment="Stretch" Margin="0,3,3,0" VerticalContentAlignment="Center" Visibility="{Binding InstallInProgress, Converter={StaticResource BoolToVisibilityConverter}}" />
             </DockPanel>
-
             <Border DockPanel.Dock="Right" UseLayoutRounding="True" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" BorderThickness="1" Margin="3,26,3,0">
                 <DockPanel Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
-                    <Border  DockPanel.Dock="Top"
-                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBrush}}"
-                            VerticalAlignment="Top"
-                            Height="4">
+                    <Border DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBrush}}" VerticalAlignment="Top" Height="4">
                         <Border.CornerRadius>
                             <MultiBinding Converter="{x:Static adonisConverters:ValuesToCornerRadiusConverter.Instance}">
-                                <Binding Source="0"/>
-                                <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight"/>
-                                <Binding Source="0"/>
-                                <Binding Source="0"/>
+                                <Binding Source="0" />
+                                <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight" />
+                                <Binding Source="0" />
+                                <Binding Source="0" />
                             </MultiBinding>
                         </Border.CornerRadius>
                     </Border>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="3,5">
-                        <Button Margin="3,0" Padding="7,5" Content="View source code" Command="{Binding SourceCodeCommand}" ToolTip="View source code for this ASI mod"/>
-                        <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText, FallbackValue='Install ASI'}" Command="{Binding InstallCommand}" ToolTip="{Binding InstallButtonToolTip}"/>
+                        <Button Margin="3,0" Padding="7,5" Content="{DynamicResource string_viewSourceCode}" Command="{Binding SourceCodeCommand}" ToolTip="{DynamicResource string_tooltip_viewSourceCodeForThisASIMod}" />
+                        <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText, FallbackValue='Install ASI'}" Command="{Binding InstallCommand}" ToolTip="{Binding InstallButtonToolTip}" />
                     </StackPanel>
                     <StackPanel>
-                        <TextBlock Margin="0,10,0,0" Text="{Binding SelectedASIName, FallbackValue='Placeholder title'}" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding SelectedASISubtext, FallbackValue='Placeholder'}" TextWrapping="Wrap"  TextAlignment="Center"/>
+                        <TextBlock Margin="0,10,0,0" Text="{Binding SelectedASIName, FallbackValue='Placeholder title'}" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" />
+                        <TextBlock Text="{Binding SelectedASISubtext, FallbackValue='Placeholder'}" TextWrapping="Wrap" TextAlignment="Center" />
                         <TextBlock Margin="5,0" Text="{Binding SelectedASIDescription}" TextWrapping="Wrap" />
                     </StackPanel>
                 </DockPanel>
             </Border>
         </DockPanel>
-
         <TabControl SelectionChanged="TabControl_SelectionChanged" ItemsSource="{Binding Games}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="{Binding GameName}"/>
+                        <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
+                        <TextBlock Text="{Binding GameName}" />
                     </StackPanel>
-
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <Grid Margin="5">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition MinHeight="200"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition MinHeight="200" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-
-                      <ComboBox Grid.Row="1" Grid.Column="2"
-                      IsEnabled="{Binding InstallInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-                      ItemsSource="{Binding GameTargets}" 
-                      SelectedItem="{Binding SelectedTarget}" 
-                      HorizontalContentAlignment="Stretch" 
-                      ItemTemplate="{StaticResource TargetSelectorTemplate}" 
-                      ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
-
-                        <DockPanel Grid.Row ="2" Margin="0,5">
-                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}"  DockPanel.Dock="Right" ToolTip="{Binding LoaderButtonToolTip}"/>
-                            <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center"/>
-
+                        <ComboBox Grid.Row="1" Grid.Column="2" IsEnabled="{Binding InstallInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ItemsSource="{Binding GameTargets}" SelectedItem="{Binding SelectedTarget}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+                        <DockPanel Grid.Row="2" Margin="0,5">
+                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right" ToolTip="{Binding LoaderButtonToolTip}" />
+                            <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" />
                         </DockPanel>
-
-                      <ListBox Grid.Row="3" Grid.Column="2" BorderThickness="1" Name="ME3_InstalledASIs_List" ItemsSource="{Binding DisplayedASIMods}"
-                             ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
-                             HorizontalContentAlignment="Stretch" SelectionChanged="ASIManagerLists_SelectedChanged" />
-
+                        <ListBox Grid.Row="3" Grid.Column="2" BorderThickness="1" Name="ME3_InstalledASIs_List" ItemsSource="{Binding DisplayedASIMods}" ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" HorizontalContentAlignment="Stretch" SelectionChanged="ASIManagerLists_SelectedChanged" />
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>

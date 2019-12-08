@@ -165,7 +165,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\AboutPanel.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ASIManagerPanel.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -182,8 +182,8 @@ namespace LocalizationHelper
                     if (commentIndex >= 0 && matchIndex > commentIndex) continue; //this is a comment
                     var str = match.ToString();
                     if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
-                    var strname = "string_validation_modparsing_";
-                    if (str.StartsWith("$")) strname = "string_interp_validation_modparsing_";
+                    var strname = "string_";
+                    if (str.StartsWith("$")) strname = "string_interp_";
                     var newStr = match.ToString().TrimStart('$').Trim('"');
                     if (newStr.Length > 1)
                     {
@@ -252,7 +252,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\AboutPanel.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ASIManagerPanel.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -320,7 +320,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\AboutPanel.xaml");
+            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ASIManagerPanel.xaml");
             string[] attributes = { "Header", "ToolTip", "Content", "Text" };
             try
             {

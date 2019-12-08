@@ -768,7 +768,7 @@
     <!-- 0 = error message -->
 
     <!-- About Panel -->
-    <system:String x:Key="string_tooltip_hello!">Hello!</system:String>
+    <system:String x:Key="string_tooltip_hello">Hello!</system:String>
     <system:String x:Key="string_tooltip_softwareDevelopedWithLoveByME3Tweaks">Software developed with love by ME3Tweaks</system:String>
     <system:String x:Key="string_libraries">Libraries</system:String>
     <system:String x:Key="string_translators">Translators</system:String>
@@ -776,5 +776,30 @@
     <system:String x:Key="string_specialThanks">Special thanks</system:String>
     <system:String x:Key="string_youTheEndUser">You, the end user, for making this software worth developing</system:String>
     <system:String x:Key="string_license">License</system:String>
+
+    <!-- ASI Manager Panel -->
+    <system:String x:Key="string_outdatedVersionInstalled">Outdated version installed</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String> 
+    <!-- 0 = author, 1 = version number -->
+    <system:String x:Key="string_installedOutdated">Installed, outdated</system:String>
+    <system:String x:Key="string_updateASI">Update ASI</system:String>
+    <system:String x:Key="string_installedUpToDate">Installed, up to date</system:String>
+    <system:String x:Key="string_uninstallASI">Uninstall ASI</system:String>
+    <system:String x:Key="string_notInstalled">Not installed</system:String>
+    <system:String x:Key="string_installASI">Install ASI</system:String>
+    <system:String x:Key="string_unknownASIDescription">Unknown ASI mod. You should be careful with this ASI as it may contain malicious code.</system:String>
+    <system:String x:Key="string_SSINotPresentInManifest">ASI not present in manifest</system:String>
+    <system:String x:Key="string_selectAnASIToViewOptions">Select an ASI to view options</system:String>
+    <system:String x:Key="string_noASISelected">No ASI selected</system:String>
+    <system:String x:Key="string_aSILoaderInstalledASIModsWillLoad">ASI loader installed. ASI mods will load</system:String>
+    <system:String x:Key="string_aSILoaderNotInstalledASIModsWillNotLoad">ASI loader not installed. ASI mods will not load</system:String>
+    <system:String x:Key="string_loaderInstalled">Loader installed</system:String>
+    <system:String x:Key="string_installLoader">Install loader</system:String>
+    <system:String x:Key="string_unknownASIMod">Unknown ASI mod</system:String>
+    <system:String x:Key="string_ASIManager">ASI Manager</system:String>
+    <system:String xml:space="preserve" x:Key="string_ASIManagerTopDescription">ASI mods are native code mods that are loaded at game startup. They allow modification of the game in ways that are beyond what you can do with package files. ASI mods should not be part of typical mod distributions and cannot be included in Mod Manager mods.&#10;Mod Manager will automatically install required ASI mods for mods that modify the ME3 Balance Changes and for ME1 DLC mods.</system:String>
+    <system:String x:Key="string_installingEllipse">Installing...</system:String>
+    <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">View source code for this ASI mod</system:String>
+    <system:String x:Key="string_viewSourceCode">View source code</system:String>
 
 </ResourceDictionary>
