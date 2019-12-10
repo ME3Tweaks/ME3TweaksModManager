@@ -1444,7 +1444,6 @@ namespace MassEffectModManagerCore
                         if (SelectedMod.IsOwnMod)
                         {
                             CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseOwnMod);
-
                         }
                         else
                         {

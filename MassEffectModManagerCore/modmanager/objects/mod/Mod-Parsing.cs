@@ -323,6 +323,7 @@ namespace MassEffectModManagerCore.modmanager
             ParsedModVersion = parsedValue;
 
             ModWebsite = iniData[@"ModInfo"][@"modsite"] ?? DefaultWebsite;
+            if (string.IsNullOrEmpty(ModWebsite)) ModWebsite = DefaultWebsite;
 
             //updates
             int.TryParse(iniData[@"ModInfo"][@"modid"], out int modmakerId);

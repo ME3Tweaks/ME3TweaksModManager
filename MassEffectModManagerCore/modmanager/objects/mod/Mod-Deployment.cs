@@ -36,7 +36,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
                     else
                     {
-                        references.Add(job.JobDirectory + @"\\" + jobFile);
+                        references.Add(job.JobDirectory + @"\" + jobFile);
                     }
                 }
                 foreach (var dlc in job.AlternateDLCs)

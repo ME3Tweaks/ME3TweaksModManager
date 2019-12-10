@@ -22,40 +22,48 @@ namespace MassEffectModManagerCore.modmanager
         {
             if (!NexusModsUtilities.HasAPIKey) return false;
             if (checkedEndorsementStatus) return IsEndorsed;
-            var client = NexusModsUtilities.GetClient();
-            string gamename = @"masseffect";
-            if (Game == MEGame.ME2) gamename += @"2";
-            if (Game == MEGame.ME3) gamename += @"3";
-            var modinfo = await client.Mods.GetMod(gamename, NexusModID);
-            if (modinfo.User.MemberID == currentuserid)
+            try
             {
-                IsEndorsed = false;
-                CanEndorse = false;
-                IsOwnMod = true;
-                checkedEndorsementStatus = true;
-                return null; //cannot endorse your own mods
-            }
-            var endorsementstatus = modinfo.Endorsement;
-            if (endorsementstatus != null)
-            {
-                if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Undecided || endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Abstained)
+                var client = NexusModsUtilities.GetClient();
+                string gamename = @"masseffect";
+                if (Game == MEGame.ME2) gamename += @"2";
+                if (Game == MEGame.ME3) gamename += @"3";
+                var modinfo = await client.Mods.GetMod(gamename, NexusModID);
+                if (modinfo.User.MemberID == currentuserid)
                 {
                     IsEndorsed = false;
+                    CanEndorse = false;
+                    IsOwnMod = true;
+                    checkedEndorsementStatus = true;
+                    return null; //cannot endorse your own mods
                 }
-                else if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Endorsed)
+                var endorsementstatus = modinfo.Endorsement;
+                if (endorsementstatus != null)
                 {
-                    IsEndorsed = true;
-                }
+                    if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Undecided || endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Abstained)
+                    {
+                        IsEndorsed = false;
+                    }
+                    else if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Endorsed)
+                    {
+                        IsEndorsed = true;
+                    }
 
-                CanEndorse = true;
+                    CanEndorse = true;
+                }
+                else
+                {
+                    IsEndorsed = false;
+                    CanEndorse = false;
+                }
+                checkedEndorsementStatus = true;
+                return IsEndorsed;
             }
-            else
+            catch (Exception e)
             {
-                IsEndorsed = false;
-                CanEndorse = false;
+                Log.Error("Error getting endorsement status: " + e.Message);
+                return false; //null would mean own mod. so just say its not endorsed atm.
             }
-            checkedEndorsementStatus = true;
-            return IsEndorsed;
         }
 
         public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
