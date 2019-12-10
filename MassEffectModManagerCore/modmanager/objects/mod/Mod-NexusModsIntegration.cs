@@ -16,7 +16,7 @@ namespace MassEffectModManagerCore.modmanager
         public bool IsEndorsed { get; set; }
         public bool IsOwnMod { get; set; }
         public bool CanEndorse { get; set; }
-        public string EndorsementStatus { get; set; } = "Endorse mod";
+        //public string EndorsementStatus { get; set; } = "Endorse mod";
 
         public async Task<bool?> GetEndorsementStatus(int currentuserid)
         {

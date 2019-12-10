@@ -26,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void Image_ME3Tweaks_Click(object sender, MouseButtonEventArgs e)
         {
-            Utilities.OpenWebpage("https://me3tweaks.com");
+            Utilities.OpenWebpage(@"https://me3tweaks.com");
         }
 
         private void About_PreviewMouseDown(object sender, MouseButtonEventArgs e)

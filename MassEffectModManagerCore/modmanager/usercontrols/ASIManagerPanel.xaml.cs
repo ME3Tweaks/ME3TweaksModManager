@@ -22,6 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Xml.Linq;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -253,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public bool UIOnly_Installed { get; set; }
             public bool UIOnly_Outdated { get; set; }
-            public string InstallStatus => UIOnly_Outdated ? "Outdated version installed" : (UIOnly_Installed ? "Installed" : "");
+            public string InstallStatus => UIOnly_Outdated ? M3L.GetString(M3L.string_outdatedVersionInstalled) : (UIOnly_Installed ? M3L.GetString(M3L.string_installed) : "");
             public InstalledASIMod InstalledInfo { get; set; }
 
             public Brush BackgroundColor
@@ -345,40 +346,41 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 SelectedASIDescription = asiMod.Description;
                 SelectedASIName = asiMod.Name;
-                string subtext = $"By {asiMod.Author} | Version {asiMod.Version}\n";
+                string subtext = M3L.GetString(M3L.string_interp_byXVersionY, asiMod.Author, asiMod.Version);
+                subtext += Environment.NewLine;
                 if (asiMod.UIOnly_Outdated)
                 {
-                    subtext += "Installed, outdated";
-                    InstallButtonText = "Update ASI";
+                    subtext += M3L.GetString(M3L.string_installedOutdated);
+                    InstallButtonText = M3L.GetString(M3L.string_updateASI);
                 }
                 else if (asiMod.UIOnly_Installed)
                 {
-                    subtext += "Installed, up to date";
-                    InstallButtonText = "Uninstall ASI";
+                    subtext += M3L.GetString(M3L.string_installedUpToDate);
+                    InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
 
                 }
                 else
                 {
-                    subtext += "Not installed";
-                    InstallButtonText = "Install ASI";
+                    subtext += M3L.GetString(M3L.string_notInstalled);
+                    InstallButtonText = M3L.GetString(M3L.string_installASI);
 
                 }
                 SelectedASISubtext = subtext;
             }
             else if (v is InstalledASIMod nonManifestAsiMod)
             {
-                SelectedASIDescription = "Unknown ASI mod. You should be careful with this ASI as it may contain malicious code.";
+                SelectedASIDescription = M3L.GetString(M3L.string_unknownASIDescription);
                 SelectedASIName = nonManifestAsiMod.Filename;
-                SelectedASISubtext = "ASI not present in manifest";
-                InstallButtonText = "Uninstall ASI";
+                SelectedASISubtext = M3L.GetString(M3L.string_SSINotPresentInManifest);
+                InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
             }
             else
             {
                 SelectedASIDescription = "";
-                SelectedASIName = "Select an ASI to view options";
+                SelectedASIName = M3L.GetString(M3L.string_selectAnASIToViewOptions);
                 SelectedASISubtext = "";
                 SelectedASIObject = null;
-                InstallButtonText = "No ASI selected";
+                InstallButtonText = M3L.GetString(M3L.string_noASISelected);
             }
         }
 
@@ -428,8 +430,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 get
                 {
-                    if (LoaderInstalled) return "ASI loader installed. ASI mods will load";
-                    return "ASI loader not installed. ASI mods will not load";
+                    if (LoaderInstalled) return M3L.GetString(M3L.string_aSILoaderInstalledASIModsWillLoad);
+                    return M3L.GetString(M3L.string_aSILoaderNotInstalledASIModsWillNotLoad);
                 }
             }
 
@@ -471,7 +473,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private void RefreshBinkStatus()
             {
                 LoaderInstalled = SelectedTarget != null && Utilities.CheckIfBinkw32ASIIsInstalled(SelectedTarget);
-                InstallLoaderText = LoaderInstalled ? "Loader installed" : "Install loader";
+                InstallLoaderText = LoaderInstalled ? M3L.GetString(M3L.string_loaderInstalled) : M3L.GetString(M3L.string_installLoader);
             }
 
             private void MapInstalledASIs()
