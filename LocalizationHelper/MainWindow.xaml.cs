@@ -165,7 +165,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ASIManagerPanel.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\windows\StarterKitGeneratorWindow.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -252,7 +252,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ASIManagerPanel.xaml.cs");
+            var file = Path.Combine(M3folder, @"modmanager\windows\StarterKitGeneratorWindow.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -320,7 +320,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\usercontrols\ASIManagerPanel.xaml");
+            var file = Path.Combine(M3folder, @"modmanager\windows\StarterKitGeneratorWindow.xaml");
             string[] attributes = { "Header", "ToolTip", "Content", "Text" };
             try
             {

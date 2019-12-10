@@ -801,5 +801,48 @@
     <system:String x:Key="string_installingEllipse">Installing...</system:String>
     <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">View source code for this ASI mod</system:String>
     <system:String x:Key="string_viewSourceCode">View source code</system:String>
+    
+    <!-- Starter Kit Window-->
+    <system:String x:Key="string_newDLCModInformation">New DLC mod information</system:String>
+    <system:String x:Key="string_modName">Mod Name</system:String>
+    <system:String x:Key="string_modDeveloper">Mod Developer</system:String>
+    <system:String x:Key="string_modWebsite">Mod Website/Nexusmods page</system:String>
+    <system:String x:Key="string_dLCFolderName">DLC Folder Name</system:String>
+    <system:String x:Key="string_internalName">Internal Name</system:String>
+    <system:String x:Key="string_internalNameTLKID">Internal Name TLK ID</system:String>
+    <system:String x:Key="string_dLCModuleNumber">DLC Module Number</system:String>
+    <system:String x:Key="string_mountPriority">Mount Priority</system:String>
+    <system:String x:Key="string_mountFlag">Mount Flag</system:String>
+    <system:String x:Key="string_decriptionHintText">Mod Manager description that users will see when they select your mod in Mod Manager. You can edit this later to more accurately describe your mod to users.</system:String>
+    <system:String x:Key="string_ensureYouAreUsingAUniqueMountPriority">Ensure you are using a unique mount priority for your mod.</system:String>
+    <system:String x:Key="string_existingKnownDLC">Existing known DLC</system:String>
+    <system:String x:Key="string_generateStarterKit">Generate Starter Kit</system:String>
+    <system:String x:Key="string_noSaveFileDependencyOnDLC">No save file dependency on DLC</system:String>
+    <system:String x:Key="string_saveFileDependencyOnDLC">Save file dependency on DLC</system:String>
+    <system:String x:Key="string_loadingPlaceholder">Loading placeholder</system:String>
+    <system:String x:Key="string_modNameCannotBeEmpty">Mod name cannot be empty</system:String>
+    <system:String x:Key="string_modNameCanOnlyContain">Mod name can only contain numbers, letters, apostrophe or hyphens</system:String>
+    <system:String xml:space="preserve" x:Key="string_modNameWillNotResolveToAUsableFilesystemPath">Mod name will not resolve to a usable filesystem path.\nPlease enter some alphanumeric values.</system:String>
+    <system:String x:Key="string_modNameCannotContainDoubleDots">Mod name cannot contain double dots when path is sanitized</system:String>
+    <system:String x:Key="string_mountPriorityRange">Mount priority must be > 0 and</system:String>
+    <system:String x:Key="string_internalTLKIDMustBeGreaterThan0">Internal TLK ID must be greater than 0</system:String>
+    <system:String x:Key="string_modDeveloperNameIsRequired">Mod developer name is required</system:String>
+    <system:String x:Key="string_modDescriptionIsRequired">Mod description is required</system:String>
+    <system:String x:Key="string_dLCFolderNameCannotBeEmpty">DLC folder name cannot be empty</system:String>
+    <system:String x:Key="string_dLCFolderNameCanOnlyConsistOf">DLC folder name can only consist of A-Z a-z 0-9 and _.</system:String>
+    <system:String x:Key="string_uRLMustBeOfProtocol">URL must be of protocol type http or https://</system:String>
+    <system:String x:Key="string_valueMustBeBetween0And">Value must be between 0 and</system:String>
+    <system:String x:Key="string_internalModNameCannotBeEmpty">Internal mod name cannot be empty. This string is shown to users when mod fails to load in-game</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogDLCModuleNumberConflicts">The DLC module number for this mod conflicts with existing DLC:{conflicts}\n\nModule numbers are used to determine filenames in the mod, such as the TLK. Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?</system:String>
+    <system:String x:Key="string_conflictingDLCModuleNumbers">Conflicting DLC module numbers</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogMountPrioirtyConflicts">The DLC mount priority for this mod conflicts with existing DLC:{conflicts}\n\nMount priority numbers are used to determine which files to use in case of ambiguous package names (same-named file exists in multiple locations). Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?</system:String>
+    <system:String x:Key="string_conflictingDLCMountPriorityNumbers">Conflicting DLC mount priority numbers</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_discourageUseOfSPSaveRequired">You have chosen to make this mod be required by the savegame. When a user removes your mod (by choice or by repair), saves that were made while this DLC is installed will not be usable by the user. In almost all circumstances this is not desirable for the end user. You should only pick this option if you really know what you're doing.\n\nUse this mount flag anyways?</system:String>
+    <system:String x:Key="string_undesirableMountFlag">Undesirable mount flag</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogWillDeleteExistingMod">Creating this mod will delete an existing directory in the mod library:\n{outputDirectory}\n\nContinue?</system:String>
+    <system:String x:Key="string_interp_dialogErrorDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory">Error occured while deleting existing mod directory:\n{e.Message}</system:String>
+    <system:String x:Key="string_generatingMod">Generating mod</system:String>
+
 
 </ResourceDictionary>

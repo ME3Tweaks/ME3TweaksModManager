@@ -35,9 +35,9 @@ namespace MassEffectModManagerCore.modmanager.windows
     public partial class StarterKitGeneratorWindow : ValidatableWindowBase
     {
         [Localizable(false)]
-        public static (string filecode, string langcode)[] me3languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("JPN", "jp-jp") };
+        public static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
         [Localizable(false)]
-        public static (string filecode, string langcode)[] me2languages = { ("INT", "en-us"), ("ESN", "es-es"), ("DEU", "de-de"), ("RUS", "ru-ru"), ("FRA", "fr-fr"), ("ITA", "it-it"), ("POL", "pl-pl"), ("HUN", "hu-hu"), ("CZE", "cs-cz") };
+        public static (string filecode, string langcode)[] me2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"HUN", @"hu-hu"), (@"CZE", @"cs-cz") };
 
         public int MaxMountForGame
         {
@@ -168,8 +168,8 @@ namespace MassEffectModManagerCore.modmanager.windows
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Starter Kit Window", new WeakReference(this));
             DataContext = this;
-            ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "No save file dependency on DLC"));
-            ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, "Save file dependency on DLC"));
+            ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, M3L.GetString(M3L.string_noSaveFileDependencyOnDLC)));
+            ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, M3L.GetString(M3L.string_saveFileDependencyOnDLC)));
 
             ME2MountFlags.Add(new UIMountFlag(EMountFileFlag.ME2_NoSaveFileDependency, @"0x00 | No save file dependency on DLC"));
             ME2MountFlags.Add(new UIMountFlag(EMountFileFlag.ME2_SaveFileDependency, @"0x02 | Save file dependency on DLC"));
@@ -181,7 +181,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_1, @"0x14 - MP only | Loads in MP"));
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_2, @"0x34 - MP only | Loads in MP"));
             PreviewTPMI.IsPreview = true;
-            DisplayedMountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, "Loading placeholder"));
+            DisplayedMountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, M3L.GetString(M3L.string_loadingPlaceholder)));
             SetupValidation();
 
             LoadCommands();
@@ -207,22 +207,22 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             Validator.AddRule(nameof(ModName), () =>
             {
-                if (string.IsNullOrWhiteSpace(ModName)) return RuleResult.Invalid("Mod name cannot be empty");
-                var r = new Regex("[A-Z,a-z,0-9,\\-,',., ,|,\",]+");
+                if (string.IsNullOrWhiteSpace(ModName)) return RuleResult.Invalid(M3L.GetString(M3L.string_modNameCannotBeEmpty));
+                var r = new Regex("[A-Z,a-z,0-9,\\-,',., ,|,\",]+"); //do not localize
                 if (!r.IsMatch(ModName))
                 {
-                    return RuleResult.Invalid("Mod name can only contain numbers, letters, apostrophe or hyphens");
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_modNameCanOnlyContain));
                 }
                 var sanitized = Utilities.SanitizePath(ModName, true);
                 if (sanitized.Length == 0)
                 {
-                    return RuleResult.Invalid("Mod name will not resolve to a usable filesystem path.\nPlease enter some alphanumeric values.");
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_modNameWillNotResolveToAUsableFilesystemPath));
                 }
                 if (sanitized.Contains(@".."))
                 {
-                    return RuleResult.Invalid("Mod name cannot contain double dots when path is sanitized");
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_modNameCannotContainDoubleDots));
                 }
-                Debug.WriteLine("Validation OK");
+                //Debug.WriteLine(M3L.GetString(M3L.string_validationOK));
                 return RuleResult.Valid();
             });
 
@@ -239,22 +239,22 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
                 if (ModInternalTLKID <= 0)
                 {
-                    return RuleResult.Invalid("Internal TLK ID must be greater than 0");
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_internalTLKIDMustBeGreaterThan0));
                 }
                 return RuleResult.Valid();
             });
 
-            Validator.AddRequiredRule(() => ModDeveloper, "Mod developer name is required");
-            Validator.AddRequiredRule(() => ModDescription, "Mod description is required");
+            Validator.AddRequiredRule(() => ModDeveloper, M3L.GetString(M3L.string_modDeveloperNameIsRequired));
+            Validator.AddRequiredRule(() => ModDescription, M3L.GetString(M3L.string_modDescriptionIsRequired));
             Validator.AddRule(nameof(ModDLCFolderName), () =>
             {
                 //Debug.WriteLine("MDFN " + ModDLCFolderName);
                 if (string.IsNullOrWhiteSpace(ModDLCFolderName))
-                    return RuleResult.Invalid("DLC folder name cannot be empty");
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCannotBeEmpty));
                 Regex reg = new Regex("[A-Za-z0-9_]+$");
                 if (!reg.IsMatch(ModDLCFolderName))
                 {
-                    return RuleResult.Invalid("DLC folder name can only consist of A-Z a-z 0-9 and _.");
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCanOnlyConsistOf));
 
                 }
                 return RuleResult.Valid();
@@ -270,7 +270,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     return RuleResult.Valid();
                 }
-                return RuleResult.Invalid("URL must be of protocol type http or https://");
+                return RuleResult.Invalid(M3L.GetString(M3L.string_uRLMustBeOfProtocol));
             });
             Validator.AddRule(nameof(ModDLCModuleNumber), () =>
             {
@@ -281,7 +281,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 }
                 return RuleResult.Valid();
             });
-            Validator.AddRequiredRule(() => ModInternalName, "Internal mod name cannot be empty. This string is shown to users when mod fails to load in-game");
+            Validator.AddRequiredRule(() => ModInternalName, M3L.GetString(M3L.string_internalModNameCannotBeEmpty));
 
             #endregion        
         }
@@ -301,8 +301,8 @@ namespace MassEffectModManagerCore.modmanager.windows
                 if (sameModuleNumberItems.Count > 0)
                 {
                     string conflicts = "";
-                    sameModuleNumberItems.ForEach(x => conflicts += "\n - " + x.modname); //do not localize
-                    var result = M3L.ShowDialog(this, $"The DLC module number for this mod conflicts with existing DLC:{conflicts}\n\nModule numbers are used to determine filenames in the mod, such as the TLK. Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC module numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                    sameModuleNumberItems.ForEach(x => conflicts += Environment.NewLine + @" - " + x.modname); //do not localize
+                    var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogDLCModuleNumberConflicts, conflicts), M3L.GetString(M3L.string_conflictingDLCModuleNumbers), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                     if (result == MessageBoxResult.No) return;
                 }
             }
@@ -311,28 +311,28 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (sameMountPriorityItems.Count > 0)
             {
                 string conflicts = "";
-                sameMountPriorityItems.ForEach(x => conflicts += "\n - " + x.modname); //do not localize
-                var result = M3L.ShowDialog(this, $"The DLC mount priority for this mod conflicts with existing DLC:{conflicts}\n\nMount priority numbers are used to determine which files to use in case of ambiguous package names (same-named file exists in multiple locations). Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?", "Conflicting DLC mount priority numbers", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                sameMountPriorityItems.ForEach(x => conflicts += Environment.NewLine + @" - " + x.modname); //do not localize
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogMountPrioirtyConflicts, conflicts), M3L.GetString(M3L.string_conflictingDLCMountPriorityNumbers), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
             }
 
             if (ModMountFlag.Flag == EMountFileFlag.ME1_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME2_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency)
             {
-                var result = M3L.ShowDialog(this, "You have chosen to make this mod be required by the savegame. When a user removes your mod (by choice or by repair), saves that were made while this DLC is installed will not be usable by the user. In almost all circumstances this is not desirable for the end user. You should only pick this option if you really know what you're doing.\n\nUse this mount flag anyways?", "Undesirable mount flag", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_discourageUseOfSPSaveRequired), M3L.GetString(M3L.string_undesirableMountFlag), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
             }
 
             var outputDirectory = Path.Combine(Utilities.GetModDirectoryForGame(Game), Utilities.SanitizePath(ModName));
             if (Directory.Exists(outputDirectory))
             {
-                var result = M3L.ShowDialog(this, $"Creating this mod will delete an existing directory in the mod library:\n{outputDirectory}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogWillDeleteExistingMod, outputDirectory), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
                 try
                 {
                     if (!Utilities.DeleteFilesAndFoldersRecursively(outputDirectory))
                     {
                         Log.Error(@"Could not delete existing output directory.");
-                        M3L.ShowDialog(this, $"Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogErrorDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -341,7 +341,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     //I don't think this can be triggered but will leave as failsafe anyways.
                     Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(e));
-                    M3L.ShowDialog(this, $"Error occured while deleting existing mod directory:\n{e.Message}", "Error deleting existing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_errorOccuredWhileDeletingExistingModDirectory, e.Message), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
@@ -369,7 +369,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 ModModuleNumber = ModDLCModuleNumber
             };
             IsBusy = true;
-            BusyText = "Generating mod";
+            BusyText = M3L.GetString(M3L.string_generatingMod);
             CreateStarterKitMod(sko, s => { BusyText = s; }, FinishedCallback);
         }
 
@@ -487,7 +487,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     //TLK
                     var dialogdir = Directory.CreateDirectory(Path.Combine(cookedDir, @"Packages", @"Dialog")).FullName;
                     var tlkGlobalFile = Path.Combine(dialogdir, $@"{dlcFolderName}_GlobalTlk.upk");
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
+                    Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
                     var tlkFile = MEPackageHandler.OpenMEPackage(tlkGlobalFile);
                     var tlk1 = new TalkFileME1(tlkFile.getUExport(1));
                     var tlk2 = new TalkFileME1(tlkFile.getUExport(2));
@@ -518,12 +518,12 @@ namespace MassEffectModManagerCore.modmanager.windows
                     mf.ME2Only_DLCHumanName = skOption.ModName;
                     mf.MountPriority = (ushort)skOption.ModMountPriority;
                     mf.TLKID = skOption.ModInternalTLKID;
-                    mf.WriteMountFile(Path.Combine(cookedDir, "Mount.dlc"));
+                    mf.WriteMountFile(Path.Combine(cookedDir, @"Mount.dlc"));
 
                     if (skOption.ModGame == Mod.MEGame.ME3)
                     {
                         //Extract Default.Sfar
-                        Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
+                        Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
 
                         //Generate Coalesced.bin for mod
                         var memory = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
