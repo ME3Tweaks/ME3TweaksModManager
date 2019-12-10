@@ -669,11 +669,11 @@
 
     <!-- Mod-Installation -->
     <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String> <!-- requires manual setup -->
-    <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {ModDeveloper}</system:String>
-    <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {ModModMakerID}</system:String>
-    <system:String x:Key="string_interp_modparsing_updateCode">Update code: {ModClassicUpdateCode}</system:String>
+    <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String> <!-- 0 = name-->
+    <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {0}</system:String> <!-- 0 = number-->
+    <system:String x:Key="string_interp_modparsing_updateCode">Update code: {0}</system:String> <!-- 0 = number-->
     <system:String x:Key="string_modparsing_installationInformationSplitter">-------Installation information--------</system:String>
-    <system:String x:Key="string_interp_modparsing_targetsModDesc">Targets ModDesc {ModDescTargetVersion}</system:String>
+    <system:String x:Key="string_interp_modparsing_targetsModDesc">Targets ModDesc {0}</system:String> <!-- 0 = number -->
     <system:String x:Key="string_interp_modparsing_modifies">Modifies: {0}</system:String>
     <!-- 0 = List of human readable DLC names (like bring down the sky)-->
     <system:String x:Key="string_interp_modparsing_addCustomDLCs">Add Custom DLCs: {0}</system:String>

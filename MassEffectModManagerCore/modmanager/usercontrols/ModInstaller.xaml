@@ -53,7 +53,7 @@
                             <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp" Opacity="{Binding UIOpacity}">
                                 <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"  DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
                                 <RadioButton IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" GroupName="{Binding GroupName}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
-                                <DockPanel DockPanel.Dock="Top">
+                                <DockPanel DockPanel.Dock="Top" Background="Transparent">
                                     <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     <TextBlock Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"/>
@@ -75,7 +75,7 @@
                             <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp" Opacity="{Binding UIOpacity}">
                                 <CheckBox IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"  DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
                                 <RadioButton IsEnabled="{Binding IsManual}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" GroupName="{Binding GroupName}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
-                                <DockPanel DockPanel.Dock="Top">
+                                <DockPanel DockPanel.Dock="Top" Background="Transparent">
                                     <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     <TextBlock Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"/>

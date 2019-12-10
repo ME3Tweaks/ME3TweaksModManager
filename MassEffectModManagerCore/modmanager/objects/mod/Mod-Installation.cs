@@ -78,6 +78,12 @@ namespace MassEffectModManagerCore.modmanager
                                             installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
                                             altApplied = true;
                                             break;
+                                        case AlternateFile.AltFileOperation.OP_INSTALL:
+                                            //same logic as substitute, just different logging.
+                                            CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
+                                            installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                            altApplied = true;
+                                            break;
                                     }
                                     break;
                                 }
@@ -191,8 +197,9 @@ namespace MassEffectModManagerCore.modmanager
                 var sourceFile = entry.Value;
 
                 bool altApplied = false;
-                foreach (var altFile in job.AlternateFiles)
+                foreach (var altFile in job.AlternateFiles.Where(x=>x.IsSelected))
                 {
+                    Debug.WriteLine("Checking alt conditions for application: " + altFile.FriendlyName);
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOTHING) continue; //skip nothing
                     //todo: Support wildcards if OP_NOINSTALL
                     if (altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
@@ -206,6 +213,12 @@ namespace MassEffectModManagerCore.modmanager
                                 break;
                             case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
                                 CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                altApplied = true;
+                                break;
+                            case AlternateFile.AltFileOperation.OP_INSTALL:
+                                //same logic as substitute, just different logging.
+                                CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
                                 installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
                                 altApplied = true;
                                 break;
