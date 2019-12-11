@@ -737,8 +737,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_dialog_discourageUseOfSPSaveRequired = "string_dialog_discourageUseOfSPSaveRequired";
 		public static readonly string string_undesirableMountFlag = "string_undesirableMountFlag";
 		public static readonly string string_interp_dialogWillDeleteExistingMod = "string_interp_dialogWillDeleteExistingMod";
-		public static readonly string string_interp_dialogErrorDeletingExistingMod = "string_interp_dialogErrorDeletingExistingMod";
+		public static readonly string string_dialogErrorDeletingExistingMod = "string_dialogErrorDeletingExistingMod";
 		public static readonly string string_interp_errorOccuredWhileDeletingExistingModDirectory = "string_interp_errorOccuredWhileDeletingExistingModDirectory";
 		public static readonly string string_generatingMod = "string_generatingMod";
+		public static readonly string string_interp_valueMustBeBetween0AndX = "string_interp_valueMustBeBetween0AndX";
 	}
 }

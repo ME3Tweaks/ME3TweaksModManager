@@ -230,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
                 if (ModMountPriority <= 0 || ModMountPriority >= GetGameSpecificMountLimit())
                 {
-                    return RuleResult.Invalid("Mount priority must be > 0 and < " + GetGameSpecificMountLimit());
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, GetGameSpecificMountLimit().ToString()));
                 }
                 return RuleResult.Valid();
             });
@@ -277,7 +277,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 if (Game != MEGame.ME2) return RuleResult.Valid();
                 if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
                 {
-                    return RuleResult.Invalid("Value must be between 0 and " + ushort.MaxValue);
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, ushort.MaxValue.ToString()));
                 }
                 return RuleResult.Valid();
             });
@@ -332,7 +332,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     if (!Utilities.DeleteFilesAndFoldersRecursively(outputDirectory))
                     {
                         Log.Error(@"Could not delete existing output directory.");
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_dialogErrorDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialogErrorDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
