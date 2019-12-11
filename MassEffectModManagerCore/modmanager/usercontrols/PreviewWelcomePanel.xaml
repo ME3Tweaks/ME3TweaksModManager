@@ -50,7 +50,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="4" Margin="2" Click="ChangeLang_RUS_Clicked" IsEnabled="False" ToolTip="Translation is in progress but is not yet available">
+            <Button Grid.Column="4" Margin="2" Click="ChangeLang_RUS_Clicked" IsEnabled="False" ToolTip="{DynamicResource string_tooltip_translationIsInProgressButIsNotYetAvailable}">
                 <StackPanel>
                     <Image Source="/modmanager/localizations/icons/russian.png"/>
                     <TextBlock Text="Russian" TextAlignment="Center"/>

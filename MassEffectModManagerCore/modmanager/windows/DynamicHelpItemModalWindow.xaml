@@ -28,6 +28,6 @@
         <fa:ImageAwesome Icon="{Binding ModalIcon}" Foreground="{Binding ModalColor}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="64" Height="64" Grid.RowSpan="3" />
         <Image Source="{Binding ResourceImage, TargetNullValue={x:Null}}" Grid.Row="0" Grid.Column="1"/>
         <TextBlock Text="{Binding ModalText, FallbackValue=This is some modal text}" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap"/>
-        <Button Content="OK" Grid.Column="1" Grid.Row="2" Width="60" HorizontalAlignment="Right" Click="OK_Click"/>
+        <Button Content="{DynamicResource string_ok}" Grid.Column="1" Grid.Row="2" Width="60" HorizontalAlignment="Right" Click="OK_Click"/>
     </Grid>
 </Window>

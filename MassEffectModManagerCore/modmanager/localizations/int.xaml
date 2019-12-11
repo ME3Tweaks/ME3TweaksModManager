@@ -260,6 +260,8 @@
     <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Thanks for downloading the preview of ME3Tweaks Mod Manager, the next generation of Mod Manager. This preview version is a work in progress and will have stability issues and missing features that are being worked on.&#10;&#10;ME3Tweaks Mod Manager will replace Mass Effect 3 Mod Manager once it is at feature parity.&#10;&#10;Please direct all feedback to the ME3Tweaks Discord, where you can have your voice heard for feature requests and bug fixes.</system:String>
     <system:String x:Key="string_joinDiscord">Join the ME3Tweaks Discord</system:String>
     <system:String x:Key="string_close">Close</system:String>
+    <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Translation is in progress but is not yet available</system:String>
+
     <!-- Close (as in close dialog) -->
 
     <!-- Deployment panel -->
@@ -371,6 +373,7 @@
     <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load. Select each mod to see why.</system:String>
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
+
 
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
@@ -858,6 +861,8 @@
     <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
     <system:String x:Key="string_errorCopyingDataToClipboard">Error copying data to clipboard</system:String>
+    <system:String x:Key="string_copyItemsToClipboard">Copy items to clipboard</system:String>
+    <system:String x:Key="string_copiedToClipboard">Copied to clipboard</system:String>
 
     <!-- Mass Effect Ini Modder (UI) -->
     <system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config file {0}.ini is missing. It should be located at {1}. Please run the game at least once to generate the default files.</system:String>
@@ -868,5 +873,13 @@
     <system:String xml:space="preserve" x:Key="string_interp_propertyNotSaved">Property not saved: {0}\n\nReason: {1}</system:String>
     <!-- 0= config property key 1=error reason -->
     <system:String x:Key="string_errorSavingProperties">Error saving properties</system:String>
+    <system:String x:Key="string_tooltip_attributesThatModifyTheGameEngine">Attributes that modify the game engine</system:String>
+    <system:String x:Key="string_tooltip_attributesThatModifyGameplay">Attributes that modify gameplay</system:String>
+    <system:String x:Key="string_tooltip_attributesThatModifyYouAndYourParty">Attributes that modify you and your party</system:String>
+    <system:String x:Key="string_makeSureToPressSaveToSaveYourChanges">Make sure to press save to save your changes</system:String>
+    <system:String x:Key="string_tooltip_resetsAllPropertiesThatThisToolCanModifyToDefaultValues">Resets all properties that this tool can modify to default values</system:String>
+    <system:String x:Key="string_resetAll">Reset All</system:String>
+    <system:String x:Key="string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles">Commits your edits to Mass Effect's configuration files</system:String>
+    <system:String x:Key="string_save">Save</system:String>
 
 </ResourceDictionary>

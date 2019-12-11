@@ -59,7 +59,7 @@ namespace LocalizationHelper
                         item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
-                    if (content != null && !content.StartsWith("{"))
+                    if (content != null && !content.StartsWith("{") && content != "+")
                     {
                         localizations[content] = $"string_{toCamelCase(content)}";
                         item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
@@ -467,6 +467,120 @@ namespace LocalizationHelper
                     foreach (var str in s)
                     {
                         Debug.WriteLine(str);
+                    }
+                }
+            }
+        }
+
+        private void CheckXamls_Clicked(object sender, RoutedEventArgs e)
+        {
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
+
+            string[] dirs =
+            {
+                Path.Combine(M3folder, "modmanager", "usercontrols"),
+                Path.Combine(M3folder, "modmanager", "windows")
+            };
+
+            int i = 0;
+            foreach (var dir in dirs)
+            {
+                var xamlFiles = Directory.GetFiles(dir, "*.xaml", SearchOption.AllDirectories).ToList();
+                if (i == 0)
+                {
+                    xamlFiles.Add(Path.Combine(M3folder, "MainWindow.xaml"));
+                }
+
+                i++;
+                foreach (var xamlFile in xamlFiles)
+                {
+                    Debug.WriteLine($" --------- FILE: {Path.GetFileName(xamlFile)} --------");
+                    if (Path.GetFileName(xamlFile) == "AboutPanel.xaml") continue; //skip this file as it has a lot of non-localizable strings
+                    try
+                    {
+                        XDocument doc = XDocument.Parse(File.ReadAllText(xamlFile));
+                        var xamlItems = doc.Descendants().ToList();
+                        Dictionary<string, string> localizations = new Dictionary<string, string>();
+
+                        foreach (var item in xamlItems)
+                        {
+                            string header = (string)item.Attribute("Header");
+                            string tooltip = (string)item.Attribute("ToolTip");
+                            string content = (string)item.Attribute("Content");
+                            string text = (string)item.Attribute("Text");
+
+                            if (header != null && !header.StartsWith("{") 
+                                               && header != "+"
+                                && header != "Deutsch"
+                                && header != "English"
+                                && header != "French"
+                                && header != "Polski"
+                                && header != "Russian"
+                                               && header != "Reload selected mod" //debug only
+                                               && header != "русский"
+                                && header != "ME1"
+                                && header != "ME2"
+                                               && header != "ME3"
+                                               )
+                            {
+                                localizations[header] = $"string_{toCamelCase(header)}";
+                                item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
+                            }
+
+                            if (tooltip != null && !tooltip.StartsWith("{"))
+                            {
+                                localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
+                                item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
+                            }
+
+                            if (content != null && !content.StartsWith("{")
+                                                && !content.StartsWith("/images")
+                                                && content != "+"
+                                                && content != "Deutsch"
+                                                && content != "English"
+                                                && content != "French"
+                                                && content != "Polski"
+                                                && content != "Russian"
+                                                && content != "ME1"
+                                                && content != "ME2"
+                                                && content != "ME3")
+                            {
+                                localizations[content] = $"string_{toCamelCase(content)}";
+                                item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
+                            }
+
+                            if (text != null && !text.StartsWith("{")
+                                             && text != "Deutsch"
+                                && text != "English"
+                                && text != "French"
+                                && text != "Polski"
+                                && text != "Russian"
+                                             && text != "+"
+                                             && text != "!"
+                                             && text != "DLC_MOD_"
+                                             && text != "ME1"
+                                && text != "ME2"
+                                && text != "ME3"
+                                             && text != "BioGame"
+                                             && text != "BioParty"
+                                             && text != "BioEngine")
+                            {
+                                localizations[text] = $"string_{toCamelCase(text)}";
+                                item.Attribute("Text").Value = $"{{DynamicResource {localizations[text]}}}";
+                            }
+                        }
+
+                        //ResultTextBox.Text = doc.ToString();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var v in localizations)
+                        {
+                            Debug.WriteLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:String>");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("EXCEPTION!");
                     }
                 }
             }

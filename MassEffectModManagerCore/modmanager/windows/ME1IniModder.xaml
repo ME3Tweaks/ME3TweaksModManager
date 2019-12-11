@@ -28,7 +28,7 @@
             <TabItem  VerticalAlignment="Stretch">
                 <TabItem.Header>
                     <TextBlock Text="BioEngine" 
-                     ToolTip="Attributes that modify the game engine"/>
+                     ToolTip="{DynamicResource string_tooltip_attributesThatModifyTheGameEngine}"/>
                 </TabItem.Header>
                 <ScrollViewer>
 
@@ -47,7 +47,7 @@
             </TabItem>
             <TabItem VerticalAlignment="Stretch">
                 <TabItem.Header>
-                    <TextBlock Text="BioGame" ToolTip="Attributes that modify gameplay"/>
+                    <TextBlock Text="BioGame" ToolTip="{DynamicResource string_tooltip_attributesThatModifyGameplay}"/>
                 </TabItem.Header>
                 <ScrollViewer>
                 <ItemsControl ItemsSource="{Binding BioGameEntries}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -70,7 +70,7 @@
             <TabItem VerticalAlignment="Stretch">
                 <TabItem.Header>
                     <TextBlock Text="BioParty" 
-                     ToolTip="Attributes that modify you and your party"/>
+                     ToolTip="{DynamicResource string_tooltip_attributesThatModifyYouAndYourParty}"/>
                 </TabItem.Header>
                 <ScrollViewer>
                 <ItemsControl ItemsSource="{Binding BioPartyEntries}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -90,9 +90,9 @@
         </TabControl>
         <DockPanel Grid.Row="1" HorizontalAlignment="Stretch" Margin="3">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right" VerticalAlignment="Center">
-                <TextBlock Name="TextBlock_Status" Text="Make sure to press save to save your changes" VerticalAlignment="Center"/>
-                <Button Content="Reset All" Click="Reset_Click" Padding="10,4" Margin="10,0,0,0" ToolTip="Resets all properties that this tool can modify to default values"/>
-                <Button Content="Save" Click="Save_Click" Padding="10,4" Margin="10,0,5,0" ToolTip="Commits your edits to Mass Effect's configuration files"/>
+                <TextBlock Name="TextBlock_Status" Text="{DynamicResource string_makeSureToPressSaveToSaveYourChanges}" VerticalAlignment="Center"/>
+                <Button Content="{DynamicResource string_resetAll}" Click="Reset_Click" Padding="10,4" Margin="10,0,0,0" ToolTip="{DynamicResource string_tooltip_resetsAllPropertiesThatThisToolCanModifyToDefaultValues}"/>
+                <Button Content="{DynamicResource string_save}" Click="Save_Click" Padding="10,4" Margin="10,0,5,0" ToolTip="{DynamicResource string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles}"/>
             </StackPanel>
         </DockPanel>
     </Grid>
