@@ -721,7 +721,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_modNameCanOnlyContain = "string_modNameCanOnlyContain";
 		public static readonly string string_modNameWillNotResolveToAUsableFilesystemPath = "string_modNameWillNotResolveToAUsableFilesystemPath";
 		public static readonly string string_modNameCannotContainDoubleDots = "string_modNameCannotContainDoubleDots";
-		public static readonly string string_mountPriorityRange = "string_mountPriorityRange";
 		public static readonly string string_internalTLKIDMustBeGreaterThan0 = "string_internalTLKIDMustBeGreaterThan0";
 		public static readonly string string_modDeveloperNameIsRequired = "string_modDeveloperNameIsRequired";
 		public static readonly string string_modDescriptionIsRequired = "string_modDescriptionIsRequired";
