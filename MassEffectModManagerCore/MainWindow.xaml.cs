@@ -73,7 +73,7 @@ namespace MassEffectModManagerCore
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
         public string ME3ASILoaderText { get; set; }
-        public string EndorseM3String { get; set; } = "Endorse ME3Tweaks Mod Manager on NexusMods";
+        public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
 
         private int lastHintIndex = -1;
         private int oldFailedBindableCount = 0;
@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore
                 if (LoadedTips.Count > 0)
                 {
                     var randomTip = LoadedTips.RandomElement();
-                    retvar += $"\n\n---------------------------------------------\n{randomTip}"; //this does not need localized. Ignore resharper warning.
+                    retvar += $"\n\n---------------------------------------------\n{randomTip}"; //do not localize
                 }
 
                 return retvar;
@@ -141,9 +141,9 @@ namespace MassEffectModManagerCore
             }
 
             backgroundTaskEngine = new BackgroundTaskEngine((updateText) =>
-                {
-                    Application.Current.Dispatcher.Invoke(() => { CurrentOperationText = updateText; });
-                },
+            {
+                Application.Current.Dispatcher.Invoke(() => { CurrentOperationText = updateText; });
+            },
                 () =>
                 {
                     Application.Current.Dispatcher.Invoke(delegate
@@ -178,7 +178,7 @@ namespace MassEffectModManagerCore
                 NexusUsername = null;
                 NexusUserID = 0;
                 ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = false;
-                EndorseM3String = "Endorse ME3Tweaks Mod Manager on NexusMods";
+                EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
         }
 
@@ -191,18 +191,22 @@ namespace MassEffectModManagerCore
                 NexusUserID = userInfo.UserID;
 
                 //ME1
-                var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile("masseffect", 149, NexusUserID);
+                var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149, NexusUserID);
                 ME1NexusEndorsed = me1Status ?? true;
 
                 //ME2
-                var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile("masseffect2", 248, NexusUserID);
+                var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248, NexusUserID);
                 ME2NexusEndorsed = me2Status ?? false;
 
                 //ME3
-                var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile("masseffect3", 373, NexusUserID);
+                var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect3", 373, NexusUserID);
                 ME3NexusEndorsed = me3Status ?? false;
 
-                EndorseM3String = (ME1NexusEndorsed && ME2NexusEndorsed && ME3NexusEndorsed ) ? "Endorsed ME3Tweaks Mod Manager on NexusMods :)" : "Endorse ME3Tweaks Mod Manager on NexusMods";
+                EndorseM3String = (ME1NexusEndorsed && ME2NexusEndorsed && ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+            }
+            else
+            {
+                EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
         }
 
@@ -210,7 +214,7 @@ namespace MassEffectModManagerCore
         {
             FailedMods.PublicPropertyChanged += (a, b) =>
             {
-                if (b.PropertyName == "BindableCount")
+                if (b.PropertyName == @"BindableCount")
                 {
                     bool isopening = FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
                     bool isclosing = FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
@@ -298,17 +302,17 @@ namespace MassEffectModManagerCore
             if (!ME1NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME1)");
-                NexusModsUtilities.EndorseFile("masseffect", true, 149, NexusUserID, (newStatus) => ME1NexusEndorsed = newStatus);
+                NexusModsUtilities.EndorseFile(@"masseffect", true, 149, NexusUserID, (newStatus) => ME1NexusEndorsed = newStatus);
             }
             if (!ME2NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME2)");
-                NexusModsUtilities.EndorseFile("masseffect2", true, 248, NexusUserID, (newStatus) => ME2NexusEndorsed = newStatus);
+                NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, NexusUserID, (newStatus) => ME2NexusEndorsed = newStatus);
             }
             if (!ME3NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME3)");
-                NexusModsUtilities.EndorseFile("masseffect3", true, 373, NexusUserID, (newStatus) => ME3NexusEndorsed = newStatus);
+                NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, NexusUserID, (newStatus) => ME3NexusEndorsed = newStatus);
             }
         }
 
@@ -499,7 +503,7 @@ namespace MassEffectModManagerCore
             OpenFileDialog m = new OpenFileDialog
             {
                 Title = M3L.GetString(M3L.string_selectModArchive),
-                Filter = "Supported files" + @"|*.zip;*.rar;*.7z;*.exe"
+                Filter = M3L.GetString(M3L.string_supportedFiles) + @"|*.zip;*.rar;*.7z;*.exe"
             };
             var result = m.ShowDialog(this);
             if (result.Value)
@@ -700,7 +704,7 @@ namespace MassEffectModManagerCore
                                 var resy = section.Entries.FirstOrDefault(x => x.Key == @"StartupResolutionY");
                                 if (resx != null && resy != null)
                                 {
-                                    resolution = $"{resx.Value}x{resy.Value}";
+                                    resolution = $@"{resx.Value}x{resy.Value}";
                                 }
                             }
                         }
@@ -1538,7 +1542,7 @@ namespace MassEffectModManagerCore
 
         private void OpenME3Tweaks_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage("https://me3tweaks.com/");
+            Utilities.OpenWebpage(@"https://me3tweaks.com/");
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -1660,14 +1664,14 @@ namespace MassEffectModManagerCore
 #if !DEBUG
                             else if (latestServerBuildNumer == App.BuildNumber)
                             {
-                                if (manifest.TryGetValue("build_md5", out var md5) && md5 != null)
+                                if (manifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
                                 {
                                     var localmd5 = Utilities.CalculateMD5(App.ExecutableLocation);
                                     if (localmd5 != md5)
                                     {
                                         //Update is available.
                                         {
-                                            Log.Information("MD5 of local exe doesn't match server version, minor update detected.");
+                                            Log.Information(@"MD5 of local exe doesn't match server version, minor update detected.");
                                             Application.Current.Dispatcher.Invoke(delegate
                                             {
                                                 var updateAvailableDialog = new ProgramUpdateNotification();
@@ -1967,23 +1971,23 @@ namespace MassEffectModManagerCore
                 string ext = Path.GetExtension(files[0]).ToLower();
                 switch (ext)
                 {
-                    case ".rar":
-                    case ".7z":
-                    case ".zip":
-                    case ".exe":
+                    case @".rar":
+                    case @".7z":
+                    case @".zip":
+                    case @".exe":
                         Analytics.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> {
                             { @"Method", @"Drag & drop" },
                             { @"Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;
                     //TPF, .mod, .mem
-                    case ".tpf":
-                    case ".mod":
-                    case ".mem":
+                    case @".tpf":
+                    case @".mod":
+                    case @".mem":
                         Analytics.TrackEvent(@"User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_installingTextureMod, ext), M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
-                    case ".me2mod":
+                    case @".me2mod":
                         Analytics.TrackEvent(@"User opened me2mod file", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;

@@ -199,7 +199,7 @@ namespace MassEffectModManagerCore.modmanager
                 bool altApplied = false;
                 foreach (var altFile in job.AlternateFiles.Where(x=>x.IsSelected))
                 {
-                    Debug.WriteLine("Checking alt conditions for application: " + altFile.FriendlyName);
+                    Debug.WriteLine(@"Checking alt conditions for application: " + altFile.FriendlyName);
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOTHING) continue; //skip nothing
                     //todo: Support wildcards if OP_NOINSTALL
                     if (altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
@@ -232,7 +232,7 @@ namespace MassEffectModManagerCore.modmanager
 
 
                 installationMapping[destFile] = sourceFile;
-                CLog.Information($@"Adding {job.Header} file to installation {(isSFAR ? @"SFAR" : @"unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation);
+                CLog.Information($@"Adding {job.Header} file to installation {(isSFAR ? @"SFAR" : @"unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation); //do not localize
 
             }
         }

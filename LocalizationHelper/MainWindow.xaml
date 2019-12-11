@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
@@ -29,5 +30,6 @@
         <Button Grid.Row="2" Grid.Column="3" Content="Update target xaml file strs" Click="PushXamlStrings_Clicked"/>
 
         <Button Grid.Row="2" Grid.Column="4" Content="Synchronize localizations" Click="Synchronize_Clicked"/>
+        <Button Grid.Row="0" Grid.Column="5" Content="Check localizations" Click="Check_Clicked"/>
     </Grid>
 </Window>

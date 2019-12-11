@@ -61,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error("Error getting endorsement status: " + e.Message);
+                Log.Error(@"Error getting endorsement status: " + e.Message);
                 return false; //null would mean own mod. so just say its not endorsed atm.
             }
         }

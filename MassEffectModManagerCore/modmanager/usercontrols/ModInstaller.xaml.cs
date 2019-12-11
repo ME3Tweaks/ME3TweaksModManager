@@ -19,7 +19,6 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
-using Microsoft.VisualBasic;
 using Serilog;
 using SevenZip;
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -38,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem("Mod Installer", new WeakReference(this));
+            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
             Log.Information($@"Starting mod installer for mod: {modBeingInstalled.ModName} for game {modBeingInstalled.Game}");
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
@@ -280,7 +279,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (readOnlyTargets.Contains(originalMapping.Key))
                     {
-                        CLog.Information("Adding resolved read only target: " + originalMapping.Key + " -> " + fullPathMappingDisk[sourceFile], Settings.LogModInstallation);
+                        CLog.Information(@"Adding resolved read only target: " + originalMapping.Key + @" -> " + fullPathMappingDisk[sourceFile], Settings.LogModInstallation);
                         mappedReadOnlyTargets.Add(fullPathMappingDisk[sourceFile]);
                     }
                     //}
@@ -339,8 +338,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Error($@"Insufficient disk space to install mod. Required: {ByteSize.FromBytes(requiredSpaceToInstall)}, available on {driveletter}: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    string message = $"There is not enough space on {driveletter} to install {ModBeingInstalled.ModName}.\nRequired space: {ByteSize.FromBytes(requiredSpaceToInstall)}\nAvailable space: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}";
-                    Xceed.Wpf.Toolkit.MessageBox.Show(window, message, "Insufficient disk space", MessageBoxButton.OK, MessageBoxImage.Error);
+                    string message = M3L.GetString(M3L.string_interp_dialogNotEnoughSpaceToInstall, driveletter, ModBeingInstalled.ModName, ByteSize.FromBytes(requiredSpaceToInstall).ToString(), ByteSize.FromBytes(freeSpaceOnTargetDisk).ToString());
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, message, M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                 });
                 e.Result = ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
                 return;
@@ -422,7 +421,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Mark items read only
             foreach (var readonlytarget in mappedReadOnlyTargets)
             {
-                CLog.Information("Setting file to read-only: " + readonlytarget, Settings.LogModInstallation);
+                CLog.Information(@"Setting file to read-only: " + readonlytarget, Settings.LogModInstallation);
                 File.SetAttributes(readonlytarget, File.GetAttributes(readonlytarget) | FileAttributes.ReadOnly);
             }
 
@@ -446,7 +445,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
                 //Todo: Convert to ASI Manager installer
-                Utilities.InstallASIByGroupID(gameTarget, "@DLC Mod Enabler", 16); //16 = DLC Mod Enabler
+                Utilities.InstallASIByGroupID(gameTarget, @"DLC Mod Enabler", 16); //16 = DLC M -od Enabler
 
                 //Utilities.InstallEmbeddedASI(@"ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget); //Todo: Switch to ASI Manager
             }

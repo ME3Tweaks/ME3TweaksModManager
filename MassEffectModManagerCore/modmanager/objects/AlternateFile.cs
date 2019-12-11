@@ -92,7 +92,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (!Enum.TryParse(properties[@"Condition"], out Condition))
             {
-                Log.Error($@"Alternate File specifies unknown/unsupported condition: {properties[@"Condition"]}");
+                Log.Error($@"Alternate File specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_unknownCondition) + properties[@"Condition"];
                 return;

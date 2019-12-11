@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using MassEffectIniModder.classes;
 using MassEffectModManagerCore.modmanager.gameini;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
@@ -34,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         public ME1IniModder()
         {
-            Analytics.TrackEvent("Launched MEIM");
+            Analytics.TrackEvent(@"Launched MEIM");
             DataContext = this;
             InitializeComponent();
 
@@ -111,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         items.AddRange(sec.GetAllProperties());
                     }
 
-                    string inifilepath = Path.Combine(configFileFolder, Path.GetFileNameWithoutExtension(kp.Key) + ".ini");
+                    string inifilepath = Path.Combine(configFileFolder, Path.GetFileNameWithoutExtension(kp.Key) + @".ini");
                     if (File.Exists(inifilepath))
                     {
                         DuplicatingIni configIni = DuplicatingIni.LoadIni(inifilepath);
@@ -122,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     }
                     else
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Mass Effect Config file {Path.GetFileNameWithoutExtension(kp.Key)}.ini is missing. It should be located at {inifilepath}. Please run the game at least once to generate the default files.");
+                        Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_missingConfigFileForMEIM, Path.GetFileNameWithoutExtension(kp.Key), inifilepath));
                         Environment.Exit(1);
                     }
 
@@ -136,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             else
             {
                 doNotOpen = true;
-                Xceed.Wpf.Toolkit.MessageBox.Show(null, $"Mass Effect Config directory is missing. It should be located at {configFileFolder}. Please run the game at least once to generate the default files.", "Cannot run Mass Effect Ini Modder", MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_interp_dialogConfigDirectoryMissing, configFileFolder), M3L.GetString(M3L.string_cannotRunMassEffectIniModder), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -177,7 +178,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 string configFileBeingUpdated = Path.Combine(configFileFolder, kp.Key);
                 if (File.Exists(configFileBeingUpdated))
                 {
-                    Log.Information("MEIM: Saving ini file: " + configFileBeingUpdated);
+                    Log.Information(@"MEIM: Saving ini file: " + configFileBeingUpdated);
 
                     //unset readonly
                     File.SetAttributes(configFileBeingUpdated, File.GetAttributes(configFileBeingUpdated) & ~FileAttributes.ReadOnly);
@@ -201,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         else
                         {
                             Log.Error($@"Could not save property {prop.FriendlyPropertyName} because {validation}");
-                            Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Property not saved: {prop.FriendlyPropertyName}\n\nReason: {validation}", "Error saving properties", MessageBoxButton.OK, MessageBoxImage.Error);
+                            Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_propertyNotSaved, prop.FriendlyPropertyName, validation), M3L.GetString(M3L.string_errorSavingProperties), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                     Analytics.TrackEvent(@"Saved game config in MEIM");

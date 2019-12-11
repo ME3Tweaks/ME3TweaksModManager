@@ -202,6 +202,9 @@
     <system:String x:Key="string_tooltip_targetInfo">View and manage installed mods and files for this target</system:String>
     <system:String x:Key="string_targetInfo">Target info</system:String>
     <system:String x:Key="string_modDescription">Mod Description</system:String>
+    <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Endorse ME3Tweaks Mod Manager on NexusMods</system:String>
+    <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Endorsed ME3Tweaks Mod Manager on NexusMods :)</system:String>
+    <system:String x:Key="string_supportedFiles">Supported files</system:String>
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
@@ -246,6 +249,9 @@
     <system:String x:Key="string_installMod">Install mod</system:String>
     <system:String x:Key="string_abortInstallingMod">Abort installing this mod</system:String>
     <system:String x:Key="string_dialogInvalidRCWFile">The .me2mod file that this mod uses is not valid or cannot be safely applied to your game installation. Installation has been aborted. Check the Mod Manager logs from the Help menu for more information.</system:String>
+    <system:String x:Key="string_modInstaller">Mod Installer</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughSpaceToInstall">There is not enough space on {0} to install {1}.\nRequired space: {2}\nAvailable space: {3}</system:String>
+    <!-- 0=driveletter 1=ModBeingInstalled.ModName 2,3=number of bytes (in MB/KB/GB etc)  -->
 
     <!-- Startup preview panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -490,6 +496,11 @@
     <system:String x:Key="string_exeModsMustBeImportedBeforeInstall">Exe mods must be imported before install</system:String>
     <system:String x:Key="string_interp_installX">Install {0}</system:String>
     <!-- 0 = noun (mod name, etc) -->
+    <system:String x:Key="string_insufficientDiskSpaceToExtractSelectedMods">Insufficient disk space to extract selected mods</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract">There is not enough space on the disk to import the selected mods into your mod library.\nRequired space: {0}\nAvailable space: {1}</system:String>
+    <!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
+    <system:String x:Key="string_insufficientDiskSpace">Insufficient disk space</system:String>
+
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -844,5 +855,18 @@
     <system:String x:Key="string_generatingMod">Generating mod</system:String>
     <system:String x:Key="string_interp_valueMustBeBetween0AndX">Value must be between 0 and {0}</system:String> <!-- 0 = number -->
 
+    <!-- List Dialog -->
+    <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
+    <system:String x:Key="string_errorCopyingDataToClipboard">Error copying data to clipboard</system:String>
+
+    <!-- Mass Effect Ini Modder (UI) -->
+    <system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config file {0}.ini is missing. It should be located at {1}. Please run the game at least once to generate the default files.</system:String>
+    <!-- 0=filename 1=inifilepath -->
+    <system:String x:Key="string_interp_dialogConfigDirectoryMissing">Mass Effect Config directory is missing. It should be located at {0}. Please run the game at least once to generate the default files.</system:String>
+    <!-- 0=configFileFolder -->
+    <system:String x:Key="string_cannotRunMassEffectIniModder">Cannot run Mass Effect Ini Modder</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_propertyNotSaved">Property not saved: {0}\n\nReason: {1}</system:String>
+    <!-- 0= config property key 1=error reason -->
+    <system:String x:Key="string_errorSavingProperties">Error saving properties</system:String>
 
 </ResourceDictionary>

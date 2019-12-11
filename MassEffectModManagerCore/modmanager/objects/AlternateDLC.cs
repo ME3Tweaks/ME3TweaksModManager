@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (!Enum.TryParse(properties[@"Condition"], out Condition))
             {
-                Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}");
+                Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_validation_altdlc_unknownCondition) + properties[@"Condition"];
                 return;
@@ -89,7 +89,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (!Enum.TryParse(properties[@"ModOperation"], out Operation))
             {
-                Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}");
+                Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}"); //do not localize
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_validation_altdlc_unknownOperation) + properties[@"ModOperation"];
                 return;

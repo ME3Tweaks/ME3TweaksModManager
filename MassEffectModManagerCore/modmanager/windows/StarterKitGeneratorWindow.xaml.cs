@@ -251,7 +251,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 //Debug.WriteLine("MDFN " + ModDLCFolderName);
                 if (string.IsNullOrWhiteSpace(ModDLCFolderName))
                     return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCannotBeEmpty));
-                Regex reg = new Regex("[A-Za-z0-9_]+$");
+                Regex reg = new Regex("[A-Za-z0-9_]+$"); //do not localize
                 if (!reg.IsMatch(ModDLCFolderName))
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCanOnlyConsistOf));

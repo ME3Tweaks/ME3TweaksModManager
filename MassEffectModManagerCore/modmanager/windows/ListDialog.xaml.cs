@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void CopyItemsToClipBoard_Click(object sender, RoutedEventArgs e)
         {
-            string toClipboard = string.Join(Environment.NewLine, items); 
+            string toClipboard = string.Join(Environment.NewLine, items);
             try
             {
                 Clipboard.SetText(toClipboard);
@@ -46,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             catch (Exception ex)
             {
                 //yes, this actually happens sometimes...
-                M3L.ShowDialog(this, "Could not set data to clipboard:\n" + ex.Message, "Error copying data to clipboard", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCouldNotSetDataToClipboard) + ex.Message, M3L.GetString(M3L.string_errorCopyingDataToClipboard), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

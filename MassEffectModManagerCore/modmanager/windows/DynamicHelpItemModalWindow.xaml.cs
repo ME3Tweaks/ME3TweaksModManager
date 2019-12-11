@@ -25,16 +25,16 @@ namespace MassEffectModManagerCore.modmanager.windows
             ModalText = shi.ModalText;
             switch (shi.ModalIcon)
             {
-                case "WARNING":
+                case @"WARNING":
                     ModalIcon = FontAwesomeIcon.ExclamationTriangle;
                     ModalColor = Brushes.DarkOrange;
                     break;
                 default:
-                case "INFO":
+                case @"INFO":
                     ModalIcon = FontAwesomeIcon.InfoCircle;
                     ModalColor = Brushes.RoyalBlue;
                     break;
-                case "ERROR":
+                case @"ERROR":
                     ModalIcon = FontAwesomeIcon.Times;
                     ModalColor = Brushes.Red;
                     break;

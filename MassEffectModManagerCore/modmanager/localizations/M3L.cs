@@ -263,6 +263,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_targetInfo = "string_tooltip_targetInfo";
 		public static readonly string string_targetInfo = "string_targetInfo";
 		public static readonly string string_modDescription = "string_modDescription";
+		public static readonly string string_endorseME3TweaksModManagerOnNexusMods = "string_endorseME3TweaksModManagerOnNexusMods";
+		public static readonly string string_endorsedME3TweaksModManagerOnNexusMods = "string_endorsedME3TweaksModManagerOnNexusMods";
+		public static readonly string string_supportedFiles = "string_supportedFiles";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
@@ -297,6 +300,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_installMod = "string_installMod";
 		public static readonly string string_abortInstallingMod = "string_abortInstallingMod";
 		public static readonly string string_dialogInvalidRCWFile = "string_dialogInvalidRCWFile";
+		public static readonly string string_modInstaller = "string_modInstaller";
+		public static readonly string string_interp_dialogNotEnoughSpaceToInstall = "string_interp_dialogNotEnoughSpaceToInstall";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -486,6 +491,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_errorOccuredDeletingExistingModX = "string_interp_errorOccuredDeletingExistingModX";
 		public static readonly string string_exeModsMustBeImportedBeforeInstall = "string_exeModsMustBeImportedBeforeInstall";
 		public static readonly string string_interp_installX = "string_interp_installX";
+		public static readonly string string_insufficientDiskSpaceToExtractSelectedMods = "string_insufficientDiskSpaceToExtractSelectedMods";
+		public static readonly string string_interp_dialogNotEnoughFreeSpaceToExtract = "string_interp_dialogNotEnoughFreeSpaceToExtract";
+		public static readonly string string_insufficientDiskSpace = "string_insufficientDiskSpace";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";
@@ -740,5 +748,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_errorOccuredWhileDeletingExistingModDirectory = "string_interp_errorOccuredWhileDeletingExistingModDirectory";
 		public static readonly string string_generatingMod = "string_generatingMod";
 		public static readonly string string_interp_valueMustBeBetween0AndX = "string_interp_valueMustBeBetween0AndX";
+		public static readonly string string_dialogCouldNotSetDataToClipboard = "string_dialogCouldNotSetDataToClipboard";
+		public static readonly string string_errorCopyingDataToClipboard = "string_errorCopyingDataToClipboard";
+		public static readonly string string_dialog_missingConfigFileForMEIM = "string_dialog_missingConfigFileForMEIM";
+		public static readonly string string_interp_dialogConfigDirectoryMissing = "string_interp_dialogConfigDirectoryMissing";
+		public static readonly string string_cannotRunMassEffectIniModder = "string_cannotRunMassEffectIniModder";
+		public static readonly string string_interp_propertyNotSaved = "string_interp_propertyNotSaved";
+		public static readonly string string_errorSavingProperties = "string_errorSavingProperties";
 	}
 }

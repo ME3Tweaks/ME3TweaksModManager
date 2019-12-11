@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser.Model;
-
 using MassEffectModManagerCore.modmanager.helpers;
 using SevenZip;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -536,9 +535,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressValue = 0;
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
-                            ActionText = "Insufficient disk space to extract selected mods"; //localize me
+                            ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
                             Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freeSpace);
-                            Xceed.Wpf.Toolkit.MessageBox.Show(window, $"There is not enough space on the disk to import the selected mods into your mod library.\nRequired space: {ByteSize.FromBytes(requiredSpace)}\nAvailable space: {ByteSize.FromBytes(freeSpace)}", "Insufficient disk space", MessageBoxButton.OK, MessageBoxImage.Error);
+                            Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, ByteSize.FromBytes(requiredSpace).ToString(), ByteSize.FromBytes(freeSpace).ToString()), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
                         }
                 }
@@ -682,8 +681,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CopyFiles.ReplaceAll(doc.Root.Elements(@"copyfile")
                     .Select(d => new CopyFile()
                     {
-                        inputfile = (string) d.Attribute(@"source"),
-                        outputfile = (string) d.Attribute(@"destination"),
+                        inputfile = (string)d.Attribute(@"source"),
+                        outputfile = (string)d.Attribute(@"destination"),
                     }).ToList());
 
                 var postTransform = doc.Root.Elements(@"posttransformmoddesc");

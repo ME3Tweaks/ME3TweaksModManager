@@ -128,7 +128,6 @@
                         <MenuItem Header="{DynamicResource string_MixInLibrary}" />
                         <MenuItem Header="{DynamicResource string_ClearMixinCache}" />
                     </MenuItem>
-                    <Separator/>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
@@ -200,7 +199,6 @@
                     <MenuItem Header="{DynamicResource string_Grantwriteaccesstogamedirectories}" Command="{Binding GrantWriteAccessCommand}" ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}" />
                     <MenuItem Header="{DynamicResource string_RunAutoTOC}" Command="{Binding AutoTOCCommand}" ToolTip="{DynamicResource string_RunsAutoTOCToolTip}" />
                     <MenuItem Header="{DynamicResource string_EnableconsoleinME1}" Command="{Binding EnableME1ConsoleCommand}" ToolTip="{DynamicResource string_EnableME1ConsoleTooltip}" />
-                    <Separator />
                     <MenuItem Header="{DynamicResource string_Additionalmoddingtools}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_ALOTInstaller}" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_ALOTInstallerTooltip}">
                         <MenuItem.Icon>
@@ -234,10 +232,8 @@
                 </MenuItem>
                 <MenuItem Name="HelpMenuItem" Header="{DynamicResource string_Help}" Padding="4">
                     <MenuItem Name="DynamicHelp_MenuItem" Header="{DynamicResource string_DynamicHelp}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <Separator />
                     <MenuItem Header="{DynamicResource string_Diagnostics}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_ModManagerLogsDiagnostics}" Click="UploadLog_Click" ToolTip="{DynamicResource string_TroubleshootingtoolsforME3Tweaks}" />
-                    <Separator />
                     <MenuItem Header="{DynamicResource string_About}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{Binding EndorseM3String}" Command="{Binding EndorseM3OnNexusCommand}"/>
 

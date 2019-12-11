@@ -292,7 +292,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         { @"Game", Game.ToString() },
                                         { @"Result", @"Failure, Could not delete existing game directory" }
                                     });
-                                M3L.ShowDialog(window, "Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted. View the logs from the help menu for more information.", M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogcouldNotFullyDeleteGameDirectory), M3L.GetString(M3L.string_errorRestoringGame), MessageBoxButton.OK, MessageBoxImage.Error);
                                 break;
                             case RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY:
                                 Analytics.TrackEvent(@"Restored game", new Dictionary<string, string>() {

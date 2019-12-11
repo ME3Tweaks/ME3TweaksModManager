@@ -165,19 +165,21 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\windows\StarterKitGeneratorWindow.xaml.cs");
+            var file = Path.Combine(M3folder, @"MainWindow.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
             var filelines = File.ReadAllLines(file);
             HashSet<string> s = new HashSet<string>();
-
+            HashSet<string> origStrForSubsOnly = new HashSet<string>();
             foreach (var line in filelines)
             {
+                if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
                 var commentIndex = line.IndexOf("//");
                 var matches = r.Matches(line);
                 foreach (var match in matches)
                 {
+                    bool xmlPreserve = false;
                     var matchIndex = line.IndexOf(match.ToString());
                     if (commentIndex >= 0 && matchIndex > commentIndex) continue; //this is a comment
                     var str = match.ToString();
@@ -187,13 +189,65 @@ namespace LocalizationHelper
                     var newStr = match.ToString().TrimStart('$').Trim('"');
                     if (newStr.Length > 1)
                     {
+                        if (newStr.Contains("\\n")) xmlPreserve = true;
+
                         strname += toCamelCase(newStr);
-                        s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+
+                        //Substitutions
+                        int pos = 0;
+                        int openbracepos = -1;
+                        List<string> substitutions = new List<string>();
+                        while (pos < newStr.Length)
+                        {
+                            if (openbracepos == -1)
+                            {
+                                if (newStr[pos] == '{')
+                                {
+                                    openbracepos = pos;
+                                    continue;
+                                }
+                            }
+                            else if (newStr[pos] == '}')
+                            {
+                                //closing!
+                                substitutions.Add(newStr.Substring(openbracepos + 1, pos - (openbracepos + 1)));
+                                openbracepos = -1;
+                            }
+
+                            //Debug.Write(newStr[pos]);
+                            //Debug.Flush();
+                            pos++;
+                        }
+
+                        int num = 0;
+                        string comment = "";
+                        string subbedStr = newStr;
+                        foreach (var substitution in substitutions)
+                        {
+                            subbedStr = subbedStr.Replace(substitution, num.ToString()); //already in { }
+                            comment += " " + num + "=" + substitution;
+                            num++;
+                        }
+
+                        string commentStr = "";
+                        if (comment.Length > 0) commentStr = "<!--" + comment + " -->";
+
+                        s.Add($"    <system:String{(xmlPreserve ? " xml:space=\"preserve\"" : "")} x:Key=\"{strname}\">{subbedStr}</system:String> " + commentStr);
+                        if (substitutions.Count > 0)
+                        {
+                            origStrForSubsOnly.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+                        }
                     }
                 }
             }
 
             foreach (var str in s)
+            {
+                Debug.WriteLine(str);
+            }
+
+            Debug.WriteLine("<!-- Subs only -->");
+            foreach (var str in origStrForSubsOnly)
             {
                 Debug.WriteLine(str);
             }
@@ -212,6 +266,10 @@ namespace LocalizationHelper
                 cleanedWord = cleanedWord.Replace("(", "");
                 cleanedWord = cleanedWord.Replace(")", "");
                 cleanedWord = cleanedWord.Replace(":", "");
+                cleanedWord = cleanedWord.Replace("/", "");
+                cleanedWord = cleanedWord.Replace("\\", "");
+                cleanedWord = cleanedWord.Replace("{", "");
+                cleanedWord = cleanedWord.Replace("}", "");
                 if (first)
                 {
                     res += caseFirst(cleanedWord, false);
@@ -252,7 +310,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\windows\StarterKitGeneratorWindow.xaml.cs");
+            var file = Path.Combine(M3folder, @"MainWindow.xaml.cs");
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
@@ -273,12 +331,13 @@ namespace LocalizationHelper
                     var localizedMatch = lstrings.FirstOrDefault(x => x.Value == strippedStr);
                     if (localizedMatch != null)
                     {
+
                         var m3lcodestr = "M3L.GetString(M3L." + localizedMatch.Attribute(x + "Key").Value;
 
                         int pos = 0;
                         int openbracepos = -1;
                         List<string> substitutions = new List<string>();
-                        while (pos < str.Length - 1)
+                        while (pos < str.Length)
                         {
                             if (openbracepos == -1)
                             {
@@ -291,7 +350,7 @@ namespace LocalizationHelper
                             else if (str[pos] == '}')
                             {
                                 //closing!
-                                substitutions.Add(str.Substring(openbracepos + 1, pos - (openbracepos + +1)));
+                                substitutions.Add(str.Substring(openbracepos + 1, pos - (openbracepos + 1)));
                                 openbracepos = -1;
                             }
                             pos++;
@@ -320,7 +379,7 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"modmanager\windows\StarterKitGeneratorWindow.xaml");
+            var file = Path.Combine(M3folder, @"MainWindow.xaml");
             string[] attributes = { "Header", "ToolTip", "Content", "Text" };
             try
             {
@@ -352,6 +411,65 @@ namespace LocalizationHelper
 
             }
 
+        }
+
+        private void Check_Clicked(object sender, RoutedEventArgs e)
+        {
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
+
+            string[] dirs =
+                {
+                Path.Combine(M3folder, "modmanager", "usercontrols"),
+                Path.Combine(M3folder, "modmanager", "objects"),
+                Path.Combine(M3folder, "modmanager", "windows")
+                };
+
+            int i = 0;
+            foreach (var dir in dirs)
+            {
+                var csFiles = Directory.GetFiles(dir, "*.cs", SearchOption.AllDirectories).ToList();
+                if (i == 0)
+                {
+                    csFiles.Add(Path.Combine(M3folder, "MainWindow.xaml.cs"));
+                }
+                i++;
+                foreach (var csFile in csFiles)
+                {
+                    Debug.WriteLine($" --------- FILE: {Path.GetFileName(csFile)} --------");
+                    var regex = "([$@]*(\".+?\"))";
+                    Regex r = new Regex(regex);
+                    var filelines = File.ReadAllLines(csFile);
+                    HashSet<string> s = new HashSet<string>();
+
+                    foreach (var line in filelines)
+                    {
+                        var commentIndex = line.IndexOf("//");
+                        var matches = r.Matches(line);
+                        if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
+                        foreach (var match in matches)
+                        {
+                            var matchIndex = line.IndexOf(match.ToString());
+                            if (commentIndex >= 0 && matchIndex > commentIndex) continue; //this is a comment
+                            var str = match.ToString();
+                            if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
+                            var strname = "string_";
+                            if (str.StartsWith("$")) strname = "string_interp_";
+                            var newStr = match.ToString().TrimStart('$').Trim('"');
+                            if (newStr.Length > 1)
+                            {
+                                strname += toCamelCase(newStr);
+                                s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+                            }
+                        }
+                    }
+
+                    foreach (var str in s)
+                    {
+                        Debug.WriteLine(str);
+                    }
+                }
+            }
         }
     }
 }
