@@ -2,7 +2,7 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <!-- Main Window -->
-    <system:String x:Key="string_AvailableMods">Available Mods</system:String>
+    <system:String x:Key="string_AvailableMods">Mod Library</system:String>
     <system:String x:Key="string_Language">Language</system:String>
     <system:String x:Key="string_Actions">Actions</system:String>
     <system:String x:Key="string_CreateaME3modonModMaker">Create a ME3 mod on ModMaker</system:String>
@@ -24,7 +24,7 @@
     <system:String x:Key="string_Checkforcontentupdates">Check for content updates</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks me3tweaks.com for updates to various services</system:String>
     <system:String x:Key="string_ReloadsMods">Reloads Mods</system:String>
-    <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Reloads mods from the mod library</system:String>
+    <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Refresh the mod library</system:String>
     <system:String x:Key="string_Exit">Exit</system:String>
     <system:String x:Key="string_ModManagement">Mod Management</system:String>
     <system:String x:Key="string_ImportMod">Import Mod</system:String>
@@ -193,7 +193,6 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Launch the currently selected target.&#10;If this is an Origin copy, the game may reboot to the Origin target</system:String>
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Apply this mod to the game</system:String>
     <system:String x:Key="string_tooltip_currentTarget">Current modding target</system:String>
-    <system:String x:Key="string_tooltip_reloadModsFromLibrary">Reload mods from mod library</system:String>
     <system:String x:Key="string_tooltip_filterME1">Click to toggle showing mods for Mass Effect</system:String>
     <system:String x:Key="string_tooltip_filterME2">Click to toggle showing mods for Mass Effect 2</system:String>
     <system:String x:Key="string_tooltip_filterME3">Click to toggle showing mods for Mass Effect 3</system:String>
