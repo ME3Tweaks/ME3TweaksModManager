@@ -23,8 +23,8 @@
     <system:String x:Key="string_LogModInstallation">Log Mod Installation</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Check for content updates</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks ME3Tweaks.com for updates to various services</system:String>
-    <system:String x:Key="string_ReloadsMods">Reloads Mods</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Refresh the mod library</system:String>
+    <system:String x:Key="string_tooltip_reloadModsfromLibrary">Refreshes the list of available mods in the mod library</system:String>
     <system:String x:Key="string_Exit">Exit</system:String>
     <system:String x:Key="string_ModManagement">Mod Management</system:String>
     <system:String x:Key="string_ImportMod">Import Mod</system:String>

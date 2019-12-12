@@ -109,7 +109,7 @@
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Checkforcontentupdates}" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}" />
-                    <MenuItem Header="{DynamicResource string_ReloadsMods}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_Reloadsmodsfromthemodlibrary}" />
+                    <MenuItem Header="{DynamicResource string_Reloadsmodsfromthemodlibrary}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsfromLibrary}" />
                     <MenuItem Header="{DynamicResource string_Exit}" Click="ExitApplication_Click" />
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModManagement}" Padding="4">
