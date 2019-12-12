@@ -340,7 +340,7 @@ namespace MassEffectModManagerCore
             Log.Fatal(st);
             //Log.Information("Forcing beta mode off before exiting...");
             //Utilities.WriteRegistryKey(Registry.CurrentUser, AlotAddOnGUI.MainWindow.REGISTRY_KEY, AlotAddOnGUI.MainWindow.SETTINGSTR_BETAMODE, 0);
-            File.Create(Utilities.GetAppCrashFile());
+            File.Create(Utilities.GetAppCrashFile()).Close();
         }
 
         /// <summary>

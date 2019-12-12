@@ -101,7 +101,7 @@
             <xctk:WatermarkTextBox Name="ModModuleNumber_TextBox" Grid.Row="8" Grid.Column="2" Watermark="150" Text="{Binding ModDLCModuleNumber, Mode=TwoWay, ValidatesOnDataErrors=True}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}" TextChanged="FieldText_Changed" />
             <xctk:WatermarkTextBox Name="ModMountPriority_TextBox" Grid.Row="9" Grid.Column="2" Watermark="3900" Text="{Binding ModMountPriority, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed" />
             <ComboBox Grid.Row="10" Grid.Column="2" ItemsSource="{Binding DisplayedMountFlags}" DisplayMemberPath="DisplayString" SelectedValuePath="Selected" SelectedItem="{Binding ModMountFlag, Mode=TwoWay}" IsSynchronizedWithCurrentItem="True" />
-            <xctk:WatermarkTextBox Name="ModDescription_TextBox" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription, Mode=TwoWay, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed">
+            <xctk:WatermarkTextBox Name="ModDescription_TextBox" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding ModDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" TextChanged="FieldText_Changed">
                 <xctk:WatermarkTextBox.Watermark>
                     <TextBlock Text="{DynamicResource string_decriptionHintText}" TextWrapping="Wrap" />
                 </xctk:WatermarkTextBox.Watermark>

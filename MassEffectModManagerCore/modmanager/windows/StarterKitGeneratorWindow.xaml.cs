@@ -167,6 +167,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         public StarterKitGeneratorWindow(Mod.MEGame Game) : base()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Starter Kit Window", new WeakReference(this));
+            Log.Information(@"Opening Starter Kit window");
             DataContext = this;
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, M3L.GetString(M3L.string_noSaveFileDependencyOnDLC)));
             ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, M3L.GetString(M3L.string_saveFileDependencyOnDLC)));
@@ -346,9 +347,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 }
             }
 
-            {
-                RunStarterKitGenerator();
-            }
+            RunStarterKitGenerator();
         }
 
         private void RunStarterKitGenerator()
@@ -368,6 +367,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                 ModURL = ModURL,
                 ModModuleNumber = ModDLCModuleNumber
             };
+
+            Log.Information(@"Generating a starter kit mod with the following options:");
+            Log.Information(sko.ToString());
+
             IsBusy = true;
             BusyText = M3L.GetString(M3L.string_generatingMod);
             CreateStarterKitMod(sko, s => { BusyText = s; }, FinishedCallback);
@@ -470,6 +473,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Directory.CreateDirectory(modPath);
 
                 //Creating DLC directories
+                Log.Information(@"Creating starter kit folders");
                 var contentDirectory = Directory.CreateDirectory(Path.Combine(modPath, dlcFolderName)).FullName;
                 var cookedDir = Directory.CreateDirectory(Path.Combine(contentDirectory, skOption.ModGame == Mod.MEGame.ME3 ? @"CookedPCConsole" : @"CookedPC")).FullName;
                 if (skOption.ModGame == Mod.MEGame.ME1)
@@ -482,6 +486,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                     autoload[@"ME1DLCMOUNT"][@"ModName"] = skOption.ModName;
                     autoload[@"ME1DLCMOUNT"][@"ModMount"] = skOption.ModMountPriority.ToString();
+                    Log.Information(@"Saving autoload.ini for ME1 mod");
                     new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, @"AutoLoad.ini"), autoload);
 
                     //TLK
@@ -505,7 +510,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     huff = new HuffmanCompressionME1();
                     huff.LoadInputData(tlk2.StringRefs.ToList());
                     huff.serializeTalkfileToExport(tlkFile.getUExport(2));
-
+                    Log.Information(@"Saving ME1 TLK pacakge");
                     tlkFile.save();
                 }
                 else
@@ -518,6 +523,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     mf.ME2Only_DLCHumanName = skOption.ModName;
                     mf.MountPriority = (ushort)skOption.ModMountPriority;
                     mf.TLKID = skOption.ModInternalTLKID;
+                    Log.Information(@"Saving mount.dlc file for mod");
                     mf.WriteMountFile(Path.Combine(cookedDir, @"Mount.dlc"));
 
                     if (skOption.ModGame == Mod.MEGame.ME3)
@@ -533,6 +539,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         var newMemory = MassEffect3.Coalesce.Converter.CompileFromMemory(files);
                         var outpath = Path.Combine(cookedDir, $@"Default_{dlcFolderName}.bin");
+                        Log.Information(@"Saving new starterkit coalesced file");
                         File.WriteAllBytes(outpath, newMemory.ToArray());
                     }
                     else
@@ -552,7 +559,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         bioEngineIni[@"DLCInfo"][@"Version"] = 0.ToString(); //unknown
                         bioEngineIni[@"DLCInfo"][@"Flags"] = ((int)skOption.ModMountFlag).ToString(); //unknown
                         bioEngineIni[@"DLCInfo"][@"Name"] = skOption.ModInternalTLKID.ToString();
-
+                        Log.Information(@"Saving BioEngine file");
                         new FileIniDataParser().WriteFile(Path.Combine(cookedDir, @"BIOEngine.ini"), bioEngineIni, new UTF8Encoding(false));
                     }
 
@@ -579,7 +586,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                         {
                             str.data += '\0';
                         }
-                        new HuffmanCompressionME2ME3().SaveToTlkFile(Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk"), strs);
+
+                        var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
+                        Log.Information(@"Saving TLK file: "+tlk);
+                        new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strs);
                     }
                 }
 
@@ -619,6 +629,21 @@ namespace MassEffectModManagerCore.modmanager.windows
             public Mod.MEGame ModGame;
 
             public int ModModuleNumber;
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(@"Game: " + ModGame);
+                sb.AppendLine(@"ModName: " + ModName);
+                sb.AppendLine(@"ModDescription: " + ModDescription);
+                sb.AppendLine(@"ModDeveloper: " + ModDLCFolderName);
+                sb.AppendLine(@"ModDLCFolderName: " + ModDLCFolderName);
+                sb.AppendLine(@"ModInternalTLKID: " + ModInternalTLKID);
+                sb.AppendLine(@"ModMountPriority: " + ModMountPriority);
+                sb.AppendLine(@"ModModuleNumber: " + ModModuleNumber);
+                sb.AppendLine(@"ModURL: " + ModURL);
+                sb.AppendLine(@"Mount flag: " + ModMountFlag);
+                return sb.ToString();
+            }
         }
 
         private void MountPriority_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -646,6 +671,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void FieldText_Changed(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
+            //Debug.WriteLine("Textchanged");
             var textField = (TextBox)sender;
             if (textField == ModModuleNumber_TextBox)
                 Validator.Validate(nameof(ModDLCModuleNumber));
