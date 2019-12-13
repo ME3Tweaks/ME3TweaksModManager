@@ -32,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class ASIManagerPanel : MMBusyPanelBase
     {
 
-        public static readonly string CachedASIsFolder = Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs");
+        public static readonly string CachedASIsFolder = Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs")).FullName;
 
         public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, @"manifest.xml");
         public static readonly string StagedManifestLocation = Path.Combine(CachedASIsFolder, @"manifest_staged.xml");
