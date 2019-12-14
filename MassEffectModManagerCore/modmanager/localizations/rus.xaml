@@ -2,7 +2,7 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <!-- Main Window -->
-    <system:String x:Key="string_AvailableMods">Available Mods</system:String>
+    <system:String x:Key="string_AvailableMods">Mod Library</system:String>
     <system:String x:Key="string_Language">Language</system:String>
     <system:String x:Key="string_Actions">Actions</system:String>
     <system:String x:Key="string_CreateaME3modonModMaker">Create a ME3 mod on ModMaker</system:String>
@@ -22,15 +22,15 @@
     <system:String x:Key="string_LogMixinStartup">Log Mixin Startup</system:String>
     <system:String x:Key="string_LogModInstallation">Log Mod Installation</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Check for content updates</system:String>
-    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks me3tweaks.com for updates to various services</system:String>
-    <system:String x:Key="string_ReloadsMods">Reloads Mods</system:String>
-    <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Reloads mods from the mod library</system:String>
+    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks ME3Tweaks.com for updates to various services</system:String>
+    <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Refresh the mod library</system:String>
+    <system:String x:Key="string_tooltip_reloadModsfromLibrary">Refreshes the list of available mods in the mod library</system:String>
     <system:String x:Key="string_Exit">Exit</system:String>
     <system:String x:Key="string_ModManagement">Mod Management</system:String>
     <system:String x:Key="string_ImportMod">Import Mod</system:String>
     <system:String x:Key="string_HeaderDragDropFaster">Use drag and drop for faster import</system:String>
-    <system:String x:Key="string_ImportmodfromArchive">Import mod from .7z/.rar/.zip</system:String>
-    <system:String xml:space="preserve" x:Key="string_ImportModFromArchiveTooltip">Opens a file browser for selecting mods stored in archive files.&#10;You can drag and drop files onto the interface to import them faster.</system:String>
+    <system:String x:Key="string_ImportmodfromArchive">Import mod from .7z/.rar/.zip/.exe/.me2mod</system:String>
+    <system:String xml:space="preserve" x:Key="string_ImportModFromArchiveTooltip">Opens a file browser for selecting mods stored in archive files, executables, and RCW's ME2 Mod Manager .me2mod files.&#10;You can drag and drop files onto the interface to import them faster.</system:String>
     <system:String x:Key="string_ImportalreadyinstalledCustomDLCmod">Import already installed Custom DLC mod</system:String>
     <system:String x:Key="string_DownloadModMakermod">Download ModMaker mod</system:String>
     <system:String x:Key="string_ASIModManager">ASI Mod Manager</system:String>
@@ -46,7 +46,7 @@
     <system:String x:Key="string_ClearMixinCache">Clear Mixin Cache</system:String>
     <system:String x:Key="string_ModUtils">Mod Utils</system:String>
     <system:String x:Key="string_Checkforupdates">Check for updates</system:String>
-    <system:String x:Key="string_RestoremodfromME3Tweaks">Restore mod from me3tweaks.com</system:String>
+    <system:String x:Key="string_RestoremodfromME3Tweaks">Restore mod from ME3Tweaks.com</system:String>
     <system:String x:Key="string_Installcustomkeybindsintothismod">Install custom keybinds into this mod</system:String>
     <system:String x:Key="string_Developeroptions">Developer options</system:String>
     <system:String x:Key="string_Metadataeditor">Metadata editor</system:String>
@@ -110,13 +110,13 @@
     <system:String x:Key="string_otherSavedTargets">Other saved targets</system:String>
     <system:String x:Key="string_cannotEndorseMod">Cannot endorse mod</system:String>
     <system:String x:Key="string_cannotEndorseOwnMod">Cannot endorse your own mod</system:String>
-    <system:String x:Key="string_notLinkedToNexusMods">not linked to NexusMods</system:String>
+    <system:String x:Key="string_notLinkedToNexusMods">mod not linked to NexusMods</system:String>
     <system:String x:Key="string_notAuthenticated">not authenticated</system:String>
     <system:String x:Key="string_gettingEndorsementStatus">Getting endorsement status</system:String>
     <system:String x:Key="string_endorseMod">Endorse mod</system:String>
     <system:String x:Key="string_modEndorsed">&#x1F44D; Mod endorsed</system:String>
-    <system:String x:Key="string_loginToNexusModsToEnableEndorsements">Log in to NexusMods to enable Endorsements</system:String>
-    <system:String x:Key="string_endorsementsEnabledAuthenicatedToNexusMods">Endorsements enabled (authenticated to NexusMods)</system:String>
+    <system:String x:Key="string_loginToNexusMods">Login to NexusMods</system:String>
+    <system:String x:Key="string_endorsementsEnabled">Endorsements enabled</system:String>
     <system:String x:Key="string_endorsing">Endorsing</system:String>
     <system:String x:Key="string_unendorsing">Unendorsing</system:String>
     <system:String x:Key="string_dialogConsoleEnabled">Console enabled.\nPress ~ to open the full size console.\nPress TAB to open the mini console.</system:String>
@@ -193,7 +193,6 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Launch the currently selected target.&#10;If this is an Origin copy, the game may reboot to the Origin target</system:String>
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Apply this mod to the game</system:String>
     <system:String x:Key="string_tooltip_currentTarget">Current modding target</system:String>
-    <system:String x:Key="string_tooltip_reloadModsFromLibrary">Reload mods from mod library</system:String>
     <system:String x:Key="string_tooltip_filterME1">Click to toggle showing mods for Mass Effect</system:String>
     <system:String x:Key="string_tooltip_filterME2">Click to toggle showing mods for Mass Effect 2</system:String>
     <system:String x:Key="string_tooltip_filterME3">Click to toggle showing mods for Mass Effect 3</system:String>
@@ -202,6 +201,9 @@
     <system:String x:Key="string_tooltip_targetInfo">View and manage installed mods and files for this target</system:String>
     <system:String x:Key="string_targetInfo">Target info</system:String>
     <system:String x:Key="string_modDescription">Mod Description</system:String>
+    <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Endorse ME3Tweaks Mod Manager on NexusMods</system:String>
+    <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Endorsed ME3Tweaks Mod Manager on NexusMods :)</system:String>
+    <system:String x:Key="string_supportedFiles">Supported files</system:String>
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
@@ -246,6 +248,9 @@
     <system:String x:Key="string_installMod">Install mod</system:String>
     <system:String x:Key="string_abortInstallingMod">Abort installing this mod</system:String>
     <system:String x:Key="string_dialogInvalidRCWFile">The .me2mod file that this mod uses is not valid or cannot be safely applied to your game installation. Installation has been aborted. Check the Mod Manager logs from the Help menu for more information.</system:String>
+    <system:String x:Key="string_modInstaller">Mod Installer</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughSpaceToInstall">There is not enough space on {0} to install {1}.\nRequired space: {2}\nAvailable space: {3}</system:String>
+    <!-- 0=driveletter 1=ModBeingInstalled.ModName 2,3=number of bytes (in MB/KB/GB etc)  -->
 
     <!-- Startup preview panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -254,6 +259,8 @@
     <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Thanks for downloading the preview of ME3Tweaks Mod Manager, the next generation of Mod Manager. This preview version is a work in progress and will have stability issues and missing features that are being worked on.&#10;&#10;ME3Tweaks Mod Manager will replace Mass Effect 3 Mod Manager once it is at feature parity.&#10;&#10;Please direct all feedback to the ME3Tweaks Discord, where you can have your voice heard for feature requests and bug fixes.</system:String>
     <system:String x:Key="string_joinDiscord">Join the ME3Tweaks Discord</system:String>
     <system:String x:Key="string_close">Close</system:String>
+    <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Translation is in progress but is not yet available</system:String>
+
     <!-- Close (as in close dialog) -->
 
     <!-- Deployment panel -->
@@ -366,6 +373,7 @@
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
 
+
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
     <system:String x:Key="string_pleaseWait">Please wait</system:String>
@@ -469,7 +477,8 @@
     <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
     <system:String x:Key="string_interp_scanningX">Scanning {0}</system:String>
     <!-- 0 = filename -->
-    <system:String x:Key="string_interp_openingX">Opening {ScanningFile}</system:String>
+    <system:String x:Key="string_interp_openingX">Opening {0}</system:String>
+    <!-- 0 = file being scanned -->
     <system:String x:Key="string_interp_XfailedToLoadY">\n\n{0} failed to load: {1}</system:String>
     <!-- 0 = mod name 1 = load failure reason -->
     <system:String x:Key="string_readingZippedExecutable">Reading zipped executable</system:String>
@@ -489,6 +498,11 @@
     <system:String x:Key="string_exeModsMustBeImportedBeforeInstall">Exe mods must be imported before install</system:String>
     <system:String x:Key="string_interp_installX">Install {0}</system:String>
     <!-- 0 = noun (mod name, etc) -->
+    <system:String x:Key="string_insufficientDiskSpaceToExtractSelectedMods">Insufficient disk space to extract selected mods</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract">There is not enough space on the disk to import the selected mods into your mod library.\nRequired space: {0}\nAvailable space: {1}</system:String>
+    <!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
+    <system:String x:Key="string_insufficientDiskSpace">Insufficient disk space</system:String>
+
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -593,4 +607,290 @@
     <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
+
+    <!-- Alternate DLC -->
+    <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <system:String x:Key="string_validation_altdlc_unknownCondition">Alternate DLC specifies unknown/unsupported condition:</system:String>
+    <system:String x:Key="string_validation_altdlc_unknownOperation">Alternate DLC specifies unknown/unsupported operation:</system:String>
+    <system:String x:Key="string_interp_validation_altdlc_cmmver6RequiresDescription">Alternate DLC ({0}) does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_missingModAltDLC">Alternate DLC ({0}) does not declare ModAltDLC but it is required for all Alternate DLC.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_missingModDestDLC">Alternate DLC ({0}) does not declare ModDestDLC but it is required for all Alternate DLC.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_conditionalDLCInvalidValue">Alternate DLC ({0}) specifies conditional DLC but no values match the allowed headers or start with DLC_.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_sourceDirectoryNotSpecifiedForModAltDLC">Alternate DLC for AltDLC ({0}) is specified, but source directory (ModAltDLC) was not specified.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_destinationDirectoryNotSpecifiedForModDestDLC">Destination DLC for AltDLC ({0}) is specified, but source directory (ModDestDLC) was not specified.</system:String>
+    <!-- 0 = Friendlyname -->
+    <system:String x:Key="string_interp_validation_altdlc_sourceDirectoryDoesntExist">Alternate DLC ({0}) is specified, but source for alternate DLC directory does not exist: {1}</system:String>
+    <!-- 0 = Friendlyname , 1 = specified folder path -->
+    <system:String x:Key="string_autoApplied">Auto Applied</system:String>
+    <system:String x:Key="string_notApplicable">Not applicable</system:String>
+
+    <!-- Alternate File -->
+    <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <system:String x:Key="string_validation_altfile_unknownCondition">Alternate File specifies unknown/unsupported condition:</system:String>
+    <system:String x:Key="string_validation_altfile_unknownOperation">Alternate File specifies unknown/unsupported operation:</system:String>
+    <system:String x:Key="string_validation_altfile_conditionalDLCInvalidValue">Alternate File ({0}) specifies conditional DLC but no values match the allowed headers or start with DLC_.</system:String>
+    <!-- 0 = friendlyname -->
+    <system:String x:Key="string_interp_validation_altfile_cmmver6RequiresDescription">Alternate File {0} does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
+    <!-- 0 = friendlyname -->
+    <system:String x:Key="string_interp_validation_altfile_noModFileDeclared">Alternate file ({0}) does not declare ModFile but it is required for all Alternate Files.</system:String>
+    <!-- 0 = friendlyname -->
+    <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate file is specified with operation {0}, but required file doesn't exist: {1}</system:String>
+    <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
+
+    <!-- GameTarget -->
+    <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
+    <!-- 0 = ALOT Version -->
+    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot Installed</system:String>
+    <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
+    <!-- 0 = filename of file that is not found in game dir but should be there -->
+    <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_cannotRemoveActiveTarget">Cannot remove a target that is currently the active boot target.\nChange the active target in the main window dropdown to remove allow removing this target</system:String>
+    <system:String x:Key="string_tooltip_removeTargetFromM3">Removes this target from Mod Manager's list of available targets for modding</system:String>
+    <system:String x:Key="string_unpacked">Unpacked</system:String>
+    <system:String x:Key="string_cleaningUp">Cleaning up</system:String>
+    <system:String x:Key="string_restored">Restored</system:String>
+    <system:String x:Key="string_restore">Restore</system:String>
+    <system:String x:Key="string_restoring">Restoring</system:String>
+
+    <!-- ModJob -->
+    <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {0} does not exist but is specified by the job.</system:String>
+    <!-- 0 = source file path in moddesc -->
+    <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe files are not allowed in M3 mods.</system:String>
+    <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll files are not allowed in M3 mods.</system:String>
+    <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi files are not allowed in M3 mods.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist">Failed to add additional file to mod job: {0} does not exist but is specified by the job.</system:String>
+    <!-- 0 = source file path in moddesc -->
+    <system:String x:Key="string_interp_validation_modjob_additionalFileAlreadyMarkedForModification">Failed to add additional file to mod job: {0} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.</system:String>
+    <!-- 0 = destination file path in moddesc -->
+    <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {0} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
+    <!-- 0 = source file path in moddesc -->
+
+    <!-- ReadOnlyOption -->
+    <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
+    <system:String x:Key="string_makeConfigFilesReadonly">Make config files read-only</system:String>
+
+    <!-- Mod-Extraction -->
+    <system:String x:Key="string_interp_compressingX">Compressing {0}</system:String>
+    <!-- 0 = filename -->
+    <system:String x:Key="string_interp_compressedX">Compressed {0}</system:String>
+    <!-- 0 = filename -->
+    <system:String x:Key="string_interp_vPatchingIntoAlternate">VPatching into alternate: {0}</system:String>
+    <!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
+
+    <!-- Mod-Installation -->
+    <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String>
+    <!-- requires manual setup -->
+    <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String>
+    <!-- 0 = name-->
+    <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {0}</system:String>
+    <!-- 0 = number-->
+    <system:String x:Key="string_interp_modparsing_updateCode">Update code: {0}</system:String>
+    <!-- 0 = number-->
+    <system:String x:Key="string_modparsing_installationInformationSplitter">-------Installation information--------</system:String>
+    <system:String x:Key="string_interp_modparsing_targetsModDesc">Targets ModDesc {0}</system:String>
+    <!-- 0 = number -->
+    <system:String x:Key="string_interp_modparsing_modifies">Modifies: {0}</system:String>
+    <!-- 0 = List of human readable DLC names (like bring down the sky)-->
+    <system:String x:Key="string_interp_modparsing_addCustomDLCs">Add Custom DLCs: {0}</system:String>
+    <!-- 0 = list of dlc foldernames -->
+    <system:String x:Key="string_modparsing_configCanChangeIfOtherDLCFound">Configuration of this mod can change if any of the following DLC are present at installation time:</system:String>
+    <system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Requires the following DLC to install:</system:String>
+    <system:String x:Key="string_modparsing_defaultRCWDescription" xml:space="preserve">RCW mod that applies changes to ME2 Coalesced.ini.\n\nRCW mods are applied directly to the Coalesced.ini file - it is not rebuilt from a vanilla version. This means applying the mod twice may have unintended side effects as duplicate keys may be created.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Error occured parsing archive moddesc.ini {0}: {1}</system:String>
+    <!-- 0 = moddescpath 1 = error message-->
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Error occured parsing {0}: {1}</system:String>
+    <!-- 0 = moddesc path, 1 = error message-->
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occured parsing virtualized moddesc.ini: {e.Message}</system:String>
+    <!-- 0 = error message. Virtualized means it's using one we generated on the fly -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomodname">The moddesc.ini file located at {0} does not have a value set for modname. This value is required.</system:String>
+    <!-- 0 = moddesc.ini file path -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomoddesc">The moddesc.ini file located at {0} does not have a value set for moddesc. This value is required.</system:String>
+    <!-- 0 = moddesc.ini file path -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomoddev">The moddesc.ini file located at {0} does not have a value set for moddev. This value is required.</system:String>
+    <!-- 0 = moddesc.ini file path -->
+    <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">This mod has both an updater service update code and a modmaker code assigned. This is not allowed.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {0}</system:String>
+    <!-- provided game value from moddesc -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12">This mod is designed for {0}. The moddesc target version is {1}, however the first version of moddesc that supports ME1 or ME2 is 6.0.</system:String>
+    <!-- 0 = game name, 1 = moddesc target version number -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerDoesNothing">This mod has a job header ({0}) in it's moddesc.ini that no values in add, replace, or remove descriptors. This header does effectively nothing and must be removed from the mod.</system:String>
+    <!-- 0 = header string in moddesc.ini -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerHasMismatchedNewFilesReplaceFiles">Job header ({0}) has mismatched newfiles and replacefiles descriptor lists. newfiles has {1} items, replacefiles has {2} items. The number of items in each list must match.</system:String>
+    <!-- 0 = header string in moddesc.ini, 1 = number, 2 = number -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerHasMismatchedAddFilesAddFilesTargets">Job header ({0}) has mismatched addfiles and addfilestargets descriptor lists. addfiles has {1} items, addfilestargets has {2} items. The number of items in each list must match.</system:String>
+    <!-- 0 = header string in moddesc.ini, 1 = number, 2 = number -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerSpecifiesNotAddedReadOnlyTarget">Job header ({0}) specifies the addfilesreadonlytargets descriptor, however it contains items that are not present in the addfilestargets list. This is not allowed.</system:String>
+    <!-- 0 = header string in moddesc.ini -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerCantSetReadOnlyWithoutAddFilesList">Job header ({0}) specifies the addfilesreadonlytargets descriptor, but the addfilestargets descriptor is not set.</system:String>
+    <!-- 0 = header string in moddesc.ini-->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerUnsupportedOnLTModdesc3">Job header ({0}) has been specified as part of the mod, but this header is only supported when targeting ModDesc 3 or higher.</system:String>
+    <!-- 0 = header string in moddesc.ini-->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport">Error occured while automapping the replace files lists for {0}: {1}. This is likely a bug in M3, please report it to Mgamerz.</system:String>
+    <!-- 0 = header string in moddesc.ini, 1 = error message -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound">Error occured while parsing the replace files lists for {0}: source directory {1} was not found and the gamedirectorystructure flag was used on this job.</system:String>
+    <!-- 0 = header string in moddesc.ini, 1 = folder path -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailureParsingLists">Error occured while parsing the replace files lists for {0}: {1}</system:String>
+    <!-- 0 = header string in moddesc.ini, 1 = error message -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists">Error occured while parsing the add files lists for {0}: {1}</system:String>
+    <!-- 0 = header string in moddesc.ini, 1 = error message -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesReadOnlyTargets">Error occured while parsing the addfilesreadonlytargtes list for {0}: {1}</system:String>
+    <!-- 0 = header string in moddesc.ini, 1 = error message -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_failedToParseAltfiles">Specified altfiles descriptor for header {0} did not successfully parse. Text is not empty, but no values were returned.</system:String>
+    <!-- 0 = header string in moddesc.ini -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">Job header (CUSTOMDLC) has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {0} items, destdirs has {0} items. The number of items in each list must match.</system:String>
+    <!-- 0 = number, 1 = number -->
+    <system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing">Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {0}</system:String>
+    <!-- 0 = source dlc foldername -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_destDirCannotBeMetadataOrOfficialDLC">Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {0}. Custom DLC cannot be installed to a folder named the same as an official DLC or metadata directory.</system:String>
+    <!-- 0 = destination dlc foldername -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_destDirFoldernamesMustStartWithDLC">Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {0}. DLC folders must start with DLC_.</system:String>
+    <!-- 0 = destination dlc foldername -->
+    <system:String x:Key="string_validation_modparsing_loadfailed_altFilesListFailedToParse">Specified altfiles descriptor for header CUSTOMDLC did not successfully parse. Text is not empty, but no values were returned.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_mustHaveBothSourceAndDestDirs">This mod specifies only one of the two required lists for the CUSTOMDLC header. Both sourcedirs and destdirs descriptors must be set for CUSTOMDLC.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_balanceChangesFileNotBinFile">This mod specifies a balance changes file, but the provided file is not a .bin file.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericErrorCreatingBalanceChangeJob">Error occured while creating BALANCE_CHANGE job: {0}</system:String>
+    <!-- 0 = error message -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_canOnlyHaveOneBalanceChangesFile">This mod specifies that balance changes will be modified, but provides an invalid amount of files to install. BALANCE_CHANGES only supports 1 item in it's newfiles descriptor, however {0} were parsed.</system:String>
+    <!-- 0 = number -->
+    <system:String x:Key="string_validation_modparsing_loadfailed_cannotHaveEmptyME1ConfigJob">Mod specifies ME1_CONFIG job, but the configfiles descriptor is empty or missing. Remove this header if you are not using this task.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericErrorReadingME1ConfigJob">Error occured while creating ME1_CONFIG job: {0}</system:String>
+    <!-- 0 = error message -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unsupportedME1ConfigFileSpecified">ME1_CONFIG job's configfiles descriptor contains an unsupported config file: {0}</system:String>
+    <!-- 0 = filename -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_specifiedRCWFileDoesntExist">Mod specifies ME2_RCWMOD job, but the specified file doesn't exist: {0}</system:String>
+    <!-- 0 = filepath -->
+    <system:String x:Key="string_validation_modparsing_loadfailed_cannotLoadCompressedRCWModThroughMainLoaderLikelyBug">Cannot load a compressed RCW mod through the main mod loader. It may be that this mod includes an RCW mod with other tasks, which is not allowed.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod">M3-mod based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified">This mod specifies required DLC but does not match a supported value or start with DLC_. The value that failed was: {0}</system:String>
+    <!-- 0 = value from moddesc.ini file -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated">CustomDLC header contains an item in outdatedcustomdlc list that is an official DLC: {0}. This is not allowed.</system:String>
+    <!-- 0 = moddesc.ini header -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCannotListOfficialDLCAsIncompatible">CustomDLC header contains an item in incompatibledlc list that is an official DLC: {0}. This is not allowed.</system:String>
+    <!-- 0 = moddesc.ini header -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFoldersValue">UPDATES header additionaldeploymentfolders includes directory ({0}) that contains a .., \\ or /, which are not permitted.</system:String>
+    <!-- 0 = filepath -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_updatesSpecifiesMissingAdditionalDeploymentFolder">UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {0}</system:String>
+    <!-- 0 = filepath -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFilesValue">UPDATES header additionaldeploymentfiles includes a filepath ({0}) that contains a .., \\ or /, which are not permitted.</system:String>
+    <!-- 0 = filepath -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_updatesSpecifiesMissingAdditionalDeploymentFiles">UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {0}</system:String>
+    <!-- 0 = filepath -->
+    <system:String x:Key="string_validation_modparsing_loadfailed_modDoesNothing">No installation jobs were specified. This mod does nothing.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_cmm1CoalFileMissing">This mod is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing">This mod specifies modcoal descriptor for cmmver 2.0, but the local Coalesced file doesn't exist: {0}</system:String>
+    <!-- 0 = filepath -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod">Error occured while creating basegame job for legacy 1.0 mod: {0}</system:String>
+    <!-- 0 = error message -->
+
+    <!-- About Panel -->
+    <system:String x:Key="string_tooltip_hello">Hello!</system:String>
+    <system:String x:Key="string_tooltip_softwareDevelopedWithLoveByME3Tweaks">Software developed with love by ME3Tweaks</system:String>
+    <system:String x:Key="string_libraries">Libraries</system:String>
+    <system:String x:Key="string_translators">Translators</system:String>
+    <system:String x:Key="string_NA">N/A</system:String>
+    <system:String x:Key="string_specialThanks">Special thanks</system:String>
+    <system:String x:Key="string_youTheEndUser">You, the end user, for making this software worth developing</system:String>
+    <system:String x:Key="string_license">License</system:String>
+
+    <!-- ASI Manager Panel -->
+    <system:String x:Key="string_outdatedVersionInstalled">Outdated version installed</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
+    <!-- 0 = author, 1 = version number -->
+    <system:String x:Key="string_installedOutdated">Installed, outdated</system:String>
+    <system:String x:Key="string_updateASI">Update ASI</system:String>
+    <system:String x:Key="string_installedUpToDate">Installed, up to date</system:String>
+    <system:String x:Key="string_uninstallASI">Uninstall ASI</system:String>
+    <system:String x:Key="string_notInstalled">Not installed</system:String>
+    <system:String x:Key="string_installASI">Install ASI</system:String>
+    <system:String x:Key="string_unknownASIDescription">Unknown ASI mod. You should be careful with this ASI as it may contain malicious code.</system:String>
+    <system:String x:Key="string_SSINotPresentInManifest">ASI not present in manifest</system:String>
+    <system:String x:Key="string_selectAnASIToViewOptions">Select an ASI to view options</system:String>
+    <system:String x:Key="string_noASISelected">No ASI selected</system:String>
+    <system:String x:Key="string_aSILoaderInstalledASIModsWillLoad">ASI loader installed. ASI mods will load</system:String>
+    <system:String x:Key="string_aSILoaderNotInstalledASIModsWillNotLoad">ASI loader not installed. ASI mods will not load</system:String>
+    <system:String x:Key="string_loaderInstalled">Loader installed</system:String>
+    <system:String x:Key="string_installLoader">Install loader</system:String>
+    <system:String x:Key="string_unknownASIMod">Unknown ASI mod</system:String>
+    <system:String x:Key="string_ASIManager">ASI Manager</system:String>
+    <system:String xml:space="preserve" x:Key="string_ASIManagerTopDescription">ASI mods are native code mods that are loaded at game startup. They allow modification of the game in ways that are beyond what you can do with package files. ASI mods should not be part of typical mod distributions and cannot be included in Mod Manager mods.&#10;Mod Manager will automatically install required ASI mods for mods that modify the ME3 Balance Changes and for ME1 DLC mods.</system:String>
+    <system:String x:Key="string_installingEllipse">Installing...</system:String>
+    <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">View source code for this ASI mod</system:String>
+    <system:String x:Key="string_viewSourceCode">View source code</system:String>
+
+    <!-- Starter Kit Window-->
+    <system:String x:Key="string_newDLCModInformation">New DLC mod information</system:String>
+    <system:String x:Key="string_modName">Mod Name</system:String>
+    <system:String x:Key="string_modDeveloper">Mod Developer</system:String>
+    <system:String x:Key="string_modWebsite">Mod Website/Nexusmods page</system:String>
+    <system:String x:Key="string_dLCFolderName">DLC Folder Name</system:String>
+    <system:String x:Key="string_internalName">Internal Name</system:String>
+    <system:String x:Key="string_internalNameTLKID">Internal Name TLK ID</system:String>
+    <system:String x:Key="string_dLCModuleNumber">DLC Module Number</system:String>
+    <system:String x:Key="string_mountPriority">Mount Priority</system:String>
+    <system:String x:Key="string_mountFlag">Mount Flag</system:String>
+    <system:String x:Key="string_decriptionHintText">Mod Manager description that users will see when they select your mod in Mod Manager. You can edit this later to more accurately describe your mod to users.</system:String>
+    <system:String x:Key="string_ensureYouAreUsingAUniqueMountPriority">Ensure you are using a unique mount priority for your mod.</system:String>
+    <system:String x:Key="string_existingKnownDLC">Existing known DLC</system:String>
+    <system:String x:Key="string_generateStarterKit">Generate Starter Kit</system:String>
+    <system:String x:Key="string_noSaveFileDependencyOnDLC">No save file dependency on DLC</system:String>
+    <system:String x:Key="string_saveFileDependencyOnDLC">Save file dependency on DLC</system:String>
+    <system:String x:Key="string_loadingPlaceholder">Loading placeholder</system:String>
+    <system:String x:Key="string_modNameCannotBeEmpty">Mod name cannot be empty</system:String>
+    <system:String x:Key="string_modNameCanOnlyContain">Mod name can only contain numbers, letters, apostrophe or hyphens</system:String>
+    <system:String xml:space="preserve" x:Key="string_modNameWillNotResolveToAUsableFilesystemPath">Mod name will not resolve to a usable filesystem path.\nPlease enter some alphanumeric values.</system:String>
+    <system:String x:Key="string_modNameCannotContainDoubleDots">Mod name cannot contain double dots when path is sanitized</system:String>
+    <system:String x:Key="string_internalTLKIDMustBeGreaterThan0">Internal TLK ID must be greater than 0</system:String>
+    <system:String x:Key="string_modDeveloperNameIsRequired">Mod developer name is required</system:String>
+    <system:String x:Key="string_modDescriptionIsRequired">Mod description is required</system:String>
+    <system:String x:Key="string_dLCFolderNameCannotBeEmpty">DLC folder name cannot be empty</system:String>
+    <system:String x:Key="string_dLCFolderNameCanOnlyConsistOf">DLC folder name can only consist of A-Z a-z 0-9 and _.</system:String>
+    <system:String x:Key="string_uRLMustBeOfProtocol">URL must be of protocol type http or https://</system:String>
+    <system:String x:Key="string_valueMustBeBetween0And">Value must be between 0 and {0}</system:String>
+    <!-- 0 = number -->
+    <system:String x:Key="string_internalModNameCannotBeEmpty">Internal mod name cannot be empty. This string is shown to users when mod fails to load in-game</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogDLCModuleNumberConflicts">The DLC module number for this mod conflicts with existing DLC:{conflicts}\n\nModule numbers are used to determine filenames in the mod, such as the TLK. Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?</system:String>
+    <system:String x:Key="string_conflictingDLCModuleNumbers">Conflicting DLC module numbers</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogMountPrioirtyConflicts">The DLC mount priority for this mod conflicts with existing DLC:{conflicts}\n\nMount priority numbers are used to determine which files to use in case of ambiguous package names (same-named file exists in multiple locations). Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?</system:String>
+    <system:String x:Key="string_conflictingDLCMountPriorityNumbers">Conflicting DLC mount priority numbers</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_discourageUseOfSPSaveRequired">You have chosen to make this mod be required by the savegame. When a user removes your mod (by choice or by repair), saves that were made while this DLC is installed will not be usable by the user. In almost all circumstances this is not desirable for the end user. You should only pick this option if you really know what you're doing.\n\nUse this mount flag anyways?</system:String>
+    <system:String x:Key="string_undesirableMountFlag">Undesirable mount flag</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogWillDeleteExistingMod">Creating this mod will delete an existing directory in the mod library:\n{0}\n\nContinue?</system:String>
+    <!-- 0 = directory -->
+    <system:String x:Key="string_dialogErrorDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory">Error occured while deleting existing mod directory:\n{0}</system:String>
+    <!-- 0 = error message -->
+    <system:String x:Key="string_generatingMod">Generating mod</system:String>
+    <system:String x:Key="string_interp_valueMustBeBetween0AndX">Value must be between 0 and {0}</system:String>
+    <!-- 0 = number -->
+
+    <!-- List Dialog -->
+    <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
+    <system:String x:Key="string_errorCopyingDataToClipboard">Error copying data to clipboard</system:String>
+    <system:String x:Key="string_copyItemsToClipboard">Copy items to clipboard</system:String>
+    <system:String x:Key="string_copiedToClipboard">Copied to clipboard</system:String>
+
+    <!-- Mass Effect Ini Modder (UI) -->
+    <system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config file {0}.ini is missing. It should be located at {1}. Please run the game at least once to generate the default files.</system:String>
+    <!-- 0=filename 1=inifilepath -->
+    <system:String x:Key="string_interp_dialogConfigDirectoryMissing">Mass Effect Config directory is missing. It should be located at {0}. Please run the game at least once to generate the default files.</system:String>
+    <!-- 0=configFileFolder -->
+    <system:String x:Key="string_cannotRunMassEffectIniModder">Cannot run Mass Effect Ini Modder</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_propertyNotSaved">Property not saved: {0}\n\nReason: {1}</system:String>
+    <!-- 0= config property key 1=error reason -->
+    <system:String x:Key="string_errorSavingProperties">Error saving properties</system:String>
+    <system:String x:Key="string_tooltip_attributesThatModifyTheGameEngine">Attributes that modify the game engine</system:String>
+    <system:String x:Key="string_tooltip_attributesThatModifyGameplay">Attributes that modify gameplay</system:String>
+    <system:String x:Key="string_tooltip_attributesThatModifyYouAndYourParty">Attributes that modify you and your party</system:String>
+    <system:String x:Key="string_makeSureToPressSaveToSaveYourChanges">Make sure to press save to save your changes</system:String>
+    <system:String x:Key="string_tooltip_resetsAllPropertiesThatThisToolCanModifyToDefaultValues">Resets all properties that this tool can modify to default values</system:String>
+    <system:String x:Key="string_resetAll">Reset All</system:String>
+    <system:String x:Key="string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles">Commits your edits to Mass Effect's configuration files</system:String>
+    <system:String x:Key="string_save">Save</system:String>
+
 </ResourceDictionary>
