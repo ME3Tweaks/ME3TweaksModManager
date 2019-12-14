@@ -42,7 +42,7 @@
     <system:String x:Key="string_Openmodslibrarydirectory">Open mods library directory</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Opens the mod library folder</system:String>
     <system:String x:Key="string_MixinsForME3">Mixins (for ME3)</system:String>
-    <system:String x:Key="string_MixInLibrary">MixIn Library</system:String>
+    <system:String x:Key="string_MixInLibrary">Mixin Library</system:String>
     <system:String x:Key="string_ClearMixinCache">Clear Mixin Cache</system:String>
     <system:String x:Key="string_ModUtils">Mod Utils</system:String>
     <system:String x:Key="string_Checkforupdates">Check for updates</system:String>
