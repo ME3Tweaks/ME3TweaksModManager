@@ -339,7 +339,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     string message = M3L.GetString(M3L.string_interp_dialogNotEnoughSpaceToInstall, driveletter, ModBeingInstalled.ModName, ByteSize.FromBytes(requiredSpaceToInstall).ToString(), ByteSize.FromBytes(freeSpaceOnTargetDisk).ToString());
-                    Xceed.Wpf.Toolkit.MessageBox.Show(window, message, M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, message, M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                 });
                 e.Result = ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
                 return;

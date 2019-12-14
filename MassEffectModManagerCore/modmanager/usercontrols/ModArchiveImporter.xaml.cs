@@ -537,7 +537,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
                             Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freeSpace);
-                            Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, ByteSize.FromBytes(requiredSpace).ToString(), ByteSize.FromBytes(freeSpace).ToString()), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, ByteSize.FromBytes(requiredSpace).ToString(), ByteSize.FromBytes(freeSpace).ToString()), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
                         }
                 }

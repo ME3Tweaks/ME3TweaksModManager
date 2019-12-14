@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Windows;
+using MassEffectModManagerCore.modmanager.windows;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.localizations
@@ -30,7 +31,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
             return ShowDialog(owner, message, caption, buttons, image, MessageBoxResult.None);
         }
 
-        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult)
+		internal static MessageBoxResult ShowDialog(Window owner, string message)
+		{
+			return ShowDialog(owner, message, "", MessageBoxButton.OK);
+		}
+
+		internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult)
         {
             var msgBox = new Xceed.Wpf.Toolkit.MessageBox();
             msgBox.InitializeMessageBox(owner, IntPtr.Zero, message, caption, buttons, image, defaultResult);

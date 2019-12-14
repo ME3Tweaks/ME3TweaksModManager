@@ -193,6 +193,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Executable location: " + ExecutableLocation);
 
                 #region Update mode boot
+                /*
                 if (updateDestinationPath != null)
                 {
                     Log.Information(" >> In update mode. Update destination: " + updateDestinationPath);
@@ -236,7 +237,8 @@ namespace MassEffectModManagerCore
                     Process.Start(psi);
                     Environment.Exit(0);
                     Current.Shutdown();
-                }
+                    
+                }*/
                 #endregion
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                new FrameworkPropertyMetadata(true));

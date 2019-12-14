@@ -123,8 +123,8 @@ namespace MassEffectModManagerCore.modmanager.windows
                     }
                     else
                     {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_missingConfigFileForMEIM, Path.GetFileNameWithoutExtension(kp.Key), inifilepath));
-                        Environment.Exit(1);
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_missingConfigFileForMEIM, Path.GetFileNameWithoutExtension(kp.Key), inifilepath));
+                        doNotOpen = true;
                     }
 
 
@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             else
             {
                 doNotOpen = true;
-                Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_interp_dialogConfigDirectoryMissing, configFileFolder), M3L.GetString(M3L.string_cannotRunMassEffectIniModder), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(null, M3L.GetString(M3L.string_interp_dialogConfigDirectoryMissing, configFileFolder), M3L.GetString(M3L.string_cannotRunMassEffectIniModder), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -202,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         else
                         {
                             Log.Error($@"Could not save property {prop.FriendlyPropertyName} because {validation}");
-                            Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_propertyNotSaved, prop.FriendlyPropertyName, validation), M3L.GetString(M3L.string_errorSavingProperties), MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_propertyNotSaved, prop.FriendlyPropertyName, validation), M3L.GetString(M3L.string_errorSavingProperties), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                     Analytics.TrackEvent(@"Saved game config in MEIM");
