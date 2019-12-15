@@ -21,6 +21,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
 using ME3Explorer.Packages;
+using MassEffectModManagerCore.modmanager.usercontrols;
 
 namespace MassEffectModManagerCore
 {
@@ -261,6 +262,10 @@ namespace MassEffectModManagerCore
                 Log.Information("Ensuring mod directories");
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
                 MEPackageHandler.Initialize();
+
+                Log.Information("Ensuring default ASI assets are present");
+                ASIManagerPanel.ExtractDefaultASIResources();
+
                 Log.Information("Mod Manager pre-UI startup has completed");
             }
             catch (Exception e)

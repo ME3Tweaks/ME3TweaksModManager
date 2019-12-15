@@ -136,6 +136,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
+        public static void ExtractDefaultASIResources()
+        {
+            var outpath = CachedASIsFolder;
+            string[] defaultResources = { @"BalanceChangesReplacer-v2.0.asi", @"ME1-DLC-ModEnabler-v1.0.asi", @"ME3Logger_truncating-v1.0.asi", "manifest.xml" };
+            foreach (var file in defaultResources)
+            {
+                var outfile = Path.Combine(CachedASIsFolder, file);
+                if (!File.Exists(outfile))
+                {
+                    Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.asi." + file, outfile, true);
+                }
+            }
+        }
+
         private void InstallUninstallASI()
         {
             if (SelectedASIObject is InstalledASIMod instASI)
@@ -147,12 +161,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else if (SelectedASIObject is ASIMod asi)
             {
                 InstallInProgress = true;
-                var alreadyUpToDate = Games.First(x => x.Game == asi.Game).ApplyASI(asi, () => { InstallInProgress = false; });
-                if (alreadyUpToDate)
+                var alreadyInstalledAndUpToDate = Games.First(x => x.Game == asi.Game).ApplyASI(asi, () =>
+                {
+                    InstallInProgress = false;
+                    RefreshASIStates();
+                    UpdateSelectionTexts(SelectedASIObject);
+                });
+                if (!alreadyInstalledAndUpToDate)
                 {
                     Games.First(x => x.Game == asi.Game).DeleteASI(asi); //UI doesn't allow you to install on top of an already installed ASI that is up to date. So we delete ith ere.
+                    InstallInProgress = false;
+                    RefreshASIStates();
+                    UpdateSelectionTexts(SelectedASIObject);
                 }
             }
+
         }
 
 

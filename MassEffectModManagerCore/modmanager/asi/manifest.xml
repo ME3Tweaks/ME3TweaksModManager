@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+<ASIManifest>
+  <updategroup groupid="0" game="3" hidden="0">
+    <asimod>
+      <name>Mouse Disabler</name>
+      <installedname>MouseDisabler</installedname>
+      <author>Erik JS</author>
+      <description>Makes Mass Effect 3 not respond to mouse input. It's very useful with the controller mods because the interfaces for some reason respond to mouse input on the first frame and can interfere with scrolling.</description>
+      <version>1</version>
+      <hash>bc47e1e18e84c85e54e53148d728517a</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/MouseDisabler-v1.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>Mouse Disabler</name>
+      <installedname>MouseDisabler</installedname>
+      <author>Erik JS</author>
+      <description>Makes Mass Effect 3 not respond to mouse input. It's very useful with the controller mods because the interfaces for some reason respond to mouse input on the first frame and can interfere with scrolling.</description>
+      <version>2</version>
+      <hash>fe33ab85c79875e2deb0df6ca3e7c232</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3MouseDisabler</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/MouseDisabler-v2.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="1" game="3" hidden="0">
+    <asimod>
+      <name>Origin MP Status</name>
+      <installedname>OriginMPStatus</installedname>
+      <author>Erik JS/Mgamerz</author>
+      <description>Enables Origin to display your game status like some of the newer games. Will display if in SP, MP, MP Lobby, or MP Match, along with the relevant Map/Faction/Difficulty. Currently this will cause 'Away' mode to become unavailable after the game is closed until you restart Origin. This ASI causes the game to load items slower.</description>
+      <version>1</version>
+      <hash>1b9bb3fb16e8d4c108bd4e123175096c</hash>
+      <sourcecode>https://github.com/Mgamerz/Misc-Stuff/tree/master/ME3MPSDKTEST</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/OriginMPStatus-v1.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>Origin MP Status</name>
+      <installedname>OriginMPStatus</installedname>
+      <author>Erik JS/Mgamerz</author>
+      <description>Enables Origin to display your game status like some of the newer games. Will display if in SP, MP, MP Lobby, or MP Match, along with the relevant Map/Faction/Difficulty. This version is MUCH MORE STABLE than the v1 version, and should not crash the game.</description>
+      <version>2</version>
+      <hash>48639bd925a0246bd5e48c53fabdefc4</hash>
+      <sourcecode>https://github.com/Mgamerz/Misc-Stuff/tree/master/ME3MPSDKTEST</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/OriginMPStatus-v2.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="2" game="3" hidden="0">
+    <asimod>
+      <name>Client Message Exposer</name>
+      <installedname>ME3ClientMessageExposer</installedname>
+      <author>Erik JS</author>
+      <description>Opens a console at game launch that will output anything that was written to the Client object which is only available in the developer version of the game. Contains some debugging info.</description>
+      <version>1</version>
+      <hash>0b31c1ce3f582ae6f8638add16518972</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3ClientMessageExposer</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/ME3ClientMessageExposer-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="4" game="3" hidden="0">
+    <asimod>
+      <name>Origin Unlinker</name>
+      <installedname>OriginUnlinker</installedname>
+      <author>Erik JS</author>
+      <description>Makes the game behave as if all the links to Origin were removed. Origin is still required as the game will not decrypt at startup. Typically used with the Private Server Emulator.</description>
+      <version>1</version>
+      <hash>5df6dccda9c6081cf3a04a21d537be64</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3OriginUnlinker</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/OriginUnlinker-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="5" game="3" hidden="0">
+    <asimod>
+      <name>Balance Changes Replacer</name>
+      <installedname>BalanceChangesReplacer</installedname>
+      <author>Erik JS</author>
+      <description>This plugin will replace the server-side Coalesced (balance changes for MP) with any custom Coalesced you want, as long as your file is named ServerCoalesced.bin, and put in "Mass Effect 3\Binaries\Win32" or "Mass Effect 3\Binaries\Win32\ASI" (the latter path will be ignored if the file is already found in the former). DO NOT USE ANY COALESCED FILE THAT IS NOT BASED ON THE ORIGINAL SERVER ONE - YOU WILL PERMANENTLY BREAK YOUR ONLINE PROFILE. ModMaker mods will automatically use the latter when i</description>
+      <version>1</version>
+      <hash>42c1e21b2f4b345efb7988268a924be5</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/BalanceChangesReplacer-v1.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>Balance Changes Replacer</name>
+      <installedname>BalanceChangesReplacer</installedname>
+      <author>Erik JS</author>
+      <description>This plugin will replace the server-side Coalesced (balance changes for MP) with any custom Coalesced you want, as long as your file is named ServerCoalesced.bin, and put in "Mass Effect 3\Binaries\Win32" or "Mass Effect 3\Binaries\Win32\ASI" (the latter path will be ignored if the file is already found in the former). ModMaker mods will automatically use the latter when installing a balance changes file. DO NOT USE ANY COALESCED FILE THAT IS NOT BASED ON THE ORIGINAL SERVER ONE.</description>
+      <version>2</version>
+      <hash>a44044728d08320537528121a193a7d8</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/BalanceChangesReplacer-v2.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="6" game="3" hidden="0">
+    <asimod>
+      <name>Live TLK Replacer</name>
+      <installedname>LiveTLKReplacer</installedname>
+      <author>Erik JS</author>
+      <description>This plugin will replace the server-side TLK (strings file) with any custom TLK you want, as long as your file is named ServerTLK.tlk and put in "Mass Effect 3\Binaries\Win32" or "Mass Effect 3\Binaries\Win32\ASI" (the latter path will be ignored if the file is already found in the former). This file is loaded in both SP and MP.</description>
+      <version>1</version>
+      <hash>ef4b9e2ed35caa1449c7e035d662894f</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3LiveTLKProxy</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/ME3LiveTLKProxy-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="7" game="3" hidden="0">
+    <asimod>
+      <name>Allow mutliple ME3 instances</name>
+      <installedname>ME3Parallelization</installedname>
+      <author>Erik JS</author>
+      <description>Allows you to run multiple copies of the game at once. Can cause significant system strain. Requires special setup, see source code link.</description>
+      <version>1</version>
+      <hash>af3572e3d0ac3cf7f89d22f6f7508dea</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3ParallelProcessUnlocker</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/ME3ParallelProcessUnlocker-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="8" game="3" hidden="0">
+    <asimod>
+      <name>ME3 Logger</name>
+      <installedname>ME3Logger</installedname>
+      <author>Heff/Erik JS</author>
+      <description>Writes game crash information in specific instances to a text file in the same location as the EXE.</description>
+      <version>1</version>
+      <hash>7e993485f7efb5ded2b549eeb9b45297</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3Logger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/ME3Logger-v1.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>ME3 Logger - Truncating</name>
+      <installedname>ME3Logger_truncating</installedname>
+      <author>Heff/Erik JS/Mgamerz</author>
+      <description>Writes game crash information in specific instances to a text file in the same location as the EXE.</description>
+      <version>2</version>
+      <hash>54ed0a6a0201db28dc34b751418303d9</hash>
+      <sourcecode>https://github.com/Mgamerz/ME3-ASI/tree/master/ME3Logger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/ME3Logger_truncating.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="9" game="3" hidden="0">
+    <asimod>
+      <name>AutoTOC ASI</name>
+      <installedname>AutoTOC</installedname>
+      <author>SirCxyrtyx</author>
+      <description>Runs AutoTOC for basegame and unpacked DLC every time the game boots.</description>
+      <version>1</version>
+      <hash>6a85a3d46718a5326d02b0e12da59cc7</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/AutoTOC-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="10" game="3" hidden="0">
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>Mgamerz</author>
+      <description>This plugin logs kismet sequence object activations to a the console and to a file named KismetLog.txt.</description>
+      <version>1</version>
+      <hash>591470bf4251a568eca68d1ddb4f7f49</hash>
+      <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v1.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>Mgamerz</author>
+      <description>This plugin logs kismet sequence object activations to a the console and to a file named KismetLog.txt.</description>
+      <version>2</version>
+      <hash>173e4696083b31466bf18b1f4072b4bf</hash>
+      <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v2.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>Mgamerz</author>
+      <description>This plugin logs kismet sequence object activations to a the console and to a file named KismetLog.txt.</description>
+      <version>3</version>
+      <hash>9ff67ff0b1a383f477792dd231820f0d</hash>
+      <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v3.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>Mgamerz</author>
+      <description>This plugin logs kismet sequence object activations to a the console and to a file named KismetLog.txt. You can trace the execution of this log with ME3Explorer's Sequence Editor WPF.</description>
+      <version>4</version>
+      <hash>00aa9650fb13c4149a625126102ea276</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v4.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="11" game="3" hidden="0">
+    <asimod>
+      <name>Retaliation Glitch Crash Fix</name>
+      <installedname>RetaliationBugfix</installedname>
+      <author>Mgamerz</author>
+      <description>Disables friend leaderboard job creation, which fixes the "Retaliation glitch" that causes the game to crash at startup if not booted in offline mode. While this is installed, the friends tab of leaderboards will be empty.</description>
+      <version>1</version>
+      <hash>fe303c82f51d1be88d06aa16ed530bcd</hash>
+      <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/RetaliationBugfix</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/RetaliationBugfix-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="12" game="3" hidden="0">
+    <asimod>
+      <name>100% Galactic Readiness</name>
+      <installedname>FullGAW</installedname>
+      <author>Mgamerz</author>
+      <description>This plugin will set the Galactic Readiness at game startup to 100% in all zones, as well as the overall readiness level. For this plugin to work, you must boot the game with Origin in Online Mode, otherwise the function that is hooked won't be called.</description>
+      <version>1</version>
+      <hash>02cd08af302bc8793bfab912edca1ec4</hash>
+      <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/FullGAW</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/FullGAW-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="13" game="3" hidden="0">
+    <asimod>
+      <name>POC Co-Op Campaign: Moving Spawn Points</name>
+      <installedname>POCCCMovingSpawnPoints</installedname>
+      <author>Mgamerz</author>
+      <description>Optional part of the Proof of Concept: Co-Op Campaign Mod. This ASI will update spawnpoints before starting a new wave, which will allow enemies to spawn closer to players than the original starting area.</description>
+      <version>1</version>
+      <hash>6b6ebf755a0fa4c9fb72429705c89c09</hash>
+      <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/POCCCMovingSpawnPoints</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/POCCCMovingSpawnPoints-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="14" game="2" hidden="0">
+    <asimod>
+      <name>Kismet Logger for ME2</name>
+      <installedname>KismetLogger</installedname>
+      <author>Mgamerz</author>
+      <description>This plugin logs kismet sequence object activations to a the console and to a file named KismetLog.txt. You can trace the execution of this log with ME3Explorer's Sequence Editor WPF.</description>
+      <version>1</version>
+      <hash>965b2378c60430fb949b62a134b28414</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/me2/KismetLogger-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="15" game="2" hidden="0">
+    <asimod>
+      <name>Function Logger for ME2</name>
+      <installedname>FunctionLogger</installedname>
+      <author>Mgamerz</author>
+      <description>Function logger records all UnrealScript function calls. This is sometimes useful when debugging a crash. Significant game performance degradation will occur - quickly reproduce your crash as disk I/O will be high. Native to native function calls are not recorded by this ASI.</description>
+      <version>1</version>
+      <hash>47deac6685cf5d51b4d6f9e5ae9a3009</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/FunctionLogger</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/me2/FunctionLogger-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="16" game="1" hidden="0">
+    <asimod>
+      <name>DLC Mod Enabler</name>
+      <installedname>ME1-DLC-ModEnabler</installedname>
+      <author>SirCxyrtyx</author>
+      <description>Enables DLC mod loading for Mass Effect. Requires additional data in the AutoLoad.ini file for DLC mods.</description>
+      <version>1</version>
+      <hash>1e8311283fa2630ff40c930df2960bab</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/ME1-DLC-ModEnabler</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/ME1-DLC-ModEnabler/releases/download/v1.0/ME1-DLC-ModEnabler-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+</ASIManifest>
