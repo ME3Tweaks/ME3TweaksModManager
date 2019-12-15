@@ -1388,9 +1388,11 @@ namespace MassEffectModManagerCore
 
             // TODO: Read and import java version configuration
 
-            var otherTargetsFileME1 = Utilities.GetCachedTargets(Mod.MEGame.ME1);
-            var otherTargetsFileME2 = Utilities.GetCachedTargets(Mod.MEGame.ME2);
-            var otherTargetsFileME3 = Utilities.GetCachedTargets(Mod.MEGame.ME3);
+            var currentTargets = InstallationTargets.ToList();
+
+            var otherTargetsFileME1 = Utilities.GetCachedTargets(Mod.MEGame.ME1, currentTargets);
+            var otherTargetsFileME2 = Utilities.GetCachedTargets(Mod.MEGame.ME2, currentTargets);
+            var otherTargetsFileME3 = Utilities.GetCachedTargets(Mod.MEGame.ME3, currentTargets);
 
             if (otherTargetsFileME1.Any() || otherTargetsFileME2.Any() || otherTargetsFileME3.Any())
             {

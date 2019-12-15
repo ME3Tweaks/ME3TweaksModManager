@@ -41,6 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         //private string[] doNotPatchFiles = { @"BioD_CitCas.pcc" };
         public GUICompatibilityGenerator(GameTarget target)
         {
+            Log.Information(@"Opening GUI compatibility generator");
             if (target.Game != MEGame.ME3) throw new Exception($@"Cannot generate compatibility mods for {target.Game}");
             DataContext = this;
             this.target = target;
@@ -64,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     OnClosing(DataEventArgs.Empty);
                     return;
                 }
-
+                Log.Information(@"Starting GUI compatibility scanner");
                 StartGuiCompatibilityScanner();
             }
             else
@@ -78,15 +79,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private static readonly string[] DLCUIModFolderNames =
         {
             @"DLC_CON_XBX",
-            @"DLC_MOD_UIScaling",
-            @"DLC_MOD_UIScaling_Shared"
+            @"DLC_CON_UIScaling",
+            @"DLC_CON_UIScaling_Shared"
         };
 
         private static readonly string[] DLCUIModFolderNamesIncludingPatch =
         {
             @"DLC_CON_XBX",
-            @"DLC_MOD_UIScaling",
-            @"DLC_MOD_UIScaling_Shared",
+            @"DLC_CON_UIScaling",
+            @"DLC_CON_UIScaling_Shared",
             @"DLC_MOD_GUICompatibilityPack"
         };
 

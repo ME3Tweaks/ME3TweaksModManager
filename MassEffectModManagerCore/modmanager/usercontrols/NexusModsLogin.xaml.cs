@@ -99,7 +99,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         SetAuthorized(true);
                         mainwindow.RefreshNexusStatus();
                         Analytics.TrackEvent(M3L.GetString(M3L.string_authenticatedToNexusMods));
-
+                    } else
+                    {
+                        Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
+                        mainwindow.NexusUsername = null;
+                        mainwindow.NexusUserID = 0;
+                        SetAuthorized(false);
+                        mainwindow.RefreshNexusStatus();
                     }
                 }
                 catch (ApiException apiException)

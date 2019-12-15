@@ -846,7 +846,7 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
         }
 
-        internal static List<GameTarget> GetCachedTargets(Mod.MEGame game)
+        internal static List<GameTarget> GetCachedTargets(Mod.MEGame game, List<GameTarget> existingTargets = null)
         {
             var cacheFile = GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
@@ -855,6 +855,10 @@ namespace MassEffectModManagerCore
                 foreach (var file in File.ReadAllLines(cacheFile))
                 {
                     //Validate game directory
+                    if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(file, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        continue; //don't try to load an existing target
+                    }
                     GameTarget target = new GameTarget(game, file, false);
                     var failureReason = target.ValidateTarget();
                     if (failureReason == null)
