@@ -281,7 +281,7 @@
         <system:String x:Key="string_verifyModDescription">Verify mod description accuracy</system:String>
         <system:String x:Key="string_sfarFilesCheck">SFAR files check</system:String>
         <system:String x:Key="string_invalidSfarSize">The following SFAR files are not 32 bytes, which is the only supported SFAR size in modding tools for Custom DLC mods.</system:String>
-        <system:String x:Key="string_wrongSfarSizesFound">Wrong SFAR sizes found errors in mod</system:String>
+        <system:String x:Key="string_wrongSfarSizesFound">Invalid SFAR files found in mod(s)</system:String>
         <system:String x:Key="string_languageSupportCheck">Language support check</system:String>
         <system:String x:Key="string_languageSupportCheckDetectedFollowingIssues">The language support check detected the following issues. Review these issues and fix them if applicable before deployment.</system:String>
         <system:String x:Key="string_languageSupportIssuesDetectedInMod">Language support issues detected in mod</system:String>
