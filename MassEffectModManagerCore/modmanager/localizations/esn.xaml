@@ -42,7 +42,7 @@
     <system:String x:Key="string_Openmodslibrarydirectory">Open mods library directory</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Opens the mod library folder</system:String>
     <system:String x:Key="string_MixinsForME3">Mixins (for ME3)</system:String>
-    <system:String x:Key="string_MixInLibrary">MixIn Library</system:String>
+    <system:String x:Key="string_MixInLibrary">Mixin Library</system:String>
     <system:String x:Key="string_ClearMixinCache">Clear Mixin Cache</system:String>
     <system:String x:Key="string_ModUtils">Mod Utils</system:String>
     <system:String x:Key="string_Checkforupdates">Check for updates</system:String>
@@ -221,7 +221,7 @@
     <!-- 0 is name of official (english only) name of DLC that is not installed (e.g. Bring Down The Sky) -->
     <system:String x:Key="string_dialogOutdatedDLCHeader">The following DLC mods are listed as outdated/no longer relevant by {0} and will be removed upon installation:\n</system:String>
     <!-- 0 = name of mod being installed -->
-    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\nClick yes to continue installing {0}, or click no to abort installation.</system:String>
+    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\Select yes to continue installing {0}, or select no to abort installation.</system:String>
     <!-- 0 = Name of mod being installed -->
     <system:String x:Key="string_outdatedDLCDetected">Outdated DLC detected</system:String>
     <system:String x:Key="string_dialogIncompatibleDLCDetectedHeader">The following DLC mods are listed as incompatible with {0}:\n</system:String>
@@ -513,6 +513,8 @@
     <system:String x:Key="string_interp_errorUpdatingX">Error updating {0}</system:String>
     <!-- 0 = mod name-->
     <system:String x:Key="string_updated">Updated</system:String>
+    <system:String x:Key="string_interp_localVersion">Local version: {0}</system:String>
+    <system:String x:Key="string_interp_serverVersion">Server version: {0}</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
@@ -675,18 +677,25 @@
     <system:String x:Key="string_makeConfigFilesReadonly">Make config files read-only</system:String>
 
     <!-- Mod-Extraction -->
-    <system:String x:Key="string_interp_compressingX">Compressing {0}</system:String> <!-- 0 = filename -->
+    <system:String x:Key="string_interp_compressingX">Compressing {0}</system:String>
+    <!-- 0 = filename -->
     <system:String x:Key="string_interp_compressedX">Compressed {0}</system:String>
     <!-- 0 = filename -->
-    <system:String x:Key="string_interp_vPatchingIntoAlternate">VPatching into alternate: {0}</system:String> <!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
+    <system:String x:Key="string_interp_vPatchingIntoAlternate">VPatching into alternate: {0}</system:String>
+    <!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
 
     <!-- Mod-Installation -->
-    <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String> <!-- requires manual setup -->
-    <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String> <!-- 0 = name-->
-    <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {0}</system:String> <!-- 0 = number-->
-    <system:String x:Key="string_interp_modparsing_updateCode">Update code: {0}</system:String> <!-- 0 = number-->
+    <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String>
+    <!-- requires manual setup -->
+    <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String>
+    <!-- 0 = name-->
+    <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {0}</system:String>
+    <!-- 0 = number-->
+    <system:String x:Key="string_interp_modparsing_updateCode">Update code: {0}</system:String>
+    <!-- 0 = number-->
     <system:String x:Key="string_modparsing_installationInformationSplitter">-------Installation information--------</system:String>
-    <system:String x:Key="string_interp_modparsing_targetsModDesc">Targets ModDesc {0}</system:String> <!-- 0 = number -->
+    <system:String x:Key="string_interp_modparsing_targetsModDesc">Targets ModDesc {0}</system:String>
+    <!-- 0 = number -->
     <system:String x:Key="string_interp_modparsing_modifies">Modifies: {0}</system:String>
     <!-- 0 = List of human readable DLC names (like bring down the sky)-->
     <system:String x:Key="string_interp_modparsing_addCustomDLCs">Add Custom DLCs: {0}</system:String>
@@ -694,7 +703,8 @@
     <system:String x:Key="string_modparsing_configCanChangeIfOtherDLCFound">Configuration of this mod can change if any of the following DLC are present at installation time:</system:String>
     <system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Requires the following DLC to install:</system:String>
     <system:String x:Key="string_modparsing_defaultRCWDescription" xml:space="preserve">RCW mod that applies changes to ME2 Coalesced.ini.\n\nRCW mods are applied directly to the Coalesced.ini file - it is not rebuilt from a vanilla version. This means applying the mod twice may have unintended side effects as duplicate keys may be created.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Error occured parsing archive moddesc.ini {0}: {1}</system:String> <!-- 0 = moddescpath 1 = error message-->
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Error occured parsing archive moddesc.ini {0}: {1}</system:String>
+    <!-- 0 = moddescpath 1 = error message-->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Error occured parsing {0}: {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message-->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occured parsing virtualized moddesc.ini: {e.Message}</system:String>
@@ -792,7 +802,7 @@
 
     <!-- ASI Manager Panel -->
     <system:String x:Key="string_outdatedVersionInstalled">Outdated version installed</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String> 
+    <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->
     <system:String x:Key="string_installedOutdated">Installed, outdated</system:String>
     <system:String x:Key="string_updateASI">Update ASI</system:String>
@@ -814,7 +824,7 @@
     <system:String x:Key="string_installingEllipse">Installing...</system:String>
     <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">View source code for this ASI mod</system:String>
     <system:String x:Key="string_viewSourceCode">View source code</system:String>
-    
+
     <!-- Starter Kit Window-->
     <system:String x:Key="string_newDLCModInformation">New DLC mod information</system:String>
     <system:String x:Key="string_modName">Mod Name</system:String>
@@ -843,7 +853,8 @@
     <system:String x:Key="string_dLCFolderNameCannotBeEmpty">DLC folder name cannot be empty</system:String>
     <system:String x:Key="string_dLCFolderNameCanOnlyConsistOf">DLC folder name can only consist of A-Z a-z 0-9 and _.</system:String>
     <system:String x:Key="string_uRLMustBeOfProtocol">URL must be of protocol type http or https://</system:String>
-    <system:String x:Key="string_valueMustBeBetween0And">Value must be between 0 and {0}</system:String> <!-- 0 = number -->
+    <system:String x:Key="string_valueMustBeBetween0And">Value must be between 0 and {0}</system:String>
+    <!-- 0 = number -->
     <system:String x:Key="string_internalModNameCannotBeEmpty">Internal mod name cannot be empty. This string is shown to users when mod fails to load in-game</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogDLCModuleNumberConflicts">The DLC module number for this mod conflicts with existing DLC:{conflicts}\n\nModule numbers are used to determine filenames in the mod, such as the TLK. Conflicting values will cause undefined behavior and should be avoided. Releasing conflicting mods that are not part of the same mod group (such as mod variants) is likely to get your mod blacklisted from modding tools.\n\nContinue anyways?</system:String>
     <system:String x:Key="string_conflictingDLCModuleNumbers">Conflicting DLC module numbers</system:String>
@@ -851,11 +862,14 @@
     <system:String x:Key="string_conflictingDLCMountPriorityNumbers">Conflicting DLC mount priority numbers</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_discourageUseOfSPSaveRequired">You have chosen to make this mod be required by the savegame. When a user removes your mod (by choice or by repair), saves that were made while this DLC is installed will not be usable by the user. In almost all circumstances this is not desirable for the end user. You should only pick this option if you really know what you're doing.\n\nUse this mount flag anyways?</system:String>
     <system:String x:Key="string_undesirableMountFlag">Undesirable mount flag</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_dialogWillDeleteExistingMod">Creating this mod will delete an existing directory in the mod library:\n{0}\n\nContinue?</system:String> <!-- 0 = directory -->
+    <system:String xml:space="preserve" x:Key="string_interp_dialogWillDeleteExistingMod">Creating this mod will delete an existing directory in the mod library:\n{0}\n\nContinue?</system:String>
+    <!-- 0 = directory -->
     <system:String x:Key="string_dialogErrorDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory">Error occured while deleting existing mod directory:\n{0}</system:String> <!-- 0 = error message -->
+    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory">Error occured while deleting existing mod directory:\n{0}</system:String>
+    <!-- 0 = error message -->
     <system:String x:Key="string_generatingMod">Generating mod</system:String>
-    <system:String x:Key="string_interp_valueMustBeBetween0AndX">Value must be between 0 and {0}</system:String> <!-- 0 = number -->
+    <system:String x:Key="string_interp_valueMustBeBetween0AndX">Value must be between 0 and {0}</system:String>
+    <!-- 0 = number -->
 
     <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
@@ -880,5 +894,6 @@
     <system:String x:Key="string_resetAll">Reset All</system:String>
     <system:String x:Key="string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles">Commits your edits to Mass Effect's configuration files</system:String>
     <system:String x:Key="string_save">Save</system:String>
-
+    <system:String x:Key="string_saved">Saved</system:String>
+    <system:String x:Key="string_resetIniItemsExceptBasic">Ini values have been reset to default (except basic settings). Press save to commit changes.</system:String>
 </ResourceDictionary>

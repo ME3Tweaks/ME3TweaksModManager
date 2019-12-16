@@ -890,5 +890,6 @@
             <system:String x:Key="string_resetAll">Reset All</system:String>
             <system:String x:Key="string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles">Commits your edits to Mass Effect's configuration files</system:String>
             <system:String x:Key="string_save">Save</system:String>
-
+            <system:String x:Key="string_saved">Saved</system:String>
+            <system:String x:Key="string_resetIniItemsExceptBasic">Ini values have been reset to default (except basic settings). Press save to commit changes.</system:String>
 </ResourceDictionary>

@@ -221,7 +221,7 @@
     <!-- 0 is name of official (english only) name of DLC that is not installed (e.g. Bring Down The Sky) -->
     <system:String x:Key="string_dialogOutdatedDLCHeader">The following DLC mods are listed as outdated/no longer relevant by {0} and will be removed upon installation:\n</system:String>
     <!-- 0 = name of mod being installed -->
-    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\nClick yes to continue installing {0}, or click no to abort installation.</system:String>
+    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\Select Yes to continue installing {0}, or select No to abort installation.</system:String>
     <!-- 0 = Name of mod being installed -->
     <system:String x:Key="string_outdatedDLCDetected">Outdated DLC detected</system:String>
     <system:String x:Key="string_dialogIncompatibleDLCDetectedHeader">The following DLC mods are listed as incompatible with {0}:\n</system:String>
