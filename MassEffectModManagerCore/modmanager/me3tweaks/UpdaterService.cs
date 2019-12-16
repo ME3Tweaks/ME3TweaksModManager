@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using ByteSizeLib;
 
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
@@ -116,6 +117,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (matchingMod != null && (forceUpdateCheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
                     {
                         modUpdateInfo.mod = matchingMod;
+                        modUpdateInfo.SetLocalizedInfo();
                         string modBasepath = matchingMod.ModPath;
                         foreach (var serverFile in modUpdateInfo.sourceFiles)
                         {
@@ -279,6 +281,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public bool HasFilesToDownload => applicableUpdates.Count > 0;
             public bool HasFilesToDelete => filesToDelete.Count > 0;
             public string DownloadButtonText { get; set; }
+
+            public string LocalizedLocalVersionString { get; set; }
+            public string LocalizedServerVersionString { get; set; }
             public void RecalculateAmountDownloaded()
             {
                 CurrentBytesDownloaded = sourceFiles.Sum(x => x.AmountDownloaded);
@@ -311,10 +316,23 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
+            /// <summary>
+            /// This mod has enough info to try to resolve version string
+            /// </summary>
             public void ResolveVersionVar()
             {
                 Version.TryParse(versionstr, out version);
             }
+
+            /// <summary>
+            /// This object now has enough variables set to resolve localization strings
+            /// </summary>
+            internal void SetLocalizedInfo()
+            {
+                LocalizedLocalVersionString = M3L.GetString(M3L.string_interp_localVersion, mod.ModVersionString);
+                LocalizedServerVersionString = M3L.GetString(M3L.string_interp_serverVersion, versionstr);
+            }
+
             public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
             public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
             public bool CanUpdate { get; internal set; } = true; //Default to true

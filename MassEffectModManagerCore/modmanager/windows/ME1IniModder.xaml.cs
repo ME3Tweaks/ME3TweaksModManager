@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using MassEffectIniModder.classes;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -157,7 +158,40 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
+            var items = new[] {BioEngineEntries.ToList(), BioGameEntries.ToList(), BioPartyEntries.ToList()};
 
+            foreach (var list in items)
+            {
+                foreach (IniPropertyMaster prop in list)
+                {
+                    if (prop.CanAutoReset)
+                    {
+                        prop.Reset();
+                    }
+                }
+            }
+
+            ShowMessage(M3L.GetString(M3L.string_resetIniItemsExceptBasic),7000);
+        }
+
+        /// <summary>
+        /// Shows a message in the statusbar, which is cleared after a few seconds.
+        /// </summary>
+        /// <param name="v">String to display</param>
+        private void ShowMessage(string v, long milliseconds = 4000)
+        {
+            TextBlock_Status.Text = v;
+            if (milliseconds > 0)
+            {
+                var timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromMilliseconds(milliseconds);
+                timer.Tick += (s, a) =>
+                {
+                    TextBlock_Status.Text = "";
+                    timer.Stop();
+                };
+                timer.Start();
+            }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -207,6 +241,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     }
                     Analytics.TrackEvent(@"Saved game config in MEIM");
                     File.WriteAllText(configFileBeingUpdated, ini.ToString());
+                    ShowMessage(M3L.GetString(M3L.string_saved));
                 }
             }
         }

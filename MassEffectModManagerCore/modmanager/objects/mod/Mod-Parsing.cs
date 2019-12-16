@@ -337,7 +337,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 //try in old location
                 int.TryParse(iniData[@"ModInfo"][@"updatecode"], out int modupdatecode2);
-                ModClassicUpdateCode = modupdatecode;
+                ModClassicUpdateCode = modupdatecode2;
             }
 
             int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode);

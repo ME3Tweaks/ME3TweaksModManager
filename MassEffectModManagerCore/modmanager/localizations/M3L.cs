@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Windows;
-using MassEffectModManagerCore.modmanager.windows;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.localizations
@@ -36,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 			return ShowDialog(owner, message, "", MessageBoxButton.OK);
 		}
 
-		internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult)
+        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult)
         {
             var msgBox = new Xceed.Wpf.Toolkit.MessageBox();
             msgBox.InitializeMessageBox(owner, IntPtr.Zero, message, caption, buttons, image, defaultResult);
@@ -91,8 +90,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_LogModInstallation = "string_LogModInstallation";
 		public static readonly string string_Checkforcontentupdates = "string_Checkforcontentupdates";
 		public static readonly string string_ChecksME3Tweaksforupdatestovariousservices = "string_ChecksME3Tweaksforupdatestovariousservices";
-		public static readonly string string_ReloadsMods = "string_ReloadsMods";
 		public static readonly string string_Reloadsmodsfromthemodlibrary = "string_Reloadsmodsfromthemodlibrary";
+		public static readonly string string_tooltip_reloadModsfromLibrary = "string_tooltip_reloadModsfromLibrary";
 		public static readonly string string_Exit = "string_Exit";
 		public static readonly string string_ModManagement = "string_ModManagement";
 		public static readonly string string_ImportMod = "string_ImportMod";
@@ -260,7 +259,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_launchCurrentlySelectedTarget = "string_tooltip_launchCurrentlySelectedTarget";
 		public static readonly string string_tooltip_applyThisModToTheGame = "string_tooltip_applyThisModToTheGame";
 		public static readonly string string_tooltip_currentTarget = "string_tooltip_currentTarget";
-		public static readonly string string_tooltip_reloadModsFromLibrary = "string_tooltip_reloadModsFromLibrary";
 		public static readonly string string_tooltip_filterME1 = "string_tooltip_filterME1";
 		public static readonly string string_tooltip_filterME2 = "string_tooltip_filterME2";
 		public static readonly string string_tooltip_filterME3 = "string_tooltip_filterME3";
@@ -314,6 +312,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_previewPanelIntro = "string_previewPanelIntro";
 		public static readonly string string_joinDiscord = "string_joinDiscord";
 		public static readonly string string_close = "string_close";
+		public static readonly string string_tooltip_translationIsInProgressButIsNotYetAvailable = "string_tooltip_translationIsInProgressButIsNotYetAvailable";
 		public static readonly string string_tooltip_multithreadDeployment = "string_tooltip_multithreadDeployment";
 		public static readonly string string_multiThreadedCompression = "string_multiThreadedCompression";
 		public static readonly string string_deploy = "string_deploy";
@@ -506,6 +505,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_errorOccuredWhileUpdatingXErrorMessage = "string_interp_errorOccuredWhileUpdatingXErrorMessage";
 		public static readonly string string_interp_errorUpdatingX = "string_interp_errorUpdatingX";
 		public static readonly string string_updated = "string_updated";
+		public static readonly string string_interp_localVersion = "string_interp_localVersion";
+		public static readonly string string_interp_serverVersion = "string_interp_serverVersion";
 		public static readonly string string_anUpdateToME3TweaksModManagerIsAvailable = "string_anUpdateToME3TweaksModManagerIsAvailable";
 		public static readonly string string_downloadingUpdate = "string_downloadingUpdate";
 		public static readonly string string_preparingToApplyUpdate = "string_preparingToApplyUpdate";
@@ -756,10 +757,22 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_valueMustBeBetween0AndX = "string_interp_valueMustBeBetween0AndX";
 		public static readonly string string_dialogCouldNotSetDataToClipboard = "string_dialogCouldNotSetDataToClipboard";
 		public static readonly string string_errorCopyingDataToClipboard = "string_errorCopyingDataToClipboard";
+		public static readonly string string_copyItemsToClipboard = "string_copyItemsToClipboard";
+		public static readonly string string_copiedToClipboard = "string_copiedToClipboard";
 		public static readonly string string_dialog_missingConfigFileForMEIM = "string_dialog_missingConfigFileForMEIM";
 		public static readonly string string_interp_dialogConfigDirectoryMissing = "string_interp_dialogConfigDirectoryMissing";
 		public static readonly string string_cannotRunMassEffectIniModder = "string_cannotRunMassEffectIniModder";
 		public static readonly string string_interp_propertyNotSaved = "string_interp_propertyNotSaved";
 		public static readonly string string_errorSavingProperties = "string_errorSavingProperties";
+		public static readonly string string_tooltip_attributesThatModifyTheGameEngine = "string_tooltip_attributesThatModifyTheGameEngine";
+		public static readonly string string_tooltip_attributesThatModifyGameplay = "string_tooltip_attributesThatModifyGameplay";
+		public static readonly string string_tooltip_attributesThatModifyYouAndYourParty = "string_tooltip_attributesThatModifyYouAndYourParty";
+		public static readonly string string_makeSureToPressSaveToSaveYourChanges = "string_makeSureToPressSaveToSaveYourChanges";
+		public static readonly string string_tooltip_resetsAllPropertiesThatThisToolCanModifyToDefaultValues = "string_tooltip_resetsAllPropertiesThatThisToolCanModifyToDefaultValues";
+		public static readonly string string_resetAll = "string_resetAll";
+		public static readonly string string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles = "string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles";
+		public static readonly string string_save = "string_save";
+		public static readonly string string_saved = "string_saved";
+		public static readonly string string_resetIniItemsExceptBasic = "string_resetIniItemsExceptBasic";
 	}
 }
