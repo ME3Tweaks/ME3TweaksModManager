@@ -146,11 +146,11 @@
     <system:String x:Key="string_checkingForModManagerUpdates">Checking for Mod Manager updates</system:String>
     <system:String x:Key="string_completedModManagerUpdateCheck">Completed Mod Manager update check</system:String>
     <system:String x:Key="string_failedToCheckForUpdates">Failed to check for updates</system:String>
-    <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Could not download static supporting files to ME3Tweaks Mod Manager. Mod Manager may be unstable due to these files not being present. Ensure you are able to connect to Github.com so these assets may be downloaded.</system:String>
+    <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Could not download the static component files for ME3Tweaks Mod Manager. Mod Manager may be unstable due to these files not being present. Ensure you are able to connect to Github.com so these assets may be downloaded.</system:String>
     <system:String x:Key="string_missingAssets">Missing assets</system:String>
-    <system:String x:Key="string_failedToDownloadStaticFiles">Failed to download static files</system:String>
-    <system:String x:Key="string_downloadingStaticFiles">Downloading static files</system:String>
-    <system:String x:Key="string_staticFilesDownloaded">Static files downloaded</system:String>
+    <system:String x:Key="string_failedToDownloadStaticFiles">Failed to download static components</system:String>
+    <system:String x:Key="string_downloadingStaticFiles">Downloading static components</system:String>
+    <system:String x:Key="string_staticFilesDownloaded">Downloaded static components</system:String>
     <system:String x:Key="string_dialogTurningOffTelemetry">Disabling telemetry makes it more difficult to fix bugs and develop new features for ME3Tweaks Mod Manager. Telemetry data collected is used to identify crashes, errors, see what demand there is for various mod support, and see what tasks are difficult for users (such as lack of guidance on a particular enforced rule of modding).\n\nYou can continue to turn it off, but it provides valuable metrics to the developers of this program and to the modding scene.\n\nTurn off telemetry?</system:String>
     <system:String x:Key="string_turningOffTelemetry">Turning off telemetry</system:String>
     <system:String x:Key="string_selectModLibraryFolder">Select mod library folder</system:String>
@@ -173,7 +173,7 @@
     <system:String x:Key="string_selectModArchive">Select mod archive</system:String>
     <system:String x:Key="string_selectGameExecutable">Select game executable</system:String>
     <system:String x:Key="string_interp_unendorseMod">Unendorse {0}?</system:String>
-    <system:String x:Key="string_interp_unableToModifyBioinputIni">Unable to modify bioinput.ini: {0}</system:String>
+    <system:String x:Key="string_interp_unableToModifyBioinputIni">Unable to modify BioInput.ini: {0}</system:String>
     <system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">Delete {0} from your mod library? This only deletes the mod from your local Mod Manager library, it does not remove it from any game installations.</system:String>
     <system:String x:Key="string_interp_modManagerHasBeenUpdatedTo">Mod Manager has been updated from build {0} to version {1}.</system:String>
     <system:String x:Key="string_interp_launching">Launching {0}</system:String>
@@ -266,7 +266,7 @@
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
     <system:String x:Key="string_multiThreadedCompression">Multi-threaded compression</system:String>
-    <system:String x:Key="string_deploy">Deploy</system:String>
+    <system:String x:Key="string_deploy">Deploy to .7z</system:String>
     <system:String x:Key="string_deploymentChecklist">Deployment checklist</system:String>
     <system:String x:Key="string_prepareModForDistribution">Prepare mod for distribution</system:String>
     <system:String x:Key="string_compressiongModForDistribution">Compressing mod for distribution</system:String>
