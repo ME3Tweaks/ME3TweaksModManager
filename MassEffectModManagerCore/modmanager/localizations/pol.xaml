@@ -507,7 +507,11 @@
             <system:String x:Key="string_interp_errorUpdatingX">Error updating {0}</system:String>
             <!-- 0 = mod name-->
             <system:String x:Key="string_updated">Updated</system:String>
-
+            <system:String x:Key="string_interp_localVersion">Local version: {0}</system:String> 
+            <!-- 0 = version string -->
+            <system:String x:Key="string_interp_serverVersion">Server version: {0}</system:String>
+            <!-- 0 = version string -->
+   
             <!-- Program updater -->
             <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
             <system:String x:Key="string_downloadingUpdate">Downloading update</system:String>
