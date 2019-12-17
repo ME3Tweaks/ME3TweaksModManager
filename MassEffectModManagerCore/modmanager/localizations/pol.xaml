@@ -441,7 +441,7 @@
             <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Will attempt to restore all modified SFARs. Will delete unpacked files too.</system:String>
             <system:String x:Key="string_restoreAllModifiedSFARs">Restore all modified SFARs</system:String>
             <system:String x:Key="string_inconsistencyDetected">Inconsistency detected</system:String>
-            <system:String x:Key="string_removeTargetFromM3">Remove target from M3</system:String>
+            <system:String x:Key="string_removeTargetFromM3">Remove target</system:String>
             <system:String x:Key="string_openInExplorer">Open in Explorer</system:String>
             <system:String x:Key="string_clickToOpenALOTInstaller">Click to open ALOT Installer</system:String>
             <system:String x:Key="string_manageTexturesWithALOTInstaller">Manage textures with ALOT Installer</system:String>
@@ -467,7 +467,7 @@
             <system:String x:Key="string_selectAModOnTheLeftToViewItsDescription">Select a mod on the left to view its description</system:String>
             <system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Select mods to import into Mod Manager library</system:String>
             <system:String x:Key="string_noCompatibleModsFoundInArchive">No compatible mods found in archive</system:String>
-            <system:String x:Key="string_executableModsMustBeValidatedByME3Tweaks">Executable installer based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.</system:String>
+            <system:String x:Key="string_executableModsMustBeValidatedByME3Tweaks">Executable installer based mods must be validated by ME3Tweaks before they can be imported into Mod Manager. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.</system:String>
             <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
             <system:String x:Key="string_interp_scanningX">Scanning {0}</system:String>
             <!-- 0 = filename -->
@@ -570,7 +570,7 @@
             <system:String x:Key="string_submitToME3Tweaks">Submit to ME3Tweaks</system:String>
             <system:String x:Key="string_submitting">Submitting...</system:String>
             <system:String x:Key="string_submitted">Submitted</system:String>
-            <system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 does not support mount flags in M3 currently</system:String>
+            <system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 does not support mount flags in Mod Manager currently</system:String>
             <system:String x:Key="string_mE3TweaksTPMISubmission">ME3Tweaks TPMI submission</system:String>
             <system:String x:Key="string_telemetryPanelHeader">Submitting your mod information to the Third Party Mod Identification database allows ME3Tweaks to provide better services to the modding scene.</system:String>
             <system:String x:Key="string_dLCFolderNameColon">DLC folder name:</system:String>
@@ -658,9 +658,9 @@
             <!-- ModJob -->
             <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {0} does not exist but is specified by the job.</system:String>
             <!-- 0 = source file path in moddesc -->
-            <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe files are not allowed in M3 mods.</system:String>
-            <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll files are not allowed in M3 mods.</system:String>
-            <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi files are not allowed in M3 mods.</system:String>
+            <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe files are not allowed in Mod Manager mods.</system:String>
+            <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll files are not allowed in Mod Manager mods.</system:String>
+            <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi files are not allowed in Mod Manager mods.</system:String>
             <system:String x:Key="string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist">Failed to add additional file to mod job: {0} does not exist but is specified by the job.</system:String>
             <!-- 0 = source file path in moddesc -->
             <system:String x:Key="string_interp_validation_modjob_additionalFileAlreadyMarkedForModification">Failed to add additional file to mod job: {0} already is marked for modification. Files that are in the addfiles descriptor cannot overlap each other or replacement files.</system:String>
@@ -728,7 +728,7 @@
             <!-- 0 = header string in moddesc.ini-->
             <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerUnsupportedOnLTModdesc3">Job header ({0}) has been specified as part of the mod, but this header is only supported when targeting ModDesc 3 or higher.</system:String>
             <!-- 0 = header string in moddesc.ini-->
-            <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport">Error occured while automapping the replace files lists for {0}: {1}. This is likely a bug in M3, please report it to Mgamerz.</system:String>
+            <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport">Error occured while automapping the replace files lists for {0}: {1}. This is likely a bug in Mod Manager, please report it to Mgamerz.</system:String>
             <!-- 0 = header string in moddesc.ini, 1 = error message -->
             <system:String x:Key="string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound">Error occured while parsing the replace files lists for {0}: source directory {1} was not found and the gamedirectorystructure flag was used on this job.</system:String>
             <!-- 0 = header string in moddesc.ini, 1 = folder path -->
@@ -764,7 +764,7 @@
             <system:String x:Key="string_interp_validation_modparsing_loadfailed_specifiedRCWFileDoesntExist">Mod specifies ME2_RCWMOD job, but the specified file doesn't exist: {0}</system:String>
             <!-- 0 = filepath -->
             <system:String x:Key="string_validation_modparsing_loadfailed_cannotLoadCompressedRCWModThroughMainLoaderLikelyBug">Cannot load a compressed RCW mod through the main mod loader. It may be that this mod includes an RCW mod with other tasks, which is not allowed.</system:String>
-            <system:String x:Key="string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod">M3-mod based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.</system:String>
+            <system:String x:Key="string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod">Mod Manager based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.</system:String>
             <system:String x:Key="string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified">This mod specifies required DLC but does not match a supported value or start with DLC_. The value that failed was: {0}</system:String>
             <!-- 0 = value from moddesc.ini file -->
             <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated">CustomDLC header contains an item in outdatedcustomdlc list that is an official DLC: {0}. This is not allowed.</system:String>
