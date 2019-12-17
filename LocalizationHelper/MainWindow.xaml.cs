@@ -585,5 +585,34 @@ namespace LocalizationHelper
                 }
             }
         }
+
+        private void CheckXmlSpacePreserve_Clicked(object sender, RoutedEventArgs e)
+        {
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var localizationsFolder = Path.Combine(solutionroot, "MassEffectModManagerCore", "modmanager", "localizations");
+            var m3lFile = Path.Combine(localizationsFolder, "M3L.cs");
+            var m3lTemplateFile = Path.Combine(localizationsFolder, "M3L_Template.txt");
+            var intfile = Path.Combine(localizationsFolder, "int.xaml");
+
+            var m3llines = File.ReadAllLines(m3lTemplateFile).ToList();
+
+            var doc = XDocument.Load(intfile);
+            XNamespace xnamespace = "clr-namespace:System;assembly=System.Runtime";
+            XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+            XNamespace xml = "http://schemas.microsoft.com/winfx/2006/xaml";
+            var keys = doc.Descendants(xnamespace + "String");
+            foreach (var key in keys)
+            {
+                if (key.Value.Contains(@"\n"))
+                {
+                    //check for preserve space
+                    var preserveSpace = key.Attribute(XNamespace.Xml + "space");
+                    if (preserveSpace == null || preserveSpace.Value != "preserve")
+                    {
+                        Debug.WriteLine(key.Value);
+                    }
+                }
+            }
+        }
     }
 }
