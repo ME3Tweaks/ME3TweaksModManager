@@ -308,6 +308,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Analytics.TrackEvent(@"Generated a UI compatibility pack", new Dictionary<string, string>() { { @"Result", gctr.ToString() } });
                     OnClosing(DataEventArgs.Empty);
+                    if (gctr == GUICompatibilityThreadResult.NOT_REQUIRED)
+                    {
+                        M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialogNoCompatPackRequired), M3L.GetString(M3L.string_noCompatPackRequired), MessageBoxButton.OK);
+                    }
                 }
                 else
                 {

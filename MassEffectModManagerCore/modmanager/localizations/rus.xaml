@@ -402,6 +402,9 @@
     <system:String x:Key="string_patchingFiles">Patching files</system:String>
     <system:String x:Key="string_interp_patchedXY">Patched {0} {1}</system:String>
     <!-- 0 = number, 1 = plural files/singular file-->
+    <system:String x:Key="string_noCompatPackRequired">No compatibility pack required</system:String>
+    <system:String x:Key="string_dialogNoCompatPackRequired">The current game configuration does not need a compatibility pack.</system:String>
+
 
     <!-- Installation Information -->
     <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Restoring files while ALOT is installed is not allowed as it will introduce invalid texture pointers into the installation.</system:String>
@@ -651,7 +654,7 @@
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
     <!-- 0 = filename of file that is not found in game dir but should be there -->
     <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialog_cannotRemoveActiveTarget">Cannot remove a target that is currently the active boot target.\nChange the active target in the main window dropdown to remove allow removing this target</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_cannotRemoveActiveTarget">Cannot remove a target that is currently the active boot target.\nChange the active target in the main window dropdown to allow removing this target</system:String>
     <system:String x:Key="string_tooltip_removeTargetFromM3">Removes this target from Mod Manager's list of available targets for modding</system:String>
     <system:String x:Key="string_unpacked">Unpacked</system:String>
     <system:String x:Key="string_cleaningUp">Cleaning up</system:String>

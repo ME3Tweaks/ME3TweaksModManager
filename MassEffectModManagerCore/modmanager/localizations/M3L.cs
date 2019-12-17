@@ -20,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
             return ShowDialog(owner, message, caption, MessageBoxButton.OK);
         }
 
-        private static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons)
+        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons)
         {
             return ShowDialog(owner, message, caption, buttons, MessageBoxImage.None);
         }
@@ -424,6 +424,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_decompressingData = "string_decompressingData";
 		public static readonly string string_patchingFiles = "string_patchingFiles";
 		public static readonly string string_interp_patchedXY = "string_interp_patchedXY";
+		public static readonly string string_noCompatPackRequired = "string_noCompatPackRequired";
+		public static readonly string string_dialogNoCompatPackRequired = "string_dialogNoCompatPackRequired";
 		public static readonly string string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed = "string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed";
 		public static readonly string string_cannotRestoreSfarFiles = "string_cannotRestoreSfarFiles";
 		public static readonly string string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode = "string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode";
