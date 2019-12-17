@@ -290,6 +290,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var generatedMod = GenerateCompatibilityPackForFiles(nonUIinstalledDLCMods, filesToBePatched.Keys.ToList(), libraryArchive);
                             b.Result = GUICompatibilityThreadResult.GENERATED_PACK;
                             Application.Current.Dispatcher.Invoke(delegate { ((MainWindow)window).LoadMods(generatedMod); }); //reload to this mod
+                            return;
                         }
                     }
 
