@@ -20,8 +20,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
-
-        private const string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
+        private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice.json";
 
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
@@ -76,7 +75,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 using var wc = new System.Net.WebClient();
                 return wc.DownloadStringAwareOfEncoding(url);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error("Error downloading string: " + e.Message);
                 return null;
@@ -97,7 +97,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return moddesc;
         }
 
-        public static List<string> FetchTipsService(bool overrideThrottling = false)
+        public static Dictionary<string, List<string>> FetchTipsService(bool overrideThrottling = false)
         {
             if (!File.Exists(Utilities.GetTipsServiceFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
             {
@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
                     File.WriteAllText(Utilities.GetTipsServiceFile(), json);
-                    return JsonConvert.DeserializeObject<List<string>>(json);
+                    return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
                 }
                 catch (Exception e)
                 {
@@ -117,12 +117,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (File.Exists(Utilities.GetTipsServiceFile()))
                     {
                         Log.Warning("Using cached tips service file instead");
-                        return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+                        return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
                     }
                     else
                     {
                         Log.Error("Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
-                        return new List<string>();
+                        return new Dictionary<string, List<string>>();
                     }
                 }
             }
