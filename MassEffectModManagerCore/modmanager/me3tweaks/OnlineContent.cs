@@ -20,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
-        private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice.json";
+        private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice";
 
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
@@ -127,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+            return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
         }
 
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)

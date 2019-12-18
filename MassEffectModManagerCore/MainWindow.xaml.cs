@@ -1727,8 +1727,17 @@ namespace MassEffectModManagerCore
 
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
-                LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!firstStartupCheck));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
+                try
+                {
+                    App.TipsService = OnlineContent.FetchTipsService(!firstStartupCheck);
+                    SetTipsForLanguage();
+
+                }
+                catch (Exception e)
+                {
+                    Log.Error(@"Failed to load tips service: " + e.Message);
+                }
+
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 if (firstStartupCheck)
                 {
@@ -1778,6 +1787,22 @@ namespace MassEffectModManagerCore
             };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
+        }
+
+        private void SetTipsForLanguage()
+        {
+            if (App.TipsService != null)
+            {
+                if (App.TipsService.TryGetValue(App.CurrentLanguage, out var tips))
+                {
+                    LoadedTips.ReplaceAll(tips);
+                }
+                else
+                {
+                    LoadedTips.Clear();
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
+            }
         }
 
         private List<MenuItem> RecursiveBuildDynamicHelpMenuItems(List<SortableHelpElement> sortableHelpItems)
@@ -2248,6 +2273,8 @@ namespace MassEffectModManagerCore
                 Source = new Uri($@"pack://application:,,,/ME3TweaksModManager;component/modmanager/localizations/{lang}.xaml", UriKind.Absolute)
             };
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
+            App.CurrentLanguage = lang;
+            SetTipsForLanguage();
         }
 
         private void ReloadSelectedMod_Click(object sender, RoutedEventArgs e)
