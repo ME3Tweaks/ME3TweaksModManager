@@ -649,7 +649,7 @@
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->
-    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot Installed</system:String>
+    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot installed</system:String>
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
     <!-- 0 = filename of file that is not found in game dir but should be there -->
     <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
