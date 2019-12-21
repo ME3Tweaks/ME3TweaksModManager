@@ -118,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
-            ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage", false);
+            ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             ModLibraryPath = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
 
@@ -202,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
             SaveSettingString(settingsIni, "ModManager", "Language", Language);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
-            SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage", ShowedPreviewPanel);
+            SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
             try
             {
                 File.WriteAllText(SettingsPath, settingsIni.ToString());

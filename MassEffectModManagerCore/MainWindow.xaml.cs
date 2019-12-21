@@ -1103,7 +1103,7 @@ namespace MassEffectModManagerCore
                 ShowUpdateCompletedPane();
             }
 
-            if (Settings.ShowedPreviewPanel)
+            if (!Settings.ShowedPreviewPanel)
             {
                 ShowPreviewPanel();
             }
@@ -1114,9 +1114,9 @@ namespace MassEffectModManagerCore
 
         private void ShowPreviewPanel()
         {
-            var archiveDeploymentPane = new PreviewWelcomePanel();
-            archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(archiveDeploymentPane);
+            var previewPanel = new PreviewWelcomePanel();
+            previewPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(previewPanel);
         }
 
         private void UpdateBinkStatus(Mod.MEGame game)
