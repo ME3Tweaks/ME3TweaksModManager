@@ -21,7 +21,7 @@
     <system:String x:Key="string_LogModStartup">Log Mod Startup</system:String>
     <system:String x:Key="string_LogMixinStartup">Log Mixin Startup</system:String>
     <system:String x:Key="string_LogModInstallation">Log Mod Installation</system:String>
-    <system:String x:Key="string_Checkforcontentupdates">Check for content updates</system:String>
+    <system:String x:Key="string_Checkforcontentupdates">Check for Mod Manager content updates</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks ME3Tweaks.com for updates to various services</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Refresh the mod library</system:String>
     <system:String x:Key="string_tooltip_reloadModsfromLibrary">Refreshes the list of available mods in the mod library</system:String>
