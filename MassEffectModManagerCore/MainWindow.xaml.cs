@@ -955,7 +955,7 @@ namespace MassEffectModManagerCore
 
         private void CheckForContentUpdates()
         {
-            PerformStartupNetworkFetches(false);
+            PerformStartupNetworkFetches(false, TODO);
         }
 
         public bool IsLoadingMods { get; set; }
@@ -1109,7 +1109,7 @@ namespace MassEffectModManagerCore
             }
 
             LoadMods();
-            PerformStartupNetworkFetches(true);
+            PerformStartupNetworkFetches(true, TODO);
         }
 
         private void ShowPreviewPanel()
@@ -1588,28 +1588,10 @@ namespace MassEffectModManagerCore
             bw.WorkerReportsProgress = true;
             bw.ProgressChanged += (sender, args) =>
             {
+                //Help items loading
                 if (args.UserState is List<SortableHelpElement> sortableHelpItems)
                 {
-                    //Replacing the dynamic help menu
-                    //DynamicHelp_MenuItem.Items.RemoveAll(x=>x.Tag is string str && str == "DynamicHelp");
-
-                    var dynamicMenuItems = RecursiveBuildDynamicHelpMenuItems(sortableHelpItems);
-
-                    //Clear old items out
-                    for (int i = HelpMenuItem.Items.Count - 1; i > 0; i--)
-                    {
-                        if (HelpMenuItem.Items[i] is MenuItem menuItem && menuItem.Tag is string str && str == @"DynamicHelp")
-                        {
-                            HelpMenuItem.Items.Remove(menuItem);
-                        }
-                    }
-
-                    dynamicMenuItems.Reverse(); //we are going to insert these in reverse order
-                    var dynamicHelpHeaderIndex = HelpMenuItem.Items.IndexOf(DynamicHelp_MenuItem) + 1;
-                    foreach (var v in dynamicMenuItems)
-                    {
-                        HelpMenuItem.Items.Insert(dynamicHelpHeaderIndex, v);
-                    }
+                    setDynamicHelpMenu(sortableHelpItems);
                 }
             };
             bw.DoWork += (a, b) =>
@@ -1714,7 +1696,7 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
-                var helpItemsLoading = OnlineContent.FetchLatestHelp(!firstStartupCheck);
+                var helpItemsLoading = OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !firstStartupCheck);
                 bw.ReportProgress(0, helpItemsLoading);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
@@ -1787,6 +1769,34 @@ namespace MassEffectModManagerCore
             };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Refreshes the dynamic help list
+        /// </summary>
+        /// <param name="sortableHelpItems"></param>
+        private void setDynamicHelpMenu(List<SortableHelpElement> sortableHelpItems)
+        {
+            //Replacing the dynamic help menu
+            //DynamicHelp_MenuItem.Items.RemoveAll(x=>x.Tag is string str && str == "DynamicHelp");
+
+            var dynamicMenuItems = RecursiveBuildDynamicHelpMenuItems(sortableHelpItems);
+
+            //Clear old items out
+            for (int i = HelpMenuItem.Items.Count - 1; i > 0; i--)
+            {
+                if (HelpMenuItem.Items[i] is MenuItem menuItem && menuItem.Tag is string str && str == @"DynamicHelp")
+                {
+                    HelpMenuItem.Items.Remove(menuItem);
+                }
+            }
+
+            dynamicMenuItems.Reverse(); //we are going to insert these in reverse order
+            var dynamicHelpHeaderIndex = HelpMenuItem.Items.IndexOf(DynamicHelp_MenuItem) + 1;
+            foreach (var v in dynamicMenuItems)
+            {
+                HelpMenuItem.Items.Insert(dynamicHelpHeaderIndex, v);
+            }
         }
 
         private void SetTipsForLanguage()
@@ -2275,6 +2285,15 @@ namespace MassEffectModManagerCore
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
             App.CurrentLanguage = lang;
             SetTipsForLanguage();
+            try
+            {
+                var localizedHelpItems = OnlineContent.FetchLatestHelp(lang, true, false);
+                setDynamicHelpMenu(localizedHelpItems);
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Could not set localized dyanmic help: " + e.Message);
+            }
         }
 
         private void ReloadSelectedMod_Click(object sender, RoutedEventArgs e)
