@@ -392,7 +392,7 @@
     <!-- Singular version of file-->
     <system:String x:Key="string_pluralFiles">files</system:String>
     <!-- Plural version of file-->
-    <system:String x:Key="string_interp_XFilesNeedToBePatched">{0} {1} need to be patched</system:String>
+    <system:String x:Key="string_interp_XFilesNeedToBePatched">Number of files requiring patches: {0}</system:String>
     <!-- 0 = number, 1 = singular/plural version of file -->
     <system:String xml:space="preserve" x:Key="string_interp_compatPackModDescription">User generated compatibility pack made to inject proper interface files into other DLC mods from the game configuration. This pack was built against the following mods and should not be used against any other configuration.\n - {0}\n\nThis compatibility pack was generated at {1}</system:String>
     <!-- 0 = bulleted dlc list, 1 = date time-->

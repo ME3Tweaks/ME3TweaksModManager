@@ -272,7 +272,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         {
                                             //match
                                             filesToBePatched[packagefile] = packagefile;
-                                            ActionSubstring = M3L.GetString(M3L.string_interp_XFilesNeedToBePatched, filesToBePatched.Count.ToString(), filesToBePatched.Count == 1 ? singlesuffix : pluralsuffix);
+                                            ActionSubstring = M3L.GetString(M3L.string_interp_XFilesNeedToBePatched, filesToBePatched.Count.ToString());
                                             Log.Information($@"{firstNonUIModDlc} {pair.Key} has GUI export that is in UI library, marking for patching. Trigger: {export.GetFullPath}");
                                             break;
                                         }
