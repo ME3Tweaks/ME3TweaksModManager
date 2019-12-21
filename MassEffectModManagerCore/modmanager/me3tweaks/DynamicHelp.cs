@@ -64,7 +64,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 doc.LoadXml(xml);
                 var sortableHelpItems = new List<SortableHelpElement>();
                 //Get top level items, in order
-                string xpathExpression = $"/helpmenu[@lang='{language}']/helpitem|/helpmenu[@lang='{language}']/list";
+                string xpathExpression = $"/localizations/helpmenu[@lang='{language}']/helpitem|/localizations/helpmenu[@lang='{language}']/list";
 
                 var nodes = doc.SelectNodes(xpathExpression);
                 foreach (XmlNode node in nodes)

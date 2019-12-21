@@ -94,7 +94,7 @@
     </list>
   </helpmenu>
   <helpmenu lang="rus">
-    <helpitem title="RUS RUS RUS ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services"/>
+    <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services"/>
     <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Chat server for finding other players of Mass Effect 3 MP and Mass Effect Andromeda MP"/>
     <helpitem title="ME3Tweaks Mod Manager is a work in progress" modaltitle="Warning: Construction ahead" icon="INFO">ME3Tweaks Mod Manager is currently in a preview stage. Many features from Mass Effect 3 Mod Manager are being ported over but this procedure will take some time. Please report any crashes to the ME3Tweaks Discord.</helpitem>
 

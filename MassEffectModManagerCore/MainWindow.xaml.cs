@@ -955,7 +955,7 @@ namespace MassEffectModManagerCore
 
         private void CheckForContentUpdates()
         {
-            PerformStartupNetworkFetches(false, TODO);
+            PerformStartupNetworkFetches(false);
         }
 
         public bool IsLoadingMods { get; set; }
@@ -1109,7 +1109,7 @@ namespace MassEffectModManagerCore
             }
 
             LoadMods();
-            PerformStartupNetworkFetches(true, TODO);
+            PerformStartupNetworkFetches(true);
         }
 
         private void ShowPreviewPanel()
