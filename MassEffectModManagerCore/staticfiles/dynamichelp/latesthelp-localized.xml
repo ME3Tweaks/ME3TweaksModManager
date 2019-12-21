@@ -8,7 +8,9 @@
     <list title="Get Mods">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="ME3Tweaks Curated Mod List" url="https://me3tweaks.com/mods" tooltip="Browse mods curated by ME3Tweaks"/>
-      <helpitem title="NexusMods" url="http://www.nexusmods.com/masseffect3/" tooltip="Browse mods developed for Mass Effect 3 on NexusMods"/>
+      <helpitem title="NexusMods (ME1)" url="http://www.nexusmods.com/masseffect/" tooltip="Browse mods developed for Mass Effect on NexusMods"/>
+      <helpitem title="NexusMods (ME2)" url="http://www.nexusmods.com/masseffect2/" tooltip="Browse mods developed for Mass Effect 2 on NexusMods"/>
+      <helpitem title="NexusMods (ME3)" url="http://www.nexusmods.com/masseffect3/" tooltip="Browse mods developed for Mass Effect 3 on NexusMods"/>
     </list>
     <list title="How to">
       <helpitem title="Add a mod" modaltitle="Adding mods to Mod Manager" icon="INFO">To add a mod to Mod Manager, drag and drop its zip/rar/7z file onto Mod Manager's main interface.&lt;br&gt;&lt;br&gt;To download and add a ModMaker mod enter its code into the Mod Management &gt; Download ME3Tweaks ModMaker Mod window.</helpitem>
@@ -24,7 +26,7 @@
       <!--<helpitem title="Can I mix mods" modaltitle="Mixing Mods" modalicon="WARNING">Mods can be mixed through the Mod Manager mod merging utility in the tools menu. You can also overlay mods on top of each other in the game and then Run AutoTOC on game from the tools menu. Mods overlaid on top of each other may break each other or the game.</helpitem>-->
       <helpitem title="Can I get banned from ME3 MP for using mods" modalicon="INFO" modaltitle="Mods and Multiplayer">BioWare has abandoned Mass Effect 3 since 2013, they do not ban or monitor anything related to Mass Effect 3 anymore. That said, if you are modding Mass Effect 3 multiplayer, you should keep it in private lobbies to be considerate to others.</helpitem>
       <helpitem title="My DLC fails to authorize" modaltitle="DLC failing to authorize" modalicon="INFO" resource="DLC_AUTH_FAIL.png" md5="532698c6707450dbcd1281b65521d584" size="116835">After installing a mod, if you get a screen similar to the one below at the main menu, the DLC listed will not load.&lt;br&gt;The list may be blank if the developer did not give their DLC a name.&lt;br&gt;Installing any mod through Mod Manager should resolve this issue, unless the DLC is corrupt. Otherwise you will need to install Binkw32 bypass from the Tools menu.</helpitem>
-      <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="Custom DLC Auth Issues">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Target Info' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
+      <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="DLC still not authorizing">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Target Info' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
     </list>
     <list title="Changelogs">
       <helpitem title="ME3Tweaks Mod Manager 6.0 Preview (Build 100)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.100"/>
