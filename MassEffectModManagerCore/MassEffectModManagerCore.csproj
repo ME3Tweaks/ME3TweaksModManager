@@ -11,9 +11,9 @@
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
     <UserSecretsId>a466212e-477d-4822-b2f5-f65f287a7c7c</UserSecretsId>
-    <AssemblyVersion>6.0.0.102</AssemblyVersion>
-    <FileVersion>6.0.0.102</FileVersion>
-    <Copyright>ME3Tweaks 2012-2019</Copyright>
+    <AssemblyVersion>6.0.0.103</AssemblyVersion>
+    <FileVersion>6.0.0.103</FileVersion>
+    <Copyright>ME3Tweaks 2012 - 2019</Copyright>
     <Authors>Mgamerz</Authors>
     <PackageId>MassEffectModManagerCore</PackageId>
     <Product>ME3Tweaks Mod Manager</Product>
@@ -22,7 +22,7 @@
     <StartupObject>MassEffectModManagerCore.App</StartupObject>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
     <AssemblyName>ME3TweaksModManager</AssemblyName>
-    <Version>6.0.0.102</Version>
+    <Version>6.0.0.103</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
