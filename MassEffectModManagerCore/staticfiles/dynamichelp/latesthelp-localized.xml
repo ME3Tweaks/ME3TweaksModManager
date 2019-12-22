@@ -13,11 +13,11 @@
       <helpitem title="NexusMods (ME3)" url="http://www.nexusmods.com/masseffect3/" tooltip="Browse mods developed for Mass Effect 3 on NexusMods"/>
     </list>
     <list title="How to">
-      <helpitem title="Add a mod" modaltitle="Adding mods to Mod Manager" icon="INFO">To add a mod to Mod Manager, drag and drop its zip/rar/7z file onto Mod Manager's main interface.&lt;br&gt;&lt;br&gt;To download and add a ModMaker mod enter its code into the Mod Management &gt; Download ME3Tweaks ModMaker Mod window.</helpitem>
+      <helpitem title="Add a mod" modaltitle="Adding mods to Mod Manager" icon="INFO">To add a mod to Mod Manager, drag and drop its zip/rar/7z/exe/me2mod file onto Mod Manager's main interface.&lt;br&gt;&lt;br&gt;To download and add a ModMaker mod enter its code into the Mod Management &gt; Download ME3Tweaks ModMaker Mod window.</helpitem>
       <!--<helpitem title="Make a mod" url="https://me3tweaks.com/modmanager/documentation/moddesc"/>-->
-      <helpitem title="Remove a mod" modaltitle="Removing mods from the library" modalicon="INFO">To remove a mod, delete its folder from the mods/ directory or select it and go to the Mod Utils menu and select Delete mod.</helpitem>
-      <helpitem title="Install a mod" modaltitle="Installing a mod" modalicon="INFO">Select a mod on the left and click Apply Mod. The mod will install. Press Start Game to start the game.&lt;br&gt;&lt;br&gt;To restore your game go to Restore and choose the appropriate options (use the unpacked options if you have unpacked your DLC).</helpitem>
-      <helpitem title="Uninstall a mod" modaltitle="Uninstalling mods" modalicon="INFO">You can remove DLC mods via the 'Target Info' button on the main screen of Mod Manager.</helpitem>
+      <helpitem title="Remove a mod" modaltitle="Removing mods from the library" modalicon="INFO">To remove a mod from the mod library (not the game), delete its folder from the mods/&lt;game&gt; directory, or select it and go to the Mod Utils menu and select Delete mod.</helpitem>
+      <helpitem title="Install a mod" modaltitle="Installing a mod" modalicon="INFO">Select a mod on the left and click Apply Mod to install the mod into the game. If the mod has optional items defined, they will be presented to you before install.</helpitem>
+      <helpitem title="Uninstall a mod" modaltitle="Uninstalling mods" modalicon="INFO">You can remove DLC mods via the 'Target Info' button on the main screen of Mod Manager. You can remove Custom DLC mods (also known as DLC mods), as well as restore individual files or SFARs (DLC archives for ME3).</helpitem>
       <helpitem title="Report issues" modaltitle="How to report issues" modalicon="INFO">If you find issues in Mod Manager, you can report them to me on my Discord. You can find a link at the top of the help menu. Please include a log from the help menu's Generate Diagnostic Log. I only support official installations of Mass Effect 3.</helpitem>
     </list>
     <list title="Commonly Asked Questions">
@@ -106,11 +106,11 @@
       <helpitem title="NexusMods (ME3)" url="http://www.nexusmods.com/masseffect3/" tooltip="Browse mods developed for Mass Effect 3 on NexusMods"/>
     </list>
     <list title="How to">
-      <helpitem title="Add a mod" modaltitle="Adding mods to Mod Manager" icon="INFO">To add a mod to Mod Manager, drag and drop its zip/rar/7z file onto Mod Manager's main interface.&lt;br&gt;&lt;br&gt;To download and add a ModMaker mod enter its code into the Mod Management &gt; Download ME3Tweaks ModMaker Mod window.</helpitem>
+      <helpitem title="Add a mod" modaltitle="Adding mods to Mod Manager" icon="INFO">To add a mod to Mod Manager, drag and drop its zip/rar/7z/exe/me2mod file onto Mod Manager's main interface.&lt;br&gt;&lt;br&gt;To download and add a ModMaker mod enter its code into the Mod Management &gt; Download ME3Tweaks ModMaker Mod window.</helpitem>
       <!--<helpitem title="Make a mod" url="https://me3tweaks.com/modmanager/documentation/moddesc"/>-->
-      <helpitem title="Remove a mod" modaltitle="Removing mods from the library" modalicon="INFO">To remove a mod, delete its folder from the mods/ directory or select it and go to the Mod Utils menu and select Delete mod.</helpitem>
-      <helpitem title="Install a mod" modaltitle="Installing a mod" modalicon="INFO">Select a mod on the left and click Apply Mod. The mod will install. Press Start Game to start the game.&lt;br&gt;&lt;br&gt;To restore your game go to Restore and choose the appropriate options (use the unpacked options if you have unpacked your DLC).</helpitem>
-      <helpitem title="Uninstall a mod" modaltitle="Uninstalling mods" modalicon="INFO">You can remove DLC mods via the 'Target Info' button on the main screen of Mod Manager.</helpitem>
+      <helpitem title="Remove a mod" modaltitle="Removing mods from the library" modalicon="INFO">To remove a mod from the mod library (not the game), delete its folder from the mods/&lt;game&gt; directory, or select it and go to the Mod Utils menu and select Delete mod.</helpitem>
+      <helpitem title="Install a mod" modaltitle="Installing a mod" modalicon="INFO">Select a mod on the left and click Apply Mod to install the mod into the game. If the mod has optional items defined, they will be presented to you before install.</helpitem>
+      <helpitem title="Uninstall a mod" modaltitle="Uninstalling mods" modalicon="INFO">You can remove DLC mods via the 'Target Info' button on the main screen of Mod Manager. You can remove Custom DLC mods (also known as DLC mods), as well as restore individual files or SFARs (DLC archives for ME3).</helpitem>
       <helpitem title="Report issues" modaltitle="How to report issues" modalicon="INFO">If you find issues in Mod Manager, you can report them to me on my Discord. You can find a link at the top of the help menu. Please include a log from the help menu's Generate Diagnostic Log. I only support official installations of Mass Effect 3.</helpitem>
     </list>
     <list title="Commonly Asked Questions">
