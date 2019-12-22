@@ -398,9 +398,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             done = 0;
             string singlesuffix = M3L.GetString(M3L.string_singularFile);
             string pluralsuffix = M3L.GetString(M3L.string_pluralFiles);
-            ActionSubstring = M3L.GetString(M3L.string_interp_patchedXY, done.ToString(), done == 1 ? singlesuffix : pluralsuffix);
             foreach (var file in filesToBePatched)
             {
+                ActionSubstring = Path.GetFileName(file);
                 var package = MEPackageHandler.OpenMEPackage(file);
                 var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == @"GFxMovieInfo").ToList();
                 if (guiExports.Count > 0)
