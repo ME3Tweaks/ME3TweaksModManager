@@ -90,7 +90,7 @@
                                     <Image Source="/modmanager/localizations/icons/spanish.png"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguageFRA_MenuItem" Header="Français" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem Name="LanguageFRA_MenuItem" Header="Français" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" IsEnabled="False">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/french.png"/>
                                 </MenuItem.Icon>
@@ -100,7 +100,7 @@
                                     <Image Source="/modmanager/localizations/icons/polish.png"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguageRUS_MenuItem" Header="Pусский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" IsEnabled="False">
+                            <MenuItem Name="LanguageRUS_MenuItem" Header="Pусский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/russian.png"/>
                                 </MenuItem.Icon>
