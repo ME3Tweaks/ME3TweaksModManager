@@ -714,7 +714,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                         foreach (var split in splits)
                         {
-                            AlternateFile af = new AlternateFile(split, this);
+                            AlternateFile af = new AlternateFile(split, headerJob, this);
                             if (af.ValidAlternate)
                             {
                                 headerJob.AlternateFiles.Add(af);
@@ -823,7 +823,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                         foreach (var split in splits)
                         {
-                            AlternateFile af = new AlternateFile(split, this);
+                            AlternateFile af = new AlternateFile(split, customDLCjob, this);
                             if (af.ValidAlternate)
                             {
                                 customDLCjob.AlternateFiles.Add(af);

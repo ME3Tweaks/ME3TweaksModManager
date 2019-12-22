@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager
 
             if (!IsVirtualized)
             {
-                referencedFiles.Add(@"moddesc.ini");
+                referencedFiles.Add(ModDescPath);
             }
             //unsure if this is required?? doesn't work for MEHEM EXE
             //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
@@ -77,7 +77,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (!IsVirtualized)
                 {
-                    referencedFiles.Add(@"moddesc.ini");
+                    referencedFiles.Add(ModDescPath);
                 }
                 //unsure if this is required?? doesn't work for MEHEM EXE
                 //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths

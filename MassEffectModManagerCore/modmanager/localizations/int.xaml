@@ -547,7 +547,7 @@
     <system:String x:Key="string_backup">Backup</system:String>
     <system:String x:Key="string_deletingExistingGameInstallation">Deleting existing game installation</system:String>
     <system:String x:Key="string_restoringGameFromBackup">Restoring game from backup</system:String>
-    <system:String x:Key="string_interp_restoringX">Restoring {0}</system:String>
+    <system:String x:Key="string_interp_restoringX">Restoring {0}%</system:String>
     <!-- 0 = filename or item like DLC name -->
     <system:String x:Key="string_restoringMovies">Restoring Movies</system:String>
     <system:String x:Key="string_restoringBasegame">Restoring Basegame</system:String>
@@ -645,7 +645,9 @@
     <!-- 0 = friendlyname -->
     <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate File is specified with operation {0}, but required file doesn't exist: {1}</system:String>
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
-
+    <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate file {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
+    <!-- 0 = Friendly name, 1 = Filepath-->
+    
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->

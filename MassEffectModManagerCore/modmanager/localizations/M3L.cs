@@ -605,6 +605,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_altfile_cmmver6RequiresDescription = "string_interp_validation_altfile_cmmver6RequiresDescription";
 		public static readonly string string_interp_validation_altfile_noModFileDeclared = "string_interp_validation_altfile_noModFileDeclared";
 		public static readonly string string_interp_validation_altfile_specifiedAltFileDoesntExist = "string_interp_validation_altfile_specifiedAltFileDoesntExist";
+		public static readonly string string_interp_validation_altfile_couldNotFindModFile = "string_interp_validation_altfile_couldNotFindModFile";
 		public static readonly string string_interp_ui_alotInstalledVersion = "string_interp_ui_alotInstalledVersion";
 		public static readonly string string_ui_alotNotInstalled = "string_ui_alotNotInstalled";
 		public static readonly string string_interp_invalidTargetMissingFile = "string_interp_invalidTargetMissingFile";

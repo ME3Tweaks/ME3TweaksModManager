@@ -20,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
             return ShowDialog(owner, message, caption, MessageBoxButton.OK);
         }
 
-        private static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons)
+        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons)
         {
             return ShowDialog(owner, message, caption, buttons, MessageBoxImage.None);
         }

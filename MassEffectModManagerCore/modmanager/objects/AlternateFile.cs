@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string ApplicableAutoText { get; }
         public string NotApplicableAutoText { get; }
 
-        public AlternateFile(string alternateFileText, Mod modForValidating)
+        public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
             if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
@@ -152,7 +152,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 if (properties.TryGetValue(@"ModFile", out string modfile))
                 {
-                    ModFile = modfile.TrimStart('\\', '/');
+                    ModFile = modfile.TrimStart('\\', '/').Replace('/', '\\');
                 }
                 else
                 {
@@ -160,6 +160,43 @@ namespace MassEffectModManagerCore.modmanager.objects
                     ValidAlternate = false;
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_noModFileDeclared, FriendlyName);
                     return;
+                }
+
+                if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
+                {
+                    var modFilePath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
+                    var pathSplit = ModFile.Split('\\');
+                    if (pathSplit.Length > 0)
+                    {
+                        var dlcName = pathSplit[0];
+                        var jobKey = associatedJob.CustomDLCFolderMapping.FirstOrDefault(x => x.Value.Equals(dlcName, StringComparison.InvariantCultureIgnoreCase));
+                        if (jobKey.Key != null)
+                        {
+                            //if (associatedJob.CustomDLCFolderMapping.TryGetValue(ModFile, out var sourceFile))
+                            //{
+
+                            //}
+                        }
+                        else
+                        {
+
+                            Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
+                            ValidAlternate = false;
+                            LoadFailedReason = "Dummy placeholder";
+                            //LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_couldNotFindModFile, FriendlyName, ModFile);
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    if (!associatedJob.FilesToInstall.TryGetValue(ModFile, out var sourceFile))
+                    {
+                        Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) specified but does not exist in job: {ModFile}");
+                        ValidAlternate = false;
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_couldNotFindModFile, FriendlyName, ModFile);
+                        return;
+                    }
                 }
 
                 //todo: implement multimap
