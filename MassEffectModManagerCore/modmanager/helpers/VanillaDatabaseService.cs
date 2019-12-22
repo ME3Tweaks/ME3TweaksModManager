@@ -9,6 +9,7 @@ using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Unreal;
+using Serilog;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.helpers
@@ -193,28 +194,34 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 default:
                     throw new Exception("Cannot vanilla check against game that is not ME1/ME2/ME3");
             }
-
-            foreach (string file in Directory.EnumerateFiles(target.TargetPath, "*", SearchOption.AllDirectories))
+            if (Directory.Exists(target.TargetPath))
             {
-                var shortname = file.Substring(target.TargetPath.Length + 1);
-                if (vanillaDB.TryGetValue(shortname, out var fileInfo))
+
+                foreach (string file in Directory.EnumerateFiles(target.TargetPath, "*", SearchOption.AllDirectories))
                 {
-                    var localFileInfo = new FileInfo(file);
-                    bool sfar = Path.GetExtension(file) == ".sfar";
-                    bool correctSize = fileInfo.Any(x => x.size == localFileInfo.Length);
-                    if (correctSize && !sfar) continue; //OK
-                    if (sfar && correctSize)
+                    var shortname = file.Substring(target.TargetPath.Length + 1);
+                    if (vanillaDB.TryGetValue(shortname, out var fileInfo))
                     {
-                        //Inconsistency check
-                        if (!GameTarget.SFARObject.HasUnpackedFiles(file)) continue; //Consistent
+                        var localFileInfo = new FileInfo(file);
+                        bool sfar = Path.GetExtension(file) == ".sfar";
+                        bool correctSize = fileInfo.Any(x => x.size == localFileInfo.Length);
+                        if (correctSize && !sfar) continue; //OK
+                        if (sfar && correctSize)
+                        {
+                            //Inconsistency check
+                            if (!GameTarget.SFARObject.HasUnpackedFiles(file)) continue; //Consistent
+                        }
+                        failedValidationCallback?.Invoke(file);
+                        isValid = false;
                     }
-                    failedValidationCallback?.Invoke(file);
-                    isValid = false;
+                    else
+                    {
+                        //Debug.WriteLine("File not in Vanilla DB: " + file);
+                    }
                 }
-                else
-                {
-                    //Debug.WriteLine("File not in Vanilla DB: " + file);
-                }
+            } else
+            {
+                Log.Error(@"Directory to validate doesn't exist: " + target.TargetPath);
             }
 
             return isValid;
