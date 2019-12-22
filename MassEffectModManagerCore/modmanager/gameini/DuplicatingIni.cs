@@ -22,12 +22,12 @@ namespace MassEffectModManagerCore.modmanager.gameini
 
         public Section GetSection(string sectionname)
         {
-            return Sections.FirstOrDefault(x => x.Header == sectionname);
+            return Sections.FirstOrDefault(x => x.Header.Equals(sectionname, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public Section GetSection(Section section)
         {
-            return Sections.FirstOrDefault(x => x.Header == section.Header);
+            return Sections.FirstOrDefault(x => x.Header.Equals(section.Header, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public static DuplicatingIni LoadIni(string iniFile)
@@ -108,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
 
             public IniEntry GetValue(string key)
             {
-                return Entries.FirstOrDefault(x => x.Key == key);
+                return Entries.FirstOrDefault(x => x.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
             }
         }
 
