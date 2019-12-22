@@ -33,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public long GetRequiredSpaceForExtraction(string archivePath)
         {
+            if (archivePath.EndsWith(@".me2mod")) { return new FileInfo(archivePath).Length; }
             var archiveFile = archivePath.EndsWith(@".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
 
             var itemsToExtract = new List<ArchiveFileInfo>();
