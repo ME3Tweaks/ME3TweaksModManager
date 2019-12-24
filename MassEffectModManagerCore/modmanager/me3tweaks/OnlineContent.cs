@@ -58,15 +58,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     else
                     {
                         Log.Error("Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
-                        Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> d = new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>();
-                        d["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
-                        d["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
-                        d["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
+                        Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> d = new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
+                        {
+                            ["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            ["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            ["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+                        };
                         return d;
                     }
                 }
             }
-            return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+
+            try
+            {
+                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error reading TPMI: " + e.Message + ". Retrying in 500ms as it might be held by something.");
+                Thread.Sleep(500);
+                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+
+            }
         }
 
         public static string FetchRemoteString(string url)
