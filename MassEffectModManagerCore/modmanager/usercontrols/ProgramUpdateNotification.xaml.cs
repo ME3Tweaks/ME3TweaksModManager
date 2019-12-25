@@ -98,9 +98,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var updateFile = OnlineContent.DownloadToMemory(downloadLink, pCallback);
                 ProgressText = M3L.GetString(M3L.string_preparingToApplyUpdate);
-                ProgressIndeterminate = true;
                 if (updateFile.errorMessage == null)
                 {
+                    ProgressIndeterminate = true;
                     ApplyUpdateFromStream(updateFile.result);
                     return; //do not loop.
                 }
