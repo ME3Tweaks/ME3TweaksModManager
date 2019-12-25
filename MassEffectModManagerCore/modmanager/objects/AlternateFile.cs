@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error($@"Alternate File specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
-                LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_unknownCondition) + properties[@"Condition"];
+                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownCondition)} {properties[@"Condition"]}";
                 return;
             }
 
@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error(@"Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"]);
                 ValidAlternate = false;
-                LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_unknownOperation) + properties[@"ModOperation"];
+                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownOperation)} { properties[@"ModOperation"]}";
                 return;
             }
 

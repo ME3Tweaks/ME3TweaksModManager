@@ -1645,7 +1645,7 @@ namespace MassEffectModManagerCore
                                     ShowBusyControl(updateAvailableDialog);
                                 });
                             }
-#if !DEBUG
+#if DEBUG
                             else if (latestServerBuildNumer == App.BuildNumber)
                             {
                                 if (manifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
