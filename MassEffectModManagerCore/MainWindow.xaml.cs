@@ -998,7 +998,7 @@ namespace MassEffectModManagerCore
                     }
 
                     //Run AutoTOC if ME3
-                    if (SelectedGameTarget.Game == Mod.MEGame.ME3)
+                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3)
                     {
                         var autoTocUI = new AutoTOC(SelectedGameTarget);
                         autoTocUI.Close += (a1, b1) =>
