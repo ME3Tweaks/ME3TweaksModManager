@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}"); //do not localize
                 ValidAlternate = false;
-                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownOperation)} {properties[@"ModOperation"]}");
+                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownOperation)} {properties[@"ModOperation"]}";
                 return;
             }
 
