@@ -65,6 +65,7 @@
                         <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" IsCheckable="True" />
                         <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True" />
                         <MenuItem Name="LogMixinStartup_MenuItem" Header="{DynamicResource string_LogMixinStartup}" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True" />
+                        <MenuItem Name="LogModMakerCompiler_MenuItem" Header="{DynamicResource string_LogModMakerCompiler}" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" IsCheckable="True" />
                         <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True" />
                         <MenuItem Header="{DynamicResource string_Language}">
                             <MenuItem.Icon>
@@ -118,7 +119,7 @@
                         <MenuItem Header="{DynamicResource string_ImportmodfromArchive}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
                         <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" IsEnabled="False" />
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_DownloadModMakermod}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_DownloadModMakermod}" Command="{Binding DownloadModMakerModCommand}"/>
                     <MenuItem Header="{DynamicResource string_ASIModManager}" Click="ASIModManager_Click" ToolTip="{DynamicResource string_ASIManagerTooltip}" />
                     <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" />
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />

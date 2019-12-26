@@ -50,6 +50,7 @@
     <None Remove="images\gameicons\Unknown_48.ico" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\me3tweaks.png" />
+    <None Remove="images\modmaker.png" />
     <None Remove="images\nexusmods_scenethemed.png" />
     <None Remove="images\origin.png" />
     <None Remove="images\windowicon.png" />
@@ -101,6 +102,7 @@
   <ItemGroup>
     <Resource Include="appicon.ico" />
     <Resource Include="images\me3tweaks.png" />
+    <Resource Include="images\modmaker.png" />
     <Resource Include="images\nexusmods_scenethemed.png" />
     <Resource Include="images\windowicon.png" />
   </ItemGroup>

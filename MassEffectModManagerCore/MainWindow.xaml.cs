@@ -262,6 +262,7 @@ namespace MassEffectModManagerCore
         public ICommand CreateTestArchiveCommand { get; set; }
         public ICommand LaunchIniModderCommand { get; set; }
         public ICommand EndorseM3OnNexusCommand { get; set; }
+        public ICommand DownloadModMakerModCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -290,6 +291,19 @@ namespace MassEffectModManagerCore
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
             EndorseM3OnNexusCommand = new GenericCommand(EndorseM3, CanEndorseM3);
+            DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
+        }
+
+        private void OpenModMakerPanel()
+        {
+            var modmakerPanel = new ModMakerPanel();
+            modmakerPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(modmakerPanel);
+        }
+
+        private bool CanOpenModMakerPanel()
+        {
+            return true;
         }
 
         private bool CanEndorseM3()
@@ -2110,15 +2124,6 @@ namespace MassEffectModManagerCore
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
         {
             var callingMember = (MenuItem)sender;
-            //if (callingMember == LogModStartup_MenuItem)
-            //{
-            //    Settings.LogModStartup = !Settings.LogModStartup; //flip
-            //}
-            //else if (callingMember == LogMixinStartup_MenuItem)
-            //{
-            //    Settings.LogMixinStartup = !Settings.LogMixinStartup; //flip
-            //}
-            //else 
             if (callingMember == SetModLibraryPath_MenuItem)
             {
                 ChooseModLibraryPath(true);
@@ -2151,8 +2156,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                //unknown caller
-                return;
+                //unknown caller. Might just be settings on/off for logging.
             }
 
             Settings.Save();

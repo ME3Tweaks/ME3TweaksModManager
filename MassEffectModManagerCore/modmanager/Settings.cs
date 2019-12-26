@@ -109,7 +109,15 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _showedPreviewPanel, value);
         }
 
+        private static bool _logModMakerCompiler;
+        public static bool LogModMakerCompiler
+        {
+            get => _logModMakerCompiler;
+            set => SetProperty(ref _logModMakerCompiler, value);
+        }
+
         private static string SettingsPath = Path.Combine(Utilities.GetAppDataFolder(), "settings.ini");
+
         public static void Load()
         {
             if (!File.Exists(SettingsPath))
@@ -126,9 +134,14 @@ namespace MassEffectModManagerCore.modmanager
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
             EnableTelemetry = LoadSettingBool(settingsIni, "Logging", "EnableTelemetry", true);
             LogModInstallation = LoadSettingBool(settingsIni, "Logging", "LogModInstallation", false);
+            LogModMakerCompiler = LoadSettingBool(settingsIni, "Logging", "LogModMakerCompiler", false);
+
             ModLibraryPath = LoadSettingString(settingsIni, "ModLibrary", "LibraryPath", null);
+
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
+
+
             Loaded = true;
         }
 
@@ -195,6 +208,7 @@ namespace MassEffectModManagerCore.modmanager
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
             SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
+            SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
             SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
             SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
             SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);

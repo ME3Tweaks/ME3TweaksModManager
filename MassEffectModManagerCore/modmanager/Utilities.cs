@@ -1391,6 +1391,24 @@ namespace MassEffectModManagerCore
             };
         }
 
+        /// <summary>
+        /// Gets folder containing #.xml files (definition of modmaker mods)
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetModmakerDefinitionsCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(Utilities.GetModMakerCache(), "moddefinitions")).FullName;
+        }
+
+        /// <summary>
+        /// Gets cache directory for modmaker files
+        /// </summary>
+        /// <returns></returns>
+        private static string GetModMakerCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ModMakerCache")).FullName;
+        }
+
         private static List<IniEntry> ME1_DefaultLODs = new List<IniEntry>()
         {
             //ME1 requires default lods to be restored or it'll just overwrite entire file
