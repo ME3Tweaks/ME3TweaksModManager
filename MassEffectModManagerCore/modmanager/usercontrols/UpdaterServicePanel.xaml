@@ -1,0 +1,17 @@
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.UpdaterServicePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+        <StackPanel>
+            <Image HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
+            <TextBlock Text="Updater Service" TextAlignment="Center"/>
+        </StackPanel>
+
+        <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Padding="7,4"/>
+    </DockPanel>
+</local:MMBusyPanelBase>
