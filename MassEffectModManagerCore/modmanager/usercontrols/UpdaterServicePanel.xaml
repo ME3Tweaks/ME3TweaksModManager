@@ -4,12 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"         
+             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                       Width="300"
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
-        <StackPanel>
-            <Image HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
-            <TextBlock Text="Updater Service" TextAlignment="Center"/>
+        <StackPanel DockPanel.Dock="Top">
+            <Image HorizontalAlignment="Center" Height="48" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
+            <TextBlock Text="Updater Service" TextAlignment="Center" FontSize="14"/>
+            <TextBlock Text="{Binding mod.ModName}" TextAlignment="Center"/>
+            <ContentControl  Margin="0,15,0,0" Focusable="False"
+                                        ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                        Width="48"
+                                        Height="48"/>
+            <TextBlock Text="{Binding CurrentActionText}" TextAlignment="Center"/>
         </StackPanel>
 
         <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Padding="7,4"/>

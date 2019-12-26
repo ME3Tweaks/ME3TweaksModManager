@@ -24,7 +24,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     public partial class OnlineContent
     {
-        private const string UpdateManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch";
+        public const string UpdaterServiceManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch";
         private const string UpdateStorageRoot = "https://me3tweaks.com/mods/updates/";
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <returns></returns>
         public static List<ModUpdateInfo> CheckForModUpdates(List<Mod> modsToCheck, bool forceUpdateCheck)
         {
-            string updateFinalRequest = UpdateManifestEndpoint;
+            string updateFinalRequest = UpdaterServiceManifestEndpoint;
             bool first = true;
             foreach (var mod in modsToCheck)
             {
@@ -351,7 +351,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public int lzmasize { get; internal set; }
             public int size { get; internal set; }
             public string hash { get; internal set; }
-            public Int64 timestamp { get; internal set; }
+            public long timestamp { get; internal set; }
             public long AmountDownloaded;
             public SourceFile() { }
         }

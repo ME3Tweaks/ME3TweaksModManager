@@ -1,6 +1,11 @@
-﻿using MassEffectModManagerCore.ui;
+﻿using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.ui;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
+using static MassEffectModManagerCore.modmanager.me3tweaks.OnlineContent;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -19,9 +26,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class UpdaterServicePanel : MMBusyPanelBase
     {
-        public UpdaterServicePanel()
+        public Mod mod { get; }
+        public string CurrentActionText { get; private set; }
+        public UpdaterServicePanel(Mod mod)
         {
             DataContext = this;
+            this.mod = mod;
             LoadCommands();
             InitializeComponent();
         }
@@ -46,6 +56,54 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"UpdaterService-SyncFetch");
+            nbw.DoWork += (a, b) =>
+            {
+                StartPreparingMod();
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        private void StartPreparingMod()
+        {
+            //Fetch current production manifest for mod (it may not exist)
+            using var wc = new System.Net.WebClient();
+            try
+            {
+                CurrentActionText = "Fetching current production manifest";
+                string updateUrl = UpdaterServiceManifestEndpoint + @"?classicupdatecode[]=" + mod.ModClassicUpdateCode;
+                string updatexml = wc.DownloadStringAwareOfEncoding(updateUrl);
+
+                XElement rootElement = XElement.Parse(updatexml);
+                var modUpdateInfos = (from e in rootElement.Elements(@"mod")
+                                      select new ModUpdateInfo
+                                      {
+                                          changelog = (string)e.Attribute(@"changelog"),
+                                          versionstr = (string)e.Attribute(@"version"),
+                                          updatecode = (int)e.Attribute(@"updatecode"),
+                                          serverfolder = (string)e.Attribute(@"folder"),
+                                          sourceFiles = (from f in e.Elements(@"sourcefile")
+                                                         select new SourceFile
+                                                         {
+                                                             lzmahash = (string)f.Attribute(@"lzmahash"),
+                                                             hash = (string)f.Attribute(@"hash"),
+                                                             size = (int)f.Attribute(@"size"),
+                                                             lzmasize = (int)f.Attribute(@"lzmasize"),
+                                                             relativefilepath = f.Value,
+                                                             timestamp = (Int64?)f.Attribute(@"timestamp") ?? (Int64)0
+                                                         }).ToList(),
+                                      }).ToList();
+                Debug.WriteLine(@"Found info: " + modUpdateInfos.Count);
+
+                CurrentActionText = "Fetching current server file listing";
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(@"Error fetching server manifest: " + ex.Message);
+            }
+
+
         }
     }
 }

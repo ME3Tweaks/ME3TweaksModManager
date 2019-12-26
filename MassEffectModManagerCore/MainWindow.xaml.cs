@@ -298,7 +298,7 @@ namespace MassEffectModManagerCore
 
         private void OpenUpdaterServicePanel()
         {
-            var updaterServicePanel = new UpdaterServicePanel();
+            var updaterServicePanel = new UpdaterServicePanel(SelectedMod);
             updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(updaterServicePanel);
         }
