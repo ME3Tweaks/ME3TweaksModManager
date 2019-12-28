@@ -37,12 +37,7 @@ namespace MassEffectModManagerCore.modmanager
             var archiveFile = archivePath.EndsWith(@".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
 
             var itemsToExtract = new List<ArchiveFileInfo>();
-            var referencedFiles = GetAllRelativeReferences(archiveFile);
-
-            if (!IsVirtualized)
-            {
-                referencedFiles.Add(ModDescPath);
-            }
+            var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archiveFile);
             //unsure if this is required?? doesn't work for MEHEM EXE
             //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
             foreach (var info in archiveFile.ArchiveFileData)
@@ -74,12 +69,7 @@ namespace MassEffectModManagerCore.modmanager
             using (archiveFile)
             {
                 var fileIndicesToExtract = new List<int>();
-                var referencedFiles = GetAllRelativeReferences(archiveFile);
-
-                if (!IsVirtualized)
-                {
-                    referencedFiles.Add(ModDescPath);
-                }
+                var referencedFiles = GetAllRelativeReferences(!IsVirtualized,archiveFile);
                 //unsure if this is required?? doesn't work for MEHEM EXE
                 //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
                 foreach (var info in archiveFile.ArchiveFileData)

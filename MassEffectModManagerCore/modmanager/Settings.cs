@@ -57,6 +57,20 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _enableTelemetry, value);
         }
 
+        private static string _updaterServiceUsername;
+        public static string UpdaterServiceUsername
+        {
+            get => _updaterServiceUsername;
+            set => SetProperty(ref _updaterServiceUsername, value);
+        }
+
+        private static string _updaterServiceEntropy;
+        public static string UpdaterServiceEntropy
+        {
+            get => _updaterServiceEntropy;
+            set => SetProperty(ref _updaterServiceEntropy, value);
+        }
+
         private static bool _logMixinStartup = false;
         public static bool LogMixinStartup
         {
@@ -129,6 +143,9 @@ namespace MassEffectModManagerCore.modmanager
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             ModLibraryPath = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
+
+            UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
+            UpdaterServiceEntropy = LoadSettingString(settingsIni, "UpdaterService", "Entropy", null);
 
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
@@ -210,6 +227,8 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
             SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
             SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
+            SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
+            SaveSettingString(settingsIni, "UpdaterService", "Entropy", UpdaterServiceEntropy);
             SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
             SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
             SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);

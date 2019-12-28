@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore.Tests
                 var archiveZ = new SevenZipExtractor(archive);
                 foreach (var mod in modsFoundInArchive)
                 {
-                    mod.GetAllRelativeReferences(archiveZ);
+                    mod.GetAllRelativeReferences(false, archiveZ);
                     var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                     foreach (var target in targetsForMod)
                     {

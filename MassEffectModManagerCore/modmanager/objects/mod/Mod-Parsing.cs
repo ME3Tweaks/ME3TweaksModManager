@@ -48,6 +48,8 @@ namespace MassEffectModManagerCore.modmanager
         public string ModDeveloper { get; set; }
         public string ModDescription { get; set; }
         public int ModModMakerID { get; set; }
+        public List<string> UpdaterServiceBlacklistedFiles { get; private set; } = new List<string>();
+        public string UpdaterServiceServerFolder { get; private set; }
 
         /// <summary>
         /// Indicates if this mod has the relevant information attached to it for updates. That is, classic update code, modmaker id, or nexusmods ID
@@ -1171,7 +1173,27 @@ namespace MassEffectModManagerCore.modmanager
                     return;
                 }
             }
+            #endregion
 
+            #region Updater Service (Devs only)
+            UpdaterServiceServerFolder = iniData[@"UPDATES"][@"serverfolder"];
+            var blacklistedFilesStr = iniData[@"UPDATES"][@"blacklistedfiles"];
+            if (blacklistedFilesStr != null)
+            {
+                var blacklistedFiles = blacklistedFilesStr.Split(';').ToList();
+                foreach (var blf in blacklistedFiles)
+                {
+                    var fullpath = Path.Combine(ModPath, blf);
+                    if (File.Exists(fullpath))
+                    {
+
+                        Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
+                        LoadFailedReason = $"This mod contains a blacklisted mod file: {fullpath}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.";
+                        return;
+                    }
+                }
+                UpdaterServiceBlacklistedFiles = blacklistedFiles;
+            }
             #endregion
 
             //Thread.Sleep(500);
@@ -1189,6 +1211,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 Log.Error(@"No installation jobs were specified. This mod does nothing.");
                 LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_modDoesNothing);
+                return;
             }
 
             CLog.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);

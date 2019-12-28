@@ -31,14 +31,12 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             return entropy;
         }
 
-        public static bool EncryptAPIKeyToDisk(string apikey)
+        public static byte[] EncryptAPIKeyToDisk(string apikey, Stream outstream)
         {
-            using FileStream fs = new FileStream(Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey"), FileMode.Create);
             byte[] bytes = Encoding.Unicode.GetBytes(apikey);
             byte[] entropy = CreateRandomEntropy();
-            File.WriteAllBytes(Path.Combine(Utilities.GetNexusModsCache(), "entropy"), entropy);
-            int byteswritten = EncryptDataToStream(bytes, entropy, DataProtectionScope.CurrentUser, fs);
-            return byteswritten > 0;
+            int byteswritten = EncryptDataToStream(bytes, entropy, DataProtectionScope.CurrentUser, outstream);
+            return entropy;
         }
 
         /// <summary>
