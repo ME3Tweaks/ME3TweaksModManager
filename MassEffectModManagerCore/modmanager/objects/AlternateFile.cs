@@ -53,6 +53,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public string ModFile { get; private set; }
 
+        internal bool HasRelativeFile()
+        {
+            if (Operation == AltFileOperation.INVALID_OPERATION) return false;
+            if (Operation == AltFileOperation.OP_NOINSTALL) return false;
+            if (Operation == AltFileOperation.OP_NOTHING) return false;
+            return AltFile != null;
+        }
+
         /// <summary>
         /// BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
         /// </summary>

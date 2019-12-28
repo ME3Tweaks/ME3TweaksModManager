@@ -209,6 +209,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         public bool IsSelected { get; set; }
+
+        internal bool HasRelativeFiles()
+        {
+            if (Operation == AltDLCOperation.INVALID_OPERATION) return false;
+            if (Operation == AltDLCOperation.OP_NOTHING) return false;
+            return AlternateDLCFolder != null;
+        }
+
         public void SetupInitialSelection(GameTarget target)
         {
             IsSelected = false; //Reset
