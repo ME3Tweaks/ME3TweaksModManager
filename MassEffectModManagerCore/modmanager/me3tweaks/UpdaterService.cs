@@ -109,6 +109,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                                              relativefilepath = f.Value,
                                                              timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
                                                          }).ToList(),
+                                          blacklistedFiles = e.Elements("blacklistedfile").Select(x => x.Value).ToList()
                                       }).ToList();
                 foreach (var modUpdateInfo in modUpdateInfos)
                 {
@@ -147,9 +148,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                         }
 
+                        foreach (var blacklistedFile in modUpdateInfo.blacklistedFiles)
+                        {
+                            var localFile = Path.Combine(modBasepath, blacklistedFile);
+                            if (File.Exists(localFile))
+                            {
+                                Log.Information(@"Blacklisted file marked for deletion: " + localFile);
+                                modUpdateInfo.filesToDelete.Add(localFile);
+                            }
+                        }
+
                         //Files to remove calculation
                         var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories).Select(x => x.Substring(modBasepath.Length + 1)).ToList();
-                        modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath), StringComparer.InvariantCultureIgnoreCase).ToList()); //Todo: Add security check here to prevent malicious values
+                        modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath), StringComparer.InvariantCultureIgnoreCase).Distinct().ToList()); //Todo: Add security check here to prevent malicious values
                         modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
                     }
                     return modUpdateInfos;
@@ -158,7 +169,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             catch (Exception e)
             {
                 Log.Error("Error checking for mod updates: " + App.FlattenException(e));
-                Crashes.TrackError(e, new Dictionary<string, string>() { { "Update check URL", updateFinalRequest } });
+                Crashes.TrackError(e, new Dictionary<string, string>() { { "Update check URL", updateFinalRequest
+    }
+});
             }
             return null;
         }
@@ -205,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                        if (decompressedStream.Length != sourcefile.size)
                        {
                            Log.Error($"Decompressed file ({sourcefile.relativefilepath}) is not of correct size. Expected: {sourcefile.size}, got: {decompressedStream.Length}");
-                           errorMessageCallback?.Invoke(downloadedFile.errorMessage);
+                           errorMessageCallback?.Invoke(downloadedFile.errorMessage); //this should be a specific error message
                            cancelDownloading = true;
                            return;
                        }
@@ -214,12 +227,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                        if (decompressedMD5 != sourcefile.hash)
                        {
                            Log.Error($"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
-                           errorMessageCallback?.Invoke(downloadedFile.errorMessage);
+                           errorMessageCallback?.Invoke(downloadedFile.errorMessage); //this should be a specific error message
                            cancelDownloading = true;
                            return;
                        }
 
                        File.WriteAllBytes(stagingFile, decompressedStream.ToArray());
+                       if (sourcefile.timestamp != 0)
+                       {
+                           File.SetLastWriteTimeUtc(stagingFile, new DateTime(sourcefile.timestamp));
+                       }
                        Log.Information("Wrote updater staged file: " + stagingFile);
                        stagedFileMapping[stagingFile] = Path.Combine(modPath, sourcefile.relativefilepath);
                    }
@@ -260,12 +277,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return true;
         }
 
-        public static void StageModForUploadToUpdaterService(Mod mod, Action<string> updateUiTextCallback = null)
+        public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Action<string> updateUiTextCallback = null)
         {
-            //get refs
-            var files = mod.GetAllRelativeReferences();
-            files = files.OrderByDescending(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length).ToList();
-            long totalAmountToCompress = files.Sum(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length);
             //create staging dir
             var stagingPath = Utilities.GetUpdaterServiceUploadStagingPath();
             if (Directory.Exists(stagingPath))
@@ -283,6 +296,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
                 updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(totalDone * 100.0 / totalAmountToCompress)}%");
             });
+            return stagingPath;
         }
 
         private static string LZMACompressFileForUpload(string relativePath, string stagingPath, string modPath)
@@ -313,15 +327,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             public Mod mod { get; set; }
             public List<SourceFile> sourceFiles;
+            public List<string> blacklistedFiles;
             public string changelog { get; set; }
             public string serverfolder;
             public int updatecode;
-
             public string versionstr { get; set; }
             public Version version;
-
             public event PropertyChangedEventHandler PropertyChanged;
-
             public bool UpdateInProgress { get; set; }
             public ICommand ApplyUpdateCommand { get; set; }
             public long TotalBytesToDownload { get; set; }
@@ -330,7 +342,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public bool HasFilesToDownload => applicableUpdates.Count > 0;
             public bool HasFilesToDelete => filesToDelete.Count > 0;
             public string DownloadButtonText { get; set; }
-
             public string LocalizedLocalVersionString { get; set; }
             public string LocalizedServerVersionString { get; set; }
             public void RecalculateAmountDownloaded()
@@ -397,8 +408,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             public string lzmahash { get; internal set; }
             public string relativefilepath { get; internal set; }
-            public int lzmasize { get; internal set; }
-            public int size { get; internal set; }
+            public long lzmasize { get; internal set; }
+            public long size { get; internal set; }
             public string hash { get; internal set; }
             public long timestamp { get; internal set; }
             public long AmountDownloaded;
