@@ -66,6 +66,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartPreparingMod()
         {
+            #region online fetch
             //Fetch current production manifest for mod (it may not exist)
             using var wc = new System.Net.WebClient();
             try
@@ -90,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                                              size = (int)f.Attribute(@"size"),
                                                              lzmasize = (int)f.Attribute(@"lzmasize"),
                                                              relativefilepath = f.Value,
-                                                             timestamp = (Int64?)f.Attribute(@"timestamp") ?? (Int64)0
+                                                             timestamp = (long?)f.Attribute(@"timestamp") ?? (long)0
                                                          }).ToList(),
                                       }).ToList();
                 Debug.WriteLine(@"Found info: " + modUpdateInfos.Count);
@@ -103,7 +104,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Error(@"Error fetching server manifest: " + ex.Message);
             }
 
+            #endregion
 
+            #region hashing mod
+            void updateCurrentTextCallback(string newText)
+            {
+                CurrentActionText = newText;
+            }
+
+            OnlineContent.StageModForUploadToUpdaterService(mod, updateCurrentTextCallback);
+            #endregion
         }
     }
 }

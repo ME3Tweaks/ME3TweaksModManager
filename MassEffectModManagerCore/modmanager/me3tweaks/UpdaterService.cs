@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Linq;
@@ -68,7 +69,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         updateFinalRequest += "&";
                     }
                     updateFinalRequest += "classicupdatecode[]=" + mod.ModClassicUpdateCode;
-                } 
+                }
                 //else if (mod.NexusModID > 0)
                 //{
                 //    //Classic style
@@ -257,6 +258,57 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             //We're done!
             return true;
+        }
+
+        public static void StageModForUploadToUpdaterService(Mod mod, Action<string> updateUiTextCallback = null)
+        {
+            //get refs
+            var files = mod.GetAllRelativeReferences();
+            files.Sort();
+            foreach(var v in files)
+            {
+                Debug.WriteLine(v);
+            }
+            //create staging dir
+            var stagingPath = Utilities.GetUpdaterServiceUploadStagingPath();
+            if (Directory.Exists(stagingPath))
+            {
+                Utilities.DeleteFilesAndFoldersRecursively(stagingPath);
+            }
+            Directory.CreateDirectory(stagingPath);
+
+
+            int numberDone = 0;
+            //run files 
+            Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = 4 }, x =>
+            {
+                LZMACompressFileForUpload(x, stagingPath, mod.ModPath);
+                int numDone = Interlocked.Increment(ref numberDone);
+                updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(numDone * 100.0 / files.Count)}%");
+            });
+        }
+
+        private static string LZMACompressFileForUpload(string relativePath, string stagingPath, string modPath)
+        {
+            Log.Information(@"Compressing " + relativePath);
+            var destPath = Path.Combine(stagingPath, relativePath + @".lzma");
+            var sourcePath = Path.Combine(modPath, relativePath);
+            Directory.CreateDirectory(Directory.GetParent(destPath).FullName);
+            using var output = new FileStream(destPath, FileMode.CreateNew);
+
+            var encoder = new LzmaEncodeStream(output);
+            var inStream = new FileStream(sourcePath, FileMode.Open);
+            int bufSize = 24576, count;
+            var buf = new byte[bufSize];
+
+            while ((count = inStream.Read(buf, 0, bufSize)) > 0)
+            {
+                encoder.Write(buf, 0, count);
+            }
+
+            encoder.Close();
+
+            return destPath;
         }
 
         [DebuggerDisplay("ModUpdateInfo | {mod.ModName} with {filesToDelete.Count} FTDelete and {applicableUpdates.Count} FTDownload")]

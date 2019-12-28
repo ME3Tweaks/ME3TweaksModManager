@@ -65,7 +65,7 @@
                         <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" IsCheckable="True" />
                         <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True" />
                         <MenuItem Name="LogMixinStartup_MenuItem" Header="{DynamicResource string_LogMixinStartup}" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True" />
-                        <MenuItem Name="LogModMakerCompiler_MenuItem" Header="{DynamicResource string_LogModMakerCompiler}" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" IsCheckable="True" />
+                        <MenuItem Name="LogModMakerCompiler_MenuItem" Header="{DynamicResource string_LogModMakerCompiler}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" IsCheckable="True" />
                         <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True" />
                         <MenuItem Header="{DynamicResource string_Language}">
                             <MenuItem.Icon>

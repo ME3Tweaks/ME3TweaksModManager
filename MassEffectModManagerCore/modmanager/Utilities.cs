@@ -352,6 +352,11 @@ namespace MassEffectModManagerCore
             }
         }
 
+        internal static string GetUpdaterServiceUploadStagingPath()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetTempPath(), "UpdaterServiceStaging")).FullName;
+        }
+
         public static int RunProcess(string exe, string args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true)
         {
             return RunProcess(exe, null, args, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow);
