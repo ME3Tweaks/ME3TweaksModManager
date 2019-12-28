@@ -41,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 foreach (var dlc in job.AlternateDLCs)
                 {
-                    if (dlc.AlternateDLCFolder != null)
+                    if (dlc.HasRelativeFiles())
                     {
                         var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList();
                         references.AddRange(files);
@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 foreach (var file in job.AlternateFiles)
                 {
-                    if (file.AltFile != null)
+                    if (file.HasRelativeFile())
                     {
                         if (IsInArchive)
                         {
