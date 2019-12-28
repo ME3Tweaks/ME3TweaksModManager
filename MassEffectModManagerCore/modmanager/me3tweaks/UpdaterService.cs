@@ -264,11 +264,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             //get refs
             var files = mod.GetAllRelativeReferences();
-            files.Sort();
-            foreach(var v in files)
-            {
-                Debug.WriteLine(v);
-            }
+            files = files.OrderByDescending(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length).ToList();
+            long totalAmountToCompress = files.Sum(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length);
             //create staging dir
             var stagingPath = Utilities.GetUpdaterServiceUploadStagingPath();
             if (Directory.Exists(stagingPath))
@@ -278,13 +275,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             Directory.CreateDirectory(stagingPath);
 
 
-            int numberDone = 0;
+            long amountDone = 0;
             //run files 
-            Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = 4 }, x =>
+            Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, x =>
             {
                 LZMACompressFileForUpload(x, stagingPath, mod.ModPath);
-                int numDone = Interlocked.Increment(ref numberDone);
-                updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(numDone * 100.0 / files.Count)}%");
+                var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
+                updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(totalDone * 100.0 / totalAmountToCompress)}%");
             });
         }
 

@@ -111,7 +111,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 CurrentActionText = newText;
             }
-
+            CurrentActionText = "Compressing mod for updater service";
             OnlineContent.StageModForUploadToUpdaterService(mod, updateCurrentTextCallback);
             #endregion
         }
