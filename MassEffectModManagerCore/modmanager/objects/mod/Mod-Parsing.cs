@@ -514,8 +514,8 @@ namespace MassEffectModManagerCore.modmanager
                     if (replaceFilesSourceList != null && replaceFilesTargetList != null)
                     {
                         //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
-                        replaceFilesSourceSplit = replaceFilesSourceList.Split(';').ToList();
-                        replaceFilesTargetSplit = replaceFilesTargetList.Split(';').ToList();
+                        replaceFilesSourceSplit = replaceFilesSourceList.Split(';').Where(x=>!string.IsNullOrWhiteSpace(x)).ToList();
+                        replaceFilesTargetSplit = replaceFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                         if (replaceFilesSourceSplit.Count != replaceFilesTargetSplit.Count)
                         {
                             //Mismatched source and target lists
@@ -537,8 +537,8 @@ namespace MassEffectModManagerCore.modmanager
                         if (addFilesSourceList != null && addFilesTargetList != null)
                         {
                             //Parse the addfiles and addfilestargets list and ensure they have the same number of elements in them.
-                            addFilesSourceSplit = addFilesSourceList.Split(';').ToList();
-                            addFilesTargetSplit = addFilesTargetList.Split(';').ToList();
+                            addFilesSourceSplit = addFilesSourceList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                            addFilesTargetSplit = addFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                             if (addFilesSourceSplit.Count != addFilesTargetSplit.Count)
                             {
                                 //Mismatched source and target lists
@@ -553,7 +553,7 @@ namespace MassEffectModManagerCore.modmanager
                         //Add files read only targets
                         if (addFilesTargetReadOnlyList != null)
                         {
-                            addFilesReadOnlySplit = addFilesTargetList.Split(';').ToList();
+                            addFilesReadOnlySplit = addFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
                             //Ensure add targets list contains this list
                             if (addFilesTargetSplit != null)
@@ -755,8 +755,8 @@ namespace MassEffectModManagerCore.modmanager
 
                     if (customDLCSourceDirsStr != null && customDLCDestDirsStr != null)
                     {
-                        var customDLCSourceSplit = customDLCSourceDirsStr.Split(';').ToList();
-                        var customDLCDestSplit = customDLCDestDirsStr.Split(';').ToList();
+                        var customDLCSourceSplit = customDLCSourceDirsStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                        var customDLCDestSplit = customDLCDestDirsStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
                         //Verify lists are the same length
                         if (customDLCSourceSplit.Count != customDLCDestSplit.Count)
@@ -888,7 +888,7 @@ namespace MassEffectModManagerCore.modmanager
                 if (replaceFilesSourceList != null)
                 {
                     //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
-                    var replaceFilesSourceSplit = replaceFilesSourceList.Split(';').ToList();
+                    var replaceFilesSourceSplit = replaceFilesSourceList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                     if (replaceFilesSourceSplit.Count == 1)
                     {
                         //Only 1 file is allowed here.
@@ -944,7 +944,7 @@ namespace MassEffectModManagerCore.modmanager
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_cannotHaveEmptyME1ConfigJob);
                             return;
                         }
-                        var configFilesSplit = configfilesStr.Split(';').ToList();
+                        var configFilesSplit = configfilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                         ModJob me1ConfigJob = new ModJob(ModJob.JobHeader.ME1_CONFIG, this);
                         me1ConfigJob.JobDirectory = jobSubdirectory;
                         foreach (var configFilename in configFilesSplit)
@@ -1016,7 +1016,7 @@ namespace MassEffectModManagerCore.modmanager
             var requiredDLCText = ModDescTargetVersion >= 5.0 ? iniData[@"ModInfo"][@"requireddlc"] : null;
             if (!string.IsNullOrWhiteSpace(requiredDLCText))
             {
-                var requiredDlcsSplit = requiredDLCText.Split(';').ToList();
+                var requiredDlcsSplit = requiredDLCText.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 foreach (var reqDLC in requiredDlcsSplit)
                 {
                     switch (Game)
@@ -1099,7 +1099,7 @@ namespace MassEffectModManagerCore.modmanager
             var additonaldeploymentfoldersStr = ModDescTargetVersion >= 5.1 ? iniData[@"UPDATES"][@"additionaldeploymentfolders"] : null;
             if (!string.IsNullOrEmpty(additonaldeploymentfoldersStr))
             {
-                var addlFolderSplit = additonaldeploymentfoldersStr.Split(';').ToList();
+                var addlFolderSplit = additonaldeploymentfoldersStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 foreach (var addlFolder in addlFolderSplit)
                 {
                     //Todo: Check to make sure this isn't contained by one of the jobs or alt files
@@ -1128,7 +1128,7 @@ namespace MassEffectModManagerCore.modmanager
             var additonaldeploymentfilesStr = ModDescTargetVersion >= 6.0 ? iniData[@"UPDATES"][@"additionaldeploymentfiles"] : null;
             if (!string.IsNullOrEmpty(additonaldeploymentfilesStr))
             {
-                var addlFileSplit = additonaldeploymentfilesStr.Split(';').ToList();
+                var addlFileSplit = additonaldeploymentfilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 foreach (var addlFile in addlFileSplit)
                 {
                     if (addlFile.Contains(@"..") || addlFile.Contains(@"/") || addlFile.Contains(@"\"))
@@ -1180,7 +1180,7 @@ namespace MassEffectModManagerCore.modmanager
             var blacklistedFilesStr = iniData[@"UPDATES"][@"blacklistedfiles"];
             if (blacklistedFilesStr != null)
             {
-                var blacklistedFiles = blacklistedFilesStr.Split(';').ToList();
+                var blacklistedFiles = blacklistedFilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 foreach (var blf in blacklistedFiles)
                 {
                     var fullpath = Path.Combine(ModPath, blf);
