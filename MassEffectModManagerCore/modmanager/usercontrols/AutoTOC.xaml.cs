@@ -63,7 +63,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool RunGameWideAutoTOC()
         {
-          Debug.WriteLine(@"FULL AUTOTOC MODE - Updating Unpacked and SFAR TOCs");
+            Debug.WriteLine(@"FULL AUTOTOC MODE - Updating Unpacked and SFAR TOCs");
 
             //get toc target folders, ensuring we clean up the inputs a bit.
             string baseDir = Path.GetFullPath(Path.Combine(gameWideModeTarget.TargetPath, @"BIOGame"));
@@ -122,6 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             watch.Stop();
                             if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_ERROR_NO_ENTRIES)
                             {
+                                Log.Information($@"No DLC entries in SFAR... Suspicious. Creating empty TOC for {tocTarget}");
                                 CreateUnpackedTOC(tocTarget);
                             }
                             else if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY)
@@ -152,6 +153,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CreateUnpackedTOC(string dlcDirectory)
         {
+            Debug.WriteLine(@"Creating unpacked toc for" + dlcDirectory);
             var watch = System.Diagnostics.Stopwatch.StartNew();
             MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
             if (ms != null)

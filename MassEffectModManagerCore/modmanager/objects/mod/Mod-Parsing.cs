@@ -344,7 +344,7 @@ namespace MassEffectModManagerCore.modmanager
             NexusModID = nexuscode;
 
             #region NexusMods ID from URL
-            if (NexusModID == 0 && ModModMakerID == 0 && ModClassicUpdateCode == 0 && !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
+            if (NexusModID == 0 && ModModMakerID == 0 /*&& ModClassicUpdateCode == 0 */ && !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
             {
                 try
                 {

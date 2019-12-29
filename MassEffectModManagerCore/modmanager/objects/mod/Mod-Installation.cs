@@ -35,6 +35,7 @@ namespace MassEffectModManagerCore.modmanager
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     #region Installation: CustomDLC
+                    //Key = destination file, value = source file to install
                     var installationMapping = new Dictionary<string, string>();
                     unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     foreach (var altdlc in alternateDLC)
@@ -71,17 +72,18 @@ namespace MassEffectModManagerCore.modmanager
                                     {
                                         case AlternateFile.AltFileOperation.OP_NOINSTALL:
                                             CLog.Information($@"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                            //we simply don't map as we just do a continue below.
                                             altApplied = true;
                                             break;
                                         case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
                                             CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
-                                            installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                            installationMapping[sourceFile] = altFile.AltFile; //use alternate file as source file (value) instead
                                             altApplied = true;
                                             break;
                                         case AlternateFile.AltFileOperation.OP_INSTALL:
                                             //same logic as substitute, just different logging.
                                             CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
-                                            installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                            installationMapping[sourceFile] = altFile.AltFile; //use alternate file as source file (value) instead
                                             altApplied = true;
                                             break;
                                     }
@@ -208,18 +210,19 @@ namespace MassEffectModManagerCore.modmanager
                         switch (altFile.Operation)
                         {
                             case AlternateFile.AltFileOperation.OP_NOINSTALL:
-                                CLog.Information($@"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                CLog.Information($@"Not installing {destFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                //we simply don't map as we just do a continue below.
                                 altApplied = true;
                                 break;
                             case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                                CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
-                                installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                CLog.Information($@"Repointing {destFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                installationMapping[destFile] = altFile.AltFile; //use alternate file as key instead
                                 altApplied = true;
                                 break;
                             case AlternateFile.AltFileOperation.OP_INSTALL:
                                 //same logic as substitute, just different logging.
                                 CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
-                                installationMapping[altFile.AltFile] = sourceFile; //use alternate file as key instead
+                                installationMapping[destFile] = altFile.AltFile; //use alternate file as key instead
                                 altApplied = true;
                                 break;
                         }
