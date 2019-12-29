@@ -69,14 +69,14 @@
     <system:String x:Key="string_EnableconsoleinME1">Включить консоль ME1</system:String>
     <system:String x:Key="string_EnableME1ConsoleTooltip">Активирует полноразмерную консоль по ~ и компактную по TAB</system:String>
     <system:String x:Key="string_Additionalmoddingtools">Дополнительные инструменты моддинга</system:String>
-    <system:String x:Key="string_ALOTInstaller">Установщик ALOT</system:String>
+    <system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
     <system:String x:Key="string_ALOTInstallerTooltip">Устанавливает A Lot of Textures, мод обновления графики, предназначенный для всех трех игр</system:String>
     <system:String x:Key="string_MassEffectINIModder">Mass Effect INI Modder</system:String>
     <system:String x:Key="string_MEIMTooltip">Инструмент для редактирования различных настроек Mass Effect</system:String>
     <system:String x:Key="string_MassEffectModder">Mass Effect Modder</system:String>
     <system:String x:Key="string_Texturebrowserandinstaller">Браузер и установщик текстур</system:String>
-    <system:String x:Key="string_MassEffectRandomizer">Рандомайзер Mass Effect</system:String>
-    <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Рандомайзер для первой части Mass Effect</system:String>
+    <system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
+    <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Randomizer для первой части Mass Effect</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip">Набор инструментов для разработки модов трилогии Mass Effect</system:String>
     <system:String x:Key="string_BackupRestore">Архивация и Восстановление</system:String>
@@ -107,7 +107,7 @@
     <system:String x:Key="string_binkAsiLoaderNotInstalled">Загрузчик Binkw32 ASI не установлен</system:String>
     <system:String x:Key="string_binkAsiLoaderInstalled">Загрузчик Binkw32 ASI установлен</system:String>
     <system:String x:Key="string_gameNotInstalled">Игра не установлена</system:String>
-    <system:String x:Key="string_otherSavedTargets">Другие сохраненные пути</system:String>
+    <system:String x:Key="string_otherSavedTargets">Другие сохраненные пути установки</system:String>
     <system:String x:Key="string_cannotEndorseMod">Невозможно одобрить мод</system:String>
     <system:String x:Key="string_cannotEndorseOwnMod">Невозможно одобрить собственный мод</system:String>
     <system:String x:Key="string_notLinkedToNexusMods">мод не связан с NexusMods</system:String>
@@ -125,7 +125,7 @@
     <system:String x:Key="string_confirmDeletion">Подтвердить удаление</system:String>
     <system:String x:Key="string_updateCompleted">Обновление завершено</system:String>
     <system:String x:Key="string_gameRunning">Игра запущена</system:String>
-    <system:String x:Key="string_errorAddingTarget">Ошибка добавления целевой директории игры</system:String>
+    <system:String x:Key="string_errorAddingTarget">Ошибка добавления целевой игры</system:String>
     <system:String x:Key="string_dialogCannotAddTargetCmmVanilla">Невозможно добавить данную директорию в качестве целевой, так как она зарезервирована для архивации (обнаружен файл cmmvanilla).</system:String>
     <system:String x:Key="string_installationAborted">Установка прервана</system:String>
     <system:String x:Key="string_cannotInstallMod">Не удается установить мод</system:String>
@@ -151,7 +151,7 @@
     <system:String x:Key="string_failedToDownloadStaticFiles">Ошибка получения статических компонентов</system:String>
     <system:String x:Key="string_downloadingStaticFiles">Получение статических компонентов</system:String>
     <system:String x:Key="string_staticFilesDownloaded">Статические компоненты получены</system:String>
-    <system:String x:Key="string_dialogTurningOffTelemetry">Отключение телеметрии затрудняет исправление багов и разработку новых возможностей ME3Tweaks Mod Manager. Сбор данных телеметрии проводится для определения вылетов, ошибок, необходимых доработок для поддержки различных модов и трудностей, встреченных пользователями при выполнении задач (например, отсуствие подсказок по определенному правилу моддинга).\n\nВы можете оставить телеметрию выключенной, но она обеспечивает ценной статистикой разработчиков данной программы, а с ними и все сообщество моддинга.\n\nОтключить телеметрию?</system:String>
+    <system:String x:Key="string_dialogTurningOffTelemetry">Отключение телеметрии затрудняет исправление багов и разработку новых возможностей ME3Tweaks Mod Manager. Сбор данных телеметрии проводится для определения вылетов, ошибок, необходимых доработок для поддержки различных модов и трудностей, встреченных пользователями при выполнении задач (например, отсуствие подсказок по определенному правилу моддинга).\n\nВы можете оставить телеметрию выключенной, но она обеспечивает ценной статистикой разработчиков данной программы, а с ними и все сообщество моддинга.\n\nОтключить телеметрию?</system:String> //modding scene
     <system:String x:Key="string_turningOffTelemetry">Отключение телеметрии</system:String>
     <system:String x:Key="string_selectModLibraryFolder">Выбрать папку библиотеки модов</system:String>
     <system:String x:Key="string_runningAutoTOC">Запуск AutoTOC</system:String>
@@ -192,13 +192,13 @@
     <!-- 0 = Name of game (Mass Effect (2/3)) -->
     <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Запустить выбранную игру.&#10;Если это копия Origin, игра может перезагрузиться в версию Origin вместо выбранной</system:String>
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Применить данный мод к игре</system:String>
-    <system:String x:Key="string_tooltip_currentTarget">Текущий путь для моддинга</system:String>
+    <system:String x:Key="string_tooltip_currentTarget">Текущая цель моддинга</system:String>
     <system:String x:Key="string_tooltip_filterME1">Нажмите для переключения видимости модов Mass Effect</system:String>
     <system:String x:Key="string_tooltip_filterME2">Нажмите для переключения видимости модов Mass Effect 2</system:String>
     <system:String x:Key="string_tooltip_filterME3">Нажмите для переключения видимости модов Mass Effect 3</system:String>
     <system:String x:Key="string_tooltip_someModsFailed">Не удалось загрузить часть модов, нажмите для подробностей</system:String>
     <system:String x:Key="string_tooltip_addAdditionalTarget">Добавить дополнительный путь установки</system:String>
-    <system:String x:Key="string_tooltip_targetInfo">Просмотр и управление модами, установленными в данную игру</system:String>
+    <system:String x:Key="string_tooltip_targetInfo">Просмотр и управление модами, установленными в данной игре</system:String>
     <system:String x:Key="string_targetInfo">Детали Установки</system:String>
     <system:String x:Key="string_modDescription">Описание Мода</system:String>
     <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Одобрить ME3Tweaks Mod Manager на NexusMods</system:String>
@@ -333,7 +333,7 @@
     <system:String x:Key="string_mod">Мод</system:String>
 
     <!-- Backup Creator-->
-    <system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Рандомайзер Mass Effect и Установщик ALOT.</system:String>
+    <system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Mass Effect Randomizer и ALOT Installer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Архивы должны создаваться из свежеустановленной, немодифицированной копии игры. Модифицированные архивы не поддерживаются.</system:String>
     <system:String x:Key="string_backUp">Архивировать</system:String>
     <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Архивы используются для восстановления файлов игры и являются важным шагом в процессе моддинга. Чтобы отвязать архив от игры, переместите или удалите папку архива. Для восстановления из Архива используйте кнопку Детали Установки в основном окне.&#10;&#10;Архивы также используются как источники оригинальных файлов в определенных операциях. Некоторые продвинутые функции требуют наличия архива, поскольку требуется доступ к немодифицированным файлам.</system:String>
@@ -449,7 +449,7 @@
     <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Будет выполнена попытка восстановить вссе модифицированные SFAR. Также будут удалены все распакованные файлы.</system:String>
     <system:String x:Key="string_restoreAllModifiedSFARs">Восстановить все модицированные SFAR</system:String>
     <system:String x:Key="string_inconsistencyDetected">Обнаружено нарушение целостности</system:String>
-    <system:String x:Key="string_removeTargetFromM3">Remove target from M3</system:String>
+    <system:String x:Key="string_removeTargetFromM3">Удалить игру из списка</system:String>
     <system:String x:Key="string_openInExplorer">Открыть в Проводнике</system:String>
     <system:String x:Key="string_clickToOpenALOTInstaller">Нажмите для открытия ALOT Installer</system:String>
     <system:String x:Key="string_manageTexturesWithALOTInstaller">Управлять текстурами через ALOT Installer</system:String>
@@ -560,7 +560,7 @@
     <system:String x:Key="string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty">Папка не пуста. Место для восстановления должно быть пустым.</system:String>
     <system:String x:Key="string_cannotRestoreToThisLocation">Невозможно восстановить в указанное место</system:String>
     <system:String x:Key="string_restoreThisTarget">Восстановить данную игру</system:String>
-    <system:String x:Key="string_selectTarget">Выберите игру для восстановления</system:String>
+    <system:String x:Key="string_selectTarget">Выберите игру</system:String>
     <system:String x:Key="string_noBackup">Архив отстутствует</system:String>
     <system:String x:Key="string_error">Ошибка!</system:String>
     <system:String x:Key="string_fullGameRestore">Полное восстановление игры</system:String>
