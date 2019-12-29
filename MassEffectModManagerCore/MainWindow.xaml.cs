@@ -503,7 +503,7 @@ namespace MassEffectModManagerCore
             OpenFileDialog m = new OpenFileDialog
             {
                 Title = M3L.GetString(M3L.string_selectModArchive),
-                Filter = M3L.GetString(M3L.string_supportedFiles) + @"|*.zip;*.rar;*.7z;*.exe"
+                Filter = M3L.GetString(M3L.string_supportedFiles) + @"|*.zip;*.rar;*.7z;*.exe;*.me2mod"
             };
             var result = m.ShowDialog(this);
             if (result.Value)
