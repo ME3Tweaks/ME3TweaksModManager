@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_Checkforcontentupdates = "string_Checkforcontentupdates";
 		public static readonly string string_ChecksME3Tweaksforupdatestovariousservices = "string_ChecksME3Tweaksforupdatestovariousservices";
 		public static readonly string string_Reloadsmodsfromthemodlibrary = "string_Reloadsmodsfromthemodlibrary";
-		public static readonly string string_tooltip_reloadModsfromLibrary = "string_tooltip_reloadModsfromLibrary";
+		public static readonly string string_tooltip_reloadModsFromLibrary = "string_tooltip_reloadModsFromLibrary";
 		public static readonly string string_Exit = "string_Exit";
 		public static readonly string string_ModManagement = "string_ModManagement";
 		public static readonly string string_ImportMod = "string_ImportMod";
@@ -304,7 +304,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_installMod = "string_installMod";
 		public static readonly string string_abortInstallingMod = "string_abortInstallingMod";
 		public static readonly string string_dialogInvalidRCWFile = "string_dialogInvalidRCWFile";
-		public static readonly string string_modInstaller = "string_modInstaller";
 		public static readonly string string_interp_dialogNotEnoughSpaceToInstall = "string_interp_dialogNotEnoughSpaceToInstall";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";

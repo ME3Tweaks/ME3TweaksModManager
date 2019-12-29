@@ -119,9 +119,8 @@ namespace MassEffectModManagerCore.modmanager
 
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
-            ModLibraryPath = LoadSettingString(settingsIni, "ModManager", "Language", "int");
+            Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
-
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
             EnableTelemetry = LoadSettingBool(settingsIni, "Logging", "EnableTelemetry", true);

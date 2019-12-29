@@ -1143,10 +1143,10 @@ namespace MassEffectModManagerCore
                 return; //don't check or anything
             }
 
-            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
-            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
-            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
-            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
+            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
+            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
+            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
 
             switch (game)
             {

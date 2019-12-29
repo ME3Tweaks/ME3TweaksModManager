@@ -17,7 +17,7 @@
         Icon="appicon.ico"
         Drop="Window_Drop"
         DragOver="Window_DragOver"
-        Title="ME3Tweaks Mod Manager" Height="600" Width="800" MinHeight="600" MinWidth="600">
+        Title="ME3Tweaks Mod Manager" Height="600" Width="850" MinHeight="600" MinWidth="600">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -109,7 +109,7 @@
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Checkforcontentupdates}" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}" />
-                    <MenuItem Header="{DynamicResource string_Reloadsmodsfromthemodlibrary}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsfromLibrary}" />
+                    <MenuItem Header="{DynamicResource string_Reloadsmodsfromthemodlibrary}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}" />
                     <MenuItem Header="{DynamicResource string_Exit}" Click="ExitApplication_Click" />
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModManagement}" Padding="4">
@@ -287,7 +287,7 @@
             <Grid Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="7"/>
-                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="275"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>

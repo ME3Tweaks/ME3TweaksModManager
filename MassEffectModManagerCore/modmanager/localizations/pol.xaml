@@ -23,8 +23,8 @@
     <system:String x:Key="string_LogModInstallation">Tworzenie Logu Instalacji Mod</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Sprawdź dostępność aktualizacji</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Sprawdź ME3Tweaks pod kątem aktualizacji różnych usług</system:String>
-    <system:String x:Key="string_ReloadsMods">Przeładuj Mody</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Przeładowuje mody z biblioteki</system:String>
+    <system:String x:Key="string_tooltip_reloadModsFromLibrary">Przeładuj mody z biblioteki modów</system:String>
     <system:String x:Key="string_Exit">Wyjdź</system:String>
     <system:String x:Key="string_ModManagement">Zarządzanie Modami</system:String>
     <system:String x:Key="string_ImportMod">Importuj Mod</system:String>
@@ -115,11 +115,11 @@
     <system:String x:Key="string_gettingEndorsementStatus">Uzyskiwanie statusu poparć</system:String>
     <system:String x:Key="string_endorseMod">Poprzyj mod</system:String>
     <system:String x:Key="string_modEndorsed">&#x1F44D; Mod poparty</system:String>
-    <system:String x:Key="string_loginToNexusModsToEnableEndorsements">Zaloguj się do NexusMods, aby włączyć Poparcia</system:String>
-    <system:String x:Key="string_endorsementsEnabledAuthenicatedToNexusMods">Poparcia włączone (uwierzytelnione w NexusMods)</system:String>
+    <system:String x:Key="string_loginToNexusMods">Login to NexusMods</system:String>
+    <system:String x:Key="string_endorsementsEnabled">Endorsements enabled</system:String>
     <system:String x:Key="string_endorsing">Popieranie</system:String>
     <system:String x:Key="string_unendorsing">Cofanie Poparcia</system:String>
-    <system:String x:Key="string_dialogConsoleEnabled">Włączona konsola.\nNaciśnij ~ aby otworzyć pełnowymiarową konsolę.\nNaciśnij TAB, aby otworzyć mini konsolę.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogConsoleEnabled">Włączona konsola.\nNaciśnij ~ aby otworzyć pełnowymiarową konsolę.\nNaciśnij TAB, aby otworzyć mini konsolę.</system:String>
     <system:String x:Key="string_consoleEnabled">Konsola włączona</system:String>
     <system:String x:Key="string_couldNotEnableConsole">Nie można włączyć konsoli</system:String>
     <system:String x:Key="string_confirmDeletion">Potwierdź usunięcie</system:String>
@@ -151,13 +151,13 @@
     <system:String x:Key="string_failedToDownloadStaticFiles">Nie udało się pobrać plików statycznych</system:String>
     <system:String x:Key="string_downloadingStaticFiles">Pobieranie plików statycznych</system:String>
     <system:String x:Key="string_staticFilesDownloaded">Pobrano pliki statyczne</system:String>
-    <system:String x:Key="string_dialogTurningOffTelemetry">Wyłączenie telemetrii utrudnia naprawę błędów i opracowanie nowych funkcji ME3Tweaks Mod Manager. Zebrane dane telemetryczne służą do identyfikowania awarii, błędów, sprawdzania zapotrzebowania na różne modyfikacje modów i sprawdzania, jakie zadania są trudne dla użytkowników (takie jak brak wskazówek dotyczących konkretnej wymuszonej reguły modowania).\n\nMożesz kontynuować aby go wyłączyć, ale zapewnia cenne dane twórcom tego programu i scenie modowania.\n\nWyłączyć telemetrię?</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogTurningOffTelemetry">Wyłączenie telemetrii utrudnia naprawę błędów i opracowanie nowych funkcji ME3Tweaks Mod Manager. Zebrane dane telemetryczne służą do identyfikowania awarii, błędów, sprawdzania zapotrzebowania na różne modyfikacje modów i sprawdzania, jakie zadania są trudne dla użytkowników (takie jak brak wskazówek dotyczących konkretnej wymuszonej reguły modowania).\n\nMożesz kontynuować aby go wyłączyć, ale zapewnia cenne dane twórcom tego programu i scenie modowania.\n\nWyłączyć telemetrię?</system:String>
     <system:String x:Key="string_turningOffTelemetry">Wyłączanie telemetrii</system:String>
     <system:String x:Key="string_selectModLibraryFolder">Wybierz folder biblioteki modów</system:String>
     <system:String x:Key="string_runningAutoTOC">Uruchamianie AutoTOC</system:String>
     <system:String x:Key="string_ranAutoTOC">Ukończono AutoTOC</system:String>
     <system:String x:Key="string_nonModManagerModFound">Znaleziono mod spoza Mod Menadżera</system:String>
-    <system:String x:Key="string_dialogCriticalFilesMissing">"Mod Manager nie mógł uzyskać plików wymaganych do poprawnego działania programu.\nUpewnij się, że masz połączenie z Internetem i że zarówno GitHub, jak i ME3Tweaks są dostępne.\nMod Manager zostanie teraz zamknięty. Jeśli potrzebujesz pomocy, przyjdź do ME3Tweaks Discord.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">"Mod Manager nie mógł uzyskać plików wymaganych do poprawnego działania programu.\nUpewnij się, że masz połączenie z Internetem i że zarówno GitHub, jak i ME3Tweaks są dostępne.\nMod Manager zostanie teraz zamknięty. Jeśli potrzebujesz pomocy, przyjdź do ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_requiredFilesNotDownloaded">Wymaganych plików nie można pobrać</system:String>
     <system:String x:Key="string_checkingWritePermissions">Sprawdzanie uprawnień do zapisu</system:String>
     <system:String x:Key="string_checkedUserWritePermissions">Sprawdzone uprawnienia użytkownika do zapisu</system:String>
@@ -179,21 +179,20 @@
     <system:String x:Key="string_interp_launching">Uruchamianie {0}</system:String>
     <system:String x:Key="string_interp_launched">Uruchomiono {0}</system:String>
     <system:String x:Key="string_interp_cannotInstallModGameNotInstalled">Nie można zainstalować modu: {0} nie jest zainstalowany.</system:String>
-    <system:String x:Key="string_interp_dialog_installingTextureMod">$"Pliki {0} można instalować za pomocą ALOT Installera lub Mass Effect Modder (MEM), oba dostępne w menu narzędzi.\n\nOSTRZEŻENIE: Te typy modów zmieniają wskaźniki plików gry. Muszą być instalowane PO wszystkich innych DLC / modyfikatorach zawartości. Zainstalowanie modów zawartości / DLC później spowoduje różne problemy w grze. Po zainstalowaniu tego rodzaju modów ME3Tweaks Mod Manager odmówi zainstalowania kolejnych modów bez przywracania gry.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_installingTextureMod">$"Pliki {0} można instalować za pomocą ALOT Installera lub Mass Effect Modder (MEM), oba dostępne w menu narzędzi.\n\nOSTRZEŻENIE: Te typy modów zmieniają wskaźniki plików gry. Muszą być instalowane PO wszystkich innych DLC / modyfikatorach zawartości. Zainstalowanie modów zawartości / DLC później spowoduje różne problemy w grze. Po zainstalowaniu tego rodzaju modów ME3Tweaks Mod Manager odmówi zainstalowania kolejnych modów bez przywracania gry.</system:String>
     <system:String x:Key="string_interp_minorUpdateAvailableMessage">Dostępna jest zaktualizowana wersja ME3Tweaks Mod Manager Build {0}. Niewielkie aktualizacje zwykle naprawiają małe błędy w programie, które nie wymagają pełnego ponownego wydania.</system:String>
-    <system:String x:Key="string_interp_dialogUnableToCreateModLibraryNoPermissions">"Nie można utworzyć katalogu biblioteki modów: {0}\nWybierz katalog modów, do którego masz uprawnienia do zapisu.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogUnableToCreateModLibraryNoPermissions">"Nie można utworzyć katalogu biblioteki modów: {0}\nWybierz katalog modów, do którego masz uprawnienia do zapisu.</system:String>
     <system:String x:Key="string_interp_dialogCannotInstallModsWhileGameRunning">Nie można zainstalować modów podczas działania {0}.</system:String>
     <system:String x:Key="string_interp_failedToInstallMod">Nie udało się zainstalować {0}</system:String>
     <system:String x:Key="string_interp_installingMod">Instalowanie {0}</system:String>
     <system:String x:Key="string_interp_installedMod">Zainstalowano {0}</system:String>
-    <system:String x:Key="string_interp_dialogUnableToAddGameTarget">Nie można dodać tej gry jako celu:\n{0}</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialogUnableToAddGameTarget">Nie można dodać tej gry jako celu:\n{0}</system:String>
     <system:String x:Key="string_gameExecutable">Plik wykonywalny gry</system:String>
     <system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Nie można modyfikować plików binkw32 podczas działania {0}.</system:String>
     <!-- 0 = Name of game (Mass Effect (2/3)) -->
     <system:String xml:space="preserve" x:Key="string_tooltip_launchCurrentlySelectedTarget">Uruchom aktualnie wybrany cel.&#10;Jeśli jest to kopia z Origin, gra może zostać ponownie uruchomiona do celu Origin</system:String>
     <system:String x:Key="string_tooltip_applyThisModToTheGame">Zastosuj ten mod do gry</system:String>
     <system:String x:Key="string_tooltip_currentTarget">Aktualny cel modowania</system:String>
-    <system:String x:Key="string_tooltip_reloadModsFromLibrary">Przeładuj mody z biblioteki modów</system:String>
     <system:String x:Key="string_tooltip_filterME1">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect</system:String>
     <system:String x:Key="string_tooltip_filterME2">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect 2</system:String>
     <system:String x:Key="string_tooltip_filterME3">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect 3</system:String>
@@ -202,10 +201,13 @@
     <system:String x:Key="string_tooltip_targetInfo">Przeglądaj zainstalowane mody i pliki dla tego celu oraz zarządzaj nimi</system:String>
     <system:String x:Key="string_targetInfo">Informacje o celu</system:String>
     <system:String x:Key="string_modDescription">Opis Modu</system:String>
+    <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Endorse ME3Tweaks Mod Manager on NexusMods</system:String>
+    <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Endorsed ME3Tweaks Mod Manager on NexusMods :)</system:String>
+    <system:String x:Key="string_supportedFiles">Supported files</system:String>
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Przygotowanie do instalacji</system:String>
-    <system:String x:Key="string_interp_devModeAlotInstalledWarning">ALOT jest zainstalowany, a ten mod instaluje pliki pakietów. Kontynuowanie instalacji tego modu prawdopodobnie spowoduje uszkodzenie tekstur lub crashe gry spowodowane błędnymi wskaźnikami tesktur oraz prawdopodobnie pustymi mipami. Twoja instalacja ALOT nie będzie również dalej wspierana. \n\nKontynuować instalację {0}? Zostałeś ostrzeżony.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT jest zainstalowany, a ten mod instaluje pliki pakietów. Kontynuowanie instalacji tego modu prawdopodobnie spowoduje uszkodzenie tekstur lub crashe gry spowodowane błędnymi wskaźnikami tesktur oraz prawdopodobnie pustymi mipami. Twoja instalacja ALOT nie będzie również dalej wspierana. \n\nKontynuować instalację {0}? Zostałeś ostrzeżony.</system:String>
     <system:String x:Key="string_brokenTexturesWarning">Ostrzeżenie o Uszkodzonych Teksturach</system:String>
     <system:String x:Key="string_installing">Instalowanie</system:String>
     <system:String x:Key="string_loadingModArchive">Wczytywanie archiwum pliku</system:String>
@@ -213,18 +215,18 @@
     <system:String x:Key="string_installed">Zainstalowano</system:String>
     <system:String x:Key="string_interp_dialogOfficialTargetDLCNotInstalled">{0} instaluje pliki do DLC {1} ({2}), który to nie jest zainstalowy.</system:String>
     <!-- 0 =  Mod Name, 1 = DLC folder name, 2 = TPMI lookup (human readable dlc name) -->
-    <system:String x:Key="string_dialogJobDescriptionMessageHeader">\n\nMod podaje następujący powód dla modyfikacji tego DLC:</system:String>
-    <system:String x:Key="string_dialogJobDescriptionMessageFooter">\n\nMod może nie działać prawidłowo bez tego DLC zainstalowanego wcześniej. Kontynuować instalację pomimo to?</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogJobDescriptionMessageHeader">\n\nMod podaje następujący powód dla modyfikacji tego DLC:</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogJobDescriptionMessageFooter">\n\nMod może nie działać prawidłowo bez tego DLC zainstalowanego wcześniej. Kontynuować instalację pomimo to?</system:String>
     <system:String x:Key="string_dialogJobDescriptionMessageTitle">DLC {0} nie jest zainstalowany</system:String>
     <!-- 0 is name of official (english only) name of DLC that is not installed (e.g. Bring Down The Sky) -->
-    <system:String x:Key="string_dialogOutdatedDLCHeader">Następujące mody DLC są oznaczone jako przestarzałe / już nie ważne przez {0} i będą usunięte podczas instalacji:\n</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogOutdatedDLCHeader">Następujące mody DLC są oznaczone jako przestarzałe / już nie ważne przez {0} i będą usunięte podczas instalacji:\n</system:String>
     <!-- 0 = name of mod being installed -->
-    <system:String x:Key="string_dialogOutdatedDLCFooter">\n\nNaciśnij Tak aby kontynuować instalowanie {0}, albo Nie aby przerwać instalację.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogOutdatedDLCFooter">\n\nNaciśnij Tak aby kontynuować instalowanie {0}, albo Nie aby przerwać instalację.</system:String>
     <!-- 0 = Name of mod being installed -->
     <system:String x:Key="string_outdatedDLCDetected">Znaleziono przestarzałe DLC</system:String>
-    <system:String x:Key="string_dialogIncompatibleDLCDetectedHeader">Następujące mody DLC zostały oznaczone jako niekompatybilne z {0}:\n</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogIncompatibleDLCDetectedHeader">Następujące mody DLC zostały oznaczone jako niekompatybilne z {0}:\n</system:String>
     <!-- 0 = Name of mod being installed -->
-    <system:String x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nAby zainstalować {0}, wymienione wyżej niestandardowe mody muszą zostać najpierw usunięte.\nMożesz zarządzać zainstalowanymi niestandardowymi modami naciskając przycisk Informacje o celu.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nAby zainstalować {0}, wymienione wyżej niestandardowe mody muszą zostać najpierw usunięte.\nMożesz zarządzać zainstalowanymi niestandardowymi modami naciskając przycisk Informacje o celu.</system:String>
     <!-- 0 = Name of mod being installed -->
     <system:String x:Key="string_incompatibleDLCDetected">Wykryto niekompatybilne DLC</system:String>
     <system:String x:Key="string_dialogNoWritePermissions">Twoje konto użytkownika nie ma uprawnień zapisu do katalogu gry. Możesz przydzielić kontu te uprawnienia używając opcji "Udziel dostępu do zapisu dla katalogów gier" w menu narzędzi.</system:String>
@@ -239,7 +241,6 @@
     <system:String x:Key="string_installationSucceededMaybe">Instalacja pomyślna, może</system:String>
     <system:String x:Key="string_dialogRunGameOnceFirst">Mody zmieniające pliki konfiguracyjne wymagają, aby Mass Effect został uruchomiony przynajmniej raz zanim zostaną one zainstalowane. Jest to wymagane dla pewności, że gra nie nadpisze tych plików podczas swojego pierwszego uruchomienia.</system:String>
     <system:String x:Key="string_gameMustBeRunAtLeastOnce">Gra musi zostać uruchomiona przynajmniej raz</system:String>
-
     <system:String x:Key="string_ui_allAlternatesAreAutomatic">Wszystkie opcje instalacyjne dla tego modu są automatyczne. Upewnij się, że wymienione DLC (mody bądź te oficjalne) są zainstalowane już przed rozpoczęciem instalacji tego modu, jeśli planujesz ich używać.</system:String>
     <system:String x:Key="string_ui_title_selectInstallationOptions">Wybierz opcje instalacji</system:String>
     <system:String x:Key="string_install">Zainstaluj</system:String>
@@ -247,7 +248,9 @@
     <system:String x:Key="string_installMod">Zainstaluj mod</system:String>
     <system:String x:Key="string_abortInstallingMod">Przerwij instalację tego modu</system:String>
     <system:String x:Key="string_dialogInvalidRCWFile">Plik .me2mod używany przez tego moda nie jest poprawny bądź nie może być bezpiecznie zastosowany do twojej instalacji gry. Instalacja została przerwana. Sprawdź logi Mod Managera z menu Pomocy po więcej informacji.</system:String>
-
+    <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughSpaceToInstall">There is not enough space on {0} to install {1}.\nRequired space: {2}\nAvailable space: {3}</system:String>
+    <!-- 0=driveletter 1=ModBeingInstalled.ModName 2,3=number of bytes (in MB/KB/GB etc)  -->
+    
     <!-- Startup preview panel -->
     <system:String x:Key="string_previewPanelTitle">Witaj w ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Wybierz swój język</system:String>
@@ -256,6 +259,7 @@
     <system:String x:Key="string_joinDiscord">Dołącz do Discorda ME3Tweaks</system:String>
     <system:String x:Key="string_close">Zamknij</system:String>
     <!-- Close (as in close dialog) -->
+    <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Translation is in progress but is not yet available</system:String>
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
@@ -639,7 +643,9 @@
     <!-- 0 = friendlyname -->
     <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate file is specified with operation {0}, but required file doesn't exist: {1}</system:String>
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
-
+    <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate file {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
+    <!-- 0 = Friendly name, 1 = Filepath-->
+    
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->
