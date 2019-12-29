@@ -564,6 +564,7 @@ namespace MassEffectModManagerCore
         {
             try
             {
+                Debug.WriteLine("Hashing file " + filename);
                 using var md5 = MD5.Create();
                 using var stream = File.OpenRead(filename);
                 var hash = md5.ComputeHash(stream);

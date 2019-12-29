@@ -356,7 +356,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             rootNode.Attributes.Append(serverfolder);
 
 
-
             #endregion
 
             //wait to ensure changelog is set.
@@ -367,9 +366,102 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Thread.Sleep(250);  //wait for changelog to be set.
             }
 
+            #region Finish building manifest
             var changelog = xmlDoc.CreateAttribute("changelog");
             changelog.InnerText = ChangelogText;
             rootNode.Attributes.Append(changelog);
+
+            using var stringWriter = new StringWriter();
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true; settings.IndentChars = " ";
+            settings.Encoding = Encoding.UTF8;
+            using var xmlTextWriter = XmlWriter.Create(stringWriter, settings);
+            xmlDoc.WriteTo(xmlTextWriter);
+            xmlTextWriter.Flush();
+
+
+            #endregion
+            Debug.WriteLine(stringWriter.GetStringBuilder().ToString());
+
+            #region Connect to ME3Tweaks
+            CurrentActionText = "Connecting to ME3Tweaks Updater Service";
+            Log.Information(@"Connecting to ME3Tweaks as " + Username);
+            string host = @"ftp.me3tweaks.com";
+            string username = Username;
+            string password = Settings.DecryptUpdaterServicePassword();
+
+            using SftpClient sftp = new SftpClient(host, username, password);
+            sftp.Connect();
+
+            Log.Information(@"Connected to ME3Tweaks over SSH (SFTP)");
+
+            CurrentActionText = "Connected to ME3Tweaks Updater Service";
+            var serverFolderName = mod.UpdaterServiceServerFolder;
+            if (serverFolderName.Contains('/'))
+            {
+                serverFolderName = serverFolderName.Substring(serverFolderName.LastIndexOf('/') + 1);
+            }
+
+            //sftp.ChangeDirectory(LZMAStoragePath);
+
+            //Log.Information(@"Listing files/folders for " + LZMAStoragePath);
+            //var lzmaStorageDirectoryItems = sftp.ListDirectory(LZMAStoragePath);
+            var serverModPath = LZMAStoragePath + @"/" + serverFolderName;
+            if (!sftp.Exists(serverModPath))
+            {
+                CurrentActionText = "Creating server folder for mod";
+                Log.Information(@"Creating server folder for mod: " + serverModPath);
+                sftp.CreateDirectory(serverModPath);
+            }
+
+            CurrentActionText = "Hashing files on server for delta";
+
+            Log.Information("Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
+            using SshClient sshClient = new SshClient(host, username, password);
+            sshClient.Connect();
+
+            var command = sshClient.CreateCommand(@"find " + serverModPath + @" -type f -exec md5sum '{}' \;");
+            command.Execute();
+            var answer = command.Result;
+            Debug.WriteLine(answer);
+
+            //UploadDirectory(sftp, lzmaStagingPath, serverModPath, (ucb) => Debug.WriteLine("UCB: " + ucb));
+
+            CurrentActionText = "Done";
+
+            #endregion
         }
+
+        private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)
+        {
+            Debug.WriteLine("Uploading directory {0} to {1}", localPath, remotePath);
+
+            IEnumerable<FileSystemInfo> infos =
+                new DirectoryInfo(localPath).EnumerateFileSystemInfos();
+            foreach (FileSystemInfo info in infos)
+            {
+                if (info.Attributes.HasFlag(FileAttributes.Directory))
+                {
+                    string subPath = remotePath + "/" + info.Name;
+                    if (!client.Exists(subPath))
+                    {
+                        client.CreateDirectory(subPath);
+                    }
+                    UploadDirectory(client, info.FullName, remotePath + "/" + info.Name, uploadCallback);
+                }
+                else
+                {
+                    using (Stream fileStream = new FileStream(info.FullName, FileMode.Open))
+                    {
+                        Debug.WriteLine(
+                            "Uploading {0} ({1:N0} bytes)",
+                            info.FullName, ((FileInfo)info).Length);
+
+                        client.UploadFile(fileStream, remotePath + "/" + info.Name, uploadCallback);
+                    }
+                }
+            }
+        }
+
     }
 }

@@ -32,7 +32,7 @@
 
             <DockPanel>
                 <Button Content="Set changelog" Command="{Binding SetChangelogCommand}" Padding="7,4" DockPanel.Dock="Right"/>
-                <xctk:WatermarkTextBox Watermark="Enter single-line changelog here" Text="{Binding ChangelogText}" IsEnabled="{Binding ChangelogNotYetSet}" TextAlignment="Center"/>
+                <xctk:WatermarkTextBox Watermark="Enter single-line changelog here" Text="{Binding ChangelogText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ChangelogNotYetSet}" TextAlignment="Left"/>
             </DockPanel>
 
             <Expander Header="Updater Service settings" Margin="0,5" IsExpanded="{Binding SettingsExpanded}">

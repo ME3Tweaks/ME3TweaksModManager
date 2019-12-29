@@ -75,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             if (includeModdesc)
             {
-                references.Add(ModDescPath);
+                references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/','\\'));
             }
             return references;
         }

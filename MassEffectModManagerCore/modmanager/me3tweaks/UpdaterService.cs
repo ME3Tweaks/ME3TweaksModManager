@@ -310,21 +310,24 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var destPath = Path.Combine(stagingPath, relativePath + @".lzma");
             var sourcePath = Path.Combine(modPath, relativePath);
             Directory.CreateDirectory(Directory.GetParent(destPath).FullName);
-            using var output = new FileStream(destPath, FileMode.CreateNew);
 
-            var encoder = new LzmaEncodeStream(output);
-            var inStream = new FileStream(sourcePath, FileMode.Open);
-            int bufSize = 24576, count;
-            var buf = new byte[bufSize];
+            var compressedBytes = SevenZipHelper.LZMA.Compress(File.ReadAllBytes(sourcePath));
+            File.WriteAllBytes(destPath, compressedBytes);
+            //using var output = new FileStream(destPath, FileMode.CreateNew);
 
-            while ((count = inStream.Read(buf, 0, bufSize)) > 0)
-            {
-                var canceled = cancelCheckCallback?.Invoke();
-                if (canceled.HasValue && canceled.Value) break;
-                encoder.Write(buf, 0, count);
-            }
+            //var encoder = new LzmaEncodeStream(output);
+            //var inStream = new FileStream(sourcePath, FileMode.Open);
+            //int bufSize = 24576, count;
+            //var buf = new byte[bufSize];
 
-            encoder.Close();
+            //while ((count = inStream.Read(buf, 0, bufSize)) > 0)
+            //{
+            //    var canceled = cancelCheckCallback?.Invoke();
+            //    if (canceled.HasValue && canceled.Value) break;
+            //    encoder.Write(buf, 0, count);
+            //}
+
+            //encoder.Close();
 
             return destPath;
         }
