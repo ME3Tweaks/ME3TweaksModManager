@@ -416,7 +416,7 @@
                     <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
                              IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1"
-                             IsTextSearchEnabled="True" TextSearch.TextPath="ModName">>
+                             IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
