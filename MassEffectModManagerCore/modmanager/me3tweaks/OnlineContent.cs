@@ -24,7 +24,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
-            using var wc = new System.Net.WebClient();
+            using var wc = new ShortTimeoutWebClient();
             string json = wc.DownloadString(StartupManifestURL);
             App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             return App.ServerManifest;
@@ -35,11 +35,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
-                    using var wc = new System.Net.WebClient();
+                    using var wc = new ShortTimeoutWebClient();
 
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyIdentificationServiceURL);
                     File.WriteAllText(Utilities.GetThirdPartyIdentificationCachedFile(), json);
@@ -86,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             try
             {
-                using var wc = new System.Net.WebClient();
+                using var wc = new ShortTimeoutWebClient();
                 return wc.DownloadStringAwareOfEncoding(url);
             }
             catch (Exception e)
@@ -98,25 +98,25 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static string FetchThirdPartyModdesc(string name)
         {
-            using var wc = new System.Net.WebClient();
+            using var wc = new ShortTimeoutWebClient();
             string moddesc = wc.DownloadStringAwareOfEncoding(ThirdPartyModDescURL + name);
             return moddesc;
         }
 
         public static string FetchExeTransform(string name)
         {
-            using var wc = new System.Net.WebClient();
+            using var wc = new ShortTimeoutWebClient();
             string moddesc = wc.DownloadStringAwareOfEncoding(ExeTransformBaseURL + name);
             return moddesc;
         }
 
         public static Dictionary<string, List<string>> FetchTipsService(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetTipsServiceFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetTipsServiceFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
-                    using var wc = new System.Net.WebClient();
+                    using var wc = new ShortTimeoutWebClient();
 
                     string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
                     File.WriteAllText(Utilities.GetTipsServiceFile(), json);
@@ -145,11 +145,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) ||overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
-                    using var wc = new System.Net.WebClient();
+                    using var wc = new ShortTimeoutWebClient();
 
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
                     File.WriteAllText(Utilities.GetThirdPartyImportingCachedFile(), json);
@@ -182,7 +182,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             string finalRelayURL = $"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
             try
             {
-                using (var wc = new System.Net.WebClient())
+                using (var wc = new ShortTimeoutWebClient())
                 {
                     Debug.WriteLine(finalRelayURL);
                     string json = wc.DownloadStringAwareOfEncoding(finalRelayURL);
@@ -206,7 +206,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 string sevenZDLL = Utilities.Get7zDllPath();
                 if (!File.Exists(sevenZDLL) || Utilities.CalculateMD5(sevenZDLL) != "72491c7b87a7c2dd350b727444f13bb4")
                 {
-                    using (var wc = new System.Net.WebClient())
+                    using (var wc = new ShortTimeoutWebClient())
                     {
                         var fullURL = StaticFilesBaseURL + "7z.dll";
                         Log.Information("Downloading 7z.dll: " + fullURL);
@@ -246,7 +246,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var localPath = Path.Combine(localBaseDir, info);
                     if (!File.Exists(localPath))
                     {
-                        using (var wc = new System.Net.WebClient())
+                        using (var wc = new ShortTimeoutWebClient())
                         {
                             var fullURL = StaticFilesBaseURL + "objectinfos/" + info;
                             Log.Information("Downloading static asset: " + fullURL);
@@ -266,7 +266,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static (MemoryStream result, string errorMessage) FetchString(string url)
         {
-            using var wc = new System.Net.WebClient();
+            using var wc = new ShortTimeoutWebClient();
             string downloadError = null;
             MemoryStream responseStream = null;
             wc.DownloadDataCompleted += (a, args) =>
@@ -296,7 +296,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null)
         {
-            using var wc = new System.Net.WebClient();
+            using var wc = new ShortTimeoutWebClient();
             string downloadError = null;
             MemoryStream responseStream = null;
             wc.DownloadProgressChanged += (a, args) => { progressCallback?.Invoke(args.BytesReceived, args.TotalBytesToReceive); };

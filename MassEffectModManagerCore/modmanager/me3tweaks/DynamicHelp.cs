@@ -24,7 +24,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
 
-            if (!localHelpExists || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!localHelpExists || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
