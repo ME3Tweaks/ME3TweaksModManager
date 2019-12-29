@@ -166,9 +166,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
     <ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
     <ProjectReference Include="..\SevenZip\SevenZip.csproj" />

@@ -165,12 +165,15 @@ namespace MassEffectModManagerCore
             );
         }
 
-        public void RefreshNexusStatus()
+        public void RefreshNexusStatus(bool languageUpdateOnly = false)
         {
             if (NexusModsUtilities.HasAPIKey)
             {
                 NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabled);
-                AuthToNexusMods();
+                if (!languageUpdateOnly)
+                {
+                    AuthToNexusMods();
+                }
             }
             else
             {
@@ -2284,6 +2287,7 @@ namespace MassEffectModManagerCore
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
             App.CurrentLanguage = lang;
             SetTipsForLanguage();
+            RefreshNexusStatus(true);
             try
             {
                 var localizedHelpItems = OnlineContent.FetchLatestHelp(lang, true, false);
