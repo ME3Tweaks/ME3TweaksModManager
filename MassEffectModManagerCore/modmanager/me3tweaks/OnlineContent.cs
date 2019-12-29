@@ -35,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
@@ -112,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, List<string>> FetchTipsService(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetTipsServiceFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetTipsServiceFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
@@ -145,7 +145,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {

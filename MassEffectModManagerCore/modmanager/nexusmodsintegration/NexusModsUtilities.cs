@@ -65,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             }
             catch (Exception e)
             {
-                Log.Error(@"Exception while authenticating to nexusmods: "+e.Message);
+                Log.Error(@"Exception while authenticating to nexusmods: " + e.Message);
             }
 
             return null;
@@ -112,24 +112,33 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         {
             if (!NexusModsUtilities.HasAPIKey) return false;
             var client = NexusModsUtilities.GetClient();
-            var modinfo = await client.Mods.GetMod(gamedomain, fileid);
-            if (modinfo.User.MemberID == currentuserid)
+            try
             {
-                return null; //cannot endorse your own mods
-            }
-            var endorsementstatus = modinfo.Endorsement;
-            if (endorsementstatus != null)
-            {
-                if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Undecided || endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Abstained)
+                var modinfo = await client.Mods.GetMod(gamedomain, fileid);
+                if (modinfo.User.MemberID == currentuserid)
                 {
-                    return false;
+                    return null; //cannot endorse your own mods
                 }
 
-                if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Endorsed)
+                var endorsementstatus = modinfo.Endorsement;
+                if (endorsementstatus != null)
                 {
-                    return true;
+                    if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Undecided || endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Abstained)
+                    {
+                        return false;
+                    }
+
+                    if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Endorsed)
+                    {
+                        return true;
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                Log.Error(@"Error getting endorsement status for mod: " + e.Message);
+            }
+
             return null; //Cannot endorse this (could not get endorsement status)
         }
 

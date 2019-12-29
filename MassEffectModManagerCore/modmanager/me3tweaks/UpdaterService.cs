@@ -148,7 +148,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                         //Files to remove calculation
                         var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories).Select(x => x.Substring(modBasepath.Length + 1)).ToList();
-                        modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath), StringComparer.InvariantCultureIgnoreCase).ToList()); //Todo: Add security check here to prevent malicious values
+                        modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath), StringComparer.InvariantCultureIgnoreCase).Distinct().ToList()); //Todo: Add security check here to prevent malicious values
                         modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
                     }
                     return modUpdateInfos;

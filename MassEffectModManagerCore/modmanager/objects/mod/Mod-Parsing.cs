@@ -1175,6 +1175,7 @@ namespace MassEffectModManagerCore.modmanager
             #endregion
 
             #region Updater Service (Devs only)
+            //For 104
             //UpdaterServiceServerFolder = iniData[@"UPDATES"][@"serverfolder"];
             //var blacklistedFilesStr = iniData[@"UPDATES"][@"blacklistedfiles"];
             //if (blacklistedFilesStr != null)

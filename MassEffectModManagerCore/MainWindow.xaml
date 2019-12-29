@@ -17,7 +17,7 @@
         Icon="appicon.ico"
         Drop="Window_Drop"
         DragOver="Window_DragOver"
-        Title="ME3Tweaks Mod Manager" Height="600" Width="850" MinHeight="600" MinWidth="600">
+        Title="ME3Tweaks Mod Manager" Height="630" Width="850" MinHeight="630" MinWidth="700">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -415,7 +415,8 @@
                     </StackPanel>
                     <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
                              IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1">
+                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1"
+                             IsTextSearchEnabled="True" TextSearch.TextPath="ModName">>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

@@ -192,7 +192,7 @@ namespace MassEffectModManagerCore
 
                 //ME1
                 var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149, NexusUserID);
-                ME1NexusEndorsed = me1Status ?? true;
+                ME1NexusEndorsed = me1Status ?? false;
 
                 //ME2
                 var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248, NexusUserID);
@@ -1596,7 +1596,7 @@ namespace MassEffectModManagerCore
             };
             bw.DoWork += (a, b) =>
             {
-                Log.Information(@"Start of content check network thread");
+                Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
 
                 BackgroundTask bgTask;
                 bool success;
@@ -2151,8 +2151,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                //unknown caller
-                return;
+                //unknown caller. Might just be settings on/off for logging.
             }
 
             Settings.Save();
