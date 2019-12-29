@@ -259,7 +259,7 @@
     <system:String x:Key="string_joinDiscord">Присоединиться к ME3Tweaks Discord</system:String>
     <system:String x:Key="string_close">Закрыть</system:String>
     <!-- Close (as in close dialog) -->
-    <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Перевод находится в процессе, но пока не доступен</system:String>
+    <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Перевод в процессе, но пока не доступен</system:String>
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Многопоточное сжатие значительно быстрее однопоточного, но требует намного больше памяти.&#10;В случае мода большого размера (>600MB) рекомендуется отключить эту функцию, если у вас менее 16GB доступной памяти.</system:String>
@@ -643,7 +643,7 @@
     <!-- 0 = friendlyname -->
     <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Для изменяемого файла определена операция {0}, но требуемый файл не существует: {1}</system:String>
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
-    <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate file {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
+    <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">В Alternate file {0} определена цель для изменений (ModFile), но путь не существует: {1}</system:String>
     <!-- 0 = Friendly name, 1 = Filepath-->
     
     <!-- GameTarget -->
