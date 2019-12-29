@@ -204,7 +204,7 @@
     <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Одобрить ME3Tweaks Mod Manager на NexusMods</system:String>
     <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">ME3Tweaks Mod Manager на NexusMods одобрен :)</system:String>
     <system:String x:Key="string_supportedFiles">Поддерживаемые файлы</system:String>
-    <system:String x:Key="string_interp_XmodsFailedToLoad">{0} mod(s) failed to load</system:String>
+    <system:String x:Key="string_interp_XmodsFailedToLoad">Модов не удалось загрузить: {0}</system:String>
     <!-- 0 = number -->
 
     <!-- Mod Installer Panel -->
