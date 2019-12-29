@@ -409,7 +409,7 @@
                     <StackPanel Name="FailedModsPopupPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{DynamicResource string_tooltip_someModsFailed}">
                             <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
-                                <TextBlock Text="{Binding FailedMods.BindableCount, StringFormat={}{0} mods failed to load, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="{Binding FailedModsString}"/>
                             </Hyperlink>
                         </TextBlock>
                     </StackPanel>

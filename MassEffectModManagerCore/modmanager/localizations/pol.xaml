@@ -204,6 +204,8 @@
     <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Endorse ME3Tweaks Mod Manager on NexusMods</system:String>
     <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Endorsed ME3Tweaks Mod Manager on NexusMods :)</system:String>
     <system:String x:Key="string_supportedFiles">Supported files</system:String>
+    <system:String x:Key="string_interp_XmodsFailedToLoad">{0} mod(s) failed to load</system:String>
+    <!-- 0 = number -->
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Przygotowanie do instalacji</system:String>

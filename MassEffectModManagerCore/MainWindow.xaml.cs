@@ -94,6 +94,7 @@ namespace MassEffectModManagerCore
             }
         }
 
+        public string FailedModsString { get; set; }
         public string NexusLoginInfoString { get; set; } = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
@@ -221,6 +222,14 @@ namespace MassEffectModManagerCore
                 {
                     bool isopening = FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
                     bool isclosing = FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
+                    if (isopening)
+                    {
+                        FailedModsString = M3L.GetString(M3L.string_interp_XmodsFailedToLoad, FailedMods.BindableCount.ToString());
+                    }
+                    else
+                    {
+                        FailedModsString = @"";
+                    }
                     if (isclosing || isopening)
                     {
                         Application.Current.Dispatcher.Invoke(delegate
