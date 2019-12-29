@@ -277,7 +277,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return true;
         }
 
-        public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Action<string> updateUiTextCallback = null)
+        public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null)
         {
             //create staging dir
             var stagingPath = Utilities.GetUpdaterServiceUploadStagingPath();
@@ -292,14 +292,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             //run files 
             Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, x =>
             {
-                LZMACompressFileForUpload(x, stagingPath, mod.ModPath);
+                var canceledCheck = canceledCallback?.Invoke();
+                if (canceledCheck.HasValue && canceledCheck.Value)
+                {
+                    return; //skip
+                }
+                LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
                 var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
                 updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(totalDone * 100.0 / totalAmountToCompress)}%");
             });
             return stagingPath;
         }
 
-        private static string LZMACompressFileForUpload(string relativePath, string stagingPath, string modPath)
+        private static string LZMACompressFileForUpload(string relativePath, string stagingPath, string modPath, Func<bool?> cancelCheckCallback = null)
         {
             Log.Information(@"Compressing " + relativePath);
             var destPath = Path.Combine(stagingPath, relativePath + @".lzma");
@@ -314,6 +319,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             while ((count = inStream.Read(buf, 0, bufSize)) > 0)
             {
+                var canceled = cancelCheckCallback?.Invoke();
+                if (canceled.HasValue && canceled.Value) break;
                 encoder.Write(buf, 0, count);
             }
 

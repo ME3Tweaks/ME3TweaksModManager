@@ -8,11 +8,11 @@
              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-                       Width="300"
+                       Width="500"
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top">
-            <Image HorizontalAlignment="Center" Height="48" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
+            <Image HorizontalAlignment="Center" Height="48" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,10,0,0" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
             <TextBlock Text="Updater Service" TextAlignment="Center" FontSize="14"/>
             <TextBlock TextAlignment="Center" DataContext="{Binding mod}">
                 <TextBlock.Text>
@@ -28,11 +28,26 @@
                                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                         Width="48"
                                         Height="48"/>
-            <TextBlock Text="{Binding CurrentActionText}" TextAlignment="Center"/>
+            <TextBlock Text="{Binding CurrentActionText}" TextAlignment="Center" Margin="0,10" FontSize="14"/>
 
+            <DockPanel>
+                <Button Content="Set changelog" Command="{Binding SetChangelogCommand}" Padding="7,4" DockPanel.Dock="Right"/>
+                <xctk:WatermarkTextBox Watermark="Enter single-line changelog here" Text="{Binding ChangelogText}" IsEnabled="{Binding ChangelogNotYetSet}" TextAlignment="Center"/>
+            </DockPanel>
 
-            <xctk:WatermarkTextBox Watermark="Enter single-line changelog here" Text="{Binding ChangelogText}" IsEnabled="{Binding ChangelogNotYetSet}" TextAlignment="Center"/>
-            <Button Content="Set changelog" Command="{Binding SetChangelogCommand}"/>
+            <Expander Header="Updater Service settings" Margin="0,5" IsExpanded="{Binding SettingsExpanded}">
+                <StackPanel Margin="15,0,0,0"  IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
+                    <xctk:WatermarkTextBox Watermark="Username" Text="{Binding Username}"/>
+                    <xctk:WatermarkPasswordBox Name="Password_TextBox" Watermark="Password" Text="{Binding Password}"/>
+                    <xctk:WatermarkTextBox Watermark="LZMA storage path" Text="{Binding LZMAStoragePath}"/>
+                    <xctk:WatermarkTextBox Watermark="Manifests storage path" Text="{Binding ManifestStoragePath}"/>
+                    <DockPanel HorizontalAlignment="Stretch">
+                        <Button DockPanel.Dock="Right" Content="{DynamicResource string_save}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="7,4" Margin="0,4,0,0" Command="{Binding SaveSettingsCommand}"/>
+                        <TextBlock Text="{Binding SettingsSubtext}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="400"/>
+                    </DockPanel>
+                </StackPanel>
+            </Expander>
+
         </StackPanel>
 
         <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" Margin="0,5,0,0" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Padding="7,4"/>

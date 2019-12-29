@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using IniParser;
 using IniParser.Model;
-
+using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -64,11 +66,18 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _updaterServiceUsername, value);
         }
 
-        private static string _updaterServiceEntropy;
-        public static string UpdaterServiceEntropy
+        private static string _updateServiceLZMAStoragePath;
+        public static string UpdaterServiceLZMAStoragePath
         {
-            get => _updaterServiceEntropy;
-            set => SetProperty(ref _updaterServiceEntropy, value);
+            get => _updateServiceLZMAStoragePath;
+            set => SetProperty(ref _updateServiceLZMAStoragePath, value);
+        }
+
+        private static string _updateServiceManifestStoragePath;
+        public static string UpdaterServiceManifestStoragePath
+        {
+            get => _updateServiceManifestStoragePath;
+            set => SetProperty(ref _updateServiceManifestStoragePath, value);
         }
 
         private static bool _logMixinStartup = false;
@@ -145,7 +154,8 @@ namespace MassEffectModManagerCore.modmanager
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
-            UpdaterServiceEntropy = LoadSettingString(settingsIni, "UpdaterService", "Entropy", null);
+            UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
+            UpdaterServiceManifestStoragePath = LoadSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", null);
 
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
@@ -214,6 +224,55 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+        public static void SaveUpdaterServiceEncryptedValues(string entropy, string encryptedPW)
+        {
+            if (!File.Exists(SettingsPath))
+            {
+                File.Create(SettingsPath).Close();
+            }
+
+            var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+            SaveSettingString(settingsIni, "UpdaterService", "Entropy", entropy);
+            SaveSettingString(settingsIni, "UpdaterService", "EncryptedPassword", encryptedPW);
+            try
+            {
+                File.WriteAllText(SettingsPath, settingsIni.ToString());
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error commiting settings: " + App.FlattenException(e));
+            }
+        }
+
+        public static string DecryptUpdaterServicePassword()
+        {
+            if (!File.Exists(SettingsPath))
+            {
+                File.Create(SettingsPath).Close();
+            }
+
+            var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+            var entropy = LoadSettingString(settingsIni, "UpdaterService", "Entropy", null);
+            var encryptedPW = LoadSettingString(settingsIni, "UpdaterService", "EncryptedPassword", null);
+
+            if (entropy != null && encryptedPW != null)
+            {
+                try
+                {
+                    using MemoryStream fs = new MemoryStream(Convert.FromBase64String(encryptedPW));
+                    return Encoding.Unicode.GetString(NexusModsUtilities.DecryptDataFromStream(Convert.FromBase64String(entropy), DataProtectionScope.CurrentUser, fs, (int)fs.Length));
+                }
+                catch (Exception e)
+                {
+                    Log.Error(@"Can't decrypt ME3Tweaks Updater Service password: " + e.Message);
+                }
+            }
+            return null; //No password
+        }
+
+        /// <summary>
+        /// Saves the settings. Note this does not update the Updates/EncryptedPassword value.
+        /// </summary>
         public static void Save()
         {
             //implement later
@@ -228,7 +287,8 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
             SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
             SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
-            SaveSettingString(settingsIni, "UpdaterService", "Entropy", UpdaterServiceEntropy);
+            SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
+            SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
             SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
             SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
             SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);

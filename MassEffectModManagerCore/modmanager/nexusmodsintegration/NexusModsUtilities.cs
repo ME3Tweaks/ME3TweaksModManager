@@ -31,9 +31,9 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             return entropy;
         }
 
-        public static byte[] EncryptAPIKeyToDisk(string apikey, Stream outstream)
+        public static byte[] EncryptStringToStream(string secret, Stream outstream)
         {
-            byte[] bytes = Encoding.Unicode.GetBytes(apikey);
+            byte[] bytes = Encoding.Unicode.GetBytes(secret);
             byte[] entropy = CreateRandomEntropy();
             int byteswritten = EncryptDataToStream(bytes, entropy, DataProtectionScope.CurrentUser, outstream);
             return entropy;
@@ -183,8 +183,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             bw.RunWorkerAsync();
         }
 
-
-        private static int EncryptDataToStream(byte[] Buffer, byte[] Entropy, DataProtectionScope Scope, Stream S)
+        public static int EncryptDataToStream(byte[] Buffer, byte[] Entropy, DataProtectionScope Scope, Stream S)
         {
             if (Buffer == null)
                 throw new ArgumentNullException("Buffer");
@@ -215,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
         }
 
-        private static byte[] DecryptDataFromStream(byte[] Entropy, DataProtectionScope Scope, Stream S, int Length)
+        public static byte[] DecryptDataFromStream(byte[] Entropy, DataProtectionScope Scope, Stream S, int Length)
         {
             if (S == null)
                 throw new ArgumentNullException("S");

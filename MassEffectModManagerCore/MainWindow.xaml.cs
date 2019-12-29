@@ -1168,10 +1168,10 @@ namespace MassEffectModManagerCore
                 return; //don't check or anything
             }
 
-            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
-            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
-            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
-            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
+            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
+            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
 
             switch (game)
             {
@@ -1621,7 +1621,7 @@ namespace MassEffectModManagerCore
             };
             bw.DoWork += (a, b) =>
             {
-                Log.Information(@"Start of content check network thread");
+                Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
 
                 BackgroundTask bgTask;
                 bool success;
