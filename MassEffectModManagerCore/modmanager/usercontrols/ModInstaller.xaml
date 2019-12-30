@@ -41,7 +41,7 @@
                                     <Style TargetType="{x:Type DockPanel}">
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}"/>
                                                 <Setter Property="Cursor" Value="Hand"/>
                                             </Trigger>
                                         </Style.Triggers>
@@ -63,7 +63,7 @@
                                     <Style TargetType="{x:Type DockPanel}">
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}"/>
                                                 <Setter Property="Cursor" Value="Hand"/>
                                             </Trigger>
                                         </Style.Triggers>
@@ -85,7 +85,7 @@
                                     <Style TargetType="{x:Type DockPanel}">
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}"/>
                                                 <Setter Property="Cursor" Value="Hand"/>
                                             </Trigger>
                                         </Style.Triggers>

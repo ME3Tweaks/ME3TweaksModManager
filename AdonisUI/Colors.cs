@@ -19,6 +19,7 @@ namespace AdonisUI
         public static ComponentResourceKey AccentInteractionColor => new ComponentResourceKey(typeof(Colors), "AccentInteractionColor");
         public static ComponentResourceKey AccentInteractionBorderColor => new ComponentResourceKey(typeof(Colors), "AccentInteractionBorderColor");
         public static ComponentResourceKey AccentInteractionForegroundColor => new ComponentResourceKey(typeof(Colors), "AccentInteractionForegroundColor");
+        public static ComponentResourceKey HoverBackgroundColor => new ComponentResourceKey(typeof(Colors), "HoverBackgroundColor");
 
         public static ComponentResourceKey Layer0BackgroundColor => new ComponentResourceKey(typeof(Colors), "Layer0BackgroundColor");
         public static ComponentResourceKey Layer0BorderColor => new ComponentResourceKey(typeof(Colors), "Layer0BorderColor");
