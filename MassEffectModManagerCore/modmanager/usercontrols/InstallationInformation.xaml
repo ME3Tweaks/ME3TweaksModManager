@@ -8,18 +8,6 @@
         <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     </UserControl.Resources>
     <StackPanel MaxHeight="520">
-        <StackPanel.Resources>
-            <Style TargetType="ListBoxItem">
-                <Style.Triggers>
-                    <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                        <Setter Property="Background" Value="#e8f4f8" />
-                    </Trigger>
-                    <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                        <Setter Property="Background" Value="White" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        </StackPanel.Resources>
         <TextBlock Text="{DynamicResource string_installationInformation}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock Text="{DynamicResource string_installationInformationSubheader}" TextAlignment="Center" />
         <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedItem="{Binding SelectedTarget}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Margin="0,5" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
@@ -35,8 +23,7 @@
                                             <Style TargetType="{x:Type DockPanel}">
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" />
-                                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                                                     </Trigger>
                                                     <Trigger Property="IsEnabled" Value="False">
                                                         <Setter Property="TextBlock.Foreground" Value="Pink" />
@@ -88,8 +75,7 @@
                                         <Style TargetType="{x:Type DockPanel}">
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" />
-                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -136,8 +122,7 @@
                                         <Style TargetType="{x:Type DockPanel}">
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" />
-                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>

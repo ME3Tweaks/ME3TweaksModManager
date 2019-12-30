@@ -10,6 +10,7 @@
     <Color x:Key="{x:Static adonisUi:Colors.AccentIntenseHighlightBorderColor}">#5B74CD</Color>
     <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionColor}">#495EA6</Color>
     <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionBorderColor}">#495EA6</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.HoverBackgroundColor}">#495EA6</Color>
     <DynamicResource x:Key="{x:Static adonisUi:Colors.AccentInteractionForegroundColor}" ResourceKey="{x:Static adonisUi:Colors.AccentForegroundColor}"/>
 
     <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#2A2B34</Color>
@@ -78,6 +79,7 @@
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.AccentInteractionBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.AccentInteractionColor}}"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.AccentInteractionBorderBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.AccentInteractionBorderColor}}"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.AccentInteractionForegroundBrush}" Color="{StaticResource {x:Static adonisUi:Colors.AccentInteractionForegroundColor}}"/>
+    <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.HoverBackgroundBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.HoverBackgroundColor}}"/>
 
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.Layer0BackgroundBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.Layer0BorderBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.Layer0BorderColor}}"/>
