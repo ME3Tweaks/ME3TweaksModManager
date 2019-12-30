@@ -150,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager
 
             var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
-            ModLibraryPath = LoadSettingString(settingsIni, "ModManager", "Language", "int");
+            Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);

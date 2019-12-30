@@ -24,7 +24,7 @@
     <system:String x:Key="string_Checkforcontentupdates">Check for Mod Manager content updates</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks ME3Tweaks.com for updates to various services</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Refresh the mod library</system:String>
-    <system:String x:Key="string_tooltip_reloadModsfromLibrary">Refreshes the list of available mods in the mod library</system:String>
+    <system:String x:Key="string_tooltip_reloadModsFromLibrary">Refreshes the list of available mods in the mod library</system:String>
     <system:String x:Key="string_Exit">Exit</system:String>
     <system:String x:Key="string_ModManagement">Mod Management</system:String>
     <system:String x:Key="string_ImportMod">Import Mod</system:String>
@@ -204,6 +204,8 @@
     <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Endorse ME3Tweaks Mod Manager on NexusMods</system:String>
     <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Endorsed ME3Tweaks Mod Manager on NexusMods :)</system:String>
     <system:String x:Key="string_supportedFiles">Supported files</system:String>
+    <system:String x:Key="string_interp_XmodsFailedToLoad">{0} mod(s) failed to load</system:String>
+    <!-- 0 = number -->
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
@@ -248,7 +250,6 @@
     <system:String x:Key="string_installMod">Install mod</system:String>
     <system:String x:Key="string_abortInstallingMod">Abort installing this mod</system:String>
     <system:String x:Key="string_dialogInvalidRCWFile">The .me2mod file that this mod uses is not valid or cannot be safely applied to your game installation. Installation has been aborted. Check the Mod Manager logs from the Help menu for more information.</system:String>
-    <system:String x:Key="string_modInstaller">Mod Installer</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughSpaceToInstall">There is not enough space on {0} to install {1}.\nRequired space: {2}\nAvailable space: {3}</system:String>
     <!-- 0=driveletter 1=ModBeingInstalled.ModName 2,3=number of bytes (in MB/KB/GB etc)  -->
 
@@ -259,9 +260,8 @@
     <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Thanks for downloading the preview of ME3Tweaks Mod Manager, the next generation of Mod Manager. This preview version is a work in progress and will have stability issues and missing features that are being worked on.&#10;&#10;ME3Tweaks Mod Manager will replace Mass Effect 3 Mod Manager once it is at feature parity.&#10;&#10;Please direct all feedback to the ME3Tweaks Discord, where you can have your voice heard for feature requests and bug fixes.</system:String>
     <system:String x:Key="string_joinDiscord">Join the ME3Tweaks Discord</system:String>
     <system:String x:Key="string_close">Close</system:String>
-    <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Translation is in progress but is not yet available</system:String>
-
     <!-- Close (as in close dialog) -->
+    <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Translation is in progress but is not yet available</system:String>
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
@@ -547,7 +547,7 @@
     <system:String x:Key="string_backup">Backup</system:String>
     <system:String x:Key="string_deletingExistingGameInstallation">Deleting existing game installation</system:String>
     <system:String x:Key="string_restoringGameFromBackup">Restoring game from backup</system:String>
-    <system:String x:Key="string_interp_restoringX">Restoring {0}</system:String>
+    <system:String x:Key="string_interp_restoringX">Restoring {0}%</system:String>
     <!-- 0 = filename or item like DLC name -->
     <system:String x:Key="string_restoringMovies">Restoring Movies</system:String>
     <system:String x:Key="string_restoringBasegame">Restoring Basegame</system:String>
@@ -565,7 +565,7 @@
     <system:String x:Key="string_error">Error!</system:String>
     <system:String x:Key="string_fullGameRestore">Full game restore</system:String>
     <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Changing the active boot target to one with ALOT installed will prompt you enable high resolution texture settings again.</system:String>
-    <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods, restoring specific files or SFARs, use the restore options from the Target Info button instead.</system:String>
+    <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods or restoring specific files/SFARs, use the restore options from the Target Info button instead.</system:String>
     <system:String x:Key="string_youMaySeeElevationPromptOnRestore">You may see an elevation prompt when trying to restore your game. This is ME3Tweaks Mod Manager granting your user account permission to the new game directory after the old one has been deleted.</system:String>
 
     <!-- Test archive generator-->
@@ -641,15 +641,17 @@
     <!-- 0 = friendlyname -->
     <system:String x:Key="string_interp_validation_altfile_cmmver6RequiresDescription">Alternate File {0} does not specify a Description, which is required for mods targeting cmmver >= 6.0.</system:String>
     <!-- 0 = friendlyname -->
-    <system:String x:Key="string_interp_validation_altfile_noModFileDeclared">Alternate file ({0}) does not declare ModFile but it is required for all Alternate Files.</system:String>
+    <system:String x:Key="string_interp_validation_altfile_noModFileDeclared">Alternate File ({0}) does not declare ModFile but it is required for all Alternate Files.</system:String>
     <!-- 0 = friendlyname -->
-    <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate file is specified with operation {0}, but required file doesn't exist: {1}</system:String>
+    <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate File is specified with operation {0}, but required file doesn't exist: {1}</system:String>
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
+    <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate file {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
+    <!-- 0 = Friendly name, 1 = Filepath-->
 
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->
-    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot Installed</system:String>
+    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot installed</system:String>
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
     <!-- 0 = filename of file that is not found in game dir but should be there -->
     <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
@@ -718,7 +720,7 @@
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomoddev">The moddesc.ini file located at {0} does not have a value set for moddev. This value is required.</system:String>
     <!-- 0 = moddesc.ini file path -->
     <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">This mod has both an updater service update code and a modmaker code assigned. This is not allowed.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2, or ME3. Value provided: {0}</system:String>
     <!-- provided game value from moddesc -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12">This mod is designed for {0}. The moddesc target version is {1}, however the first version of moddesc that supports ME1 or ME2 is 6.0.</system:String>
     <!-- 0 = game name, 1 = moddesc target version number -->
@@ -846,7 +848,7 @@
     <system:String x:Key="string_saveFileDependencyOnDLC">Save file dependency on DLC</system:String>
     <system:String x:Key="string_loadingPlaceholder">Loading placeholder</system:String>
     <system:String x:Key="string_modNameCannotBeEmpty">Mod name cannot be empty</system:String>
-    <system:String x:Key="string_modNameCanOnlyContain">Mod name can only contain numbers, letters, apostrophe or hyphens</system:String>
+    <system:String x:Key="string_modNameCanOnlyContain">Mod name can only contain numbers, letters, apostrophe, or hyphens</system:String>
     <system:String xml:space="preserve" x:Key="string_modNameWillNotResolveToAUsableFilesystemPath">Mod name will not resolve to a usable filesystem path.\nPlease enter some alphanumeric values.</system:String>
     <system:String x:Key="string_modNameCannotContainDoubleDots">Mod name cannot contain double dots when path is sanitized</system:String>
     <system:String x:Key="string_internalTLKIDMustBeGreaterThan0">Internal TLK ID must be greater than 0</system:String>

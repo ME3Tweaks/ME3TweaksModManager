@@ -94,6 +94,7 @@ namespace MassEffectModManagerCore
             }
         }
 
+        public string FailedModsString { get; set; }
         public string NexusLoginInfoString { get; set; } = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
@@ -165,12 +166,15 @@ namespace MassEffectModManagerCore
             );
         }
 
-        public void RefreshNexusStatus()
+        public void RefreshNexusStatus(bool languageUpdateOnly = false)
         {
             if (NexusModsUtilities.HasAPIKey)
             {
                 NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabled);
-                AuthToNexusMods();
+                if (!languageUpdateOnly)
+                {
+                    AuthToNexusMods();
+                }
             }
             else
             {
@@ -192,7 +196,7 @@ namespace MassEffectModManagerCore
 
                 //ME1
                 var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149, NexusUserID);
-                ME1NexusEndorsed = me1Status ?? true;
+                ME1NexusEndorsed = me1Status ?? false;
 
                 //ME2
                 var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248, NexusUserID);
@@ -218,6 +222,14 @@ namespace MassEffectModManagerCore
                 {
                     bool isopening = FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
                     bool isclosing = FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
+                    if (isopening)
+                    {
+                        FailedModsString = M3L.GetString(M3L.string_interp_XmodsFailedToLoad, FailedMods.BindableCount.ToString());
+                    }
+                    else
+                    {
+                        FailedModsString = @"";
+                    }
                     if (isclosing || isopening)
                     {
                         Application.Current.Dispatcher.Invoke(delegate
@@ -528,7 +540,7 @@ namespace MassEffectModManagerCore
             OpenFileDialog m = new OpenFileDialog
             {
                 Title = M3L.GetString(M3L.string_selectModArchive),
-                Filter = M3L.GetString(M3L.string_supportedFiles) + @"|*.zip;*.rar;*.7z;*.exe"
+                Filter = M3L.GetString(M3L.string_supportedFiles) + @"|*.zip;*.rar;*.7z;*.exe;*.me2mod"
             };
             var result = m.ShowDialog(this);
             if (result.Value)
@@ -1170,8 +1182,8 @@ namespace MassEffectModManagerCore
 
             var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
             var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
-            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
             var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
+            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
 
             switch (game)
             {
@@ -2300,6 +2312,7 @@ namespace MassEffectModManagerCore
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
             App.CurrentLanguage = lang;
             SetTipsForLanguage();
+            RefreshNexusStatus(true);
             try
             {
                 var localizedHelpItems = OnlineContent.FetchLatestHelp(lang, true, false);

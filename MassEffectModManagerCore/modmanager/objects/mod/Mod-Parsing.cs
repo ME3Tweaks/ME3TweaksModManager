@@ -346,7 +346,7 @@ namespace MassEffectModManagerCore.modmanager
             NexusModID = nexuscode;
 
             #region NexusMods ID from URL
-            if (NexusModID == 0 && ModModMakerID == 0 && ModClassicUpdateCode == 0 && !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
+            if (NexusModID == 0 && ModModMakerID == 0 /*&& ModClassicUpdateCode == 0 */ && !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
             {
                 try
                 {
@@ -1194,6 +1194,28 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 UpdaterServiceBlacklistedFiles = blacklistedFiles;
             }
+            #endregion
+
+            #region Updater Service (Devs only)
+            //For 104
+            //UpdaterServiceServerFolder = iniData[@"UPDATES"][@"serverfolder"];
+            //var blacklistedFilesStr = iniData[@"UPDATES"][@"blacklistedfiles"];
+            //if (blacklistedFilesStr != null)
+            //{
+            //    var blacklistedFiles = blacklistedFilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+            //    foreach (var blf in blacklistedFiles)
+            //    {
+            //        var fullpath = Path.Combine(ModPath, blf);
+            //        if (File.Exists(fullpath))
+            //        {
+
+            //            Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
+            //            LoadFailedReason = $"This mod contains a blacklisted mod file: {fullpath}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.";
+            //            return;
+            //        }
+            //    }
+            //    UpdaterServiceBlacklistedFiles = blacklistedFiles;
+            //}
             #endregion
 
             //Thread.Sleep(500);

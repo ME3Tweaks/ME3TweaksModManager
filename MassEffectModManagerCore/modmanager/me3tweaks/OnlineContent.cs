@@ -145,7 +145,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) ||overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
