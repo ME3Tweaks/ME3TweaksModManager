@@ -50,6 +50,18 @@ namespace MassEffectModManagerCore.modmanager
         public int ModModMakerID { get; set; }
         public List<string> UpdaterServiceBlacklistedFiles { get; private set; } = new List<string>();
         public string UpdaterServiceServerFolder { get; private set; }
+        public string UpdaterServiceServerFolderShortname
+        {
+            get
+            {
+                if (UpdaterServiceServerFolder == null) return null;
+                if (UpdaterServiceServerFolder.Contains('/'))
+                {
+                    return UpdaterServiceServerFolder.Substring(UpdaterServiceServerFolder.LastIndexOf('/') + 1);
+                }
+                return UpdaterServiceServerFolder;
+            }
+        }
 
         /// <summary>
         /// Indicates if this mod has the relevant information attached to it for updates. That is, classic update code, modmaker id, or nexusmods ID

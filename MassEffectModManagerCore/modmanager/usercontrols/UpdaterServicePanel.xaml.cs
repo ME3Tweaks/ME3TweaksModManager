@@ -219,37 +219,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             using var wc = new System.Net.WebClient();
             try
             {
-                CurrentActionText = "Fetching current production manifest";
-                string updateUrl = UpdaterServiceManifestEndpoint + @"?classicupdatecode[]=" + mod.ModClassicUpdateCode;
-                string updatexml = wc.DownloadStringAwareOfEncoding(updateUrl);
-
-                XElement rootElement = XElement.Parse(updatexml);
-                var modUpdateInfos = (from e in rootElement.Elements(@"mod")
-                                      select new ModUpdateInfo
-                                      {
-                                          changelog = (string)e.Attribute(@"changelog"),
-                                          versionstr = (string)e.Attribute(@"version"),
-                                          updatecode = (int)e.Attribute(@"updatecode"),
-                                          serverfolder = (string)e.Attribute(@"folder"),
-                                          sourceFiles = (from f in e.Elements(@"sourcefile")
-                                                         select new SourceFile
-                                                         {
-                                                             lzmahash = (string)f.Attribute(@"lzmahash"),
-                                                             hash = (string)f.Attribute(@"hash"),
-                                                             size = (int)f.Attribute(@"size"),
-                                                             lzmasize = (int)f.Attribute(@"lzmasize"),
-                                                             relativefilepath = f.Value,
-                                                             timestamp = (long?)f.Attribute(@"timestamp") ?? (long)0
-                                                         }).ToList(),
-                                      }).ToList();
-                Debug.WriteLine(@"Found info: " + modUpdateInfos.Count);
-
-                CurrentActionText = "Fetching current server file listing";
-
+                CurrentActionText = "Checking if updater service is configured for mod";
+                string validationUrl = $@"{UpdaterServiceCodeValidationEndpoint}?updatecode={mod.ModClassicUpdateCode}&updatexmlname={mod.UpdaterServiceServerFolderShortname}.xml";
+                string isBeingServed = wc.DownloadStringAwareOfEncoding(validationUrl);
+                if (string.IsNullOrWhiteSpace(isBeingServed) || isBeingServed != "true") //we don't parse for bool because it might have a different text that is not specifically true or false. It might
+                                                                                         // have an error for example
+                {
+                    //Not being served
+                    Log.Error(@"This mod is not configured for use on the Updater Service. Please contact Mgamerz.");
+                    CurrentActionText = "Server not configured for mod - contact Mgamerz";
+                    return;
+                }
             }
             catch (Exception ex)
             {
-                Log.Error(@"Error fetching server manifest: " + ex.Message);
+                Log.Error(@"Error validating mod is configured on updater service: " + ex.Message);
+                CurrentActionText = $"Error checking updater service configuration:\n{ex.Message}";
+                return;
             }
 
             #endregion
@@ -396,11 +382,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Log.Information(@"Connected to ME3Tweaks over SSH (SFTP)");
 
             CurrentActionText = "Connected to ME3Tweaks Updater Service";
-            var serverFolderName = mod.UpdaterServiceServerFolder;
-            if (serverFolderName.Contains('/'))
-            {
-                serverFolderName = serverFolderName.Substring(serverFolderName.LastIndexOf('/') + 1);
-            }
+            var serverFolderName = mod.UpdaterServiceServerFolderShortname;
 
             //sftp.ChangeDirectory(LZMAStoragePath);
 
@@ -423,7 +405,58 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var command = sshClient.CreateCommand(@"find " + serverModPath + @" -type f -exec md5sum '{}' \;");
             command.Execute();
             var answer = command.Result;
-            Debug.WriteLine(answer);
+
+            Dictionary<string, string> serverHashes = new Dictionary<string, string>();
+            foreach (var hashpair in answer.Split("\n"))
+            {
+                if (string.IsNullOrWhiteSpace(hashpair)) continue; //last line will be blank
+                string md5 = hashpair.Substring(0, 32);
+                string path = hashpair.Substring(34);
+
+                path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
+                serverHashes[path] = md5;
+                Debug.WriteLine(md5 + " for file " + path);
+            }
+
+            //Calculate what needs to be updated or removed from server
+            List<string> filesToUploadToServer = new List<string>();
+            List<string> filesToDeleteOffServer = new List<string>();
+
+            //Files to upload
+            foreach (var sourceFile in manifestFiles)
+            {
+                //find matching server file
+                if (serverHashes.TryGetValue(sourceFile.Key.Replace('\\','/') + @".lzma", out var matchingHash))
+                {
+                    //exists on server, compare hash
+                    if (matchingHash != sourceFile.Value.lzmahash)
+                    {
+                        //server hash is different! Upload new file.
+                        Log.Information(@"Server version of file is different from local: " + sourceFile.Key);
+                        filesToUploadToServer.Add(sourceFile.Key);
+                    }
+                    else
+                    {
+                        Log.Information(@"Server version of file is same as local: " + sourceFile.Key);
+                    }
+                }
+                else
+                {
+                    Log.Information(@"Server does not have file: " + sourceFile.Key);
+                    filesToUploadToServer.Add(sourceFile.Key);
+                }
+            }
+
+            //Files to remove from server
+            foreach (var serverfile in serverHashes.Keys)
+            {
+                if (!manifestFiles.Any(x => (x.Key + @".lzma") == serverfile.Replace('/','\\')))
+                {
+                    Log.Information("File exists on server but not locally: " + serverfile);
+                    filesToDeleteOffServer.Add(serverfile);
+                }
+            }
+
 
             //UploadDirectory(sftp, lzmaStagingPath, serverModPath, (ucb) => Debug.WriteLine("UCB: " + ucb));
 

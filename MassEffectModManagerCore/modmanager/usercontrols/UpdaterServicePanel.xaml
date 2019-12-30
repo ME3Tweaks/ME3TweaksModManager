@@ -27,7 +27,8 @@
                                         ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
                                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                         Width="48"
-                                        Height="48"/>
+                                        Height="48"
+                             Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}"/>
             <TextBlock Text="{Binding CurrentActionText}" TextAlignment="Center" Margin="0,10" FontSize="14"/>
 
             <DockPanel>

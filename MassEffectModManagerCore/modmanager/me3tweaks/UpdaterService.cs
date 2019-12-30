@@ -26,6 +26,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     public partial class OnlineContent
     {
         public const string UpdaterServiceManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch";
+        public const string UpdaterServiceCodeValidationEndpoint = "https://me3tweaks.com/mods/latestxml/updatecodevalidation";
         private const string UpdateStorageRoot = "https://me3tweaks.com/mods/updates/";
 
         /// <summary>

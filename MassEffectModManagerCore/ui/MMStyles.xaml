@@ -6,6 +6,7 @@
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <converters:BoolToHiddenVisibleConverter x:Key="BoolToHiddenVisibleConverter"/>
     <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
     <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     <converters:NullHiddenConverter x:Key="NullHiddenConverter"/>
