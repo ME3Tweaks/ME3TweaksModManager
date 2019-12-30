@@ -106,7 +106,7 @@ namespace LocalizationHelper
             {
                 var keyStr = key.Attribute(x + "Key").Value;
                 m3llines.Add($"\t\tpublic static readonly string {keyStr} = \"{keyStr}\";");
-                Debug.WriteLine(keyStr);
+                //Debug.WriteLine(keyStr);
             }
             //Write end of .cs file lines
             m3llines.Add("\t}");
@@ -114,14 +114,14 @@ namespace LocalizationHelper
 
             File.WriteAllLines(m3lFile, m3llines); //write back updated file
 
-            return;
+            //return;
             //Update all of the other xaml files
             var localizationMapping = Directory.GetFiles(localizationsFolder, "*.xaml").Where(y => Path.GetFileName(y) != "int.xaml").ToDictionary(y => y, y => File.ReadAllLines(y).ToList());
             var intlines = File.ReadAllLines(intfile);
             for (int i = 3; i < intlines.Length - 1; i++) //-1 to avoid resource dictionary line
             {
                 var line = intlines[i];
-                if (!line.StartsWith("    <system:String ")) continue;
+                if (!line.Trim().StartsWith("<system:String")) continue;
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 if (line == "</ResourceDictionary>") continue; //EOF
 
@@ -133,10 +133,15 @@ namespace LocalizationHelper
                         var lline = l.Value[i];
                         if (string.IsNullOrWhiteSpace(lline)) continue;
                         if (lline == "</ResourceDictionary>") continue; //EOF
+                        if (!lline.Trim().StartsWith("<system:String"))
+                        {
+                            Debug.WriteLine("Desync in " + Path.GetFileName(l.Key) + " on line " + i + ": " + lline);
+                            continue;
+                        }
                         var lstrInfo = extractInfo(lline);
                         if (strInfo.preserveWhitespace != lstrInfo.preserveWhitespace)
                         {
-                            Debug.WriteLine(lstrInfo.key + " " + l.Key + " whitespace is wrong for key " + l);
+                            Debug.WriteLine(lstrInfo.key + " " + Path.GetFileName(l.Key) + " whitespace is wrong for key " + lstrInfo.key);
                         }
                         if (strInfo.key != lstrInfo.key)
                         {
@@ -510,7 +515,7 @@ namespace LocalizationHelper
                             string content = (string)item.Attribute("Content");
                             string text = (string)item.Attribute("Text");
 
-                            if (header != null && !header.StartsWith("{") 
+                            if (header != null && !header.StartsWith("{")
                                                && header != "+"
                                 && header != "Deutsch"
                                 && header != "English"
@@ -581,6 +586,35 @@ namespace LocalizationHelper
                     catch (Exception ex)
                     {
                         Debug.WriteLine("EXCEPTION!");
+                    }
+                }
+            }
+        }
+
+        private void CheckXmlSpacePreserve_Clicked(object sender, RoutedEventArgs e)
+        {
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var localizationsFolder = Path.Combine(solutionroot, "MassEffectModManagerCore", "modmanager", "localizations");
+            var m3lFile = Path.Combine(localizationsFolder, "M3L.cs");
+            var m3lTemplateFile = Path.Combine(localizationsFolder, "M3L_Template.txt");
+            var intfile = Path.Combine(localizationsFolder, "int.xaml");
+
+            var m3llines = File.ReadAllLines(m3lTemplateFile).ToList();
+
+            var doc = XDocument.Load(intfile);
+            XNamespace xnamespace = "clr-namespace:System;assembly=System.Runtime";
+            XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+            XNamespace xml = "http://schemas.microsoft.com/winfx/2006/xaml";
+            var keys = doc.Descendants(xnamespace + "String");
+            foreach (var key in keys)
+            {
+                if (key.Value.Contains(@"\n"))
+                {
+                    //check for preserve space
+                    var preserveSpace = key.Attribute(XNamespace.Xml + "space");
+                    if (preserveSpace == null || preserveSpace.Value != "preserve")
+                    {
+                        Debug.WriteLine(key.Value);
                     }
                 }
             }

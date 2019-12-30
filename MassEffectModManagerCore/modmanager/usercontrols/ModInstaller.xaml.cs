@@ -487,7 +487,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             RCWMod rcw = ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD).RCW;
             foreach (var rcwF in rcw.Files)
             {
-                var me2cF = me2c.Inis.FirstOrDefault(x => x.Key == rcwF.FileName);
+                var me2cF = me2c.Inis.FirstOrDefault(x => x.Key.Equals(rcwF.FileName, StringComparison.InvariantCultureIgnoreCase));
                 if (me2cF.Key == null)
                 {
                     Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF);
@@ -496,7 +496,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 foreach (var rcwS in rcwF.Sections)
                 {
-                    var section = me2cF.Value.Sections.FirstOrDefault(x => x.Header == rcwS.SectionName);
+                    var section = me2cF.Value.Sections.FirstOrDefault(x => x.Header.Equals(rcwS.SectionName, StringComparison.InvariantCultureIgnoreCase));
                     if (section == null)
                     {
                         Log.Error($@"RCW mod specifies a section in {rcwF.FileName} that does not exist in the local coalesced: {rcwS.SectionName}");
@@ -508,7 +508,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Apply mod
                 foreach (var rcwS in rcwF.Sections)
                 {
-                    var section = me2cF.Value.Sections.FirstOrDefault(x => x.Header == rcwS.SectionName);
+                    var section = me2cF.Value.Sections.FirstOrDefault(x => x.Header.Equals(rcwS.SectionName, StringComparison.InvariantCultureIgnoreCase));
                     Dictionary<string, int> keyCount = new Dictionary<string, int>();
                     foreach (var key in section.Entries)
                     {
@@ -530,7 +530,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         for (int i = section.Entries.Count - 1; i > 0; i--)
                         {
                             var entry = section.Entries[i];
-                            if (entry.Key == itemToDelete.Key && entry.Value == itemToDelete.Value)
+                            if (entry.Key == itemToDelete.Key && entry.Value == itemToDelete.Value) //case sensitive
                             {
                                 CLog.Information($@"Removing ini entry {entry.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                                 section.Entries.RemoveAt(i);
@@ -540,7 +540,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     foreach (var itemToAdd in rcwS.KeysToAdd)
                     {
-                        var existingEntries = section.Entries.Where(x => x.Key == itemToAdd.Key).ToList();
+                        var existingEntries = section.Entries.Where(x => x.Key.Equals(itemToAdd.Key, StringComparison.InvariantCultureIgnoreCase)).ToList();
                         if (existingEntries.Count <= 0)
                         {
                             //just add it
@@ -550,7 +550,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else if (existingEntries.Count > 1)
                         {
                             //Supports multi. Add this key - but making sure the data doesn't already exist!
-                            if (existingEntries.Any(x => x.Value == itemToAdd.Value))
+                            if (existingEntries.Any(x => x.Value == itemToAdd.Value)) //case sensitive
                             {
                                 //Duplicate.
                                 CLog.Information($@"Not adding duplicate ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
@@ -565,10 +565,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             //Only one key exists currently. We need to check multi lookup to choose how to install
-                            if (keysSupportingMulti[itemToAdd.Key])
+                            if (keysSupportingMulti.TryGetValue(itemToAdd.Key, out var _))
                             {
                                 //Supports multi. Add this key - but making sure the data doesn't already exist!
-                                if (existingEntries.Any(x => x.Value == itemToAdd.Value))
+                                if (existingEntries.Any(x => x.Value == itemToAdd.Value)) //case sensitive
                                 {
                                     //Duplicate.
                                     CLog.Information($@"Not adding duplicate ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
@@ -740,7 +740,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Warning);
 
                 }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
+                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION|| mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
                 {
                     InstallationCancelled = true;
                 }

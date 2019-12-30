@@ -98,9 +98,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var updateFile = OnlineContent.DownloadToMemory(downloadLink, pCallback);
                 ProgressText = M3L.GetString(M3L.string_preparingToApplyUpdate);
-                ProgressIndeterminate = true;
                 if (updateFile.errorMessage == null)
                 {
+                    ProgressIndeterminate = true;
                     ApplyUpdateFromStream(updateFile.result);
                     return; //do not loop.
                 }
@@ -208,11 +208,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <returns>stripped and parsed string</returns>
         private string GetPlainTextFromHtml(string htmlString)
         {
+            htmlString = htmlString.Replace(@"<br>", Environment.NewLine);
             string htmlTagPattern = @"<.*?>";
             var regexCss = new Regex(@"(\<script(.+?)\</script\>)|(\<style(.+?)\</style\>)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             htmlString = regexCss.Replace(htmlString, string.Empty);
             htmlString = Regex.Replace(htmlString, htmlTagPattern, string.Empty);
-            htmlString = Regex.Replace(htmlString, @"^\s+$[\r\n]*", "", RegexOptions.Multiline);
+            //htmlString = Regex.Replace(htmlString, @"^\s+$[\r\n]*", "", RegexOptions.Multiline);
             htmlString = htmlString.Replace(@"&nbsp;", string.Empty);
 
             return htmlString;

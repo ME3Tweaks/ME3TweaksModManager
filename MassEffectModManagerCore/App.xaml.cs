@@ -288,6 +288,8 @@ namespace MassEffectModManagerCore
         public static bool BootingUpdate;
         public static int UpdatedFrom = 0;
         public static string InitialLanguage = "int";
+        internal static Dictionary<string, List<string>> TipsService;
+        internal static string CurrentLanguage = InitialLanguage;
 
         public static string AppVersion
         {

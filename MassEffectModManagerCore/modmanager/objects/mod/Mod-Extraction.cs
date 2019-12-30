@@ -33,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public long GetRequiredSpaceForExtraction(string archivePath)
         {
+            if (archivePath.EndsWith(@".me2mod")) { return new FileInfo(archivePath).Length; }
             var archiveFile = archivePath.EndsWith(@".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
 
             var itemsToExtract = new List<ArchiveFileInfo>();
@@ -40,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager
 
             if (!IsVirtualized)
             {
-                referencedFiles.Add(@"moddesc.ini");
+                referencedFiles.Add(ModDescPath);
             }
             //unsure if this is required?? doesn't work for MEHEM EXE
             //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
@@ -77,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (!IsVirtualized)
                 {
-                    referencedFiles.Add(@"moddesc.ini");
+                    referencedFiles.Add(ModDescPath);
                 }
                 //unsure if this is required?? doesn't work for MEHEM EXE
                 //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths

@@ -20,8 +20,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
-
-        private const string TipsServiceURL = StaticFilesBaseURL + "tipsservice.json";
+        private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice";
 
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
@@ -36,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
@@ -59,15 +58,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     else
                     {
                         Log.Error("Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
-                        Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> d = new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>();
-                        d["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
-                        d["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
-                        d["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>();
+                        Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> d = new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
+                        {
+                            ["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            ["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            ["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+                        };
                         return d;
                     }
                 }
             }
-            return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+
+            try
+            {
+                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error reading TPMI: " + e.Message + ". Retrying in 500ms as it might be held by something.");
+                Thread.Sleep(500);
+                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+
+            }
         }
 
         public static string FetchRemoteString(string url)
@@ -76,7 +88,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 using var wc = new System.Net.WebClient();
                 return wc.DownloadStringAwareOfEncoding(url);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error("Error downloading string: " + e.Message);
                 return null;
@@ -97,9 +110,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return moddesc;
         }
 
-        public static List<string> FetchTipsService(bool overrideThrottling = false)
+        public static Dictionary<string, List<string>> FetchTipsService(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetTipsServiceFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetTipsServiceFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
@@ -107,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
                     File.WriteAllText(Utilities.GetTipsServiceFile(), json);
-                    return JsonConvert.DeserializeObject<List<string>>(json);
+                    return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
                 }
                 catch (Exception e)
                 {
@@ -117,22 +130,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (File.Exists(Utilities.GetTipsServiceFile()))
                     {
                         Log.Warning("Using cached tips service file instead");
-                        return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+                        return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
                     }
                     else
                     {
                         Log.Error("Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
-                        return new List<string>();
+                        return new Dictionary<string, List<string>>();
                     }
                 }
             }
 
-            return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+            return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
         }
 
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {

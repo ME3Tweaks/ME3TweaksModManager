@@ -8,7 +8,7 @@
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                        d:DesignHeight="450" d:DesignWidth="800"
-                       Width="600" Height="500">
+                       Width="700" Height="500">
     <UserControl.Resources>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     </UserControl.Resources>
@@ -21,7 +21,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="7"/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="270"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>

@@ -17,7 +17,7 @@
         Icon="appicon.ico"
         Drop="Window_Drop"
         DragOver="Window_DragOver"
-        Title="ME3Tweaks Mod Manager" Height="600" Width="800" MinHeight="600" MinWidth="600">
+        Title="ME3Tweaks Mod Manager" Height="630" Width="850" MinHeight="630" MinWidth="700">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -90,7 +90,7 @@
                                     <Image Source="/modmanager/localizations/icons/spanish.png"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguageFRA_MenuItem" Header="French" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem Name="LanguageFRA_MenuItem" Header="Français" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" IsEnabled="False">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/french.png"/>
                                 </MenuItem.Icon>
@@ -100,7 +100,7 @@
                                     <Image Source="/modmanager/localizations/icons/polish.png"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguageRUS_MenuItem" Header="Pусский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" IsEnabled="False">
+                            <MenuItem Name="LanguageRUS_MenuItem" Header="Pусский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/russian.png"/>
                                 </MenuItem.Icon>
@@ -109,7 +109,7 @@
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Checkforcontentupdates}" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}" />
-                    <MenuItem Header="{DynamicResource string_Reloadsmodsfromthemodlibrary}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsfromLibrary}" />
+                    <MenuItem Header="{DynamicResource string_Reloadsmodsfromthemodlibrary}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}" />
                     <MenuItem Header="{DynamicResource string_Exit}" Click="ExitApplication_Click" />
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModManagement}" Padding="4">
@@ -287,7 +287,7 @@
             <Grid Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="7"/>
-                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="275"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -409,13 +409,14 @@
                     <StackPanel Name="FailedModsPopupPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{DynamicResource string_tooltip_someModsFailed}">
                             <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
-                                <TextBlock Text="{Binding FailedMods.BindableCount, StringFormat={}{0} mods failed to load, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="{Binding FailedModsString}"/>
                             </Hyperlink>
                         </TextBlock>
                     </StackPanel>
                     <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
                              IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1">
+                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1"
+                             IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

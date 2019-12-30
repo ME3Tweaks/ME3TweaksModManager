@@ -28,14 +28,13 @@
             <Button FlowDirection="LeftToRight" Click="CopyItemsToClipBoard_Click" Content="{DynamicResource string_copyItemsToClipboard}" Padding="7,5"/>
             <Label Name="ListDialog_Status" FlowDirection="LeftToRight" Content="{DynamicResource string_copiedToClipboard}" Margin="8,0,0,0" Visibility="Collapsed" VerticalAlignment="Center"/>
         </StackPanel>
-        <ListView Name="ListDialog_List" Background="Red" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AlternationCount="2" BorderThickness="1" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                  ItemContainerStyle="{DynamicResource CustomListViewItemStyle}">
+        <ListBox Name="ListDialog_List" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AlternationCount="2" BorderThickness="1" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}">
             <!-- here set the itemTemplate to a TextBlock that can wraps-->
-            <ListView.ItemTemplate>
+            <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=.}" TextWrapping="Wrap" MouseDown="TextBlock_MouseDown"/>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap" MouseDown="TextBlock_MouseDown"/>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </DockPanel>
 </Window>

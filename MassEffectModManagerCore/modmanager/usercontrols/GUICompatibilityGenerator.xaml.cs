@@ -272,7 +272,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         {
                                             //match
                                             filesToBePatched[packagefile] = packagefile;
-                                            ActionSubstring = M3L.GetString(M3L.string_interp_XFilesNeedToBePatched, filesToBePatched.Count.ToString(), filesToBePatched.Count == 1 ? singlesuffix : pluralsuffix);
+                                            ActionSubstring = M3L.GetString(M3L.string_interp_XFilesNeedToBePatched, filesToBePatched.Count.ToString());
                                             Log.Information($@"{firstNonUIModDlc} {pair.Key} has GUI export that is in UI library, marking for patching. Trigger: {export.GetFullPath}");
                                             break;
                                         }
@@ -290,6 +290,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var generatedMod = GenerateCompatibilityPackForFiles(nonUIinstalledDLCMods, filesToBePatched.Keys.ToList(), libraryArchive);
                             b.Result = GUICompatibilityThreadResult.GENERATED_PACK;
                             Application.Current.Dispatcher.Invoke(delegate { ((MainWindow)window).LoadMods(generatedMod); }); //reload to this mod
+                            return;
                         }
                     }
 
@@ -308,6 +309,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Analytics.TrackEvent(@"Generated a UI compatibility pack", new Dictionary<string, string>() { { @"Result", gctr.ToString() } });
                     OnClosing(DataEventArgs.Empty);
+                    if (gctr == GUICompatibilityThreadResult.NOT_REQUIRED)
+                    {
+                        M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialogNoCompatPackRequired), M3L.GetString(M3L.string_noCompatPackRequired), MessageBoxButton.OK);
+                    }
                 }
                 else
                 {
@@ -393,9 +398,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             done = 0;
             string singlesuffix = M3L.GetString(M3L.string_singularFile);
             string pluralsuffix = M3L.GetString(M3L.string_pluralFiles);
-            ActionSubstring = M3L.GetString(M3L.string_interp_patchedXY, done.ToString(), done == 1 ? singlesuffix : pluralsuffix);
             foreach (var file in filesToBePatched)
             {
+                ActionSubstring = Path.GetFileName(file);
                 var package = MEPackageHandler.OpenMEPackage(file);
                 var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == @"GFxMovieInfo").ToList();
                 if (guiExports.Count > 0)

@@ -1,7 +1,7 @@
 <properties>
   <Section name="BIOC_Base.BioPlayerSquad">
     <intproperty propertyname="SquadReformRange" friendlyname="Squad reform range" notes="Range squad must be within when the reform command is used">3400</intproperty>
-    <boolproperty propertyname="UseMoreAdvancedCover" friendlyname="Use more advanced cover" notes="Unknown at this time">FALSE</boolproperty>
+    <boolproperty propertyname="UseMoreAdvancedCover" friendlyname="Use more advanced cover" notes="Unknown at this time">TRUE</boolproperty>
     <enumproperty propertyname="m_eGameOverCondition" friendlyname="Game over condition" notes="Condition that must be met to signal game over">
         <enumvalue friendlyname="Shepard dies" default="true">BIO_GAME_OVER_CONDITION_PLAYER_PAWN_DIES</enumvalue>
         <enumvalue friendlyname="All squad members die">BIO_GAME_OVER_CONDITION_PLAYER_SQUAD_DIES</enumvalue>

@@ -12,19 +12,26 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     [Localizable(false)]
     partial class OnlineContent
     {
-        private static readonly string LatestHelpFileLink = StaticFilesBaseURL + "dynamichelp/latesthelp.xml";
+        private static readonly string LatestHelpFileLink = StaticFilesBaseURL + "dynamichelp/latesthelp-localized.xml";
         internal static readonly string HelpResourcesBaseURL = StaticFilesBaseURL + "dynamichelp/resources";
 
-        public static List<SortableHelpElement> FetchLatestHelp(bool overrideThrottling = false)
+        public static List<SortableHelpElement> FetchLatestHelp(string language, bool preferLocal, bool overrideThrottling = false)
         {
-            if (!File.Exists(Utilities.GetLocalHelpFile()) || (!overrideThrottling && Utilities.CanFetchContentThrottleCheck()))
+            var localHelpExists = File.Exists(Utilities.GetLocalHelpFile());
+            if (localHelpExists && preferLocal)
+            {
+                return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
+            }
+
+
+            if (!localHelpExists || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
                 {
                     using var wc = new System.Net.WebClient();
                     string xml = wc.DownloadStringAwareOfEncoding(LatestHelpFileLink);
                     File.WriteAllText(Utilities.GetLocalHelpFile(), xml);
-                    return ParseLocalHelp(xml);
+                    return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
                 }
                 catch (Exception e)
                 {
@@ -34,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (File.Exists(Utilities.GetLocalHelpFile()))
                     {
                         Log.Warning("Using cached help instead");
-                        return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()));
+                        return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
                     }
                     else
                     {
@@ -44,10 +51,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()));
+            return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
         }
 
-        private static List<SortableHelpElement> ParseLocalHelp(string xml)
+        private static List<SortableHelpElement> ParseLocalHelp(string xml, string language)
         {
             //We can't use LINQ here as we have to multiselect
             //And parse things in a certain order
@@ -57,7 +64,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 doc.LoadXml(xml);
                 var sortableHelpItems = new List<SortableHelpElement>();
                 //Get top level items, in order
-                string xpathExpression = "/helpmenu/helpitem|/helpmenu/list";
+                string xpathExpression = $"/localizations/helpmenu[@lang='{language}']/helpitem|/localizations/helpmenu[@lang='{language}']/list";
 
                 var nodes = doc.SelectNodes(xpathExpression);
                 foreach (XmlNode node in nodes)

@@ -10,10 +10,9 @@
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
-    <UserSecretsId>a466212e-477d-4822-b2f5-f65f287a7c7c</UserSecretsId>
-    <AssemblyVersion>6.0.0.102</AssemblyVersion>
-    <FileVersion>6.0.0.102</FileVersion>
-    <Copyright>ME3Tweaks 2012-2019</Copyright>
+    <AssemblyVersion>6.0.0.103</AssemblyVersion>
+    <FileVersion>6.0.0.103</FileVersion>
+    <Copyright>ME3Tweaks 2012 - 2019</Copyright>
     <Authors>Mgamerz</Authors>
     <PackageId>MassEffectModManagerCore</PackageId>
     <Product>ME3Tweaks Mod Manager</Product>
@@ -22,7 +21,7 @@
     <StartupObject>MassEffectModManagerCore.App</StartupObject>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
     <AssemblyName>ME3TweaksModManager</AssemblyName>
-    <Version>6.0.0.102</Version>
+    <Version>6.0.0.103</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -147,28 +146,24 @@
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
     <PackageReference Include="Flurl" Version="2.8.2" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
-    <PackageReference Include="Fody" Version="6.0.2">
+    <PackageReference Include="Fody" Version="6.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
-    <PackageReference Include="Microsoft.AppCenter" Version="2.5.0" />
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="2.5.0" />
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AppCenter" Version="2.6.4" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="2.6.4" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="2.6.4" />
     <PackageReference Include="MvvmValidation" Version="3.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Octokit" Version="0.36.0" />
     <PackageReference Include="Pathoschild.FluentNexus" Version="0.8.0" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.1.3" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.2.1" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile.Extension" Version="2.0.2" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />

@@ -8,11 +8,11 @@
         <Separator />
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{DynamicResource string_currentVersion}" />
-            <TextBlock Text="{Binding CurrentVersion}" FontWeight="Bold" />
+            <TextBlock Text="{Binding CurrentVersion}" FontWeight="Bold" Margin="5,0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{DynamicResource string_updateVersion}" />
-            <TextBlock Text="{Binding LatestVersion}" FontWeight="Bold" />
+            <TextBlock Text="{Binding LatestVersion}" FontWeight="Bold" Margin="5,0"/>
         </StackPanel>
         <Separator />
         <TextBlock Text="{DynamicResource string_releaseNotes}" FontWeight="Bold" />

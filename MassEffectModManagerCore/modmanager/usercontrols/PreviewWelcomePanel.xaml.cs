@@ -62,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ChangeLang_RUS_Clicked(object sender, RoutedEventArgs e)
         {
-            ChangeLanguage(@"pol");
+            ChangeLanguage(@"rus");
         }
 
         private void ChangeLang_POL_Clicked(object sender, RoutedEventArgs e)

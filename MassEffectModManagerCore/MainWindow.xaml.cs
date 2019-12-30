@@ -94,6 +94,7 @@ namespace MassEffectModManagerCore
             }
         }
 
+        public string FailedModsString { get; set; }
         public string NexusLoginInfoString { get; set; } = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
@@ -165,12 +166,15 @@ namespace MassEffectModManagerCore
             );
         }
 
-        public void RefreshNexusStatus()
+        public void RefreshNexusStatus(bool languageUpdateOnly = false)
         {
             if (NexusModsUtilities.HasAPIKey)
             {
                 NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabled);
-                AuthToNexusMods();
+                if (!languageUpdateOnly)
+                {
+                    AuthToNexusMods();
+                }
             }
             else
             {
@@ -192,7 +196,7 @@ namespace MassEffectModManagerCore
 
                 //ME1
                 var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149, NexusUserID);
-                ME1NexusEndorsed = me1Status ?? true;
+                ME1NexusEndorsed = me1Status ?? false;
 
                 //ME2
                 var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248, NexusUserID);
@@ -218,6 +222,14 @@ namespace MassEffectModManagerCore
                 {
                     bool isopening = FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
                     bool isclosing = FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
+                    if (isopening)
+                    {
+                        FailedModsString = M3L.GetString(M3L.string_interp_XmodsFailedToLoad, FailedMods.BindableCount.ToString());
+                    }
+                    else
+                    {
+                        FailedModsString = @"";
+                    }
                     if (isclosing || isopening)
                     {
                         Application.Current.Dispatcher.Invoke(delegate
@@ -503,7 +515,7 @@ namespace MassEffectModManagerCore
             OpenFileDialog m = new OpenFileDialog
             {
                 Title = M3L.GetString(M3L.string_selectModArchive),
-                Filter = M3L.GetString(M3L.string_supportedFiles) + @"|*.zip;*.rar;*.7z;*.exe"
+                Filter = M3L.GetString(M3L.string_supportedFiles) + @"|*.zip;*.rar;*.7z;*.exe;*.me2mod"
             };
             var result = m.ShowDialog(this);
             if (result.Value)
@@ -998,7 +1010,7 @@ namespace MassEffectModManagerCore
                     }
 
                     //Run AutoTOC if ME3
-                    if (SelectedGameTarget.Game == Mod.MEGame.ME3)
+                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3)
                     {
                         var autoTocUI = new AutoTOC(SelectedGameTarget);
                         autoTocUI.Close += (a1, b1) =>
@@ -1103,7 +1115,7 @@ namespace MassEffectModManagerCore
                 ShowUpdateCompletedPane();
             }
 
-            if (Settings.ShowedPreviewPanel)
+            if (!Settings.ShowedPreviewPanel)
             {
                 ShowPreviewPanel();
             }
@@ -1114,9 +1126,9 @@ namespace MassEffectModManagerCore
 
         private void ShowPreviewPanel()
         {
-            var archiveDeploymentPane = new PreviewWelcomePanel();
-            archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(archiveDeploymentPane);
+            var previewPanel = new PreviewWelcomePanel();
+            previewPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(previewPanel);
         }
 
         private void UpdateBinkStatus(Mod.MEGame game)
@@ -1143,10 +1155,10 @@ namespace MassEffectModManagerCore
                 return; //don't check or anything
             }
 
-            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
-            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
-            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
-            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
+            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
+            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
+            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
 
             switch (game)
             {
@@ -1588,33 +1600,15 @@ namespace MassEffectModManagerCore
             bw.WorkerReportsProgress = true;
             bw.ProgressChanged += (sender, args) =>
             {
+                //Help items loading
                 if (args.UserState is List<SortableHelpElement> sortableHelpItems)
                 {
-                    //Replacing the dynamic help menu
-                    //DynamicHelp_MenuItem.Items.RemoveAll(x=>x.Tag is string str && str == "DynamicHelp");
-
-                    var dynamicMenuItems = RecursiveBuildDynamicHelpMenuItems(sortableHelpItems);
-
-                    //Clear old items out
-                    for (int i = HelpMenuItem.Items.Count - 1; i > 0; i--)
-                    {
-                        if (HelpMenuItem.Items[i] is MenuItem menuItem && menuItem.Tag is string str && str == @"DynamicHelp")
-                        {
-                            HelpMenuItem.Items.Remove(menuItem);
-                        }
-                    }
-
-                    dynamicMenuItems.Reverse(); //we are going to insert these in reverse order
-                    var dynamicHelpHeaderIndex = HelpMenuItem.Items.IndexOf(DynamicHelp_MenuItem) + 1;
-                    foreach (var v in dynamicMenuItems)
-                    {
-                        HelpMenuItem.Items.Insert(dynamicHelpHeaderIndex, v);
-                    }
+                    setDynamicHelpMenu(sortableHelpItems);
                 }
             };
             bw.DoWork += (a, b) =>
             {
-                Log.Information(@"Start of content check network thread");
+                Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
 
                 BackgroundTask bgTask;
                 bool success;
@@ -1714,7 +1708,7 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
-                var helpItemsLoading = OnlineContent.FetchLatestHelp(!firstStartupCheck);
+                var helpItemsLoading = OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !firstStartupCheck);
                 bw.ReportProgress(0, helpItemsLoading);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
@@ -1727,8 +1721,17 @@ namespace MassEffectModManagerCore
 
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
-                LoadedTips.ReplaceAll(OnlineContent.FetchTipsService(!firstStartupCheck));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
+                try
+                {
+                    App.TipsService = OnlineContent.FetchTipsService(!firstStartupCheck);
+                    SetTipsForLanguage();
+
+                }
+                catch (Exception e)
+                {
+                    Log.Error(@"Failed to load tips service: " + e.Message);
+                }
+
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 if (firstStartupCheck)
                 {
@@ -1778,6 +1781,50 @@ namespace MassEffectModManagerCore
             };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Refreshes the dynamic help list
+        /// </summary>
+        /// <param name="sortableHelpItems"></param>
+        private void setDynamicHelpMenu(List<SortableHelpElement> sortableHelpItems)
+        {
+            //Replacing the dynamic help menu
+            //DynamicHelp_MenuItem.Items.RemoveAll(x=>x.Tag is string str && str == "DynamicHelp");
+
+            var dynamicMenuItems = RecursiveBuildDynamicHelpMenuItems(sortableHelpItems);
+
+            //Clear old items out
+            for (int i = HelpMenuItem.Items.Count - 1; i > 0; i--)
+            {
+                if (HelpMenuItem.Items[i] is MenuItem menuItem && menuItem.Tag is string str && str == @"DynamicHelp")
+                {
+                    HelpMenuItem.Items.Remove(menuItem);
+                }
+            }
+
+            dynamicMenuItems.Reverse(); //we are going to insert these in reverse order
+            var dynamicHelpHeaderIndex = HelpMenuItem.Items.IndexOf(DynamicHelp_MenuItem) + 1;
+            foreach (var v in dynamicMenuItems)
+            {
+                HelpMenuItem.Items.Insert(dynamicHelpHeaderIndex, v);
+            }
+        }
+
+        private void SetTipsForLanguage()
+        {
+            if (App.TipsService != null)
+            {
+                if (App.TipsService.TryGetValue(App.CurrentLanguage, out var tips))
+                {
+                    LoadedTips.ReplaceAll(tips);
+                }
+                else
+                {
+                    LoadedTips.Clear();
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
+            }
         }
 
         private List<MenuItem> RecursiveBuildDynamicHelpMenuItems(List<SortableHelpElement> sortableHelpItems)
@@ -2116,8 +2163,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                //unknown caller
-                return;
+                //unknown caller. Might just be settings on/off for logging.
             }
 
             Settings.Save();
@@ -2248,6 +2294,18 @@ namespace MassEffectModManagerCore
                 Source = new Uri($@"pack://application:,,,/ME3TweaksModManager;component/modmanager/localizations/{lang}.xaml", UriKind.Absolute)
             };
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
+            App.CurrentLanguage = lang;
+            SetTipsForLanguage();
+            RefreshNexusStatus(true);
+            try
+            {
+                var localizedHelpItems = OnlineContent.FetchLatestHelp(lang, true, false);
+                setDynamicHelpMenu(localizedHelpItems);
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Could not set localized dyanmic help: " + e.Message);
+            }
         }
 
         private void ReloadSelectedMod_Click(object sender, RoutedEventArgs e)
