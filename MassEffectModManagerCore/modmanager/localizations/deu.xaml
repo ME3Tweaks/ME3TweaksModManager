@@ -657,9 +657,9 @@
     <!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Ersatzdatei konnte nicht zu mod job hinzugefügt werden: {0} existiert nicht, wird jedoch vom job angegeben.</system:String>
     <!-- 0 = source file path in moddesc -->
-    <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe files are not allowed in M3 mods.</system:String>
-    <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll files are not allowed in M3 mods.</system:String>
-    <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi files are not allowed in M3 mods.</system:String>
+    <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe files are not allowed in Mod Manager mods.</system:String>
+    <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll files are not allowed in Mod Manager mods.</system:String>
+    <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi files are not allowed in Mod Manager mods.</system:String>
     <system:String x:Key="string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist">Zusätzliche Datei konnte nicht zu mod job hinzugefügt werden: {0} existiert nicht, wird jedoch vom job angegeben.</system:String>
     <!-- 0 = source file path in moddesc -->
     <system:String x:Key="string_interp_validation_modjob_additionalFileAlreadyMarkedForModification">Zusätzliche Datei konnte nicht zu mod job hinzugefügt werden: {0} ist bereits zur Modifikation markiert. Dateien im addfiles descriptor dürfen sich nicht untereinander oder mit Ersatzdateien überlappen.</system:String>
