@@ -1,4 +1,5 @@
-﻿using MassEffectModManagerCore.modmanager.helpers;
+﻿using ByteSizeLib;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.ui;
@@ -20,6 +21,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Xml;
@@ -51,6 +53,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         public bool OperationInProgress { get; set; }
+
+        public void OnOperationInProgressChanged()
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                Storyboard sb = this.FindResource(OperationInProgress ? @"OpenBusyControl" : @"CloseBusyControl") as Storyboard;
+                if (sb.IsSealed)
+                {
+                    sb = sb.Clone();
+                }
+                Storyboard.SetTarget(sb, LoadingBarAnimation);
+                sb.Begin();
+            });
+        }
         public bool SettingsExpanded { get; set; }
         public bool ChangelogNotYetSet { get; set; } = true;
         public ICommand CloseCommand { get; set; }
@@ -87,6 +103,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         SettingsExpanded = false;
                         SettingsSubtext = null;
+                        StartPreparingModWrapper();
                     }
                 }
                 else if (result is string errorMessage)
@@ -105,6 +122,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SetChangelog()
         {
             ChangelogNotYetSet = false; //set changelog as locked in.
+        }
+
+        private void HideChangelogArea()
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                Storyboard sb = this.FindResource(@"CloseBusyControl") as Storyboard;
+                if (sb.IsSealed)
+                {
+                    sb = sb.Clone();
+                }
+                ChangelogPanel.Height = ChangelogPanel.ActualHeight; //required to unset NaN
+                Storyboard.SetTarget(sb, ChangelogPanel);
+                sb.Begin();
+            });
         }
 
         private bool CanClosePanel() => !OperationInProgress;
@@ -130,9 +162,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 string.IsNullOrWhiteSpace(LZMAStoragePath) ||
                 string.IsNullOrWhiteSpace(ManifestStoragePath) ||
                 string.IsNullOrWhiteSpace(Password_TextBox.Password);
+
+            if (string.IsNullOrWhiteSpace(mod.UpdaterServiceServerFolder))
+            {
+                HideChangelogArea();
+                CurrentActionText = "Mod must have the serverfolder descriptor set under UPDATES header";
+                return;
+            }
+
             if (SettingsExpanded)
             {
-                CurrentActionText = "Enter Updater Service settings";
+                CurrentActionText = "Enter your ME3Tweaks Updater Service information";
                 SettingsSubtext = "Press save to validate settings";
             }
             else
@@ -145,17 +185,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var authed = (bool?)result;
                         if (authed.HasValue && authed.Value)
                         {
-                            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"UpdaterServiceUpload");
-                            nbw.DoWork += (a, b) =>
-                            {
-                                OperationInProgress = true;
-                                StartPreparingMod();
-                            };
-                            nbw.RunWorkerCompleted += (a, b) =>
-                            {
-                                OperationInProgress = false;
-                            };
-                            nbw.RunWorkerAsync();
+                            StartPreparingModWrapper();
                         }
                     }
                     else
@@ -168,6 +198,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// Starts preparing a mod by launching a background thread. This should be called from a UI thread
+        /// </summary>
+        private void StartPreparingModWrapper()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"UpdaterServiceUpload");
+            nbw.DoWork += (a, b) =>
+            {
+                OperationInProgress = true;
+                StartPreparingMod();
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                OperationInProgress = false;
+            };
+            nbw.RunWorkerAsync();
         }
 
         private void CheckAuth(string pwOverride = null, Action<object> authCompletedCallback = null)
@@ -228,6 +276,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Not being served
                     Log.Error(@"This mod is not configured for use on the Updater Service. Please contact Mgamerz.");
                     CurrentActionText = "Server not configured for mod - contact Mgamerz";
+                    HideChangelogArea();
                     return;
                 }
             }
@@ -235,6 +284,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Log.Error(@"Error validating mod is configured on updater service: " + ex.Message);
                 CurrentActionText = $"Error checking updater service configuration:\n{ex.Message}";
+                HideChangelogArea();
                 return;
             }
 
@@ -263,7 +313,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             long amountHashed = 0;
             ConcurrentDictionary<string, SourceFile> manifestFiles = new ConcurrentDictionary<string, SourceFile>();
-            Parallel.ForEach(files, new ParallelOptions() { MaxDegreeOfParallelism = 2 }, x =>
+            Parallel.ForEach(files, new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1) }, x =>
             {
                 if (CancelOperations) return;
                 SourceFile sf = new SourceFile();
@@ -426,7 +476,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var sourceFile in manifestFiles)
             {
                 //find matching server file
-                if (serverHashes.TryGetValue(sourceFile.Key.Replace('\\','/') + @".lzma", out var matchingHash))
+                if (serverHashes.TryGetValue(sourceFile.Key.Replace('\\', '/') + @".lzma", out var matchingHash))
                 {
                     //exists on server, compare hash
                     if (matchingHash != sourceFile.Value.lzmahash)
@@ -450,19 +500,98 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Files to remove from server
             foreach (var serverfile in serverHashes.Keys)
             {
-                if (!manifestFiles.Any(x => (x.Key + @".lzma") == serverfile.Replace('/','\\')))
+                if (!manifestFiles.Any(x => (x.Key + @".lzma") == serverfile.Replace('/', '\\')))
                 {
                     Log.Information("File exists on server but not locally: " + serverfile);
                     filesToDeleteOffServer.Add(serverfile);
                 }
             }
 
+            #endregion
 
-            //UploadDirectory(sftp, lzmaStagingPath, serverModPath, (ucb) => Debug.WriteLine("UCB: " + ucb));
+            #region upload files
+            //Create directories
+            SortedSet<string> directoriesToCreate = new SortedSet<string>();
+            foreach (var f in filesToUploadToServer)
+            {
+                string foldername = f;
+                var lastIndex = foldername.LastIndexOf("\\");
 
-            CurrentActionText = "Done";
+                while (lastIndex > 0)
+                {
+                    foldername = foldername.Substring(0, lastIndex);
+                    directoriesToCreate.Add(foldername.Replace('\\', '/'));
+                    lastIndex = foldername.LastIndexOf("\\");
+                }
+            }
+
+
+            //foreach (FileSystemInfo info in infos)
+            //{
+            //    if (info.Attributes.HasFlag(FileAttributes.Directory))
+            //    {
+            //        string subPath = remotePath + "/" + info.Name;
+            //        if (!client.Exists(subPath))
+            //        {
+            //            client.CreateDirectory(subPath);
+            //        }
+            //        UploadDirectory(client, info.FullName, remotePath + "/" + info.Name, uploadCallback);
+            //    }
+            //    else
+            //    {
+            //        using (Stream fileStream = new FileStream(info.FullName, FileMode.Open))
+            //        {
+            //            Debug.WriteLine(
+            //                "Uploading {0} ({1:N0} bytes)",
+            //                info.FullName, ((FileInfo)info).Length);
+
+            //            client.UploadFile(fileStream, remotePath + "/" + info.Name, uploadCallback);
+            //        }
+            //    }
+            //}
 
             #endregion
+            //UploadDirectory(sftp, lzmaStagingPath, serverModPath, (ucb) => Debug.WriteLine("UCB: " + ucb));
+            var dirsToCreateOnServerSorted = directoriesToCreate.ToList();
+            dirsToCreateOnServerSorted.Sort((a, b) => a.Length.CompareTo(b.Length)); //short to longest so we create top levels first!
+            if (dirsToCreateOnServerSorted.Count > 0)
+            {
+                CurrentActionText = "Creating mod directories on server";
+                foreach (var f in dirsToCreateOnServerSorted)
+                {
+                    var serverFolderStr = serverModPath + "/" + f;
+                    if (!sftp.Exists(serverFolderStr))
+                    {
+                        Log.Information(@"Creating directory on server: " + serverFolderStr);
+                        sftp.CreateDirectory(serverFolderStr);
+                    }
+                    else
+                    {
+                        Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
+                    }
+                }
+            }
+
+            //Upload files
+            long amountUploaded = 0;
+            long amountToUpload = filesToUploadToServer.Sum(x => new FileInfo(Path.Combine(lzmaStagingPath, x + @".lzma")).Length);
+            foreach (var file in filesToUploadToServer)
+            {
+                var fullPath = Path.Combine(lzmaStagingPath, file + @".lzma");
+                var serverFilePath = serverModPath + "/" + file.Replace("\\", "/") + @".lzma";
+                Log.Information(@"Uploading file " + fullPath + " to " + serverFilePath);
+                long amountUploadedBeforeChunk = amountUploaded;
+                using (Stream fileStream = new FileStream(fullPath, FileMode.Open))
+                {
+                    sftp.UploadFile(fileStream, serverFilePath, (x) =>
+                       {
+                           amountUploaded = amountUploadedBeforeChunk + (long)x;
+                           CurrentActionText = $"Uploading files to server {ByteSize.FromBytes(amountUploaded).ToString("0.00")}/{ByteSize.FromBytes(amountToUpload).ToString("0.00")}";
+                       });
+                }
+            }
+            CurrentActionText = "Done";
+
         }
 
         private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)

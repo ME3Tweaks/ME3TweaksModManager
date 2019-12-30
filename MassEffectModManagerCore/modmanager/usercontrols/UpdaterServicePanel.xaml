@@ -10,6 +10,22 @@
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                        Width="500"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Storyboard x:Key="OpenBusyControl" Storyboard.TargetProperty="(FrameworkElement.Height)">
+            <DoubleAnimation To="48" Duration="0:0:0.35">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="CloseBusyControl">
+            <DoubleAnimation To="0" Duration="0:0:0.35" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
     <DockPanel>
         <StackPanel DockPanel.Dock="Top">
             <Image HorizontalAlignment="Center" Height="48" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,10,0,0" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
@@ -23,7 +39,7 @@
                 </TextBlock.Text>
             </TextBlock>
 
-            <ContentControl  Margin="0,15,0,0" Focusable="False"
+            <ContentControl Name="LoadingBarAnimation"  Margin="0,15,0,0" Focusable="False"
                                         ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
                                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                         Width="48"
@@ -31,7 +47,7 @@
                              Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}"/>
             <TextBlock Text="{Binding CurrentActionText}" TextAlignment="Center" Margin="0,10" FontSize="14"/>
 
-            <DockPanel>
+            <DockPanel Name="ChangelogPanel">
                 <Button Content="Set changelog" Command="{Binding SetChangelogCommand}" Padding="7,4" DockPanel.Dock="Right"/>
                 <xctk:WatermarkTextBox Watermark="Enter single-line changelog here" Text="{Binding ChangelogText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ChangelogNotYetSet}" TextAlignment="Left"/>
             </DockPanel>

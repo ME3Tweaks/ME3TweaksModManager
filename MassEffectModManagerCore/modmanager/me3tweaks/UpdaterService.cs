@@ -291,17 +291,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             long amountDone = 0;
             //run files 
-            Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, x =>
-            {
-                var canceledCheck = canceledCallback?.Invoke();
-                if (canceledCheck.HasValue && canceledCheck.Value)
-                {
-                    return; //skip
+            Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1) }, x =>
+             {
+                 var canceledCheck = canceledCallback?.Invoke();
+                 if (canceledCheck.HasValue && canceledCheck.Value)
+                 {
+                     return; //skip
                 }
-                LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
-                var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
-                updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(totalDone * 100.0 / totalAmountToCompress)}%");
-            });
+                 LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
+                 var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
+                 updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(totalDone * 100.0 / totalAmountToCompress)}%");
+             });
             return stagingPath;
         }
 
@@ -313,7 +313,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             Directory.CreateDirectory(Directory.GetParent(destPath).FullName);
 
             var compressedBytes = SevenZipHelper.LZMA.Compress(File.ReadAllBytes(sourcePath));
-            File.WriteAllBytes(destPath, compressedBytes);
+            byte[] fixedBytes = new byte[compressedBytes.Count() + 8]; //needs 8 byte header written into it (only mem version needs this)
+            Buffer.BlockCopy(compressedBytes, 0, fixedBytes, 0, 5);
+            fixedBytes.OverwriteRange(5, BitConverter.GetBytes((int)new FileInfo(sourcePath).Length));
+            Buffer.BlockCopy(compressedBytes, 5, fixedBytes, 13, compressedBytes.Length - 5);
+
+
+            File.WriteAllBytes(destPath, fixedBytes);
             //using var output = new FileStream(destPath, FileMode.CreateNew);
 
             //var encoder = new LzmaEncodeStream(output);
