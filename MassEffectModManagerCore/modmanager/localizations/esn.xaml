@@ -516,7 +516,9 @@
     <!-- 0 = mod name-->
     <system:String x:Key="string_updated">Updated</system:String>
     <system:String x:Key="string_interp_localVersion">Local version: {0}</system:String>
+    <!-- 0 = version string -->
     <system:String x:Key="string_interp_serverVersion">Server version: {0}</system:String>
+    <!-- 0 = version string -->
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
@@ -779,11 +781,11 @@
     <!-- 0 = moddesc.ini header -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCannotListOfficialDLCAsIncompatible">CustomDLC header contains an item in incompatibledlc list that is an official DLC: {0}. This is not allowed.</system:String>
     <!-- 0 = moddesc.ini header -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFoldersValue">UPDATES header additionaldeploymentfolders includes directory ({0}) that contains a .., \\ or /, which are not permitted.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFoldersValue">UPDATES header additionaldeploymentfolders includes directory ({0}) that contains a .., \\, or /, which are not permitted.</system:String>
     <!-- 0 = filepath -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_updatesSpecifiesMissingAdditionalDeploymentFolder">UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {0}</system:String>
     <!-- 0 = filepath -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFilesValue">UPDATES header additionaldeploymentfiles includes a filepath ({0}) that contains a .., \\ or /, which are not permitted.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFilesValue">UPDATES header additionaldeploymentfiles includes a filepath ({0}) that contains a .., \\, or /, which are not permitted.</system:String>
     <!-- 0 = filepath -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_updatesSpecifiesMissingAdditionalDeploymentFiles">UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {0}</system:String>
     <!-- 0 = filepath -->
