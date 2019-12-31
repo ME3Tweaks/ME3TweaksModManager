@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace MassEffectModManagerCore.ui
 {
+    [Localizable(false)]
     public class ObservableCollectionExtended<T> : ObservableCollection<T>
     {
         //INotifyPropertyChanged inherited from ObservableCollection<T>
@@ -157,6 +158,14 @@ namespace MassEffectModManagerCore.ui
                     OnPropertyChanged();
                 }
             }
+        }
+
+        /// <summary>
+        /// Used to force property to raise event changed. Used when refreshing language in application
+        /// </summary>
+        public void RaiseBindableCountChanged()
+        {
+            OnPropertyChanged("BindableCount");
         }
 
         #endregion // Sorting

@@ -271,6 +271,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_endorsedME3TweaksModManagerOnNexusMods = "string_endorsedME3TweaksModManagerOnNexusMods";
 		public static readonly string string_supportedFiles = "string_supportedFiles";
 		public static readonly string string_interp_XmodsFailedToLoad = "string_interp_XmodsFailedToLoad";
+		public static readonly string string_setLanguageToX = "string_setLanguageToX";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";

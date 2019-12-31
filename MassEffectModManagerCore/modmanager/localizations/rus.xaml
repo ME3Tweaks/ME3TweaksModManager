@@ -206,6 +206,8 @@
     <system:String x:Key="string_supportedFiles">Поддерживаемые файлы</system:String>
     <system:String x:Key="string_interp_XmodsFailedToLoad">Модов не удалось загрузить: {0}</system:String>
     <!-- 0 = number -->
+    <system:String x:Key="string_setLanguageToX">Set language to Russian</system:String>
+    <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Подготовка к установке</system:String>

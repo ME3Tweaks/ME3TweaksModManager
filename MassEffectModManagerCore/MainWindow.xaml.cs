@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore
             //Change language if not INT
             if (App.InitialLanguage != @"int")
             {
-                SetLanguage(App.InitialLanguage);
+                SetLanguage(App.InitialLanguage, true);
             }
             PopulateTargets();
             AttachListeners();
@@ -222,7 +222,7 @@ namespace MassEffectModManagerCore
                 {
                     bool isopening = FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
                     bool isclosing = FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
-                    if (isopening)
+                    if (FailedMods.BindableCount > 0)
                     {
                         FailedModsString = M3L.GetString(M3L.string_interp_XmodsFailedToLoad, FailedMods.BindableCount.ToString());
                     }
@@ -2276,10 +2276,10 @@ namespace MassEffectModManagerCore
 
             Settings.Language = lang;
             Settings.Save();
-            SetLanguage(lang);
+            SetLanguage(lang, false);
         }
 
-        public void SetLanguage(string lang)
+        public void SetLanguage(string lang, bool startup)
         {
             Log.Information(@"Setting language to " + lang);
             foreach (var item in languageMenuItems)
@@ -2304,7 +2304,13 @@ namespace MassEffectModManagerCore
             }
             catch (Exception e)
             {
-                Log.Error(@"Could not set localized dyanmic help: " + e.Message);
+                Log.Error(@"Could not set localized dynamic help: " + e.Message);
+            }
+            if (!startup)
+            {
+                AuthToNexusMods();
+                FailedMods.RaiseBindableCountChanged();
+                CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
             }
         }
 

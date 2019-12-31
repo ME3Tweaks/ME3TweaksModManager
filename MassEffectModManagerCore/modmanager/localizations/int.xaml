@@ -206,7 +206,9 @@
     <system:String x:Key="string_supportedFiles">Supported files</system:String>
     <system:String x:Key="string_interp_XmodsFailedToLoad">{0} mod(s) failed to load</system:String>
     <!-- 0 = number -->
-
+    <system:String x:Key="string_setLanguageToX">Set language to English</system:String>
+    <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
+    
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
@@ -647,7 +649,7 @@
     <!-- 0 = friendlyname -->
     <system:String x:Key="string_interp_validation_altfile_specifiedAltFileDoesntExist">Alternate File is specified with operation {0}, but required file doesn't exist: {1}</system:String>
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
-    <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate file {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
+    <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate File {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
     <!-- 0 = Friendly name, 1 = Filepath-->
     
     <!-- GameTarget -->

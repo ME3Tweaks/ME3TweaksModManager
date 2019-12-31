@@ -85,7 +85,7 @@
                                     <Image Source="/modmanager/localizations/icons/english.png"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguageESN_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
+                            <MenuItem Name="LanguageESN_MenuItem" Header="Spanish" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/spanish.png"/>
                                 </MenuItem.Icon>
