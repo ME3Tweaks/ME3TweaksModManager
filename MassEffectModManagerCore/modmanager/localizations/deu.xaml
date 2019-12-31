@@ -777,9 +777,9 @@
     <system:String x:Key="string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod">Mod Manager-basierte RCW-Mods dürfen nur je 1 RCW-Mod enthalten. Beim Importieren sollten diese in mehrere einzelne Mods aufgeteilt werden.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified">Dieser Mod gibt benötigtes DLC an, aber verwendet weder die erlaubten Werte noch beginnt es mit DLC_. Der fehlerhafte Wert lautet: {0}</system:String>
     <!-- 0 = value from moddesc.ini file -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated">CustomDLC header enthält ein Element in der outdatedcustomdlc-Liste, das ein offizielles DLC ist: {0}. Das ist nicht erlaubt.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated">CUSTOMDLC header enthält ein Element in der outdatedcustomdlc-Liste, das ein offizielles DLC ist: {0}. Das ist nicht erlaubt.</system:String>
     <!-- 0 = moddesc.ini header -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCannotListOfficialDLCAsIncompatible">CustomDLC header enthält ein Element in der incompatibledlc-Liste, das ein offizielles DLC ist: {0}. Das ist nicht erlaubt.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCannotListOfficialDLCAsIncompatible">CUSTOMDLC header enthält ein Element in der incompatibledlc-Liste, das ein offizielles DLC ist: {0}. Das ist nicht erlaubt.</system:String>
     <!-- 0 = moddesc.ini header -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFoldersValue">UPDATES header additionaldeploymentfolders gibt mittels .., \\ oder / einen Ordner an ({0}), was nicht erlaubt ist.</system:String>
     <!-- 0 = filepath -->
