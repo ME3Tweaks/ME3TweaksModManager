@@ -705,6 +705,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return Path.GetInvalidFileNameChars().Aggregate(path, (current, c) => current.Replace(c.ToString(), string.Empty));
         }
 
+
+        public static Stream ToStream(this string s, bool bom = false)
+        {
+            return s.ToStream(/*bom ? new UTF8Encoding(false) : */Encoding.UTF8);
+        }
+
+        public static Stream ToStream(this string s, Encoding encoding)
+        {
+            return new MemoryStream(encoding.GetBytes(s ?? ""));
+        }
+
         public static bool RepresentsPackageFilePath(this string path)
         {
             string extension = Path.GetExtension(path);

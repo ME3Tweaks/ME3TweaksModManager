@@ -1,5 +1,6 @@
 ﻿using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.ui;
@@ -70,13 +71,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool SettingsExpanded { get; set; }
         public bool ChangelogNotYetSet { get; set; } = true;
         public ICommand CloseCommand { get; set; }
+        public ICommand CancelCommand { get; set; }
         public ICommand SetChangelogCommand { get; set; }
         public ICommand SaveSettingsCommand { get; set; }
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(ClosePanel, CanClosePanel);
+            CancelCommand = new GenericCommand(CancelOperation, CanCancelOperation);
             SetChangelogCommand = new GenericCommand(SetChangelog, () => !string.IsNullOrWhiteSpace(ChangelogText) && ChangelogNotYetSet);
             SaveSettingsCommand = new GenericCommand(SaveSettings, () => !OperationInProgress);
+        }
+
+        private void CancelOperation()
+        {
+            CancelOperations = true;
+        }
+
+        private bool CanCancelOperation()
+        {
+            return !CancelOperations && OperationInProgress;
         }
 
         private void SaveSettings()
@@ -290,6 +303,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             #endregion
 
+            #region get current production version to see if we should prompt user
+            var latestVersionOnServer = OnlineContent.GetLatestVersionOfModOnUpdaterService(mod.ModClassicUpdateCode);
+            if (latestVersionOnServer != null)
+            {
+                if (latestVersionOnServer >= mod.ParsedModVersion)
+                {
+                    bool cancel = false;
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        //server is newer or same as version we are pushing
+                        var response = M3L.ShowDialog(mainwindow, $"The server version is the same or higher version of the mod you are already uploading. Are you sure you want to push this version to the ME3Tweaks Updater Service? Clients who have a newer or same version of the mod will not see an update.\n\nLocal version: {mod.ParsedModVersion}\nServer version: {latestVersionOnServer}", "Server version same or newer than local", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (response == MessageBoxResult.No)
+                        {
+                            CurrentActionText = "Upload aborted - mod on server is same or newer than local one being uploaded";
+                            HideChangelogArea();
+                            cancel = true;
+                            return;
+                        }
+                    });
+                    if (cancel)
+                    {
+                        return;
+                    }
+                }
+            }
+            #endregion
+
             #region mod variables
             //get refs
             var files = mod.GetAllRelativeReferences(true);
@@ -307,7 +347,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentActionText = "Compressing mod for updater service";
             var lzmaStagingPath = OnlineContent.StageModForUploadToUpdaterService(mod, files, totalModSizeUncompressed, canceledCheckCallback, updateCurrentTextCallback);
             #endregion
-            if (CancelOperations) return;
+            if (CancelOperations) { AbortUpload(); return; }
             #region hash mod and build server manifest
             CurrentActionText = "Building server manifest";
 
@@ -330,7 +370,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var done = Interlocked.Add(ref amountHashed, sf.size);
                 CurrentActionText = $"Building server manifest {Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
             });
-            if (CancelOperations) return;
+            if (CancelOperations) { AbortUpload(); return; }
 
             //Build document
             XmlDocument xmlDoc = new XmlDocument();
@@ -339,7 +379,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var mf in manifestFiles)
             {
-                if (CancelOperations) return;
+                if (CancelOperations) { AbortUpload(); return; }
 
                 XmlNode sourceNode = xmlDoc.CreateElement("sourcefile");
 
@@ -367,18 +407,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 rootNode.AppendChild(sourceNode);
             }
-            if (CancelOperations) return;
+            if (CancelOperations) { AbortUpload(); return; }
 
             foreach (var bf in mod.UpdaterServiceBlacklistedFiles)
             {
-                if (CancelOperations) return;
+                if (CancelOperations) { AbortUpload(); return; }
 
                 var bfn = xmlDoc.CreateElement("blacklistedfile");
                 bfn.InnerText = bf;
                 rootNode.AppendChild(bfn);
             }
 
-            if (CancelOperations) return;
+            if (CancelOperations) { AbortUpload(); return; }
             var updatecode = xmlDoc.CreateAttribute("updatecode");
             updatecode.InnerText = mod.ModClassicUpdateCode.ToString();
             rootNode.Attributes.Append(updatecode);
@@ -398,6 +438,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             while (ChangelogNotYetSet)
             {
+                if (CancelOperations) { AbortUpload(); return; }
+
                 CurrentActionText = "Waiting for changelog to be set";
                 Thread.Sleep(250);  //wait for changelog to be set.
             }
@@ -407,7 +449,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             changelog.InnerText = ChangelogText;
             rootNode.Attributes.Append(changelog);
 
-            using var stringWriter = new StringWriter();
+            using var stringWriter = new StringWriterWithEncoding(Encoding.UTF8);
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true; settings.IndentChars = " ";
             settings.Encoding = Encoding.UTF8;
@@ -417,7 +459,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
             #endregion
-            Debug.WriteLine(stringWriter.GetStringBuilder().ToString());
+
+            var finalManifestText = stringWriter.GetStringBuilder().ToString();
 
             #region Connect to ME3Tweaks
             CurrentActionText = "Connecting to ME3Tweaks Updater Service";
@@ -455,6 +498,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var command = sshClient.CreateCommand(@"find " + serverModPath + @" -type f -exec md5sum '{}' \;");
             command.Execute();
             var answer = command.Result;
+            if (CancelOperations) { AbortUpload(); return; }
 
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
             foreach (var hashpair in answer.Split("\n"))
@@ -583,15 +627,43 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 long amountUploadedBeforeChunk = amountUploaded;
                 using (Stream fileStream = new FileStream(fullPath, FileMode.Open))
                 {
-                    sftp.UploadFile(fileStream, serverFilePath, (x) =>
+                    sftp.UploadFile(fileStream, serverFilePath, true, (x) =>
                        {
+                           if (CancelOperations) { CurrentActionText = "Aborting upload"; return; }
                            amountUploaded = amountUploadedBeforeChunk + (long)x;
                            CurrentActionText = $"Uploading files to server {ByteSize.FromBytes(amountUploaded).ToString("0.00")}/{ByteSize.FromBytes(amountToUpload).ToString("0.00")}";
                        });
                 }
             }
-            CurrentActionText = "Done";
+            if (CancelOperations) { AbortUpload(); return; }
+            //delete extra files
+            int numdone = 0;
+            foreach (var file in filesToDeleteOffServer)
+            {
+                CurrentActionText = $"Deleting obsolete mod files from server {numdone}/{filesToDeleteOffServer.Count}";
+                var fullPath = $@"{LZMAStoragePath}/{ serverFolderName}/{ file}";
+                Log.Information(@"Deleting unused file off server: " + fullPath);
+                sftp.DeleteFile(fullPath);
+                numdone++;
+            }
 
+
+            //Upload manifest
+            using var manifestStream = finalManifestText.ToStream();
+            var serverManifestPath = $@"{ManifestStoragePath}/{serverFolderName}.xml";
+            Log.Information(@"Uploading manifest to server: " + serverManifestPath);
+            sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
+            {
+                CurrentActionText = $"Uploading update manifest to server {ByteSize.FromBytes(amountUploaded).ToString("0.00")}/{ByteSize.FromBytes(amountToUpload).ToString("0.00")}";
+            });
+
+            CurrentActionText = "Validating mod on server";
+
+        }
+
+        private void AbortUpload()
+        {
+            CurrentActionText = "Upload aborted";
         }
 
         private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)

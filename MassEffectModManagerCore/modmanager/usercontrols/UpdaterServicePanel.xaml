@@ -55,7 +55,7 @@
             <Expander Header="Updater Service settings" Margin="0,5" IsExpanded="{Binding SettingsExpanded}">
                 <StackPanel Margin="15,0,0,0"  IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
                     <xctk:WatermarkTextBox Watermark="Username" Text="{Binding Username}"/>
-                    <xctk:WatermarkPasswordBox Name="Password_TextBox" Watermark="Password" Text="{Binding Password}"/>
+                    <xctk:WatermarkPasswordBox Name="Password_TextBox" Watermark="Password"/>
                     <xctk:WatermarkTextBox Watermark="LZMA storage path" Text="{Binding LZMAStoragePath}"/>
                     <xctk:WatermarkTextBox Watermark="Manifests storage path" Text="{Binding ManifestStoragePath}"/>
                     <DockPanel HorizontalAlignment="Stretch">
@@ -66,7 +66,9 @@
             </Expander>
 
         </StackPanel>
-
-        <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" Margin="0,5,0,0" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Padding="7,4"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Margin="0,5,0,0">
+            <Button Content="{DynamicResource string_cancel}" Command="{Binding CancelCommand}" Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Padding="7,4" Margin="5,0" ToolTip="Cancel the current upload task"/>
+            <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}"  Padding="7,4"/>
+        </StackPanel>
     </DockPanel>
 </local:MMBusyPanelBase>

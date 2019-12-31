@@ -29,11 +29,44 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public const string UpdaterServiceCodeValidationEndpoint = "https://me3tweaks.com/mods/latestxml/updatecodevalidation";
         private const string UpdateStorageRoot = "https://me3tweaks.com/mods/updates/";
 
+
+        /// <summary>
+        /// Fetch latest version information (manifest attribute) from ME3Tweaks Updater Service. This should not be used for true update checks, use CheckForModUpdates() for that purpose.
+        /// </summary>
+        /// <param name="updatecode">Code to check</param>
+        /// <returns>verison string if found and parsable, null otherwise</returns>
+        public static Version GetLatestVersionOfModOnUpdaterService(int updatecode)
+        {
+            if (updatecode <= 0) return null; //invalid
+            string updateFinalRequest = UpdaterServiceManifestEndpoint + "?classicupdatecode[]=" + updatecode;
+            using var wc = new System.Net.WebClient();
+            try
+            {
+                string updatexml = wc.DownloadStringAwareOfEncoding(updateFinalRequest);
+
+                 XElement rootElement = XElement.Parse(updatexml);
+                var modUpdateInfos = (from e in rootElement.Elements("mod")
+                                      select new ModUpdateInfo
+                                      {
+                                          versionstr = (string)e.Attribute("version")
+                                      }).ToList();
+                if (modUpdateInfos.Count == 1 && Version.TryParse(modUpdateInfos[0].versionstr, out var ver))
+                {
+                    return ver;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to fetch latest version of mod on updater service: " + e.Message);
+            }
+            return null;
+        }
+
         /// <summary>
         /// Checks mods for updates. ForceUpdateCheck will force the mod to validate against the server (essentially repair mode). It is not used for rate limiting!
         /// </summary>
-        /// <param name="modsToCheck"></param>
-        /// <param name="forceUpdateCheck"></param>
+        /// <param name="modsToCheck">Mods to have server send information about</param>
+        /// <param name="forceUpdateCheck">Force update check regardless of version</param>
         /// <returns></returns>
         public static List<ModUpdateInfo> CheckForModUpdates(List<Mod> modsToCheck, bool forceUpdateCheck)
         {
@@ -297,7 +330,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                  if (canceledCheck.HasValue && canceledCheck.Value)
                  {
                      return; //skip
-                }
+                 }
                  LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
                  var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
                  updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(totalDone * 100.0 / totalAmountToCompress)}%");
