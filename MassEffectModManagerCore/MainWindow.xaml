@@ -95,7 +95,7 @@
                                     <Image Source="/modmanager/localizations/icons/french.png"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguagePOL_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem Name="LanguagePOL_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" IsEnabled="False">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/polish.png"/>
                                 </MenuItem.Icon>
