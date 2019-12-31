@@ -70,7 +70,7 @@
     <system:String x:Key="string_EnableME1ConsoleTooltip">Włącza pełną konsolę na ~ i minikonsolę na TAB</system:String>
     <system:String x:Key="string_Additionalmoddingtools">Dodatkowe narzędzia do modowania</system:String>
     <system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
-    <system:String x:Key="string_ALOTInstallerTooltip">Instalator dla A Lot of Textures, modu ulepszającego grafikę wszystkich trzech gier</system:String>
+    <system:String x:Key="string_ALOTInstallerTooltip">Instalator dla A Lot Of Textures, modu ulepszającego grafikę wszystkich trzech gier</system:String>
     <system:String x:Key="string_MassEffectINIModder">Mass Effect INI Modder</system:String>
     <system:String x:Key="string_MEIMTooltip">Narzędzie do konfigurowania wielu różnych ustawień Mass Effect</system:String>
     <system:String x:Key="string_MassEffectModder">Mass Effect Modder</system:String>
@@ -146,7 +146,7 @@
     <system:String x:Key="string_checkingForModManagerUpdates">Sprawdzanie aktualizacji Mod Managera</system:String>
     <system:String x:Key="string_completedModManagerUpdateCheck">Ukończono sprawdzanie aktualizacji Mod Managera</system:String>
     <system:String x:Key="string_failedToCheckForUpdates">Nie można sprawdzić aktualizacji</system:String>
-    <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Nie można pobrać statycznych plików pomocniczych do ME3Tweaks Mod Manager. Menedżer modów może być niestabilny z powodu braku tych plików. Upewnij się, że możesz połączyć się z Github.com, aby te zasoby mogły zostać pobrane.</system:String>
+    <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Nie można pobrać statycznych plików pomocniczych do ME3Tweaks Mod Manager. Menedżer modów może być niestabilny z powodu braku tych plików. Upewnij się, że możesz połączyć się z GitHub.com, aby te zasoby mogły zostać pobrane.</system:String>
     <system:String x:Key="string_missingAssets">Brakujące zasoby</system:String>
     <system:String x:Key="string_failedToDownloadStaticFiles">Nie udało się pobrać plików statycznych</system:String>
     <system:String x:Key="string_downloadingStaticFiles">Pobieranie plików statycznych</system:String>
@@ -206,6 +206,8 @@
     <system:String x:Key="string_supportedFiles">Supported files</system:String>
     <system:String x:Key="string_interp_XmodsFailedToLoad">{0} mod(s) failed to load</system:String>
     <!-- 0 = number -->
+    <system:String x:Key="string_setLanguageToX">Set language to Polish</system:String>
+    <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Przygotowanie do instalacji</system:String>
@@ -516,7 +518,9 @@
     <!-- 0 = mod name-->
     <system:String x:Key="string_updated">Updated</system:String>
     <system:String x:Key="string_interp_localVersion">Local version: {0}</system:String>
+    <!-- 0 = version string -->
     <system:String x:Key="string_interp_serverVersion">Server version: {0}</system:String>
+    <!-- 0 = version string -->
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
@@ -775,9 +779,9 @@
     <system:String x:Key="string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod">Mod Manager based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified">This mod specifies required DLC but does not match a supported value or start with DLC_. The value that failed was: {0}</system:String>
     <!-- 0 = value from moddesc.ini file -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated">CustomDLC header contains an item in outdatedcustomdlc list that is an official DLC: {0}. This is not allowed.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated">CUSTOMDLC header contains an item in outdatedcustomdlc list that is an official DLC: {0}. This is not allowed.</system:String>
     <!-- 0 = moddesc.ini header -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCannotListOfficialDLCAsIncompatible">CustomDLC header contains an item in incompatibledlc list that is an official DLC: {0}. This is not allowed.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCannotListOfficialDLCAsIncompatible">CUSTOMDLC header contains an item in incompatibledlc list that is an official DLC: {0}. This is not allowed.</system:String>
     <!-- 0 = moddesc.ini header -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFoldersValue">UPDATES header additionaldeploymentfolders includes directory ({0}) that contains a .., \\ or /, which are not permitted.</system:String>
     <!-- 0 = filepath -->
@@ -833,7 +837,7 @@
     <system:String x:Key="string_newDLCModInformation">New DLC mod information</system:String>
     <system:String x:Key="string_modName">Mod Name</system:String>
     <system:String x:Key="string_modDeveloper">Mod Developer</system:String>
-    <system:String x:Key="string_modWebsite">Mod Website/Nexusmods page</system:String>
+    <system:String x:Key="string_modWebsite">Mod Website/NexusMods page</system:String>
     <system:String x:Key="string_dLCFolderName">DLC Folder Name</system:String>
     <system:String x:Key="string_internalName">Internal Name</system:String>
     <system:String x:Key="string_internalNameTLKID">Internal Name TLK ID</system:String>

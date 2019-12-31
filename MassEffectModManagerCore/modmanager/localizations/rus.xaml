@@ -70,7 +70,7 @@
     <system:String x:Key="string_EnableME1ConsoleTooltip">Активирует полноразмерную консоль по ~ и компактную по TAB</system:String>
     <system:String x:Key="string_Additionalmoddingtools">Дополнительные инструменты моддинга</system:String>
     <system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
-    <system:String x:Key="string_ALOTInstallerTooltip">Устанавливает A Lot of Textures, мод обновления графики, предназначенный для всех трех игр</system:String>
+    <system:String x:Key="string_ALOTInstallerTooltip">Устанавливает A Lot Of Textures, мод обновления графики, предназначенный для всех трех игр</system:String>
     <system:String x:Key="string_MassEffectINIModder">Mass Effect INI Modder</system:String>
     <system:String x:Key="string_MEIMTooltip">Инструмент для редактирования различных настроек Mass Effect</system:String>
     <system:String x:Key="string_MassEffectModder">Mass Effect Modder</system:String>
@@ -146,7 +146,7 @@
     <system:String x:Key="string_checkingForModManagerUpdates">Поиск обновлений Mod Manager</system:String>
     <system:String x:Key="string_completedModManagerUpdateCheck">Поиск обновлениий Mod Manager завершен</system:String>
     <system:String x:Key="string_failedToCheckForUpdates">Не удалось проверить обновления</system:String>
-    <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Невозмоно скачать статические файлы для ME3Tweaks Mod Manager. Mod Manager может работать нестабильно из-за отсутствия данных файлов. Проверьте доступность Github.com для возможности скачивания данных файлов.</system:String>
+    <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Невозмоно скачать статические файлы для ME3Tweaks Mod Manager. Mod Manager может работать нестабильно из-за отсутствия данных файлов. Проверьте доступность GitHub.com для возможности скачивания данных файлов.</system:String>
     <system:String x:Key="string_missingAssets">Недостающие ресурсы</system:String>
     <system:String x:Key="string_failedToDownloadStaticFiles">Ошибка получения статических компонентов</system:String>
     <system:String x:Key="string_downloadingStaticFiles">Получение статических компонентов</system:String>
@@ -206,6 +206,8 @@
     <system:String x:Key="string_supportedFiles">Поддерживаемые файлы</system:String>
     <system:String x:Key="string_interp_XmodsFailedToLoad">Модов не удалось загрузить: {0}</system:String>
     <!-- 0 = number -->
+    <system:String x:Key="string_setLanguageToX">Язык изменен на Русский</system:String>
+    <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Подготовка к установке</system:String>
@@ -516,7 +518,9 @@
     <!-- 0 = mod name-->
     <system:String x:Key="string_updated">Обновлено</system:String>
 	<system:String x:Key="string_interp_localVersion">Версия на компьютере: {0}</system:String>
+    <!-- 0 = version string -->
     <system:String x:Key="string_interp_serverVersion">Версия на сервере: {0}</system:String>
+    <!-- 0 = version string -->
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Доступно обновление ME3Tweaks Mod Manager.</system:String>
@@ -823,7 +827,7 @@
     <system:String x:Key="string_loaderInstalled">Загрузчик установлен</system:String>
     <system:String x:Key="string_installLoader">Установить загрузчик</system:String>
     <system:String x:Key="string_unknownASIMod">Неизвестный ASI-мод</system:String>
-    <system:String x:Key="string_ASIManager">Менеджер ASI</system:String>
+    <system:String x:Key="string_ASIManager">ASI Manager</system:String>
     <system:String xml:space="preserve" x:Key="string_ASIManagerTopDescription">ASI-моды - это моды на исходном коде, загружаемые при запуске игры. Они позволяют модифицировать игру путями, недоступными пакетным файлам. ASI-моды не должны входить в состав обычных модов и могут быть включены в моды Mod Manager.&#10;Mod Manager автоматически установит требуемые ASI-моды для модов, изменяющих баланс ME3 и для ME1 DLC-модов.</system:String>
     <system:String x:Key="string_installingEllipse">Установка...</system:String>
     <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">Посмотреть исходный код данного ASI-мода</system:String>
@@ -833,7 +837,7 @@
     <system:String x:Key="string_newDLCModInformation">Информация о новом DLC-моде</system:String>
     <system:String x:Key="string_modName">Имя Мода</system:String>
     <system:String x:Key="string_modDeveloper">Разработчик Мода</system:String>
-    <system:String x:Key="string_modWebsite">Сайт Мода/Страница Nexusmods</system:String>
+    <system:String x:Key="string_modWebsite">Сайт Мода/Страница NexusMods</system:String>
     <system:String x:Key="string_dLCFolderName">Имя Папки DLC</system:String>
     <system:String x:Key="string_internalName">Внутреннее Имя</system:String>
     <system:String x:Key="string_internalNameTLKID">TLK ID Внутреннего Имени</system:String>

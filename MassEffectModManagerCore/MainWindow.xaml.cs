@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore
             //Change language if not INT
             if (App.InitialLanguage != @"int")
             {
-                SetLanguage(App.InitialLanguage);
+                SetLanguage(App.InitialLanguage, true);
             }
             PopulateTargets();
             AttachListeners();
@@ -206,7 +206,7 @@ namespace MassEffectModManagerCore
                 var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect3", 373, NexusUserID);
                 ME3NexusEndorsed = me3Status ?? false;
 
-                EndorseM3String = (ME1NexusEndorsed && ME2NexusEndorsed && ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
             else
             {
@@ -222,7 +222,7 @@ namespace MassEffectModManagerCore
                 {
                     bool isopening = FailedMods.BindableCount > 0 && oldFailedBindableCount == 0;
                     bool isclosing = FailedMods.BindableCount == 0 && oldFailedBindableCount > 0;
-                    if (isopening)
+                    if (FailedMods.BindableCount > 0)
                     {
                         FailedModsString = M3L.GetString(M3L.string_interp_XmodsFailedToLoad, FailedMods.BindableCount.ToString());
                     }
@@ -331,7 +331,7 @@ namespace MassEffectModManagerCore
 
         private bool CanEndorseM3()
         {
-            return NexusUserID != 0 && (!ME1NexusEndorsed || !ME2NexusEndorsed || !ME3NexusEndorsed);
+            return NexusUserID != 0 && (!ME1NexusEndorsed && !ME2NexusEndorsed && !ME3NexusEndorsed);
         }
 
         private void EndorseM3()
@@ -339,17 +339,29 @@ namespace MassEffectModManagerCore
             if (!ME1NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME1)");
-                NexusModsUtilities.EndorseFile(@"masseffect", true, 149, NexusUserID, (newStatus) => ME1NexusEndorsed = newStatus);
+                NexusModsUtilities.EndorseFile(@"masseffect", true, 149, NexusUserID, (newStatus) =>
+                {
+                    ME1NexusEndorsed = newStatus;
+                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                });
             }
             if (!ME2NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME2)");
-                NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, NexusUserID, (newStatus) => ME2NexusEndorsed = newStatus);
+                NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, NexusUserID, (newStatus) =>
+                {
+                    ME2NexusEndorsed = newStatus;
+                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                });
             }
             if (!ME3NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME3)");
-                NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, NexusUserID, (newStatus) => ME3NexusEndorsed = newStatus);
+                NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, NexusUserID, (newStatus) =>
+                {
+                    ME3NexusEndorsed = newStatus;
+                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                });
             }
         }
 
@@ -2292,10 +2304,10 @@ namespace MassEffectModManagerCore
 
             Settings.Language = lang;
             Settings.Save();
-            SetLanguage(lang);
+            SetLanguage(lang, false);
         }
 
-        public void SetLanguage(string lang)
+        public void SetLanguage(string lang, bool startup)
         {
             Log.Information(@"Setting language to " + lang);
             foreach (var item in languageMenuItems)
@@ -2320,7 +2332,13 @@ namespace MassEffectModManagerCore
             }
             catch (Exception e)
             {
-                Log.Error(@"Could not set localized dyanmic help: " + e.Message);
+                Log.Error(@"Could not set localized dynamic help: " + e.Message);
+            }
+            if (!startup)
+            {
+                AuthToNexusMods();
+                FailedMods.RaiseBindableCountChanged();
+                CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
             }
         }
 
