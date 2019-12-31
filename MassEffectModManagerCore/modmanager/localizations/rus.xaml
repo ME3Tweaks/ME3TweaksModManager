@@ -516,7 +516,9 @@
     <!-- 0 = mod name-->
     <system:String x:Key="string_updated">Обновлено</system:String>
 	<system:String x:Key="string_interp_localVersion">Версия на компьютере: {0}</system:String>
+    <!-- 0 = version string -->
     <system:String x:Key="string_interp_serverVersion">Версия на сервере: {0}</system:String>
+    <!-- 0 = version string -->
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Доступно обновление ME3Tweaks Mod Manager.</system:String>
