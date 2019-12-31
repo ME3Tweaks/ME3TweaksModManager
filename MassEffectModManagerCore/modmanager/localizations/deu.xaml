@@ -206,7 +206,7 @@
     <system:String x:Key="string_supportedFiles">Unterstützte Dateien</system:String>
     <system:String x:Key="string_interp_XmodsFailedToLoad">Laden von {0} Mod(s) fehlgeschlagen</system:String>
     <!-- 0 = number -->
-    <system:String x:Key="string_setLanguageToX">Set language to German</system:String>
+    <system:String x:Key="string_setLanguageToX">Sprache wurde auf Deutsch eingetellt</system:String>
     <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
 
     <!-- Mod Installer Panel -->
