@@ -206,7 +206,7 @@
     <system:String x:Key="string_supportedFiles">Поддерживаемые файлы</system:String>
     <system:String x:Key="string_interp_XmodsFailedToLoad">Модов не удалось загрузить: {0}</system:String>
     <!-- 0 = number -->
-    <system:String x:Key="string_setLanguageToX">Set language to Russian</system:String>
+    <system:String x:Key="string_setLanguageToX">Переключить язык на Русский</system:String>
     <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
 
     <!-- Mod Installer Panel -->
@@ -827,7 +827,7 @@
     <system:String x:Key="string_loaderInstalled">Загрузчик установлен</system:String>
     <system:String x:Key="string_installLoader">Установить загрузчик</system:String>
     <system:String x:Key="string_unknownASIMod">Неизвестный ASI-мод</system:String>
-    <system:String x:Key="string_ASIManager">Менеджер ASI</system:String>
+    <system:String x:Key="string_ASIManager">ASI Manager</system:String>
     <system:String xml:space="preserve" x:Key="string_ASIManagerTopDescription">ASI-моды - это моды на исходном коде, загружаемые при запуске игры. Они позволяют модифицировать игру путями, недоступными пакетным файлам. ASI-моды не должны входить в состав обычных модов и могут быть включены в моды Mod Manager.&#10;Mod Manager автоматически установит требуемые ASI-моды для модов, изменяющих баланс ME3 и для ME1 DLC-модов.</system:String>
     <system:String x:Key="string_installingEllipse">Установка...</system:String>
     <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">Посмотреть исходный код данного ASI-мода</system:String>
