@@ -69,7 +69,7 @@
     <system:String x:Key="string_EnableconsoleinME1">Konsole in ME1 aktivieren</system:String>
     <system:String x:Key="string_EnableME1ConsoleTooltip">Aktiviert die vollständige Konsole mit ~ und Minikonsole mit TAB</system:String>
     <system:String x:Key="string_Additionalmoddingtools">Zusätzliche Modding-Werkzeuge</system:String>
-    <system:String x:Key="string_ALOTInstaller">ALOT Installationsprogramm</system:String>
+    <system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
     <system:String x:Key="string_ALOTInstallerTooltip">Installationsprogramm für A Lot Of Textures, ein Grafik-Upgrade Mod für alle drei Spiele</system:String>
     <system:String x:Key="string_MassEffectINIModder">Mass Effect INI Modder</system:String>
     <system:String x:Key="string_MEIMTooltip">Werkzeug zum Konfigurieren vieler verschiedener Einstellungen für Mass Effect</system:String>
