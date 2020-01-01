@@ -98,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         mainwindow.NexusUserID = authInfo.UserID;
                         SetAuthorized(true);
                         mainwindow.RefreshNexusStatus();
-                        Analytics.TrackEvent(M3L.GetString(M3L.string_authenticatedToNexusMods));
+                        Analytics.TrackEvent(@"Authenticated to NexusMods");
                     } else
                     {
                         Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
