@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ProgressValue = done;
                 ProgressMax = total;
-                ProgressText = M3L.GetString(M3L.string_downloadingUpdate) + $@" {ByteSize.FromBytes(done)} / {ByteSize.FromBytes(total)}";
+                ProgressText = M3L.GetString(M3L.string_downloadingUpdate) + $@" {ByteSize.FromBytes(done).ToString("0.00")} / {ByteSize.FromBytes(total).ToString("0.00")}";
             }
             var downloadLinks = new string[] { PrimaryDownloadLink, BackupDownloadLink };
             string errorMessage = null;

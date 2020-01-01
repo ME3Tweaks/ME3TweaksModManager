@@ -339,7 +339,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string TotalBytesHR => ByteSize.FromBytes(TotalBytesToDownload).ToString();
             public string RemainingDataToDownload
             {
-                get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? ByteSize.FromBytes(TotalBytesToDownload - CurrentBytesDownloaded).ToString() : "";
+                get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? ByteSize.FromBytes(TotalBytesToDownload - CurrentBytesDownloaded).ToString("0.00") : "";
                 set { } //do nothing.
             }
         }
