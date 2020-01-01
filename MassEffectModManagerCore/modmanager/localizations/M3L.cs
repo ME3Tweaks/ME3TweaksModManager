@@ -307,6 +307,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_abortInstallingMod = "string_abortInstallingMod";
 		public static readonly string string_dialogInvalidRCWFile = "string_dialogInvalidRCWFile";
 		public static readonly string string_interp_dialogNotEnoughSpaceToInstall = "string_interp_dialogNotEnoughSpaceToInstall";
+		public static readonly string string_dialogInvalidME2Coalesced = "string_dialogInvalidME2Coalesced";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";

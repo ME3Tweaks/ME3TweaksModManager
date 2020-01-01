@@ -19,8 +19,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             int unknownInt = fs.ReadInt32();
             if (unknownInt != 0x1E)
             {
-                Console.WriteLine();
-                throw new Exception("First 4 bytes were not 0x1E.This does not appear to be a Coalesced file.");
+                throw new Exception("First 4 bytes were not 0x1E (was " + unknownInt.ToString("X8") + ").This does not appear to be a Coalesced file.");
             }
 
             while (fs.Position < fs.Length)
@@ -28,7 +27,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                 long pos = fs.Position;
                 string filename = fs.ReadUnrealString();
                 string contents = fs.ReadUnrealString();
-                Inis[filename] =  DuplicatingIni.ParseIni(contents);
+                Inis[filename] = DuplicatingIni.ParseIni(contents);
             }
         }
 
