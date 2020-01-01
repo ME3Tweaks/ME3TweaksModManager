@@ -193,37 +193,37 @@
     </list>
   </helpmenu>
   <helpmenu lang="deu">
-    <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services"/>
-    <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Chat server for finding other players of Mass Effect 3 MP and Mass Effect Andromeda MP"/>
-    <helpitem title="ME3Tweaks Mod Manager is a work in progress" modaltitle="Warning: Construction ahead" icon="INFO">ME3Tweaks Mod Manager is currently in a preview stage. Many features from Mass Effect 3 Mod Manager are being ported over but this procedure will take some time. Please report any crashes to the ME3Tweaks Discord.</helpitem>
+    <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat Server für schnelle Unterstützung zu ME3Tweaks-Produkten und Diensten"/>
+    <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Chat Server, um andere Mass Effect 3 MP- und Mass Effect Andromeda MP-Spieler zu finden"/>
+    <helpitem title="ME3Tweaks Mod Manager ist in der Entwicklung" modaltitle="Warnung: Bauarbeiten" icon="INFO">ME3Tweaks Mod Manager ist aktuell in der Vorschau-Phase. Viele Funktionen aus Mass Effect 3 Mod Manager werden übernommen, doch bis dahin dauert es noch. Bitte berichte etwaige Abstürze im ME3Tweaks Discord (Englisch).</helpitem>
 
-    <list title="Get Mods">
+    <list title="Mods bekommen">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
-      <helpitem title="ME3Tweaks Curated Mod List" url="https://me3tweaks.com/mods" tooltip="Browse mods curated by ME3Tweaks"/>
-      <helpitem title="NexusMods (ME1)" url="http://www.nexusmods.com/masseffect/" tooltip="Browse mods developed for Mass Effect on NexusMods"/>
-      <helpitem title="NexusMods (ME2)" url="http://www.nexusmods.com/masseffect2/" tooltip="Browse mods developed for Mass Effect 2 on NexusMods"/>
-      <helpitem title="NexusMods (ME3)" url="http://www.nexusmods.com/masseffect3/" tooltip="Browse mods developed for Mass Effect 3 on NexusMods"/>
+      <helpitem title="Liste der von ME3Tweaks vorgeschlagenen Mods" url="https://me3tweaks.com/mods" tooltip="Stöbere durch von ME3Tweaks vorgeschlagene Mods"/>
+      <helpitem title="NexusMods (ME1)" url="http://www.nexusmods.com/masseffect/" tooltip="Stöbere durch Mods für Mass Effect auf NexusMods"/>
+      <helpitem title="NexusMods (ME2)" url="http://www.nexusmods.com/masseffect2/" tooltip="Stöbere durch Mods für Mass Effect 2 auf NexusMods"/>
+      <helpitem title="NexusMods (ME3)" url="http://www.nexusmods.com/masseffect3/" tooltip="Stöbere durch Mods für Mass Effect 3 auf NexusMods"/>
     </list>
-    <list title="How to">
-      <helpitem title="Add a mod" modaltitle="Adding mods to Mod Manager" icon="INFO">To add a mod to Mod Manager, drag and drop its zip/rar/7z/exe/me2mod file onto Mod Manager's main interface.&lt;br&gt;&lt;br&gt;To download and add a ModMaker mod enter its code into the Mod Management &gt; Download ME3Tweaks ModMaker Mod window.</helpitem>
+    <list title="Kurzanleitung">
+      <helpitem title="Einen Mod hinzufügen" modaltitle="Mod zu Mod Manager hinzufügen" icon="INFO">Um einen Mod zu Mod Manager hinzuzufügen, ziehe die .7z/.rar/.zip/.exe/.me2mod-Datei auf das Hauptfenster von Mod Manager.&lt;br&gt;&lt;br&gt;Um einen ModMaker-Mod herunterzuladen, gib seinen Code im Fenster Mod Management &gt; ModMaker Mod herunterladen ein.</helpitem>
       <!--<helpitem title="Make a mod" url="https://me3tweaks.com/modmanager/documentation/moddesc"/>-->
-      <helpitem title="Remove a mod" modaltitle="Removing mods from the library" modalicon="INFO">To remove a mod from the mod library (not the game), delete its folder from the mods/&lt;game&gt; directory, or select it and go to the Mod Utils menu and select Delete mod.</helpitem>
-      <helpitem title="Install a mod" modaltitle="Installing a mod" modalicon="INFO">Select a mod on the left and click Apply Mod to install the mod into the game. If the mod has optional items defined, they will be presented to you before install.</helpitem>
-      <helpitem title="Uninstall a mod" modaltitle="Uninstalling mods" modalicon="INFO">You can remove DLC mods via the 'Target Info' button on the main screen of Mod Manager. You can remove Custom DLC mods (also known as DLC mods), as well as restore individual files or SFARs (DLC archives for ME3).</helpitem>
-      <helpitem title="Report issues" modaltitle="How to report issues" modalicon="INFO">If you find issues in Mod Manager, you can report them to me on my Discord. You can find a link at the top of the help menu. Please include a log from the help menu's Generate Diagnostic Log. I only support official installations of Mass Effect 3.</helpitem>
+      <helpitem title="Einen Mod entfernen" modaltitle="Einen Mod aus der Bibliothek entfernen" modalicon="INFO">Um einen Mod aus der Bibliothek zu entfernen (nicht aus dem Spiel), lösche seinen Ordner aus dem Mods/&lt;Spiel&gt; Ordner, oder wähle ihn aus, gehe ins Mod-Werkzeuge-Menü und klicke Mod aus Bibliothek löschen.</helpitem>
+      <helpitem title="Einen Mod installieren" modaltitle="Einen Mod installieren" modalicon="INFO">Wähle links einen Mod und klicke auf Mod installieren, um ihn ins Spiel zu installieren. Falls der Mod Optionale Bestandteile hat, werden diese dir vor der Installation angezeigt.</helpitem>
+      <helpitem title="Einen Mod deinstallieren" modaltitle="Mods deinstallieren" modalicon="INFO">Du kannst DLC-Mods über den 'Ziel-Info'-Knopf im Hauptfenster von Mod Manager löschen. Du kannst sowohl Custom DLC-Mods (auch DLC-Mods genannt) löschen, als auch einzelne Dateien und SFARs (DLC Archive für ME3) wiederherstellen.</helpitem>
+      <helpitem title="Probleme Melden" modaltitle="Wie man Probleme meldet" modalicon="INFO">Falls du Probleme in Mod Manager feststellst, kannst du sie via Discord (Englisch) an mich melden. Du findest einen Link oben im Hilfe-Menü. Bitte schicke mir ein Ereignisprotokoll mittels der Option Diagnose-Ereignisprotokoll erstellen im Hilfe-Menü. Ich unterstütze nur offizielle Installationen von Mass Effect 3.</helpitem>
     </list>
-    <list title="Commonly Asked Questions">
-      <helpitem title="Does installation order matter" modaltitle="Installation order" modalicon="INFO">For most mods, installation order will not matter as the load order is controlled by a file named mount.dlc. A few Mod Manager mods can automatically change how they install based on what is already installed, so you should typically install them last. Texture mods, such as MEUITM or ALOT, must always be installed at the very end. Mod Manager will refuse to install mods that contain package files after texture mods have been installed to prevent invalid texture pointers from being introduced to the game.</helpitem>
-      <helpitem title="Can I get banned from ME3 MP for using mods" modalicon="INFO" modaltitle="Mods and Multiplayer">BioWare has abandoned Mass Effect 3 since 2013, they do not ban or monitor anything related to Mass Effect 3 anymore. That said, if you are modding Mass Effect 3 multiplayer, you should keep it in private lobbies to be considerate to others.</helpitem>
-      <helpitem title="My DLC fails to authorize" modaltitle="DLC failing to authorize" modalicon="INFO" resource="DLC_AUTH_FAIL.png" md5="532698c6707450dbcd1281b65521d584" size="116835">After installing a mod, if you get a screen similar to the one below at the main menu, the DLC listed will not load.&lt;br&gt;The list may be blank if the developer did not give their DLC a name.&lt;br&gt;Installing any mod through Mod Manager should resolve this issue, unless the DLC is corrupt. Otherwise you will need to install Binkw32 bypass from the Tools menu.</helpitem>
-      <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="DLC still not authorizing">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Target Info' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
+    <list title="Häufig gestellte Fragen">
+      <helpitem title="Ist die Installationsreihenfolge relevant" modaltitle="Installationsreihenfolge" modalicon="INFO">Für die meisten Mods ist die Installationsreihenfolge irrelevant, da die Ladereihenfolge von einer Datei namens mount.dlc geregelt wird. Ein paar Mod Manager Mods können sich automatisch verändern, basierend darauf welche anderen Mods bereits installiert sind, daher solltest du diese normalerweise als letztes installieren. Textur-Mods, wie zum Beispiel MEUITM oder ALOT, müssen immer zum Schluss installiert werden. Mod Manager wird sich weigern, Mods die package-Dateien beinhalten zu installieren, nachdem Textur-Mods installiert wurden, um ungültige Texturzeiger zu verhindern.</helpitem>
+      <helpitem title="Kann ich wegen Mods vom ME3 MP gebannt werden" modalicon="INFO" modaltitle="Mods und Multiplayer">BioWare hat Mass Effect 3 seit 2013 aufgegeben, nichts bezüglich Mass Effect 3 wird mehr gebannt oder überwacht. Dennoch: wenn du Mass Effect 3 Multiplayer moddest, solltest du dich auf private Lobbys beschränken um Rücksicht auf andere zu nehmen.</helpitem>
+      <helpitem title="Mein DLC kann nicht autorisiert werden" modaltitle="DLC kann nicht autorisiert werden" modalicon="INFO" resource="DLC_AUTH_FAIL.png" md5="532698c6707450dbcd1281b65521d584" size="116835">Falls dir nach der Installation eines Mods im Hauptfenster eine Meldung wie im Bild angezeigt wird, wird das/die gelistete/n DLC/s nicht geladen werden.&lt;br&gt;Die Liste könnte leer sein, wenn der Entwickler seinem DLC keinen Namen gegeben hat.&lt;br&gt;Die Installation irgendeines Mods mit Mod Manager sollte diesen Fehler beheben, es sei denn das DLC ist defekt. Ansonsten musst du über das Werkzeuge-Menü den Binkw32 Bypass installieren.</helpitem>
+      <helpitem title="Spiel-Dateien wiederhergestellt aber DLC kann immer noch nicht autorisiert werden" modalicon="INFO" modaltitle="DLC kann immer noch nicht autorisiert werden">Wenn ein Mod den du installiert hast Custom DLC enthält (Mod, der in den DLC Ordner des Spiels installiert wird), wird er von einigen Optionen in Mod Manager nicht entfernt. Wenn du versucht hast dein Spiel wiederherzustellen, aber immer noch Probleme mit dem Autorisieren von DLC hast, gehe auf 'Ziel-Info' und lösche alle DLC-Ordner im 'Installierte DLC-Mods' Tab.</helpitem>
     </list>
-    <list title="Changelogs">
-      <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 3(Build 103)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.103"/>
-      <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 2(Build 102)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.102"/>
-      <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 1(Build 101)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.101"/>
+    <list title="Änderungsprotokolle">
+      <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 3 (Build 103)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.103"/>
+      <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 2 (Build 102)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.102"/>
+      <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 1 (Build 101)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.101"/>
       <helpitem title="ME3Tweaks Mod Manager 6.0 Preview (Build 100)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.100"/>
-      <list title="Older changelogs" sort="low">
+      <list title="Ältere Änderungsprotokolle" sort="low">
         <list title="Mod Manager 5.1">
           <helpitem title="Mod Manager 5.1.9 (Build 97)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.9.0"/>
           <helpitem title="Mod Manager 5.1.8 (Build 96)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.8"/>
