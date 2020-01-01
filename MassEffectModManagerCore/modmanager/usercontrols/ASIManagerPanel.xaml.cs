@@ -44,6 +44,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool InstallInProgress { get; set; }
         public string InstallButtonText { get; set; }
 
+        public bool ME1TabEnabled { get; set; }
+        public bool ME2TabEnabled { get; set; }
+        public bool ME3TabEnabled { get; set; }
+
         public string InstallLoaderText { get; set; }
 
 
@@ -116,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadCommands()
         {
-            InstallCommand = new GenericCommand(InstallUninstallASI, ASIIsSelected);
+            InstallCommand = new GenericCommand(InstallUninstallASI, CanInstallASI);
             SourceCodeCommand = new GenericCommand(ViewSourceCode, ManifestASIIsSelected);
             CloseCommand = new GenericCommand(ClosePanel, CanClosePanel);
         }
@@ -175,11 +179,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     UpdateSelectionTexts(SelectedASIObject);
                 }
             }
-
         }
 
-
-        private bool ASIIsSelected() => SelectedASIObject != null;
+        private bool CanInstallASI()
+        {
+            if (SelectedASIObject == null) return false;
+            if (SelectedASIObject is ASIMod am)
+            {
+                return Games.First(x=>x.Game == am.Game).GameTargets.Any();
+            }
+            if (SelectedASIObject is InstalledASIMod iam)
+            {
+                return Games.First(x => x.Game == iam.Game).GameTargets.Any();
+            }
+            return false;
+        }
 
         private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod;
 
@@ -422,7 +436,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Games.Add(new ASIGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1).ToList()));
             Games.Add(new ASIGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2).ToList()));
             Games.Add(new ASIGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3).ToList()));
-
             //Technically this could load earlier, but it's not really worth the effort for the miniscule time saved
             LoadManifest(true, Games.ToList(), UpdateSelectionTexts);
             UpdateSelectionTexts(null);
@@ -459,6 +472,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             public bool LoaderInstalled { get; set; }
+            public bool IsEnabled { get; set; }
             public string GameName => Utilities.GetGameName(Game);
             public List<ASIModUpdateGroup> ASIModUpdateGroups { get; internal set; }
 
@@ -471,6 +485,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 GameTargets.ReplaceAll(targets);
                 SelectedTarget = targets.FirstOrDefault(x => x.RegistryActive);
                 InstallLoaderCommand = new GenericCommand(InstallLoader, CanInstallLoader);
+                IsEnabled = GameTargets.Any();
             }
 
             /// <summary>
