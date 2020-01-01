@@ -254,7 +254,7 @@
     <system:String x:Key="string_dialogInvalidRCWFile">Die .me2mod Datei dieses Mods ist unzulässig oder kann nicht sicher auf deine Spiel-Installation angewendet werden. Die Installation wurde abgebrochen. Prüfe die Mod Manager-Protokolle über das Hilfe-Menü für weitere Informationen.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughSpaceToInstall">Auf {0} ist nicht genügend freier Speicherplatz vorhanden, um {1} zu installieren.\nBenötigter Speicherplatz: {2}\nFreier Speicherplatz: {3}</system:String>
     <!-- 0=driveletter 1=ModBeingInstalled.ModName 2,3=number of bytes (in MB/KB/GB etc)  -->
-    <system:String x:Key="string_dialogInvalidME2Coalesced">The Coalesced.ini file for this installation of Mass Effect 2 appears to be malformed (header bytes are wrong). The installation has been aborted.</system:String>
+    <system:String x:Key="string_dialogInvalidME2Coalesced">Die Coalesced.ini-Datei dieser Mass Effect 2-Installation scheint kaputt zu sein (Dateikopf stimmt nicht). Die Installation wurde abgebrochen.</system:String>
 
     <!-- Startup preview panel -->
     <system:String x:Key="string_previewPanelTitle">Willkommen beim ME3Tweaks Mod Manager</system:String>
