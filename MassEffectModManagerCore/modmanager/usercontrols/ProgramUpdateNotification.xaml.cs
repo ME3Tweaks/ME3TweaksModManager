@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AuthenticodeExaminer;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -131,10 +132,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updaterExe))
             {
                 ProgressText = M3L.GetString(M3L.string_verifyingUpdate);
-                var isTrusted = AuthenticodeHelper.IsTrusted(updateExecutablePath);
-                if (!isTrusted)
+                var authenticodeInspector = new FileInspector(updateExecutablePath);
+                var validationResult = authenticodeInspector.Validate();
+                if (validationResult != SignatureCheckResult.Valid)
                 {
-                    Log.Error(@"The update file is not signed. Update will be aborted.");
+                    Log.Error($@"The update file is not signed ({validationResult.ToString()}) Update will be aborted.");
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_unableToApplyUpdateNotSigned), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);

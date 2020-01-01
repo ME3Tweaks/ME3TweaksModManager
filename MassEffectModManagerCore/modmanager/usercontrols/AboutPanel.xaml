@@ -13,6 +13,7 @@
         <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,3,0,0">
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" Text="ME3Tweaks Mod Manager" FontWeight="Light" />
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" FontWeight="Light" Text="{Binding Path=(modmanagercore:App.AppVersionAbout), Mode=OneTime, StringFormat='Version {0}'}" />
+            <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="12" FontWeight="Light" Text="{Binding BuildDate}" />
             <Image HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" Cursor="Hand" MouseDown="Image_ME3Tweaks_Click" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
             <Button Content="{DynamicResource string_close}" HorizontalAlignment="Left" Margin="8,0,0,0" Click="ClosePanel" />
         </StackPanel>
