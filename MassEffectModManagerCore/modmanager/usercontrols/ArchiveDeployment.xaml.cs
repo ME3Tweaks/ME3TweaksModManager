@@ -145,10 +145,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                obj.Icon = FontAwesomeIcon.CheckCircle;
-                obj.Foreground = Brushes.Green;
-                obj.ItemText = M3L.GetString(M3L.string_interp_modURLOK, ModBeingDeployed.ModWebsite);
-                obj.ToolTip = M3L.GetString(M3L.string_validationOK);
+                if (ModBeingDeployed.ModWebsite == Mod.DefaultWebsite)
+                {
+                    obj.Icon = FontAwesomeIcon.TimesCircle;
+                    obj.Foreground = Brushes.Red;
+                    obj.ItemText = "moddesc.ini is missing modsite descriptor";
+                    obj.Spinning = false;
+                    obj.HasError = true;
+                    obj.Errors.Add("No mod website URL was set - typically the ModInfo modsite descriptor should point to NexusMods page. This also enables users to endorse your mod on NexusMods through Mod Manager.");
+                }
+                else
+                {
+                    obj.Icon = FontAwesomeIcon.CheckCircle;
+                    obj.Foreground = Brushes.Green;
+                    obj.ItemText = M3L.GetString(M3L.string_interp_modURLOK, ModBeingDeployed.ModWebsite);
+                    obj.ToolTip = M3L.GetString(M3L.string_validationOK);
+                }
             }
         }
 
@@ -663,7 +675,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public string ToolTip { get; set; }
             public bool HasError { get; internal set; }
-            public List<string> Errors { get; internal set; }
+            public List<string> Errors { get; internal set; } = new List<string>();
 
             //public DeploymentChecklistItem(string initialDisplayText, Mod m, Action<DeploymentChecklistItem> validationFunction)
             //{
