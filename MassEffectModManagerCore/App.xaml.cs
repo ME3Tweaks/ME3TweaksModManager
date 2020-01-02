@@ -70,6 +70,7 @@ namespace MassEffectModManagerCore
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
 #if !DEBUG
 
             if (APIKeys.HasAppCenterKey)
@@ -98,6 +99,15 @@ namespace MassEffectModManagerCore
                     return attachments;
                 };
                 AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
+            }
+#else
+            if (!APIKeys.HasAppCenterKey)
+            {
+                Debug.WriteLine(" >>> This build is missing an API key for AppCenter!");
+            }
+            else
+            {
+                Debug.WriteLine("This build has an API key for AppCenter");
             }
 #endif
         }

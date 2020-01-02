@@ -3,6 +3,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -22,10 +23,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class AboutPanel : MMBusyPanelBase
     {
+        public bool TelemetryKeyAvailable => APIKeys.HasAppCenterKey;
         public string BuildDate { get; set; }
         public AboutPanel()
         {
             DataContext = this;
+            Debug.WriteLine(TelemetryKeyAvailable);
             InitializeComponent();
             NamedBackgroundWorker nbw = new NamedBackgroundWorker("AboutAuthenticode");
             nbw.DoWork += (a, b) =>
