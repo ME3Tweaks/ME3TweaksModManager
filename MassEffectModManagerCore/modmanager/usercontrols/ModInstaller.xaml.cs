@@ -19,6 +19,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -63,7 +64,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS,
             NO_RESULT_CODE,
             INSTALL_FAILED_MALFORMED_RCW_FILE,
-            INSTALL_ABORTED_NOT_ENOUGH_SPACE
+            INSTALL_ABORTED_NOT_ENOUGH_SPACE,
+            INSTALL_FAILED_BAD_ME2_COALESCED
         }
 
 
@@ -483,14 +485,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private ModInstallCompletedStatus InstallAttachedRCWMod()
         {
             CLog.Information(@"Installing attached RCW mod. Checking Coalesced.ini first to make sure this mod can be safely applied", Settings.LogModInstallation);
-            ME2Coalesced me2c = new ME2Coalesced(ME2Directory.CoalescedPath(gameTarget));
+            ME2Coalesced me2c = null;
+            try
+            {
+                me2c = new ME2Coalesced(ME2Directory.CoalescedPath(gameTarget));
+            }
+            catch (Exception e)
+            {
+                Crashes.TrackError(e);
+                Log.Error("Error parsing ME2Coalesced. We will abort this installation");
+                return ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED;
+            }
             RCWMod rcw = ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD).RCW;
             foreach (var rcwF in rcw.Files)
             {
                 var me2cF = me2c.Inis.FirstOrDefault(x => x.Key.Equals(rcwF.FileName, StringComparison.InvariantCultureIgnoreCase));
                 if (me2cF.Key == null)
                 {
-                    Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF);
+                    //it seems some .me2 mod files only use the filename directly.
+                    me2cF = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(rcwF.FileName, StringComparison.InvariantCultureIgnoreCase));
+                }
+                if (me2cF.Key == null) 
+                {
+                    Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF.FileName);
+                    Crashes.TrackError(new Exception("Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
+                    {
+                        { "me2mod mod name", rcw.ModName },
+                        { "Missing file", rcwF.FileName }
+                    });
                     return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
                 }
 
@@ -500,6 +522,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (section == null)
                     {
                         Log.Error($@"RCW mod specifies a section in {rcwF.FileName} that does not exist in the local coalesced: {rcwS.SectionName}");
+                        Crashes.TrackError(new Exception("Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
+                        {
+                            { "me2mod mod name", rcw.ModName },
+                            { "File", rcwF.FileName },
+                            { "Missing Section", rcwS.SectionName }
+                        });
                         return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
                     }
                 }
@@ -737,10 +765,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE)
                 {
                     InstallationCancelled = true;
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Warning);
-
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION|| mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
+                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED)
+                {
+                    InstallationCancelled = true;
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidME2Coalesced), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
                 {
                     InstallationCancelled = true;
                 }

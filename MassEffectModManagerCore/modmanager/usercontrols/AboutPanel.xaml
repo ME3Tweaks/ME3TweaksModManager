@@ -13,6 +13,7 @@
         <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,3,0,0">
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" Text="ME3Tweaks Mod Manager" FontWeight="Light" />
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" FontWeight="Light" Text="{Binding Path=(modmanagercore:App.AppVersionAbout), Mode=OneTime, StringFormat='Version {0}'}" />
+            <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="12" FontWeight="Light" Text="{Binding BuildDate}" />
             <Image HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" Cursor="Hand" MouseDown="Image_ME3Tweaks_Click" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
             <Button Content="{DynamicResource string_close}" HorizontalAlignment="Left" Margin="8,0,0,0" Click="ClosePanel" />
         </StackPanel>
@@ -110,7 +111,7 @@
             <TextBlock Text="WPF Extended Toolkit" />
           </Hyperlink>
         </TextBlock>
-                <TextBlock ToolTip="Mass Effect trilogy package handling and file handlers" Grid.Row="5" Grid.Column="1" TextAlignment="Center">
+        <TextBlock ToolTip="Mass Effect trilogy package handling and file handlers" Grid.Row="5" Grid.Column="1" TextAlignment="Center">
           <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/ME3Tweaks/ME3Explorer" Foreground="#FF87CEFA">
             <TextBlock Text="ME3Explorer" />
           </Hyperlink>
@@ -136,6 +137,8 @@
                 <TextBlock Foreground="White" Grid.Row="14" Grid.Column="0" TextWrapping="Wrap" Grid.ColumnSpan="3" Text="{DynamicResource string_youTheEndUser}" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Text="{DynamicResource string_license}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="16" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="17" TextWrapping="Wrap" Text="Copyright (C) 2012 - 2019 ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts." />
+                <TextBlock Text="Telemetry key not present in this build" Visibility="{Binding TelemetryKeyAvailable, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Foreground="White" Grid.ColumnSpan="3" Grid.Row="18" TextAlignment="Center" Margin="0,10"/>
+
             </Grid>
         </ScrollViewer>
     </Grid>

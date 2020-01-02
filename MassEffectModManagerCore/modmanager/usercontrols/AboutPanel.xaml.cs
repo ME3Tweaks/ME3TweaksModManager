@@ -1,6 +1,10 @@
-﻿using MassEffectModManagerCore.ui;
+﻿using AuthenticodeExaminer;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,9 +23,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class AboutPanel : MMBusyPanelBase
     {
+        public bool TelemetryKeyAvailable => APIKeys.HasAppCenterKey;
+        public string BuildDate { get; set; }
         public AboutPanel()
         {
+            DataContext = this;
+            Debug.WriteLine(TelemetryKeyAvailable);
             InitializeComponent();
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("AboutAuthenticode");
+            nbw.DoWork += (a, b) =>
+            {
+                var info = new FileInspector(App.ExecutableLocation);
+                var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
+
+                if (signTime != null)
+                {
+                    BuildDate = signTime.Value.ToString(@"MMMM dd, yyyy");
+                }
+                else
+                {
+                    BuildDate = "WARNING: This build is not signed by ME3Tweaks";
+                }
+            };
+            nbw.RunWorkerAsync();
         }
 
         private void Image_ME3Tweaks_Click(object sender, MouseButtonEventArgs e)

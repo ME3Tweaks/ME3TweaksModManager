@@ -25,6 +25,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.localizations;
+using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -413,6 +414,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             Log.Information(@"ME3Tweaks does not have additional version information for this file");
+                            Analytics.TrackEvent("Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                            {
+                                {"Filename", Path.GetFileName(filepath)},
+                                {"MD5", md5}
+                            });
                         }
                     }
 
@@ -420,6 +426,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //Try straight up TPMI import?
                         Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
+                        Analytics.TrackEvent("Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                        {
+                            {"Filename", Path.GetFileName(filepath)},
+                            {"MD5", md5}
+                        });
                     }
                 }
             }
