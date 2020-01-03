@@ -35,10 +35,10 @@
     <system:String x:Key="string_DownloadModMakermod">Скачать мод для ModMaker</system:String>
     <system:String x:Key="string_ASIModManager">ASI Mod Manager</system:String>
     <system:String x:Key="string_ASIManagerTooltip">Управление модами ASI. Только для продвинутых пользователей.</system:String>
-    <system:String x:Key="string_CustomDLCConflictDetector">Детектор Конфликтов Сustom DLC</system:String>
+    <system:String x:Key="string_CustomDLCConflictDetector">Сustom DLC Conflict Detector</system:String>
     <system:String x:Key="string_GUICompact">Генератор пакета совместимости для мода Interface Scaling/Controller (ME3)</system:String>
     <system:String x:Key="string_GUICompactTooltip">Проверяет моды ME3 на наличие экпортируемых элементов интерфейса, являющихся частью UI модов и генерирует патч-мод при необходимости</system:String>
-    <system:String x:Key="string_BatchModInstaller">Установщик Batch Mod</system:String>
+    <system:String x:Key="string_BatchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_Openmodslibrarydirectory">Открыть директорию библиотеки модов</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Открывает папку библиотеки модов</system:String>
     <system:String x:Key="string_MixinsForME3">Патчи Mixin (для ME3)</system:String>
@@ -50,7 +50,7 @@
     <system:String x:Key="string_Installcustomkeybindsintothismod">Установить пользовательские привязки клавиш в данный мод</system:String>
     <system:String x:Key="string_Developeroptions">Настройки для разработчиков</system:String>
     <system:String x:Key="string_Metadataeditor">Редактор метаданных</system:String>
-    <system:String x:Key="string_Deploymodto7zfilefordistribution">Запаковать мод в 7z для распространения</system:String>
+    <system:String x:Key="string_Deploymodto7zfilefordistribution">Сконвертировать мод в 7z для размещения в интернете</system:String>
     <system:String x:Key="string_Prepareforupdaterservice">Подготовить мод для сервиса обновления</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Отправить информацию по моду на ME3Tweaks</system:String>
     <system:String x:Key="string_Openmodfolder">Открыть папку мода</system:String>
@@ -110,8 +110,8 @@
     <system:String x:Key="string_otherSavedTargets">Другие сохраненные пути установки</system:String>
     <system:String x:Key="string_cannotEndorseMod">Невозможно одобрить мод</system:String>
     <system:String x:Key="string_cannotEndorseOwnMod">Невозможно одобрить собственный мод</system:String>
-    <system:String x:Key="string_notLinkedToNexusMods">мод не связан с NexusMods</system:String>
-    <system:String x:Key="string_notAuthenticated">не авторизован</system:String>
+    <system:String x:Key="string_notLinkedToNexusMods">нет связи с NexusMods</system:String>
+    <system:String x:Key="string_notAuthenticated">нет авторизации</system:String>
     <system:String x:Key="string_gettingEndorsementStatus">Получение статуса одобрения</system:String>
     <system:String x:Key="string_endorseMod">Одобрить мод</system:String>
     <system:String x:Key="string_modEndorsed">&#x1F44D; Мод одобрен</system:String>
@@ -269,10 +269,10 @@
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Многопоточное сжатие значительно быстрее однопоточного, но требует намного больше памяти.&#10;В случае мода большого размера (>600MB) рекомендуется отключить эту функцию, если у вас менее 16GB доступной памяти.</system:String>
     <system:String x:Key="string_multiThreadedCompression">Многопоточное сжатие</system:String>
-    <system:String x:Key="string_deploy">Запаковать в .7z</system:String>
-    <system:String x:Key="string_deploymentChecklist">Чек-лист запаковки</system:String>
-    <system:String x:Key="string_prepareModForDistribution">Подготовка мода для распространения</system:String>
-    <system:String x:Key="string_compressiongModForDistribution">Сжатие мода для распростанения</system:String>
+    <system:String x:Key="string_deploy">Сконвертировать в .7z</system:String>
+    <system:String x:Key="string_deploymentChecklist">Чек-лист конвертации</system:String>
+    <system:String x:Key="string_prepareModForDistribution">Подготовка мода для размещения в интернете</system:String>
+    <system:String x:Key="string_compressiongModForDistribution">Сжатие мода для размещения в интернете</system:String>
     <system:String x:Key="string_verifyModVersion">Подтверждение корректности версии мода</system:String>
     <system:String x:Key="string_recommendedVersionFormatNotFollowed">Не соблюден рекомендуемый формат версии ({0})</system:String>
     <!-- 0 = X.X or X.X[.X[.X]] (literal string) -->
@@ -285,13 +285,13 @@
     <system:String x:Key="string_invalidSfarSize">Размер следующих SFAR не равен 32 байтам, что является единственным поддерживаемым размером SFAR в средствах моддинга Custom DLC.</system:String>
     <system:String x:Key="string_wrongSfarSizesFound">Найдены ошибки неверного размера SFAR в моде</system:String>
     <system:String x:Key="string_languageSupportCheck">Проверка языковой поддержки</system:String>
-    <system:String x:Key="string_languageSupportCheckDetectedFollowingIssues">Проверка языковой поддержки выявила следующие проблемы. По возможности исследуйте и исправьте их перед запаковкой.</system:String>
+    <system:String x:Key="string_languageSupportCheckDetectedFollowingIssues">Проверка языковой поддержки выявила следующие проблемы. По возможности исследуйте и исправьте их перед конвертацией.</system:String>
     <system:String x:Key="string_languageSupportIssuesDetectedInMod">В моде обнаружены проблемы языковой поддержки</system:String>
     <system:String x:Key="string_audioCheck">Проверка аудиофайлов</system:String>
-    <system:String x:Key="string_audioCheckDetectedErrors">Проверка выявила ошибки при попытке определить возможность использования всех задейстованных аудиофайлов конечными пользователями. По возможности исследуйте и исправьте их перед запаковкой.</system:String>
+    <system:String x:Key="string_audioCheckDetectedErrors">Проверка выявила ошибки при попытке определить возможность использования всех задейстованных аудиофайлов конечными пользователями. По возможности исследуйте и исправьте их перед конвертацией.</system:String>
     <system:String x:Key="string_audioIssuesDetectedInMod">Обнаружены проблемы с аудиофайлами в данном моде</system:String>
     <system:String x:Key="string_texturesCheck">Проверка текстур</system:String>
-    <system:String x:Key="string_texturesCheckDetectedErrors">Проверка выявила ошибки при попытке загрузки всех текстур в мод. Исследуйте и исправьте их перед запаковкой.</system:String>
+    <system:String x:Key="string_texturesCheckDetectedErrors">Проверка выявила ошибки при попытке загрузки всех текстур в мод. Исследуйте и исправьте их перед конвертацией.</system:String>
     <system:String x:Key="string_textureErrorsInMod">Ошибки текстур в моде</system:String>
     <system:String x:Key="string_interp_urlIsNotValid">URL ({0}) неверен. Исправьте дескриптор modsite в moddesc.ini, чтобы он указывал на страницу вашего мода и таким образом пользователи могли легко найти ваш мод после импорта.</system:String>
     <!-- 0 = url-->
@@ -330,7 +330,7 @@
     <system:String x:Key="string_7zipArchiveFile">Архивный файл 7-zip</system:String>
     <system:String x:Key="string_deploymentInProgress">Загрузка в процессе...</system:String>
     <system:String x:Key="string_deploymentSucceeded">Успешная загрузка</system:String>
-    <system:String x:Key="string_verifyAboveItemsBeforeDeployment">Подтвердите указанные пункты перед запаковкой</system:String>
+    <system:String x:Key="string_verifyAboveItemsBeforeDeployment">Подтвердите указанные пункты перед конвертацией</system:String>
     <system:String x:Key="string_validationInProgress">Валидация в процессе...</system:String>
     <system:String x:Key="string_languageCheckDetectedIssues">Языковая проверка обнаружила проблемы</system:String>
     <system:String x:Key="string_mod">Мод</system:String>
@@ -361,11 +361,11 @@
     <system:String x:Key="string_inconsistentDLCDetectedUnofficialGame">Обнаружено незавершенное DLC. Это может быть вызвано использованием неофициальной копии игры.</system:String>
     <system:String x:Key="string_movies">Видеоролики</system:String>
     <system:String x:Key="string_basegame">Базовая игра</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialogInsufficientDiskSpace">There is not enough free disk space on {0} to create this backup.\n\nFree space: {1}\nRequired space: {2}</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogInsufficientDiskSpace">Недостаточно свободного места на {0} для создания архива.\n\nДоступно места: {1}\nТребуется места: {2}</system:String>
     <!-- 0=drive letter path (e.g. C:\)  1=filepath 2=filepath -->
-    <system:String xml:space="preserve" x:Key="string_dialogBackupCannotBeSubdirectoryOfGame">A backup cannot be created in a subdirectory of a game target.\n\nSelected path: {0}\nConflicting target: {1}</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogBackupCannotBeSubdirectoryOfGame">Архив не может быть создан внутри директории целевой игры.\n\nУказанный путь: {0}\nКонфликт с путем: {1}</system:String>
     <!-- 0=filepath  1=filepath -->
-    <system:String x:Key="string_cannotCreateBackup">Cannot create backup</system:String>
+    <system:String x:Key="string_cannotCreateBackup">Невозможно создать архив</system:String>
 
     <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
@@ -872,7 +872,7 @@
     <system:String xml:space="preserve" x:Key="string_interp_dialogDLCModuleNumberConflicts">Номера модуля DLC для данного мода конфликтует с существующим DLC:{conflicts}\n\nНомер модулей используются для определения имен файлов моде, таких как TLK. Конфликтующие значения вызовут непредсказуемое поведение и должны быть исключены. Выпуск конфликтующих модов, не являющихся частью одной группы модов (например, многовариантный мод) скорее всего приведет к включению вашего мода в черный список средств моддинга.\n\nВсе равно продолжить?</system:String>
     <system:String x:Key="string_conflictingDLCModuleNumbers">Конфликтующие номера модулей DLC</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogMountPrioirtyConflicts">Приоритет загрузки DLC для данного мода конфликтует с существующим DLC:{conflicts}\n\nНомера приоритета загрузк использутся для определения того, какие файлы использовть в случае неопределенности имен пакетов (одинаково названный файл существует в нескольких местах). Конфликтующие значения вызовут непредсказуемое поведение и должны быть исключены. Выпуск конфликтующих модов, не являющихся частью одной группы модов (например, многовариантный мод) скорее всего приведет к включению вашего мода в черный список средств моддинга.\n\nВсе равно продолжить?</system:String>
-    <system:String x:Key="string_conflictingDLCMountPriorityNumbers">Конфликтующие номера прирорита загрузки DLC</system:String>
+    <system:String x:Key="string_conflictingDLCMountPriorityNumbers">Конфликтующие номера приоритета загрузки DLC</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_discourageUseOfSPSaveRequired">Вы сделали этот мод обязательным для сохранений игры. В случае удаления вашего мода (намеренно или при восстановлении игры), сохранения, когда был установлено данное DLC не смогут быть загружены пользователем. В подавляющем большинстве случае это нежелательно для конечного пользователя. Выбирайте эту опцию только если вы действительно знаете, что делаете.\n\nВсе равно использовать этот флаг загрузки?</system:String>
     <system:String x:Key="string_undesirableMountFlag">Нежелательный флаг загрузки</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogWillDeleteExistingMod">Создание данного мода удалит существующую директорию в библиотеке модов:\n{0}\n\nПродолжить?</system:String>
