@@ -31,7 +31,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     using var wc = new System.Net.WebClient();
                     string xml = wc.DownloadStringAwareOfEncoding(LatestHelpFileLink);
                     File.WriteAllText(Utilities.GetLocalHelpFile(), xml);
-                    return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
+                    return ParseLocalHelp(xml, language);
                 }
                 catch (Exception e)
                 {

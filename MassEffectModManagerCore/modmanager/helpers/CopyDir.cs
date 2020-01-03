@@ -50,6 +50,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         continue;
                     }
                 }
+                
                 string displayName = fi.Name;
                 //if (path.ToLower().EndsWith(".sfar") || path.ToLower().EndsWith(".tfc"))
                 //{
@@ -63,7 +64,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     {
                         if (!testrun)
                         {
-                            fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                            var destPath = Path.Combine(target.FullName, fi.Name);
+                            fi.CopyTo(destPath, true);
+                            FileInfo dest = new FileInfo(destPath);
+                            if (dest.IsReadOnly) dest.IsReadOnly = false;
                         }
                     }
                     catch (Exception e)
@@ -108,6 +112,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             attributes = attributes & ~FileAttributes.ReadOnly;
                             File.SetAttributes(dest, attributes);
                         }
+                    }
+                    FileInfo si = new FileInfo(source);
+                    if (si.IsReadOnly)
+                    {
+                        si.IsReadOnly = false; //remove flag. Some mod archives do this I guess.
                     }
                     File.Copy(source, dest, true);
                 }

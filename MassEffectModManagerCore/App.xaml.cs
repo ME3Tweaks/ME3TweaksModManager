@@ -77,7 +77,7 @@ namespace MassEffectModManagerCore
             {
                 Crashes.GetErrorAttachments = (ErrorReport report) =>
                 {
-
+                    Log.CloseAndFlush();
                     var attachments = new List<ErrorAttachmentLog>();
                     // Attach some text.
                     var logFile = new DirectoryInfo(LogDir)
@@ -253,7 +253,12 @@ namespace MassEffectModManagerCore
                 #endregion
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                new FrameworkPropertyMetadata(true));
-
+                var avs = Utilities.GetListOfInstalledAV();
+                Log.Information("Detected the following antivirus products:");
+                foreach (var av in avs)
+                {
+                    Log.Information(" - " + av);
+                }
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 Log.Information("Loading settings");
                 Settings.Load();

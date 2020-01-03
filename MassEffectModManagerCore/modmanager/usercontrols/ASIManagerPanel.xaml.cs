@@ -136,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (SelectedASIObject is ASIMod asi)
             {
-                Process.Start(asi.SourceCodeLink);
+                Utilities.OpenWebpage(asi.SourceCodeLink);
             }
         }
 

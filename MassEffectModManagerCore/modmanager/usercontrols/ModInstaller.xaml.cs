@@ -85,7 +85,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //bw.ProgressChanged += ModProgressChanged;
             bw.RunWorkerAsync();
         }
-        
+
         private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
         {
             bool testrun = false; //change to true to test
@@ -283,7 +283,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         CLog.Information(@"Adding resolved read only target: " + originalMapping.Key + @" -> " + fullPathMappingDisk[sourceFile], Settings.LogModInstallation);
                         mappedReadOnlyTargets.Add(fullPathMappingDisk[sourceFile]);
                     }
-                    //}
                 }
             }
 
@@ -396,6 +395,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (!fullPathMappingArchive.ContainsKey(args.FileInfo.Index)) return; //archive extracted this file (in memory) but did not do anything with this file (7z)
                     FileInstalledCallback(args.FileInfo.FileName);
                     filesInstalled.Add(args.FileInfo.FileName);
+                    FileInfo dest = new FileInfo(fullPathMappingArchive[args.FileInfo.Index]);
+                    if (dest.IsReadOnly) 
+                        dest.IsReadOnly = false;
                     //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
                 };
