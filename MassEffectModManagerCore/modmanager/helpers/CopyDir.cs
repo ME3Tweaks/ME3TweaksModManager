@@ -14,7 +14,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
     public static class CopyDir
     {
 
-        public static int CopyAll_ProgressBar(DirectoryInfo source, DirectoryInfo target, Action<int> totalItemsToCopyCallback = null, Action fileCopiedCallback = null, Func<string, bool> aboutToCopyCallback = null, int total = -1, int done = 0, string[] ignoredExtensions = null)
+        public static int CopyAll_ProgressBar(DirectoryInfo source, DirectoryInfo target, Action<int> totalItemsToCopyCallback = null, Action fileCopiedCallback = null, Func<string, bool> aboutToCopyCallback = null, int total = -1, int done = 0, string[] ignoredExtensions = null, bool testrun = false)
         {
             if (total == -1)
             {
@@ -24,7 +24,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
 
             int numdone = done;
-            Directory.CreateDirectory(target.FullName);
+            if (!testrun)
+            {
+                Directory.CreateDirectory(target.FullName);
+            }
 
             // Copy each file into the new directory.
             foreach (FileInfo fi in source.GetFiles())
@@ -48,7 +51,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                 }
                 string displayName = fi.Name;
-                string path = Path.Combine(target.FullName, fi.Name);
                 //if (path.ToLower().EndsWith(".sfar") || path.ToLower().EndsWith(".tfc"))
                 //{
                 //    long length = new System.IO.FileInfo(fi.FullName).Length;
@@ -59,7 +61,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     try
                     {
-                        fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                        if (!testrun)
+                        {
+                            fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -77,33 +82,40 @@ namespace MassEffectModManagerCore.modmanager.helpers
             // Copy each subdirectory using recursion.
             foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
             {
-                DirectoryInfo nextTargetSubDir =
-                    target.CreateSubdirectory(diSourceSubDir.Name);
-                numdone = CopyAll_ProgressBar(diSourceSubDir, nextTargetSubDir, totalItemsToCopyCallback, fileCopiedCallback, aboutToCopyCallback, total, numdone);
+                DirectoryInfo nextTargetSubDir = testrun ? null : target.CreateSubdirectory(diSourceSubDir.Name);
+                numdone = CopyAll_ProgressBar(diSourceSubDir, nextTargetSubDir, totalItemsToCopyCallback, fileCopiedCallback, aboutToCopyCallback, total, numdone, null, testrun);
             }
             return numdone;
         }
 
-        public static void CopyFiles_ProgressBar(Dictionary<string, string> fileMapping, Action<string> fileCopiedCallback = null)
+        public static void CopyFiles_ProgressBar(Dictionary<string, string> fileMapping, Action<string> fileCopiedCallback = null, bool testrun = false)
         {
             foreach (var singleMapping in fileMapping)
             {
                 var source = singleMapping.Key;
                 var dest = singleMapping.Value;
-                Directory.CreateDirectory(Directory.GetParent(dest).FullName);
-                if (File.Exists(dest))
+                if (!testrun)
                 {
-                    FileAttributes attributes = File.GetAttributes(dest);
+                    Directory.CreateDirectory(Directory.GetParent(dest).FullName);
 
-                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    if (File.Exists(dest))
                     {
-                        // Make the file RW
-                        attributes = attributes & ~FileAttributes.ReadOnly;
-                        File.SetAttributes(dest, attributes);
+                        FileAttributes attributes = File.GetAttributes(dest);
+
+                        if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        {
+                            // Make the file RW
+                            attributes = attributes & ~FileAttributes.ReadOnly;
+                            File.SetAttributes(dest, attributes);
+                        }
                     }
+                    File.Copy(source, dest, true);
+                }
+                else
+                {
+                    FileInfo f = new FileInfo(source); //get source info. this will throw exception if an error occurs
                 }
 
-                File.Copy(source, dest, true);
                 fileCopiedCallback?.Invoke(dest);
             }
         }

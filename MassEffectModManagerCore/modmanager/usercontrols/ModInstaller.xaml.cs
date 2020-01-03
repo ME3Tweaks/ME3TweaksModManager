@@ -22,6 +22,8 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
+using static MassEffectModManagerCore.modmanager.Mod;
+
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
@@ -68,8 +70,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_BAD_ME2_COALESCED
         }
 
-
-
         public string Action { get; set; }
         public int Percent { get; set; }
         public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
@@ -85,10 +85,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //bw.ProgressChanged += ModProgressChanged;
             bw.RunWorkerAsync();
         }
-
-
+        
         private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
         {
+            bool testrun = false; //change to true to test
             Log.Information(@"Mod Installer Background thread starting");
             var installationJobs = ModBeingInstalled.InstallationJobs;
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
@@ -121,8 +121,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Prepare queues
-            (Dictionary<ModJob, (Dictionary<string, string> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
-                List<(ModJob job, string sfarPath, Dictionary<string, string> sfarInstallationMapping)> sfarJobs) installationQueues =
+            (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
+                List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues =
                 ModBeingInstalled.GetInstallationQueues(gameTarget);
 
             var readOnlyTargets = ModBeingInstalled.GetAllRelativeReadonlyTargets(me1ConfigReadOnlyOption.IsSelected);
@@ -218,15 +218,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     //Resolve source file path
                     string sourceFile;
-                    if (unpackedQueue.Key.JobDirectory == null)
+                    if (unpackedQueue.Key.JobDirectory == null || originalMapping.Value.IsFullRelativeFilePath)
                     {
-                        sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, originalMapping.Value);
+                        sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, originalMapping.Value.FilePath);
                     }
                     else
                     {
-                        sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, unpackedQueue.Key.JobDirectory, originalMapping.Value);
+                        sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, unpackedQueue.Key.JobDirectory, originalMapping.Value.FilePath);
                     }
-
 
 
                     if (unpackedQueue.Key.Header == ModJob.JobHeader.ME1_CONFIG)
@@ -296,14 +295,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     foreach (var fileToInstall in sfarJob.sfarInstallationMapping)
                     {
-                        string sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, sfarJob.job.JobDirectory, fileToInstall.Value);
+                        string sourceFile = null;
+                        if (fileToInstall.Value.IsFullRelativeFilePath)
+                        {
+                            sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, fileToInstall.Value.FilePath);
+                        }
+                        else
+                        {
+                            sourceFile = FilesystemInterposer.PathCombine(ModBeingInstalled.IsInArchive, ModBeingInstalled.ModPath, sfarJob.job.JobDirectory, fileToInstall.Value.FilePath);
+                        }
                         int archiveIndex = ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile, StringComparer.InvariantCultureIgnoreCase);
                         if (archiveIndex == -1)
                         {
                             Log.Error($@"Archive Index is -1 for file {sourceFile}. This will probably throw an exception!");
                             Debugger.Break();
                         }
-                        string destFile = Path.Combine(sfarStagingDirectory, sfarJob.job.JobDirectory, fileToInstall.Value);
+                        string destFile = Path.Combine(sfarStagingDirectory, sfarJob.job.JobDirectory, fileToInstall.Value.FilePath);
                         fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
                         fullPathMappingDisk[sourceFile] = destFile; //used for redirection
                         Debug.WriteLine($@"SFAR Disk Staging: {fileToInstall.Key} => {destFile}");
@@ -363,7 +370,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Direct copy
                 Log.Information($@"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
-                CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback);
+                CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
             }
             else
             {
@@ -505,7 +512,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //it seems some .me2 mod files only use the filename directly.
                     me2cF = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(rcwF.FileName, StringComparison.InvariantCultureIgnoreCase));
                 }
-                if (me2cF.Key == null) 
+                if (me2cF.Key == null)
                 {
                     Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF.FileName);
                     Crashes.TrackError(new Exception("Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
@@ -622,7 +629,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, string> fileMapping) sfarJob, Mod mod, Action<string> FileInstalledCallback = null, string ForcedSourcePath = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> fileMapping) sfarJob, Mod mod, Action<string> FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
             int numfiles = sfarJob.fileMapping.Count;
@@ -648,7 +655,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 int index = dlc.FindFileEntry(entryPath);
                 //Todo: For archive to immediate installation we will need to modify this ModPath value to point to some temporary directory
                 //where we have extracted files destined for SFAR files as we cannot unpack solid archives to streams.
-                var sourcePath = Path.Combine(ForcedSourcePath ?? mod.ModPath, sfarJob.job.JobDirectory, entry.Value);
+                var sourcePath = Path.Combine(ForcedSourcePath ?? mod.ModPath, sfarJob.job.JobDirectory, entry.Value.FilePath);
+                if (entry.Value.IsFullRelativeFilePath)
+                {
+                    sourcePath = Path.Combine(ForcedSourcePath ?? mod.ModPath, entry.Value.FilePath);
+                }
                 if (index >= 0)
                 {
                     dlc.ReplaceEntry(sourcePath, index);
