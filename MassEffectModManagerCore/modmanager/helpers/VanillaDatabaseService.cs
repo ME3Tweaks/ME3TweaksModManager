@@ -49,14 +49,40 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return null;
         }
 
-        public static MemoryStream FetchFileFromVanillaSFAR(GameTarget target, string dlcName, string filename)
-        {
-            var dlcDir = MEDirectories.DLCPath(target);
-            //Todo: Testpatch
+        /// <summary>
+        /// Fetches a file from an SFAR from the game backup of ME3.
+        /// </summary>
+        /// <param name="dlcName">Name of DLC to fetch from. This is the DLC foldername, or TESTPATCH if fetching from there.</param>
+        /// <param name="filename">File in archive to fetch.</param>
+        /// <param name="target">Optional forced target, in case you just want to fetch from a target (still must be vanilla).</param>
+        /// <returns>Null if file could not be fetched or was not vanilla</returns>
 
-            var sfar = Path.Combine(dlcDir, dlcName, "CookedPCConsole", "Default.sfar");
-            if (File.Exists(sfar) && IsFileVanilla(target, sfar, false))
+        public static MemoryStream FetchFileFromVanillaSFAR(string dlcName, string filename, GameTarget target = null)
+        {
+            var backupPath = Utilities.GetGameBackupPath(Mod.MEGame.ME3);
+            if (backupPath == null && target == null) return null; //can't fetch
+
+            string sfar = null;
+            if (dlcName == "DLC_TestPatch") //might need changed
             {
+                //testpatch
+                string biogame = backupPath == null ? MEDirectories.BioGamePath(target) : MEDirectories.BioGamePath(backupPath);
+                sfar = Path.Combine(biogame, "Patches", "PCConsole", "Patch_001.sfar");
+            }
+            else
+            {
+                //main dlc
+                string dlcDir = backupPath == null ? MEDirectories.DLCPath(target) : MEDirectories.DLCPath(backupPath, Mod.MEGame.ME3);
+                sfar = Path.Combine(dlcDir, dlcName, "CookedPCConsole", "Default.sfar");
+            }
+
+            if (File.Exists(sfar))
+            {
+                if (target != null && !IsFileVanilla(target, sfar, false))
+                {
+                    Log.Error("SFAR is not vanilla: " + sfar);
+                    return null; //Not vanilla!
+                }
                 var dlc = new DLCPackage(sfar);
                 var dlcEntry = dlc.FindFileEntry(filename);
                 if (dlcEntry >= 0)
@@ -64,7 +90,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     return dlc.DecompressEntry(dlcEntry);
                 }
             }
-
             return null;
         }
 
@@ -219,7 +244,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         //Debug.WriteLine("File not in Vanilla DB: " + file);
                     }
                 }
-            } else
+            }
+            else
             {
                 Log.Error(@"Directory to validate doesn't exist: " + target.TargetPath);
             }

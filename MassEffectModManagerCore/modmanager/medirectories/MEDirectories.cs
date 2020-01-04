@@ -86,6 +86,7 @@ namespace MassEffectModManagerCore.GameDirectories
         }
 
         public static string BioGamePath(GameTarget target) => Path.Combine(target.TargetPath, "BioGame"); //all games use same biogame path.
+        public static string BioGamePath(string gameRoot) => Path.Combine(gameRoot, "BioGame"); //all games use same biogame path.
 
         public static Dictionary<string, string> OfficialDLCNames(Mod.MEGame game)
         {

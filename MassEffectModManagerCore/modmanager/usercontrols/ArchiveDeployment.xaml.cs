@@ -369,7 +369,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 else if (MEDirectories.OfficialDLC(validationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
                                 {
                                     var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf(@"_", StringComparison.InvariantCultureIgnoreCase));
-                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(validationTarget, dlcName, afcNameWithExtension);
+                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcName, afcNameWithExtension, validationTarget);
                                     if (audio != null)
                                     {
                                         cachedAudio[afcNameProp.Value.Name] = audio;

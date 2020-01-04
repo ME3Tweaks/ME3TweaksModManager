@@ -295,6 +295,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                 }
             }
             fs.Close();
+            result.Position = 0;
             return result;
         }
 
