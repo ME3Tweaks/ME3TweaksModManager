@@ -83,7 +83,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (logUploadText != null)
                 {
                     var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logUploadText));
-                    File.WriteAllBytes(@"C:\users\mgamerz\desktop\log.txt.lzma", lzmalog);
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
