@@ -1408,6 +1408,7 @@ namespace MassEffectModManagerCore
         {
             RepopulatingTargets = true;
             InstallationTargets.ClearEx();
+            SelectedGameTarget = null;
             MEDirectories.ReloadGamePaths(); //this is redundant on the first boot but whatever.
             Log.Information(@"Populating game targets");
 
@@ -1478,7 +1479,6 @@ namespace MassEffectModManagerCore
                 if (InstallationTargets.Count > count)
                 {
                     InstallationTargets.Insert(count, new GameTarget(Mod.MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
-
                 }
             }
 

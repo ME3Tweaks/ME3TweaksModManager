@@ -186,7 +186,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedASIObject == null) return false;
             if (SelectedASIObject is ASIMod am)
             {
-                return Games.First(x=>x.Game == am.Game).GameTargets.Any();
+                return Games.First(x => x.Game == am.Game).GameTargets.Any();
             }
             if (SelectedASIObject is InstalledASIMod iam)
             {
@@ -433,9 +433,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             //This has to be done here as mainwindow will not be available until this is called
-            Games.Add(new ASIGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1).ToList()));
-            Games.Add(new ASIGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2).ToList()));
-            Games.Add(new ASIGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3).ToList()));
+            Mod.MEGame[] gameEnum = new[] { Mod.MEGame.ME1, Mod.MEGame.ME2, Mod.MEGame.ME3 };
+            foreach (var game in gameEnum)
+            {
+                var targets = mainwindow.InstallationTargets.Where(x => x.Game == game).ToList();
+                if (targets.Count > 0)
+                {
+                    Games.Add(new ASIGame(game, targets));
+                }
+            }
             //Technically this could load earlier, but it's not really worth the effort for the miniscule time saved
             LoadManifest(true, Games.ToList(), UpdateSelectionTexts);
             UpdateSelectionTexts(null);

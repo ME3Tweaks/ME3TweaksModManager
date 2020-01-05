@@ -132,6 +132,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string OP_ADDITION = "addition";
         private const string OP_SUBTRACTION = "subtraction";
         private const string OP_ASSIGNMENT = "assignment";
+        private const string OP_MODIFY = "modify"; //same as assignment, except used for array values
 
         /// <summary>
         /// Compile's a chunk's subfile. e.g. DLC_CON_MP5's BioGame file.
@@ -143,7 +144,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             //Sections
             #region Sections
-
             var sectionsToHandle = modDeltaDocument.Elements("Section");
             foreach (var section in sectionsToHandle)
             {
@@ -171,11 +171,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
             }
-
             #endregion
 
             #region Properties - Assignments
-            /*var deltaPropertyAssignments = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ASSIGNMENT);
+            var deltaPropertyAssignments = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ASSIGNMENT);
             foreach (var deltaProperty in deltaPropertyAssignments)
             {
                 var sectionName = deltaProperty.Attribute("path").Value;
@@ -202,11 +201,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         CLog.Information($"{loggingPrefix}Skipping same-value for {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                     }
                 }
-            }*/
+            }
             #endregion
 
             #region Properties - Subtraction
-            /*
             var deltaPropertySubtractions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_SUBTRACTION);
             foreach (var deltaProperty in deltaPropertySubtractions)
             {
@@ -233,11 +231,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
             }
-            */
             #endregion
 
             #region Properties = Addition
-            /*var deltaPropertyAdditions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ADDITION);
+            var deltaPropertyAdditions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ADDITION);
             foreach (var deltaProperty in deltaPropertyAdditions)
             {
                 var sectionName = deltaProperty.Attribute("path").Value;
@@ -258,7 +255,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     targetElement.Add(newSection);
                     CLog.Information($"{loggingPrefix}Added property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                 }
-            }*/
+            }
             #endregion
 
             #region ArrayProperty
@@ -283,25 +280,27 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var operation = deltaProperty.Attribute("operation").Value;
                     if (operation == OP_ADDITION)
                     {
-                        //var newArrayElement = new XElement("Value", value);
-                        //newArrayElement.SetAttributeValue("type", type);
-                        //arrayContainer.Add(newArrayElement);
-                        //CLog.Information($"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}", Settings.LogModMakerCompiler);
+                        var newArrayElement = new XElement("Value", value);
+                        newArrayElement.SetAttributeValue("type", type);
+                        arrayContainer.Add(newArrayElement);
+                        CLog.Information($"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}", Settings.LogModMakerCompiler);
                     }
                     else if (operation == OP_SUBTRACTION)
                     {
-                        //var itemToRemove = arrayContainer.Descendants("Value").FirstOrDefault(x => x.Value == value && x.Attribute("type").Value == matchOnType);
-                        //if (itemToRemove == null)
-                        //{
-                        //    CLog.Warning($"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
-                        //}
-                        //else
-                        //{
-                        //    itemToRemove.Remove();
-                        //    CLog.Information($"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
-                        //}
+                        var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
+                        var values = arrayContainer.Descendants("Value");
+                        var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values, matchingAlgorithm, matchOnType, value);
+                        if (matchingItem == null)
+                        {
+                            CLog.Warning($"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
+                        }
+                        else
+                        {
+                            matchingItem.Remove();
+                            CLog.Information($"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
+                        }
                     }
-                    else if (operation == OP_ASSIGNMENT)
+                    else if (operation == OP_ASSIGNMENT || operation == OP_MODIFY)
                     {
                         //Algorithms based
                         var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
@@ -316,9 +315,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             Debug.WriteLine($"Found matching item {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}");
                             matchingItem.Value = value; //assign
                         }
-
                     }
-
                 }
             }
             #endregion
@@ -376,7 +373,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 case "biodifficulty":
                     {
-
+                        var newValues = StringStructParser.GetCommaSplitValues(value);
+                        foreach (var element in values)
+                        {
+                            if (matchesOnIdentifier("Category", matchOnType, element, newValues))
+                            {
+                                return element;
+                            }
+                        }
+                        CLog.Warning("Could not find element using category algorithm for value " + value, Settings.LogModMakerCompiler);
                     }
                     break;
                 case "wavelist":
@@ -425,6 +430,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
                     CLog.Warning("Could not find element using enemytype algorithm for value " + value, Settings.LogModMakerCompiler);
+                    break;
+                default:
+                    Log.Error($"Unknown array value matching algorithm: { matchingAlgorithm}. Ths modification of this value will be skipped: {sectionName} -> {propertyName} for {value}");
                     break;
             }
             return null;
