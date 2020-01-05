@@ -204,11 +204,15 @@ namespace MassEffectModManagerCore
                 {
                     IsSigned = true;
                     BuildDate = signTime.Value.ToString(@"MMMM dd, yyyy");
+                    Log.Information("Build signed by ME3Tweaks. Build date: " + BuildDate);
                 }
                 else
                 {
                     //needs localized later.
                     BuildDate = "WARNING: This build is not signed by ME3Tweaks";
+#if !DEBUG
+                    Log.Warning("This build is not signed by ME3Tweaks. This may not be an official build.");
+#endif
                 }
 
                 #region Update mode boot
@@ -261,11 +265,19 @@ namespace MassEffectModManagerCore
                 #endregion
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                new FrameworkPropertyMetadata(true));
-                var avs = Utilities.GetListOfInstalledAV();
-                Log.Information("Detected the following antivirus products:");
-                foreach (var av in avs)
+
+                try
                 {
-                    Log.Information(" - " + av);
+                    var avs = Utilities.GetListOfInstalledAV();
+                    Log.Information("Detected the following antivirus products:");
+                    foreach (var av in avs)
+                    {
+                        Log.Information(" - " + av);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Unable to get the list of installed antivirus products: " + e.Message);
                 }
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 Log.Information("Loading settings");
@@ -289,7 +301,8 @@ namespace MassEffectModManagerCore
                 Log.Information("Ensuring default ASI assets are present");
                 ASIManagerPanel.ExtractDefaultASIResources();
 
-                Log.Information("Mod Manager pre-UI startup has completed");
+                Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
+                Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
             }
             catch (Exception e)
             {
