@@ -143,7 +143,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             //Sections
             #region Sections
-            
+
             var sectionsToHandle = modDeltaDocument.Elements("Section");
             foreach (var section in sectionsToHandle)
             {
@@ -205,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }*/
             #endregion
 
-            #region Properties - Addition
+            #region Properties - Subtraction
             /*
             var deltaPropertySubtractions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_SUBTRACTION);
             foreach (var deltaProperty in deltaPropertySubtractions)
@@ -236,6 +236,31 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             */
             #endregion
 
+            #region Properties = Addition
+            /*var deltaPropertyAdditions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ADDITION);
+            foreach (var deltaProperty in deltaPropertyAdditions)
+            {
+                var sectionName = deltaProperty.Attribute("path").Value;
+                var propertyName = deltaProperty.Attribute("name").Value;
+                var value = deltaProperty.Value;
+                var type = deltaProperty.Attribute("type").Value;
+
+                var targetElement = targetDocument.XPathSelectElement($"/CoalesceAsset/Sections/Section[@name='{sectionName}']");
+                if (targetElement == null)
+                {
+                    CLog.Warning($"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                }
+                else
+                {
+                    var newSection = new XElement("Property", value);
+                    newSection.SetAttributeValue("name", propertyName);
+                    newSection.SetAttributeValue("type", type);
+                    targetElement.Add(newSection);
+                    CLog.Information($"{loggingPrefix}Added property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                }
+            }*/
+            #endregion
+
             #region ArrayProperty
             var deltaArrayProperties = modDeltaDocument.Elements("ArrayProperty");
             foreach (var deltaProperty in deltaArrayProperties)
@@ -244,15 +269,172 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var sectionName = pathTokens[0];
                 var propertyName = pathTokens[1];
                 var matchOnType = deltaProperty.Attribute("matchontype").Value;
+                var type = deltaProperty.Attribute("type").Value;
+                var value = deltaProperty.Value;
                 var arrayContainer = targetDocument.XPathSelectElement($"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
 
                 if (arrayContainer == null)
                 {
                     Log.Error($"{loggingPrefix}Did not find arrayproperty @name='{sectionName}']/Property[@name='{propertyName}' and @type='{matchOnType}']");
                 }
+                else
+                {
+                    //Log.Information($"{loggingPrefix}Found array countainer {sectionName} => {propertyName}");
+                    var operation = deltaProperty.Attribute("operation").Value;
+                    if (operation == OP_ADDITION)
+                    {
+                        //var newArrayElement = new XElement("Value", value);
+                        //newArrayElement.SetAttributeValue("type", type);
+                        //arrayContainer.Add(newArrayElement);
+                        //CLog.Information($"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}", Settings.LogModMakerCompiler);
+                    }
+                    else if (operation == OP_SUBTRACTION)
+                    {
+                        //var itemToRemove = arrayContainer.Descendants("Value").FirstOrDefault(x => x.Value == value && x.Attribute("type").Value == matchOnType);
+                        //if (itemToRemove == null)
+                        //{
+                        //    CLog.Warning($"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
+                        //}
+                        //else
+                        //{
+                        //    itemToRemove.Remove();
+                        //    CLog.Information($"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
+                        //}
+                    }
+                    else if (operation == OP_ASSIGNMENT)
+                    {
+                        //Algorithms based
+                        var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
+                        var values = arrayContainer.Descendants("Value");
+                        var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values, matchingAlgorithm, matchOnType, value);
+                        if (matchingItem == null)
+                        {
+                            CLog.Warning($"Could not find matching element: {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}", Settings.LogModMakerCompiler);
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"Found matching item {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}");
+                            matchingItem.Value = value; //assign
+                        }
+
+                    }
+
+                }
             }
             #endregion
             return "";
+        }
+
+        /// <summary>
+        /// This is the vanilla value for Plat Collectors Wave 5. It should be Do_Level4 but bioware set it to 3.
+        /// </summary>
+        private static readonly string CollectorsPlatWave5WrongText = "(Difficulty=DO_Level3,Enemies=( (EnemyType=\"WAVE_COL_Scion\"), (EnemyType=\"WAVE_COL_Praetorian\", MinCount=1, MaxCount=1), (EnemyType=\"WAVE_CER_Phoenix\", MinCount=2, MaxCount=2), (EnemyType=\"WAVE_CER_Phantom\", MinCount=3, MaxCount=3) ))";
+
+
+        /// <summary>
+        /// Finds an array element (Property->Value) based on a list of array types from ME3Tweaks ModMaker. THis is used to find items in a list to modify without fully having to rewrite the list.
+        /// </summary>
+        /// <param name="values">List of values to search through</param>
+        /// <param name="matchingAlgorithm">The algorithm type (arraytype)</param>
+        /// <param name="matchOnType">What type to match on</param>
+        /// <param name="value">The value information for lookup (may be new data for assignment in conjunction with algorithm)</param>
+        /// <returns></returns>
+        private XElement findArrayElementBasedOnAlgoritm(string sectionName, string propertyName, IEnumerable<XElement> values, string matchingAlgorithm, string matchOnType, string value)
+        {
+            switch (matchingAlgorithm)
+            {
+                case "exactvalue":
+                    {
+                        return values.FirstOrDefault(x => x.Value == value && matchOnType == x.Attribute("type").Value);
+                    }
+                case "id":
+                    {
+                        var newValues = StringStructParser.GetCommaSplitValues(value);
+                        foreach (var element in values)
+                        {
+                            if (matchesOnIdentifier("ID", matchOnType, element, newValues))
+                            {
+                                return element;
+                            }
+                        }
+                        CLog.Warning("Could not find element using ID algorithm for value " + value, Settings.LogModMakerCompiler);
+                        break;
+                    }
+                case "wavecost":
+                case "enemytype":
+                    {
+                        var newValues = StringStructParser.GetCommaSplitValues(value);
+                        foreach (var element in values)
+                        {
+                            if (matchesOnIdentifier("EnemyType", matchOnType, element, newValues))
+                            {
+                                return element;
+                            }
+                        }
+                        CLog.Warning("Could not find element using enemytype/wavecost algorithm for value " + value, Settings.LogModMakerCompiler);
+                        break;
+                    }
+                case "biodifficulty":
+                    {
+
+                    }
+                    break;
+                case "wavelist":
+                    {
+                        //Collector Plat Wave 5 is set to DO_Level3 even though it should be 4.
+                        var newValues = StringStructParser.GetCommaSplitValues(value);
+                        foreach (var element in values)
+                        {
+                            if (matchesOnIdentifier("Difficulty", matchOnType, element, newValues))
+                            {
+                                return element;
+                            }
+                            else if (newValues["Difficulty"] == "DO_Level4" && sectionName == "sfxwave_horde_collector5 sfxwave_horde_collector" && propertyName == "enemies" && element.Value == CollectorsPlatWave5WrongText)
+                            {
+                                Debug.WriteLine("Found wrong collectors wave 5 data from bioware, returning");
+                                return element;
+                            }
+                        }
+                        CLog.Warning("Could not find element using wavelist algorithm for value " + value, Settings.LogModMakerCompiler);
+                    }
+                    break;
+                case "possessionwaves":
+                case "shareddifficulty":
+                case "wavebudget":
+                    {
+                        var newValues = StringStructParser.GetCommaSplitValues(value);
+                        foreach (var element in values)
+                        {
+                            if (matchesOnIdentifier("Difficulty", matchOnType, element, newValues))
+                            {
+                                return element;
+                            }
+                        }
+                        CLog.Warning("Could not find element using shareddifficulty/wavebudget/possessionwaves algorithm for value " + value, Settings.LogModMakerCompiler);
+                    }
+                    break;
+                case "waveclass":
+                    {
+                        var newValues = StringStructParser.GetCommaSplitValues(value);
+                        foreach (var element in values)
+                        {
+                            if (matchesOnIdentifier("WaveClassName", matchOnType, element, newValues))
+                            {
+                                return element;
+                            }
+                        }
+                    }
+                    CLog.Warning("Could not find element using enemytype algorithm for value " + value, Settings.LogModMakerCompiler);
+                    break;
+            }
+            return null;
+        }
+        private bool matchesOnIdentifier(string identifierKey, string matchOnType, XElement element, Dictionary<string, string> newValues)
+        {
+            var type = element.Attribute("type").Value;
+            if (type != matchOnType) return false;
+            var elementValues = StringStructParser.GetCommaSplitValues(element.Value);
+            return elementValues[identifierKey] == newValues[identifierKey];
         }
 
         private string chunkNameToFoldername(string chunkName)

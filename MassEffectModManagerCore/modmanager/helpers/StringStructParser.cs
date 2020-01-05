@@ -40,15 +40,30 @@ namespace MassEffectModManagerCore.modmanager.helpers
             //Find commas
             int propNameStartPos = 0;
             int lastEqualsPos = -1;
+
             int openingQuotePos = -1; //quotes if any
             int closingQuotePos = -1; //quotes if any
-
             bool isInQuotes = false;
+
+            int openingParenthesisPos = -1; //parenthesis if any
+            int closingParenthesisPos = -1; //parenthesis if any
+            int openParenthesisCount = 0;
             Dictionary<string, string> values = new Dictionary<string, string>();
             for (int i = 0; i < inputString.Length; i++)
             {
                 switch (inputString[i])
                 {
+                    case ')':
+                        if (openParenthesisCount <= 0)
+                        {
+                            throw new Exception("ASSERT ERROR: StringStructParser cannot handle closing ) without an opening (.");
+                        }
+                        //closingParenthesisPos = i;
+                        openParenthesisCount--;
+                        break;
+                    case '(':
+                        openParenthesisCount++;
+                        break;
                     case '"':
                         if (openingQuotePos != -1)
                         {
@@ -62,17 +77,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         }
                         break;
                     case '=':
-                        if (!isInQuotes)
+                        if (!isInQuotes && openParenthesisCount <= 0)
                         {
                             lastEqualsPos = i;
                         }
                         break;
                     case ',':
-                        if (!isInQuotes)
+                        if (!isInQuotes && openParenthesisCount <= 0)
                         {
                             //New property
                             {
-                                if (lastEqualsPos < propNameStartPos) throw new Exception("ASSERT ERROR: Error prasing string struct: equals cannot come before property name start.");
+                                if (lastEqualsPos < propNameStartPos) throw new Exception("ASSERT ERROR: Error parsing string struct: equals cannot come before property name start. Value: " + inputString);
                                 string propertyName = inputString.Substring(propNameStartPos, lastEqualsPos - propNameStartPos).Trim();
                                 string value = "";
                                 if (openingQuotePos >= 0)
