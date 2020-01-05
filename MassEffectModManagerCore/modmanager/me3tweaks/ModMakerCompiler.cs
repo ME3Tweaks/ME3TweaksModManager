@@ -142,6 +142,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private string compileCoalescedChunkFile(XDocument targetDocument, XElement modDeltaDocument, string loggingPrefix)
         {
             //Sections
+            #region Sections
+            
             var sectionsToHandle = modDeltaDocument.Elements("Section");
             foreach (var section in sectionsToHandle)
             {
@@ -170,9 +172,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
+            #endregion
 
             #region Properties - Assignments
-            var deltaPropertyAssignments = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ASSIGNMENT);
+            /*var deltaPropertyAssignments = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ASSIGNMENT);
             foreach (var deltaProperty in deltaPropertyAssignments)
             {
                 var sectionName = deltaProperty.Attribute("path").Value;
@@ -199,10 +202,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         CLog.Information($"{loggingPrefix}Skipping same-value for {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                     }
                 }
-            }
+            }*/
             #endregion
 
             #region Properties - Addition
+            /*
             var deltaPropertySubtractions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_SUBTRACTION);
             foreach (var deltaProperty in deltaPropertySubtractions)
             {
@@ -229,6 +233,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
             }
+            */
             #endregion
 
             #region ArrayProperty

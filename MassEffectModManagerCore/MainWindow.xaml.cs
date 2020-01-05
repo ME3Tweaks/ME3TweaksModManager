@@ -2370,5 +2370,23 @@ namespace MassEffectModManagerCore
         {
             Mod m = new Mod(SelectedMod.ModDescPath, Mod.MEGame.Unknown);
         }
+
+        private void StampCurrentTargetWithALOT_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedGameTarget != null)
+            {
+                SelectedGameTarget.StampDebugALOTInfo();
+                SelectedGameTarget.ReloadGameTarget();
+            }
+        }
+
+        private void StripCurrentTargetALOTMarker_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedGameTarget != null)
+            {
+                SelectedGameTarget.StripALOTInfo();
+                SelectedGameTarget.ReloadGameTarget();
+            }
+        }
     }
 }

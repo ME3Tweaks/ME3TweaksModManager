@@ -553,7 +553,9 @@
     <system:String x:Key="string_backup">Backup</system:String>
     <system:String x:Key="string_deletingExistingGameInstallation">Deleting existing game installation</system:String>
     <system:String x:Key="string_restoringGameFromBackup">Restoring game from backup</system:String>
-    <system:String x:Key="string_interp_restoringX">Restoring {0}%</system:String>
+    <system:String x:Key="string_interp_restoringXpercent">Restoring {0}%</system:String>
+    <!-- 0 = number -->
+    <system:String x:Key="string_interp_restoringX">Restoring {0}</system:String>
     <!-- 0 = filename or item like DLC name -->
     <system:String x:Key="string_restoringMovies">Restoring Movies</system:String>
     <system:String x:Key="string_restoringBasegame">Restoring Basegame</system:String>

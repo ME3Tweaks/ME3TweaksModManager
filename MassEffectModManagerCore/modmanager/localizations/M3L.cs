@@ -88,6 +88,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_LogModStartup = "string_LogModStartup";
 		public static readonly string string_LogMixinStartup = "string_LogMixinStartup";
 		public static readonly string string_LogModInstallation = "string_LogModInstallation";
+		public static readonly string string_LogModMakerCompiler = "string_LogModMakerCompiler";
 		public static readonly string string_Checkforcontentupdates = "string_Checkforcontentupdates";
 		public static readonly string string_ChecksME3Tweaksforupdatestovariousservices = "string_ChecksME3Tweaksforupdatestovariousservices";
 		public static readonly string string_Reloadsmodsfromthemodlibrary = "string_Reloadsmodsfromthemodlibrary";
@@ -536,6 +537,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_backup = "string_backup";
 		public static readonly string string_deletingExistingGameInstallation = "string_deletingExistingGameInstallation";
 		public static readonly string string_restoringGameFromBackup = "string_restoringGameFromBackup";
+		public static readonly string string_interp_restoringXpercent = "string_interp_restoringXpercent";
 		public static readonly string string_interp_restoringX = "string_interp_restoringX";
 		public static readonly string string_restoringMovies = "string_restoringMovies";
 		public static readonly string string_restoringBasegame = "string_restoringBasegame";

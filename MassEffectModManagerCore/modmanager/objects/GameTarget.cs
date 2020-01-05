@@ -31,9 +31,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         public Mod.MEGame Game { get; }
         public string TargetPath { get; }
         public bool RegistryActive { get; set; }
-        public string GameSource { get; }
+        public string GameSource { get; private set; }
         public bool Supported => GameSource != null;
-        public bool IsPolishME1 { get; }
+        public bool IsPolishME1 { get; private set; }
         public Brush BackgroundColor
         {
             get
@@ -63,7 +63,12 @@ namespace MassEffectModManagerCore.modmanager.objects
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
             this.TargetPath = target.TrimEnd('\\');
-            if (game != Mod.MEGame.Unknown && !IsCustomOption)
+            ReloadGameTarget();
+        }
+
+        public void ReloadGameTarget()
+        {
+            if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
                 var alotInfo = GetInstalledALOTInfo();
                 if (alotInfo != null)
@@ -75,6 +80,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                         MEUITMInstalled = true;
                         MEUITMVersion = alotInfo.MEUITMVER;
                     }
+                } else
+                {
+                    ALOTInstalled = false;
+                    ALOTVersion = null; 
+                    MEUITMInstalled = false;
+                    MEUITMVersion = 0; 
                 }
                 Log.Information(@"Getting game source for target " + TargetPath);
                 var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
@@ -88,7 +99,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     Log.Information(@"Source: " + GameSource);
                 }
-                IsPolishME1 = game == Mod.MEGame.ME1 && File.Exists(Path.Combine(target, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
+                IsPolishME1 = Game == Mod.MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
                 if (IsPolishME1)
                 {
                     Log.Information(@"ME1 Polish Edition detected");
@@ -334,8 +345,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public bool MEUITMInstalled { get; }
-        public int MEUITMVersion { get; }
+        public bool MEUITMInstalled { get; private set; }
+        public int MEUITMVersion { get; private set; }
 
         public override int GetHashCode()
         {
@@ -406,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
                         Restoring = true;
                         Log.Information($@"Restoring SFAR from backup: {backupFile} {targetFile}");
-                        XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringX, pce.ProgressPercentage.ToString()); });
+                        XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent, pce.ProgressPercentage.ToString()); });
                         var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
                         RestoreButtonContent = M3L.GetString(M3L.string_cleaningUp);
                         foreach (var file in unpackedFiles)
@@ -545,6 +556,54 @@ namespace MassEffectModManagerCore.modmanager.objects
                 checkedForBackupFile = true;
                 return canRestoreFile;
             }
+        }
+
+        internal void StampDebugALOTInfo()
+        {
+#if DEBUG
+            var markerPAth = getALOTMarkerFilePath();
+            try
+            {
+                using (FileStream fs = new FileStream(markerPAth, System.IO.FileMode.Open, FileAccess.ReadWrite))
+                {
+                    fs.SeekEnd();
+                    fs.WriteInt32(4); //meuitm
+                    fs.WriteUInt16(6); //major
+                    fs.WriteByte(8); //minor
+                    fs.WriteByte(0); //hotfix
+                    //fs.WriteByte(0); //unused
+                    fs.WriteInt32(100); //installer version
+                    fs.WriteUInt32(MEMI_TAG);
+                }
+                Log.Information("Stamped ALOT for game. Installer 100, v 6.8, MEUITM 4");
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Error writing debug ALOT marker file for {Game}. {e.Message}");
+            }
+#endif
+        }
+
+        internal void StripALOTInfo()
+        {
+#if DEBUG
+            var markerPAth = getALOTMarkerFilePath();
+
+            try
+            {
+                using (FileStream fs = new FileStream(markerPAth, System.IO.FileMode.Open, FileAccess.ReadWrite))
+                {
+                    fs.SeekEnd();
+                    fs.Position -= 4;
+                    fs.WriteUInt32(1234); //erase memi tag
+                }
+                Log.Information("Chaged MEMI Tag for game to 1234.");
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Error stripping debug ALOT marker file for {Game}. {e.Message}");
+            }
+#endif
         }
     }
 }
