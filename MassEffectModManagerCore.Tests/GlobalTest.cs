@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using MassEffectModManagerCore.modmanager;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Serilog;
 
 namespace MassEffectModManagerCore.Tests
@@ -33,6 +35,8 @@ namespace MassEffectModManagerCore.Tests
         {
             if (!initialized)
             {
+                Analytics.SetEnabledAsync(false);
+                Crashes.SetEnabledAsync(false);
                 Settings.LogModStartup = true;
                 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
                 initialized = true;

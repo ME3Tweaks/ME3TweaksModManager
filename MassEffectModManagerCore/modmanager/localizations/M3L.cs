@@ -396,6 +396,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_inconsistentDLCDetectedUnofficialGame = "string_inconsistentDLCDetectedUnofficialGame";
 		public static readonly string string_movies = "string_movies";
 		public static readonly string string_basegame = "string_basegame";
+		public static readonly string string_dialogInsufficientDiskSpace = "string_dialogInsufficientDiskSpace";
+		public static readonly string string_dialogBackupCannotBeSubdirectoryOfGame = "string_dialogBackupCannotBeSubdirectoryOfGame";
+		public static readonly string string_cannotCreateBackup = "string_cannotCreateBackup";
 		public static readonly string string_interp_downloadingX = "string_interp_downloadingX";
 		public static readonly string string_interp_extractingX = "string_interp_extractingX";
 		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";

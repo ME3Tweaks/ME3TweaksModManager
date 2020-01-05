@@ -19,6 +19,7 @@ using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 using MassEffectModManagerCore.modmanager.localizations;
+using ByteSizeLib;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -150,8 +151,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (isVanilla && isDLCConsistent && dlcModsInstalled.Count == 0)
                     {
                         BackupStatus = M3L.GetString(M3L.string_waitingForUserInput);
- 
-                         string backupPath = null;
+
+                        string backupPath = null;
                         bool end = false;
                         Application.Current.Dispatcher.Invoke(delegate
                         {
@@ -174,6 +175,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         //Directory not empty
                                         Log.Error(@"Selected backup directory is not empty.");
                                         M3L.ShowDialog(window, M3L.GetString(M3L.string_directoryIsNotEmptyMustBeEmpty), M3L.GetString(M3L.string_directoryNotEmpty), MessageBoxButton.OK, MessageBoxImage.Error);
+                                        end = true;
+                                        EndBackup();
+                                        return;
+                                    }
+                                }
+
+                                //Check space
+                                Utilities.GetDiskFreeSpaceEx(backupPath, out var freeBytes, out var totalBytes, out var totalFreeBytes);
+                                var requiredSpace = Utilities.GetSizeOfDirectory(BackupSourceTarget.TargetPath) * 1.1; //10% buffer
+
+                                if (freeBytes < requiredSpace)
+                                {
+                                    //Not enough space.
+                                    Log.Error($@"Not enough disk spcae to create backup at {backupPath}. Required space: {ByteSize.FromBytes(requiredSpace)} Free space: {ByteSize.FromBytes(freeBytes)}");
+                                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInsufficientDiskSpace, Path.GetPathRoot(backupPath), ByteSize.FromBytes(freeBytes).ToString(), ByteSize.FromBytes(requiredSpace).ToString()), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
+                                    end = true;
+                                    EndBackup();
+                                    return;
+                                }
+
+                                //Check it is not subdirectory of the game (we might want ot check its not subdir of a target)
+                                foreach (var target in AvailableBackupSources)
+                                {
+                                    if (backupPath.IsSubPathOf(target.TargetPath))
+                                    {
+                                        //Not enough space.
+                                        Log.Error($@"A backup cannot be created in a subdirectory of a game. {backupPath} is a subdir of {BackupSourceTarget.TargetPath}");
+                                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogBackupCannotBeSubdirectoryOfGame, backupPath, target.TargetPath), M3L.GetString(M3L.string_cannotCreateBackup), MessageBoxButton.OK, MessageBoxImage.Error);
                                         end = true;
                                         EndBackup();
                                         return;
@@ -244,13 +273,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         #endregion
                         BackupStatus = M3L.GetString(M3L.string_creatingBackup);
- 
 
-                         CopyDir.CopyAll_ProgressBar(new DirectoryInfo(BackupSourceTarget.TargetPath), new DirectoryInfo(backupPath),
-                            totalItemsToCopyCallback: totalFilesToCopyCallback,
-                            aboutToCopyCallback: aboutToCopyCallback,
-                            fileCopiedCallback: fileCopiedCallback,
-                            ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
+
+                        CopyDir.CopyAll_ProgressBar(new DirectoryInfo(BackupSourceTarget.TargetPath), new DirectoryInfo(backupPath),
+                           totalItemsToCopyCallback: totalFilesToCopyCallback,
+                           aboutToCopyCallback: aboutToCopyCallback,
+                           fileCopiedCallback: fileCopiedCallback,
+                           ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
                         switch (Game)
                         {
                             case Mod.MEGame.ME1:
@@ -305,19 +334,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     EndBackup();
                 };
                 bw.RunWorkerCompleted += (a, b) =>
-                {
+                    {
 
-                    if (b.Result is (List<string> listItems, string title, string text))
-                    {
-                        ListDialog ld = new ListDialog(listItems, title, text, window);
-                        ld.Show();
-                    }
-                    else if (b.Result is (string errortitle, string message))
-                    {
-                        M3L.ShowDialog(window,message, errortitle, MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    CommandManager.InvalidateRequerySuggested();
-                };
+                        if (b.Result is (List<string> listItems, string title, string text))
+                        {
+                            ListDialog ld = new ListDialog(listItems, title, text, window);
+                            ld.Show();
+                        }
+                        else if (b.Result is (string errortitle, string message))
+                        {
+                            M3L.ShowDialog(window, message, errortitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        CommandManager.InvalidateRequerySuggested();
+                    };
                 bw.RunWorkerAsync();
             }
 

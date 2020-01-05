@@ -14,7 +14,12 @@ namespace MassEffectModManagerCore.modmanager
 {
     public partial class Mod
     {
-        public (Dictionary<ModJob, (Dictionary<string, string> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, string>)>) GetInstallationQueues(GameTarget gameTarget)
+        /// <summary>
+        /// Builds the installation queues for the mod. Item 1 is the unpacked job mappings (per modjob) along with the list of custom dlc folders being installed. Item 2 is the list of modjobs, their sfar paths, and the list of source files to install for SFAR jobs.
+        /// </summary>
+        /// <param name="gameTarget"></param>
+        /// <returns></returns>
+        public (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile>)>) GetInstallationQueues(GameTarget gameTarget)
         {
             if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
@@ -25,8 +30,8 @@ namespace MassEffectModManagerCore.modmanager
                 customDLCMapping = new Dictionary<string, string>(customDLCMapping); //prevent altering the source object
             }
 
-            var unpackedJobInstallationMapping = new Dictionary<ModJob, (Dictionary<string, string> mapping, List<string> dlcFoldersBeingInstalled)>();
-            var sfarInstallationJobs = new List<(ModJob job, string sfarPath, Dictionary<string, string> installationMapping)>();
+            var unpackedJobInstallationMapping = new Dictionary<ModJob, (Dictionary<string, InstallSourceFile> mapping, List<string> dlcFoldersBeingInstalled)>();
+            var sfarInstallationJobs = new List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> installationMapping)>();
             foreach (var job in InstallationJobs)
             {
                 Log.Information($@"Preprocessing installation job: {job.Header}");
@@ -36,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: CustomDLC
                     //Key = destination file, value = source file to install
-                    var installationMapping = new Dictionary<string, string>();
+                    var installationMapping = new Dictionary<string, InstallSourceFile>();
                     unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     foreach (var altdlc in alternateDLC)
                     {
@@ -45,7 +50,6 @@ namespace MassEffectModManagerCore.modmanager
                             customDLCMapping[altdlc.AlternateDLCFolder] = altdlc.DestinationDLCFolder;
                         }
                     }
-
 
                     foreach (var mapping in customDLCMapping)
                     {
@@ -79,11 +83,15 @@ namespace MassEffectModManagerCore.modmanager
                                             CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
                                             if (job.JobDirectory != null && altFile.AltFile.StartsWith(job.JobDirectory))
                                             {
-                                                installationMapping[sourceFile] = altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'); //use alternate file as key instead
+                                                installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
+                                                {
+                                                    AltApplied = true,
+                                                    IsFullRelativeFilePath = true
+                                                };//use alternate file as key instead
                                             }
                                             else
                                             {
-                                                installationMapping[sourceFile] = altFile.AltFile; //use alternate file as key instead
+                                                installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile) { AltApplied = true, IsFullRelativeFilePath = true }; //use alternate file as key instead
                                             }
                                             altApplied = true;
                                             break;
@@ -92,11 +100,15 @@ namespace MassEffectModManagerCore.modmanager
                                             CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
                                             if (job.JobDirectory != null && altFile.AltFile.StartsWith(job.JobDirectory))
                                             {
-                                                installationMapping[sourceFile] = altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'); //use alternate file as key instead
+                                                installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
+                                                {
+                                                    AltApplied = true,
+                                                    IsFullRelativeFilePath = true
+                                                }; //use alternate file as key instead
                                             }
                                             else
                                             {
-                                                installationMapping[sourceFile] = altFile.AltFile; //use alternate file as key instead
+                                                installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile) { AltApplied = true, IsFullRelativeFilePath = true }; //use alternate file as key instead
                                             }
                                             altApplied = true;
                                             break;
@@ -108,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager
                             if (altApplied) continue; //no further processing for file
                             var relativeDestStartIndex = sourceFile.IndexOf(mapping.Value);
                             string destPath = sourceFile.Substring(relativeDestStartIndex);
-                            installationMapping[destPath] = sourceFile; //destination is mapped to source file that will replace it.
+                            installationMapping[destPath] = new InstallSourceFile(sourceFile); //destination is mapped to source file that will replace it.
                         }
 
                         foreach (var altdlc in alternateDLC)
@@ -123,7 +135,7 @@ namespace MassEffectModManagerCore.modmanager
                                     var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.Substring(altdlc.AlternateDLCFolder.Length).TrimStart('\\', '/'));
                                     CLog.Information($@"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
-                                    installationMapping[destFile] = fileToAdd;
+                                    installationMapping[destFile] = new InstallSourceFile(fileToAdd) { AltApplied = true };
                                 }
                             }
                         }
@@ -138,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager
                 else if (job.Header == ModJob.JobHeader.BASEGAME || job.Header == ModJob.JobHeader.BALANCE_CHANGES || job.Header == ModJob.JobHeader.ME1_CONFIG)
                 {
                     #region Installation: BASEGAME, BALANCE CHANGES, ME1 CONFIG
-                    var installationMapping = new Dictionary<string, string>();
+                    var installationMapping = new Dictionary<string, InstallSourceFile>();
                     unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     buildInstallationQueue(job, installationMapping, false);
                     #endregion
@@ -154,7 +166,7 @@ namespace MassEffectModManagerCore.modmanager
 
                         if (File.Exists(sfarPath))
                         {
-                            var installationMapping = new Dictionary<string, string>();
+                            var installationMapping = new Dictionary<string, InstallSourceFile>();
                             if (new FileInfo(sfarPath).Length == 32)
                             {
                                 //Unpacked
@@ -182,7 +194,7 @@ namespace MassEffectModManagerCore.modmanager
                     //Unpacked
                     if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
-                        var installationMapping = new Dictionary<string, string>();
+                        var installationMapping = new Dictionary<string, InstallSourceFile>();
                         unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                         buildInstallationQueue(job, installationMapping, false);
                     }
@@ -203,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager
             return (unpackedJobInstallationMapping, sfarInstallationJobs);
         }
 
-        private void buildInstallationQueue(ModJob job, Dictionary<string, string> installationMapping, bool isSFAR)
+        private void buildInstallationQueue(ModJob job, Dictionary<string, InstallSourceFile> installationMapping, bool isSFAR)
         {
             CLog.Information(@"Building installation queue for " + job.Header, Settings.LogModInstallation);
             foreach (var entry in job.FilesToInstall)
@@ -230,13 +242,21 @@ namespace MassEffectModManagerCore.modmanager
                                 break;
                             case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
                                 CLog.Information($@"Repointing {destFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
-                                if (job.JobDirectory != null && altFile.AltFile.StartsWith(job.JobDirectory))
+                                if (job.JobDirectory != null && (altFile.AltFile.StartsWith(job.JobDirectory) && job.Header == ModJob.JobHeader.CUSTOMDLC))
                                 {
-                                    installationMapping[destFile] = altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'); //use alternate file as key instead
+                                    installationMapping[destFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
+                                    {
+                                        AltApplied = true,
+                                        IsFullRelativeFilePath = true
+                                    }; //use alternate file as key instead
                                 }
                                 else
                                 {
-                                    installationMapping[destFile] = altFile.AltFile; //use alternate file as key instead
+                                    installationMapping[destFile] = new InstallSourceFile(altFile.AltFile)
+                                    {
+                                        AltApplied = true,
+                                        IsFullRelativeFilePath = true
+                                    }; //use alternate file as key instead
                                 }
 
                                 altApplied = true;
@@ -244,13 +264,21 @@ namespace MassEffectModManagerCore.modmanager
                             case AlternateFile.AltFileOperation.OP_INSTALL:
                                 //same logic as substitute, just different logging.
                                 CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
-                                if (job.JobDirectory != null && altFile.AltFile.StartsWith(job.JobDirectory))
+                                if (job.JobDirectory != null && (altFile.AltFile.StartsWith(job.JobDirectory) && job.Header == ModJob.JobHeader.CUSTOMDLC))
                                 {
-                                    installationMapping[destFile] = altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'); //use alternate file as key instead
+                                    installationMapping[destFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
+                                    {
+                                        AltApplied = true,
+                                        IsFullRelativeFilePath = true
+                                    }; //use alternate file as key instead
                                 }
                                 else
                                 {
-                                    installationMapping[destFile] = altFile.AltFile; //use alternate file as key instead
+                                    installationMapping[destFile] = new InstallSourceFile(altFile.AltFile)
+                                    {
+                                        AltApplied = true,
+                                        IsFullRelativeFilePath = true
+                                    }; //use alternate file as key instead
                                 }
                                 altApplied = true;
                                 break;
@@ -263,7 +291,7 @@ namespace MassEffectModManagerCore.modmanager
                 //installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
 
 
-                installationMapping[destFile] = sourceFile;
+                installationMapping[destFile] = new InstallSourceFile(sourceFile);
                 CLog.Information($@"Adding {job.Header} file to installation {(isSFAR ? @"SFAR" : @"unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation); //do not localize
 
             }
@@ -314,5 +342,39 @@ namespace MassEffectModManagerCore.modmanager
             }
             return list;
         }
+
+        public class InstallSourceFile
+        {
+            /// <summary>
+            /// The path to the file. This is a relative path from the job root
+            /// </summary>
+            public string FilePath { get; set; }
+            /// <summary>
+            /// If this file is the result of an alternate operation
+            /// </summary>
+            public bool AltApplied { get; set; }
+            /// <summary>
+            /// If this path is a "full path", aka it should not include the job directory
+            /// </summary>
+            public bool IsFullRelativeFilePath { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                return obj is InstallSourceFile file &&
+                       FilePath == file.FilePath;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(FilePath);
+            }
+
+            public InstallSourceFile(string path)
+            {
+                FilePath = path;
+            }
+        }
+
+
     }
 }

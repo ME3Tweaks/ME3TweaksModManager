@@ -53,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 var userinfo = await nexus.Users.ValidateAsync();
                 if (userinfo.Name != null)
                 {
-                    Log.Information("API call returned valid data. API key is valid");
+                    Log.Information("NexusMods API call returned valid data. API key is valid");
 
                     //Authorized OK.
 

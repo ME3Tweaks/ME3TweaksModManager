@@ -52,6 +52,7 @@ namespace MassEffectModManagerCore.Tests
             foreach (var d in Directory.GetDirectories(root))
             {
                 GameTarget gt = new GameTarget(Mod.MEGame.ME1, d, false, false);
+                gt.ValidateTarget();
                 if (gt.IsValid)
                 {
                     targets.Add(gt);
@@ -61,6 +62,7 @@ namespace MassEffectModManagerCore.Tests
             foreach (var d in Directory.GetDirectories(root))
             {
                 GameTarget gt = new GameTarget(Mod.MEGame.ME2, d, false, false);
+                gt.ValidateTarget();
                 if (gt.IsValid)
                 {
                     targets.Add(gt);
@@ -70,6 +72,7 @@ namespace MassEffectModManagerCore.Tests
             foreach (var d in Directory.GetDirectories(root))
             {
                 GameTarget gt = new GameTarget(Mod.MEGame.ME3, d, false, false);
+                gt.ValidateTarget();
                 if (gt.IsValid)
                 {
                     targets.Add(gt);
@@ -87,11 +90,60 @@ namespace MassEffectModManagerCore.Tests
                 var archiveZ = new SevenZipExtractor(archive);
                 foreach (var mod in modsFoundInArchive)
                 {
-                    mod.GetAllRelativeReferences(false, archiveZ);
-                    var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
-                    foreach (var target in targetsForMod)
+                    bool altsOn = false;
+                    while (true)
                     {
-                        mod.GetInstallationQueues(target);
+                        if (altsOn)
+                        {
+                            foreach (var job in mod.InstallationJobs)
+                            {
+                                List<string> selectedGroups = new List<string>();
+                                foreach (var altfile in job.AlternateFiles)
+                                {
+                                    if (altfile.GroupName != null)
+                                    {
+                                        if (selectedGroups.Contains(altfile.GroupName))
+                                        {
+                                            continue; //we already did first time of this. I know that's a weak test case...
+                                        }
+                                        selectedGroups.Add(altfile.GroupName);
+                                    }
+
+                                    altfile.IsSelected = true;
+                                }
+                            }
+                        }
+                        mod.GetAllRelativeReferences(archiveZ); //test
+                        var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
+                        foreach (var target in targetsForMod)
+                        {
+                            var queue = mod.GetInstallationQueues(target);
+                            foreach (var jobMapping in queue.Item1)
+                            {
+                                foreach (var unpackedItem in jobMapping.Value.unpackedJobMapping)
+                                {
+                                    string sourceFile;
+                                    if (jobMapping.Key.JobDirectory == null || unpackedItem.Value.IsFullRelativeFilePath)
+                                    {
+                                        sourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, unpackedItem.Value.FilePath);
+                                    }
+                                    else
+                                    {
+                                        sourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, jobMapping.Key.JobDirectory, unpackedItem.Value.FilePath);
+                                    }
+                                    Assert.IsTrue(archiveZ.ArchiveFileNames.Contains(sourceFile), "Archive should contain a file specified by mod (mod is valid) but does not appear to. File: "+sourceFile);
+                                }
+                            }
+                        }
+
+                        if (!altsOn)
+                        {
+                            altsOn = true;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }

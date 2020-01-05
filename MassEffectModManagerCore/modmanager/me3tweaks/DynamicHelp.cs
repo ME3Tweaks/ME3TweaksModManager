@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml;
 
 using MassEffectModManagerCore.modmanager.helpers;
+using Microsoft.AppCenter.Crashes;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -18,9 +19,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static List<SortableHelpElement> FetchLatestHelp(string language, bool preferLocal, bool overrideThrottling = false)
         {
             var localHelpExists = File.Exists(Utilities.GetLocalHelpFile());
+            string cached = null;
+            if (localHelpExists)
+            {
+                try
+                {
+                    cached = File.ReadAllText(Utilities.GetLocalHelpFile());
+                }
+                catch (Exception e)
+                {
+                    var attachments = new List<ErrorAttachmentLog>();
+                    string log = LogCollector.CollectLatestLog(false);
+                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    {
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                    }
+                    Crashes.TrackError(e, new Dictionary<string, string>()
+                    {
+                        {"Error type", "Error reading cached online content" },
+                        {"Service", "Dynamic Help" },
+                        {"Message", e.Message }
+                    }, attachments.ToArray());
+                }
+            }
+
             if (localHelpExists && preferLocal)
             {
-                return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
+                return ParseLocalHelp(cached, language);
             }
 
 
@@ -31,17 +56,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     using var wc = new System.Net.WebClient();
                     string xml = wc.DownloadStringAwareOfEncoding(LatestHelpFileLink);
                     File.WriteAllText(Utilities.GetLocalHelpFile(), xml);
-                    return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
+                    return ParseLocalHelp(xml, language);
                 }
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
                     Log.Error("Error fetching online help: " + e.Message);
 
-                    if (File.Exists(Utilities.GetLocalHelpFile()))
+                    if (cached != null)
                     {
                         Log.Warning("Using cached help instead");
-                        return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
                     }
                     else
                     {
@@ -51,7 +75,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            return ParseLocalHelp(File.ReadAllText(Utilities.GetLocalHelpFile()), language);
+            try
+            {
+                return ParseLocalHelp(cached, language);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to parse local dynamic help file: " + e.Message);
+                return null;
+            }
         }
 
         private static List<SortableHelpElement> ParseLocalHelp(string xml, string language)

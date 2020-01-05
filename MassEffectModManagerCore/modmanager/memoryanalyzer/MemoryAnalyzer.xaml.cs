@@ -29,10 +29,13 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
         public static void AddTrackedMemoryItem(string objectname, WeakReference reference)
         {
             //Force concurrency
-            Application.Current.Dispatcher.Invoke(() =>
+            if (Application.Current != null)
             {
-                TrackedMemoryObjects.Add(new MemoryAnalyzerObject(objectname, reference));
-            });
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    TrackedMemoryObjects.Add(new MemoryAnalyzerObject(objectname, reference));
+                });
+            }
         }
 
         #endregion

@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading;
+using System.Threading.Tasks;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
@@ -127,6 +129,20 @@ namespace MassEffectModManagerCore
                 return false;
 
             }
+        }
+
+        public static long GetSizeOfDirectory(string dir)
+        {
+            String[] files = Directory.GetFiles(dir, "*", SearchOption.AllDirectories);
+            long totalSize = 0;
+            Parallel.For(0, files.Length,
+                         index =>
+                         {
+                             FileInfo fi = new FileInfo(files[index]);
+                             long size = fi.Length;
+                             Interlocked.Add(ref totalSize, size);
+                         });
+            return totalSize;
         }
 
 
@@ -749,6 +765,14 @@ namespace MassEffectModManagerCore
 
                 using (Stream stream = Utilities.GetResourceStream(internalResourceName))
                 {
+                    if (File.Exists(destination))
+                    {
+                        FileInfo fi = new FileInfo(destination);
+                        if (fi.IsReadOnly)
+                        {
+                            fi.IsReadOnly = false; //clear read only. might happen on some binkw32 in archives, maybe
+                        }
+                    }
                     using (var file = new FileStream(destination, FileMode.Create, FileAccess.Write))
                     {
                         stream.CopyTo(file);
@@ -767,6 +791,24 @@ namespace MassEffectModManagerCore
             if (target.Game == Mod.MEGame.ME1 || target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries");
             if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32");
             return null;
+        }
+
+        internal static List<string> GetListOfInstalledAV()
+        {
+            List<string> av = new List<string>();
+            // for Windows Vista and above '\root\SecurityCenter2'
+            using (var searcher = new ManagementObjectSearcher(@"\\" +
+                                                Environment.MachineName +
+                                                @"\root\SecurityCenter2",
+                                                "SELECT * FROM AntivirusProduct"))
+            {
+                var searcherInstance = searcher.Get();
+                foreach (var instance in searcherInstance)
+                {
+                    av.Add(instance["displayName"].ToString());
+                }
+            }
+            return av;
         }
 
         internal static bool InstallBinkBypass(GameTarget target)

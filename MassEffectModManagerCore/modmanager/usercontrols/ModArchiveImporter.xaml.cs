@@ -244,10 +244,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             using (archiveFile)
             {
 #if DEBUG
-                foreach (var v in archiveFile.ArchiveFileData)
-                {
-                    Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size}");
-                }
+                //foreach (var v in archiveFile.ArchiveFileData)
+                //{
+                //    Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size}");
+                //}
 #endif
                 var moddesciniEntries = new List<ArchiveFileInfo>();
                 var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC

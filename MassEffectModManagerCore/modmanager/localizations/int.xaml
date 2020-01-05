@@ -209,7 +209,7 @@
     <!-- 0 = number -->
     <system:String x:Key="string_setLanguageToX">Set language to English</system:String>
     <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
-    
+
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
@@ -360,9 +360,13 @@
     <system:String x:Key="string_backedUp">Backed up</system:String>
     <system:String x:Key="string_notBackedUp">Not backed up</system:String>
     <system:String x:Key="string_inconsistentDLCDetectedUnofficialGame">Inconsistent DLC was detected. This may be due to using an unofficial copy of the game.</system:String>
-
     <system:String x:Key="string_movies">Movies</system:String>
     <system:String x:Key="string_basegame">Basegame</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogInsufficientDiskSpace">There is not enough free disk space on {0} to create this backup.\n\nFree space: {1}\nRequired space: {2}</system:String>
+    <!-- 0=drive letter path (e.g. C:\)  1=filepath 2=filepath -->
+    <system:String xml:space="preserve" x:Key="string_dialogBackupCannotBeSubdirectoryOfGame">A backup cannot be created in a subdirectory of a game target.\n\nSelected path: {0}\nConflicting target: {1}</system:String>
+    <!-- 0=filepath  1=filepath -->
+    <system:String x:Key="string_cannotCreateBackup">Cannot create backup</system:String>
 
     <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Downloading {0}</system:String>
@@ -655,7 +659,7 @@
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
     <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate File {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
     <!-- 0 = Friendly name, 1 = Filepath-->
-    
+
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->

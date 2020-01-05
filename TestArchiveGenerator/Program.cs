@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 
@@ -16,9 +17,16 @@ namespace TestArchiveGenerator
             ParseArguments(args);
             if (SourceArchive == null && SourceDir == null)
             {
-                Console.WriteLine("--inputarchive and/or --inputdir not specified");
-                return;
+                if (args.Count() == 1 && File.Exists(args[0])) {
+                    SourceArchive = args[0];
+                }
+                else
+                {
+                    Console.WriteLine("--inputarchive and/or --inputdir not specified");
+                    return;
+                }
             }
+
             if (SourceArchive != null && !File.Exists(SourceArchive))
             {
                 Console.WriteLine("Source archive doesn't exist: " + SourceArchive);

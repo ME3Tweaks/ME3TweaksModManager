@@ -359,9 +359,13 @@
     <system:String x:Key="string_backedUp">Backup existiert</system:String>
     <system:String x:Key="string_notBackedUp">Kein Backup</system:String>
     <system:String x:Key="string_inconsistentDLCDetectedUnofficialGame">Inkonsistentes DLC wurde gefunden. Das könnte daran liegen, dass es sich um eine inoffizielle Kopie des Spiels handelt.</system:String>
-
     <system:String x:Key="string_movies">Filme</system:String>
     <system:String x:Key="string_basegame">Hauptspiel</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogInsufficientDiskSpace">Auf {0} ist nicht genügend freier Speicherplatz vorhanden, um dieses Backup zu erstellen.\n\nBenötigter Speicherplatz: {2}\nFreier Speicherplatz: {1}</system:String>
+    <!-- 0=drive letter path (e.g. C:\)  1=filepath 2=filepath -->
+    <system:String xml:space="preserve" x:Key="string_dialogBackupCannotBeSubdirectoryOfGame">Ein Backup kann nicht in einen Unterordner eines Installationsziels erstellt werden\n\nGewählter Pfad: {0}\nKollidierendes Ziel: {1}</system:String>
+    <!-- 0=filepath  1=filepath -->
+    <system:String x:Key="string_cannotCreateBackup">Backup kann nicht erstellt werden</system:String>
 
     <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>

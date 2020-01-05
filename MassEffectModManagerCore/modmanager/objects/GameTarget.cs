@@ -533,6 +533,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Restoring = true;
                         Log.Information(@"Restoring basegame file: " + targetFile);
                         notifyRestoringCallback?.Invoke();
+                        var tfi = new FileInfo(targetFile);
+                        if (tfi.IsReadOnly)
+                        {
+                            tfi.IsReadOnly = false;
+                        }
                         File.Copy(backupFile, targetFile, true);
                         notifyRestoredCallback?.Invoke(this);
                     }

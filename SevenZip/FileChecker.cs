@@ -94,7 +94,7 @@ namespace SevenZip
 
             foreach (var expectedSignature in Formats.InSignatureFormats.Keys)
             {
-                Debug.WriteLine(expectedSignature);
+                //Debug.WriteLine(expectedSignature);
                 if (actualSignature.StartsWith(expectedSignature, StringComparison.OrdinalIgnoreCase) ||
                     actualSignature.Substring(6).StartsWith(expectedSignature, StringComparison.OrdinalIgnoreCase) &&
                     Formats.InSignatureFormats[expectedSignature] == InArchiveFormat.Lzh)

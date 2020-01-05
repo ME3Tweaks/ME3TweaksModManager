@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Threading;
 
 using MassEffectModManagerCore.modmanager.helpers;
+using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -28,13 +29,35 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             string json = wc.DownloadString(StartupManifestURL);
             App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             return App.ServerManifest;
-
         }
-
-
 
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
+            string cached = null;
+            if (File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()))
+            {
+                try
+                {
+                    cached = File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile());
+                }
+                catch (Exception e)
+                {
+                    var attachments = new List<ErrorAttachmentLog>();
+                    string log = LogCollector.CollectLatestLog(false);
+                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    {
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                    }
+                    Crashes.TrackError(e, new Dictionary<string, string>()
+                    {
+                        {"Error type", "Error reading cached online content" },
+                        {"Service", "Third Party Identification Service" },
+                        {"Message", e.Message }
+                    }, attachments.ToArray());
+                }
+            }
+
+
             if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
@@ -50,10 +73,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     //Unable to fetch latest help.
                     Log.Error("Error fetching online third party identification service: " + e.Message);
 
-                    if (File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()))
+                    if (cached != null)
                     {
-                        Log.Warning("Using cached third party identification service instead");
-                        return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+                        Log.Warning("Using cached third party identification service  file instead");
                     }
                     else
                     {
@@ -71,14 +93,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             try
             {
-                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
+                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(cached);
             }
             catch (Exception e)
             {
-                Log.Error("Error reading TPMI: " + e.Message + ". Retrying in 500ms as it might be held by something.");
-                Thread.Sleep(500);
-                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile()));
-
+                Log.Error("Could not parse cached third party identification service file. Returning blank TPMI data instead. Reason: " + e.Message);
+                return new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
+                {
+                    ["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                    ["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                    ["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+                };
             }
         }
 
@@ -112,6 +137,30 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, List<string>> FetchTipsService(bool overrideThrottling = false)
         {
+            string cached = null;
+            if (File.Exists(Utilities.GetTipsServiceFile()))
+            {
+                try
+                {
+                    cached = File.ReadAllText(Utilities.GetTipsServiceFile());
+                }
+                catch (Exception e)
+                {
+                    var attachments = new List<ErrorAttachmentLog>();
+                    string log = LogCollector.CollectLatestLog(false);
+                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    {
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                    }
+                    Crashes.TrackError(e, new Dictionary<string, string>()
+                    {
+                        {"Error type", "Error reading cached online content" },
+                        {"Service", "Tips Service" },
+                        {"Message", e.Message }
+                    }, attachments.ToArray());
+                }
+            }
+
             if (!File.Exists(Utilities.GetTipsServiceFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
@@ -126,11 +175,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     //Unable to fetch latest help.
                     Log.Error("Error fetching latest tips service file: " + e.Message);
-
-                    if (File.Exists(Utilities.GetTipsServiceFile()))
+                    if (cached != null)
                     {
                         Log.Warning("Using cached tips service file instead");
-                        return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
                     }
                     else
                     {
@@ -140,11 +187,43 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(Utilities.GetTipsServiceFile()));
+            try
+            {
+                return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(cached);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to parse cached tips service file: " + e.Message);
+                return new Dictionary<string, List<string>>();
+            }
         }
 
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
+            string cached = null;
+            if (File.Exists(Utilities.GetThirdPartyImportingCachedFile()))
+            {
+                try
+                {
+                    cached = File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile());
+                }
+                catch (Exception e)
+                {
+                    var attachments = new List<ErrorAttachmentLog>();
+                    string log = LogCollector.CollectLatestLog(false);
+                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    {
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                    }
+                    Crashes.TrackError(e, new Dictionary<string, string>()
+                    {
+                        {"Error type", "Error reading cached online content" },
+                        {"Service", "Third Party Importing Service" },
+                        {"Message", e.Message }
+                    }, attachments.ToArray());
+                }
+            }
+
             if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
                 try
@@ -158,12 +237,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
-                    Log.Error("Error fetching latest tips service file: " + e.Message);
+                    Log.Error("Error fetching latest importing service file: " + e.Message);
 
-                    if (File.Exists(Utilities.GetThirdPartyImportingCachedFile()))
+                    if (cached != null)
                     {
                         Log.Warning("Using cached third party importing service file instead");
-                        return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
                     }
                     else
                     {
@@ -172,8 +250,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
             }
-
-            return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile()));
+            try
+            {
+                return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(cached);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to parse cached importing service file: " + e.Message);
+                return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
+            }
         }
 
         public static Dictionary<string, string> QueryModRelay(string md5, long size)
