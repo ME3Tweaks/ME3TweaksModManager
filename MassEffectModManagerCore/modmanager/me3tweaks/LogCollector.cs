@@ -18,9 +18,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             try
             {
                 string log = File.ReadAllText(logfile);
-                string[] lines = File.ReadAllLines(logfile);
-                Debug.WriteLine("Read " + lines.Count() + " lines");
-                File.WriteAllText(@"C:\users\mgamerz\desktop\log.txt", log);
                 CreateLogger();
                 return log;
             }

@@ -83,11 +83,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (logUploadText != null)
                 {
                     var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logUploadText));
-                    File.WriteAllBytes(@"C:\users\mgamerz\desktop\log.txt.lzma", lzmalog);
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
-                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload2.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
                         Uri uriResult;
                         bool result = Uri.TryCreate(responseString, UriKind.Absolute, out uriResult)
                                       && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
