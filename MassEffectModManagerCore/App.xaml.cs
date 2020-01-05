@@ -78,7 +78,6 @@ namespace MassEffectModManagerCore
             {
                 Crashes.GetErrorAttachments = (ErrorReport report) =>
                 {
-                    Log.CloseAndFlush();
                     var attachments = new List<ErrorAttachmentLog>();
                     // Attach some text.
 
