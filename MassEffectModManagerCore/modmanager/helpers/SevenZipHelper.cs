@@ -19,7 +19,9 @@
  *
  */
 
+using MassEffectModManagerCore.modmanager.helpers;
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace SevenZipHelper
@@ -58,6 +60,22 @@ namespace SevenZipHelper
             Array.Copy(tmpbuf, dst, (int)dstLen);
 
             return dst;
+        }
+
+        /// <summary>
+        /// Compresses the input data and returns LZMA compressed data, with the proper header for an LZMA file.
+        /// </summary>
+        /// <param name="src">Source data</param>
+        /// <returns>Byte array of compressed data</returns>
+
+        public static byte[] CompressToLZMAFile(byte[] src)
+        {
+            var compressedBytes = SevenZipHelper.LZMA.Compress(src);
+            byte[] fixedBytes = new byte[compressedBytes.Length + 8]; //needs 8 byte header written into it (only mem version needs this)
+            Buffer.BlockCopy(compressedBytes, 0, fixedBytes, 0, 5);
+            fixedBytes.OverwriteRange(5, BitConverter.GetBytes(src.Length));
+            Buffer.BlockCopy(compressedBytes, 5, fixedBytes, 13, compressedBytes.Length - 5);
+            return fixedBytes;
         }
     }
 }

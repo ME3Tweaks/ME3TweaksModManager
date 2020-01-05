@@ -22,6 +22,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
+using AuthenticodeExaminer;
 
 namespace MassEffectModManagerCore
 {
@@ -80,18 +81,13 @@ namespace MassEffectModManagerCore
                     Log.CloseAndFlush();
                     var attachments = new List<ErrorAttachmentLog>();
                     // Attach some text.
-                    var logFile = new DirectoryInfo(LogDir)
-                                 .GetFiles("*.txt")
-                                 .OrderByDescending(f => f.LastWriteTime)
-                                 .FirstOrDefault();
-                    if (logFile != null && File.Exists(logFile.FullName))
+
+                    string log = LogCollector.CollectLatestLog(false);
+                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
-                        string log = Utilities.ReadLockedTextFile(logFile.FullName);
-                        if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
-                        {
-                            attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
-                        }
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
                     }
+
                     // Attach binary data.
                     //var fakeImage = System.Text.Encoding.Default.GetBytes("Fake image");
                     //ErrorAttachmentLog binaryLog = ErrorAttachmentLog.AttachmentWithBinary(fakeImage, "ic_launcher.jpeg", "image/jpeg");
@@ -112,6 +108,9 @@ namespace MassEffectModManagerCore
 #endif
         }
 
+        public static string BuildDate;
+        public static bool IsSigned;
+
         public App() : base()
         {
             // var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
@@ -127,13 +126,8 @@ namespace MassEffectModManagerCore
             try
             {
                 string exeFolder = Directory.GetParent(ExecutableLocation).ToString();
-                Log.Logger = new LoggerConfiguration().WriteTo.SizeRollingFile(Path.Combine(App.LogDir, "modmanagerlog.txt"),
-                        retainedFileDurationLimit: TimeSpan.FromDays(14),
-                        fileSizeLimitBytes: 1024 * 1024 * 10) // 10MB
-#if DEBUG
-                .WriteTo.Debug()
-#endif
-                .CreateLogger();
+                LogCollector.CreateLogger();
+
 
 
                 string[] args = Environment.GetCommandLineArgs();
@@ -202,6 +196,21 @@ namespace MassEffectModManagerCore
                 Log.Information("ME3Tweaks Mod Manager " + version);
                 Log.Information("Application boot: " + DateTime.UtcNow.ToString());
                 Log.Information("Executable location: " + ExecutableLocation);
+
+                //Get build date
+                var info = new FileInspector(App.ExecutableLocation);
+                var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
+
+                if (signTime != null)
+                {
+                    IsSigned = true;
+                    BuildDate = signTime.Value.ToString(@"MMMM dd, yyyy");
+                }
+                else
+                {
+                    //needs localized later.
+                    BuildDate = "WARNING: This build is not signed by ME3Tweaks";
+                }
 
                 #region Update mode boot
                 /*

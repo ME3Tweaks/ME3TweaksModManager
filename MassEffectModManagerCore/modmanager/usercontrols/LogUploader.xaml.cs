@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -77,30 +78,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"LogUpload");
             bw.DoWork += (a, b) =>
             {
+                Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
                 string logUploadText = LogCollector.CollectLogs(SelectedLog.filepath);
-                using (var output = new MemoryStream())
+                if (logUploadText != null)
                 {
-                    var encoder = new LzmaEncodeStream(output);
-                    using (var normalBytes = new MemoryStream(Encoding.UTF8.GetBytes(logUploadText)))
-                    {
-                        int bufSize = 24576, count;
-                        var buf = new byte[bufSize];
-
-                        while ((count = normalBytes.Read(buf, 0, bufSize)) > 0)
-                        {
-                            encoder.Write(buf, 0, count);
-                        }
-                    }
-
-                    encoder.Close();
-
-                    //Upload log to ME3Tweaks
-
-                    var lzmalog = output.ToArray();
+                    var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logUploadText));
+                    File.WriteAllBytes(@"C:\users\mgamerz\desktop\log.txt.lzma", lzmalog);
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
-                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload2.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
                         Uri uriResult;
                         bool result = Uri.TryCreate(responseString, UriKind.Absolute, out uriResult)
                                       && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
@@ -148,25 +135,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         b.Result = M3L.GetString(M3L.string_interp_logWasUnableToUpload, exmessage);
                     }
                 }
-
+                else
+                {
+                    //Log pull failed
+                }
             };
             bw.RunWorkerCompleted += (a, b) =>
-            {
-                if (b.Result is string response)
                 {
-                    if (response.StartsWith(@"http"))
+                    if (b.Result is string response)
                     {
-                        Utilities.OpenWebpage(response);
+                        if (response.StartsWith(@"http"))
+                        {
+                            Utilities.OpenWebpage(response);
+                        }
+                        else
+                        {
+                            OnClosing(DataEventArgs.Empty);
+                            var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
                     }
-                    else
-                    {
-                        OnClosing(DataEventArgs.Empty);
-                        var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                }
-                OnClosing(DataEventArgs.Empty);
-            };
+                    OnClosing(DataEventArgs.Empty);
+                };
             bw.RunWorkerAsync();
         }
 
