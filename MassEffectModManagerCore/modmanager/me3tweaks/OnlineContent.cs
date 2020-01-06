@@ -23,6 +23,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
         private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice";
 
+        public static readonly string ModmakerModsEndpoint = "https://me3tweaks.com/modmaker/download.php?id=";
+
         public static Dictionary<string, string> FetchOnlineStartupManifest()
         {
             using var wc = new ShortTimeoutWebClient();
@@ -379,6 +381,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return (responseStream, downloadError);
         }
 
+        /// <summary>
+        /// Downloads from a URL to memory. This is a blocking call and should be done on a background thread.
+        /// </summary>
+        /// <param name="url">URL to download from</param>
+        /// <param name="progressCallback">Progress information clalback</param>
+        /// <param name="hash">Hash check value (md5). Leave null if no hash check</param>
+        /// <returns></returns>
+
         public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null)
         {
             using var wc = new ShortTimeoutWebClient();
@@ -398,7 +408,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         if (md5 != hash)
                         {
                             responseStream = null;
-                            downloadError = $"Hash of downloaded item ({url}) does not match expected hash. Expected: {hash}, got: {md5}";
+                            downloadError = $"Hash of downloaded item ({url}) does not match expected hash. Expected: {hash}, got: {md5}"; //needs localized
                         }
                     }
                 }

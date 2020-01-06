@@ -127,7 +127,8 @@ namespace MassEffectModManagerCore
                 string exeFolder = Directory.GetParent(ExecutableLocation).ToString();
                 LogCollector.CreateLogger();
 
-
+                JPatch.DebugTest();
+                Environment.Exit(0);
 
                 string[] args = Environment.GetCommandLineArgs();
                 //Parsed<Options> parsedCommandLineArgs = null;

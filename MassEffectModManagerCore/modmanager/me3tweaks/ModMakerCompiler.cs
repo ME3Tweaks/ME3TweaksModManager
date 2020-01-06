@@ -22,18 +22,39 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     {
         private readonly int code;
 
-        public ModMakerCompiler(int code)
+        //Callbacks. The caller should set these to update the UI.
+        public Action<int> SetOverallMaxCallback;
+        public Action<int> SetOverallValueCallback;
+        public Action<int> SetCurrentMaxCallback;
+        public Action<int> SetCurrentValueCallback;
+        public Action<bool> SetCurrentTaskIndeterminateCallback;
+        public Action<string> SetCurrentTaskStringCallback;
+        public Action<string> SetModNameCallback;
+        public Action SetCompileStarted;
+
+        public ModMakerCompiler(int code = 0)
         {
             this.code = code;
         }
-        public void DownloadAndCompileMod()
+
+        public void DownloadAndCompileMod(string delta = null)
         {
-            string cachedFilename = Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + @".xml");
-            if (File.Exists(cachedFilename))
+            if (delta != null)
             {
-                //Going to compile cached item
-                CompileMod(File.ReadAllText(cachedFilename));
+                CompileMod(delta);
             }
+            else if (code != 0)
+            {
+                //Try cache
+                string cachedFilename = Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + @".xml");
+                if (File.Exists(cachedFilename))
+                {
+                    //Going to compile cached item
+                    Log.Information("Compiling cached modmaker mode with code " + code);
+                    CompileMod(File.ReadAllText(cachedFilename));
+                }
+            }
+
         }
 
         /// <summary>
@@ -42,14 +63,25 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="modxml">XML document for the mod</param>
         private void CompileMod(string modxml)
         {
+            Log.Information("Compiling modmaker mod");
             var xmlDoc = XDocument.Parse(modxml);
 
             var mod = GenerateLibraryModFromDocument(xmlDoc);
-            compileCoalesceds(xmlDoc, mod);
+            if (mod != null)
+            {
+                compileCoalesceds(xmlDoc, mod);
+            }
+            else
+            {
+                SetModNameCallback?.Invoke("Mod not found on server");
+            }
         }
 
+        int totalNumCoalescedFileChunks = 0;
+        int numDoneCoalescedFileChunks = 0;
         private void compileCoalesceds(XDocument xmlDoc, Mod mod)
         {
+            SetCurrentTaskStringCallback?.Invoke("Compiling Coalesced files");
             List<XElement> jobCollection = new List<XElement>();
             var jobs = xmlDoc.XPathSelectElements(@"/ModMaker/ModData/*");
             if (jobs != null)
@@ -60,10 +92,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         CLog.Information(@"Found coalesced modifier for DLC: " + node.Name, Settings.LogModMakerCompiler);
                         jobCollection.Add(node);
+                        totalNumCoalescedFileChunks += node.Elements().Count();
                     }
                 }
             }
 
+            SetCurrentMaxCallback?.Invoke(totalNumCoalescedFileChunks);
             //Todo: Precheck assets are available.
 
             Parallel.ForEach(jobCollection, new ParallelOptions { MaxDegreeOfParallelism = 1 }, (xmlChunk) => compileCoalescedChunk(xmlChunk, mod));
@@ -80,9 +114,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             //File fetch
             Dictionary<string, string> coalescedFilemapping = null;
+            string coalescedFilename = null;
             if (chunkName == "BASEGAME")
             {
                 var coalPath = Path.Combine(Utilities.GetGameBackupPath(MEGame.ME3), "BioGame", "CookedPCConsole", "Coalesced.bin");
+                coalescedFilename = "Coalesced.bin";
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
@@ -96,13 +132,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             else if (chunkName == "BALANCE_CHANGES")
             {
-                // do later
-                // fetch from cache
+                var serverCoalesced = Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
+                coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(serverCoalesced);
+                coalescedFilename = "ServerCoalesced.bin";
             }
             else
             {
                 var dlcFolderName = chunkNameToFoldername(chunkName);
                 var coalescedData = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, $"Default_{dlcFolderName}.bin");
+                coalescedFilename = $"Default_{dlcFolderName}.bin";
                 if (coalescedData != null)
                 {
                     coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(coalescedData);
@@ -123,7 +161,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var matchingCoalFile = coalescedFilemapping[fileNode.Name + ".xml"];
                     var coalFileDoc = XDocument.Parse(matchingCoalFile);
                     string updatedDocumentText = compileCoalescedChunkFile(coalFileDoc, fileNode, $"{loggingPrefix}[{fileNode.Name}]: ");
+                    coalescedFilemapping[fileNode.Name + ".xml"] = updatedDocumentText;
                 }
+                CLog.Information($"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
+                var newFileStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
+
+                var outFolder = Path.Combine(mod.ModPath, chunkName);
+                Directory.CreateDirectory(outFolder);
+                var outFile = Path.Combine(outFolder, coalescedFilename);
+
+                File.WriteAllBytes(outFile, newFileStream.ToArray());
+                CLog.Information($"{loggingPrefix} Compiled coalesced file, chunk finished", Settings.LogModMakerCompiler);
             }
 
             return true;
@@ -319,13 +367,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
             #endregion
-            return "";
+
+            var numdone = Interlocked.Increment(ref numDoneCoalescedFileChunks);
+            SetCurrentValueCallback?.Invoke(numdone);
+            return targetDocument.ToString();
         }
 
         /// <summary>
         /// This is the vanilla value for Plat Collectors Wave 5. It should be Do_Level4 but bioware set it to 3.
         /// </summary>
         private static readonly string CollectorsPlatWave5WrongText = "(Difficulty=DO_Level3,Enemies=( (EnemyType=\"WAVE_COL_Scion\"), (EnemyType=\"WAVE_COL_Praetorian\", MinCount=1, MaxCount=1), (EnemyType=\"WAVE_CER_Phoenix\", MinCount=2, MaxCount=2), (EnemyType=\"WAVE_CER_Phantom\", MinCount=3, MaxCount=3) ))";
+
 
 
         /// <summary>
@@ -504,7 +556,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <returns>Mod object</returns>
         private Mod GenerateLibraryModFromDocument(XDocument xmlDoc)
         {
+            var hasError = xmlDoc.XPathSelectElement(@"/ModMaker/Error");
+            if (hasError != null)
+            {
+                Log.Information("Mod was not found server.");
+                return null;
+            }
+            SetCompileStarted?.Invoke();
             var modName = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Name").Value;
+            SetModNameCallback?.Invoke(modName);
             Log.Information(@"Compiling mod: " + modName);
 
             var modDev = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Author").Value;
@@ -525,6 +585,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ini[@"ModInfo"][@"modsite"] = @"https://me3tweaks.com/modmaker/mods/" + code;
 
             var outputDir = Path.Combine(Utilities.GetME3ModsDirectory(), Utilities.SanitizePath(modName));
+            CLog.Information("Generating new mod directory: " + outputDir, Settings.LogModMakerCompiler);
             if (Directory.Exists(outputDir))
             {
                 Utilities.DeleteFilesAndFoldersRecursively(outputDir);

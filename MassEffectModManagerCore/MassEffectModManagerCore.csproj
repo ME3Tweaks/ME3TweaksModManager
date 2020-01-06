@@ -74,6 +74,7 @@
     <None Remove="modmanager\localizations\icons\languageselector.png" />
     <None Remove="modmanager\localizations\icons\polish.png" />
     <None Remove="modmanager\localizations\icons\russian.png" />
+    <None Remove="modmanager\me3tweaks\LiveIni.bin" />
     <None Remove="modmanager\me3tweaks\PermissionsGranter.exe" />
     <None Remove="modmanager\meim\propertymaps\BioEngine.xml" />
     <None Remove="modmanager\meim\propertymaps\BioGame.xml" />
@@ -130,6 +131,7 @@
     <EmbeddedResource Include="modmanager\gamemd5\me1pl.bin" />
     <EmbeddedResource Include="modmanager\gamemd5\me2.bin" />
     <EmbeddedResource Include="modmanager\gamemd5\me3.bin" />
+    <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
     <EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
     <EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
     <EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
