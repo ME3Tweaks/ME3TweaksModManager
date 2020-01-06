@@ -884,17 +884,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="input">Stream to copy from</param>
         /// <param name="output">Stream to copy to</param>
         /// <param name="bytes">The number of bytes to copy</param>
-        public static void CopyToEx(this Stream input, Stream output, int bytes)
-        {
-            var buffer = new byte[32768];
-            int read;
-            while (bytes > 0 &&
-                   (read = input.Read(buffer, 0, Math.Min(buffer.Length, bytes))) > 0)
-            {
-                output.Write(buffer, 0, read);
-                bytes -= read;
-            }
-        }
+        //public static void CopyToEx(this Stream input, Stream output, int bytes)
+        //{
+        //    var buffer = new byte[32768];
+        //    int read;
+        //    while (bytes > 0 &&
+        //           (read = input.Read(buffer, 0, Math.Min(buffer.Length, bytes))) > 0)
+        //    {
+        //        output.Write(buffer, 0, read);
+        //        bytes -= read;
+        //    }
+        //}
 
         public static NameReference ReadNameReference(this Stream stream, IMEPackage pcc)
         {

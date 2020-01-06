@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MassEffectModManagerCore.modmanager.helpers;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,31 +19,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             string sourcefile = @"C:\Users\Mgamerz\Desktop\jdiff-cs\Patch_SFXPawn_Banshee.pcc";
             string patchfile = @"C:\Users\Mgamerz\Desktop\jdiff-cs\bansheeattackspets.jsf";
 
-            var outdata = File.ReadAllBytes(sourcefile).ToList();
-            FileStream sourceStream = new FileStream(sourcefile, FileMode.Open);
-            FileStream patchStream = new FileStream(patchfile, FileMode.Open);
-            ApplyJPatch(sourceStream, patchStream, outdata);
+            using FileStream sourceStream = new FileStream(sourcefile, FileMode.Open);
+            using FileStream patchStream = new FileStream(patchfile, FileMode.Open);
+            MemoryStream outStream = new MemoryStream();
+            ApplyJPatch(sourceStream, patchStream, outStream);
         }
         private enum JojoOpcode
         {
-            OPERATION_ESC = 0xa7, //Opening opcoede
-            OPERATION_MOD = 0xa6, //Overwrite bytes
-            OPERATION_INS = 0xa5, //Insert bytes
-            OPERATION_DEL = 0xa4, //Delete bytes
-            OPERATION_EQL = 0xa3, //?? Make data equal??
-            OPERATION_BKT = 0xa2 //backtrack from current position
+            OPERATION_ESC = 0xA7, //Opening opcoede
+            OPERATION_MOD = 0xA6, //Overwrite bytes
+            OPERATION_INS = 0xA5, //Insert bytes
+            OPERATION_DEL = 0xA4, //Delete bytes
+            OPERATION_EQL = 0xA3, //copy data (equal)
+            OPERATION_BKT = 0xA2  //backtrack from current position
         }
-        public static void ApplyJPatch(Stream sourceData, Stream patchData, List<byte> outData)
+        public static void ApplyJPatch(Stream sourceData, Stream patchData, Stream outData)
         {
             //all positions should be at 0.
             sourceData.Position = 0;
             patchData.Position = 0;
-
-            PatchContext context = new PatchContext();
-            context.outData = outData;
+            outData.Position = 0;
 
             int readChar;
-            JojoOpcode currentOpcode;
 
             //Read patch data.
             while ((readChar = patchData.ReadByte()) != -1)
@@ -64,16 +62,29 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     switch (opcode)
                     {
                         case JojoOpcode.OPERATION_MOD:
+                            //Overwrite data
                             Debug.WriteLine("Opcode MOD at 0x" + (patchData.Position - 1).ToString("X6"));
-                            processModInsOpcode(sourceData, patchData, true, context);
+                            processModInsOpcode(sourceData, patchData, outData, true);
                             break;
                         case JojoOpcode.OPERATION_INS:
+                            //Insert new data
                             Debug.WriteLine("Opcode INS at 0x" + (patchData.Position - 1).ToString("X6"));
-                            processModInsOpcode(sourceData, patchData, false, context);
+                            processModInsOpcode(sourceData, patchData, outData, false);
                             break;
                         case JojoOpcode.OPERATION_EQL:
+                            //Equal, move pointers forward
                             Debug.WriteLine("Opcode EQL at 0x" + (patchData.Position - 1).ToString("X6"));
-                            processEQL(sourceData, patchData, context);
+                            processEqlBktOpcode(sourceData, patchData, outData, false);
+                            break;
+                        case JojoOpcode.OPERATION_BKT:
+                            //Backtrace, move backwards
+                            Debug.WriteLine("Opcode BKT at 0x" + (patchData.Position - 1).ToString("X6"));
+                            processEqlBktOpcode(sourceData, patchData, outData, true);
+                            break;
+                        case JojoOpcode.OPERATION_DEL:
+                            //Backtrace, move backwards
+                            Debug.WriteLine("Opcode DEL at 0x" + (patchData.Position - 1).ToString("X6"));
+                            processDel(sourceData, patchData, outData);
                             break;
                         case JojoOpcode.OPERATION_ESC:
                             continue; //this is not actualy an opcode. SKip it.
@@ -87,6 +98,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     Debug.WriteLine("Invalid patch data. Found unexpected byte that is not an opcode: " + readChar.ToString("X2"));
                 }
             }
+
+            if (sourceData.Position != sourceData.Length)
+            {
+                Debug.WriteLine($"Not at end of source data. Len: 0x{sourceData.Length:X6} Pos: 0x{sourceData.Position:X6}");
+            }
+            else
+            {
+                Debug.WriteLine("At end of source data. OK");
+            }
+        }
+
+        private static void processDel(Stream sourceData, Stream patchData, Stream outData)
+        {
+            //Delete data from source. Essentially, skip the data.
+            var len = getJLength(patchData);
+            sourceData.Position += len;
         }
 
         private static int getJLength(Stream patchData)
@@ -126,12 +153,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         /// <summary>
-        /// Modifies or Inserts a series of bytes.
+        /// Modifies or Inserts a series of bytes. Specify MOD using modifyMode = true, so the source data pointer moves as each new byte is written in.
         /// </summary>
         /// <param name="sourceData"></param>
         /// <param name="patchData"></param>
         /// <param name="outData"></param>
-        private static void processModInsOpcode(Stream sourceData, Stream patchData, bool advanceSourceDataPointer, PatchContext context)
+        private static void processModInsOpcode(Stream sourceData, Stream patchData, Stream outData, bool modifyMode)
         {
             int readChar;
             while ((readChar = patchData.ReadByte()) != -1)
@@ -139,8 +166,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (readChar != (int)JojoOpcode.OPERATION_ESC)
                 {
                     //not escape byte, just write it
-                    context.OverwriteByte(readChar);
-                    if (advanceSourceDataPointer)
+                    outData.WriteByte((byte)readChar);
+                    if (modifyMode)
                     {
                         sourceData.Position++;
                     }
@@ -151,8 +178,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (nextChar == (int)JojoOpcode.OPERATION_ESC)
                 {
                     //its <esc><esc>.
-                    context.OverwriteByte(nextChar);
-                    if (advanceSourceDataPointer)
+                    outData.WriteByte((byte)nextChar);
+                    if (modifyMode)
                     {
                         sourceData.Position++;
                     }
@@ -167,9 +194,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 else
                 {
                     //it's <esc>... nothing... this shouldn't be possible but maybe some sort of edge case.
-                    context.OverwriteByte(readChar);
-                    context.OverwriteByte(nextChar);
-                    if (advanceSourceDataPointer)
+                    Debug.WriteLine($"Encountered unexpected esc sequence value: {nextChar:X2}");
+                    outData.WriteByte((byte)readChar);
+                    outData.WriteByte((byte)nextChar);
+
+                    if (modifyMode)
                     {
                         sourceData.Position += 2;
                     }
@@ -178,44 +207,31 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         /// <summary>
-        /// Advances the pointers forward as the source and destination file data is assumed to be the same.
-        /// This does NOT check the data is the same! JojoPatch did not seem to do this.
+        /// Advances the pointers forward or backwards as the source and destination file data is assumed to be the same.
+        /// Data is copied from source data if backwards is false.
         /// </summary>
         /// <param name="sourceData"></param>
         /// <param name="patchData"></param>
         /// <param name="context"></param>
-        private static void processEQL(Stream sourceData, Stream patchData, PatchContext context)
+        /// <param name="backwards">For BCT Backtrace</param>
+        private static void processEqlBktOpcode(Stream sourceData, Stream patchData, Stream outData, bool backwards)
         {
-            var equalLength = getJLength(patchData);
-            Debug.WriteLine("  Data is same for length " + equalLength + " bytes");
-            sourceData.Position += equalLength;
-            context.outFilePosition += equalLength;
+            var length = getJLength(patchData);
+            Debug.WriteLine("  Length: " + length + " bytes");
+            if (backwards)
+            {
+                sourceData.Position -= length;
+            }
+            else
+            {
+                //copy
+                sourceData.CopyToEx(outData, length);
+            }
         }
-
 
         public static bool isOpcode(int code)
         {
             return code >= 0xA2 && code <= 0xA6;
-        }
-
-        private class PatchContext
-        {
-            public List<byte> outData;
-            public int outFilePosition;
-
-            /// <summary>
-            /// Overwrites the byte at the current outFilePosition.
-            /// </summary>
-            /// <param name="readChar"></param>
-            internal void OverwriteByte(int readChar)
-            {
-                if (outFilePosition >= outData.Count)
-                {
-                    throw new Exception("JPatch error: Attempting to overwrite a byte outside of outdata size.");
-                }
-                outData[outFilePosition] = (byte)readChar;
-                outFilePosition++;
-            }
         }
     }
 }
