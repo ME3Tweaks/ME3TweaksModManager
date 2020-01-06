@@ -1385,6 +1385,7 @@ namespace SevenZip
 
             outSize = 0;
 
+            //size (8 bytes)
             for (var i = 0; i < 8; i++)
             {
                 var b = inStream.ReadByte();
