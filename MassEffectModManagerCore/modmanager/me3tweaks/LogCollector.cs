@@ -43,6 +43,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         internal static string CollectLatestLog(bool restartLogger)
         {
             Log.Information("Shutting down logger to allow application to pull log file.");
+            Log.CloseAndFlush();
             var logFile = new DirectoryInfo(App.LogDir)
                                              .GetFiles("*.txt")
                                              .OrderByDescending(f => f.LastWriteTime)
@@ -51,7 +52,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             if (logFile != null && File.Exists(logFile.FullName))
             {
                 logText = File.ReadAllText(logFile.FullName);
-                
             }
 
             if (restartLogger)
