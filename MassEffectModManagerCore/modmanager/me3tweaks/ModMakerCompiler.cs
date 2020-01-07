@@ -1,5 +1,6 @@
 ﻿using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Packages;
 using Serilog;
 using System;
@@ -81,18 +82,79 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         private void compileMixins(XDocument xmlDoc, Mod mod)
         {
-            //TESTING ONLY
+            //Build mixin list by module=>files=>list of mixins for file
             var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
-            var me3tweaksmixins = mixinNode.Elements("MixIn").Select(x => int.Parse(x.Value.Substring(0,x.Value.IndexOf("v")))).ToList();
-            var dynamicmixins = mixinNode.Elements("DynamicMixIn").ToList();
+            var me3tweaksmixinsdata = mixinNode.Elements("MixIn").Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf("v")))).ToList();
+            var dynamicmixindata = mixinNode.Elements("DynamicMixIn").ToList();
 
-            var firstMixinTest = me3tweaksmixins.First();
-            var mixin = MixinHandler.GetMixinByME3TweaksID(firstMixinTest);
-            var dlcFolderName = chunkNameToFoldername(mixin.TargetModule.ToString());
-            var filename = Path.GetFileName(mixin.TargetFile);
-            var filedata = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, filename);
-            filedata.Position = 0;
-            var packageTest = MEPackageHandler.OpenMEPackage(filedata);
+            List<Mixin> allmixins = new List<Mixin>();
+            allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
+            allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
+
+            var compilingListsPerModule = new Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>>();
+            var modules = allmixins.Select(x => x.TargetModule).Distinct().ToList();
+            foreach (var module in modules)
+            {
+                var moduleMixinMapping = new Dictionary<string, List<Mixin>>();
+                var mixinsForModule = allmixins.Where(x => x.TargetModule == module).ToList();
+                foreach (var mixin in mixinsForModule)
+                {
+                    List<Mixin> mixinListForFile;
+                    if (!moduleMixinMapping.TryGetValue(mixin.Filename, out mixinListForFile))
+                    {
+                        mixinListForFile = new List<Mixin>();
+                        moduleMixinMapping[mixin.Filename] = mixinListForFile;
+                    }
+
+                    //make sure finalizer is last
+                    if (mixin.IsFinalizer)
+                    {
+                        CLog.Information($@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.Filename)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
+                        mixinListForFile.Add(mixin);
+                    }
+                    else
+                    {
+                        CLog.Information($@"Adding mixin to mixin list for file {Path.GetFileName(mixin.Filename)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
+                        mixinListForFile.Prepend(mixin);
+                    }
+                }
+
+                //verify only one finalizer
+                foreach (var list in moduleMixinMapping)
+                {
+                    if (list.Value.Count(x => x.IsFinalizer) > 1)
+                    {
+                        Log.Error("ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
+                        //do something here to abort
+                    }
+                }
+                compilingListsPerModule[module] = moduleMixinMapping;
+            }
+
+            //Mixins are ready to be applied
+            Parallel.ForEach(compilingListsPerModule, new ParallelOptions { MaxDegreeOfParallelism = 1 }, mapping =>
+            {
+                var dlcFolderName = chunkNameToFoldername(mapping.Key.ToString());
+                foreach (var map in compilingListsPerModule.Values)
+                {
+                    Stream decompressedFileData;
+                    if (mapping.Key == ModJob.JobHeader.BASEGAME)
+                    {
+                        //basegame
+                    }
+                    else
+                    {
+                        //dlc
+                        //var filedata = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.);
+                        //todo
+                    }
+                }
+            });
+
+
+            //var filename = Path.GetFileName(mixin2.TargetFile);
+            //filedata.Position = 0;
+            //var packageTest = MEPackageHandler.OpenMEPackage(filedata);
         }
 
         int totalNumCoalescedFileChunks = 0;
@@ -519,6 +581,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             switch (chunkName)
             {
+                case "BASEGAME":
+                    return null; //kind of a hack. This is not a DLC folder but i don't want to return error log
                 case "RESURGENCE":
                 case "MP1":
                     return "DLC_CON_MP1";

@@ -97,6 +97,26 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return mixin;
         }
 
+        /// <summary>
+        /// Creates a mixin object from Dynamic Mixin data in a modmaker mod definition
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        internal static Mixin ReadDynamicMixin(XElement element)
+        {
+            Mixin dynamic = new Mixin()
+            {
+                TargetModule = Enum.Parse<ModJob.JobHeader>(element.Attribute("targetmodule").Value),
+                TargetFile = element.Attribute("targetmodule").Value,
+                PatchName = element.Attribute("name").Value,
+                TargetSize = int.Parse(element.Attribute("targetsize").Value)
+            };
+            var hexStr = element.Value;
+            byte[] hexData = Utilities.HexStringToByteArray(hexStr);
+            dynamic.PatchData = new MemoryStream(hexData);
+            return dynamic;
+        }
+
         private static MemoryStream GetPatchDataForMixin(Mixin mixin)
         {
             using (var file = File.OpenRead(MixinPackagePath))
