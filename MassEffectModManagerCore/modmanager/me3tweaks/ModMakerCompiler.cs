@@ -1,5 +1,6 @@
 ﻿using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
+using ME3Explorer.Packages;
 using Serilog;
 using System;
 using System.Collections.Concurrent;
@@ -69,12 +70,29 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var mod = GenerateLibraryModFromDocument(xmlDoc);
             if (mod != null)
             {
+                compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
             }
             else
             {
                 SetModNameCallback?.Invoke("Mod not found on server");
             }
+        }
+
+        private void compileMixins(XDocument xmlDoc, Mod mod)
+        {
+            //TESTING ONLY
+            var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
+            var me3tweaksmixins = mixinNode.Elements("MixIn").Select(x => int.Parse(x.Value.Substring(0,x.Value.IndexOf("v")))).ToList();
+            var dynamicmixins = mixinNode.Elements("DynamicMixIn").ToList();
+
+            var firstMixinTest = me3tweaksmixins.First();
+            var mixin = MixinHandler.GetMixinByME3TweaksID(firstMixinTest);
+            var dlcFolderName = chunkNameToFoldername(mixin.TargetModule.ToString());
+            var filename = Path.GetFileName(mixin.TargetFile);
+            var filedata = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, filename);
+            filedata.Position = 0;
+            var packageTest = MEPackageHandler.OpenMEPackage(filedata);
         }
 
         int totalNumCoalescedFileChunks = 0;
@@ -501,14 +519,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             switch (chunkName)
             {
+                case "RESURGENCE":
                 case "MP1":
                     return "DLC_CON_MP1";
+                case "REBELLION":
                 case "MP2":
                     return "DLC_CON_MP2";
+                case "EARTH":
                 case "MP3":
                     return "DLC_CON_MP3";
+                case "RETALIATION":
                 case "MP4":
                     return "DLC_CON_MP4";
+                case "RECKONING":
                 case "MP5":
                     return "DLC_CON_MP5";
                 case "PATCH1":

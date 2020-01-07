@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -10,6 +11,19 @@ namespace MassEffectModManagerCore.modmanager.objects
     /// </summary>
     public class Mixin
     {
-
+        public string PatchName { get; set; }
+        public string PatchDesc { get; set; }
+        public string PatchDeveloper { get; set; }
+        public int PatchVersion { get; set; }
+        //public string TargetVersion { get; set; }
+        public ModJob.JobHeader TargetModule { get; set; }
+        public string TargetFile { get; set; }
+        public int TargetSize { get; set; }
+        public bool IsFinalizer { get; set; }
+        //public string patchurl { get; set; }
+        public string FolderName { get; set; }
+        public int ME3TweaksID { get; set; }
+        public string Filename { get; internal set; }
+        public MemoryStream PatchData { get; internal set; }
     }
 }

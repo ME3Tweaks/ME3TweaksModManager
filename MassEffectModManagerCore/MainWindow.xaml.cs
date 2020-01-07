@@ -1692,18 +1692,11 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        //var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
-                        //if (File.Exists(coalesced))
-                        //{
-                        //    ME2Coalesced me2c = new ME2Coalesced(coalesced);
-                        //    me2c.Serialize(@"C:\users\public\me2c.ini");
-                        //}
-
-                        var manifest = OnlineContent.FetchOnlineStartupManifest();
+                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest();
                         //#if DEBUG
                         //                    if (int.Parse(manifest["latest_build_number"]) > 0)
                         //#else
-                        if (int.TryParse(manifest[@"latest_build_number"], out var latestServerBuildNumer))
+                        if (int.TryParse(App.OnlineManifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
 
@@ -1753,8 +1746,50 @@ namespace MassEffectModManagerCore
                         Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
                         updateCheckTask.finishedUiText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
-
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
+
+                    if (App.OnlineManifest != null)
+                    {
+                        bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"MixinFetch", "Loading Mixins", "Loaded Mixins");
+                        try
+                        {
+                            //Mixins
+                            MixinHandler.ServerMixinHash = App.OnlineManifest["mixinpackagemd5"];
+                            if (!MixinHandler.IsMixinPackageUpToDate())
+                            {
+                                //Download new package.
+                                var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
+                                if (memoryPackage.errorMessage != null)
+                                {
+                                    Log.Error("Error fetching mixin package: " + memoryPackage.errorMessage);
+                                    bgTask.finishedUiText = "Failed to update mixin package";
+                                }
+                                else
+                                {
+                                    File.WriteAllBytes(MixinHandler.MixinPackagePath, memoryPackage.result.ToArray());
+                                    Log.Information("Wrote ME3Tweaks Mixin Package to disk");
+                                    MixinHandler.LoadME3TweaksPackage();
+                                }
+                            }
+                            else
+                            {
+                                Log.Information("ME3Tweaks Mixin Package is up to date");
+                                MixinHandler.LoadME3TweaksPackage();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("Error fetching mixin package: " + e.Message);
+                            bgTask.finishedUiText = "Error loading Mixins";
+
+                        }
+                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    }
+                    else
+                    {
+                        // load cached (will load nothing if there is no local file)
+                        MixinHandler.LoadME3TweaksPackage();
+                    }
                 }
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
@@ -1786,7 +1821,6 @@ namespace MassEffectModManagerCore
                 {
                     App.TipsService = OnlineContent.FetchTipsService(!firstStartupCheck);
                     SetTipsForLanguage();
-
                 }
                 catch (Exception e)
                 {
@@ -1794,6 +1828,7 @@ namespace MassEffectModManagerCore
                 }
 
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
                 if (firstStartupCheck)
                 {
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadObjectInfo", M3L.GetString(M3L.string_loadingPackageInfoDatabases), M3L.GetString(M3L.string_loadedPackageInfoDatabases));
