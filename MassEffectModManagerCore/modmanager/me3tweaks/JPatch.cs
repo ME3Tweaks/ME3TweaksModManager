@@ -23,6 +23,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             using FileStream patchStream = new FileStream(patchfile, FileMode.Open);
             MemoryStream outStream = new MemoryStream();
             ApplyJPatch(sourceStream, patchStream, outStream);
+            File.WriteAllBytes(@"C:\Users\Mgamerz\Desktop\jdiff-cs\Patch_SFXPawn_Banshee-patched-cs.pcc", outStream.ToArray());
         }
         private enum JojoOpcode
         {
