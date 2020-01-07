@@ -1412,7 +1412,7 @@ namespace MassEffectModManagerCore
             MEDirectories.ReloadGamePaths(); //this is redundant on the first boot but whatever.
             Log.Information(@"Populating game targets");
 
-            if (ME3Directory.gamePath != null)
+            if (ME3Directory.gamePath != null && Directory.Exists(ME3Directory.gamePath))
             {
                 var target = new GameTarget(Mod.MEGame.ME3, ME3Directory.gamePath, true);
                 var failureReason = target.ValidateTarget();
@@ -1428,7 +1428,7 @@ namespace MassEffectModManagerCore
                 }
             }
 
-            if (ME2Directory.gamePath != null)
+            if (ME2Directory.gamePath != null && Directory.Exists(ME2Directory.gamePath))
             {
                 var target = new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath, true);
                 var failureReason = target.ValidateTarget();
@@ -1444,7 +1444,7 @@ namespace MassEffectModManagerCore
                 }
             }
 
-            if (ME1Directory.gamePath != null)
+            if (ME1Directory.gamePath != null && Directory.Exists(ME1Directory.gamePath))
             {
                 var target = new GameTarget(Mod.MEGame.ME1, ME1Directory.gamePath, true);
                 var failureReason = target.ValidateTarget();
