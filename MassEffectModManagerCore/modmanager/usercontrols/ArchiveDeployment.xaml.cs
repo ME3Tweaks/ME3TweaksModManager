@@ -591,7 +591,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (buildingFolderList != "")
                     {
-                        buildingFolderList += @"\\";
+                        buildingFolderList += @"\";
                     }
                     buildingFolderList += relativeFolder;
                     if (directories.Add(buildingFolderList))
