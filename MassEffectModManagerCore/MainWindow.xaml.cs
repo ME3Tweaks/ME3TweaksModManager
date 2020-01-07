@@ -1045,8 +1045,8 @@ namespace MassEffectModManagerCore
                         }
                     }
 
-                //Run AutoTOC if ME3
-                if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3)
+                    //Run AutoTOC if ME3
+                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3)
                     {
                         var autoTocUI = new AutoTOC(SelectedGameTarget);
                         autoTocUI.Close += (a1, b1) =>
@@ -1267,7 +1267,7 @@ namespace MassEffectModManagerCore
             bw.DoWork += (a, args) =>
             {
                 bool canCheckForModUpdates = Utilities.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
-            ModsLoaded = false;
+                ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 CLog.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory(), Settings.LogModStartup);
                 var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: Mod.MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
@@ -1294,13 +1294,13 @@ namespace MassEffectModManagerCore
                         FailedMods.Add(mod);
 
 
-                    //Application.Current.Dispatcher.Invoke(delegate
-                    //{
-                    //    Storyboard sb = this.FindResource("OpenWebsitePanel") as Storyboard;
-                    //    Storyboard.SetTarget(sb, FailedModsPanel);
-                    //    sb.Begin();
-                    //});
-                }
+                        //Application.Current.Dispatcher.Invoke(delegate
+                        //{
+                        //    Storyboard sb = this.FindResource("OpenWebsitePanel") as Storyboard;
+                        //    Storyboard.SetTarget(sb, FailedModsPanel);
+                        //    sb.Begin();
+                        //});
+                    }
                 }
 
                 if (modToHighlight != null)
@@ -1309,15 +1309,15 @@ namespace MassEffectModManagerCore
                 }
 
 
-            //should this be here?
-            UpdateBinkStatus(Mod.MEGame.ME1);
+                //should this be here?
+                UpdateBinkStatus(Mod.MEGame.ME1);
                 UpdateBinkStatus(Mod.MEGame.ME2);
                 UpdateBinkStatus(Mod.MEGame.ME3);
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
-            //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
-            if (canCheckForModUpdates)
+                //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
+                if (canCheckForModUpdates)
                 {
                     CheckAllModsForUpdates();
                 }
@@ -1636,8 +1636,8 @@ namespace MassEffectModManagerCore
             bw.WorkerReportsProgress = true;
             bw.ProgressChanged += (sender, args) =>
             {
-            //Help items loading
-            if (args.UserState is List<SortableHelpElement> sortableHelpItems)
+                //Help items loading
+                if (args.UserState is List<SortableHelpElement> sortableHelpItems)
                 {
                     setDynamicHelpMenu(sortableHelpItems);
                 }
@@ -1654,9 +1654,9 @@ namespace MassEffectModManagerCore
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
                     if (!OnlineContent.EnsureCriticalFiles())
                     {
-                    //Critical files not loaded!
+                        //Critical files not loaded!
 
-                    b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
+                        b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
                         bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadRequiredFiles);
                         backgroundTaskEngine.SubmitJobCompletion(bgTask);
                         return;
@@ -1667,23 +1667,23 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                    //var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
-                    //if (File.Exists(coalesced))
-                    //{
-                    //    ME2Coalesced me2c = new ME2Coalesced(coalesced);
-                    //    me2c.Serialize(@"C:\users\public\me2c.ini");
-                    //}
+                        //var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
+                        //if (File.Exists(coalesced))
+                        //{
+                        //    ME2Coalesced me2c = new ME2Coalesced(coalesced);
+                        //    me2c.Serialize(@"C:\users\public\me2c.ini");
+                        //}
 
-                    var manifest = OnlineContent.FetchOnlineStartupManifest();
-                    //#if DEBUG
-                    //                    if (int.Parse(manifest["latest_build_number"]) > 0)
-                    //#else
-                    if (int.TryParse(manifest[@"latest_build_number"], out var latestServerBuildNumer))
+                        var manifest = OnlineContent.FetchOnlineStartupManifest();
+                        //#if DEBUG
+                        //                    if (int.Parse(manifest["latest_build_number"]) > 0)
+                        //#else
+                        if (int.TryParse(manifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
 
-                        //#endif
-                        {
+                            //#endif
+                            {
                                 Log.Information(@"Found update for Mod Manager: Build " + latestServerBuildNumer);
 
                                 Application.Current.Dispatcher.Invoke(delegate
@@ -1716,7 +1716,7 @@ namespace MassEffectModManagerCore
                                 }
                             }
 #endif
-                        else
+                            else
                             {
                                 Log.Information(@"Mod Manager is up to date");
                             }
@@ -1724,8 +1724,8 @@ namespace MassEffectModManagerCore
                     }
                     catch (Exception e)
                     {
-                    //Error checking for updates!
-                    Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
+                        //Error checking for updates!
+                        Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
                         updateCheckTask.finishedUiText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
 
@@ -1786,7 +1786,7 @@ namespace MassEffectModManagerCore
 
                 Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
-        };
+            };
             bw.RunWorkerCompleted += (a, b) =>
             {
                 if (b.Result is int i)
@@ -1810,11 +1810,11 @@ namespace MassEffectModManagerCore
                 StartupCompleted = true;
                 CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
-            //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
-            //MemoryStream ms = new MemoryStream(bytes);
-            //SevenZipExtractor sve = new SevenZipExtractor(ms);
-            //sve.ExtractArchive(@"C:\users\public\documents");
-        };
+                //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
+                //MemoryStream ms = new MemoryStream(bytes);
+                //SevenZipExtractor sve = new SevenZipExtractor(ms);
+                //sve.ExtractArchive(@"C:\users\public\documents");
+            };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
         }

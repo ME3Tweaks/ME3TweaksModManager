@@ -707,6 +707,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             /// <returns></returns>
             internal bool ApplyASI(ASIMod asi, Action operationCompletedCallback)
             {
+                if (asi == null)
+                {
+                    //how can this be?
+                    Log.Error("ASI is null for ApplyASI()!");
+                }
+                if (SelectedTarget.TargetPath == null)
+                {
+                    Log.Error("Selected Target is null for ApplyASI()!");
+                }
                 Log.Information($@"Installing {asi.Name} v{asi.Version} to target {SelectedTarget.TargetPath}");
                 //Check if this is actually installed or not (or outdated)
                 var installedInfo = asi.InstalledInfo;

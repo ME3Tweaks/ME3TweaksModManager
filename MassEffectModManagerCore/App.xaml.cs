@@ -80,11 +80,18 @@ namespace MassEffectModManagerCore
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     // Attach some text.
-
+                    string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + report.StackTrace;
+                    Log.Fatal(errorMessage);
                     string log = LogCollector.CollectLatestLog(false);
                     if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
+                    }
+                    else
+                    {
+                        //Compress log
+                        var compressedLog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, "crashlog.txt.lzma", "application/x-lzma"));
                     }
 
                     // Attach binary data.
@@ -181,8 +188,6 @@ namespace MassEffectModManagerCore
                     }
                 }
                 #endregion
-
-
 
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
@@ -374,18 +379,17 @@ namespace MassEffectModManagerCore
 
         /// <summary>
         /// Called when an unhandled exception occurs. This method can only be invoked after startup has completed. 
+        /// Note! This method is called AFTER it is called from the Crashes library.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">Exception to process</param>
         static void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            string errorMessage = string.Format("ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:");
-            string st = FlattenException(e.Exception);
-            Log.Fatal(errorMessage);
-            Log.Fatal(st);
-            //Log.Information("Forcing beta mode off before exiting...");
-            //Utilities.WriteRegistryKey(Registry.CurrentUser, AlotAddOnGUI.MainWindow.REGISTRY_KEY, AlotAddOnGUI.MainWindow.SETTINGSTR_BETAMODE, 0);
-            File.Create(Utilities.GetAppCrashFile()).Close();
+            if (!Crashes.IsEnabledAsync().Result)
+            {
+                string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + FlattenException(e.Exception);
+                Log.Fatal(errorMessage);
+            }
         }
 
         /// <summary>
@@ -396,8 +400,7 @@ namespace MassEffectModManagerCore
         {
             if (!POST_STARTUP)
             {
-                string errorMessage = string.Format("ME3Tweaks Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
-                File.WriteAllText(Path.Combine(Utilities.GetAppDataFolder(), "FATAL_STARTUP_CRASH.txt"), errorMessage);
+                Log.Fatal("ME3Tweaks Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
             }
         }
 

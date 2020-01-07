@@ -721,11 +721,6 @@ namespace MassEffectModManagerCore
             }
         }
 
-        internal static string GetAppCrashFile()
-        {
-            return Path.Combine(Utilities.GetAppDataFolder(), "APP_CRASH");
-        }
-
         internal static string GetAppDataFolder()
         {
             var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
