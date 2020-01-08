@@ -15,7 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -64,6 +63,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             bw.DoWork += (a, b) =>
             {
+                //Todo: Add checkbox to use local version instead
                 if (int.TryParse(ModMakerCode, out var code))
                 {
                     DownloadAndModNameText = "Downloading mod delta from ME3Tweaks";
@@ -71,6 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var lzmaEndpoint = normalEndpoint + "&method=lzma";
 
                     string modDelta = null;
+
                     //Try LZMA first
                     try
                     {
@@ -121,6 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
 
+
                     if (modDelta != null)
                     {
                         KeepOpenWhenThreadFinishes = false;
@@ -135,6 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         compiler.SetCompileStarted = CompilationInProgress;
                         compiler.SetModNotFoundCallback = ModNotFound;
                         Mod m = compiler.DownloadAndCompileMod(modDelta);
+                        File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + ".xml"), modDelta);
                         b.Result = m;
                     }
                 }
@@ -146,7 +149,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     OnClosing(new DataEventArgs(m));
                 }
-                
+
             };
             bw.RunWorkerAsync();
         }

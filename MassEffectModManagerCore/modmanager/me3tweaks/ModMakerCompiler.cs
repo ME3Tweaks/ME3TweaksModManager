@@ -486,8 +486,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                         else
                         {
-                            Debug.WriteLine($"Found matching item {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}");
-                            matchingItem.Value = value; //assign
+                            //Debug.WriteLine($"Found matching item {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}");
+                            if (matchingAlgorithm == "wavelist")
+                            {
+                                //On Jan 7 2020 I discovered a bug in the output code of ME3Tweaks ModMaker server publisher that has been present since late 2014.
+                                //The , between enemies in the wavelist lists would not be output if the enemy did not have emax set (max num on field). 
+                                //ME3CMM did not have issues with this as it's weak struct parser could parse the list 
+                                //and since I was building modmaker I opted to stress test my implementation
+                                //by making the client also parse and rebuild the string, even though this was not necessary as the assignment data was already known.
+                                //M3 does not parse the item beyond identification purposes, so an )( items will need to be substituted for ),(, but only for arraytype wavelist.
+                                matchingItem.Value = value.Replace(")(", "),("); //assign
+                            }
+                            else
+                            {
+                                matchingItem.Value = value; //assign
+                            }
                         }
                     }
                 }
