@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.IO;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -18,6 +19,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     /// </summary>
     public class MixinHandler
     {
+        public static readonly RecyclableMemoryStreamManager MixinMemoryStreamManager = new RecyclableMemoryStreamManager();
         public static string ServerMixinHash;
         public static readonly string MixinPackageEndpoint = @"https://me3tweaks.com/mixins/mixinlibrary.zip";
         public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), "Mixins", "me3tweaks")).FullName, "mixinlibrary.zip");
@@ -151,8 +153,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 CLog.Information(@"Applying mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
                 if (decompressedStream.Length == mixin.TargetSize)
                 {
-
-                    MemoryStream outStream = new MemoryStream((int)decompressedStream.Length);
+                    var outStream = MixinMemoryStreamManager.GetStream();
+                    //MemoryStream outStream = new MemoryStream();
                     JPatch.ApplyJPatch(decompressedStream, mixin.PatchData, outStream);
                     if (!mixin.IsFinalizer && outStream.Length != decompressedStream.Length)
                     {

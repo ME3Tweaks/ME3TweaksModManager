@@ -122,6 +122,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 return binaryReader.ReadUInt32();
         }
 
+        public static void WriteToFile(this MemoryStream stream, string outfile)
+        {
+            stream.Position = 0;
+            using (FileStream file = new FileStream(outfile, FileMode.Create, System.IO.FileAccess.Write))
+                stream.CopyTo(file);
+        }
+
         public static void WriteInt64ToStream(this Stream stream, long value)
         {
             using (BinaryWriter binaryWriter = new BinaryWriter(stream, Encoding.Default, true))

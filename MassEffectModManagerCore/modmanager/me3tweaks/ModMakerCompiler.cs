@@ -174,19 +174,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                          using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
                          using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
                          var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                         File.WriteAllBytes(outfile, finalStream.ToArray());
+                         finalStream.WriteToFile(outfile);
+                         //File.WriteAllBytes(outfile, finalStream.ToArray());
                      }
                  }
                  else
                  {
                      //dlc
+                     var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
                      foreach (var file in mapping.Value)
                      {
-                         using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key);
+                         using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
                          using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
                          using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
                          var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                         File.WriteAllBytes(outfile, finalStream.ToArray());
+                         finalStream.WriteToFile(outfile);
                      }
                  }
              });
@@ -294,7 +296,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 Directory.CreateDirectory(outFolder);
                 var outFile = Path.Combine(outFolder, coalescedFilename);
 
-                File.WriteAllBytes(outFile, newFileStream.ToArray());
+                newFileStream.WriteToFile(outFile);
                 CLog.Information($"{loggingPrefix} Compiled coalesced file, chunk finished", Settings.LogModMakerCompiler);
             }
 

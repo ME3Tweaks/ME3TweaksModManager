@@ -49,15 +49,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return null;
         }
 
-        /// <summary>
-        /// Fetches a file from an SFAR from the game backup of ME3.
-        /// </summary>
-        /// <param name="dlcName">Name of DLC to fetch from. This is the DLC foldername, or TESTPATCH if fetching from there.</param>
-        /// <param name="filename">File in archive to fetch.</param>
-        /// <param name="target">Optional forced target, in case you just want to fetch from a target (still must be vanilla).</param>
-        /// <returns>Null if file could not be fetched or was not vanilla</returns>
-
-        public static MemoryStream FetchFileFromVanillaSFAR(string dlcName, string filename, GameTarget target = null)
+        public static DLCPackage FetchVanillaSFAR(string dlcName, GameTarget target = null)
         {
             var backupPath = Utilities.GetGameBackupPath(Mod.MEGame.ME3);
             if (backupPath == null && target == null) return null; //can't fetch
@@ -83,7 +75,29 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     Log.Error("SFAR is not vanilla: " + sfar);
                     return null; //Not vanilla!
                 }
-                var dlc = new DLCPackage(sfar);
+
+                return new DLCPackage(sfar);
+            }
+            else
+            {
+                Log.Error($"SFAR does not exist for requested file fetch: {sfar}");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Fetches a file from an SFAR from the game backup of ME3.
+        /// </summary>
+        /// <param name="dlcName">Name of DLC to fetch from. This is the DLC foldername, or TESTPATCH if fetching from there.</param>
+        /// <param name="filename">File in archive to fetch.</param>
+        /// <param name="target">Optional forced target, in case you just want to fetch from a target (still must be vanilla).</param>
+        /// <returns>Null if file could not be fetched or was not vanilla</returns>
+
+        public static MemoryStream FetchFileFromVanillaSFAR(string dlcName, string filename, GameTarget target = null, DLCPackage forcedDLC = null)
+        {
+            var dlc = forcedDLC ?? FetchVanillaSFAR(dlcName, target);
+            if (dlc != null)
+            {
                 var dlcEntry = dlc.FindFileEntry(filename);
                 if (dlcEntry >= 0)
                 {
@@ -94,10 +108,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     Log.Error($"Could not find file entry in {dlcName} SFAR: {filename}");
                 }
-            }
-            else
-            {
-                Log.Error($"SFAR does not exist for requested file fetch: {sfar}");
             }
             return null;
         }
