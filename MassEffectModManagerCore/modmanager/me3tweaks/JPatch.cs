@@ -64,33 +64,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         case JojoOpcode.OPERATION_MOD:
                             //Overwrite data
-                            Debug.WriteLine("Opcode MOD at 0x" + (patchData.Position - 1).ToString("X6"));
+                            //Debug.WriteLine("Opcode MOD at 0x" + (patchData.Position - 1).ToString("X6"));
                             processModInsOpcode(sourceData, patchData, outData, true);
                             break;
                         case JojoOpcode.OPERATION_INS:
                             //Insert new data
-                            Debug.WriteLine("Opcode INS at 0x" + (patchData.Position - 1).ToString("X6"));
+                            //Debug.WriteLine("Opcode INS at 0x" + (patchData.Position - 1).ToString("X6"));
                             processModInsOpcode(sourceData, patchData, outData, false);
                             break;
                         case JojoOpcode.OPERATION_EQL:
                             //Equal, move pointers forward
-                            Debug.WriteLine("Opcode EQL at 0x" + (patchData.Position - 1).ToString("X6"));
+                            //Debug.WriteLine("Opcode EQL at 0x" + (patchData.Position - 1).ToString("X6"));
                             processEqlBktOpcode(sourceData, patchData, outData, false);
                             break;
                         case JojoOpcode.OPERATION_BKT:
                             //Backtrace, move backwards
-                            Debug.WriteLine("Opcode BKT at 0x" + (patchData.Position - 1).ToString("X6"));
+                            //Debug.WriteLine("Opcode BKT at 0x" + (patchData.Position - 1).ToString("X6"));
                             processEqlBktOpcode(sourceData, patchData, outData, true);
                             break;
                         case JojoOpcode.OPERATION_DEL:
                             //Backtrace, move backwards
-                            Debug.WriteLine("Opcode DEL at 0x" + (patchData.Position - 1).ToString("X6"));
+                            //Debug.WriteLine("Opcode DEL at 0x" + (patchData.Position - 1).ToString("X6"));
                             processDel(sourceData, patchData, outData);
                             break;
                         case JojoOpcode.OPERATION_ESC:
                             continue; //this is not actualy an opcode. SKip it.
                         default:
-                            Debug.WriteLine("Unsupported opcode currently: " + opcode.ToString());
+                            //Debug.WriteLine("Unsupported opcode currently: " + opcode.ToString());
                             break;
                     }
                 }
@@ -106,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             else
             {
-                Debug.WriteLine("At end of source data. OK");
+                //Debug.WriteLine("At end of source data. OK");
             }
         }
 
@@ -195,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 else
                 {
                     //it's <esc>... nothing... this shouldn't be possible but maybe some sort of edge case.
-                    Debug.WriteLine($"Encountered unexpected esc sequence value: {nextChar:X2} at {(patchData.Position - 1):X2}");
+                    //Debug.WriteLine($"Encountered unexpected esc sequence value: {nextChar:X2} at {(patchData.Position - 1):X2}");
                     outData.WriteByte((byte)readChar);
                     outData.WriteByte((byte)nextChar);
 
@@ -218,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private static void processEqlBktOpcode(Stream sourceData, Stream patchData, Stream outData, bool backwards)
         {
             var length = getJLength(patchData);
-            Debug.WriteLine("  Length: " + length + " bytes");
+            //Debug.WriteLine("  Length: " + length + " bytes");
             if (backwards)
             {
                 sourceData.Position -= length;

@@ -37,6 +37,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public Action SetCompileStarted;
         public Action SetModNotFoundCallback;
 
+        private const int MaxModmakerCores = 1;
         public ModMakerCompiler(int code = 0)
         {
             this.code = code;
@@ -77,6 +78,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
+                //compileTLKs(xmlDoc, mod); //Compile TLK
                 finalizeModdesc(mod);
                 return mod;
             }
@@ -135,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     if (list.Value.Count(x => x.IsFinalizer) > 1)
                     {
-                        Log.Error("ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
+                        Log.Error(@"ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
                         //do something here to abort
                     }
                 }
@@ -153,41 +155,41 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var numdone = Interlocked.Increment(ref numMixinsApplied);
                 if (numdone > totalMixinsToApply)
                 {
-                    Log.Warning($"Error in progress calculation, numdome > total. Done: {numdone} Total: {totalMixinsToApply}");
+                    Log.Warning($@"Error in progress calculation, numdone > total. Done: {numdone} Total: {totalMixinsToApply}");
                 }
                 SetCurrentValueCallback?.Invoke(numdone);
             };
             //Mixins are ready to be applied
-            Parallel.ForEach(compilingListsPerModule, new ParallelOptions { MaxDegreeOfParallelism = 1 }, mapping =>
-            {
-                var dlcFolderName = chunkNameToDLCFoldername(mapping.Key.ToString());
-                var outdir = Path.Combine(mod.ModPath, headerToModFoldername(mapping.Key), "CookedPCConsole");
-                Directory.CreateDirectory(outdir);
-                if (mapping.Key == ModJob.JobHeader.BASEGAME)
-                {
-                    //basegame
-                    foreach (var file in mapping.Value)
-                    {
-                        using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
-                        using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
-                        using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
-                        var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                        File.WriteAllBytes(outfile, finalStream.ToArray());
-                    }
-                }
-                else
-                {
-                    //dlc
-                    foreach (var file in mapping.Value)
-                    {
-                        using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key);
-                        using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
-                        using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
-                        var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                        File.WriteAllBytes(outfile, finalStream.ToArray());
-                    }
-                }
-            });
+            Parallel.ForEach(compilingListsPerModule, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount > MaxModmakerCores ? MaxModmakerCores : Environment.ProcessorCount }, mapping =>
+             {
+                 var dlcFolderName = chunkNameToDLCFoldername(mapping.Key.ToString());
+                 var outdir = Path.Combine(mod.ModPath, headerToModFoldername(mapping.Key), @"CookedPCConsole");
+                 Directory.CreateDirectory(outdir);
+                 if (mapping.Key == ModJob.JobHeader.BASEGAME)
+                 {
+                     //basegame
+                     foreach (var file in mapping.Value)
+                     {
+                         using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
+                         using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                         using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
+                         var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                         File.WriteAllBytes(outfile, finalStream.ToArray());
+                     }
+                 }
+                 else
+                 {
+                     //dlc
+                     foreach (var file in mapping.Value)
+                     {
+                         using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key);
+                         using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                         using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
+                         var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                         File.WriteAllBytes(outfile, finalStream.ToArray());
+                     }
+                 }
+             });
 
 
             //var filename = Path.GetFileName(mixin2.TargetFile);
@@ -218,7 +220,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             SetCurrentMaxCallback?.Invoke(totalNumCoalescedFileChunks);
             //Todo: Precheck assets are available.
 
-            Parallel.ForEach(jobCollection, new ParallelOptions { MaxDegreeOfParallelism = 1 }, (xmlChunk) => compileCoalescedChunk(xmlChunk, mod));
+            Parallel.ForEach(jobCollection, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount > MaxModmakerCores ? MaxModmakerCores : Environment.ProcessorCount }, (xmlChunk) => compileCoalescedChunk(xmlChunk, mod));
         }
 
         private bool compileCoalescedChunk(XElement xmlChunk, Mod mod)

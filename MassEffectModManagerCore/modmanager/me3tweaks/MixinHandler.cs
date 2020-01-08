@@ -148,25 +148,26 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             foreach (var mixin in mixins)
             {
-                CLog.Information("Applying mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
+                CLog.Information(@"Applying mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
                 if (decompressedStream.Length == mixin.TargetSize)
                 {
 
-                    MemoryStream outStream = new MemoryStream();
+                    MemoryStream outStream = new MemoryStream((int)decompressedStream.Length);
                     JPatch.ApplyJPatch(decompressedStream, mixin.PatchData, outStream);
-                    if (mixin.IsFinalizer && outStream.Length != decompressedStream.Length)
+                    if (!mixin.IsFinalizer && outStream.Length != decompressedStream.Length)
                     {
-                        Log.Error($"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed!! The output of this mixin patch will be discarded.");
+                        Log.Error($@"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed!! The output of this mixin patch will be discarded.");
                     }
                     else
                     {
-                        CLog.Information("Applied mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
+                        CLog.Information(@"Applied mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
+                        decompressedStream.Dispose();
                         decompressedStream = outStream; //pass through
                     }
                 }
                 else
                 {
-                    Log.Error($"Mixin {mixin.PatchName} cannot be applied to this data, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}");
+                    Log.Error($@"Mixin {mixin.PatchName} cannot be applied to this data, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}");
                 }
 
                 notifyApplicationDone?.Invoke();

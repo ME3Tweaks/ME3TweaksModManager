@@ -156,7 +156,9 @@ namespace ME3Explorer.Packages
             if (Flags.HasFlag(EPackageFlags.Compressed))
             {
                 //package is compressed.
-                return Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+                var newStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+                stream.Dispose();
+                return newStream;
             }
             else
             {
