@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public Action SetCompileStarted;
         public Action SetModNotFoundCallback;
 
-        private const int MaxModmakerCores = 1;
+        private const int MaxModmakerCores = 4;
         public ModMakerCompiler(int code = 0)
         {
             this.code = code;
