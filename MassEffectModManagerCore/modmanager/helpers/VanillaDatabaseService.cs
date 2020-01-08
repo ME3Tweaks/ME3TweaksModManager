@@ -62,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             var backupPath = Utilities.GetGameBackupPath(Mod.MEGame.ME3);
             if (backupPath == null && target == null) return null; //can't fetch
 
-            string sfar = null;
+            string sfar;
             if (dlcName == "DLC_TestPatch") //might need changed
             {
                 //testpatch
@@ -87,8 +87,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var dlcEntry = dlc.FindFileEntry(filename);
                 if (dlcEntry >= 0)
                 {
+                    Log.Information($"Extracting file to memory from {dlcName} SFAR: {filename}");
                     return dlc.DecompressEntry(dlcEntry);
                 }
+                else
+                {
+                    Log.Error($"Could not find file entry in {dlcName} SFAR: {filename}");
+                }
+            }
+            else
+            {
+                Log.Error($"SFAR does not exist for requested file fetch: {sfar}");
             }
             return null;
         }
@@ -154,6 +163,52 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 list.Add((size, sb.ToString()));
             }
+        }
+
+        /// <summary>
+        /// Fetches a file from the backup CookedPC/CookedPCConsole directory.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="filename">FILENAME only of file. Do not pass a relative path</param>
+        /// <returns></returns>
+        internal static MemoryStream FetchBasegameFile(Mod.MEGame game, string filename)
+        {
+            var backupPath = Utilities.GetGameBackupPath(game);
+            if (backupPath == null/* && target == null*/) return null; //can't fetch
+
+            string cookedPath = MEDirectories.CookedPath(game, backupPath);
+
+            if (game >= Mod.MEGame.ME2)
+            {
+                //Me2,Me3: Game file will exist in this folder
+                var file = Path.Combine(cookedPath, Path.GetFileName(filename));
+                if (File.Exists(file))
+                {
+                    //file found
+                    return new MemoryStream(File.ReadAllBytes(file));
+                }
+                else
+                {
+                    Log.Error($"Could not find basegame file in backup for {game}: {file}");
+                }
+            }
+            else
+            {
+                //Me1: will have to search subdirectories for file with same name.
+                string[] files = Directory.GetFiles(cookedPath, Path.GetFileName(filename), SearchOption.AllDirectories);
+                if (files.Count() == 1)
+                {
+                    //file found
+                    return new MemoryStream(File.ReadAllBytes(files[0]));
+                }
+                else
+                {
+                    //ambiguous or file not found
+                    Log.Error($"Could not find basegame file (or found multiple) in backup for {game}: {filename}");
+
+                }
+            }
+            return null;
         }
 
         public static bool IsFileVanilla(GameTarget target, string file, bool md5check = false)

@@ -25,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public string patchurl { get; set; }
         public string FolderName { get; set; }
         public int ME3TweaksID { get; set; }
-        public string Filename { get; internal set; }
+        public string PatchFilename { get; internal set; }
         public MemoryStream PatchData { get; internal set; }
     }
 }

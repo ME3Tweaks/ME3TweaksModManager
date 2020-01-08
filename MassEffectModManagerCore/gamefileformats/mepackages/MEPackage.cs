@@ -117,6 +117,147 @@ namespace ME3Explorer.Packages
             ReadPackageFromStream(stream);
         }
 
+        public static MemoryStream GetDecompressedPackageStream(MemoryStream stream)
+        {
+            long startPos = stream.Position;
+            uint magic = stream.ReadUInt32();
+            if (magic != packageTag)
+            {
+                throw new FormatException("Not an Unreal package!");
+            }
+            ushort unrealVersion = stream.ReadUInt16();
+            ushort licenseeVersion = stream.ReadUInt16();
+            Mod.MEGame Game;
+            switch (unrealVersion)
+            {
+                case 491 when licenseeVersion == 1008:
+                    Game = Mod.MEGame.ME1;
+                    break;
+                case 512 when licenseeVersion == 130:
+                    Game = Mod.MEGame.ME2;
+                    break;
+                case 684 when licenseeVersion == 194:
+                    Game = Mod.MEGame.ME3;
+                    break;
+                default:
+                    throw new FormatException("Not a Mass Effect Package!");
+            }
+            var FullHeaderSize = stream.ReadInt32();
+            int foldernameStrLen = stream.ReadInt32();
+            //always "None", so don't bother saving result
+            if (foldernameStrLen > 0)
+                stream.ReadStringASCIINull(foldernameStrLen);
+            else
+                stream.ReadStringUnicodeNull(foldernameStrLen * -2);
+
+            var Flags = (EPackageFlags)stream.ReadUInt32();
+
+            stream.Position = startPos;
+            if (Flags.HasFlag(EPackageFlags.Compressed))
+            {
+                //package is compressed.
+                return Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+            }
+            else
+            {
+                return stream;
+            }
+
+
+            //if (Game == Mod.MEGame.ME3 && Flags.HasFlag(EPackageFlags.Cooked))
+            //{
+            //    stream.SkipInt32(); //always 0
+            //}
+
+            //var NameCount = stream.ReadInt32();
+            //var NameOffset = stream.ReadInt32();
+            //var ExportCount = stream.ReadInt32();
+            //var ExportOffset = stream.ReadInt32();
+            //var ImportCount = stream.ReadInt32();
+            //var ImportOffset = stream.ReadInt32();
+            //var DependencyTableOffset = stream.ReadInt32();
+
+            //if (Game == Mod.MEGame.ME3)
+            //{
+            //    ImportExportGuidsOffset = stream.ReadInt32();
+            //    stream.SkipInt32(); //ImportGuidsCount always 0
+            //    stream.SkipInt32(); //ExportGuidsCount always 0
+            //    stream.SkipInt32(); //ThumbnailTableOffset always 0
+            //}
+
+            //PackageGuid = stream.ReadGuid();
+            //uint generationsTableCount = stream.ReadUInt32();
+            //if (generationsTableCount > 0)
+            //{
+            //    generationsTableCount--;
+            //    Gen0ExportCount = stream.ReadInt32();
+            //    Gen0NameCount = stream.ReadInt32();
+            //    Gen0NetworkedObjectCount = stream.ReadInt32();
+            //}
+            ////should never be more than 1 generation, but just in case
+            //stream.Skip(generationsTableCount * 12);
+
+            //stream.SkipInt32();//engineVersion          Like unrealVersion and licenseeVersion, these 2 are determined by what game this is,
+            //stream.SkipInt32();//cookedContentVersion   so we don't have to read them in
+
+            //if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
+            //{
+            //    stream.SkipInt32(); //always 0
+            //    stream.SkipInt32(); //always 47699
+            //    unknown4 = stream.ReadInt32();
+            //    stream.SkipInt32(); //always 1 in ME1, always 1966080 in ME2
+            //}
+
+            //unknown6 = stream.ReadInt32();
+            //stream.SkipInt32(); //always -1 in ME1 and ME2, always 145358848 in ME3
+
+            //if (Game == Mod.MEGame.ME1)
+            //{
+            //    stream.SkipInt32(); //always -1
+            //}
+
+            ////skip compression type chunks. Decompressor will handle that
+            //stream.SkipInt32();
+            ////Todo: Move decompression of package code here maybe
+            ////Todo: Refactor decompression code to single unified style
+            //int numChunks = stream.ReadInt32();
+            //stream.Skip(numChunks * 16);
+
+            //packageSource = stream.ReadUInt32();
+
+            //if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
+            //{
+            //    stream.SkipInt32(); //always 0
+            //}
+
+            ////Doesn't need to be written out, so it doesn't need to be read in
+            ////keep this here in case one day we learn that this has a purpose
+            ///*if (Game == MEGame.ME2 || Game == MEGame.ME3)
+            //{
+            //    int additionalPackagesToCookCount = fs.ReadInt32();
+            //    var additionalPackagesToCook = new string[additionalPackagesToCookCount];
+            //    for (int i = 0; i < additionalPackagesToCookCount; i++)
+            //    {
+            //        int strLen = fs.ReadInt32();
+            //        if (strLen > 0)
+            //        {
+            //            additionalPackagesToCook[i] = fs.ReadStringASCIINull(strLen);
+            //        }
+            //        else
+            //        {
+            //            additionalPackagesToCook[i] = fs.ReadStringUnicodeNull(strLen * -2);
+            //        }
+            //    }
+            //}*/
+            //#endregion
+
+            //Stream inStream = stream;
+            //if (IsCompressed && numChunks > 0)
+            //{
+            //    inStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+            //}
+        }
+
         /// <summary>
         /// Reads a package file from a stream.
         /// </summary>

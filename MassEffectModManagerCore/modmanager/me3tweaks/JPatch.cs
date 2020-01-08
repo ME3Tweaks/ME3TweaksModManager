@@ -195,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 else
                 {
                     //it's <esc>... nothing... this shouldn't be possible but maybe some sort of edge case.
-                    Debug.WriteLine($"Encountered unexpected esc sequence value: {nextChar:X2}");
+                    Debug.WriteLine($"Encountered unexpected esc sequence value: {nextChar:X2} at {(patchData.Position - 1):X2}");
                     outData.WriteByte((byte)readChar);
                     outData.WriteByte((byte)nextChar);
 

@@ -1,4 +1,6 @@
-﻿using IniParser.Model;
+﻿using IniParser;
+using IniParser.Model;
+using IniParser.Parser;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Packages;
@@ -33,17 +35,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public Action<string> SetCurrentTaskStringCallback;
         public Action<string> SetModNameCallback;
         public Action SetCompileStarted;
+        public Action SetModNotFoundCallback;
 
         public ModMakerCompiler(int code = 0)
         {
             this.code = code;
         }
 
-        public void DownloadAndCompileMod(string delta = null)
+        public Mod DownloadAndCompileMod(string delta = null)
         {
             if (delta != null)
             {
-                CompileMod(delta);
+                return CompileMod(delta);
             }
             else if (code != 0)
             {
@@ -53,9 +56,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     //Going to compile cached item
                     Log.Information("Compiling cached modmaker mode with code " + code);
-                    CompileMod(File.ReadAllText(cachedFilename));
+                    return CompileMod(File.ReadAllText(cachedFilename));
                 }
             }
+            return null; //could not compile mod
 
         }
 
@@ -63,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// Compiles a mod using the specified mod definition text
         /// </summary>
         /// <param name="modxml">XML document for the mod</param>
-        private void CompileMod(string modxml)
+        private Mod CompileMod(string modxml)
         {
             Log.Information("Compiling modmaker mod");
             var xmlDoc = XDocument.Parse(modxml);
@@ -73,15 +77,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
+                finalizeModdesc(mod);
+                return mod;
             }
             else
             {
                 SetModNameCallback?.Invoke("Mod not found on server");
+                SetModNotFoundCallback?.Invoke();
+                return null;
             }
         }
 
         private void compileMixins(XDocument xmlDoc, Mod mod)
         {
+            SetCurrentTaskStringCallback?.Invoke("Preparing Mixin patch data");
+            SetCurrentTaskIndeterminateCallback?.Invoke(true);
+
             //Build mixin list by module=>files=>list of mixins for file
             var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
             var me3tweaksmixinsdata = mixinNode.Elements("MixIn").Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf("v")))).ToList();
@@ -100,22 +111,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 foreach (var mixin in mixinsForModule)
                 {
                     List<Mixin> mixinListForFile;
-                    if (!moduleMixinMapping.TryGetValue(mixin.Filename, out mixinListForFile))
+                    if (!moduleMixinMapping.TryGetValue(mixin.TargetFile, out mixinListForFile))
                     {
                         mixinListForFile = new List<Mixin>();
-                        moduleMixinMapping[mixin.Filename] = mixinListForFile;
+                        moduleMixinMapping[mixin.TargetFile] = mixinListForFile;
                     }
 
                     //make sure finalizer is last
                     if (mixin.IsFinalizer)
                     {
-                        CLog.Information($@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.Filename)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
+                        CLog.Information($@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
                         mixinListForFile.Add(mixin);
                     }
                     else
                     {
-                        CLog.Information($@"Adding mixin to mixin list for file {Path.GetFileName(mixin.Filename)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
-                        mixinListForFile.Prepend(mixin);
+                        CLog.Information($@"Adding mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
+                        mixinListForFile.Insert(0, mixin);
                     }
                 }
 
@@ -131,22 +142,49 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 compilingListsPerModule[module] = moduleMixinMapping;
             }
 
+            int totalMixinsToApply = compilingListsPerModule.Sum(x => x.Value.Values.Sum(y => y.Count()));
+            int numMixinsApplied = 0;
+            SetCurrentMaxCallback(totalMixinsToApply);
+            SetCurrentValueCallback(0);
+            SetCurrentTaskIndeterminateCallback?.Invoke(false);
+            SetCurrentTaskStringCallback?.Invoke("Applying Mixins");
+            void completedSingleApplicationCallback()
+            {
+                var numdone = Interlocked.Increment(ref numMixinsApplied);
+                if (numdone > totalMixinsToApply)
+                {
+                    Log.Warning($"Error in progress calculation, numdome > total. Done: {numdone} Total: {totalMixinsToApply}");
+                }
+                SetCurrentValueCallback?.Invoke(numdone);
+            };
             //Mixins are ready to be applied
             Parallel.ForEach(compilingListsPerModule, new ParallelOptions { MaxDegreeOfParallelism = 1 }, mapping =>
             {
-                var dlcFolderName = chunkNameToFoldername(mapping.Key.ToString());
-                foreach (var map in compilingListsPerModule.Values)
+                var dlcFolderName = chunkNameToDLCFoldername(mapping.Key.ToString());
+                var outdir = Path.Combine(mod.ModPath, headerToModFoldername(mapping.Key), "CookedPCConsole");
+                Directory.CreateDirectory(outdir);
+                if (mapping.Key == ModJob.JobHeader.BASEGAME)
                 {
-                    Stream decompressedFileData;
-                    if (mapping.Key == ModJob.JobHeader.BASEGAME)
+                    //basegame
+                    foreach (var file in mapping.Value)
                     {
-                        //basegame
+                        using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
+                        using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                        using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
+                        var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                        File.WriteAllBytes(outfile, finalStream.ToArray());
                     }
-                    else
+                }
+                else
+                {
+                    //dlc
+                    foreach (var file in mapping.Value)
                     {
-                        //dlc
-                        //var filedata = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.);
-                        //todo
+                        using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key);
+                        using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                        using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
+                        var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                        File.WriteAllBytes(outfile, finalStream.ToArray());
                     }
                 }
             });
@@ -218,7 +256,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             else
             {
-                var dlcFolderName = chunkNameToFoldername(chunkName);
+                var dlcFolderName = chunkNameToDLCFoldername(chunkName);
                 var coalescedData = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, $"Default_{dlcFolderName}.bin");
                 coalescedFilename = $"Default_{dlcFolderName}.bin";
                 if (coalescedData != null)
@@ -246,7 +284,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 CLog.Information($"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
                 var newFileStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
 
-                var outFolder = Path.Combine(mod.ModPath, chunkName);
+                var outFolder = Path.Combine(mod.ModPath, chunkName, "CookedPCConsole");
+                if (chunkName == "BALANCE_CHANGES")
+                {
+                    outFolder = Path.Combine(mod.ModPath, chunkName);
+                }
                 Directory.CreateDirectory(outFolder);
                 var outFile = Path.Combine(outFolder, coalescedFilename);
 
@@ -577,7 +619,86 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return elementValues[identifierKey] == newValues[identifierKey];
         }
 
-        private string chunkNameToFoldername(string chunkName)
+        private void finalizeModdesc(Mod mod)
+        {
+            //Update moddesc
+            IniData ini = new FileIniDataParser().ReadFile(mod.ModDescPath);
+            var dirs = Directory.GetDirectories(mod.ModPath);
+
+            foreach (var dir in dirs)
+            {
+                //automap
+                var dirname = Path.GetFileName(dir);
+                var headername = defaultFoldernameToHeader(dirname).ToString();
+                ini[headername]["moddir"] = dirname;
+                if (dirname != "BALANCE_CHANGES")
+                {
+                    ini[headername]["newfiles"] = "CookedPCConsole";
+
+                    string inGameDestdir = @"BIOGame\";
+                    if (dirname == "BASEGAME")
+                    {
+                        inGameDestdir = @"BIOGame/CookedPCConsole";
+                    }
+                    else
+                    {
+                        //DLC
+                        inGameDestdir = $@"BIOGame/DLC/{chunkNameToDLCFoldername(dirname)}/CookedPCConsole";
+                    }
+
+                    ini[headername]["replacefiles"] = inGameDestdir;
+                    ini[headername]["gamedirectorystructure"] = "true";
+                }
+                else
+                {
+                    ini[headername]["newfiles"] = "ServerCoalesced.bin"; //BALANCE_CHANGES
+                }
+            }
+            CLog.Information("Writing finalized moddesc to library", Settings.LogModMakerCompiler);
+            File.WriteAllText(mod.ModDescPath, ini.ToString());
+        }
+
+        private string headerToModFoldername(ModJob.JobHeader header)
+        {
+            switch (header)
+            {
+                case ModJob.JobHeader.RESURGENCE:
+                    return "MP1";
+                case ModJob.JobHeader.REBELLION:
+                    return "MP2";
+                case ModJob.JobHeader.EARTH:
+                    return "MP3";
+                case ModJob.JobHeader.RETALIATION:
+                    return "MP4";
+                case ModJob.JobHeader.RECKONING:
+                    return "MP5";
+            }
+            return header.ToString();
+        }
+
+        private ModJob.JobHeader defaultFoldernameToHeader(string foldername)
+        {
+            if (Enum.TryParse<ModJob.JobHeader>(foldername, out var header))
+            {
+                return header;
+            }
+            switch (foldername)
+            {
+                case "MP1":
+                    return ModJob.JobHeader.RESURGENCE;
+                case "MP2":
+                    return ModJob.JobHeader.REBELLION;
+                case "MP3":
+                    return ModJob.JobHeader.EARTH;
+                case "MP4":
+                    return ModJob.JobHeader.RETALIATION;
+                case "MP5":
+                    return ModJob.JobHeader.RECKONING;
+            }
+            throw new Exception("Unknown default foldername: " + foldername);
+        }
+
+        private string chunkNameToDLCFoldername(string chunkName)
         {
             switch (chunkName)
             {

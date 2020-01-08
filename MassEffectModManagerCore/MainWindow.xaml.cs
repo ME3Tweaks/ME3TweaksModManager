@@ -320,7 +320,14 @@ namespace MassEffectModManagerCore
         private void OpenModMakerPanel()
         {
             var modmakerPanel = new ModMakerPanel();
-            modmakerPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            modmakerPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is Mod m)
+                {
+                    LoadMods(m);
+                }
+            };
             ShowBusyControl(modmakerPanel);
         }
 
@@ -1714,7 +1721,7 @@ namespace MassEffectModManagerCore
 #if !DEBUG
                             else if (latestServerBuildNumer == App.BuildNumber)
                             {
-                                if (manifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
+                                if (App.OnlineManifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
                                 {
                                     var localmd5 = Utilities.CalculateMD5(App.ExecutableLocation);
                                     if (localmd5 != md5)

@@ -12,16 +12,16 @@ namespace MassEffectModManagerCore.GameDirectories
     [Localizable(false)]
     public static class MEDirectories
     {
-        public static string CookedPath(Mod.MEGame game)
+        public static string CookedPath(Mod.MEGame game, string forcedPath = null)
         {
             switch (game)
             {
                 case Mod.MEGame.ME1:
-                    return ME1Directory.cookedPath;
+                    return forcedPath != null? ME1Directory.CookedPath(forcedPath) : ME1Directory.cookedPath;
                 case Mod.MEGame.ME2:
-                    return ME2Directory.cookedPath;
+                    return forcedPath != null ? ME2Directory.CookedPath(forcedPath) : ME2Directory.cookedPath;
                 case Mod.MEGame.ME3:
-                    return ME3Directory.cookedPath;
+                    return forcedPath != null ? ME3Directory.CookedPath(forcedPath) : ME3Directory.cookedPath;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(game), game, null);
             }
@@ -40,6 +40,7 @@ namespace MassEffectModManagerCore.GameDirectories
                     throw new ArgumentOutOfRangeException(nameof(target.Game), target.Game, null);
             }
         }
+
 
         public static string ASIPath(GameTarget target)
         {

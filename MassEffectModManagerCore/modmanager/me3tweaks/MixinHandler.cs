@@ -3,6 +3,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 TargetFile = elem.Element("targetfile").Value,
                                 TargetSize = int.Parse(elem.Element("targetsize").Value),
                                 IsFinalizer = elem.Element("finalizer").Value == "1" ? true : false,
-                                Filename = elem.Element("filename").Value,
+                                PatchFilename = elem.Element("filename").Value,
                                 //patchurl = elem.Element("").Value,
                                 //folder = elem.Element("").Value,
                                 ME3TweaksID = int.Parse(elem.Element("me3tweaksid").Value)
@@ -107,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             Mixin dynamic = new Mixin()
             {
                 TargetModule = Enum.Parse<ModJob.JobHeader>(element.Attribute("targetmodule").Value),
-                TargetFile = element.Attribute("targetmodule").Value,
+                TargetFile = element.Attribute("targetfile").Value,
                 PatchName = element.Attribute("name").Value,
                 TargetSize = int.Parse(element.Attribute("targetsize").Value)
             };
@@ -122,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             using (var file = File.OpenRead(MixinPackagePath))
             using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
             {
-                var patchfile = zip.GetEntry(mixin.Filename);
+                var patchfile = zip.GetEntry(mixin.PatchFilename);
                 if (patchfile != null)
                 {
                     using var patchStream = patchfile.Open();
@@ -143,5 +144,35 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
+        internal static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, Action notifyApplicationDone = null)
+        {
+            foreach (var mixin in mixins)
+            {
+                CLog.Information("Applying mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
+                if (decompressedStream.Length == mixin.TargetSize)
+                {
+
+                    MemoryStream outStream = new MemoryStream();
+                    JPatch.ApplyJPatch(decompressedStream, mixin.PatchData, outStream);
+                    if (mixin.IsFinalizer && outStream.Length != decompressedStream.Length)
+                    {
+                        Log.Error($"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed!! The output of this mixin patch will be discarded.");
+                    }
+                    else
+                    {
+                        CLog.Information("Applied mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
+                        decompressedStream = outStream; //pass through
+                    }
+                }
+                else
+                {
+                    Log.Error($"Mixin {mixin.PatchName} cannot be applied to this data, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}");
+                }
+
+                notifyApplicationDone?.Invoke();
+            }
+
+            return decompressedStream;
+        }
     }
 }

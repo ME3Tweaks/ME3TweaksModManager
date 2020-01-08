@@ -24,6 +24,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ModMakerPanel : MMBusyPanelBase
     {
+        private bool KeepOpenWhenThreadFinishes;
         public string ModMakerCode { get; set; }
         public long CurrentTaskValue { get; private set; }
         public long CurrentTaskMaximum { get; private set; } = 100;
@@ -122,6 +123,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (modDelta != null)
                     {
+                        KeepOpenWhenThreadFinishes = false;
                         var compiler = new ModMakerCompiler();
                         compiler.SetCurrentMaxCallback = SetCurrentMax;
                         compiler.SetCurrentValueCallback = SetCurrentProgressValue;
@@ -131,15 +133,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         compiler.SetCurrentTaskStringCallback = SetCurrentTaskString;
                         compiler.SetModNameCallback = SetModNameOrDownloadText;
                         compiler.SetCompileStarted = CompilationInProgress;
-                        compiler.DownloadAndCompileMod(modDelta);
+                        compiler.SetModNotFoundCallback = ModNotFound;
+                        Mod m = compiler.DownloadAndCompileMod(modDelta);
+                        b.Result = m;
                     }
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
                 CompileInProgress = false;
+                if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)
+                {
+                    OnClosing(new DataEventArgs(m));
+                }
+                
             };
             bw.RunWorkerAsync();
+        }
+
+        private void ModNotFound()
+        {
+            KeepOpenWhenThreadFinishes = true;
         }
 
         private void SetModNameOrDownloadText(string obj)
