@@ -126,7 +126,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (modDelta != null)
                     {
                         KeepOpenWhenThreadFinishes = false;
-                        var compiler = new ModMakerCompiler();
+                        var compiler = new ModMakerCompiler(code);
                         compiler.SetCurrentMaxCallback = SetCurrentMax;
                         compiler.SetCurrentValueCallback = SetCurrentProgressValue;
                         compiler.SetOverallMaxCallback = SetOverallMax;

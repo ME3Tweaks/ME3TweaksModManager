@@ -1,8 +1,10 @@
 ﻿using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
+using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using ME3Explorer;
 using ME3Explorer.Packages;
 using Serilog;
 using System;
@@ -76,9 +78,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var mod = GenerateLibraryModFromDocument(xmlDoc);
             if (mod != null)
             {
+                compileTLKs(xmlDoc, mod); //Compile TLK
                 compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
-                //compileTLKs(xmlDoc, mod); //Compile TLK
                 finalizeModdesc(mod);
                 return mod;
             }
@@ -90,6 +92,62 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
+        private void compileTLKs(XDocument xmlDoc, Mod mod)
+        {
+            var tlkNode = xmlDoc.XPathSelectElement(@"/ModMaker/TLKData");
+            if (tlkNode != null)
+            {
+                var tlknodes = tlkNode.Elements();
+
+                int totalTLKSteps = tlknodes.Count() * 3; //decomp modify recomp
+                int numDoneTLKSteps = 0;
+                SetCurrentValueCallback?.Invoke(0);
+                SetCurrentMaxCallback?.Invoke(totalTLKSteps);
+                SetCurrentTaskStringCallback?.Invoke("Compiling TLK files");
+                Parallel.ForEach(tlknodes, new ParallelOptions() { MaxDegreeOfParallelism = MaxModmakerCores }, tlknode =>
+                  {
+                      var lang = tlknode.Name;
+                      string loggingPrefix = $"[TLK][{lang}]: ";
+                      var newstringnodes = tlknode.Elements("TLKProperty");
+                      string filename = "BIOGame_" + lang + ".tlk";
+                      var vanillaTLK = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, filename);
+                      var tf = new TalkFileME2ME3();
+                      tf.LoadTlkDataFromStream(vanillaTLK);
+                      SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
+                      foreach (var strnode in newstringnodes)
+                      {
+                          var id = int.Parse(strnode.Attribute("id").Value);
+                          var matchingref = tf.StringRefs.FirstOrDefault(x => x.StringID == id);
+                          if (matchingref != null)
+                          {
+                              matchingref.Data = strnode.Value;
+                              CLog.Information($@"{loggingPrefix}Set {id} to {matchingref.Data}",
+                                  Settings.LogModMakerCompiler);
+                          }
+                          else
+                          {
+                              Log.Warning($"{loggingPrefix} Could not find string id {id} in TLK");
+                          }
+                      }
+
+                      SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //modify
+
+                      string outfolder = Path.Combine(mod.ModPath, "BASEGAME", "CookedPCConsole");
+                      Directory.CreateDirectory(outfolder);
+                      string outfile = Path.Combine(outfolder, filename);
+                      CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
+                      HuffmanCompressionME2ME3.SaveToTlkFile(outfile, tf.StringRefs);
+                      CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
+                          Settings.LogModMakerCompiler);
+                      SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
+                  });
+            }
+            else
+            {
+                CLog.Information("This mod does not have a TLKData section. TLKs will not be compiled.", Settings.LogModMakerCompiler);
+            }
+        }
+
         private void compileMixins(XDocument xmlDoc, Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke("Preparing Mixin patch data");
@@ -97,110 +155,139 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             //Build mixin list by module=>files=>list of mixins for file
             var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
-            var me3tweaksmixinsdata = mixinNode.Elements("MixIn").Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf("v")))).ToList();
-            var dynamicmixindata = mixinNode.Elements("DynamicMixIn").ToList();
-
-            List<Mixin> allmixins = new List<Mixin>();
-            allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
-            allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
-
-            var compilingListsPerModule = new Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>>();
-            var modules = allmixins.Select(x => x.TargetModule).Distinct().ToList();
-            foreach (var module in modules)
+            if (mixinNode != null)
             {
-                var moduleMixinMapping = new Dictionary<string, List<Mixin>>();
-                var mixinsForModule = allmixins.Where(x => x.TargetModule == module).ToList();
-                foreach (var mixin in mixinsForModule)
+                var me3tweaksmixinsdata = mixinNode.Elements("MixIn")
+                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf("v")))).ToList();
+                var dynamicmixindata = mixinNode.Elements("DynamicMixIn").ToList();
+
+                List<Mixin> allmixins = new List<Mixin>();
+                allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
+                allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
+
+                var compilingListsPerModule = new Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>>();
+                var modules = allmixins.Select(x => x.TargetModule).Distinct().ToList();
+                foreach (var module in modules)
                 {
-                    List<Mixin> mixinListForFile;
-                    if (!moduleMixinMapping.TryGetValue(mixin.TargetFile, out mixinListForFile))
+                    var moduleMixinMapping = new Dictionary<string, List<Mixin>>();
+                    var mixinsForModule = allmixins.Where(x => x.TargetModule == module).ToList();
+                    foreach (var mixin in mixinsForModule)
                     {
-                        mixinListForFile = new List<Mixin>();
-                        moduleMixinMapping[mixin.TargetFile] = mixinListForFile;
+                        List<Mixin> mixinListForFile;
+                        if (!moduleMixinMapping.TryGetValue(mixin.TargetFile, out mixinListForFile))
+                        {
+                            mixinListForFile = new List<Mixin>();
+                            moduleMixinMapping[mixin.TargetFile] = mixinListForFile;
+                        }
+
+                        //make sure finalizer is last
+                        if (mixin.IsFinalizer)
+                        {
+                            CLog.Information(
+                                $@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
+                                Settings.LogModMakerCompiler);
+                            mixinListForFile.Add(mixin);
+                        }
+                        else
+                        {
+                            CLog.Information(
+                                $@"Adding mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
+                                Settings.LogModMakerCompiler);
+                            mixinListForFile.Insert(0, mixin);
+                        }
                     }
 
-                    //make sure finalizer is last
-                    if (mixin.IsFinalizer)
+                    //verify only one finalizer
+                    foreach (var list in moduleMixinMapping)
                     {
-                        CLog.Information($@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
-                        mixinListForFile.Add(mixin);
+                        if (list.Value.Count(x => x.IsFinalizer) > 1)
+                        {
+                            Log.Error(@"ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
+                            //do something here to abort
+                        }
                     }
-                    else
-                    {
-                        CLog.Information($@"Adding mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}", Settings.LogModMakerCompiler);
-                        mixinListForFile.Insert(0, mixin);
-                    }
+
+                    compilingListsPerModule[module] = moduleMixinMapping;
                 }
 
-                //verify only one finalizer
-                foreach (var list in moduleMixinMapping)
+                int totalMixinsToApply = compilingListsPerModule.Sum(x => x.Value.Values.Sum(y => y.Count()));
+                int numMixinsApplied = 0;
+                SetCurrentMaxCallback(totalMixinsToApply);
+                SetCurrentValueCallback(0);
+                SetCurrentTaskIndeterminateCallback?.Invoke(false);
+                SetCurrentTaskStringCallback?.Invoke("Applying Mixins");
+
+                void completedSingleApplicationCallback()
                 {
-                    if (list.Value.Count(x => x.IsFinalizer) > 1)
+                    var numdone = Interlocked.Increment(ref numMixinsApplied);
+                    if (numdone > totalMixinsToApply)
                     {
-                        Log.Error(@"ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
-                        //do something here to abort
+                        Log.Warning(
+                            $@"Error in progress calculation, numdone > total. Done: {numdone} Total: {totalMixinsToApply}");
                     }
+
+                    SetCurrentValueCallback?.Invoke(numdone);
                 }
-                compilingListsPerModule[module] = moduleMixinMapping;
+
+                ;
+                //Mixins are ready to be applied
+                Parallel.ForEach(compilingListsPerModule,
+                    new ParallelOptions
+                    {
+                        MaxDegreeOfParallelism = Environment.ProcessorCount > MaxModmakerCores
+                            ? MaxModmakerCores
+                            : Environment.ProcessorCount
+                    }, mapping =>
+                    {
+                        var dlcFolderName = chunkNameToDLCFoldername(mapping.Key.ToString());
+                        var outdir = Path.Combine(mod.ModPath, headerToModFoldername(mapping.Key), @"CookedPCConsole");
+                        Directory.CreateDirectory(outdir);
+                        if (mapping.Key == ModJob.JobHeader.BASEGAME)
+                        {
+                            //basegame
+                            foreach (var file in mapping.Value)
+                            {
+                                using var packageAsStream =
+                                    VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
+                                        Path.GetFileName(file.Key));
+                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
+                                    completedSingleApplicationCallback);
+                                var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                                finalStream.WriteToFile(outfile);
+                                //File.WriteAllBytes(outfile, finalStream.ToArray());
+                            }
+                        }
+                        else
+                        {
+                            //dlc
+                            var dlcPackage =
+                                VanillaDatabaseService
+                                    .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                            foreach (var file in mapping.Value)
+                            {
+                                using var packageAsStream =
+                                    VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key,
+                                        forcedDLC: dlcPackage);
+                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
+                                    completedSingleApplicationCallback);
+                                var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                                finalStream.WriteToFile(outfile);
+                            }
+                        }
+                    });
+                CLog.Information("Finished compiling Mixins.", Settings.LogModMakerCompiler);
             }
-
-            int totalMixinsToApply = compilingListsPerModule.Sum(x => x.Value.Values.Sum(y => y.Count()));
-            int numMixinsApplied = 0;
-            SetCurrentMaxCallback(totalMixinsToApply);
-            SetCurrentValueCallback(0);
-            SetCurrentTaskIndeterminateCallback?.Invoke(false);
-            SetCurrentTaskStringCallback?.Invoke("Applying Mixins");
-            void completedSingleApplicationCallback()
+            else
             {
-                var numdone = Interlocked.Increment(ref numMixinsApplied);
-                if (numdone > totalMixinsToApply)
-                {
-                    Log.Warning($@"Error in progress calculation, numdone > total. Done: {numdone} Total: {totalMixinsToApply}");
-                }
-                SetCurrentValueCallback?.Invoke(numdone);
-            };
-            //Mixins are ready to be applied
-            Parallel.ForEach(compilingListsPerModule, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount > MaxModmakerCores ? MaxModmakerCores : Environment.ProcessorCount }, mapping =>
-             {
-                 var dlcFolderName = chunkNameToDLCFoldername(mapping.Key.ToString());
-                 var outdir = Path.Combine(mod.ModPath, headerToModFoldername(mapping.Key), @"CookedPCConsole");
-                 Directory.CreateDirectory(outdir);
-                 if (mapping.Key == ModJob.JobHeader.BASEGAME)
-                 {
-                     //basegame
-                     foreach (var file in mapping.Value)
-                     {
-                         using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
-                         using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
-                         using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
-                         var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                         finalStream.WriteToFile(outfile);
-                         //File.WriteAllBytes(outfile, finalStream.ToArray());
-                     }
-                 }
-                 else
-                 {
-                     //dlc
-                     var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
-                     foreach (var file in mapping.Value)
-                     {
-                         using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                         using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
-                         using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
-                         var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                         finalStream.WriteToFile(outfile);
-                     }
-                 }
-             });
-
-
-            //var filename = Path.GetFileName(mixin2.TargetFile);
-            //filedata.Position = 0;
-            //var packageTest = MEPackageHandler.OpenMEPackage(filedata);
+                CLog.Information("This modmaker mod does not have a MixinData section. Skipping mixin compiler.", Settings.LogModMakerCompiler);
+            }
         }
 
         int totalNumCoalescedFileChunks = 0;
         int numDoneCoalescedFileChunks = 0;
+
         private void compileCoalesceds(XDocument xmlDoc, Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke("Compiling Coalesced files");
@@ -212,7 +299,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     if (job is XElement node)
                     {
-                        CLog.Information(@"Found coalesced modifier for DLC: " + node.Name, Settings.LogModMakerCompiler);
+                        CLog.Information(@"Found coalesced modifier for DLC: " + node.Name,
+                            Settings.LogModMakerCompiler);
                         jobCollection.Add(node);
                         totalNumCoalescedFileChunks += node.Elements().Count();
                     }
@@ -222,7 +310,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             SetCurrentMaxCallback?.Invoke(totalNumCoalescedFileChunks);
             //Todo: Precheck assets are available.
 
-            Parallel.ForEach(jobCollection, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount > MaxModmakerCores ? MaxModmakerCores : Environment.ProcessorCount }, (xmlChunk) => compileCoalescedChunk(xmlChunk, mod));
+            Parallel.ForEach(jobCollection,
+                new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = Environment.ProcessorCount > MaxModmakerCores
+                        ? MaxModmakerCores
+                        : Environment.ProcessorCount
+                }, (xmlChunk) => compileCoalescedChunk(xmlChunk, mod));
+            CLog.Information("Finished compiling coalesceds.", Settings.LogModMakerCompiler);
         }
 
         private bool compileCoalescedChunk(XElement xmlChunk, Mod mod)
@@ -348,7 +443,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #endregion
 
             #region Properties - Assignments
-            var deltaPropertyAssignments = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ASSIGNMENT);
+            // Really old modmaker stuff did not assign operations to everything. The default was Assignment
+            var deltaPropertyAssignments = modDeltaDocument.Elements("Property")
+                .Where(x => x.Attribute("operation") == null || x.Attribute("operation").Value == OP_ASSIGNMENT);
             foreach (var deltaProperty in deltaPropertyAssignments)
             {
                 var sectionName = deltaProperty.Attribute("path").Value;
@@ -379,7 +476,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #endregion
 
             #region Properties - Subtraction
-            var deltaPropertySubtractions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_SUBTRACTION);
+            var deltaPropertySubtractions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation") != null && x.Attribute("operation").Value == OP_SUBTRACTION);
             foreach (var deltaProperty in deltaPropertySubtractions)
             {
                 var sectionName = deltaProperty.Attribute("path").Value;
@@ -408,7 +505,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #endregion
 
             #region Properties = Addition
-            var deltaPropertyAdditions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation").Value == OP_ADDITION);
+            var deltaPropertyAdditions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation") != null && x.Attribute("operation").Value == OP_ADDITION);
             foreach (var deltaProperty in deltaPropertyAdditions)
             {
                 var sectionName = deltaProperty.Attribute("path").Value;
@@ -436,73 +533,92 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var deltaArrayProperties = modDeltaDocument.Elements("ArrayProperty");
             foreach (var deltaProperty in deltaArrayProperties)
             {
-                var pathTokens = deltaProperty.Attribute("path").Value.Split('&');
-                var sectionName = pathTokens[0];
-                var propertyName = pathTokens[1];
-                var matchOnType = deltaProperty.Attribute("matchontype").Value;
-                var type = deltaProperty.Attribute("type").Value;
-                var value = deltaProperty.Value;
-                var arrayContainer = targetDocument.XPathSelectElement($"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
+                try
+                {
+                    var pathTokens = deltaProperty.Attribute("path").Value.Split('&');
+                    var sectionName = pathTokens[0];
+                    var propertyName = pathTokens[1];
+                    var matchOnType = deltaProperty.Attribute("matchontype").Value;
+                    var type = deltaProperty.Attribute("type").Value;
+                    var value = deltaProperty.Value;
+                    var arrayContainer = targetDocument.XPathSelectElement(
+                        $"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
 
-                if (arrayContainer == null)
-                {
-                    Log.Error($"{loggingPrefix}Did not find arrayproperty @name='{sectionName}']/Property[@name='{propertyName}' and @type='{matchOnType}']");
-                }
-                else
-                {
-                    //Log.Information($"{loggingPrefix}Found array countainer {sectionName} => {propertyName}");
-                    var operation = deltaProperty.Attribute("operation").Value;
-                    if (operation == OP_ADDITION)
+                    if (arrayContainer == null)
                     {
-                        var newArrayElement = new XElement("Value", value);
-                        newArrayElement.SetAttributeValue("type", type);
-                        arrayContainer.Add(newArrayElement);
-                        CLog.Information($"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}", Settings.LogModMakerCompiler);
+                        Log.Error(
+                            $"{loggingPrefix}Did not find arrayproperty @name='{sectionName}']/Property[@name='{propertyName}' and @type='{matchOnType}']");
                     }
-                    else if (operation == OP_SUBTRACTION)
+                    else
                     {
-                        var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
-                        var values = arrayContainer.Descendants("Value");
-                        var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values, matchingAlgorithm, matchOnType, value);
-                        if (matchingItem == null)
+                        //Log.Information($"{loggingPrefix}Found array countainer {sectionName} => {propertyName}");
+                        var operation = deltaProperty.Attribute("operation").Value;
+                        if (operation == OP_ADDITION)
                         {
-                            CLog.Warning($"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
+                            var newArrayElement = new XElement("Value", value);
+                            newArrayElement.SetAttributeValue("type", type);
+                            arrayContainer.Add(newArrayElement);
+                            CLog.Information(
+                                $"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}",
+                                Settings.LogModMakerCompiler);
                         }
-                        else
+                        else if (operation == OP_SUBTRACTION)
                         {
-                            matchingItem.Remove();
-                            CLog.Information($"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}", Settings.LogModMakerCompiler);
-                        }
-                    }
-                    else if (operation == OP_ASSIGNMENT || operation == OP_MODIFY)
-                    {
-                        //Algorithms based
-                        var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
-                        var values = arrayContainer.Descendants("Value");
-                        var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values, matchingAlgorithm, matchOnType, value);
-                        if (matchingItem == null)
-                        {
-                            CLog.Warning($"Could not find matching element: {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}", Settings.LogModMakerCompiler);
-                        }
-                        else
-                        {
-                            //Debug.WriteLine($"Found matching item {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}");
-                            if (matchingAlgorithm == "wavelist")
+                            var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
+                            var values = arrayContainer.Descendants("Value");
+                            var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values,
+                                matchingAlgorithm, matchOnType, value);
+                            if (matchingItem == null)
                             {
-                                //On Jan 7 2020 I discovered a bug in the output code of ME3Tweaks ModMaker server publisher that has been present since late 2014.
-                                //The , between enemies in the wavelist lists would not be output if the enemy did not have emax set (max num on field). 
-                                //ME3CMM did not have issues with this as it's weak struct parser could parse the list 
-                                //and since I was building modmaker I opted to stress test my implementation
-                                //by making the client also parse and rebuild the string, even though this was not necessary as the assignment data was already known.
-                                //M3 does not parse the item beyond identification purposes, so an )( items will need to be substituted for ),(, but only for arraytype wavelist.
-                                matchingItem.Value = value.Replace(")(", "),("); //assign
+                                CLog.Warning(
+                                    $"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
+                                    Settings.LogModMakerCompiler);
                             }
                             else
                             {
-                                matchingItem.Value = value; //assign
+                                matchingItem.Remove();
+                                CLog.Information(
+                                    $"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
+                                    Settings.LogModMakerCompiler);
+                            }
+                        }
+                        else if (operation == OP_ASSIGNMENT || operation == OP_MODIFY)
+                        {
+                            //Algorithms based
+                            var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
+                            var values = arrayContainer.Descendants("Value");
+                            var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values,
+                                matchingAlgorithm, matchOnType, value);
+                            if (matchingItem == null)
+                            {
+                                CLog.Warning(
+                                    $"Could not find matching element: {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}",
+                                    Settings.LogModMakerCompiler);
+                            }
+                            else
+                            {
+                                //Debug.WriteLine($"Found matching item {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}");
+                                if (matchingAlgorithm == "wavelist")
+                                {
+                                    //On Jan 7 2020 I discovered a bug in the output code of ME3Tweaks ModMaker server publisher that has been present since late 2014.
+                                    //The , between enemies in the wavelist lists would not be output if the enemy did not have emax set (max num on field). 
+                                    //ME3CMM did not have issues with this as it's weak struct parser could parse the list 
+                                    //and since I was building modmaker I opted to stress test my implementation
+                                    //by making the client also parse and rebuild the string, even though this was not necessary as the assignment data was already known.
+                                    //M3 does not parse the item beyond identification purposes, so an )( items will need to be substituted for ),(, but only for arraytype wavelist.
+                                    matchingItem.Value = value.Replace(")(", "),("); //assign
+                                }
+                                else
+                                {
+                                    matchingItem.Value = value; //assign
+                                }
                             }
                         }
                     }
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Error applying delta property: " + e.Message);
                 }
             }
             #endregion
@@ -781,10 +897,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <returns>Mod object</returns>
         private Mod GenerateLibraryModFromDocument(XDocument xmlDoc)
         {
-            var hasError = xmlDoc.XPathSelectElement(@"/ModMaker/Error");
+            var hasError = xmlDoc.XPathSelectElement(@"/ModMaker/error");
             if (hasError != null)
             {
-                Log.Information("Mod was not found server.");
+                Log.Error("Mod was not found server.");
                 return null;
             }
             SetCompileStarted?.Invoke();
@@ -793,7 +909,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             Log.Information(@"Compiling mod: " + modName);
 
             var modDev = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Author").Value;
-            var modVersion = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Revision").Value;
+            var revisionElement = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Revision");
+            string modVersion = "1";
+            if (revisionElement != null)
+            {
+                modVersion = revisionElement.Value;
+            }
             var modDescription = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Description").Value;
             var modmakerServerVer = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/ModMakerVersion").Value;
 
