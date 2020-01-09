@@ -6,8 +6,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using ME3Explorer;
 using PropertyChanged;
@@ -52,6 +54,7 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 
             DataContext = this;
             Refresh();
+            LoadCommands();
             InitializeComponent();
 
             //  DispatcherTimer setup
@@ -61,6 +64,20 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             dispatcherTimer.Start();
         }
 
+        public ICommand AttemptResetMemoryManagerCommand { get; set; }
+        private void LoadCommands()
+        {
+            AttemptResetMemoryManagerCommand =
+                new GenericCommand(
+                    () =>
+                    {
+                        MixinHandler.AttemptResetMemoryManager();
+
+                    },
+                () => true
+                    );
+
+        }
 
 
         public string LastRefreshText { get; set; }
@@ -82,6 +99,10 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             GC.Collect();
         }
 
+        public string LargeInUseStr { get; set; }
+        public string LargeFreeStr { get; set; }
+        public string SmallInUseStr { get; set; }
+        public string SmallFreeStr { get; set; }
         private void Refresh()
         {
             TrackedMemoryObjects.Where(x => !x.IsAlive()).ToList().ForEach(x => x.RemainingLifetimeAfterGC--);
@@ -89,6 +110,12 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             InstancedTrackedMemoryObjects.ReplaceAll(TrackedMemoryObjects);
             LastRefreshText = "Last refreshed: " + DateTime.Now;
             CurrentMemoryUsageText = "Current process allocation: " + ByteSize.FromBytes(System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64);
+
+            LargeInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolInUseSize).ToString();
+            LargeFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolFreeSize).ToString();
+            SmallInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolInUseSize).ToString();
+            SmallFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolFreeSize).ToString();
+
             //foreach (var item in InstancedTrackedMemoryObjects)
             //{
             //    item.RefreshStatus();

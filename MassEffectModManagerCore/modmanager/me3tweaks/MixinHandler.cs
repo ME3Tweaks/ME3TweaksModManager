@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.IO;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -17,9 +18,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     /// <summary>
     /// Handler class for the ME3Tweaks Mixin Package
     /// </summary>
-    public class MixinHandler
+    public static class MixinHandler
     {
-        public static readonly RecyclableMemoryStreamManager MixinMemoryStreamManager = new RecyclableMemoryStreamManager();
+        static MixinHandler()
+        {
+            AttemptResetMemoryManager();
+            
+        }
+        public static RecyclableMemoryStreamManager MixinMemoryStreamManager { get; private set; } 
         public static string ServerMixinHash;
         public static readonly string MixinPackageEndpoint = @"https://me3tweaks.com/mixins/mixinlibrary.zip";
         public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), "Mixins", "me3tweaks")).FullName, "mixinlibrary.zip");
@@ -129,7 +135,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (patchfile != null)
                 {
                     using var patchStream = patchfile.Open();
-                    MemoryStream patchData = new MemoryStream();
+                    MemoryStream patchData = MixinMemoryStreamManager.GetStream();
                     patchStream.CopyTo(patchData);
                     patchData.Position = 0;
                     return patchData;
@@ -176,6 +182,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             return decompressedStream;
+        }
+
+        public static void FreeME3TweaksPatchData()
+        {
+            foreach (var mixin in ME3TweaksPackageMixins)
+            {
+                if (mixin.PatchData != null)
+                {
+                    mixin.PatchData.Dispose();
+                    mixin.PatchData = null;
+                }
+            }
+            //MixinMemoryStreamManager.AggressiveBufferReturn = true;
+        }
+
+        public static void AttemptResetMemoryManager()
+        {
+            if (MixinMemoryStreamManager == null || (MixinMemoryStreamManager.LargePoolInUseSize == 0 && MixinMemoryStreamManager.SmallPoolInUseSize == 0))
+            {
+                MixinMemoryStreamManager = new RecyclableMemoryStreamManager();
+                MemoryAnalyzer.AddTrackedMemoryItem("Mixin Memory Stream Manager", new WeakReference(MixinMemoryStreamManager));
+            }
         }
     }
 }

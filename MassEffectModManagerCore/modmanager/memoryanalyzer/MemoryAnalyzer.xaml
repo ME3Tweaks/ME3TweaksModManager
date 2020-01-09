@@ -7,50 +7,95 @@
         mc:Ignorable="d"
         Closing="MemoryAnalyzer_Closing"
         SizeToContent="Width"
-        Title="Mod Manager Memory Analyzer" MinHeight="445" Height="440" Width="800" MinWidth="800">
+        Title="Mod Manager Memory Analyzer" MinHeight="445" Height="Auto" Width="800" MinWidth="800">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    <DockPanel LastChildFill="True" Margin="5">
-        <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="This tool is for mod manager developers only."/>
-            <TextBlock Text="Tracked references:" FontWeight="Bold" Margin="0,10,0,0"/>
-        </StackPanel>
-        <StackPanel DockPanel.Dock="Bottom">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock TextWrapping="Wrap" Text="{Binding CurrentMemoryUsageText}" HorizontalAlignment="Left"/>
-                <TextBlock TextWrapping="Wrap" Text="{Binding LastRefreshText}" Grid.Column="1" HorizontalAlignment="Right"/>
-            </Grid>
-            <DockPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="400"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel LastChildFill="True" Margin="5" Grid.Row="0">
+            <StackPanel DockPanel.Dock="Top">
+                <TextBlock Text="This tool is for mod manager developers only."/>
+                <TextBlock Text="Tracked references" FontWeight="Bold" Margin="0,10,0,0"/>
+            </StackPanel>
+            <ListBox ItemsSource="{Binding InstancedTrackedMemoryObjects}" MinHeight="300" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" >
+                            <TextBlock TextWrapping="Wrap" Text="{Binding AllocationTime}" FontStyle="Italic"/>
+                            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Margin="10,0,0,0">
+                                <TextBlock TextWrapping="Wrap" DockPanel.Dock="Right" HorizontalAlignment="Stretch" TextAlignment="Left" Text="{Binding Path=ReferenceStatus}" FontWeight="Bold"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Path=ReferenceName}" HorizontalAlignment="Stretch" TextAlignment="Left"/>
+                            </DockPanel>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <Grid Grid.Row="1" Margin="5,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="RecycleableStream Pool" FontWeight="Bold" Margin="0,10,0,0" Grid.Row="0" Grid.ColumnSpan="3"/>
+            <TextBlock Text="Large Pool" FontWeight="Bold" Grid.Row="1" Grid.Column="0"/>
+            <TextBlock Text="Small Pool" FontWeight="Bold" Grid.Row="1" Grid.Column="2"/>
+            <!-- Labels -->
+            <TextBlock Text="In Use:" Grid.Row="2" Grid.Column="0"/>
+            <TextBlock Text="In Use:" Grid.Row="2" Grid.Column="2"/>
+            <TextBlock Text="Free:" Grid.Row="3" Grid.Column="0"/>
+            <TextBlock Text="Free:" Grid.Row="3" Grid.Column="2"/>
+<!-- Data -->
+            <TextBlock Text="{Binding LargeInUseStr}" Width="100"  Grid.Row="2" Grid.Column="1"/>
+            <TextBlock Text="{Binding SmallInUseStr}" Width="100" Grid.Row="2" Grid.Column="3"/>
+            <TextBlock Text="{Binding LargeFreeStr}" Width="100" Grid.Row="3" Grid.Column="1"/>
+            <TextBlock Text="{Binding SmallFreeStr}" Width="100" Grid.Row="3" Grid.Column="3"/>
+
+            <TextBlock Text="Memory Manager" FontWeight="Bold" Grid.Row="1" Grid.Column="5"/>
+            <Button Content="Attempt Reset" Grid.Row="2" Grid.RowSpan="2" Grid.Column="5" Command="{Binding AttemptResetMemoryManagerCommand}"/>
+
+        </Grid>
+
+        <!-- Bottom panel -->
+        <Grid Grid.Row="2" Margin="5,0,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock TextWrapping="Wrap" Text="{Binding CurrentMemoryUsageText}" HorizontalAlignment="Left"/>
+            <TextBlock TextWrapping="Wrap" Text="{Binding LastRefreshText}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/>
+            <DockPanel Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
                 <Button Content="Clear garbage collected references" Padding="5,3,5,3" Margin="0,5,0,5" Click="CleanUpOldRefs_Click"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Force Large GC" Margin="2,5" Padding="5,3,5,3" Click="ForceLargeGC_Click"/>
                     <Button Content="Force GC" Margin="2,5" Padding="3,3,3,3" Click="ForceGC_Click"/>
                 </StackPanel>
             </DockPanel>
-
-        </StackPanel>
-        <ListBox ItemsSource="{Binding InstancedTrackedMemoryObjects}" MinHeight="300" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" >
-                        <TextBlock TextWrapping="Wrap" Text="{Binding AllocationTime}" FontStyle="Italic"/>
-                        <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Margin="10,0,0,0">
-                            <TextBlock TextWrapping="Wrap" DockPanel.Dock="Right" HorizontalAlignment="Stretch" TextAlignment="Left" Text="{Binding Path=ReferenceStatus}" FontWeight="Bold"/>
-                            <TextBlock TextWrapping="Wrap" Text="{Binding Path=ReferenceName}" HorizontalAlignment="Stretch" TextAlignment="Left"/>
-                        </DockPanel>
-                    </DockPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </DockPanel>
+        </Grid>
+    </Grid>
 </Window>

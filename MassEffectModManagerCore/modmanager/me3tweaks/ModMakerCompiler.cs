@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 compileTLKs(xmlDoc, mod); //Compile TLK
                 compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
-                finalizeModdesc(mod);
+                finalizeModdesc(xmlDoc, mod);
                 return mod;
             }
             else
@@ -277,6 +277,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                         }
                     });
+                MixinHandler.FreeME3TweaksPatchData();
                 CLog.Information("Finished compiling Mixins.", Settings.LogModMakerCompiler);
             }
             else
@@ -752,7 +753,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return elementValues[identifierKey] == newValues[identifierKey];
         }
 
-        private void finalizeModdesc(Mod mod)
+        private void finalizeModdesc(XDocument doc, Mod mod)
         {
             //Update moddesc
             IniData ini = new FileIniDataParser().ReadFile(mod.ModDescPath);
@@ -768,7 +769,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     ini[headername]["newfiles"] = "CookedPCConsole";
 
-                    string inGameDestdir = @"BIOGame\";
+                    string inGameDestdir;
                     if (dirname == "BASEGAME")
                     {
                         inGameDestdir = @"BIOGame/CookedPCConsole";
@@ -787,6 +788,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     ini[headername]["newfiles"] = "ServerCoalesced.bin"; //BALANCE_CHANGES
                 }
             }
+
+            ini["ModInfo"]["compiledagainst"] = doc.XPathSelectElement("/ModMaker/ModInfo/ModMakerVersion").Value;
             CLog.Information("Writing finalized moddesc to library", Settings.LogModMakerCompiler);
             File.WriteAllText(mod.ModDescPath, ini.ToString());
         }
