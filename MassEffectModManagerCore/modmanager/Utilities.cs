@@ -738,8 +738,11 @@ namespace MassEffectModManagerCore
 
         internal static string GetAppDataFolder()
         {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
-            Directory.CreateDirectory(folder);
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ME3TweaksModManager");
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
             return folder;
         }
 

@@ -615,7 +615,7 @@ namespace ME3Explorer.Packages
                     {
                         //Rollover to the next chunk as this chunk would be too big if we tried to put this export into the chunk
                         chunks.Add(chunk);
-                        Debug.WriteLine($"Chunk {chunkNum} ({chunk.uncompressedSize} bytes) contains {firstElement} to {lastElement} - 0x{chunk.uncompressedOffset:X6} to 0x{(chunk.uncompressedSize + chunk.uncompressedOffset):X6}");
+                        //Debug.WriteLine($"Chunk {chunkNum} ({chunk.uncompressedSize} bytes) contains {firstElement} to {lastElement} - 0x{chunk.uncompressedOffset:X6} to 0x{(chunk.uncompressedSize + chunk.uncompressedOffset):X6}");
                         chunkNum++;
                         chunk = new CompressionHelper.Chunk
                         {
@@ -735,14 +735,14 @@ namespace ME3Explorer.Packages
                 //}
                 //chunks.Clear();
                 //chunks = null;
-
-                File.WriteAllBytes(path, compressedStream.ToArray());
+                compressedStream.WriteToFile(path);
+                //File.WriteAllBytes(path, compressedStream.ToArray());
                 // validation
-                var validatePackage = MEPackageHandler.OpenMEPackage(path);
-                foreach (var export in Exports)
-                {
-                    export.GetProperties();
-                }
+                //var validatePackage = MEPackageHandler.OpenMEPackage(path);
+                //foreach (var export in validatePackage.Exports)
+                //{
+                //    export.GetProperties();
+                //}
             }
             AfterSave();
             //}

@@ -253,8 +253,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                     completedSingleApplicationCallback);
+                                CLog.Information("Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                                finalStream.Position = 0;
+                                var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                finalStream.WriteToFile(outfile);
+                                package.save(outfile, true);
+                                //finalStream.WriteToFile(outfile);
                                 //File.WriteAllBytes(outfile, finalStream.ToArray());
                             }
                         }
@@ -272,8 +276,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                     completedSingleApplicationCallback);
+                                CLog.Information("Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                                finalStream.Position = 0;
+                                var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                finalStream.WriteToFile(outfile);
+                                package.save(outfile, true);
+                                //finalStream.WriteToFile(outfile);
                             }
                         }
                     });

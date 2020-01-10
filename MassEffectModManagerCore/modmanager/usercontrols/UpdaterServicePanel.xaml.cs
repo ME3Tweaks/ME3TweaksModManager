@@ -482,34 +482,41 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Log.Information(@"Listing files/folders for " + LZMAStoragePath);
             //var lzmaStorageDirectoryItems = sftp.ListDirectory(LZMAStoragePath);
             var serverModPath = LZMAStoragePath + @"/" + serverFolderName;
+            bool justMadeFolder = false;
             if (!sftp.Exists(serverModPath))
             {
                 CurrentActionText = "Creating server folder for mod";
                 Log.Information(@"Creating server folder for mod: " + serverModPath);
                 sftp.CreateDirectory(serverModPath);
+                justMadeFolder = true;
             }
 
-            CurrentActionText = "Hashing files on server for delta";
-
-            Log.Information("Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
-            using SshClient sshClient = new SshClient(host, username, password);
-            sshClient.Connect();
-
-            var command = sshClient.CreateCommand(@"find " + serverModPath + @" -type f -exec md5sum '{}' \;");
-            command.Execute();
-            var answer = command.Result;
-            if (CancelOperations) { AbortUpload(); return; }
-
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
-            foreach (var hashpair in answer.Split("\n"))
+            if (!justMadeFolder)
             {
-                if (string.IsNullOrWhiteSpace(hashpair)) continue; //last line will be blank
-                string md5 = hashpair.Substring(0, 32);
-                string path = hashpair.Substring(34);
+                CurrentActionText = "Hashing files on server for delta";
 
-                path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
-                serverHashes[path] = md5;
-                Debug.WriteLine(md5 + " for file " + path);
+                Log.Information("Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
+                using SshClient sshClient = new SshClient(host, username, password);
+                sshClient.Connect();
+                Log.Information("Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
+
+                var command = sshClient.CreateCommand(@"find " + serverModPath + @" -type f -exec md5sum '{}' \;");
+                command.CommandTimeout = TimeSpan.FromMinutes(1);
+                command.Execute();
+                var answer = command.Result;
+                if (CancelOperations) { AbortUpload(); return; }
+
+                foreach (var hashpair in answer.Split("\n"))
+                {
+                    if (string.IsNullOrWhiteSpace(hashpair)) continue; //last line will be blank
+                    string md5 = hashpair.Substring(0, 32);
+                    string path = hashpair.Substring(34);
+
+                    path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
+                    serverHashes[path] = md5;
+                    Debug.WriteLine(md5 + " for file " + path);
+                }
             }
 
             //Calculate what needs to be updated or removed from server
