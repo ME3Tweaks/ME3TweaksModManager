@@ -82,6 +82,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
                 finalizeModdesc(xmlDoc, mod);
+                MixinHandler.AttemptResetMemoryManager();
                 return mod;
             }
             else

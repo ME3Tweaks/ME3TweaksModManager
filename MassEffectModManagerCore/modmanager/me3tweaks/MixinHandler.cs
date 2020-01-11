@@ -12,6 +12,8 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.IO;
+using ByteSizeLib;
+using System.Runtime;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -23,9 +25,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         static MixinHandler()
         {
             AttemptResetMemoryManager();
-            
+
         }
-        public static RecyclableMemoryStreamManager MixinMemoryStreamManager { get; private set; } 
+        public static RecyclableMemoryStreamManager MixinMemoryStreamManager { get; private set; }
         public static string ServerMixinHash;
         public static readonly string MixinPackageEndpoint = @"https://me3tweaks.com/mixins/mixinlibrary.zip";
         public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), "Mixins", "me3tweaks")).FullName, "mixinlibrary.zip");
@@ -199,10 +201,20 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static void AttemptResetMemoryManager()
         {
+            bool isResetting = false;
             if (MixinMemoryStreamManager == null || (MixinMemoryStreamManager.LargePoolInUseSize == 0 && MixinMemoryStreamManager.SmallPoolInUseSize == 0))
             {
-                MixinMemoryStreamManager = new RecyclableMemoryStreamManager();
+                if (MixinMemoryStreamManager != null) isResetting = true;
+                var MB = 1024 * 1024;
+                MixinMemoryStreamManager = new RecyclableMemoryStreamManager(MB * 4, MB * 128, MB * 256);
+                MixinMemoryStreamManager.GenerateCallStacks = true;
+                MixinMemoryStreamManager.AggressiveBufferReturn = true;
                 MemoryAnalyzer.AddTrackedMemoryItem("Mixin Memory Stream Manager", new WeakReference(MixinMemoryStreamManager));
+            }
+            if (isResetting)
+            {
+                GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                GC.Collect();
             }
         }
     }
