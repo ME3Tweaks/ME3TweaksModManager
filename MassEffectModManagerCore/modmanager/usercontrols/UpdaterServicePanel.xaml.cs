@@ -53,6 +53,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
+        public UpdaterServicePanel()
+        {
+            DataContext = this;
+            LoadCommands();
+            InitializeComponent();
+        }
+
         public bool OperationInProgress { get; set; }
 
         public void OnOperationInProgressChanged()
@@ -116,7 +123,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         SettingsExpanded = false;
                         SettingsSubtext = null;
-                        StartPreparingModWrapper();
+                        if (mod != null)
+                        {
+                            StartPreparingModWrapper();
+                        } else
+                        {
+                            CurrentActionText = "Settings saved";
+                        }
                     }
                 }
                 else if (result is string errorMessage)
@@ -174,13 +187,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SettingsExpanded = string.IsNullOrWhiteSpace(Username) ||
                 string.IsNullOrWhiteSpace(LZMAStoragePath) ||
                 string.IsNullOrWhiteSpace(ManifestStoragePath) ||
-                string.IsNullOrWhiteSpace(Password_TextBox.Password);
+                string.IsNullOrWhiteSpace(Password_TextBox.Password) ||
+                mod == null;
 
-            if (string.IsNullOrWhiteSpace(mod.UpdaterServiceServerFolder))
+            if (mod != null)
             {
-                HideChangelogArea();
-                CurrentActionText = "Mod must have the serverfolder descriptor set under UPDATES header";
-                return;
+                if (string.IsNullOrWhiteSpace(mod.UpdaterServiceServerFolder))
+                {
+                    HideChangelogArea();
+                    CurrentActionText = "Mod must have the serverfolder descriptor set under UPDATES header";
+                    return;
+                }
             }
 
             if (SettingsExpanded)
@@ -188,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CurrentActionText = "Enter your ME3Tweaks Updater Service information";
                 SettingsSubtext = "Press save to validate settings";
             }
-            else
+            else if (mod != null)
             {
                 CurrentActionText = "Authenticating to ME3Tweaks";
                 CheckAuth(authCompletedCallback: (result) =>
@@ -490,35 +507,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 sftp.CreateDirectory(serverModPath);
                 justMadeFolder = true;
             }
-
+            var dirContents = sftp.ListDirectory(serverModPath).ToList();
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
-            if (!justMadeFolder)
+
+            //Open SSH connection as we will need to hash files out afterwards.
+            Log.Information("Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
+            using SshClient sshClient = new SshClient(host, username, password);
+            sshClient.Connect();
+            Log.Information("Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
+
+            if (!justMadeFolder && dirContents.Any(x => x.Name != "." && x.Name != ".."))
             {
                 CurrentActionText = "Hashing files on server for delta";
-
-                Log.Information("Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
-                using SshClient sshClient = new SshClient(host, username, password);
-                sshClient.Connect();
-                Log.Information("Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
-
-                var command = sshClient.CreateCommand(@"find " + serverModPath + @" -type f -exec md5sum '{}' \;");
-                command.CommandTimeout = TimeSpan.FromMinutes(1);
-                command.Execute();
-                var answer = command.Result;
-                if (CancelOperations) { AbortUpload(); return; }
-
-                foreach (var hashpair in answer.Split("\n"))
-                {
-                    if (string.IsNullOrWhiteSpace(hashpair)) continue; //last line will be blank
-                    string md5 = hashpair.Substring(0, 32);
-                    string path = hashpair.Substring(34);
-
-                    path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
-                    serverHashes[path] = md5;
-                    Debug.WriteLine(md5 + " for file " + path);
-                }
+                serverHashes = getServerHashes(sshClient, serverFolderName, serverModPath);
             }
-
             //Calculate what needs to be updated or removed from server
             List<string> filesToUploadToServer = new List<string>();
             List<string> filesToDeleteOffServer = new List<string>();
@@ -605,6 +607,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //UploadDirectory(sftp, lzmaStagingPath, serverModPath, (ucb) => Debug.WriteLine("UCB: " + ucb));
             var dirsToCreateOnServerSorted = directoriesToCreate.ToList();
             dirsToCreateOnServerSorted.Sort((a, b) => a.Length.CompareTo(b.Length)); //short to longest so we create top levels first!
+            int numFoldersToCreate = dirsToCreateOnServerSorted.Count();
+            int numDone = 0;
             if (dirsToCreateOnServerSorted.Count > 0)
             {
                 CurrentActionText = "Creating mod directories on server";
@@ -620,6 +624,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
                     }
+                    numDone++;
+                    CurrentActionText = "Creating mod directories on server" + " " + Math.Round(numDone * 100.0 / numFoldersToCreate) + "%";
+
                 }
             }
 
@@ -628,6 +635,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             long amountToUpload = filesToUploadToServer.Sum(x => new FileInfo(Path.Combine(lzmaStagingPath, x + @".lzma")).Length);
             foreach (var file in filesToUploadToServer)
             {
+                if (CancelOperations) { AbortUpload(); return; }
                 var fullPath = Path.Combine(lzmaStagingPath, file + @".lzma");
                 var serverFilePath = serverModPath + "/" + file.Replace("\\", "/") + @".lzma";
                 Log.Information(@"Uploading file " + fullPath + " to " + serverFilePath);
@@ -665,13 +673,75 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
 
             CurrentActionText = "Validating mod on server";
-
+            var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
+            var badHashes = verifyHashes(manifestFiles, serverHashes);
+            if (badHashes.Any())
+            {
+                CurrentActionText = "Some hashes on server are incorrect - contact Mgamerz";
+            }
+            else
+            {
+                CurrentActionText = "Mod uploaded to Updater Service";
+            }
         }
 
         private void AbortUpload()
         {
             CurrentActionText = "Upload aborted";
         }
+
+        private Dictionary<string, string> getServerHashes(SshClient sshClient, string serverFolderName, string serverModPath)
+        {
+            Dictionary<string, string> serverHashes = new Dictionary<string, string>();
+            string commandStr = @"find " + serverModPath + @" -type f -exec md5sum '{}' \;";
+            Log.Information("Hash command: " + commandStr);
+            var command = sshClient.CreateCommand(commandStr);
+            command.CommandTimeout = TimeSpan.FromMinutes(1);
+            command.Execute();
+            var answer = command.Result;
+            if (CancelOperations) { AbortUpload(); return serverHashes; }
+
+            foreach (var hashpair in answer.Split("\n"))
+            {
+                if (string.IsNullOrWhiteSpace(hashpair)) continue; //last line will be blank
+                string md5 = hashpair.Substring(0, 32);
+                string path = hashpair.Substring(34);
+
+                path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
+                serverHashes[path] = md5;
+                Debug.WriteLine(md5 + " for file " + path);
+            }
+
+            return serverHashes;
+        }
+
+        private List<string> verifyHashes(ConcurrentDictionary<string, SourceFile> manifestHashes, Dictionary<string, string> serverhashes)
+        {
+            List<string> badHashes = new List<string>();
+            foreach (var hashpair in manifestHashes)
+            {
+                var file = hashpair.Key;
+                var manifestMD5 = hashpair.Value.lzmahash;
+                if (serverhashes.TryGetValue(file + ".lzma", out var serverMD5))
+                {
+                    if (manifestMD5 != serverMD5)
+                    {
+                        Debug.WriteLine("ERROR ON SERVER HASH FOR FILE " + file);
+                        badHashes.Add(file);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Server hash OK for " + file);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Extra file on server that is not present in manifest " + file);
+                }
+            }
+            return badHashes;
+        }
+
 
         private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)
         {

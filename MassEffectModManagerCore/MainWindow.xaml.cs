@@ -276,6 +276,7 @@ namespace MassEffectModManagerCore
         public ICommand EndorseM3OnNexusCommand { get; set; }
         public ICommand DownloadModMakerModCommand { get; set; }
         public ICommand UpdaterServiceCommand { get; set; }
+        public ICommand UpdaterServiceSettingsCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -306,6 +307,14 @@ namespace MassEffectModManagerCore
             EndorseM3OnNexusCommand = new GenericCommand(EndorseM3, CanEndorseM3);
             DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
             UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
+            UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
+        }
+
+        private void OpenUpdaterServicePanelEditorMode()
+        {
+            var updaterServicePanel = new UpdaterServicePanel();
+            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(updaterServicePanel);
         }
 
         private void OpenUpdaterServicePanel()

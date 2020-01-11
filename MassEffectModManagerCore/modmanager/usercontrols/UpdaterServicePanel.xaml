@@ -47,7 +47,7 @@
                              Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}"/>
             <TextBlock Text="{Binding CurrentActionText}" TextAlignment="Center" Margin="0,10" FontSize="14"/>
 
-            <DockPanel Name="ChangelogPanel">
+            <DockPanel Name="ChangelogPanel" Visibility="{Binding mod, Converter={StaticResource NullVisibilityConverter}}">
                 <Button Content="Set changelog" Command="{Binding SetChangelogCommand}" Padding="7,4" DockPanel.Dock="Right"/>
                 <xctk:WatermarkTextBox Watermark="Enter single-line changelog here" Text="{Binding ChangelogText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ChangelogNotYetSet}" TextAlignment="Left"/>
             </DockPanel>
