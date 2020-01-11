@@ -608,7 +608,7 @@ namespace ME3Explorer.Packages
                 //Export data chunks
                 //chunk = new CompressionHelper.Chunk();
                 int chunkNum = 0;
-                Debug.WriteLine($"Exports start at {Exports[0].DataOffset}");
+                //Debug.WriteLine($"Exports start at {Exports[0].DataOffset}");
                 foreach (ExportEntry e in Exports)
                 {
                     if (chunk.uncompressedSize + e.DataSize > CompressionHelper.MAX_CHUNK_SIZE)
@@ -630,7 +630,7 @@ namespace ME3Explorer.Packages
                         lastElement = e.UIndex + " " + e.GetFullPath;
                     }
                 }
-                Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
+                //Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
                 chunks.Add(chunk);
 
                 //Rewrite header with chunk table information so we can position the data blocks after table
