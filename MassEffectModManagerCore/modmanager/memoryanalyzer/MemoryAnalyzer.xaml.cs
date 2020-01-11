@@ -103,6 +103,8 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
         public string LargeFreeStr { get; set; }
         public string SmallInUseStr { get; set; }
         public string SmallFreeStr { get; set; }
+        public string MemoryBlockSize { get; set; }
+        public string MaxBufferSize { get; set; }
         private void Refresh()
         {
             TrackedMemoryObjects.Where(x => !x.IsAlive()).ToList().ForEach(x => x.RemainingLifetimeAfterGC--);
@@ -115,7 +117,8 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             LargeFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolFreeSize).ToString();
             SmallInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolInUseSize).ToString();
             SmallFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolFreeSize).ToString();
-
+            MaxBufferSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.MaximumBufferSize).ToString();
+            MemoryBlockSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.BlockSize).ToString();
             //foreach (var item in InstancedTrackedMemoryObjects)
             //{
             //    item.RefreshStatus();
