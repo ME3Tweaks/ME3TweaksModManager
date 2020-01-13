@@ -22,6 +22,7 @@
 using MassEffectModManagerCore.modmanager.helpers;
 using SevenZip;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -89,7 +90,7 @@ namespace SevenZipHelper
                 byte[] strippedData = new byte[lzmaFile.Length - 8];
                 //Non-Streamed (made from disk)
                 Buffer.BlockCopy(lzmaFile, 0, strippedData, 0, 5);
-                Buffer.BlockCopy(lzmaFile, 13, strippedData, 0, lzmaFile.Length - 13);
+                Buffer.BlockCopy(lzmaFile, 13, strippedData, 5, lzmaFile.Length - 13);
                 return Decompress(strippedData, (uint)len);
             }
             else if (len == -1)
@@ -104,8 +105,10 @@ namespace SevenZipHelper
                     decompressedStream.Write(buf, 0, count);
                 }
                 return decompressedStream.ToArray();
-            } else
+            }
+            else
             {
+                Debug.WriteLine("Cannot decompress LZMA array: Length is not positive or -1 (" + len + ")! This is not an LZMA array");
                 return null; //Not LZMA!
             }
         }
@@ -120,6 +123,7 @@ namespace SevenZipHelper
             {
                 byte[] strippedData = new byte[compressedStream.Length - 8];
                 compressedStream.Read(strippedData, 0, 5);
+                compressedStream.Seek(8, SeekOrigin.Current); //Skip 8 bytes for length.
                 compressedStream.Read(strippedData, 5, (int)compressedStream.Length - 13);
                 var decompressed = Decompress(strippedData, (uint)len);
                 decompressedStream.Write(decompressed);
@@ -127,6 +131,10 @@ namespace SevenZipHelper
             else if (len == -1)
             {
                 SevenZipExtractor.DecompressStream(compressedStream, decompressedStream, null, null);
+            }
+            else
+            {
+                Debug.WriteLine("LZMA Stream to decompess has wrong length: " + len);
             }
         }
     }

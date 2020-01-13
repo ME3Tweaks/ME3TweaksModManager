@@ -346,7 +346,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var sourcePath = Path.Combine(modPath, relativePath);
             Directory.CreateDirectory(Directory.GetParent(destPath).FullName);
 
-            var compressedBytes = SevenZipHelper.LZMA.Compress(File.ReadAllBytes(sourcePath));
+            var src = File.ReadAllBytes(sourcePath);
+            var compressedBytes = SevenZipHelper.LZMA.Compress(src);
             byte[] fixedBytes = new byte[compressedBytes.Count() + 8]; //needs 8 byte header written into it (only mem version needs this)
             Buffer.BlockCopy(compressedBytes, 0, fixedBytes, 0, 5);
             fixedBytes.OverwriteRange(5, BitConverter.GetBytes((int)new FileInfo(sourcePath).Length));
@@ -354,21 +355,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
 
             File.WriteAllBytes(destPath, fixedBytes);
-            //using var output = new FileStream(destPath, FileMode.CreateNew);
 
-            //var encoder = new LzmaEncodeStream(output);
-            //var inStream = new FileStream(sourcePath, FileMode.Open);
-            //int bufSize = 24576, count;
-            //var buf = new byte[bufSize];
-
-            //while ((count = inStream.Read(buf, 0, bufSize)) > 0)
+            //Test!
+            //var decomp = SevenZipHelper.LZMA.DecompressLZMAFile(fixedBytes);
+            //if (decomp == null)
             //{
-            //    var canceled = cancelCheckCallback?.Invoke();
-            //    if (canceled.HasValue && canceled.Value) break;
-            //    encoder.Write(buf, 0, count);
+            //    Debug.WriteLine("NOT LZMA");
             //}
-
-            //encoder.Close();
+            //else if (decomp.Length != src.Length)
+            //{
+            //    Debug.WriteLine("Decompressed data does not match source length!");
+            //}
 
             return destPath;
         }
