@@ -197,8 +197,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         modUpdateInfo.filesToDelete.AddRange(modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath), StringComparer.InvariantCultureIgnoreCase).Distinct().ToList()); //Todo: Add security check here to prevent malicious values
                         modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
                     }
-                    return modUpdateInfos;
                 }
+                return modUpdateInfos;
             }
             catch (Exception e)
             {
@@ -246,7 +246,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                        //Decompress file
                        MemoryStream decompressedStream = new MemoryStream();
-                       SevenZipExtractor.DecompressStream(downloadedFile.result, decompressedStream, null, null);
+                       SevenZipHelper.LZMA.DecompressLZMAStream(downloadedFile.result, decompressedStream);
+                       //SevenZipExtractor.DecompressStream(downloadedFile.result, decompressedStream, null, null);
 
                        //Hash check output
                        if (decompressedStream.Length != sourcefile.size)

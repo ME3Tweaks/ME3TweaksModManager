@@ -109,5 +109,25 @@ namespace SevenZipHelper
                 return null; //Not LZMA!
             }
         }
+
+        internal static void DecompressLZMAStream(MemoryStream compressedStream, MemoryStream decompressedStream)
+        {
+            compressedStream.Seek(5, SeekOrigin.Begin);
+            int len = compressedStream.ReadInt32();
+            compressedStream.Seek(0, SeekOrigin.Begin);
+
+            if (len >= 0)
+            {
+                byte[] strippedData = new byte[compressedStream.Length - 8];
+                compressedStream.Read(strippedData, 0, 5);
+                compressedStream.Read(strippedData, 5, (int)compressedStream.Length - 13);
+                var decompressed = Decompress(strippedData, (uint)len);
+                decompressedStream.Write(decompressed);
+            }
+            else if (len == -1)
+            {
+                SevenZipExtractor.DecompressStream(compressedStream, decompressedStream, null, null);
+            }
+        }
     }
 }
