@@ -1,0 +1,71 @@
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.MixinManager"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             mc:Ignorable="d" 
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                       xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+                       d:DesignHeight="450" d:DesignWidth="800"
+                       Width="700" Height="500">
+    <UserControl.Resources>
+        <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
+    </UserControl.Resources>
+    <DockPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0" >
+
+            <Button MinWidth="70" Content="{DynamicResource string_restoreFromME3Tweaks}" Margin="5,0,0,0" Command="{Binding RestoreSelectedModCommand}" Padding="7,4"/>
+            <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Command="{Binding CloseCommand}" Padding="7,4"/>
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="7"/>
+                <ColumnDefinition Width="270"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="7"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="3"/>
+            </Grid.RowDefinitions>
+            <!-- Header Panel -->
+            <TextBlock DockPanel.Dock="Top" Text="Mixin Manager" Grid.Row="1" Grid.Column="1" TextAlignment="Center" Grid.ColumnSpan="3" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="Mixins are premade patch files that can be stacked onto each other as long as the filesize does not change.&#10;Mixins are currently only available for Mass Effect 3." Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" TextAlignment="Center" />
+            <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
+            <DockPanel Grid.Row="5" Grid.Column="1">
+                <TextBlock DockPanel.Dock="Top" Text="Available Mixins" FontWeight="Bold"/>
+                <ListBox Name="MixinList_ListBox" ItemsSource="{Binding AvailableOfficialMixins}" SelectionChanged="MixinList_ListBox_OnSelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox/>
+                                <TextBlock Text="{Binding PatchName}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+            <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch" />
+            <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2">
+                <TextBlock DockPanel.Dock="Top" Text="Patch Description" FontWeight="Bold"/>
+                <!--<StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
+                    <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
+                        <Hyperlink Command="{Binding OpenWebsiteCommand}" RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
+                            <TextBlock Text="{Binding SelectedMod.ModName, StringFormat=Visit {0}\'s web site}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>-->
+                <TextBox IsReadOnly="True" IsReadOnlyCaretVisible="False" 
+                         Text="{Binding SelectedMixin.UIText, Mode=OneWay}" TextWrapping="Wrap" VerticalContentAlignment="Top" HorizontalContentAlignment="Left"/>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</local:MMBusyPanelBase>

@@ -31,6 +31,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static string ServerMixinHash;
         public static readonly string MixinPackageEndpoint = @"https://me3tweaks.com/mixins/mixinlibrary.zip";
         public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), "Mixins", "me3tweaks")).FullName, "mixinlibrary.zip");
+
         public static bool IsMixinPackageUpToDate()
         {
             if (ServerMixinHash == null) return true; //can't check. Just say it's up to date.

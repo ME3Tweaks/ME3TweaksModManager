@@ -27,5 +27,19 @@ namespace MassEffectModManagerCore.modmanager.objects
         public int ME3TweaksID { get; set; }
         public string PatchFilename { get; internal set; }
         public MemoryStream PatchData { get; internal set; }
+        public string UIText
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(PatchDesc);
+                sb.AppendLine();
+                sb.AppendLine("Applies to file " + TargetFile);
+                sb.AppendLine("Part of " + TargetModule);
+                sb.AppendLine("Version " + PatchVersion);
+                sb.AppendLine("Developed by " + PatchDeveloper);
+                return sb.ToString();
+            }
+        }
     }
 }

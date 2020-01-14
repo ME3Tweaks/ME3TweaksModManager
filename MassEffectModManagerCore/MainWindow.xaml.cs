@@ -277,6 +277,7 @@ namespace MassEffectModManagerCore
         public ICommand DownloadModMakerModCommand { get; set; }
         public ICommand UpdaterServiceCommand { get; set; }
         public ICommand UpdaterServiceSettingsCommand { get; set; }
+        public ICommand MixinLibraryCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -308,6 +309,19 @@ namespace MassEffectModManagerCore
             DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
             UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
             UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
+            MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
+        }
+
+        private void OpenMixinManagerPanel()
+        {
+            var mixinManager = new MixinManager();
+            mixinManager.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(mixinManager);
+        }
+
+        private bool CanOpenMixinManagerPanel()
+        {
+            return true;
         }
 
         private void OpenUpdaterServicePanelEditorMode()
@@ -342,6 +356,7 @@ namespace MassEffectModManagerCore
 
         private bool CanOpenModMakerPanel()
         {
+            //todo: Check for backup
             return true;
         }
 

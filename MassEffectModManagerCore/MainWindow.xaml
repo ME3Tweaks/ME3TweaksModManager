@@ -125,10 +125,7 @@
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
                     <MenuItem Header="{DynamicResource string_BatchModInstaller}" IsEnabled="False" />
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
-                    <MenuItem Header="{DynamicResource string_MixinsForME3}" IsEnabled="False">
-                        <MenuItem Header="{DynamicResource string_MixInLibrary}" />
-                        <MenuItem Header="{DynamicResource string_ClearMixinCache}" />
-                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_MixInLibrary}" Command="{Binding MixinLibraryCommand}"/>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
