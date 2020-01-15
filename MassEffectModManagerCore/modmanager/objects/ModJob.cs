@@ -192,6 +192,10 @@ namespace MassEffectModManagerCore.modmanager
         /// Subdirectory of the parent mod object that this job will pull files from. Note this is a relative path and not a full path.
         /// </summary>
         public string JobDirectory { get; internal set; }
+        /// <summary>
+        /// MultiLists are tied to multilist[x] descriptors. These are esssentially an array variable you can reference in moddesc.
+        /// </summary>
+        public Dictionary<int, string[]> MultiLists { get; internal set; } = new Dictionary<int, string[]>();
 
         /// <summary>
         /// Creates a new ModJob for the specific header.

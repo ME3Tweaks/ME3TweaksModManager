@@ -526,7 +526,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (replaceFilesSourceList != null && replaceFilesTargetList != null)
                     {
                         //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
-                        replaceFilesSourceSplit = replaceFilesSourceList.Split(';').Where(x=>!string.IsNullOrWhiteSpace(x)).ToList();
+                        replaceFilesSourceSplit = replaceFilesSourceList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                         replaceFilesTargetSplit = replaceFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                         if (replaceFilesSourceSplit.Count != replaceFilesTargetSplit.Count)
                         {
@@ -850,13 +850,29 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
                     }
+
+                    //MultiAltLists: Mod Manager 6.0
+                    //Must be parsed before AltDLC as AltDLC can access these lists.
+                    if (ModDescTargetVersion >= 6.0)
+                    {
+                        int i = 1;
+                        while (true)
+                        {
+                            var multilist = iniData[@"CUSTOMDLC"][@"multilist" + i];
+                            if (multilist == null) break; //no more to parse
+                            customDLCjob.MultiLists[i] = multilist.Split(';');
+                            i++;
+                        }
+                    }
+
+
                     //AltDLC: Mod Manager 4.4
                     if (!string.IsNullOrEmpty(altdlcstr))
                     {
                         var splits = StringStructParser.GetParenthesisSplitValues(altdlcstr);
                         foreach (var split in splits)
                         {
-                            AlternateDLC af = new AlternateDLC(split, this);
+                            AlternateDLC af = new AlternateDLC(split, this, customDLCjob);
                             if (af.ValidAlternate)
                             {
                                 customDLCjob.AlternateDLCs.Add(af);

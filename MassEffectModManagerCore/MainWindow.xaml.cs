@@ -2287,7 +2287,7 @@ namespace MassEffectModManagerCore
             Settings.Save();
         }
 
-        private void SetTheme()
+        internal void SetTheme()
         {
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
         }

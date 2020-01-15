@@ -56,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     case ')':
                         if (openParenthesisCount <= 0)
                         {
-                            throw new Exception("ASSERT ERROR: StringStructParser cannot handle closing ) without an opening (.");
+                            throw new Exception("ASSERT ERROR: StringStructParser cannot handle closing ) without an opening (. at position " + i);
                         }
                         //closingParenthesisPos = i;
                         openParenthesisCount--;

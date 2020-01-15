@@ -43,10 +43,12 @@
     <None Remove="bundleddlls\lzo2wrapper.dll" />
     <None Remove="bundleddlls\sevenzipwrapper.dll" />
     <None Remove="bundleddlls\zlibwrapper.dll" />
+    <None Remove="images\darktheme.png" />
     <None Remove="images\gameicons\ME1_48.ico" />
     <None Remove="images\gameicons\ME2_48.ico" />
     <None Remove="images\gameicons\ME3_48.ico" />
     <None Remove="images\gameicons\Unknown_48.ico" />
+    <None Remove="images\lighttheme.png" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\me3tweaks.png" />
     <None Remove="images\modmaker.png" />
@@ -102,6 +104,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="appicon.ico" />
+    <Resource Include="images\darktheme.png" />
+    <Resource Include="images\lighttheme.png" />
     <Resource Include="images\me3tweaks.png" />
     <Resource Include="images\modmaker.png" />
     <Resource Include="images\nexusmods_scenethemed.png" />

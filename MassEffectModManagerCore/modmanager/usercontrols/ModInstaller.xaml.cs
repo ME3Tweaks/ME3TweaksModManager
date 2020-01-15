@@ -396,7 +396,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     FileInstalledCallback(args.FileInfo.FileName);
                     filesInstalled.Add(args.FileInfo.FileName);
                     FileInfo dest = new FileInfo(fullPathMappingArchive[args.FileInfo.Index]);
-                    if (dest.IsReadOnly) 
+                    if (dest.IsReadOnly)
                         dest.IsReadOnly = false;
                     //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
@@ -852,10 +852,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (sender is DockPanel dp)
             {
-                if (dp.DataContext is AlternateDLC ad && ad.IsManual)
+                if (dp.DataContext is AlternateDLC ad)
                 {
-                    if (ad.GroupName != null && ad.IsSelected) return; //Cannot deselect group
-                    ad.IsSelected = !ad.IsSelected;
+                    if (!ad.UIIsSelectable)
+                    {
+                        return; //cannot select this item
+                    }
+                    if (ad.IsManual)
+                    {
+                        if (ad.GroupName != null && ad.IsSelected) return; //Cannot deselect group
+                        ad.IsSelected = !ad.IsSelected;
+                    }
                 }
                 else if (dp.DataContext is AlternateFile af && af.IsManual)
                 {
