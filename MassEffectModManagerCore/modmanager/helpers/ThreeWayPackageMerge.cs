@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -10,9 +11,102 @@ namespace MassEffectModManagerCore.modmanager.helpers
     {
         public static bool AttemptMerge(IMEPackage vanillaPackage, IMEPackage modifiedVanillaPackage, IMEPackage targetPackage)
         {
-            //NAMES MERGE
             PackageDelta vanillaToModifiedDelta = PackageDelta.CalculateDelta(vanillaPackage, modifiedVanillaPackage);
             PackageDelta vanillaToTargetDelta = PackageDelta.CalculateDelta(vanillaPackage, targetPackage);
+
+            //Check merge conditions
+            var nameConflicts = vanillaToModifiedDelta.NameDeltas.Keys.Intersect(vanillaToTargetDelta.NameDeltas.Keys).ToList();
+            var importConflicts = vanillaToModifiedDelta.ImportDeltas.Keys.Intersect(vanillaToTargetDelta.ImportDeltas.Keys).ToList();
+            var exportConflicts = vanillaToModifiedDelta.ExportDeltas.Keys.Intersect(vanillaToTargetDelta.ExportDeltas.Keys).ToList();
+
+            //Name deltas
+
+            if (nameConflicts.Count > 0)
+            {
+                //need to check if the conflicts result in same value, in this case it would not be a conflict.
+                foreach (int nameIndex in nameConflicts)
+                {
+                    var modifiedName = modifiedVanillaPackage.Names[nameIndex];
+                    var targetName = targetPackage.Names[nameIndex];
+                    if (modifiedName != targetName)
+                    {
+                        //Differing names in same spots.
+                        Log.Information($@"Cannot merge files: Name index {nameIndex} is different between modified and target.");
+                        return false;
+                    }
+                }
+            }
+
+            if (importConflicts.Count > 0)
+            {
+                //todo
+            }
+
+            if (exportConflicts.Count > 0)
+            {
+                //hmm... this will be a tough one.
+                foreach (int exportTableIndex in exportConflicts)
+                {
+                    //we will have to check sizes if we ever hope to have way to merge this
+                    var modifiedData = modifiedVanillaPackage.Exports[exportTableIndex].Data;
+                    var targetData = targetPackage.Exports[exportTableIndex].Data;
+
+                    if (!modifiedData.SequenceEqual(targetData))
+                    {
+                        Log.Information($@"Cannot merge files: Export table index {exportTableIndex} data is different between modified and target.");
+                        return false;
+                    }
+
+                    //We will have to ignore size here somehow...
+                    //var modifiedHeader = modifiedVanillaPackage.Exports[exportTableIndex].Header;
+                    //var targetHeader = targetPackage.Exports[exportTableIndex].Header;
+                }
+            }
+
+            //Merge is OK to perform
+            //Apply vanilla to modified delta to target package
+            foreach (var nameDelta in vanillaToModifiedDelta.NameDeltas)
+            {
+                if (nameDelta.Key >= targetPackage.NameCount)
+                {
+                    //add it
+                    targetPackage.addName(nameDelta.Value);
+                }
+                else
+                {
+                    targetPackage.replaceName(nameDelta.Key, nameDelta.Value);
+                }
+            }
+
+            foreach (var exportDelta in vanillaToModifiedDelta.ExportDeltas)
+            {
+                if (exportDelta.Key >= targetPackage.ExportCount)
+                {
+                    //add it
+                    targetPackage.addExport(exportDelta.Value); //not sure if this is possible
+                }
+                else
+                {
+                    //gonna need this reviewed, not entirely sure this is OK to do
+                    targetPackage.Exports[exportDelta.Key].Data = exportDelta.Value.Data;
+                    targetPackage.Exports[exportDelta.Key].Header = exportDelta.Value.Header;
+                }
+            }
+
+            foreach (var importDelta in vanillaToModifiedDelta.ImportDeltas)
+            {
+                if (importDelta.Key >= targetPackage.ImportCount)
+                {
+                    //add it
+                    targetPackage.addImport(importDelta.Value); //not sure if this is possible
+                }
+                else
+                {
+                    //gonna need this reviewed, not entirely sure this is OK to do
+                    //targetPackage.Imports[importDelta.Key].Data = importDelta.Value.Data;
+                    targetPackage.Imports[importDelta.Key].Header = importDelta.Value.Header;
+                }
+            }
 
 
             return true;
@@ -72,7 +166,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                 }
                 #endregion
-                
+
                 #region Imports
                 {
                     int numImportsToEnumerate = ancestorPackage.ImportCount;

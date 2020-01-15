@@ -1326,7 +1326,7 @@ namespace MassEffectModManagerCore
                 bool canCheckForModUpdates = Utilities.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
-                CLog.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory(), Settings.LogModStartup);
+                Log.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory());
                 var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: Mod.MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: Mod.MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: Mod.MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
@@ -1870,9 +1870,19 @@ namespace MassEffectModManagerCore
                     ME1UnrealObjectInfo.loadfromJSON();
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                    var vanilla = MEPackageHandler.OpenMEPackage(@"F:\Backups\Mass Effect 2\BioGame\CookedPC\Startup_INT.pcc");
-                    var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
-                    var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+                    var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));
+
+                    //Dev
+                    //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
+                    //var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+
+                    //Laptop
+                    //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
+                    //var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+
+                    //Desktop
+                    var modified = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2NoMinigames-Vanilla\BioGame\CookedPC\Startup_INT.pcc");
+                    var target = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2 Controller\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
                     ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
 
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
