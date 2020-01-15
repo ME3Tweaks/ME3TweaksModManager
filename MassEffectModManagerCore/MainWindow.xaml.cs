@@ -26,6 +26,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
+using ME3Explorer.Packages;
 using ME3Explorer.Unreal;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -1869,6 +1870,10 @@ namespace MassEffectModManagerCore
                     ME1UnrealObjectInfo.loadfromJSON();
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                    var vanilla = MEPackageHandler.OpenMEPackage(@"F:\Backups\Mass Effect 2\BioGame\CookedPC\Startup_INT.pcc");
+                    var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
+                    var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+                    ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
 
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
