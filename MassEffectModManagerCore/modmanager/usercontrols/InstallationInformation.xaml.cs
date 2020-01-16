@@ -339,19 +339,40 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private string dlcFolderPath;
 
             public event PropertyChangedEventHandler PropertyChanged;
+            public string EnableDisableText
+            {
+                get
+                {
+                    return DLCFolderName.StartsWith("xDLC") ? "Enable" : "Disable";
+                }
+            }
 
             public string ModName { get; }
-            public string DLCFolderName { get; }
+            public string DLCFolderName { get; private set; }
             public string DLCFolderNameString { get; }
             public string InstalledBy { get; }
             public string Version { get; }
             public string InstallerInstanceGUID { get; }
             public string InstallerInstanceBuild { get; }
+            private Mod.MEGame game;
+            public SolidColorBrush TextColor
+            {
+                get
+                {
+                    if (DLCFolderName.StartsWith('x'))
+                    {
+                        return Brushes.IndianRed;
+                    }
+                    return null;
+                }
+            }
 
             public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted)
             {
                 this.dlcFolderPath = dlcFolderPath;
+                this.game = game;
                 DLCFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
+                DLCFolderNameString = DLCFolderNameString.TrimStart('x'); //this string is not to show "Disabled"
                 if (App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(DLCFolderName, out var tpmi))
                 {
                     ModName = tpmi.modname;
@@ -410,14 +431,40 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.deleteConfirmationCallback = deleteConfirmationCallback;
                 this.notifyDeleted = notifyDeleted;
                 DeleteCommand = new RelayCommand(DeleteDLCMod, CanDeleteDLCMod);
+                EnableDisableCommand = new GenericCommand(ToggleDLC, CanToggleDLC);
 
             }
+
+            private void ToggleDLC()
+            {
+                var source = dlcFolderPath;
+                var dlcdir = Directory.GetParent(dlcFolderPath).FullName;
+                var newdlcname = DLCFolderName.StartsWith("xDLC") ? DLCFolderName.TrimStart('x') : "x" + DLCFolderName;
+                var target = Path.Combine(dlcdir, newdlcname);
+                try
+                {
+                    Directory.Move(source, target);
+                    DLCFolderName = newdlcname;
+                    dlcFolderPath = target;
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Unable to toggle DLC: " + e.Message);
+                }
+                //TriggerPropertyChangedFor(nameof(DLCFolderName));
+            }
+            private void TriggerPropertyChangedFor(string propertyname)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+            }
+            private bool CanToggleDLC() => !Utilities.IsGameRunning(game);
 
             private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
             private Action notifyDeleted;
 
             public ICommand DeleteCommand { get; set; }
-            private bool CanDeleteDLCMod(object obj) => true;
+            public GenericCommand EnableDisableCommand { get; set; }
+            private bool CanDeleteDLCMod(object obj) => !Utilities.IsGameRunning(game);
 
             private void DeleteDLCMod(object obj)
             {

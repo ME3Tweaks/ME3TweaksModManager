@@ -141,12 +141,12 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             return mips;
         }
 
-        public byte[] GetImageBytesForMip(Texture2DMipInfo info, GameTarget target, bool useLowerMipsIfTFCMissing)
+        public byte[] GetImageBytesForMip(Texture2DMipInfo info, GameTarget target, bool useLowerMipsIfTFCMissing, List<string> additionalTFCs = null)
         {
             byte[] imageBytes = null;
             try
             {
-                imageBytes = GetTextureData(info, target);
+                imageBytes = GetTextureData(info, target, additionalTFCs: additionalTFCs);
             }
             catch (FileNotFoundException e)
             {
@@ -214,7 +214,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
         }
 
 
-        public static byte[] GetTextureData(Texture2DMipInfo mipToLoad, GameTarget target, bool decompress = true)
+        public static byte[] GetTextureData(Texture2DMipInfo mipToLoad, GameTarget target, bool decompress = true, List<string> additionalTFCs = null)
         {
             var imagebytes = new byte[decompress ? mipToLoad.uncompressedSize : mipToLoad.compressedSize];
             //Debug.WriteLine("getting texture data for " + mipToLoad.Export.FullPath);
@@ -249,6 +249,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                 if (mipToLoad.Export.Game == Mod.MEGame.ME1)
                 {
                     var fullPath = loadedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(mipToLoad.TextureCacheName, StringComparison.InvariantCultureIgnoreCase));
+
                     if (fullPath != null)
                     {
                         filename = fullPath;
@@ -261,10 +262,15 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                 else
                 {
                     string archive = mipToLoad.TextureCacheName + ".tfc";
+
                     var localDirectoryTFCPath = Path.Combine(Path.GetDirectoryName(mipToLoad.Export.FileRef.FilePath), archive);
                     if (File.Exists(localDirectoryTFCPath))
                     {
                         filename = localDirectoryTFCPath;
+                    }
+                    else if (additionalTFCs != null && additionalTFCs.Any(x => Path.GetFileName(x).Equals(archive, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        filename = additionalTFCs.First(x => Path.GetFileName(x).Equals(archive, StringComparison.InvariantCultureIgnoreCase));
                     }
                     else
                     {

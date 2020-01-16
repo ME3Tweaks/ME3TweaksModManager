@@ -237,12 +237,12 @@ namespace MassEffectModManagerCore.GameDirectories
             return files.Where(t => predicate(t)).ToList();
         }
 
-        internal static List<string> GetInstalledDLC(GameTarget target)
+        internal static List<string> GetInstalledDLC(GameTarget target, bool includeDisabled = false)
         {
             var dlcDirectory = MEDirectories.DLCPath(target);
             if (Directory.Exists(dlcDirectory))
             {
-                return Directory.GetDirectories(dlcDirectory).Where(x => Path.GetFileName(x).StartsWith("DLC_")).Select(x => Path.GetFileName(x)).ToList();
+                return Directory.GetDirectories(dlcDirectory).Where(x => Path.GetFileName(x).StartsWith("DLC_") || (includeDisabled && Path.GetFileName(x).StartsWith("xDLC_"))).Select(x => Path.GetFileName(x)).ToList();
             }
 
             return new List<string>();

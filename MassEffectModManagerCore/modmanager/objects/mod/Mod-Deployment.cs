@@ -44,8 +44,19 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     if (dlc.HasRelativeFiles())
                     {
-                        var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList();
-                        references.AddRange(files);
+                        if (dlc.AlternateDLCFolder != null)
+                        {
+                            var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList();
+                            references.AddRange(files);
+                        }
+                        else if (dlc.MultiListSourceFiles != null)
+                        {
+                            foreach(var mf in dlc.MultiListSourceFiles)
+                            {
+                                var relpath = Path.Combine(ModPath, dlc.MultiListRootPath, mf).Substring(ModPath.Length + 1);
+                                references.Add(relpath);
+                            }
+                        }
                     }
                 }
                 foreach (var file in job.AlternateFiles)
@@ -75,9 +86,9 @@ namespace MassEffectModManagerCore.modmanager
             }
             if (includeModdesc)
             {
-                references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/','\\'));
+                references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/', '\\'));
             }
-            return references;
+            return references.Distinct(StringComparer.InvariantCultureIgnoreCase).ToList();
         }
     }
 }
