@@ -1040,29 +1040,30 @@ namespace ME3Explorer.Packages
                 export.setBinaryData(binData);
             }
             //update offsets for pcc-stored mips in Textures
-            else if (export.IsTexture())
-            {
-                int baseOffset = newDataOffset + export.propsEnd();
-                MemoryStream binData = new MemoryStream(export.getBinaryData());
-                binData.Skip(12);
-                binData.WriteInt32(baseOffset + (int)binData.Position + 4);
-                for (int i = binData.ReadInt32(); i > 0 && binData.Position < binData.Length; i--)
-                {
-                    var storageFlags = (StorageFlags)binData.ReadInt32();
-                    if (!storageFlags.HasFlag(StorageFlags.externalFile)) //pcc-stored
-                    {
-                        int uncompressedSize = binData.ReadInt32();
-                        int compressedSize = binData.ReadInt32();
-                        binData.WriteInt32(baseOffset + (int)binData.Position + 4);//update offset
-                        binData.Seek((storageFlags == StorageFlags.noFlags ? uncompressedSize : compressedSize) + 8, SeekOrigin.Current); //skip texture and width + height values
-                    }
-                    else
-                    {
-                        binData.Seek(20, SeekOrigin.Current);//skip whole rest of mip definition
-                    }
-                }
-                export.setBinaryData(binData.ToArray());
-            }
+            //This I do not think is actually necessary
+            //else if (export.IsTexture())
+            //{
+            //    int baseOffset = newDataOffset + export.propsEnd();
+            //    MemoryStream binData = new MemoryStream(export.getBinaryData());
+            //    binData.Skip(12);
+            //    binData.WriteInt32(baseOffset + (int)binData.Position + 4);
+            //    for (int i = binData.ReadInt32(); i > 0 && binData.Position < binData.Length; i--)
+            //    {
+            //        var storageFlags = (StorageFlags)binData.ReadInt32();
+            //        if (!storageFlags.HasFlag(StorageFlags.externalFile)) //pcc-stored
+            //        {
+            //            int uncompressedSize = binData.ReadInt32();
+            //            int compressedSize = binData.ReadInt32();
+            //            binData.WriteInt32(baseOffset + (int)binData.Position + 4);//update offset
+            //            binData.Seek((storageFlags == StorageFlags.noFlags ? uncompressedSize : compressedSize) + 8, SeekOrigin.Current); //skip texture and width + height values
+            //        }
+            //        else
+            //        {
+            //            binData.Seek(20, SeekOrigin.Current);//skip whole rest of mip definition
+            //        }
+            //    }
+            //    export.setBinaryData(binData.ToArray());
+            //}
             else if (export.ClassName == "ShaderCache")
             {
                 int oldDataOffset = export.DataOffset;
