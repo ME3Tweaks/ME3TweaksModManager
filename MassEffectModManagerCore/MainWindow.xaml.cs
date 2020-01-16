@@ -1386,9 +1386,7 @@ namespace MassEffectModManagerCore
                 {
                     ModsList_ListBox.SelectedItem = m;
                     ModsList_ListBox.ScrollIntoView(m);
-
                 }
-
                 ModsLoaded = true;
             };
             bw.RunWorkerAsync();
@@ -1422,7 +1420,6 @@ namespace MassEffectModManagerCore
                             {
                                 LoadMods(updates.Count == 1 ? updates[0].mod : null);
                             }
-
                         };
                         ShowBusyControl(modUpdatesNotificationDialog);
                     });
@@ -1843,10 +1840,8 @@ namespace MassEffectModManagerCore
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
                 App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!firstStartupCheck);
 
-
                 App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
                 try
@@ -1881,15 +1876,20 @@ namespace MassEffectModManagerCore
                     //var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
 
                     //Desktop
-                    var modified = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2NoMinigames-Vanilla\BioGame\CookedPC\Startup_INT.pcc");
-                    var target = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2 Controller\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
-                    ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
+                    //var modified = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2NoMinigames-Vanilla\BioGame\CookedPC\Startup_INT.pcc");
+                    //var target = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2 Controller\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+                    //ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
 
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }
 
+                if (Utilities.CanFetchContentThrottleCheck())
+                {
+                    Settings.LastContentCheck = DateTime.Now;
+                    Settings.Save();
+                }
                 Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
             };
@@ -2054,6 +2054,7 @@ namespace MassEffectModManagerCore
 
         private bool RepopulatingTargets;
         private Dictionary<string, MenuItem> languageMenuItems;
+        private bool hasDoneStartupModUpdateCheck;
 
         private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
