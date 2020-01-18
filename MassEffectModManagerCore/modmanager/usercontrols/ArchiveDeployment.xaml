@@ -47,7 +47,7 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-        <CheckBox Content="{DynamicResource string_multiThreadedCompression}" ToolTip="{DynamicResource string_tooltip_multithreadDeployment}" IsChecked="{Binding MultithreadedCompression}" Margin="0,5"/>
+        <CheckBox Content="{DynamicResource string_multiThreadedCompression}" IsEnabled="{Binding DeploymentInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ToolTip="{DynamicResource string_tooltip_multithreadDeployment}" IsChecked="{Binding MultithreadedCompression}" Margin="0,5"/>
         <ProgressBar Height="16" IsIndeterminate="{Binding ProgressIndeterminate}" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"/>
         <DockPanel Margin="0,4">
             <Button DockPanel.Dock="Right" Content="{DynamicResource string_deploy}" Command="{Binding DeployCommand}" HorizontalAlignment="Right" Padding ="7,5"/>

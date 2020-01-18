@@ -28,8 +28,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             DataContext = this;
             MixinHandler.LoadME3TweaksPackage();
-            AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x=>x.PatchName));
+            AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x => x.PatchName));
+            LoadCommands();
             InitializeComponent();
+        }
+
+        public ICommand CloseCommand;
+        private void LoadCommands()
+        {
+            CloseCommand = new GenericCommand(ClosePanel, CanClosePanel);
+        }
+
+        private bool CanClosePanel() => true;
+
+        private void ClosePanel()
+        {
+            OnClosing(DataEventArgs.Empty);
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)

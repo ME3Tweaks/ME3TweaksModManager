@@ -54,6 +54,11 @@ namespace MassEffectModManagerCore
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "nexusmodsintegration")).FullName;
         }
 
+        internal static string GetBatchInstallGroupsFolder()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "batchmodqueues")).FullName;
+        }
+
         // Pinvoke for API function
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]

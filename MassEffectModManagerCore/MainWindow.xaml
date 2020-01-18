@@ -123,7 +123,7 @@
                     <MenuItem Header="{DynamicResource string_ASIModManager}" Click="ASIModManager_Click" ToolTip="{DynamicResource string_ASIManagerTooltip}" />
                     <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" />
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
-                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" Command="{Binding BatchModInstallerCommand}" />
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
                     <MenuItem Header="{DynamicResource string_MixInLibrary}" Command="{Binding MixinLibraryCommand}"/>
                 </MenuItem>

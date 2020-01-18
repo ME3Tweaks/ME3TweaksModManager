@@ -267,6 +267,17 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 CheckedByDefault = cbd;
             }
+            if (Condition != AltDLCCondition.COND_MANUAL && Condition != AltDLCCondition.INVALID_CONDITION)
+            {
+                //ensure conditional dlc list has at least one item.
+                if (ConditionalDLC.Count == 0)
+                {
+                    Log.Error($@"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.");
+                    ValidAlternate = false;
+                    LoadFailedReason = $"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.";
+                    return;
+                }
+            }
 
             CLog.Information($@"AlternateDLC loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;

@@ -279,7 +279,7 @@ namespace MassEffectModManagerCore
         public ICommand UpdaterServiceCommand { get; set; }
         public ICommand UpdaterServiceSettingsCommand { get; set; }
         public ICommand MixinLibraryCommand { get; set; }
-
+        public ICommand BatchModInstallerCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -311,6 +311,27 @@ namespace MassEffectModManagerCore
             UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
             UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
             MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
+            BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
+        }
+
+        private bool CanOpenBatchModPanel()
+        {
+            return !IsLoadingMods;
+        }
+
+        private void OpenBatchModPanel()
+        {
+            var batchLibrary = new BatchModLibrary();
+            batchLibrary.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is BatchLibraryInstallQueue queue)
+                {
+                    ReleaseBusyControl(); //release control
+
+                }
+            };
+            ShowBusyControl(batchLibrary);
         }
 
         private void OpenMixinManagerPanel()
