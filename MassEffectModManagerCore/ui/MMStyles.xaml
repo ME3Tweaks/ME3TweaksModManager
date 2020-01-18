@@ -10,6 +10,7 @@
     <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
     <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     <converters:NullHiddenConverter x:Key="NullHiddenConverter"/>
+    <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>

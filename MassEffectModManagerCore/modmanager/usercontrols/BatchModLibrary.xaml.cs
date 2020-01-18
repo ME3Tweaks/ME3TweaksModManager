@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.windows;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -22,7 +25,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class BatchModLibrary : MMBusyPanelBase
     {
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
+        public Mod SelectedModInGroup { get; set; }
         public ObservableCollectionExtended<BatchLibraryInstallQueue> AvailableBatchQueues { get; } = new ObservableCollectionExtended<BatchLibraryInstallQueue>();
+        public ObservableCollectionExtended<GameTarget> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTarget>();
         public BatchModLibrary()
         {
             DataContext = this;
@@ -30,10 +35,40 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
         public ICommand CloseCommand { get; private set; }
+        public ICommand CreateNewGroupCommand { get; private set; }
+        public ICommand InstallGroupCommand { get; private set; }
+        public ICommand EditGroupCommand { get; private set; }
 
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(ClosePanel);
+            CreateNewGroupCommand = new GenericCommand(CreateNewGroup);
+            InstallGroupCommand = new GenericCommand(InstallGroup, CanInstallGroup);
+            EditGroupCommand = new GenericCommand(EditGroup, CanEditGroup);
+        }
+
+        private void EditGroup()
+        {
+            new BatchModQueueEditor(mainwindow, SelectedBatchQueue).ShowDialog();
+        }
+
+        private bool CanEditGroup() => SelectedBatchQueue != null;
+
+        private void InstallGroup()
+        {
+            //throw new NotImplementedException();
+            SelectedBatchQueue.Target = SelectedGameTarget;
+            OnClosing(new DataEventArgs(SelectedBatchQueue));
+        }
+
+        private bool CanInstallGroup()
+        {
+            return SelectedGameTarget != null && SelectedBatchQueue != null;
+        }
+
+        private void CreateNewGroup()
+        {
+            new BatchModQueueEditor(mainwindow).ShowDialog();
         }
 
         private void ClosePanel()
@@ -70,16 +105,49 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
+        public GameTarget SelectedGameTarget { get; set; }
+
         private void OnSelectedBatchQueueChanged()
         {
+            GameTarget currentTarget = SelectedGameTarget;
+            SelectedGameTarget = null;
+            InstallationTargetsForGroup.ClearEx();
+            if (SelectedBatchQueue != null)
+            {
+                InstallationTargetsForGroup.AddRange(mainwindow.InstallationTargets.Where(x => x.Game == SelectedBatchQueue.Game));
+                if (InstallationTargetsForGroup.Contains(currentTarget))
+                {
+                    SelectedGameTarget = currentTarget;
+                } else
+                {
+                    SelectedGameTarget = InstallationTargetsForGroup.FirstOrDefault();
+                }
+            }
+        }
 
+        public string ModDescriptionText { get; set; }
+
+        public void OnSelectedModInGroupChanged()
+        {
+            if (SelectedModInGroup == null)
+            {
+                ModDescriptionText = "";
+            }
+            else
+            {
+                ModDescriptionText = SelectedModInGroup.DisplayedModDescription;
+            }
         }
     }
 
     public class BatchLibraryInstallQueue : INotifyPropertyChanged
     {
-        public List<Mod> ModsToInstall = new List<Mod>();
-        public List<string> ModsMissing = new List<string>();
+        /// <summary>
+        /// Target for installation. Only used when installation commences.
+        /// </summary>
+        public GameTarget Target;
+        public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
 
         public Mod.MEGame Game { get; private set; }
         public string QueueName { get; private set; }

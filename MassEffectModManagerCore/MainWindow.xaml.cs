@@ -329,6 +329,20 @@ namespace MassEffectModManagerCore
                 {
                     ReleaseBusyControl(); //release control
 
+                    bool continueInstalling = true;
+                    int modIndex = -1;
+                    //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
+                    void modInstalled(bool successful)
+                    {
+                        continueInstalling &= successful;
+                        if (continueInstalling && queue.ModsToInstall.Count > modIndex)
+                        {
+                            modIndex++;
+                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, true, modInstalled);
+                        }
+                    }
+
+                    modInstalled(true); //kick off first installation
                 }
             };
             ShowBusyControl(batchLibrary);
@@ -1099,12 +1113,20 @@ namespace MassEffectModManagerCore
             return SelectedMod != null && InstallationTargets_ComboBox.SelectedItem is GameTarget gt && gt.Game == SelectedMod.Game;
         }
 
-        private void ApplyMod(Mod mod)
+        /// <summary>
+        /// Applies a mod to the current or forced target. This method is asynchronous, it must run on the UI thread but it will immediately yield once the installer begins.
+        /// </summary>
+        /// <param name="mod">Mod to install</param>
+        /// <param name="forcedTarget">Forced target to install to</param>
+        /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
+        /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
+
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, Action<bool> installCompletedCallback = null)
         {
             if (!Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modInstaller = new ModInstaller(mod, SelectedGameTarget);
+                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget);
                 modInstaller.Close += (a, b) =>
                 {
 
@@ -1115,16 +1137,18 @@ namespace MassEffectModManagerCore
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_installationAborted);
                             ReleaseBusyControl();
                             backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                            installCompletedCallback?.Invoke(false);
                             return;
                         }
                         else
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
+                            installCompletedCallback?.Invoke(false);
                         }
                     }
 
-                    //Run AutoTOC if ME3
-                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3)
+                    //Run AutoTOC if ME3 and not batch mode
+                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3 && !batchMode)
                     {
                         var autoTocUI = new AutoTOC(SelectedGameTarget);
                         autoTocUI.Close += (a1, b1) =>
@@ -1139,6 +1163,11 @@ namespace MassEffectModManagerCore
                     {
                         ReleaseBusyControl();
                         backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    }
+
+                    if (modInstaller.InstallationSucceeded)
+                    {
+                        installCompletedCallback?.Invoke(true);
                     }
                 };
                 ShowBusyControl(modInstaller);

@@ -73,6 +73,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string Action { get; set; }
         public int Percent { get; set; }
         public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
+        public bool BatchMode { get; set; }
 
         private void BeginInstallingMod()
         {
