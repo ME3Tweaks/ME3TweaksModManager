@@ -1,0 +1,106 @@
+﻿<Window x:Class="MassEffectModManagerCore.modmanager.windows.BatchModQueueEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="Install Group Editor" Height="450" Width="800">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
+    <DockPanel Margin="5">
+        <TextBlock Text="Install Group Editor" FontSize="20" FontWeight="Bold" DockPanel.Dock="Top" TextAlignment="Center"/>
+        <TextBlock Text="Move mods to the right side to add them to the install group." TextAlignment="Center"  DockPanel.Dock="Top" Margin="0,0,0,10"/>
+
+        <Grid DockPanel.Dock="Left">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Game" FontWeight="Bold" Grid.ColumnSpan="3"/>
+            <RadioButton Grid.Column="0" Grid.Row="1" Click="ME1_Clicked" Name="ME1_RadioButton">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/images/gameicons/ME1_48.ico" Width="32" Height="32" Margin="0,0,5,0"/>
+                </StackPanel>
+            </RadioButton>
+            <RadioButton Grid.Row="1" Grid.Column="1" Margin="5,0" Click="ME2_Clicked"  Name="ME2_RadioButton">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/images/gameicons/ME2_48.ico" Width="32" Height="32" Margin="0,0,5,0"/>
+                </StackPanel>
+            </RadioButton>
+            <RadioButton Grid.Row="1" Grid.Column="2" Click="ME3_Clicked" Name="ME3_RadioButton">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/images/gameicons/ME3_48.ico" Width="32" Height="32" Margin="0,0,5,0"/>
+                </StackPanel>
+            </RadioButton>
+            <TextBlock Text="Available mods for group" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0"/>
+            <ListBox Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding VisibleFilteredMods}" SelectedItem="{Binding SelectedAvailableMod}"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding ModName}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Grid.Row="4" Grid.Column="0" Margin="0,5,0,0"  Grid.ColumnSpan="3" HorizontalAlignment="Right" Content="Add to group >>"/>
+        </Grid>
+        <DockPanel Margin="10,0,0,0">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
+                <Button Content="Cancel editing" Margin="5,0" Command="{Binding CancelCommand}"/>
+                <Button Content="Save group" Command="{Binding SaveAndCloseCommand}"/>
+            </StackPanel>
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Group name" FontWeight="Bold" Grid.Row="0" Grid.Column="0"/>
+                <xctk:WatermarkTextBox Watermark="Group name" Grid.Row="1" Grid.Column="0" Text="{Binding GroupName}"/>
+                <TextBlock Text="Group description" FontWeight="Bold" Grid.Row="2" Grid.Column="0"/>
+                <xctk:WatermarkTextBox Watermark="Group description" Grid.Row="3" Grid.Column="0" Height="55" Text="{Binding GroupDescription}"/>
+            </Grid>
+            <DockPanel>
+                <TextBlock Text="Mods in install group" FontWeight="Bold" DockPanel.Dock="Top"/>
+                <TextBlock Text="Mods will install in this order. Mods that configure themselves based on other mods should be installed last." TextWrapping="Wrap" DockPanel.Dock="Top"/>
+                <DockPanel DockPanel.Dock="Bottom">
+                    <Button Content="&lt;&lt; Remove from install group" DockPanel.Dock="Left"/>
+                    <Button Content="Move down" DockPanel.Dock="Right" Margin="5,0,0,0"/>
+                    <Button HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Move up"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <ListBox ItemsSource="{Binding ModsInGroup}" SelectedItem="{Binding SelectedInstallGroupMod}"
+                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding ModName}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </DockPanel>
+    </DockPanel>
+</Window>

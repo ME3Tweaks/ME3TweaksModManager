@@ -10,6 +10,8 @@
     /// </summary>
     public class LzmaDecodeStream : Stream
     {
+        private bool isStreamingLZMA;
+        private bool foundStreamingEndOfStream;
         private readonly MemoryStream _buffer = new MemoryStream();
         private readonly Decoder _decoder = new Decoder();
         private readonly Stream _input;
@@ -108,11 +110,19 @@
                 _error = true;
                 return;
             }
-            if (_buffer.Capacity < (int)size)
+            if (size != -1)
             {
-                _buffer.Capacity = (int)size;
+                if (_buffer.Capacity < (int)size)
+                {
+                    _buffer.Capacity = (int)size;
+                }
+                _buffer.SetLength(size);
             }
-            _buffer.SetLength(size);
+            else
+            {
+                isStreamingLZMA = true;
+                //we don't know length of the data we are about to read.
+            }
             _decoder.SetDecoderProperties(properties);
             _buffer.Position = 0;
             _decoder.Code(
@@ -128,37 +138,41 @@
         /// <summary>
         /// Reads a sequence of bytes from the current stream and decompresses data if necessary.
         /// </summary>
-        /// <param name="buffer">An array of bytes.</param>
+        /// <param name="bufferToWriteTo">An array of bytes.</param>
         /// <param name="offset">The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</param>
-        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
+        /// <param name="amountToRead">The maximum number of bytes to be read from the current stream.</param>
         /// <returns>The total number of bytes read into the buffer.</returns>        
-        public override int Read(byte[] buffer, int offset, int count)
+        public override int Read(byte[] bufferToWriteTo, int offset, int amountToRead)
         {
             if (_error)
             {
                 return 0;
             }
-
             if (!_firstChunkRead)
             {
                 ReadChunk();
                 _firstChunkRead = true;
             }
             int readCount = 0;
-            while (count > _buffer.Length - _buffer.Position && !_error)
+
+            //streaming LZMA: _buffer.Length is not set.
+            while (amountToRead > _buffer.Length - _buffer.Position && !_error)
             {
+                if (isStreamingLZMA && _decoder.HasFoundEndOfStream)
+                {
+                    break;
+                }
                 var buf = new byte[_buffer.Length - _buffer.Position];
                 _buffer.Read(buf, 0, buf.Length);
-                buf.CopyTo(buffer, offset);
+                buf.CopyTo(bufferToWriteTo, offset);
                 offset += buf.Length;
-                count -= buf.Length;
+                amountToRead -= buf.Length;
                 readCount += buf.Length;
                 ReadChunk();
             }
             if (!_error)
             {
-                _buffer.Read(buffer, offset, count);
-                readCount += count;
+                readCount += _buffer.Read(bufferToWriteTo, offset, amountToRead); 
             }
             return readCount;
         }

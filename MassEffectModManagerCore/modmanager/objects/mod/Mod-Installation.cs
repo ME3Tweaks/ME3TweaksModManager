@@ -128,7 +128,6 @@ namespace MassEffectModManagerCore.modmanager
                             if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC)
                             {
                                 string alternatePathRoot = FilesystemInterposer.PathCombine(IsInArchive, ModPath, altdlc.AlternateDLCFolder);
-                                //Todo: Change to Filesystem Interposer to support installation from archives
                                 var filesToAdd = FilesystemInterposer.DirectoryGetFiles(alternatePathRoot, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
                                 foreach (var fileToAdd in filesToAdd)
                                 {
@@ -136,6 +135,18 @@ namespace MassEffectModManagerCore.modmanager
                                     CLog.Information($@"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
                                     installationMapping[destFile] = new InstallSourceFile(fileToAdd) { AltApplied = true };
+                                }
+                            }
+                            else if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC)
+                            {
+                                string alternatePathRoot = FilesystemInterposer.PathCombine(IsInArchive, ModPath, altdlc.MultiListRootPath);
+                                foreach (var fileToAdd in altdlc.MultiListSourceFiles)
+                                {
+                                    var sourceFile = FilesystemInterposer.PathCombine(IsInArchive, alternatePathRoot, fileToAdd).Substring(ModPath.Length).TrimStart('\\');
+                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.TrimStart('\\', '/'));
+                                    CLog.Information($@"Adding extra CustomDLC file (MultiList) ({sourceFile} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
+
+                                    installationMapping[destFile] = new InstallSourceFile(sourceFile) { AltApplied = true };
                                 }
                             }
                         }

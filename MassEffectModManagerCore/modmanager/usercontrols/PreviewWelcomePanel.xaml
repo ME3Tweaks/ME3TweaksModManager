@@ -4,19 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             mc:Ignorable="d" 
+                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                       mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
                        MaxWidth="450">
     <StackPanel Margin="5">
         <TextBlock Text="{DynamicResource string_previewPanelTitle}" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10"/>
         <TextBlock TextWrapping="Wrap" Text="{DynamicResource string_previewPanelIntro}"/>
 
-        <TextBlock Text="{DynamicResource string_selectYourLanguage}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
-        <Grid HorizontalAlignment="Center" Margin="0,5">
+        <Grid HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
@@ -24,43 +21,106 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            <!--<DockPanel Grid.Column="0" HorizontalAlignment="Left">-->
+            <Grid HorizontalAlignment="Center" Margin="0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="{DynamicResource string_selectYourLanguage}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
+                <TextBlock Grid.Column="4" Text="Theme" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
 
-            <Button Grid.Column="0" Margin="2" Click="ChangeLang_DEU_Clicked">
-                <StackPanel>
-                    <Image Source="/modmanager/localizations/icons/german.png"/>
-                    <TextBlock Text="Deutsch" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="1" Margin="2" Click="ChangeLang_INT_Clicked">
-                <StackPanel>
-                    <Image Source="/modmanager/localizations/icons/english.png"/>
-                    <TextBlock Text="English" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="2" Margin="2" Click="ChangeLang_FRA_Clicked" IsEnabled="False" ToolTip="{DynamicResource string_tooltip_translationIsInProgressButIsNotYetAvailable}">
-                <StackPanel>
-                    <Image Source="/modmanager/localizations/icons/french.png"/>
-                    <TextBlock Text="Français" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="3" Margin="2" Click="ChangeLang_POL_Clicked" IsEnabled="False" ToolTip="{DynamicResource string_tooltip_translationIsInProgressButIsNotYetAvailable}">
-                <StackPanel >
-                    <Image Source="/modmanager/localizations/icons/polish.png"/>
-                    <TextBlock Text="Polski" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
+                <Button Grid.Column="0" Grid.Row="1" Margin="2" Click="ChangeLang_DEU_Clicked">
+                    <StackPanel>
+                        <Image Source="/modmanager/localizations/icons/german.png"/>
+                        <TextBlock Text="Deutsch" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="1" Grid.Row="1" Margin="2" Click="ChangeLang_INT_Clicked">
+                    <StackPanel>
+                        <Image Source="/modmanager/localizations/icons/english.png"/>
+                        <TextBlock Text="English" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="2" Margin="2" Click="ChangeLang_ESN_Clicked" IsEnabled="False" ToolTip="{DynamicResource string_tooltip_translationIsInProgressButIsNotYetAvailable}">
+                    <StackPanel>
+                        <Image Source="/modmanager/localizations/icons/spanish.png"/>
+                        <TextBlock Text="Español" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="2" Grid.Column="0" Margin="2" Click="ChangeLang_FRA_Clicked" IsEnabled="False" ToolTip="{DynamicResource string_tooltip_translationIsInProgressButIsNotYetAvailable}">
+                    <StackPanel>
+                        <Image Source="/modmanager/localizations/icons/french.png"/>
+                        <TextBlock Text="Français" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="2" Grid.Column="1" Margin="2" Click="ChangeLang_POL_Clicked" IsEnabled="False" ToolTip="{DynamicResource string_tooltip_translationIsInProgressButIsNotYetAvailable}">
+                    <StackPanel >
+                        <Image Source="/modmanager/localizations/icons/polish.png"/>
+                        <TextBlock Text="Polski" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="2" Grid.Column="2" Margin="2" Click="ChangeLang_RUS_Clicked">
+                    <StackPanel>
+                        <Image Source="/modmanager/localizations/icons/russian.png" Width="64"/>
+                        <TextBlock Text="Pусский" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-            <Button Grid.Column="4" Margin="2" Click="ChangeLang_RUS_Clicked">
-                <StackPanel>
-                    <Image Source="/modmanager/localizations/icons/russian.png"/>
-                    <TextBlock Text="Pусский" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
+                <!-- Themes -->
+                <Button Grid.Column="4" Grid.Row="1" Margin="10,2,2,2" Click="ChangeTheme_Light_Clicked">
+                    <StackPanel>
+                        <Image Source="/images/lighttheme.png"  Width="64"/>
+                        <TextBlock Text="Light" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="4" Grid.Row="2" Margin="10,2,2,2" Click="ChangeTheme_Dark_Clicked">
+                    <StackPanel>
+                        <Image Source="/images/darktheme.png" Width="64"/>
+                        <TextBlock Text="Dark" TextAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+            <!--</DockPanel>-->
+            <DockPanel Grid.Column="1">
+                <Grid HorizontalAlignment="Center" Margin="0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="79"/>
+                        <RowDefinition Height="79"/>
+                    </Grid.RowDefinitions>
 
-            
+                    
+                </Grid>
+            </DockPanel>
+
+            <DockPanel Grid.Row="1" Grid.ColumnSpan="2">
+                <TextBlock DockPanel.Dock="Top" Text="Mod library location" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
+                <TextBlock DockPanel.Dock="Top" Text="Mods that are imported into Mod Manager will be stored at this location." TextAlignment="Center" Margin="0,5,0,0"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <xctk:WatermarkTextBox Watermark="Library location"/>
+                    <Button Content="Browse" Grid.Column="1"/>
+                </Grid>
+                
+
+            </DockPanel>
         </Grid>
-        <TextBlock Text="{DynamicResource string_howToChangeLanguage}" TextWrapping="Wrap"/>
-
+        <TextBlock DockPanel.Dock="Bottom" Text="You can change your settings at any time through the Actions menu." TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
 
             <Button Content="{DynamicResource string_joinDiscord}" Click="JoinDiscord_Click" Padding="7,4" Margin="4,0"/>

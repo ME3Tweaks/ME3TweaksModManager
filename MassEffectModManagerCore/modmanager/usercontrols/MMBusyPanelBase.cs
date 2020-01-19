@@ -45,5 +45,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             window.KeyDown -= HandleKeyPress;
             window = null; //lose reference
         }
+
+        public void TriggerPropertyChangedFor(string propertyname)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        }
     }
 }

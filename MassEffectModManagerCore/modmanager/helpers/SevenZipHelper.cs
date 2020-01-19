@@ -20,7 +20,10 @@
  */
 
 using MassEffectModManagerCore.modmanager.helpers;
+using SevenZip;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -76,6 +79,63 @@ namespace SevenZipHelper
             fixedBytes.OverwriteRange(5, BitConverter.GetBytes(src.Length));
             Buffer.BlockCopy(compressedBytes, 5, fixedBytes, 13, compressedBytes.Length - 5);
             return fixedBytes;
+        }
+
+        internal static byte[] DecompressLZMAFile(byte[] lzmaFile)
+        {
+            int len = (int)BitConverter.ToInt32(lzmaFile, 5); //this is technically a 32-bit but since MEM code can't handle 64 bit sizes we are just going to use 32bit.
+
+            if (len >= 0)
+            {
+                byte[] strippedData = new byte[lzmaFile.Length - 8];
+                //Non-Streamed (made from disk)
+                Buffer.BlockCopy(lzmaFile, 0, strippedData, 0, 5);
+                Buffer.BlockCopy(lzmaFile, 13, strippedData, 5, lzmaFile.Length - 13);
+                return Decompress(strippedData, (uint)len);
+            }
+            else if (len == -1)
+            {
+                //Streamed. MEM code can't handle streamed so we have to fallback
+                var lzmads = new LzmaDecodeStream(new MemoryStream(lzmaFile));
+                using var decompressedStream = new MemoryStream();
+                int bufSize = 24576, count;
+                byte[] buf = new byte[bufSize];
+                while (/*lzmads.Position < lzmaFile.Length && */(count = lzmads.Read(buf, 0, bufSize)) > 0)
+                {
+                    decompressedStream.Write(buf, 0, count);
+                }
+                return decompressedStream.ToArray();
+            }
+            else
+            {
+                Debug.WriteLine("Cannot decompress LZMA array: Length is not positive or -1 (" + len + ")! This is not an LZMA array");
+                return null; //Not LZMA!
+            }
+        }
+
+        internal static void DecompressLZMAStream(MemoryStream compressedStream, MemoryStream decompressedStream)
+        {
+            compressedStream.Seek(5, SeekOrigin.Begin);
+            int len = compressedStream.ReadInt32();
+            compressedStream.Seek(0, SeekOrigin.Begin);
+
+            if (len >= 0)
+            {
+                byte[] strippedData = new byte[compressedStream.Length - 8];
+                compressedStream.Read(strippedData, 0, 5);
+                compressedStream.Seek(8, SeekOrigin.Current); //Skip 8 bytes for length.
+                compressedStream.Read(strippedData, 5, (int)compressedStream.Length - 13);
+                var decompressed = Decompress(strippedData, (uint)len);
+                decompressedStream.Write(decompressed);
+            }
+            else if (len == -1)
+            {
+                SevenZipExtractor.DecompressStream(compressedStream, decompressedStream, null, null);
+            }
+            else
+            {
+                Debug.WriteLine("LZMA Stream to decompess has wrong length: " + len);
+            }
         }
     }
 }

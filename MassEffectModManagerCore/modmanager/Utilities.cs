@@ -54,6 +54,11 @@ namespace MassEffectModManagerCore
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "nexusmodsintegration")).FullName;
         }
 
+        internal static string GetBatchInstallGroupsFolder()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "batchmodqueues")).FullName;
+        }
+
         // Pinvoke for API function
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -86,6 +91,15 @@ namespace MassEffectModManagerCore
             {
                 return false;
             }
+        }
+
+        public static byte[] HexStringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
         }
 
         public static bool CreateDirectoryWithWritePermission(string directoryPath)
@@ -368,6 +382,11 @@ namespace MassEffectModManagerCore
             }
         }
 
+        internal static string GetUpdaterServiceUploadStagingPath()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetTempPath(), "UpdaterServiceStaging")).FullName;
+        }
+
         public static int RunProcess(string exe, string args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true)
         {
             return RunProcess(exe, null, args, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow);
@@ -575,6 +594,7 @@ namespace MassEffectModManagerCore
         {
             try
             {
+                Debug.WriteLine("Hashing file " + filename);
                 using var md5 = MD5.Create();
                 using var stream = File.OpenRead(filename);
                 var hash = md5.ComputeHash(stream);
@@ -723,8 +743,11 @@ namespace MassEffectModManagerCore
 
         internal static string GetAppDataFolder()
         {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
-            Directory.CreateDirectory(folder);
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ME3TweaksModManager");
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
             return folder;
         }
 
@@ -1426,6 +1449,24 @@ namespace MassEffectModManagerCore
                 windrvWindowsclient,
                 textureStreaming
             };
+        }
+
+        /// <summary>
+        /// Gets folder containing #.xml files (definition of modmaker mods)
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetModmakerDefinitionsCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(Utilities.GetModMakerCache(), "moddefinitions")).FullName;
+        }
+
+        /// <summary>
+        /// Gets cache directory for modmaker files
+        /// </summary>
+        /// <returns></returns>
+        private static string GetModMakerCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ModMakerCache")).FullName;
         }
 
         private static List<IniEntry> ME1_DefaultLODs = new List<IniEntry>()

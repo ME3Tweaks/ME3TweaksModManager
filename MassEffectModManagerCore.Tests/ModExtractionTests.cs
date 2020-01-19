@@ -113,7 +113,7 @@ namespace MassEffectModManagerCore.Tests
                                 }
                             }
                         }
-                        mod.GetAllRelativeReferences(archiveZ); //test
+                        mod.GetAllRelativeReferences(true, archiveZ); //test
                         var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                         foreach (var target in targetsForMod)
                         {
@@ -131,7 +131,7 @@ namespace MassEffectModManagerCore.Tests
                                     {
                                         sourceFile = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, jobMapping.Key.JobDirectory, unpackedItem.Value.FilePath);
                                     }
-                                    Assert.IsTrue(archiveZ.ArchiveFileNames.Contains(sourceFile), "Archive should contain a file specified by mod (mod is valid) but does not appear to. File: "+sourceFile);
+                                    Assert.IsTrue(archiveZ.ArchiveFileNames.Contains(sourceFile), "Archive should contain a file specified by mod (mod is valid) but does not appear to. File: " + sourceFile);
                                 }
                             }
                         }

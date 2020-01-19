@@ -23,6 +23,7 @@ using System.Linq;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using AuthenticodeExaminer;
+using SevenZip;
 
 namespace MassEffectModManagerCore
 {
@@ -52,7 +53,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
             get { return Visibility.Visible; }
 #else
-        get { return Visibility.Collapsed; }
+            get { return Visibility.Collapsed; }
 #endif
         }
 
@@ -134,8 +135,6 @@ namespace MassEffectModManagerCore
                 string exeFolder = Directory.GetParent(ExecutableLocation).ToString();
                 LogCollector.CreateLogger();
 
-
-
                 string[] args = Environment.GetCommandLineArgs();
                 //Parsed<Options> parsedCommandLineArgs = null;
                 string updateDestinationPath = null;
@@ -194,6 +193,8 @@ namespace MassEffectModManagerCore
                 POST_STARTUP = true;
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
+
+
                 Log.Information("===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;
@@ -376,6 +377,7 @@ namespace MassEffectModManagerCore
         }
 
         public static string ExecutableLocation { get; private set; }
+        public static Dictionary<string, string> OnlineManifest { get; internal set; }
 
         /// <summary>
         /// Called when an unhandled exception occurs. This method can only be invoked after startup has completed. 

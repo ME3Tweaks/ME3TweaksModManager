@@ -40,9 +40,6 @@
         <Storyboard x:Key="CloseLoadingSpinner">
             <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)"/>
         </Storyboard>
-        <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
     </Window.Resources>
     <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}" >
         <DockPanel>
@@ -61,11 +58,6 @@
                         <MenuItem Name="SetModLibraryPath_MenuItem" Header="{DynamicResource string_Setmodlibrarypath}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}" />
                         <MenuItem Name="DeveloperMode_MenuItem" Header="{DynamicResource string_Developermode}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="{DynamicResource string_Enabledeveloper-orientedfeatures}" IsCheckable="True" />
                         <MenuItem Name="DarkMode_MenuItem" Visibility="Visible" Header="{DynamicResource string_Darktheme}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}" ToolTip="{DynamicResource string_SwitchUItodarktheme}" IsCheckable="True" />
-                        <MenuItem Header="{DynamicResource string_Logging}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" IsCheckable="True" />
-                        <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True" />
-                        <MenuItem Name="LogMixinStartup_MenuItem" Header="{DynamicResource string_LogMixinStartup}" StaysOpenOnClick="True" IsEnabled="False" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogMixinStartup)}" IsCheckable="True" />
-                        <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True" />
                         <MenuItem Header="{DynamicResource string_Language}">
                             <MenuItem.Icon>
                                 <Image Source="/modmanager/localizations/icons/languageselector.png" RenderOptions.BitmapScalingMode="HighQuality"/>
@@ -106,6 +98,11 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuItem>
+                        <MenuItem Header="{DynamicResource string_Logging}" Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" IsCheckable="True" />
+                        <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True" />
+                        <MenuItem Name="LogModMakerCompiler_MenuItem" Header="{DynamicResource string_LogModMakerCompiler}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" IsCheckable="True" />
+                        <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True" />
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Checkforcontentupdates}" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}" />
@@ -118,16 +115,13 @@
                         <MenuItem Header="{DynamicResource string_ImportmodfromArchive}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
                         <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" IsEnabled="False" />
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_DownloadModMakermod}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_DownloadModMakermod}" Command="{Binding DownloadModMakerModCommand}"/>
                     <MenuItem Header="{DynamicResource string_ASIModManager}" Click="ASIModManager_Click" ToolTip="{DynamicResource string_ASIManagerTooltip}" />
                     <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" />
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
-                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" Command="{Binding BatchModInstallerCommand}" />
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
-                    <MenuItem Header="{DynamicResource string_MixinsForME3}" IsEnabled="False">
-                        <MenuItem Header="{DynamicResource string_MixInLibrary}" />
-                        <MenuItem Header="{DynamicResource string_ClearMixinCache}" />
-                    </MenuItem>
+                    <MenuItem Header="{DynamicResource string_MixInLibrary}" Command="{Binding MixinLibraryCommand}"/>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
@@ -137,10 +131,14 @@
                     <MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />
                     <MenuItem Header="{DynamicResource string_Developeroptions}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                         <MenuItem Header="{DynamicResource string_Metadataeditor}" IsEnabled="False" />
+                        <MenuItem Header="Package mod for release" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Header="{DynamicResource string_Deploymodto7zfilefordistribution}" Command="{Binding DeployModCommand}" />
-                        <MenuItem Header="{DynamicResource string_Prepareforupdaterservice}" IsEnabled="False" />
-                        <Separator/>
+                        <MenuItem Header="ME3Tweaks Updater Service" Style="{StaticResource MenuItemHeaderStyle}"/>
+                        <MenuItem Header="{DynamicResource string_Prepareforupdaterservice}" Command="{Binding UpdaterServiceCommand}"/>
+                        <MenuItem Header="Edit updater service settings" Command="{Binding UpdaterServiceSettingsCommand}"/>
+                        <MenuItem Header="Third Party Identification Service" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Header="{DynamicResource string_SubmitmodinformationtoME3Tweaks}" Command="{Binding SubmitTelemetryForModCommand}" />
+                        <MenuItem Header="Debugging" Style="{StaticResource MenuItemHeaderStyle}"/>
                         <MenuItem Header="{DynamicResource string_CreateTestingArchive}" ToolTip="{DynamicResource string_CreateTestingArchiveTooltip}" Command="{Binding CreateTestArchiveCommand}" />
                     </MenuItem>
                     <Separator />
@@ -148,7 +146,10 @@
                     <MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" />
 
                     <Separator Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem Header="Debug Build Items" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem Header="Reload selected mod" Click="ReloadSelectedMod_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Stamp current target with ALOT marker" Click="StampCurrentTargetWithALOT_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Strip current target ALOT marker" Click="StripCurrentTargetALOTMarker_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
                     <!--<MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />-->
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_Tools}" Padding="4">
@@ -415,8 +416,7 @@
                     </StackPanel>
                     <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
                              IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1"
-                             IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
+                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

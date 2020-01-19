@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using ME3Explorer;
 using ME3Explorer.Unreal;
 
@@ -245,7 +246,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
 
         public MemoryStream DecompressEntry(int index)
         {
-            MemoryStream result = new MemoryStream();
+            MemoryStream result = MixinHandler.MixinMemoryStreamManager.GetStream();
             FileEntryStruct e = Files[index];
             uint count = 0;
             byte[] inputBlock;
@@ -253,12 +254,13 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
             long left = e.RealUncompressedSize;
             FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
             fs.Seek(e.BlockOffsets[0], SeekOrigin.Begin);
-            byte[] buff;
+            //byte[] buff;
             if (e.BlockSizeIndex == 0xFFFFFFFF)
             {
-                buff = new byte[e.RealUncompressedSize];
-                fs.Read(buff, 0, buff.Length);
-                result.Write(buff, 0, buff.Length);
+                fs.CopyToEx(result, (int)e.RealUncompressedSize);
+                //buff = new byte[e.RealUncompressedSize];
+                //fs.Read(buff, 0, buff.Length);
+                //result.Write(buff, 0, buff.Length);
             }
             else
             {
@@ -269,9 +271,11 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                         compressedBlockSize = Header.MaxBlockSize;
                     if (compressedBlockSize == Header.MaxBlockSize || compressedBlockSize == left)
                     {
-                        buff = new byte[compressedBlockSize];
-                        fs.Read(buff, 0, buff.Length);
-                        result.Write(buff, 0, buff.Length);
+                        fs.CopyToEx(result, (int)compressedBlockSize);
+
+                        //buff = new byte[compressedBlockSize];
+                        //fs.Read(buff, 0, buff.Length);
+                        //result.Write(buff, 0, buff.Length);
                         left -= compressedBlockSize;
                     }
                     else
@@ -279,7 +283,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                         var uncompressedBlockSize = (uint)Math.Min(left, Header.MaxBlockSize);
                         if (compressedBlockSize < 5)
                         {
-                            throw new Exception("SFAR compressed block size smaller than 5");
+                            throw new Exception("SFAR compressed block size smaller than 5 bytes");
                         }
                         inputBlock = new byte[compressedBlockSize];
                         fs.Read(inputBlock, 0, (int)compressedBlockSize);
@@ -295,13 +299,15 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                 }
             }
             fs.Close();
+            result.Position = 0;
             return result;
         }
 
         public MemoryStream DecompressEntry(int index, FileStream fs)
         {
-            MemoryStream result = new MemoryStream();
             FileEntryStruct e = Files[index];
+            //MemoryStream result = new MemoryStream((int)e.RealUncompressedSize);
+            MemoryStream result = MixinHandler.MixinMemoryStreamManager.GetStream();
             uint count = 0;
             byte[] inputBlock;
             byte[] outputBlock = new byte[Header.MaxBlockSize];

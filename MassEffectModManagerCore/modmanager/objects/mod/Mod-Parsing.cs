@@ -48,6 +48,20 @@ namespace MassEffectModManagerCore.modmanager
         public string ModDeveloper { get; set; }
         public string ModDescription { get; set; }
         public int ModModMakerID { get; set; }
+        public List<string> UpdaterServiceBlacklistedFiles { get; private set; } = new List<string>();
+        public string UpdaterServiceServerFolder { get; private set; }
+        public string UpdaterServiceServerFolderShortname
+        {
+            get
+            {
+                if (UpdaterServiceServerFolder == null) return null;
+                if (UpdaterServiceServerFolder.Contains('/'))
+                {
+                    return UpdaterServiceServerFolder.Substring(UpdaterServiceServerFolder.LastIndexOf('/') + 1);
+                }
+                return UpdaterServiceServerFolder;
+            }
+        }
 
         /// <summary>
         /// Indicates if this mod has the relevant information attached to it for updates. That is, classic update code, modmaker id, or nexusmods ID
@@ -512,7 +526,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (replaceFilesSourceList != null && replaceFilesTargetList != null)
                     {
                         //Parse the newfiles and replacefiles list and ensure they have the same number of elements in them.
-                        replaceFilesSourceSplit = replaceFilesSourceList.Split(';').Where(x=>!string.IsNullOrWhiteSpace(x)).ToList();
+                        replaceFilesSourceSplit = replaceFilesSourceList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                         replaceFilesTargetSplit = replaceFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                         if (replaceFilesSourceSplit.Count != replaceFilesTargetSplit.Count)
                         {
@@ -836,13 +850,29 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
                     }
+
+                    //MultiAltLists: Mod Manager 6.0
+                    //Must be parsed before AltDLC as AltDLC can access these lists.
+                    if (ModDescTargetVersion >= 6.0)
+                    {
+                        int i = 1;
+                        while (true)
+                        {
+                            var multilist = iniData[@"CUSTOMDLC"][@"multilist" + i];
+                            if (multilist == null) break; //no more to parse
+                            customDLCjob.MultiLists[i] = multilist.Split(';');
+                            i++;
+                        }
+                    }
+
+
                     //AltDLC: Mod Manager 4.4
                     if (!string.IsNullOrEmpty(altdlcstr))
                     {
                         var splits = StringStructParser.GetParenthesisSplitValues(altdlcstr);
                         foreach (var split in splits)
                         {
-                            AlternateDLC af = new AlternateDLC(split, this);
+                            AlternateDLC af = new AlternateDLC(split, this, customDLCjob);
                             if (af.ValidAlternate)
                             {
                                 customDLCjob.AlternateDLCs.Add(af);
@@ -1171,7 +1201,27 @@ namespace MassEffectModManagerCore.modmanager
                     return;
                 }
             }
+            #endregion
 
+            #region Updater Service (Devs only)
+            UpdaterServiceServerFolder = iniData[@"UPDATES"][@"serverfolder"];
+            var blacklistedFilesStr = iniData[@"UPDATES"][@"blacklistedfiles"];
+            if (blacklistedFilesStr != null)
+            {
+                var blacklistedFiles = blacklistedFilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                foreach (var blf in blacklistedFiles)
+                {
+                    var fullpath = Path.Combine(ModPath, blf);
+                    if (File.Exists(fullpath))
+                    {
+
+                        Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
+                        LoadFailedReason = $"This mod contains a blacklisted mod file: {fullpath}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.";
+                        return;
+                    }
+                }
+                UpdaterServiceBlacklistedFiles = blacklistedFiles;
+            }
             #endregion
 
             #region Updater Service (Devs only)
@@ -1211,6 +1261,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 Log.Error(@"No installation jobs were specified. This mod does nothing.");
                 LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_modDoesNothing);
+                return;
             }
 
             CLog.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);

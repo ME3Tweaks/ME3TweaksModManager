@@ -35,12 +35,21 @@ namespace MassEffectModManagerCore.ui
     {
         private readonly Action _execute;
         private readonly Func<bool> _canExecute;
+        private ICommand debugReload;
+        private Func<bool> canDebugReload;
 
         public GenericCommand(Action execute, Func<bool> canExecute = null)
         {
             _execute = execute;
             _canExecute = canExecute;
         }
+
+        public GenericCommand(ICommand debugReload, Func<bool> canDebugReload)
+        {
+            this.debugReload = debugReload;
+            this.canDebugReload = canDebugReload;
+        }
+
         public bool CanExecute(object parameter)
         {
             bool result = _canExecute?.Invoke() ?? true;

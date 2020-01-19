@@ -369,7 +369,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 else if (MEDirectories.OfficialDLC(validationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
                                 {
                                     var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf(@"_", StringComparison.InvariantCultureIgnoreCase));
-                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(validationTarget, dlcName, afcNameWithExtension);
+                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcName, afcNameWithExtension /*, validationTarget*/);
                                     if (audio != null)
                                     {
                                         cachedAudio[afcNameProp.Value.Name] = audio;
@@ -385,7 +385,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath, afcNameProp.ToString()));
+                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.GetInstancedFullPath, afcNameProp.ToString()));
                                     continue;
                                 }
                             }
@@ -398,13 +398,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             try
                             {
                                 audioStream.Seek(audioOffset, SeekOrigin.Begin);
-                                if (audioStream.ReadStringASCIINull(4) != @"RIFF")
+                                if (audioStream.Position > audioStream.Length - 4)
                                 {
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointer, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath));
+                                    errors.Add($"Invalid audio pointer found that points outside of target file stream: {Path.GetFileName(wwisestream.FileRef.FilePath)} Export {wwisestream.UIndex} {wwisestream.ObjectName} points to offset {audioOffset} in AFC file {afcPath} but the AFC is only {audioStream.Length} bytes long");
+                                    if (audioStream is FileStream) audioStream.Close();
+                                    continue;
+                                }
+
+                                if ( audioStream.ReadStringASCIINull(4) != @"RIFF")
+                                {
+                                    hasError = true;
+                                    item.Icon = FontAwesomeIcon.TimesCircle;
+                                    item.Foreground = Brushes.Red;
+                                    item.Spinning = false;
+                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointer, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.GetInstancedFullPath));
                                     if (audioStream is FileStream) audioStream.Close();
                                     continue;
                                 }
@@ -473,6 +484,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.HasError = false;
             item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+            var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == ".tfc").ToList();
             int numChecked = 0;
             GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
             var errors = new List<string>();
@@ -498,7 +510,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 Texture2D tex = new Texture2D(texture);
                                 try
                                 {
-                                    tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false); //use active target
+                                    tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false, allTFCs); //use active target
                                 }
                                 catch (Exception e)
                                 {

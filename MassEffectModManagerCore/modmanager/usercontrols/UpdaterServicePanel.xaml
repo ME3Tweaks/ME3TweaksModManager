@@ -1,0 +1,74 @@
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.UpdaterServicePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             mc:Ignorable="d"         
+             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                       Width="500"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Storyboard x:Key="OpenBusyControl" Storyboard.TargetProperty="(FrameworkElement.Height)">
+            <DoubleAnimation To="48" Duration="0:0:0.35">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="CloseBusyControl">
+            <DoubleAnimation To="0" Duration="0:0:0.35" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <Image HorizontalAlignment="Center" Height="48" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,10,0,0" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
+            <TextBlock Text="Updater Service" TextAlignment="Center" FontSize="14"/>
+            <TextBlock TextAlignment="Center" DataContext="{Binding mod}">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} {1}">
+                        <Binding Path="ModName" />
+                        <Binding Path="ParsedModVersion" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
+            <ContentControl Name="LoadingBarAnimation"  Margin="0,15,0,0" Focusable="False"
+                                        ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                        Width="48"
+                                        Height="48"
+                             Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}"/>
+            <TextBlock Text="{Binding CurrentActionText}" TextAlignment="Center" Margin="0,10" FontSize="14"/>
+
+            <DockPanel Name="ChangelogPanel" Visibility="{Binding mod, Converter={StaticResource NullVisibilityConverter}}">
+                <Button Content="Set changelog" Command="{Binding SetChangelogCommand}" Padding="7,4" DockPanel.Dock="Right"/>
+                <xctk:WatermarkTextBox Watermark="Enter single-line changelog here" Text="{Binding ChangelogText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ChangelogNotYetSet}" TextAlignment="Left"/>
+            </DockPanel>
+
+            <Expander Header="Updater Service settings" Margin="0,5" IsExpanded="{Binding SettingsExpanded}">
+                <StackPanel Margin="15,0,0,0"  IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
+                    <xctk:WatermarkTextBox Watermark="Username" Text="{Binding Username}"/>
+                    <xctk:WatermarkPasswordBox Name="Password_TextBox" Watermark="Password"/>
+                    <xctk:WatermarkTextBox Watermark="LZMA storage path" Text="{Binding LZMAStoragePath}"/>
+                    <xctk:WatermarkTextBox Watermark="Manifests storage path" Text="{Binding ManifestStoragePath}"/>
+                    <DockPanel HorizontalAlignment="Stretch">
+                        <Button DockPanel.Dock="Right" Content="{DynamicResource string_save}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="7,4" Margin="0,4,0,0" Command="{Binding SaveSettingsCommand}"/>
+                        <TextBlock Text="{Binding SettingsSubtext}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="400"/>
+                    </DockPanel>
+                </StackPanel>
+            </Expander>
+
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Margin="0,5,0,0">
+            <Button Content="{DynamicResource string_cancel}" Command="{Binding CancelCommand}" Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Padding="7,4" Margin="5,0" ToolTip="Cancel the current upload task"/>
+            <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}"  Padding="7,4"/>
+        </StackPanel>
+    </DockPanel>
+</local:MMBusyPanelBase>

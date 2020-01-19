@@ -122,6 +122,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 return binaryReader.ReadUInt32();
         }
 
+        public static void WriteToFile(this MemoryStream stream, string outfile)
+        {
+            stream.Position = 0;
+            using (FileStream file = new FileStream(outfile, FileMode.Create, System.IO.FileAccess.Write))
+                stream.CopyTo(file);
+        }
+
         public static void WriteInt64ToStream(this Stream stream, long value)
         {
             using (BinaryWriter binaryWriter = new BinaryWriter(stream, Encoding.Default, true))
@@ -764,6 +771,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return Path.GetInvalidFileNameChars().Aggregate(path, (current, c) => current.Replace(c.ToString(), string.Empty));
         }
 
+
+        public static Stream ToStream(this string s, bool bom = false)
+        {
+            return s.ToStream(/*bom ? new UTF8Encoding(false) : */Encoding.UTF8);
+        }
+
+        public static Stream ToStream(this string s, Encoding encoding)
+        {
+            return new MemoryStream(encoding.GetBytes(s ?? ""));
+        }
+
         public static bool RepresentsPackageFilePath(this string path)
         {
             string extension = Path.GetExtension(path);
@@ -873,17 +891,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="input">Stream to copy from</param>
         /// <param name="output">Stream to copy to</param>
         /// <param name="bytes">The number of bytes to copy</param>
-        public static void CopyToEx(this Stream input, Stream output, int bytes)
-        {
-            var buffer = new byte[32768];
-            int read;
-            while (bytes > 0 &&
-                   (read = input.Read(buffer, 0, Math.Min(buffer.Length, bytes))) > 0)
-            {
-                output.Write(buffer, 0, read);
-                bytes -= read;
-            }
-        }
+        //public static void CopyToEx(this Stream input, Stream output, int bytes)
+        //{
+        //    var buffer = new byte[32768];
+        //    int read;
+        //    while (bytes > 0 &&
+        //           (read = input.Read(buffer, 0, Math.Min(buffer.Length, bytes))) > 0)
+        //    {
+        //        output.Write(buffer, 0, read);
+        //        bytes -= read;
+        //    }
+        //}
 
         public static NameReference ReadNameReference(this Stream stream, IMEPackage pcc)
         {

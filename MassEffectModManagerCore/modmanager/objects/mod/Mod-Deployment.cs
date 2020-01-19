@@ -16,11 +16,12 @@ namespace MassEffectModManagerCore.modmanager
         internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
 
         /// <summary>
-        /// Gets all files referenced by this mod. This does not include moddessc.ini.
+        /// Gets all files referenced by this mod. This does not include moddessc.ini by default
         /// </summary>
+        /// <param name="includeModdesc">Include moddesc.ini in the results</param>
         /// <param name="archive">Archive, if this mod is in an archive.</param>
         /// <returns></returns>
-        public List<string> GetAllRelativeReferences(SevenZipExtractor archive = null)
+        public List<string> GetAllRelativeReferences(bool includeModdesc = false, SevenZipExtractor archive = null)
         {
             var references = new List<string>();
             //references.Add("moddesc.ini"); //Moddesc is implicitly referenced by the mod.
@@ -43,8 +44,19 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     if (dlc.HasRelativeFiles())
                     {
-                        var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList();
-                        references.AddRange(files);
+                        if (dlc.AlternateDLCFolder != null)
+                        {
+                            var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList();
+                            references.AddRange(files);
+                        }
+                        else if (dlc.MultiListSourceFiles != null)
+                        {
+                            foreach(var mf in dlc.MultiListSourceFiles)
+                            {
+                                var relpath = Path.Combine(ModPath, dlc.MultiListRootPath, mf).Substring(ModPath.Length + 1);
+                                references.Add(relpath);
+                            }
+                        }
                     }
                 }
                 foreach (var file in job.AlternateFiles)
@@ -72,7 +84,11 @@ namespace MassEffectModManagerCore.modmanager
             {
                 references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList());
             }
-            return references;
+            if (includeModdesc)
+            {
+                references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/', '\\'));
+            }
+            return references.Distinct(StringComparer.InvariantCultureIgnoreCase).ToList();
         }
     }
 }

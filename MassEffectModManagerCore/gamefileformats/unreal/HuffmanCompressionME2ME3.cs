@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MassEffectModManagerCore.gamefileformats;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -30,8 +31,8 @@ namespace ME3Explorer
 
             public int CompareTo(object obj)
             {
-               TLKEntry entry = (TLKEntry)obj;
-               return position.CompareTo(entry.position);
+                TLKEntry entry = (TLKEntry)obj;
+                return position.CompareTo(entry.position);
             }
         }
 
@@ -170,6 +171,32 @@ namespace ME3Explorer
         }
 
         /// <summary>
+        /// Save a list of TLKStringRefs to a TLK file. 
+        /// </summary>
+        /// <param name="outfile"></param>
+        /// <param name="stringRefs"></param>
+        internal static void SaveToTlkFile(string outfile, List<TalkFileME1.TLKStringRef> stringRefs)
+        {
+            HuffmanCompressionME2ME3 huff = new HuffmanCompressionME2ME3();
+
+            //load data
+            int position = 0;
+            foreach (var sref in stringRefs)
+            {
+                var data = sref.Data == null ? null : sref.Data.Replace("\r\n", "\n");
+                /* every string should be NULL-terminated */
+                if (sref.StringID >= 0)
+                    data += '\0';
+                /* only add debug info if we are in debug mode and StringID is positive AND it's localizable */
+                huff._inputData.Add(new TLKEntry(sref.StringID, position, data));
+                position++;
+            }
+            huff._inputData.Sort();
+            huff.PrepareHuffmanCoding();
+            huff.SaveToTlkFile(outfile);
+        }
+
+        /// <summary>
         /// Loads data from XML file into memory
         /// </summary>
         /// <param name="fileName"></param>
@@ -214,7 +241,7 @@ namespace ME3Explorer
                             _inputData.Add(new TLKEntry(id, position, data));
                         position++;
                     }
-                } 
+                }
             }
             else //legacy support
             {
@@ -275,7 +302,7 @@ namespace ME3Explorer
 
             BuildHuffmanTree();
             BuildCodingArray();
-           
+
             // DebugTools.LoadHuffmanTree(_huffmanCodes);
             // DebugTools.PrintLookupTable();
         }
@@ -342,7 +369,7 @@ namespace ME3Explorer
         /// <returns></returns>
         private List<int> ConvertHuffmanTreeToBuffer()
         {
-            Queue <HuffmanNode> q = new Queue<HuffmanNode>();
+            Queue<HuffmanNode> q = new Queue<HuffmanNode>();
             Dictionary<int, HuffmanNode> indices = new Dictionary<int, HuffmanNode>();
 
             int index = 0;
@@ -359,7 +386,7 @@ namespace ME3Explorer
 
                     /* that's how it's going to be decoded when parsing TLK file:
                      * char c = BitConverter.ToChar(BitConverter.GetBytes(0xffff - node.ID), 0); */
-                } 
+                }
                 else
                 {
                     node.ID = index++;

@@ -272,6 +272,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     Log.Information(@"Restore thread wrapping up");
+                    RestoreTarget.ReloadGameTarget(); //
                     b.Result = RestoreResult.RESTORE_OK;
                 };
                 bw.RunWorkerCompleted += (a, b) =>

@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
@@ -93,7 +92,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var authInfo = NexusModsUtilities.AuthToNexusMods(APIKeyText).Result;
                     if (authInfo != null)
                     {
-                        NexusModsUtilities.EncryptAPIKeyToDisk(APIKeyText);
+                        using FileStream fs = new FileStream(Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey"), FileMode.Create);
+                        File.WriteAllBytes(Path.Combine(Utilities.GetNexusModsCache(), "entropy"), NexusModsUtilities.EncryptStringToStream(APIKeyText, fs));
                         mainwindow.NexusUsername = authInfo.Name;
                         mainwindow.NexusUserID = authInfo.UserID;
                         SetAuthorized(true);

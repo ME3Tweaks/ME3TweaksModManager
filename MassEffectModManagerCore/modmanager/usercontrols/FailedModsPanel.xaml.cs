@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,14 +31,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public Mod SelectedMod { get; set; }
         public ICommand RestoreSelectedModCommand { get; set; }
+        public ICommand DebugReloadCommand { get; set; }
         private void LoadCommands()
         {
             RestoreSelectedModCommand = new GenericCommand(CloseToRestoreMod, CanRestoreMod);
+            DebugReloadCommand = new GenericCommand(DebugReloadMod, CanDebugReload);
+        }
+
+        private void DebugReloadMod()
+        {
+#if DEBUG
+            Mod m = new Mod(SelectedMod.ModDescPath, Mod.MEGame.Unknown);
+            Debug.WriteLine("Is valid: " + m.ValidMod);
+#endif
         }
 
         private bool CanRestoreMod()
         {
             return SelectedMod != null && SelectedMod.IsUpdatable;
+        }
+
+        private bool CanDebugReload()
+        {
+#if DEBUG
+            return SelectedMod != null;
+#else
+            return false;
+#endif
         }
 
         private void CloseToRestoreMod()

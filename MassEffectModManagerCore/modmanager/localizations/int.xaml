@@ -21,6 +21,7 @@
     <system:String x:Key="string_LogModStartup">Log Mod Startup</system:String>
     <system:String x:Key="string_LogMixinStartup">Log Mixin Startup</system:String>
     <system:String x:Key="string_LogModInstallation">Log Mod Installation</system:String>
+    <system:String x:Key="string_LogModMakerCompiler">Log ModMaker Compiler</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Check for Mod Manager content updates</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks ME3Tweaks.com for updates to various services</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Refresh the mod library</system:String>
@@ -556,7 +557,9 @@
     <system:String x:Key="string_backup">Backup</system:String>
     <system:String x:Key="string_deletingExistingGameInstallation">Deleting existing game installation</system:String>
     <system:String x:Key="string_restoringGameFromBackup">Restoring game from backup</system:String>
-    <system:String x:Key="string_interp_restoringX">Restoring {0}%</system:String>
+    <system:String x:Key="string_interp_restoringXpercent">Restoring {0}%</system:String>
+    <!-- 0 = number -->
+    <system:String x:Key="string_interp_restoringX">Restoring {0}</system:String>
     <!-- 0 = filename or item like DLC name -->
     <system:String x:Key="string_restoringMovies">Restoring Movies</system:String>
     <system:String x:Key="string_restoringBasegame">Restoring Basegame</system:String>

@@ -1,0 +1,43 @@
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ModMakerPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                       mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Storyboard x:Key="OpenProgressPanel" Storyboard.TargetProperty="(FrameworkElement.Height)">
+            <DoubleAnimation To="120" Duration="0:0:0.5">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="CloseInfoPanel">
+            <DoubleAnimation To="0" Duration="0:0:0.35" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+    <StackPanel>
+        <Image Source="/images/modmaker.png" MaxWidth="300"/>
+        <TextBlock Text="{Binding DownloadAndModNameText, FallbackValue=Zombie Mod}" TextAlignment="Center" FontSize="16" Margin="0,10"/>
+        <DockPanel Name="DownloadInfoPanel">
+            <Button Content="{DynamicResource string_downloading}" DockPanel.Dock="Right" Command="{Binding DownloadCompileCommand}"/>
+            <Button Content="{DynamicResource string_close}" DockPanel.Dock="Right" Command="{Binding CloseCommand}"/>
+            <xctk:WatermarkTextBox Watermark="ModMaker Code" Text="{Binding ModMakerCode, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <StackPanel Name="DownloadingProgressPanel" Height="0">
+            <TextBlock Text="Overall progress"/>
+            <ProgressBar Value="{Binding OverallValue, Mode=OneWay}" Maximum="{Binding OverallMaximum, Mode=OneWay}" IsIndeterminate="{Binding OverallIndeterminate}" Height="16"/>
+            <TextBlock Text="{Binding CurrentTaskString}"/>
+            <ProgressBar Value="{Binding CurrentTaskValue, Mode=OneWay}" Maximum="{Binding CurrentTaskMaximum, Mode=OneWay}" IsIndeterminate="{Binding CurrentTaskIndeterminate}" Height="16"/>
+        </StackPanel>
+        
+
+    </StackPanel>
+</local:MMBusyPanelBase>

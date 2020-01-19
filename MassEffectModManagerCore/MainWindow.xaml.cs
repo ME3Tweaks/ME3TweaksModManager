@@ -26,6 +26,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
+using ME3Explorer.Packages;
 using ME3Explorer.Unreal;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -274,7 +275,11 @@ namespace MassEffectModManagerCore
         public ICommand CreateTestArchiveCommand { get; set; }
         public ICommand LaunchIniModderCommand { get; set; }
         public ICommand EndorseM3OnNexusCommand { get; set; }
-
+        public ICommand DownloadModMakerModCommand { get; set; }
+        public ICommand UpdaterServiceCommand { get; set; }
+        public ICommand UpdaterServiceSettingsCommand { get; set; }
+        public ICommand MixinLibraryCommand { get; set; }
+        public ICommand BatchModInstallerCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -302,6 +307,93 @@ namespace MassEffectModManagerCore
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
             LaunchIniModderCommand = new GenericCommand(OpenMEIM, CanOpenMEIM);
             EndorseM3OnNexusCommand = new GenericCommand(EndorseM3, CanEndorseM3);
+            DownloadModMakerModCommand = new GenericCommand(OpenModMakerPanel, CanOpenModMakerPanel);
+            UpdaterServiceCommand = new GenericCommand(OpenUpdaterServicePanel, CanOpenUpdaterServicePanel);
+            UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
+            MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
+            BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
+        }
+
+        private bool CanOpenBatchModPanel()
+        {
+            return !IsLoadingMods;
+        }
+
+        private void OpenBatchModPanel()
+        {
+            var batchLibrary = new BatchModLibrary();
+            batchLibrary.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is BatchLibraryInstallQueue queue)
+                {
+                    ReleaseBusyControl(); //release control
+
+                    bool continueInstalling = true;
+                    int modIndex = -1;
+                    //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
+                    void modInstalled(bool successful)
+                    {
+                        continueInstalling &= successful;
+                        if (continueInstalling && queue.ModsToInstall.Count > modIndex)
+                        {
+                            modIndex++;
+                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, true, modInstalled);
+                        }
+                    }
+
+                    modInstalled(true); //kick off first installation
+                }
+            };
+            ShowBusyControl(batchLibrary);
+        }
+
+        private void OpenMixinManagerPanel()
+        {
+            var mixinManager = new MixinManager();
+            mixinManager.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(mixinManager);
+        }
+
+        private bool CanOpenMixinManagerPanel()
+        {
+            return true;
+        }
+
+        private void OpenUpdaterServicePanelEditorMode()
+        {
+            var updaterServicePanel = new UpdaterServicePanel();
+            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(updaterServicePanel);
+        }
+
+        private void OpenUpdaterServicePanel()
+        {
+            var updaterServicePanel = new UpdaterServicePanel(SelectedMod);
+            updaterServicePanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(updaterServicePanel);
+        }
+
+        private bool CanOpenUpdaterServicePanel() => SelectedMod != null && SelectedMod.ModClassicUpdateCode > 0;
+
+        private void OpenModMakerPanel()
+        {
+            var modmakerPanel = new ModMakerPanel();
+            modmakerPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is Mod m)
+                {
+                    LoadMods(m);
+                }
+            };
+            ShowBusyControl(modmakerPanel);
+        }
+
+        private bool CanOpenModMakerPanel()
+        {
+            //todo: Check for backup
+            return true;
         }
 
         private bool CanEndorseM3()
@@ -1021,12 +1113,20 @@ namespace MassEffectModManagerCore
             return SelectedMod != null && InstallationTargets_ComboBox.SelectedItem is GameTarget gt && gt.Game == SelectedMod.Game;
         }
 
-        private void ApplyMod(Mod mod)
+        /// <summary>
+        /// Applies a mod to the current or forced target. This method is asynchronous, it must run on the UI thread but it will immediately yield once the installer begins.
+        /// </summary>
+        /// <param name="mod">Mod to install</param>
+        /// <param name="forcedTarget">Forced target to install to</param>
+        /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
+        /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
+
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, Action<bool> installCompletedCallback = null)
         {
             if (!Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modInstaller = new ModInstaller(mod, SelectedGameTarget);
+                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget);
                 modInstaller.Close += (a, b) =>
                 {
 
@@ -1037,16 +1137,18 @@ namespace MassEffectModManagerCore
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_installationAborted);
                             ReleaseBusyControl();
                             backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                            installCompletedCallback?.Invoke(false);
                             return;
                         }
                         else
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
+                            installCompletedCallback?.Invoke(false);
                         }
                     }
 
-                    //Run AutoTOC if ME3
-                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3)
+                    //Run AutoTOC if ME3 and not batch mode
+                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == Mod.MEGame.ME3 && !batchMode)
                     {
                         var autoTocUI = new AutoTOC(SelectedGameTarget);
                         autoTocUI.Close += (a1, b1) =>
@@ -1061,6 +1163,11 @@ namespace MassEffectModManagerCore
                     {
                         ReleaseBusyControl();
                         backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    }
+
+                    if (modInstaller.InstallationSucceeded)
+                    {
+                        installCompletedCallback?.Invoke(true);
                     }
                 };
                 ShowBusyControl(modInstaller);
@@ -1269,7 +1376,7 @@ namespace MassEffectModManagerCore
                 bool canCheckForModUpdates = Utilities.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
-                CLog.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory(), Settings.LogModStartup);
+                Log.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory());
                 var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: Mod.MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: Mod.MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: Mod.MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
@@ -1329,9 +1436,7 @@ namespace MassEffectModManagerCore
                 {
                     ModsList_ListBox.SelectedItem = m;
                     ModsList_ListBox.ScrollIntoView(m);
-
                 }
-
                 ModsLoaded = true;
             };
             bw.RunWorkerAsync();
@@ -1365,7 +1470,6 @@ namespace MassEffectModManagerCore
                             {
                                 LoadMods(updates.Count == 1 ? updates[0].mod : null);
                             }
-
                         };
                         ShowBusyControl(modUpdatesNotificationDialog);
                     });
@@ -1383,6 +1487,7 @@ namespace MassEffectModManagerCore
         {
             RepopulatingTargets = true;
             InstallationTargets.ClearEx();
+            SelectedGameTarget = null;
             MEDirectories.ReloadGamePaths(); //this is redundant on the first boot but whatever.
             Log.Information(@"Populating game targets");
 
@@ -1453,7 +1558,6 @@ namespace MassEffectModManagerCore
                 if (InstallationTargets.Count > count)
                 {
                     InstallationTargets.Insert(count, new GameTarget(Mod.MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
-
                 }
             }
 
@@ -1667,18 +1771,11 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        //var coalesced = Path.Combine(InstallationTargets.FirstOrDefault(x => x.Game == Mod.MEGame.ME2).TargetPath, "BIOGame", "Config", "PC", "Cooked", "Coalesced.ini");
-                        //if (File.Exists(coalesced))
-                        //{
-                        //    ME2Coalesced me2c = new ME2Coalesced(coalesced);
-                        //    me2c.Serialize(@"C:\users\public\me2c.ini");
-                        //}
-
-                        var manifest = OnlineContent.FetchOnlineStartupManifest();
+                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest();
                         //#if DEBUG
                         //                    if (int.Parse(manifest["latest_build_number"]) > 0)
                         //#else
-                        if (int.TryParse(manifest[@"latest_build_number"], out var latestServerBuildNumer))
+                        if (int.TryParse(App.OnlineManifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
 
@@ -1696,7 +1793,7 @@ namespace MassEffectModManagerCore
 #if !DEBUG
                             else if (latestServerBuildNumer == App.BuildNumber)
                             {
-                                if (manifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
+                                if (App.OnlineManifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
                                 {
                                     var localmd5 = Utilities.CalculateMD5(App.ExecutableLocation);
                                     if (localmd5 != md5)
@@ -1728,8 +1825,50 @@ namespace MassEffectModManagerCore
                         Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
                         updateCheckTask.finishedUiText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
-
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
+
+                    if (App.OnlineManifest != null)
+                    {
+                        bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"MixinFetch", "Loading Mixins", "Loaded Mixins");
+                        try
+                        {
+                            //Mixins
+                            MixinHandler.ServerMixinHash = App.OnlineManifest["mixinpackagemd5"];
+                            if (!MixinHandler.IsMixinPackageUpToDate())
+                            {
+                                //Download new package.
+                                var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
+                                if (memoryPackage.errorMessage != null)
+                                {
+                                    Log.Error("Error fetching mixin package: " + memoryPackage.errorMessage);
+                                    bgTask.finishedUiText = "Failed to update mixin package";
+                                }
+                                else
+                                {
+                                    File.WriteAllBytes(MixinHandler.MixinPackagePath, memoryPackage.result.ToArray());
+                                    Log.Information("Wrote ME3Tweaks Mixin Package to disk");
+                                    MixinHandler.LoadME3TweaksPackage();
+                                }
+                            }
+                            else
+                            {
+                                Log.Information("ME3Tweaks Mixin Package is up to date");
+                                MixinHandler.LoadME3TweaksPackage();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("Error fetching mixin package: " + e.Message);
+                            bgTask.finishedUiText = "Error loading Mixins";
+
+                        }
+                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    }
+                    else
+                    {
+                        // load cached (will load nothing if there is no local file)
+                        MixinHandler.LoadME3TweaksPackage();
+                    }
                 }
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
@@ -1751,17 +1890,14 @@ namespace MassEffectModManagerCore
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
                 App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!firstStartupCheck);
 
-
                 App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
                 try
                 {
                     App.TipsService = OnlineContent.FetchTipsService(!firstStartupCheck);
                     SetTipsForLanguage();
-
                 }
                 catch (Exception e)
                 {
@@ -1769,6 +1905,7 @@ namespace MassEffectModManagerCore
                 }
 
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
                 if (firstStartupCheck)
                 {
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadObjectInfo", M3L.GetString(M3L.string_loadingPackageInfoDatabases), M3L.GetString(M3L.string_loadedPackageInfoDatabases));
@@ -1778,12 +1915,31 @@ namespace MassEffectModManagerCore
                     ME1UnrealObjectInfo.loadfromJSON();
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                    var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));
+
+                    //Dev
+                    //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
+                    //var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+
+                    //Laptop
+                    //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
+                    //var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+
+                    //Desktop
+                    //var modified = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2NoMinigames-Vanilla\BioGame\CookedPC\Startup_INT.pcc");
+                    //var target = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2 Controller\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
+                    //ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
 
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }
 
+                if (Utilities.CanFetchContentThrottleCheck())
+                {
+                    Settings.LastContentCheck = DateTime.Now;
+                    Settings.Save();
+                }
                 Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
             };
@@ -1948,6 +2104,7 @@ namespace MassEffectModManagerCore
 
         private bool RepopulatingTargets;
         private Dictionary<string, MenuItem> languageMenuItems;
+        private bool hasDoneStartupModUpdateCheck;
 
         private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -2158,15 +2315,6 @@ namespace MassEffectModManagerCore
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
         {
             var callingMember = (MenuItem)sender;
-            //if (callingMember == LogModStartup_MenuItem)
-            //{
-            //    Settings.LogModStartup = !Settings.LogModStartup; //flip
-            //}
-            //else if (callingMember == LogMixinStartup_MenuItem)
-            //{
-            //    Settings.LogMixinStartup = !Settings.LogMixinStartup; //flip
-            //}
-            //else 
             if (callingMember == SetModLibraryPath_MenuItem)
             {
                 ChooseModLibraryPath(true);
@@ -2205,7 +2353,7 @@ namespace MassEffectModManagerCore
             Settings.Save();
         }
 
-        private void SetTheme()
+        internal void SetTheme()
         {
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
         }
@@ -2353,6 +2501,24 @@ namespace MassEffectModManagerCore
         private void ReloadSelectedMod_Click(object sender, RoutedEventArgs e)
         {
             Mod m = new Mod(SelectedMod.ModDescPath, Mod.MEGame.Unknown);
+        }
+
+        private void StampCurrentTargetWithALOT_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedGameTarget != null)
+            {
+                SelectedGameTarget.StampDebugALOTInfo();
+                SelectedGameTarget.ReloadGameTarget();
+            }
+        }
+
+        private void StripCurrentTargetALOTMarker_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedGameTarget != null)
+            {
+                SelectedGameTarget.StripALOTInfo();
+                SelectedGameTarget.ReloadGameTarget();
+            }
         }
     }
 }

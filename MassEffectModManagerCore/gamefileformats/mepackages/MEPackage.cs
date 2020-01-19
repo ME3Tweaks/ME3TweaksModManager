@@ -91,6 +91,339 @@ namespace ME3Explorer.Packages
             return (f, g) => new MEPackage(f, g);
         }
 
+        static bool isInitializedStream;
+        public static Func<Stream, Mod.MEGame, MEPackage> InitializeStream()
+        {
+            if (isInitializedStream)
+            {
+                throw new Exception(nameof(MEPackage) + " (stream mode) can only be initialized once");
+            }
+
+            isInitializedStream = true;
+            return (f, g) => new MEPackage(f, g);
+        }
+
+        private MEPackage(Stream stream, Mod.MEGame forceGame = Mod.MEGame.Unknown)
+        {
+            if (forceGame != Mod.MEGame.Unknown)
+            {
+                //new Package
+                Game = forceGame;
+                //reasonable defaults?
+                Flags = EPackageFlags.Cooked | EPackageFlags.AllowDownload | EPackageFlags.DisallowLazyLoading | EPackageFlags.RequireImportsAlreadyLoaded;
+                return;
+            }
+
+            ReadPackageFromStream(stream);
+        }
+
+        public static MemoryStream GetDecompressedPackageStream(MemoryStream stream)
+        {
+            long startPos = stream.Position;
+            uint magic = stream.ReadUInt32();
+            if (magic != packageTag)
+            {
+                throw new FormatException("Not an Unreal package!");
+            }
+            ushort unrealVersion = stream.ReadUInt16();
+            ushort licenseeVersion = stream.ReadUInt16();
+            Mod.MEGame Game;
+            switch (unrealVersion)
+            {
+                case 491 when licenseeVersion == 1008:
+                    Game = Mod.MEGame.ME1;
+                    break;
+                case 512 when licenseeVersion == 130:
+                    Game = Mod.MEGame.ME2;
+                    break;
+                case 684 when licenseeVersion == 194:
+                    Game = Mod.MEGame.ME3;
+                    break;
+                default:
+                    throw new FormatException("Not a Mass Effect Package!");
+            }
+            var FullHeaderSize = stream.ReadInt32();
+            int foldernameStrLen = stream.ReadInt32();
+            //always "None", so don't bother saving result
+            if (foldernameStrLen > 0)
+                stream.ReadStringASCIINull(foldernameStrLen);
+            else
+                stream.ReadStringUnicodeNull(foldernameStrLen * -2);
+
+            var Flags = (EPackageFlags)stream.ReadUInt32();
+
+            stream.Position = startPos;
+            if (Flags.HasFlag(EPackageFlags.Compressed))
+            {
+                //package is compressed.
+                var newStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+                stream.Dispose();
+                return newStream;
+            }
+            else
+            {
+                return stream;
+            }
+
+
+            //if (Game == Mod.MEGame.ME3 && Flags.HasFlag(EPackageFlags.Cooked))
+            //{
+            //    stream.SkipInt32(); //always 0
+            //}
+
+            //var NameCount = stream.ReadInt32();
+            //var NameOffset = stream.ReadInt32();
+            //var ExportCount = stream.ReadInt32();
+            //var ExportOffset = stream.ReadInt32();
+            //var ImportCount = stream.ReadInt32();
+            //var ImportOffset = stream.ReadInt32();
+            //var DependencyTableOffset = stream.ReadInt32();
+
+            //if (Game == Mod.MEGame.ME3)
+            //{
+            //    ImportExportGuidsOffset = stream.ReadInt32();
+            //    stream.SkipInt32(); //ImportGuidsCount always 0
+            //    stream.SkipInt32(); //ExportGuidsCount always 0
+            //    stream.SkipInt32(); //ThumbnailTableOffset always 0
+            //}
+
+            //PackageGuid = stream.ReadGuid();
+            //uint generationsTableCount = stream.ReadUInt32();
+            //if (generationsTableCount > 0)
+            //{
+            //    generationsTableCount--;
+            //    Gen0ExportCount = stream.ReadInt32();
+            //    Gen0NameCount = stream.ReadInt32();
+            //    Gen0NetworkedObjectCount = stream.ReadInt32();
+            //}
+            ////should never be more than 1 generation, but just in case
+            //stream.Skip(generationsTableCount * 12);
+
+            //stream.SkipInt32();//engineVersion          Like unrealVersion and licenseeVersion, these 2 are determined by what game this is,
+            //stream.SkipInt32();//cookedContentVersion   so we don't have to read them in
+
+            //if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
+            //{
+            //    stream.SkipInt32(); //always 0
+            //    stream.SkipInt32(); //always 47699
+            //    unknown4 = stream.ReadInt32();
+            //    stream.SkipInt32(); //always 1 in ME1, always 1966080 in ME2
+            //}
+
+            //unknown6 = stream.ReadInt32();
+            //stream.SkipInt32(); //always -1 in ME1 and ME2, always 145358848 in ME3
+
+            //if (Game == Mod.MEGame.ME1)
+            //{
+            //    stream.SkipInt32(); //always -1
+            //}
+
+            ////skip compression type chunks. Decompressor will handle that
+            //stream.SkipInt32();
+            ////Todo: Move decompression of package code here maybe
+            ////Todo: Refactor decompression code to single unified style
+            //int numChunks = stream.ReadInt32();
+            //stream.Skip(numChunks * 16);
+
+            //packageSource = stream.ReadUInt32();
+
+            //if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
+            //{
+            //    stream.SkipInt32(); //always 0
+            //}
+
+            ////Doesn't need to be written out, so it doesn't need to be read in
+            ////keep this here in case one day we learn that this has a purpose
+            ///*if (Game == MEGame.ME2 || Game == MEGame.ME3)
+            //{
+            //    int additionalPackagesToCookCount = fs.ReadInt32();
+            //    var additionalPackagesToCook = new string[additionalPackagesToCookCount];
+            //    for (int i = 0; i < additionalPackagesToCookCount; i++)
+            //    {
+            //        int strLen = fs.ReadInt32();
+            //        if (strLen > 0)
+            //        {
+            //            additionalPackagesToCook[i] = fs.ReadStringASCIINull(strLen);
+            //        }
+            //        else
+            //        {
+            //            additionalPackagesToCook[i] = fs.ReadStringUnicodeNull(strLen * -2);
+            //        }
+            //    }
+            //}*/
+            //#endregion
+
+            //Stream inStream = stream;
+            //if (IsCompressed && numChunks > 0)
+            //{
+            //    inStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+            //}
+        }
+
+        /// <summary>
+        /// Reads a package file from a stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        private void ReadPackageFromStream(Stream stream)
+        {
+            #region Header
+            uint magic = stream.ReadUInt32();
+            if (magic != packageTag)
+            {
+                throw new FormatException("Not an Unreal package!");
+            }
+            ushort unrealVersion = stream.ReadUInt16();
+            ushort licenseeVersion = stream.ReadUInt16();
+            switch (unrealVersion)
+            {
+                case 491 when licenseeVersion == 1008:
+                    Game = Mod.MEGame.ME1;
+                    break;
+                case 512 when licenseeVersion == 130:
+                    Game = Mod.MEGame.ME2;
+                    break;
+                case 684 when licenseeVersion == 194:
+                    Game = Mod.MEGame.ME3;
+                    break;
+                default:
+                    throw new FormatException("Not a Mass Effect Package!");
+            }
+            FullHeaderSize = stream.ReadInt32();
+            int foldernameStrLen = stream.ReadInt32();
+            //always "None", so don't bother saving result
+            if (foldernameStrLen > 0)
+                stream.ReadStringASCIINull(foldernameStrLen);
+            else
+                stream.ReadStringUnicodeNull(foldernameStrLen * -2);
+
+            Flags = (EPackageFlags)stream.ReadUInt32();
+
+            if (Game == Mod.MEGame.ME3 && Flags.HasFlag(EPackageFlags.Cooked))
+            {
+                stream.SkipInt32(); //always 0
+            }
+
+            NameCount = stream.ReadInt32();
+            NameOffset = stream.ReadInt32();
+            ExportCount = stream.ReadInt32();
+            ExportOffset = stream.ReadInt32();
+            ImportCount = stream.ReadInt32();
+            ImportOffset = stream.ReadInt32();
+            DependencyTableOffset = stream.ReadInt32();
+
+            if (Game == Mod.MEGame.ME3)
+            {
+                ImportExportGuidsOffset = stream.ReadInt32();
+                stream.SkipInt32(); //ImportGuidsCount always 0
+                stream.SkipInt32(); //ExportGuidsCount always 0
+                stream.SkipInt32(); //ThumbnailTableOffset always 0
+            }
+
+            PackageGuid = stream.ReadGuid();
+            uint generationsTableCount = stream.ReadUInt32();
+            if (generationsTableCount > 0)
+            {
+                generationsTableCount--;
+                Gen0ExportCount = stream.ReadInt32();
+                Gen0NameCount = stream.ReadInt32();
+                Gen0NetworkedObjectCount = stream.ReadInt32();
+            }
+            //should never be more than 1 generation, but just in case
+            stream.Skip(generationsTableCount * 12);
+
+            stream.SkipInt32();//engineVersion          Like unrealVersion and licenseeVersion, these 2 are determined by what game this is,
+            stream.SkipInt32();//cookedContentVersion   so we don't have to read them in
+
+            if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
+            {
+                stream.SkipInt32(); //always 0
+                stream.SkipInt32(); //always 47699
+                unknown4 = stream.ReadInt32();
+                stream.SkipInt32(); //always 1 in ME1, always 1966080 in ME2
+            }
+
+            unknown6 = stream.ReadInt32();
+            stream.SkipInt32(); //always -1 in ME1 and ME2, always 145358848 in ME3
+
+            if (Game == Mod.MEGame.ME1)
+            {
+                stream.SkipInt32(); //always -1
+            }
+
+            //skip compression type chunks. Decompressor will handle that
+            stream.SkipInt32();
+            //Todo: Move decompression of package code here maybe
+            //Todo: Refactor decompression code to single unified style
+            int numChunks = stream.ReadInt32();
+            stream.Skip(numChunks * 16);
+
+            packageSource = stream.ReadUInt32();
+
+            if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
+            {
+                stream.SkipInt32(); //always 0
+            }
+
+            //Doesn't need to be written out, so it doesn't need to be read in
+            //keep this here in case one day we learn that this has a purpose
+            /*if (Game == MEGame.ME2 || Game == MEGame.ME3)
+            {
+                int additionalPackagesToCookCount = fs.ReadInt32();
+                var additionalPackagesToCook = new string[additionalPackagesToCookCount];
+                for (int i = 0; i < additionalPackagesToCookCount; i++)
+                {
+                    int strLen = fs.ReadInt32();
+                    if (strLen > 0)
+                    {
+                        additionalPackagesToCook[i] = fs.ReadStringASCIINull(strLen);
+                    }
+                    else
+                    {
+                        additionalPackagesToCook[i] = fs.ReadStringUnicodeNull(strLen * -2);
+                    }
+                }
+            }*/
+            #endregion
+
+            Stream inStream = stream;
+            if (IsCompressed && numChunks > 0)
+            {
+                inStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+            }
+
+            //read namelist
+            inStream.JumpTo(NameOffset);
+            for (int i = 0; i < NameCount; i++)
+            {
+                names.Add(inStream.ReadUnrealString());
+                if (Game == Mod.MEGame.ME1)
+                    inStream.Skip(8);
+                else if (Game == Mod.MEGame.ME2)
+                    inStream.Skip(4);
+            }
+
+            //read importTable
+            inStream.Seek(ImportOffset, SeekOrigin.Begin);
+            for (int i = 0; i < ImportCount; i++)
+            {
+                ImportEntry imp = new ImportEntry(this, inStream) { Index = i };
+                imports.Add(imp);
+            }
+
+            //read exportTable (ExportEntry constructor reads export data)
+            inStream.Seek(ExportOffset, SeekOrigin.Begin);
+            for (int i = 0; i < ExportCount; i++)
+            {
+                ExportEntry e = new ExportEntry(this, inStream) { Index = i };
+                exports.Add(e);
+            }
+
+            if (Game == Mod.MEGame.ME1)
+            {
+                ReadLocalTLKs();
+            }
+        }
+
         private MEPackage(string filePath, Mod.MEGame forceGame = Mod.MEGame.Unknown)
         {
             FilePath = Path.GetFullPath(filePath);
@@ -106,163 +439,7 @@ namespace ME3Explorer.Packages
 
             using (var fs = File.OpenRead(filePath))
             {
-                #region Header
-
-                uint magic = fs.ReadUInt32();
-                if (magic != packageTag)
-                {
-                    throw new FormatException("Not an Unreal package!");
-                }
-                ushort unrealVersion = fs.ReadUInt16();
-                ushort licenseeVersion = fs.ReadUInt16();
-                switch (unrealVersion)
-                {
-                    case 491 when licenseeVersion == 1008:
-                        Game = Mod.MEGame.ME1;
-                        break;
-                    case 512 when licenseeVersion == 130:
-                        Game = Mod.MEGame.ME2;
-                        break;
-                    case 684 when licenseeVersion == 194:
-                        Game = Mod.MEGame.ME3;
-                        break;
-                    default:
-                        throw new FormatException("Not a Mass Effect Package!");
-                }
-                FullHeaderSize = fs.ReadInt32();
-                int foldernameStrLen = fs.ReadInt32();
-                //always "None", so don't bother saving result
-                if (foldernameStrLen > 0)
-                    fs.ReadStringASCIINull(foldernameStrLen);
-                else
-                    fs.ReadStringUnicodeNull(foldernameStrLen * -2);
-
-                Flags = (EPackageFlags)fs.ReadUInt32();
-
-                if (Game == Mod.MEGame.ME3 && Flags.HasFlag(EPackageFlags.Cooked))
-                {
-                    fs.SkipInt32(); //always 0
-                }
-
-                NameCount = fs.ReadInt32();
-                NameOffset = fs.ReadInt32();
-                ExportCount = fs.ReadInt32();
-                ExportOffset = fs.ReadInt32();
-                ImportCount = fs.ReadInt32();
-                ImportOffset = fs.ReadInt32();
-                DependencyTableOffset = fs.ReadInt32();
-
-                if (Game == Mod.MEGame.ME3)
-                {
-                    ImportExportGuidsOffset = fs.ReadInt32();
-                    fs.SkipInt32(); //ImportGuidsCount always 0
-                    fs.SkipInt32(); //ExportGuidsCount always 0
-                    fs.SkipInt32(); //ThumbnailTableOffset always 0
-                }
-
-                PackageGuid = fs.ReadGuid();
-                uint generationsTableCount = fs.ReadUInt32();
-                if (generationsTableCount > 0)
-                {
-                    generationsTableCount--;
-                    Gen0ExportCount = fs.ReadInt32();
-                    Gen0NameCount = fs.ReadInt32();
-                    Gen0NetworkedObjectCount = fs.ReadInt32();
-                }
-                //should never be more than 1 generation, but just in case
-                fs.Skip(generationsTableCount * 12);
-
-                fs.SkipInt32();//engineVersion          Like unrealVersion and licenseeVersion, these 2 are determined by what game this is,
-                fs.SkipInt32();//cookedContentVersion   so we don't have to read them in
-
-                if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
-                {
-                    fs.SkipInt32(); //always 0
-                    fs.SkipInt32(); //always 47699
-                    unknown4 = fs.ReadInt32();
-                    fs.SkipInt32(); //always 1 in ME1, always 1966080 in ME2
-                }
-
-                unknown6 = fs.ReadInt32();
-                fs.SkipInt32(); //always -1 in ME1 and ME2, always 145358848 in ME3
-
-                if (Game == Mod.MEGame.ME1)
-                {
-                    fs.SkipInt32(); //always -1
-                }
-
-                //skip compression type chunks. Decompressor will handle that
-                fs.SkipInt32();
-                //Todo: Move decompression of package code here maybe
-                //Todo: Refactor decompression code to single unified style
-                int numChunks = fs.ReadInt32();
-                fs.Skip(numChunks * 16);
-
-                packageSource = fs.ReadUInt32();
-
-                if (Game == Mod.MEGame.ME2 || Game == Mod.MEGame.ME1)
-                {
-                    fs.SkipInt32(); //always 0
-                }
-
-                //Doesn't need to be written out, so it doesn't need to be read in
-                //keep this here in case one day we learn that this has a purpose
-                /*if (Game == MEGame.ME2 || Game == MEGame.ME3)
-                {
-                    int additionalPackagesToCookCount = fs.ReadInt32();
-                    var additionalPackagesToCook = new string[additionalPackagesToCookCount];
-                    for (int i = 0; i < additionalPackagesToCookCount; i++)
-                    {
-                        int strLen = fs.ReadInt32();
-                        if (strLen > 0)
-                        {
-                            additionalPackagesToCook[i] = fs.ReadStringASCIINull(strLen);
-                        }
-                        else
-                        {
-                            additionalPackagesToCook[i] = fs.ReadStringUnicodeNull(strLen * -2);
-                        }
-                    }
-                }*/
-                #endregion
-
-                Stream inStream = fs;
-                if (IsCompressed && numChunks > 0)
-                {
-                    inStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(fs) : CompressionHelper.DecompressME1orME2(fs);
-                }
-
-                //read namelist
-                inStream.JumpTo(NameOffset);
-                for (int i = 0; i < NameCount; i++)
-                {
-                    names.Add(inStream.ReadUnrealString());
-                    if (Game == Mod.MEGame.ME1)
-                        inStream.Skip(8);
-                    else if (Game == Mod.MEGame.ME2)
-                        inStream.Skip(4);
-                }
-
-                //read importTable
-                inStream.Seek(ImportOffset, SeekOrigin.Begin);
-                for (int i = 0; i < ImportCount; i++)
-                {
-                    ImportEntry imp = new ImportEntry(this, inStream) { Index = i };
-                    imports.Add(imp);
-                }
-
-                //read exportTable (ExportEntry constructor reads export data)
-                inStream.Seek(ExportOffset, SeekOrigin.Begin);
-                for (int i = 0; i < ExportCount; i++)
-                {
-                    ExportEntry e = new ExportEntry(this, inStream) { Index = i };
-                    exports.Add(e);
-                }
-
-                if (Game == Mod.MEGame.ME1)
-                {
-                    ReadLocalTLKs();
-                }
+                ReadPackageFromStream(fs);
             }
         }
         public void save(bool compress = false)
@@ -309,265 +486,265 @@ namespace ME3Explorer.Packages
         {
             //try
             //{
-                var uncompressedStream = new MemoryStream();
+            var uncompressedStream = new MemoryStream();
 
-                //just for positioning. We write over this later when the header values have been updated
-                WriteHeader(uncompressedStream);
+            //just for positioning. We write over this later when the header values have been updated
+            WriteHeader(uncompressedStream);
 
-                //name table
-                NameOffset = (int)uncompressedStream.Position;
-                NameCount = Gen0NameCount = names.Count;
-                foreach (string name in names)
+            //name table
+            NameOffset = (int)uncompressedStream.Position;
+            NameCount = Gen0NameCount = names.Count;
+            foreach (string name in names)
+            {
+                switch (Game)
                 {
-                    switch (Game)
+                    case Mod.MEGame.ME1:
+                        uncompressedStream.WriteUnrealStringASCII(name);
+                        uncompressedStream.WriteInt32(0);
+                        uncompressedStream.WriteInt32(458768);
+                        break;
+                    case Mod.MEGame.ME2:
+                        uncompressedStream.WriteUnrealStringASCII(name);
+                        uncompressedStream.WriteInt32(-14);
+                        break;
+                    case Mod.MEGame.ME3:
+                        uncompressedStream.WriteUnrealStringUnicode(name);
+                        break;
+                }
+            }
+
+            //import table
+            ImportOffset = (int)uncompressedStream.Position;
+            ImportCount = imports.Count;
+            foreach (ImportEntry e in imports)
+            {
+                uncompressedStream.WriteFromBuffer(e.Header);
+            }
+
+            //export table
+            ExportOffset = (int)uncompressedStream.Position;
+            ExportCount = Gen0ExportCount = exports.Count;
+            foreach (ExportEntry e in exports)
+            {
+                e.HeaderOffset = (uint)uncompressedStream.Position;
+                uncompressedStream.WriteFromBuffer(e.Header);
+            }
+
+            DependencyTableOffset = (int)uncompressedStream.Position;
+            uncompressedStream.WriteInt32(0);//zero-count DependencyTable
+            FullHeaderSize = ImportExportGuidsOffset = (int)uncompressedStream.Position;
+
+            //export data
+            foreach (ExportEntry e in exports)
+            {
+                switch (Game)
+                {
+                    case Mod.MEGame.ME1:
+                        UpdateME1Offsets(e, (int)uncompressedStream.Position);
+                        break;
+                    case Mod.MEGame.ME2:
+                        UpdateME2Offsets(e, (int)uncompressedStream.Position);
+                        break;
+                    case Mod.MEGame.ME3:
+                        UpdateME3Offsets(e, (int)uncompressedStream.Position);
+                        break;
+                }
+
+                e.DataOffset = (int)uncompressedStream.Position;
+
+
+                uncompressedStream.WriteFromBuffer(e.Data);
+                //update size and offset in already-written header
+                long pos = uncompressedStream.Position;
+                uncompressedStream.JumpTo(e.HeaderOffset + 32);
+                uncompressedStream.WriteInt32(e.DataSize); //DataSize might have been changed by UpdateOffsets
+                uncompressedStream.WriteInt32(e.DataOffset);
+                uncompressedStream.JumpTo(pos);
+            }
+
+            //re-write header with updated values
+            uncompressedStream.JumpTo(0);
+            WriteHeader(uncompressedStream);
+
+            if (compressionType == CompressionType.None)
+            {
+                File.WriteAllBytes(path, uncompressedStream.ToArray());
+            }
+            else
+            {
+                MemoryStream compressedStream = new MemoryStream();
+                WriteHeader(compressedStream); //for positioning
+                var chunks = new List<CompressionHelper.Chunk>();
+
+                //Compression format:
+                //uint ChunkMetaDataTableCount
+                //CHUNK METADATA TABLE ENTRIES:
+                //uint UncompressedOffset
+                //uint UncompressedSize
+                //uint CompressedOffset
+                //uint CompressedSize
+                //
+                // After ChunkMetaDataTableCount * 16 bytes the chunk blocks begin
+                // Each chunk block has it's own block header.
+                //
+
+                CompressionHelper.Chunk chunk = new CompressionHelper.Chunk();
+                //Tables chunk
+                //fairly certain this is wrong
+                chunk.uncompressedSize = FullHeaderSize - NameOffset;
+                chunk.uncompressedOffset = NameOffset;
+
+                //Debug stuff
+                string firstElement = "Tables";
+                string lastElement = firstElement;
+
+                MemoryStream m2 = new MemoryStream();
+                long pos = uncompressedStream.Position;
+                uncompressedStream.Position = NameOffset;
+                m2.WriteFromStream(uncompressedStream, chunk.uncompressedSize);
+                uncompressedStream.Position = pos;
+                //end debug stuff
+
+                //Export data chunks
+                //chunk = new CompressionHelper.Chunk();
+                int chunkNum = 0;
+                //Debug.WriteLine($"Exports start at {Exports[0].DataOffset}");
+                foreach (ExportEntry e in Exports)
+                {
+                    if (chunk.uncompressedSize + e.DataSize > CompressionHelper.MAX_CHUNK_SIZE)
                     {
-                        case Mod.MEGame.ME1:
-                            uncompressedStream.WriteUnrealStringASCII(name);
-                            uncompressedStream.WriteInt32(0);
-                            uncompressedStream.WriteInt32(458768);
-                            break;
-                        case Mod.MEGame.ME2:
-                            uncompressedStream.WriteUnrealStringASCII(name);
-                            uncompressedStream.WriteInt32(-14);
-                            break;
-                        case Mod.MEGame.ME3:
-                            uncompressedStream.WriteUnrealStringUnicode(name);
-                            break;
-                    }
-                }
-
-                //import table
-                ImportOffset = (int)uncompressedStream.Position;
-                ImportCount = imports.Count;
-                foreach (ImportEntry e in imports)
-                {
-                    uncompressedStream.WriteFromBuffer(e.Header);
-                }
-
-                //export table
-                ExportOffset = (int)uncompressedStream.Position;
-                ExportCount = Gen0ExportCount = exports.Count;
-                foreach (ExportEntry e in exports)
-                {
-                    e.HeaderOffset = (uint)uncompressedStream.Position;
-                    uncompressedStream.WriteFromBuffer(e.Header);
-                }
-
-                DependencyTableOffset = (int)uncompressedStream.Position;
-                uncompressedStream.WriteInt32(0);//zero-count DependencyTable
-                FullHeaderSize = ImportExportGuidsOffset = (int)uncompressedStream.Position;
-
-                //export data
-                foreach (ExportEntry e in exports)
-                {
-                    switch (Game)
-                    {
-                        case Mod.MEGame.ME1:
-                            UpdateME1Offsets(e, (int)uncompressedStream.Position);
-                            break;
-                        case Mod.MEGame.ME2:
-                            UpdateME2Offsets(e, (int)uncompressedStream.Position);
-                            break;
-                        case Mod.MEGame.ME3:
-                            UpdateME3Offsets(e, (int)uncompressedStream.Position);
-                            break;
-                    }
-
-                    e.DataOffset = (int)uncompressedStream.Position;
-
-
-                    uncompressedStream.WriteFromBuffer(e.Data);
-                    //update size and offset in already-written header
-                    long pos = uncompressedStream.Position;
-                    uncompressedStream.JumpTo(e.HeaderOffset + 32);
-                    uncompressedStream.WriteInt32(e.DataSize); //DataSize might have been changed by UpdateOffsets
-                    uncompressedStream.WriteInt32(e.DataOffset);
-                    uncompressedStream.JumpTo(pos);
-                }
-
-                //re-write header with updated values
-                uncompressedStream.JumpTo(0);
-                WriteHeader(uncompressedStream);
-
-                if (compressionType == CompressionType.None)
-                {
-                    File.WriteAllBytes(path, uncompressedStream.ToArray());
-                }
-                else
-                {
-                    MemoryStream compressedStream = new MemoryStream();
-                    WriteHeader(compressedStream); //for positioning
-                    var chunks = new List<CompressionHelper.Chunk>();
-
-                    //Compression format:
-                    //uint ChunkMetaDataTableCount
-                    //CHUNK METADATA TABLE ENTRIES:
-                    //uint UncompressedOffset
-                    //uint UncompressedSize
-                    //uint CompressedOffset
-                    //uint CompressedSize
-                    //
-                    // After ChunkMetaDataTableCount * 16 bytes the chunk blocks begin
-                    // Each chunk block has it's own block header.
-                    //
-
-                    CompressionHelper.Chunk chunk = new CompressionHelper.Chunk();
-                    //Tables chunk
-                    //fairly certain this is wrong
-                    chunk.uncompressedSize = FullHeaderSize - NameOffset;
-                    chunk.uncompressedOffset = NameOffset;
-
-                    //Debug stuff
-                    string firstElement = "Tables";
-                    string lastElement = firstElement;
-
-                    MemoryStream m2 = new MemoryStream();
-                    long pos = uncompressedStream.Position;
-                    uncompressedStream.Position = NameOffset;
-                    m2.WriteFromStream(uncompressedStream, chunk.uncompressedSize);
-                    uncompressedStream.Position = pos;
-                    //end debug stuff
-
-                    //Export data chunks
-                    //chunk = new CompressionHelper.Chunk();
-                    int chunkNum = 0;
-                    Debug.WriteLine($"Exports start at {Exports[0].DataOffset}");
-                    foreach (ExportEntry e in Exports)
-                    {
-                        if (chunk.uncompressedSize + e.DataSize > CompressionHelper.MAX_CHUNK_SIZE)
+                        //Rollover to the next chunk as this chunk would be too big if we tried to put this export into the chunk
+                        chunks.Add(chunk);
+                        //Debug.WriteLine($"Chunk {chunkNum} ({chunk.uncompressedSize} bytes) contains {firstElement} to {lastElement} - 0x{chunk.uncompressedOffset:X6} to 0x{(chunk.uncompressedSize + chunk.uncompressedOffset):X6}");
+                        chunkNum++;
+                        chunk = new CompressionHelper.Chunk
                         {
-                            //Rollover to the next chunk as this chunk would be too big if we tried to put this export into the chunk
-                            chunks.Add(chunk);
-                            Debug.WriteLine($"Chunk {chunkNum} ({chunk.uncompressedSize} bytes) contains {firstElement} to {lastElement} - 0x{chunk.uncompressedOffset:X6} to 0x{(chunk.uncompressedSize + chunk.uncompressedOffset):X6}");
-                            chunkNum++;
-                            chunk = new CompressionHelper.Chunk
-                            {
-                                uncompressedSize = e.DataSize,
-                                uncompressedOffset = e.DataOffset
-                            };
-                            firstElement = lastElement = e.UIndex +" " +e.GetFullPath;
-                        }
+                            uncompressedSize = e.DataSize,
+                            uncompressedOffset = e.DataOffset
+                        };
+                        firstElement = lastElement = e.UIndex + " " + e.GetFullPath;
+                    }
+                    else
+                    {
+                        chunk.uncompressedSize += e.DataSize; //This chunk can fit this export
+                        lastElement = e.UIndex + " " + e.GetFullPath;
+                    }
+                }
+                //Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
+                chunks.Add(chunk);
+
+                //Rewrite header with chunk table information so we can position the data blocks after table
+                compressedStream.Position = 0;
+                WriteHeader(compressedStream, compressionType, chunks);
+                MemoryStream m1 = new MemoryStream();
+
+                for (int c = 0; c < chunks.Count; c++)
+                {
+                    chunk = chunks[c];
+                    chunk.compressedOffset = (int)compressedStream.Position;
+                    chunk.compressedSize = 0; // filled later
+
+                    int dataSizeRemainingToCompress = chunk.uncompressedSize;
+                    //weird way to do this
+                    //int newNumBlocks = (chunk.uncompressedSize / CompressionHelper.MAX_BLOCK_SIZE - 1) / CompressionHelper.MAX_BLOCK_SIZE;
+                    int numBlocksInChunk = (int)Math.Ceiling(chunk.uncompressedSize * 1.0 / CompressionHelper.MAX_BLOCK_SIZE);
+                    // skip chunk header and blocks table - filled later
+                    compressedStream.Seek(CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.SIZE_OF_CHUNK_BLOCK_HEADER * numBlocksInChunk, SeekOrigin.Current);
+
+                    uncompressedStream.JumpTo(chunk.uncompressedOffset);
+
+                    chunk.blocks = new List<CompressionHelper.Block>();
+
+                    //Calculate blocks by splitting data into 128KB "block chunks".
+                    for (int b = 0; b < numBlocksInChunk; b++)
+                    {
+                        CompressionHelper.Block block = new CompressionHelper.Block();
+                        block.uncompressedsize = Math.Min(CompressionHelper.MAX_BLOCK_SIZE, dataSizeRemainingToCompress);
+                        dataSizeRemainingToCompress -= block.uncompressedsize;
+                        block.uncompressedData = uncompressedStream.ReadToBuffer(block.uncompressedsize);
+                        chunk.blocks.Add(block);
+                    }
+
+                    if (chunk.blocks.Count != numBlocksInChunk) throw new Exception("Number of blocks does not match expected amount");
+
+                    //Compress blocks
+                    Parallel.For(0, chunk.blocks.Count, b =>
+                    {
+                        CompressionHelper.Block block = chunk.blocks[b];
+                        if (compressionType == CompressionType.LZO)
+                            block.compressedData = LZO2Helper.LZO2.Compress(block.uncompressedData);
+                        else if (compressionType == CompressionType.Zlib)
+                            block.compressedData = ZlibHelper.Zlib.Compress(block.uncompressedData);
                         else
-                        {
-                            chunk.uncompressedSize += e.DataSize; //This chunk can fit this export
-                            lastElement = e.UIndex + " " + e.GetFullPath;
-                        }
-                    }
-                    Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
-                    chunks.Add(chunk);
+                            throw new Exception("Internal error: Unsupported compression type for compressing blocks: " + compressionType);
+                        if (block.compressedData.Length == 0)
+                            throw new Exception("Internal error: Block compression failed! Compressor returned no bytes");
+                        block.compressedsize = (int)block.compressedData.Length;
+                        chunk.blocks[b] = block;
+                    });
 
-                    //Rewrite header with chunk table information so we can position the data blocks after table
-                    compressedStream.Position = 0;
-                    WriteHeader(compressedStream, compressionType, chunks);
-                    MemoryStream m1 = new MemoryStream();
-
-                    for (int c = 0; c < chunks.Count; c++)
+                    //Write compressed data to stream 
+                    for (int b = 0; b < numBlocksInChunk; b++)
                     {
-                        chunk = chunks[c];
-                        chunk.compressedOffset = (int)compressedStream.Position;
-                        chunk.compressedSize = 0; // filled later
-
-                        int dataSizeRemainingToCompress = chunk.uncompressedSize;
-                        //weird way to do this
-                        //int newNumBlocks = (chunk.uncompressedSize / CompressionHelper.MAX_BLOCK_SIZE - 1) / CompressionHelper.MAX_BLOCK_SIZE;
-                        int numBlocksInChunk = (int) Math.Ceiling(chunk.uncompressedSize * 1.0 / CompressionHelper.MAX_BLOCK_SIZE);
-                        // skip chunk header and blocks table - filled later
-                        compressedStream.Seek(CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.SIZE_OF_CHUNK_BLOCK_HEADER * numBlocksInChunk, SeekOrigin.Current);
-
-                        uncompressedStream.JumpTo(chunk.uncompressedOffset);
-
-                        chunk.blocks = new List<CompressionHelper.Block>();
-
-                        //Calculate blocks by splitting data into 128KB "block chunks".
-                        for (int b = 0; b < numBlocksInChunk; b++)
+                        var block = chunk.blocks[b];
+                        compressedStream.Write(block.compressedData, 0, (int)block.compressedsize);
+                        //DEBUG - HEAD ONLY
+                        if (c == 0)
                         {
-                            CompressionHelper.Block block = new CompressionHelper.Block();
-                            block.uncompressedsize = Math.Min(CompressionHelper.MAX_BLOCK_SIZE, dataSizeRemainingToCompress);
-                            dataSizeRemainingToCompress -= block.uncompressedsize;
-                            block.uncompressedData = uncompressedStream.ReadToBuffer(block.uncompressedsize);
-                            chunk.blocks.Add(block);
+                            m1.Write(block.compressedData, 0, (int)block.compressedsize);
                         }
-
-                        if (chunk.blocks.Count != numBlocksInChunk) throw new Exception("Number of blocks does not match expected amount");
-
-                        //Compress blocks
-                        Parallel.For(0, chunk.blocks.Count, b =>
-                        {
-                            CompressionHelper.Block block = chunk.blocks[b];
-                            if (compressionType == CompressionType.LZO)
-                                block.compressedData = LZO2Helper.LZO2.Compress(block.uncompressedData);
-                            else if (compressionType == CompressionType.Zlib)
-                                block.compressedData = ZlibHelper.Zlib.Compress(block.uncompressedData);
-                            else
-                                throw new Exception("Internal error: Unsupported compression type for compressing blocks: " + compressionType);
-                            if (block.compressedData.Length == 0)
-                                throw new Exception("Internal error: Block compression failed! Compressor returned no bytes");
-                            block.compressedsize = (int)block.compressedData.Length;
-                            chunk.blocks[b] = block;
-                        });
-
-                        //Write compressed data to stream 
-                        for (int b = 0; b < numBlocksInChunk; b++)
-                        {
-                            var block = chunk.blocks[b];
-                            compressedStream.Write(block.compressedData, 0, (int)block.compressedsize);
-                            //DEBUG - HEAD ONLY
-                            if (c == 0)
-                            {
-                                m1.Write(block.compressedData, 0, (int)block.compressedsize);
-                            }
-                            //END DEBUG
-                            chunk.compressedSize += block.compressedsize;
-                        }
-                        chunks[c] = chunk;
+                        //END DEBUG
+                        chunk.compressedSize += block.compressedsize;
                     }
-                    //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-comp.bin", m1.ToArray());
-                    MemoryStream m3 = new MemoryStream();
-                    WriteHeader(m3);
-                    m2.Position = 0;
-                    m2.CopyTo(m3);
-                    //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-uncomp.bin", m3.ToArray());
+                    chunks[c] = chunk;
+                }
+                //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-comp.bin", m1.ToArray());
+                MemoryStream m3 = new MemoryStream();
+                WriteHeader(m3);
+                m2.Position = 0;
+                m2.CopyTo(m3);
+                //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-uncomp.bin", m3.ToArray());
 
 
-                    //Update each chunk header with new information
-                    for (int c = 0; c < chunks.Count; c++)
+                //Update each chunk header with new information
+                for (int c = 0; c < chunks.Count; c++)
+                {
+                    chunk = chunks[c];
+                    compressedStream.JumpTo(chunk.compressedOffset); // jump to blocks header
+                    compressedStream.WriteUInt32(packageTag);
+                    compressedStream.WriteUInt32(CompressionHelper.MAX_BLOCK_SIZE);
+                    compressedStream.WriteInt32(chunk.compressedSize);
+                    compressedStream.WriteInt32(chunk.uncompressedSize);
+
+                    //write block header table
+                    foreach (var block in chunk.blocks)
                     {
-                        chunk = chunks[c];
-                        compressedStream.JumpTo(chunk.compressedOffset); // jump to blocks header
-                        compressedStream.WriteUInt32(packageTag);
-                        compressedStream.WriteUInt32(CompressionHelper.MAX_BLOCK_SIZE);
-                        compressedStream.WriteInt32(chunk.compressedSize);
-                        compressedStream.WriteInt32(chunk.uncompressedSize);
-
-                        //write block header table
-                        foreach (var block in chunk.blocks)
-                        {
-                            compressedStream.WriteInt32(block.compressedsize);
-                            compressedStream.WriteInt32(block.uncompressedsize);
-                        }
-                    }
-                    //Write final header
-                    compressedStream.Position = 0;
-                    WriteHeader(compressedStream, compressionType, chunks);
-
-                    //for (int c = 0; c < chunks.Count; c++)
-                    //{
-                    //    chunk = chunks[c];
-                    //    chunk.blocks.Clear();
-                    //    chunk.blocks = null;
-                    //}
-                    //chunks.Clear();
-                    //chunks = null;
-
-                    File.WriteAllBytes(path, compressedStream.ToArray());
-                    // validation
-                    var validatePackage = MEPackageHandler.OpenMEPackage(path);
-                    foreach (var export in Exports)
-                    {
-                        export.GetProperties();
+                        compressedStream.WriteInt32(block.compressedsize);
+                        compressedStream.WriteInt32(block.uncompressedsize);
                     }
                 }
-                AfterSave();
+                //Write final header
+                compressedStream.Position = 0;
+                WriteHeader(compressedStream, compressionType, chunks);
+
+                //for (int c = 0; c < chunks.Count; c++)
+                //{
+                //    chunk = chunks[c];
+                //    chunk.blocks.Clear();
+                //    chunk.blocks = null;
+                //}
+                //chunks.Clear();
+                //chunks = null;
+                compressedStream.WriteToFile(path);
+                //File.WriteAllBytes(path, compressedStream.ToArray());
+                // validation
+                //var validatePackage = MEPackageHandler.OpenMEPackage(path);
+                //foreach (var export in validatePackage.Exports)
+                //{
+                //    export.GetProperties();
+                //}
+            }
+            AfterSave();
             //}
             //catch (Exception ex)
             //{
@@ -863,29 +1040,30 @@ namespace ME3Explorer.Packages
                 export.setBinaryData(binData);
             }
             //update offsets for pcc-stored mips in Textures
-            else if (export.IsTexture())
-            {
-                int baseOffset = newDataOffset + export.propsEnd();
-                MemoryStream binData = new MemoryStream(export.getBinaryData());
-                binData.Skip(12);
-                binData.WriteInt32(baseOffset + (int)binData.Position + 4);
-                for (int i = binData.ReadInt32(); i > 0 && binData.Position < binData.Length; i--)
-                {
-                    var storageFlags = (StorageFlags)binData.ReadInt32();
-                    if (!storageFlags.HasFlag(StorageFlags.externalFile)) //pcc-stored
-                    {
-                        int uncompressedSize = binData.ReadInt32();
-                        int compressedSize = binData.ReadInt32();
-                        binData.WriteInt32(baseOffset + (int)binData.Position + 4);//update offset
-                        binData.Seek((storageFlags == StorageFlags.noFlags ? uncompressedSize : compressedSize) + 8, SeekOrigin.Current); //skip texture and width + height values
-                    }
-                    else
-                    {
-                        binData.Seek(20, SeekOrigin.Current);//skip whole rest of mip definition
-                    }
-                }
-                export.setBinaryData(binData.ToArray());
-            }
+            //This I do not think is actually necessary
+            //else if (export.IsTexture())
+            //{
+            //    int baseOffset = newDataOffset + export.propsEnd();
+            //    MemoryStream binData = new MemoryStream(export.getBinaryData());
+            //    binData.Skip(12);
+            //    binData.WriteInt32(baseOffset + (int)binData.Position + 4);
+            //    for (int i = binData.ReadInt32(); i > 0 && binData.Position < binData.Length; i--)
+            //    {
+            //        var storageFlags = (StorageFlags)binData.ReadInt32();
+            //        if (!storageFlags.HasFlag(StorageFlags.externalFile)) //pcc-stored
+            //        {
+            //            int uncompressedSize = binData.ReadInt32();
+            //            int compressedSize = binData.ReadInt32();
+            //            binData.WriteInt32(baseOffset + (int)binData.Position + 4);//update offset
+            //            binData.Seek((storageFlags == StorageFlags.noFlags ? uncompressedSize : compressedSize) + 8, SeekOrigin.Current); //skip texture and width + height values
+            //        }
+            //        else
+            //        {
+            //            binData.Seek(20, SeekOrigin.Current);//skip whole rest of mip definition
+            //        }
+            //    }
+            //    export.setBinaryData(binData.ToArray());
+            //}
             else if (export.ClassName == "ShaderCache")
             {
                 int oldDataOffset = export.DataOffset;

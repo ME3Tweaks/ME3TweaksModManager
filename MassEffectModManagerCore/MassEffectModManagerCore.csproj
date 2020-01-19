@@ -43,12 +43,15 @@
     <None Remove="bundleddlls\lzo2wrapper.dll" />
     <None Remove="bundleddlls\sevenzipwrapper.dll" />
     <None Remove="bundleddlls\zlibwrapper.dll" />
+    <None Remove="images\darktheme.png" />
     <None Remove="images\gameicons\ME1_48.ico" />
     <None Remove="images\gameicons\ME2_48.ico" />
     <None Remove="images\gameicons\ME3_48.ico" />
     <None Remove="images\gameicons\Unknown_48.ico" />
+    <None Remove="images\lighttheme.png" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\me3tweaks.png" />
+    <None Remove="images\modmaker.png" />
     <None Remove="images\nexusmods_scenethemed.png" />
     <None Remove="images\origin.png" />
     <None Remove="images\windowicon.png" />
@@ -73,6 +76,8 @@
     <None Remove="modmanager\localizations\icons\languageselector.png" />
     <None Remove="modmanager\localizations\icons\polish.png" />
     <None Remove="modmanager\localizations\icons\russian.png" />
+    <None Remove="modmanager\localizations\icons\spanish.png" />
+    <None Remove="modmanager\me3tweaks\LiveIni.bin" />
     <None Remove="modmanager\me3tweaks\PermissionsGranter.exe" />
     <None Remove="modmanager\meim\propertymaps\BioEngine.xml" />
     <None Remove="modmanager\meim\propertymaps\BioGame.xml" />
@@ -99,7 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="appicon.ico" />
+    <Resource Include="images\darktheme.png" />
+    <Resource Include="images\lighttheme.png" />
     <Resource Include="images\me3tweaks.png" />
+    <Resource Include="images\modmaker.png" />
     <Resource Include="images\nexusmods_scenethemed.png" />
     <Resource Include="images\windowicon.png" />
   </ItemGroup>
@@ -128,6 +136,7 @@
     <EmbeddedResource Include="modmanager\gamemd5\me1pl.bin" />
     <EmbeddedResource Include="modmanager\gamemd5\me2.bin" />
     <EmbeddedResource Include="modmanager\gamemd5\me3.bin" />
+    <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
     <EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
     <EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
     <EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
@@ -155,6 +164,7 @@
     <PackageReference Include="Microsoft.AppCenter" Version="2.6.4" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="2.6.4" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="2.6.4" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.2" />
     <PackageReference Include="MvvmValidation" Version="3.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Octokit" Version="0.36.0" />
@@ -163,8 +173,13 @@
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile.Extension" Version="2.0.2" />
+    <PackageReference Include="SSH.NET" Version="2016.1.0" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
@@ -187,6 +202,7 @@
     <Resource Include="modmanager\localizations\icons\languageselector.png" />
     <Resource Include="modmanager\localizations\icons\polish.png" />
     <Resource Include="modmanager\localizations\icons\russian.png" />
+    <Resource Include="modmanager\localizations\icons\spanish.png" />
     <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
     <Resource Include="modmanager\toolicons\alot_32.png" />
     <Resource Include="modmanager\toolicons\alot_big.png" />

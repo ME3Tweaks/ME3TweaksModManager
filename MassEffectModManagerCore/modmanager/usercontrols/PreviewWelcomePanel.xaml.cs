@@ -94,5 +94,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             ChangeLanguage(@"esn");
         }
+
+        private void ChangeTheme_Dark_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeTheme(true);
+        }
+
+        private void ChangeTheme_Light_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeTheme(false);
+        }
+
+        private void ChangeTheme(bool dark)
+        {
+            if (Settings.DarkTheme ^ dark)
+            {
+                Settings.DarkTheme = !Settings.DarkTheme;
+                Settings.Save();
+                mainwindow.SetTheme();
+            }
+        }
     }
 }

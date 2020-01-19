@@ -53,7 +53,7 @@ namespace MassEffect3.Coalesce
                 { "\n", "\\n" }
             };
 
-        public static Dictionary<string, string> DecompileToMemory(MemoryStream ms)
+        public static Dictionary<string, string> DecompileToMemory(Stream ms)
         {
             Dictionary<string, string> fileMapping = new Dictionary<string, string>();
             var coal = new CoalescedFileXml();

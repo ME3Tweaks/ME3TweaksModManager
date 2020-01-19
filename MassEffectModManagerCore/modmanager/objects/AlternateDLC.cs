@@ -19,6 +19,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             INVALID_OPERATION,
             OP_ADD_CUSTOMDLC,
             OP_ADD_FOLDERFILES_TO_CUSTOMDLC,
+            OP_ADD_MULTILISTFILES_TO_CUSTOMDLC,
             OP_NOTHING
         }
 
@@ -38,9 +39,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         public AltDLCOperation Operation;
         public bool CheckedByDefault { get; }
         public bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
-        public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
+        public double UIOpacity => (!UIIsSelectable) ? .5 : 1;
         public bool UIRequired => !IsManual && IsSelected;
-        public bool UINotApplicable => !IsManual && !IsSelected;
+        public bool UINotApplicable => (!IsManual && !IsSelected) || !UIIsSelectable;
+        public bool UIIsSelectable { get; set; }
+        /// <summary>
+        /// Requirements for this manual option to be able to be picked
+        /// </summary>
+        public string[] DLCRequirementsForManual { get; }
         public string ApplicableAutoText { get; }
         public string GroupName { get; }
         public string NotApplicableAutoText { get; }
@@ -62,7 +68,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public AlternateDLC(string alternateDLCText, Mod modForValidating)
+        public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
             //todo: if statements to check these.
@@ -108,19 +114,59 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
+
             if (Operation != AltDLCOperation.OP_NOTHING)
             {
-
-                if (properties.TryGetValue(@"ModAltDLC", out string altDLCFolder))
+                int multilistid = -1;
+                if (Operation == AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC)
                 {
-                    AlternateDLCFolder = altDLCFolder.Replace('/', '\\');
+                    if (properties.TryGetValue(@"MultiListRootPath", out var rootpath))
+                    {
+                        MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.";
+                        return;
+                    }
+                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out multilistid))
+                    {
+                        if (job.MultiLists.TryGetValue(multilistid, out var ml))
+                        {
+                            MultiListSourceFiles = ml;
+                        }
+                        else
+                        {
+                            Log.Error($@"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
+                            ValidAlternate = false;
+                            var id = @"multilist" + multilistid;
+                            LoadFailedReason = $"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the task: {id}";
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.";
+                        return;
+                    }
                 }
                 else
                 {
-                    Log.Error(@"Alternate DLC does not specify ModAltDLC but is required");
-                    ValidAlternate = false;
-                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_missingModAltDLC, FriendlyName);
-                    return;
+                    if (properties.TryGetValue(@"ModAltDLC", out string altDLCFolder))
+                    {
+                        AlternateDLCFolder = altDLCFolder.Replace('/', '\\');
+                    }
+                    else
+                    {
+                        Log.Error(@"Alternate DLC does not specify ModAltDLC but is required");
+                        ValidAlternate = false;
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_missingModAltDLC, FriendlyName);
+                        return;
+                    }
                 }
 
                 if (properties.TryGetValue(@"ModDestDLC", out string destDLCFolder))
@@ -164,7 +210,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
 
                 //Validation
-                if (string.IsNullOrWhiteSpace(AlternateDLCFolder))
+                if (string.IsNullOrWhiteSpace(AlternateDLCFolder) && MultiListRootPath == null)
                 {
                     Log.Error($@"Alternate DLC directory (ModAltDLC) not specified for { FriendlyName}");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_sourceDirectoryNotSpecifiedForModAltDLC, FriendlyName);
@@ -178,17 +224,35 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return;
                 }
 
-                AlternateDLCFolder = AlternateDLCFolder.TrimStart('\\', '/').Replace('/', '\\');
-
-                //Check ModAltDLC directory exists
-                var localAltDlcDir = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AlternateDLCFolder);
-                if (!FilesystemInterposer.DirectoryExists(localAltDlcDir, modForValidating.Archive))
+                if (AlternateDLCFolder != null)
                 {
-                    Log.Error($@"Alternate DLC directory (ModAltDLC) does not exist: {AlternateDLCFolder}");
-                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_sourceDirectoryDoesntExist, FriendlyName, AlternateDLCFolder);
-                    return;
+                    AlternateDLCFolder = AlternateDLCFolder.TrimStart('\\', '/').Replace('/', '\\');
+
+                    //Check ModAltDLC directory exists
+                    var localAltDlcDir = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AlternateDLCFolder);
+                    if (!FilesystemInterposer.DirectoryExists(localAltDlcDir, modForValidating.Archive))
+                    {
+                        Log.Error($@"Alternate DLC directory (ModAltDLC) does not exist: {AlternateDLCFolder}");
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_sourceDirectoryDoesntExist, FriendlyName, AlternateDLCFolder);
+                        return;
+                    }
+                }
+                else if (MultiListRootPath != null)
+                {
+                    foreach (var multif in MultiListSourceFiles)
+                    {
+                        var path = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, MultiListRootPath, multif);
+                        if (!FilesystemInterposer.FileExists(path, modForValidating.Archive))
+                        {
+                            Log.Error($@"Alternate DLC ({FriendlyName}) specifies a multilist (index {multilistid}) that contains file that does not exist: {multif}");
+                            LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies a multilist (index {multilistid}) that contains file that does not exist: {multif}";
+                            return;
+                        }
+                    }
                 }
             }
+
+            DLCRequirementsForManual = properties.TryGetValue(@"DLCRequirements", out string dlcReqs) ? dlcReqs.Split(';') : null;
 
             ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
 
@@ -203,26 +267,49 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 CheckedByDefault = cbd;
             }
+            if (Condition != AltDLCCondition.COND_MANUAL && Condition != AltDLCCondition.INVALID_CONDITION)
+            {
+                //ensure conditional dlc list has at least one item.
+                if (ConditionalDLC.Count == 0)
+                {
+                    Log.Error($@"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.");
+                    ValidAlternate = false;
+                    LoadFailedReason = $"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.";
+                    return;
+                }
+            }
 
             CLog.Information($@"AlternateDLC loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;
         }
 
         public bool IsSelected { get; set; }
+        public string[] MultiListSourceFiles { get; }
+        public string MultiListRootPath { get; }
 
         internal bool HasRelativeFiles()
         {
             if (Operation == AltDLCOperation.INVALID_OPERATION) return false;
             if (Operation == AltDLCOperation.OP_NOTHING) return false;
-            return AlternateDLCFolder != null;
+            return AlternateDLCFolder != null || MultiListSourceFiles != null;
         }
 
         public void SetupInitialSelection(GameTarget target)
         {
+            UIIsSelectable = false; //Reset
             IsSelected = false; //Reset
             if (Condition == AltDLCCondition.COND_MANUAL)
             {
                 IsSelected = CheckedByDefault;
+                if (DLCRequirementsForManual != null)
+                {
+                    var dlc = MEDirectories.GetInstalledDLC(target);
+                    UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
+                }
+                else
+                {
+                    UIIsSelectable = true;
+                }
                 return;
             }
             var installedDLC = MEDirectories.GetInstalledDLC(target);
@@ -243,6 +330,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
             }
+            UIIsSelectable = IsSelected; //autos
         }
     }
 }
