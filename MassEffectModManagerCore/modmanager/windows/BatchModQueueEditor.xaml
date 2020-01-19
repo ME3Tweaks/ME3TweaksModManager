@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         Title="Install Group Editor" Height="450" Width="800">
@@ -57,7 +58,13 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Grid.Row="4" Grid.Column="0" Margin="0,5,0,0"  Grid.ColumnSpan="3" HorizontalAlignment="Right" Content="Add to group >>"/>
+            <Button Grid.Row="4" Grid.Column="0" Margin="0,5,0,0"  Grid.ColumnSpan="3" HorizontalAlignment="Right" Command="{Binding AddToInstallGroupCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Add mod to install group"/>
+                    <fa:ImageAwesome Icon="ArrowCircleRight" Height="12" Margin="5,0,0,0"  Foreground="GreenYellow"/>
+
+                </StackPanel>
+            </Button>
         </Grid>
         <DockPanel Margin="10,0,0,0">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
@@ -72,18 +79,29 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Group name" FontWeight="Bold" Grid.Row="0" Grid.Column="0"/>
-                <xctk:WatermarkTextBox Watermark="Group name" Grid.Row="1" Grid.Column="0" Text="{Binding GroupName}"/>
+                <xctk:WatermarkTextBox Watermark="Group name" Grid.Row="1" Grid.Column="0" Text="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="Group description" FontWeight="Bold" Grid.Row="2" Grid.Column="0"/>
-                <xctk:WatermarkTextBox Watermark="Group description" Grid.Row="3" Grid.Column="0" Height="55" Text="{Binding GroupDescription}"/>
+                <xctk:WatermarkTextBox Watermark="Group description" Grid.Row="3" Grid.Column="0" Height="55" Text="{Binding GroupDescription, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <DockPanel>
                 <TextBlock Text="Mods in install group" FontWeight="Bold" DockPanel.Dock="Top"/>
                 <TextBlock Text="Mods will install in this order. Mods that configure themselves based on other mods should be installed last." TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <DockPanel DockPanel.Dock="Bottom">
-                    <Button Content="&lt;&lt; Remove from install group" DockPanel.Dock="Left"/>
-                    <Button Content="Move down" DockPanel.Dock="Right" Margin="5,0,0,0"/>
-                    <Button HorizontalAlignment="Right">
+                    <Button DockPanel.Dock="Left" Command="{Binding RemoveFromInstallGroupCommand}">
                         <StackPanel Orientation="Horizontal">
+                            <fa:ImageAwesome Icon="ArrowCircleLeft" Height="12" Margin="0,0,5,0"  Foreground="Red"/>
+                            <TextBlock Text="Remove mod from install group"/>
+                        </StackPanel>
+                    </Button>
+                    <Button DockPanel.Dock="Right" Margin="5,0,0,0" Command="{Binding MoveDownCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:ImageAwesome Icon="ArrowCircleDown" Height="12" Margin="0,0,5,0"  Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                            <TextBlock Text="Move down"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Right" Command="{Binding MoveUpCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:ImageAwesome Icon="ArrowCircleUp" Height="12" Margin="0,0,5,0"  Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
                             <TextBlock Text="Move up"/>
                         </StackPanel>
                     </Button>

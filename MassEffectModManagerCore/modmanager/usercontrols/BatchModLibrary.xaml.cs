@@ -49,7 +49,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void EditGroup()
         {
-            new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow, SelectedBatchQueue).ShowDialog();
+            var editGroupUI = new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow, SelectedBatchQueue);
+            editGroupUI.ShowDialog();
+            var newPath = editGroupUI.SavedPath;
+            if (newPath != null)
+            {
+                //file was saved, reload
+                parseBatchFiles(newPath);
+            }
         }
 
         private bool CanEditGroup() => SelectedBatchQueue != null;
@@ -68,7 +75,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CreateNewGroup()
         {
-            new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow).ShowDialog();
+            var editGroupUI = new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow);
+            editGroupUI.ShowDialog();
+            var newPath = editGroupUI.SavedPath;
+            if (newPath != null)
+            {
+                //file was saved, reload
+                parseBatchFiles(newPath);
+            }
         }
 
         private void ClosePanel()
@@ -86,7 +100,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             parseBatchFiles();
         }
 
-        private void parseBatchFiles()
+        private void parseBatchFiles(string pathToHighlight = null)
         {
             AvailableBatchQueues.ClearEx();
             var batchDir = Utilities.GetBatchInstallGroupsFolder();
@@ -94,12 +108,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var file in files)
             {
                 var extension = Path.GetExtension(file);
-                if (extension == ".biq" || extension == ".txt")
+                if (extension == @".biq" || extension == @".txt")
                 {
                     var queue = BatchLibraryInstallQueue.ParseInstallQueue(file, mainwindow.AllLoadedMods.ToList());
                     if (queue != null)
                     {
                         AvailableBatchQueues.Add(queue);
+                        if (file == pathToHighlight)
+                        {
+                            SelectedBatchQueue = queue;
+                        }
                     }
                 }
             }
@@ -122,6 +140,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     SelectedGameTarget = InstallationTargetsForGroup.FirstOrDefault();
+                }
+
+                if (SelectedBatchQueue.ModsToInstall.Any())
+                {
+                    SelectedModInGroup = SelectedBatchQueue.ModsToInstall.First();
                 }
             }
         }

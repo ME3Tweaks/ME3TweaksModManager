@@ -19,6 +19,7 @@ using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager
 {
+    [DebuggerDisplay("Mod - {ModName}")]
     public partial class Mod : INotifyPropertyChanged
     {
         public enum MEGame
