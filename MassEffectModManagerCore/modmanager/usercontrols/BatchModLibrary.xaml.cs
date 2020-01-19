@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void EditGroup()
         {
-            new BatchModQueueEditor(mainwindow, SelectedBatchQueue).ShowDialog();
+            new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow, SelectedBatchQueue).ShowDialog();
         }
 
         private bool CanEditGroup() => SelectedBatchQueue != null;
@@ -68,7 +68,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CreateNewGroup()
         {
-            new BatchModQueueEditor(mainwindow).ShowDialog();
+            new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow).ShowDialog();
         }
 
         private void ClosePanel()
@@ -118,7 +118,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (InstallationTargetsForGroup.Contains(currentTarget))
                 {
                     SelectedGameTarget = currentTarget;
-                } else
+                }
+                else
                 {
                     SelectedGameTarget = InstallationTargetsForGroup.FirstOrDefault();
                 }
@@ -146,6 +147,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// Target for installation. Only used when installation commences.
         /// </summary>
         public GameTarget Target;
+
+        public string BackingFilename { get; set; }
         public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
 
@@ -163,6 +166,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (!File.Exists(queueFile)) return null;
             BatchLibraryInstallQueue result = new BatchLibraryInstallQueue();
+            result.BackingFilename = Path.GetFileName(queueFile);
             string[] lines = File.ReadAllLines(queueFile);
             int line = 0;
             if (Path.GetExtension(queueFile) == ".biq")
