@@ -113,11 +113,11 @@
                     <MenuItem Header="{DynamicResource string_ImportMod}">
                         <MenuItem Header="{DynamicResource string_HeaderDragDropFaster}" Style="{StaticResource MenuItemHeaderStyle}" />
                         <MenuItem Header="{DynamicResource string_ImportmodfromArchive}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
-                        <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" IsEnabled="False" />
+                        <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" Command="{Binding ImportDLCModFromGameCommand}" ToolTip="Import an already-installed DLC mod into Mod Manager" />
                     </MenuItem>
                     <MenuItem Header="{DynamicResource string_DownloadModMakermod}" Command="{Binding DownloadModMakerModCommand}"/>
                     <MenuItem Header="{DynamicResource string_ASIModManager}" Click="ASIModManager_Click" ToolTip="{DynamicResource string_ASIManagerTooltip}" />
-                    <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" />
+                    <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
                     <MenuItem Header="{DynamicResource string_BatchModInstaller}" Command="{Binding BatchModInstallerCommand}" />
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
@@ -128,7 +128,7 @@
                     <MenuItem Header="{DynamicResource string_Checkforupdates}" Command="{Binding SelectedModCheckForUpdatesCommand}" />
                     <MenuItem Header="{DynamicResource string_RestoremodfromME3Tweaks}" Command="{Binding RestoreModFromME3TweaksCommand}" />
                     <Separator />
-                    <MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />
+                    <!--<MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />--> <!-- Will implement later, maybe. Not sure -->
                     <MenuItem Header="{DynamicResource string_Developeroptions}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                         <MenuItem Header="{DynamicResource string_Metadataeditor}" IsEnabled="False" />
                         <MenuItem Header="Package mod for release" Style="{StaticResource MenuItemHeaderStyle}"/>

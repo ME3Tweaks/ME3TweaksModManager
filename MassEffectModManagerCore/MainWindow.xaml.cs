@@ -280,6 +280,7 @@ namespace MassEffectModManagerCore
         public ICommand UpdaterServiceSettingsCommand { get; set; }
         public ICommand MixinLibraryCommand { get; set; }
         public ICommand BatchModInstallerCommand { get; set; }
+        public ICommand ImportDLCModFromGameCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -312,6 +313,24 @@ namespace MassEffectModManagerCore
             UpdaterServiceSettingsCommand = new GenericCommand(OpenUpdaterServicePanelEditorMode);
             MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
             BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
+            ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
+        }
+
+        private bool CanOpenImportFromUI() => !IsLoadingMods;
+
+        private void OpenImportFromGameUI()
+        {
+            Log.Information(@"Opening Import DLC mod from game panel");
+            var importerPanel = new ImportInstalledDLCModPanel();
+            importerPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is Mod importedMod)
+                {
+                    LoadMods(importedMod);
+                }
+            };
+            ShowBusyControl(importerPanel);
         }
 
         private bool CanOpenBatchModPanel()
@@ -2269,7 +2288,7 @@ namespace MassEffectModManagerCore
                     ReleaseBusyControl();
                 }
             };
-            ShowBusyControl(modInspector); //todo: Set progress bar params
+            ShowBusyControl(modInspector);
         }
 
         private void Window_DragOver(object sender, DragEventArgs e)
