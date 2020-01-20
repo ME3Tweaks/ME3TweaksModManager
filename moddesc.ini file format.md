@@ -344,6 +344,7 @@ The altfiles descriptor value is a struct list (see above). The table below show
 |FriendlyName|String|Sets the title text of the alternate when displayed in the installation dialog.|Yes|
 |Description|String|This variable sets the description what the alternate's purpose is.|Yes|
 |CheckedByDefault|Boolean String|This value only is applied if using `COND_MANUAL`. It is used to determine the default selection state of the alternate. If this value is missing, the default value is false.|No|
+|OptionGroup|String|Sets the group this alternate file struct is part of. All alternate file structs that have the same OptionGroup value will be part of a group. Option groups can only have one option picked out of the group. Essentailly, this makes the selector become a radio button. Ensure at least one item in the group has `CheckedByDefault` set.|No|
 
 ### altdlc specification
 altdlc allows you to add a folder of files to a CustomDLC based on the installed game state. You can alternatively add an entire Custom DLC folder to the game using this specification. This is useful for automatically applying compatibility packs if your mod has known incompatibilities with another, as you can detect that and automatically reconfigure your mod to work around it. You can also have manual options to allow users to add their own developer-provided options, like lower resolution asset files.
@@ -359,3 +360,4 @@ altdlc allows you to add a folder of files to a CustomDLC based on the installed
 |FriendlyName|String|Sets the title text of the alternate when displayed in the installation dialog.|Yes|
 |Description|String|This variable sets the description what the alternate's purpose is.|Yes|
 |CheckedByDefault|Boolean String|This value only is applied if using `COND_MANUAL`. It is used to determine the default selection state of the alternate. If this value is missing, the default value is false.|No|
+|OptionGroup|String|Sets the group this alternate dlc is part of. All alternate dlc that have the same OptionGroup value will be part of a group. Option groups can only have one option picked out of the group. Essentailly, this makes the selector become a radio button. Ensure at least one item in the group has `CheckedByDefault` set.|No|
