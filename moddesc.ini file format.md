@@ -276,13 +276,52 @@ The following headers are supported, with their supported descriptors in the tab
 |TESTPATCH|BIOGame/Patches/PCConsole|3.0+|
 |BALANCE_CHANGES|See below notes|4.3+|
 
-BALANCE_CHANGES is special in that it is an additional job that supports all of normal features, but additional code is run when this task is processed to ensure the balance changes replacer ASI is installed. You should only ever use this header to target balance changes, such as follows:
+`BALANCE_CHANGES` is special in that it is an special header that is used to install a balance changes coalesced file, that is used when the Balance Changes Replacer ASI is installed. When using this header, upon mod installation, the Balance Changes Replacer ASI is automatically installed. This task only uses the `newfiles` descriptor, and only one item is allowed in the list. It must end with the .bin extension.
 
+
+```
 [BALANCE_CHANGES]
 moddir = BALANCE_CHANGES
 newfiles = ServerCoalesced.bin
-replacefiles = \Binaries\win32\asi\ServerCoalesced.bin
-The above headers support the following descriptors:
+```
+**WARNING: DO NOT USE ANY COALESCED FILE THAT IS NOT DERIVED FROM THE ORIGINAL SERVER COALESCED FILE. You may completely ruin your online profile with no way to recover it without purchasing a new copy of Mass Effect 3.**
+
+#### Supported Headers for Mass Effect 2
+|Header name|DLC Folder|Supported Versions|
+|--- |--- |--- |
+|BASEGAME|BIOGame/CookedPC|6.0+|
+|AEGIS_PACK|BIOGame/DLC/DLC_CER_02|6.0+|
+|APPEARANCE_PACK_1|BIOGame/DLC/DLC_CON_Pack01|6.0+|
+|APPEARANCE_PACK_2|BIOGame/DLC/DLC_CON_Pack02|6.0+|
+|ARC_PROJECTOR|BIOGame/DLC/DLC_CER_Arc|6.0+|
+|ARRIVAL|BIOGame/DLC/DLC_EXP_Part02|6.0+|
+|BLOOD_DRAGON_ARMOR|BIOGame/DLC/DLC_PRE_DA|6.0+|
+|CERBERUS_WEAPON_ARMOR|BIOGame/DLC/DLC_PRE_Cerberus|6.0+|
+|COLLECTORS_WEAPON_ARMOR|BIOGame/DLC/DLC_PRE_Collectors|6.0+|
+|EQUALIZER_PACK|BIOGame/DLC/DLC_MCR_03|6.0+|
+|FIREPOWER_PACK|BIOGame/DLC/DLC_MCR_01|6.0+|
+|GENESIS|BIOGame/DLC/DLC_DHME1|6.0+|
+|INCISOR|BIOGame/DLC/DLC_PRE_Incisor|6.0+|
+|INFERNO_ARMOR|BIOGame/DLC/DLC_PRE_General|6.0+|
+|KASUMI|BIOGame/DLC/DLC_HEN_MT|6.0+|
+|LAIR_OF_THE_SHADOW_BROKER|BIOGame/DLC/DLC_EXP_Part01|6.0+|
+|NORMANDY_CRASH_SITE|BIOGame/DLC/DLC_UNC_Moment01|6.0+|
+|OVERLORD|BIOGame/DLC/DLC_UNC_Pack01|6.0+|
+|RECON_HOOD|BIOGame/DLC/DLC_PRO_Pepper02|6.0+|
+|SENTRY_INTERFACE|BIOGame/DLC/DLC_PRO_Gulp01|6.0+|
+|TERMINUS_WEAPON_ARMOR|BIOGame/DLC/DLC_PRE_Gamestop|6.0+|
+|UMBRA_VISOR|BIOGame/DLC/DLC_PRO_Pepper01|6.0+|
+|ZAEED|BIOGame/DLC/DLC_HEN_VT|6.0+|
+|ME2_RCWMOD|See below notes|6.0+|
+
+`ME2_RCWMOD` is a special header that is used for **R**oad**C**rew**W**orker's ME2 Mod Manager's .me2mod files. These files are delta files for the Coalesced.ini file. M3 can handle these files using this task. The only supported descriptor for this task is `modfile`, which is the filename of the .me2mod that resides next to the moddesc.ini file. RCW mods in Mod Manager must only contain a single 'mod' in their .me2mod file description. Multiple `###mod` directives in the .me2mod file is not allowed - import the .me2mod through Mod Manager to split them into multiple single mods.
+
+#### Supported Headers for Mass Effect
+|Header name|Game Folder|Supported Versions|
+|--- |--- |--- |
+|BASEGAME|BIOGame/CookedPC|6.0+|
+|BRING_DOWN_THE_SKY|DLC/DLC_UNC|6.0+|
+|PINNACLE_STATION|DLC/DLC_Vegas|6.0+|
 
 ### Official DLC Descriptors
 Note that `newfiles` and `replacefiles` behavior differs if `gamedirectorystructure` is set to true. See info after this table for more information.
