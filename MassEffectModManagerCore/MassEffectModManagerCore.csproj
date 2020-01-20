@@ -54,6 +54,7 @@
     <None Remove="images\modmaker.png" />
     <None Remove="images\nexusmods_scenethemed.png" />
     <None Remove="images\origin.png" />
+    <None Remove="images\terminal.png" />
     <None Remove="images\windowicon.png" />
     <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
     <None Remove="modmanager\asi\manifest.xml" />
@@ -101,6 +102,9 @@
     <None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
     <None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
     <None Remove="updater\ME3TweaksUpdater.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\terminal.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="appicon.ico" />

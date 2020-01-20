@@ -67,8 +67,8 @@
     <system:String x:Key="string_Grantswritepermissionstogamedirectories">Grants write permissions to game directories</system:String>
     <system:String x:Key="string_RunAutoTOC">Run AutoTOC on game (ME3)</system:String>
     <system:String x:Key="string_RunsAutoTOCToolTip">Runs AutoTOC on the current ME3 target (or first ME3 one in the list if the current target is not ME3)</system:String>
-    <system:String x:Key="string_EnableconsoleinME1">Console Command Keybinder</system:String>
-    <system:String x:Key="string_EnableME1ConsoleTooltip">Allows you to configure what keys are used for opening the console in each game</system:String>
+    <system:String x:Key="string_consoleCommandKeybinder">Console Key Keybinder</system:String>
+    <system:String x:Key="string_tooltip_consoleCommandKeybinder">Allows you to configure what keys are used for opening the console in each game</system:String>
     <system:String x:Key="string_Additionalmoddingtools">Additional modding tools</system:String>
     <system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
     <system:String x:Key="string_ALOTInstallerTooltip">Installer for A Lot Of Textures, a graphical upgrade mod supporting all three games</system:String>

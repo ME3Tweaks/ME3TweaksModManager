@@ -269,7 +269,7 @@ namespace MassEffectModManagerCore
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
         public ICommand ME3UICompatibilityPackGeneratorCommand { get; set; }
-        public ICommand EnableME1ConsoleCommand { get; set; }
+        public ICommand ConsoleKeyKeybinderCommand { get; set; }
         public ICommand LoginToNexusCommand { get; set; }
         public GenericCommand EndorseSelectedModCommand { get; set; }
         public ICommand CreateTestArchiveCommand { get; set; }
@@ -302,7 +302,7 @@ namespace MassEffectModManagerCore
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new GenericCommand(RunAutoTOCOnTarget, HasME3Target);
             ME3UICompatibilityPackGeneratorCommand = new GenericCommand(RunCompatGenerator, CanRunCompatGenerator);
-            EnableME1ConsoleCommand = new GenericCommand(EnableME1ConsoleWrapper, CanEnableME1Console);
+            ConsoleKeyKeybinderCommand = new GenericCommand(OpenConsoleKeyKeybinder, CanOpenConsoleKeyKeybinder);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
             CreateTestArchiveCommand = new GenericCommand(CreateTestArchive, CanCreateTestArchive);
@@ -314,6 +314,18 @@ namespace MassEffectModManagerCore
             MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
             BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
             ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
+        }
+
+        private bool CanOpenConsoleKeyKeybinder()
+        {
+            return InstallationTargets.Any();
+        }
+
+        private void OpenConsoleKeyKeybinder()
+        {
+            var consoleKeybindingPanel = new ConsoleKeybindingPanel();
+            consoleKeybindingPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(consoleKeybindingPanel);
         }
 
         private bool CanOpenImportFromUI() => !IsLoadingMods;

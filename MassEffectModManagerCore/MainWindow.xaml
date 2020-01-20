@@ -128,7 +128,8 @@
                     <MenuItem Header="{DynamicResource string_Checkforupdates}" Command="{Binding SelectedModCheckForUpdatesCommand}" />
                     <MenuItem Header="{DynamicResource string_RestoremodfromME3Tweaks}" Command="{Binding RestoreModFromME3TweaksCommand}" />
                     <Separator />
-                    <!--<MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />--> <!-- Will implement later, maybe. Not sure -->
+                    <!--<MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />-->
+                    <!-- Will implement later, maybe. Not sure -->
                     <MenuItem Header="{DynamicResource string_Developeroptions}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                         <MenuItem Header="{DynamicResource string_Metadataeditor}" IsEnabled="False" />
                         <MenuItem Header="Package mod for release" Style="{StaticResource MenuItemHeaderStyle}"/>
@@ -199,7 +200,11 @@
                     </MenuItem>
                     <MenuItem Header="{DynamicResource string_Grantwriteaccesstogamedirectories}" Command="{Binding GrantWriteAccessCommand}" ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}" />
                     <MenuItem Header="{DynamicResource string_RunAutoTOC}" Command="{Binding AutoTOCCommand}" ToolTip="{DynamicResource string_RunsAutoTOCToolTip}" />
-                    <MenuItem Header="{DynamicResource string_EnableconsoleinME1}" Command="{Binding EnableME1ConsoleCommand}" ToolTip="{DynamicResource string_EnableME1ConsoleTooltip}" />
+                    <MenuItem Header="{DynamicResource string_consoleCommandKeybinder}" Command="{Binding ConsoleKeyKeybinderCommand}" ToolTip="{DynamicResource string_tooltip_consoleCommandKeybinder}">
+                        <MenuItem.Icon>
+                            <Image Source="/images/terminal.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <MenuItem Header="{DynamicResource string_Additionalmoddingtools}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_ALOTInstaller}" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_ALOTInstallerTooltip}">
                         <MenuItem.Icon>
