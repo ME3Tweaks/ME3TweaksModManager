@@ -41,7 +41,7 @@ M3 mods are defined as folders in a mod user's mod library. In the library there
 ![Mod folder structure](https://i.imgur.com/vAZUjPa.png)
 
 #### Backwards compatibility
-M3 is backwards compatible with Mass Effect 3 Mod Manager mods and it's older versions. This is done through a system call **moddesc version targeting**. At the top of every moddesc.ini file, there is a section header of **[ModManager]**, and underneath is a descriptor named _cmmver_. The value you assign to cmmver will change how M3 handles your mod. I strive to ensure all mods targeting old versions remain functional.
+M3 is backwards compatible with Mass Effect 3 Mod Manager mods and it's older versions. This is done through a system called **moddesc version targeting**. At the top of every moddesc.ini file, there is a section header of **[ModManager]**, and underneath is a descriptor named _cmmver_. The value you assign to cmmver will change how M3 handles your mod. I strive to ensure all mods targeting old versions remain functional.
 
 ![cmmver](https://i.imgur.com/nmHxJIs.png)
 
