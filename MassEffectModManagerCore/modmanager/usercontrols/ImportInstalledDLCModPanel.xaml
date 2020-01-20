@@ -11,7 +11,7 @@
              Width="500">
     <DockPanel>
         <TextBlock Text="Import an installed DLC mod" FontWeight="Bold" FontSize="20" DockPanel.Dock="Top" TextAlignment="Center"/>
-        <TextBlock Text="You can import a mod from a game installation into Mod Manager using this importer. Mods imported this way won't have configuration options or support updates. Import mods through Mod Manager for these features." 
+        <TextBlock Text="You can import a mod from a game installation into Mod Manager using this importer, which will allow you to install the mod quickly and easily later. Mods imported this way don't support configuration options, updates, and other Mod Manager features. Import mods from archive for full feature support." 
                    TextWrapping="Wrap" DockPanel.Dock="Top" TextAlignment="Center" Margin="0,0,0,5"/>
         <ComboBox ItemsSource="{Binding InstallationTargets}" HorizontalContentAlignment="Stretch" IsEditable="False" SelectedItem="{Binding SelectedTarget}"
                   Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="{DynamicResource string_tooltip_currentTarget}"
@@ -29,6 +29,10 @@
             <Button Grid.Row="0" Grid.Column="1" Content="Import mod" Command="{Binding ImportSelectedDLCFolderCommand}" HorizontalAlignment="Right"/>
             <Button Grid.Row="1" Grid.Column="1" Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Margin="0,3,0,0"/>
         </Grid>
+        <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding SelectedTarget.ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Text="This installation has been texture modded" FontWeight="Bold" Foreground="Red"/>
+            <TextBlock Text="You cannot import mods from a game installation that has had texture mods installed into it." TextWrapping="Wrap" DockPanel.Dock ="Bottom"  Foreground="Red"/>
+        </StackPanel>
         <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding CurrentModInTPMI, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
             <TextBlock Text="This mod has not been cataloged by ME3Tweaks yet" FontWeight="Bold"/>
             <TextBlock Text="This mod does not appear to be part of the ME3Tweaks Third Party Mod Identification service (TPMI). This service helps users and developers identify mods in Mod Manager and in other tools. Please enter the following information. This information will be sent to ME3Tweaks for review before it is added to the TPMI service." TextWrapping="Wrap" DockPanel.Dock ="Bottom"/>

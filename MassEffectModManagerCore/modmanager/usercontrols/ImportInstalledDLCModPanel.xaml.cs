@@ -15,11 +15,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using ByteSizeLib;
+using Flurl;
+using Flurl.Http;
 using IniParser.Model;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
+using Pathoschild.FluentNexus.Models;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -52,7 +57,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ImportSelectedDLCFolderCommand = new GenericCommand(ImportSelectedFolder, CanImportSelectedFolder);
         }
 
-        private bool CanImportSelectedFolder() => SelectedDLCFolder != null && !string.IsNullOrWhiteSpace(ModNameText);
+        private bool CanImportSelectedFolder() => SelectedDLCFolder != null && !string.IsNullOrWhiteSpace(ModNameText) && !SelectedTarget.ALOTInstalled;
 
         private void ImportSelectedFolder()
         {
@@ -107,13 +112,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.DoWork += ImportDLCFolder_BackgroundThread;
             bw.RunWorkerCompleted += (a, b) =>
             {
+                Analytics.TrackEvent("Imported a mod from game installation", new Dictionary<string, string>()
+                {
+                    {"Game", SelectedTarget.Game.ToString()},
+                    {"Folder", SelectedDLCFolder.DLCFolderName}
+                });
                 OperationInProgress = false;
                 OnClosing(new DataEventArgs(b.Result));
             };
             bw.RunWorkerAsync();
         }
 
-        private void ImportDLCFolder_BackgroundThread(object sender, DoWorkEventArgs e)
+        private async void ImportDLCFolder_BackgroundThread(object sender, DoWorkEventArgs e)
         {
             OperationInProgress = true;
             var sourceDir = Path.Combine(MEDirectories.DLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
@@ -161,6 +171,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Mod m = new Mod(moddescPath, Mod.MEGame.ME3);
             e.Result = m;
             Log.Information("Mod import complete.");
+
+            if (!CurrentModInTPMI)
+            {
+                //Submit telemetry to ME3Tweaks
+                try
+                {
+                    TPMITelemetrySubmissionForm.TelemetryPackage tp = TPMITelemetrySubmissionForm.GetTelemetryPackageForDLC(SelectedTarget.Game,
+                        MEDirectories.DLCPath(SelectedTarget),
+                        SelectedDLCFolder.DLCFolderName,
+                        ModNameText,
+                        @"N/A",
+                        ModSiteText,
+                        null
+                    );
+
+                    tp.SubmitPackage();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(@"Cannot submit telemetry: " + ex.Message);
+                }
+            }
         }
 
         public int ProgressBarValue { get; set; }
@@ -170,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public void OnSelectedDLCFolderChanged()
         {
             ModSiteText = "";
-            if (SelectedDLCFolder != null)
+            if (SelectedDLCFolder != null && !SelectedTarget.ALOTInstalled)
             {
                 App.ThirdPartyIdentificationService[SelectedTarget.Game.ToString()].TryGetValue(SelectedDLCFolder.DLCFolderName, out var tpmi);
                 CurrentModInTPMI = tpmi != null;
@@ -182,6 +214,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     ModNameText = "";
                 }
+
+                //Check ALOT
             }
             else
             {

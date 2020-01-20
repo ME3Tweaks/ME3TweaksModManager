@@ -44,7 +44,7 @@
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="1">
                 <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_failedMods}" FontWeight="Bold"/>
-                <ListBox Name="ModsList_ListBox" ItemsSource="{Binding FailedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged">
+                <ListBox Name="ModsList_ListBox" ItemsSource="{Binding FailedMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" BorderThickness="1">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
