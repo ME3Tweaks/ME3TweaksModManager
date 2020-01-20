@@ -1,5 +1,7 @@
 THIS DOCUMENT IS A WORK IN PROGRESS FOR MOD MANAGER 6
 
+Current as of Build 103.
+
 **This document is long! Do not let that dissuade you. It is just very thorough.**
 
 ME3Tweaks Mod Manager (which will be written as M3 from now on in this document) allows users to organize mods as well as deploy them into the each game of the Mass Effect Trilogy. It is designed to be friendly for users and powerful for developers - for example, as a developer, you do not need to worry about users not installing the binkw32 bypass or running AutoTOC - M3 takes care of this all in the background for users. You can focus on developing your mods and my program will take care of the user side of things.
