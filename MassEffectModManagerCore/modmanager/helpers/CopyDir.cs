@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         continue;
                     }
                 }
-                
+
                 string displayName = fi.Name;
                 //if (path.ToLower().EndsWith(".sfar") || path.ToLower().EndsWith(".tfc"))
                 //{
@@ -58,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 //    displayName += " (" + ByteSize.FromBytes(length) + ")";
                 //}
                 var shouldCopy = aboutToCopyCallback?.Invoke(fi.FullName);
-                if (shouldCopy.HasValue && shouldCopy.Value)
+                if (aboutToCopyCallback == null || (shouldCopy.HasValue && shouldCopy.Value))
                 {
                     try
                     {

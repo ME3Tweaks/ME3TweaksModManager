@@ -210,7 +210,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 PopulateUI();
             }
-            SelectedTarget.PopulateDLCMods(deleteConfirmationCallback, notifyDeleted);
+            SelectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDeleted);
 
             bool restoreBasegamefileConfirmationCallback(string filepath)
             {
@@ -368,15 +368,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return Application.Current.FindResource(AdonisUI.Brushes.ForegroundBrush) as SolidColorBrush;
                 }
             }
-
+            /// <summary>
+            /// Indicates that this mod was installed by ALOT Installer or Mod Manager.
+            /// </summary>
+            public bool InstalledByManagedSolution { get; private set; }
             public void OnDLCFolderNameChanged()
             {
                 dlcFolderPath = Path.Combine(Directory.GetParent(dlcFolderPath).FullName, DLCFolderName);
-                parseInstalledBy(DLCFolderName.StartsWith('x'));
+                parseInstalledBy(DLCFolderName.StartsWith('x'), false);
                 TriggerPropertyChangedFor(nameof(TextColor));
             }
 
-            public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted)
+            public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, bool modNamePrefersTPMI)
             {
                 this.dlcFolderPath = dlcFolderPath;
                 this.game = game;
@@ -389,7 +392,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     ModName = DLCFolderName;
                 }
-                parseInstalledBy(DLCFolderName.StartsWith('x'));
+                parseInstalledBy(DLCFolderName.StartsWith('x'), modNamePrefersTPMI);
                 this.deleteConfirmationCallback = deleteConfirmationCallback;
                 this.notifyDeleted = notifyDeleted;
                 DeleteCommand = new RelayCommand(DeleteDLCMod, CanDeleteDLCMod);
@@ -397,12 +400,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             }
 
-            private void parseInstalledBy(bool disabled)
+            private void parseInstalledBy(bool disabled, bool modNamePrefersTPMI)
             {
                 DLCFolderNameString = DLCFolderName.TrimStart('x'); //this string is not to show "Disabled"
                 var metaFile = Path.Combine(dlcFolderPath, @"_metacmm.txt");
                 if (File.Exists(metaFile))
                 {
+                    InstalledByManagedSolution = true;
                     InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
                     //Parse MetaCMM
                     var lines = File.ReadAllLines(metaFile).ToList();
@@ -416,7 +420,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (line != ModName)
                                 {
                                     DLCFolderNameString += $@" ({ModName})";
-                                    ModName = line;
+                                    if (!modNamePrefersTPMI || ModName == null)
+                                    {
+                                        ModName = line;
+                                    }
                                 }
                                 break;
                             case 1:

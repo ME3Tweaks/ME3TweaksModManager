@@ -491,7 +491,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        public static bool DeleteFilesAndFoldersRecursively(string targetDirectory)
+        public static bool DeleteFilesAndFoldersRecursively(string targetDirectory, bool throwOnFailed = false)
         {
             if (!Directory.Exists(targetDirectory))
             {
@@ -510,13 +510,18 @@ namespace MassEffectModManagerCore
                 catch (Exception e)
                 {
                     Log.Error($"Unable to delete file: {file}. It may be open still: {e.Message}");
+                    if (throwOnFailed)
+                    {
+                        throw;
+                    }
+
                     return false;
                 }
             }
 
             foreach (string subDir in Directory.GetDirectories(targetDirectory))
             {
-                result &= DeleteFilesAndFoldersRecursively(subDir);
+                result &= DeleteFilesAndFoldersRecursively(subDir, throwOnFailed);
             }
 
             Thread.Sleep(10); // This makes the difference between whether it works or not. Sleep(0) is not enough.
@@ -529,6 +534,10 @@ namespace MassEffectModManagerCore
             catch (Exception e)
             {
                 Log.Error($"Unable to delete directory: {targetDirectory}. It may be open still or may not be actually empty: {e.Message}");
+                if (throwOnFailed)
+                {
+                    throw;
+                }
                 return false;
             }
             return result;

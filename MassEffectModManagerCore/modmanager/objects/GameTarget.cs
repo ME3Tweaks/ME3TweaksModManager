@@ -228,11 +228,11 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public ObservableCollectionExtended<InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
 
-        public void PopulateDLCMods(Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted)
+        public void PopulateDLCMods(bool includeDisabled, Func<InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
         {
             UIInstalledDLCMods.ClearEx();
             var dlcDir = MEDirectories.DLCPath(this);
-            var installedMods = MEDirectories.GetInstalledDLC(this, true).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted)).ToList();
+            var installedMods = MEDirectories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList();
             UIInstalledDLCMods.AddRange(installedMods);
         }
 
