@@ -207,12 +207,6 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                 }
 
-                //todo: implement multimap
-                if (properties.TryGetValue(@"MultiMappingFile", out string multifilemapping))
-                {
-                    MultiMappingFile = multifilemapping.TrimStart('\\', '/');
-                }
-
                 if (properties.TryGetValue(@"AltFile", out string altfile))
                 {
                     AltFile = altfile;
