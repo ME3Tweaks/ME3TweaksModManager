@@ -4,6 +4,7 @@ using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ using Serilog;
 
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -29,6 +31,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public string ALOTStatusString { get; set; }
         public GameTarget SelectedTarget { get; set; }
+        public GameTarget PreviousTarget { get; set; }
         public string BackupLocationString { get; set; }
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<InstalledDLCMod> DLCModsInstalled { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
@@ -61,11 +64,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RemoveTarget()
         {
             Utilities.RemoveCachedTarget(SelectedTarget);
-            OnClosing(new DataEventArgs(@"ReloadTargets"));
+            if (SelectedTarget != null)
+                SelectedTarget.ModifiedBasegameFilesView.Filter = null; OnClosing(new DataEventArgs(@"ReloadTargets"));
         }
 
         private void ClosePanel()
         {
+            if (SelectedTarget != null)
+                SelectedTarget.ModifiedBasegameFilesView.Filter = null;
             OnClosing(DataEventArgs.Empty);
         }
 
@@ -76,11 +82,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress; //check if ifles being restored
         }
 
+        public string ModifiedFilesFilterText { get; set; }
+
+        private bool FilterBasegameObject(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(ModifiedFilesFilterText) && obj is GameTarget.ModifiedFileObject mobj)
+            {
+                return mobj.FilePath.Contains(ModifiedFilesFilterText, StringComparison.InvariantCulture);
+            }
+            return true;
+        }
+
+        public void OnModifiedFilesFilterTextChanged()
+        {
+            SelectedTarget?.ModifiedBasegameFilesView.Refresh();
+        }
+
         private void RestoreAllBasegame()
         {
             bool restore = false;
-
-
             if (SelectedTarget.ALOTInstalled)
             {
                 if (!Settings.DeveloperMode)
@@ -120,6 +140,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bw.RunWorkerCompleted += (a, b) =>
                 {
                     RestoreAllBasegameInProgress = false;
+                    if (SelectedTarget.Game == Mod.MEGame.ME3)
+                    {
+                        AutoTOC.RunTOCOnGameTarget(SelectedTarget);
+                    }
                     CommandManager.InvalidateRequerySuggested();
                 };
                 bw.RunWorkerAsync();
@@ -161,34 +185,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
-
-        private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DLCModsInstalled.ClearEx();
-
-            //Get installed mod information
-            if (e.AddedItems.Count > 0)
-            {
-                SelectedTarget = e.AddedItems[0] as GameTarget;
-                PopulateUI();
-                var backupLoc = Utilities.GetGameBackupPath(SelectedTarget.Game);
-                if (backupLoc != null)
-                {
-                    BackupLocationString = M3L.GetString(M3L.string_interp_backupAtX, backupLoc);
-                }
-                else
-                {
-                    BackupLocationString = M3L.GetString(M3L.string_noBackupForThisGame);
-                }
-            }
-            else
-            {
-                SelectedTarget = null;
-                BackupLocationString = null;
-            }
-        }
-
-
 
         private void PopulateUI()
         {
@@ -332,6 +328,43 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 notifyStartingBasegameFileRestoreCallback,
                 notifyRestoredCallback);
             SFARBeingRestored = false;
+        }
+
+        public void OnSelectedTargetChanged()
+        {
+            if (PreviousTarget != null)
+            {
+                PreviousTarget.ModifiedBasegameFilesView.Filter = null;
+            }
+            DLCModsInstalled.ClearEx();
+
+            //Get installed mod information
+            if (SelectedTarget != null)
+            {
+                PopulateUI();
+                var backupLoc = Utilities.GetGameBackupPath(SelectedTarget.Game);
+                if (backupLoc != null)
+                {
+                    BackupLocationString = M3L.GetString(M3L.string_interp_backupAtX, backupLoc);
+                }
+                else
+                {
+                    BackupLocationString = M3L.GetString(M3L.string_noBackupForThisGame);
+                }
+
+                SelectedTarget.ModifiedBasegameFilesView.Filter = FilterBasegameObject;
+            }
+            else
+            {
+                BackupLocationString = null;
+            }
+
+            PreviousTarget = SelectedTarget;
+        }
+
+        private void TargetChanged(GameTarget oldTarget, GameTarget newTarget)
+        {
+
         }
 
         public class InstalledDLCMod : INotifyPropertyChanged
@@ -511,6 +544,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenALOTInstaller_Click(object sender, RequestNavigateEventArgs e)
         {
+            if (SelectedTarget != null)
+                SelectedTarget.ModifiedBasegameFilesView.Filter = null;
             OnClosing(new DataEventArgs(@"ALOTInstaller"));
         }
 
@@ -523,6 +558,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (e.Key == Key.Escape && CanClose())
             {
+                if (SelectedTarget != null)
+                    SelectedTarget.ModifiedBasegameFilesView.Filter = null;
                 OnClosing(DataEventArgs.Empty);
             }
         }

@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public AutoTOC(Mod mod)
         {
-            //TODO: Implement this. Possibly make it static.
+            //TODO: Implement this. Possibly make it static so no UI is used. Meant for mod distribution
             DataContext = this;
             if (mod.Game != Mod.MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");
             this.modModeMod = mod;
@@ -61,13 +61,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Implement mod-only autotoc, for deployments
         }
 
-        private bool RunGameWideAutoTOC()
+        public static bool RunTOCOnGameTarget(GameTarget target, Action<int> percentDoneCallback = null)
         {
-            Debug.WriteLine(@"FULL AUTOTOC MODE - Updating Unpacked and SFAR TOCs");
+            Log.Information("Autotocing game: " + target.TargetPath);
 
             //get toc target folders, ensuring we clean up the inputs a bit.
-            string baseDir = Path.GetFullPath(Path.Combine(gameWideModeTarget.TargetPath, @"BIOGame"));
-            string dlcDirRoot = MEDirectories.DLCPath(gameWideModeTarget);
+            string baseDir = Path.GetFullPath(Path.Combine(target.TargetPath, @"BIOGame"));
+            string dlcDirRoot = MEDirectories.DLCPath(target);
             if (!Directory.Exists(dlcDirRoot))
             {
                 Log.Error(@"Specified game directory does not appear to be a Mass Effect 3 root game directory (DLC folder missing).");
@@ -76,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             var tocTargets = (new DirectoryInfo(dlcDirRoot)).GetDirectories().Select(x => x.FullName).Where(x => Path.GetFileName(x).StartsWith(@"DLC_", StringComparison.OrdinalIgnoreCase)).ToList();
             tocTargets.Add(baseDir);
-            tocTargets.Add(Path.Combine(gameWideModeTarget.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar"));
+            tocTargets.Add(Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar"));
 
             //Debug.WriteLine("Found TOC Targets:");
             tocTargets.ForEach(x => Debug.WriteLine(x));
@@ -146,14 +146,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 done++;
-                Percent = (int)Math.Floor(done * 100.0 / tocTargets.Count);
+                percentDoneCallback?.Invoke((int)Math.Floor(done * 100.0 / tocTargets.Count));
             }
             return true;
         }
 
-        private void CreateUnpackedTOC(string dlcDirectory)
+        public static void CreateUnpackedTOC(string dlcDirectory)
         {
-            Debug.WriteLine(@"Creating unpacked toc for" + dlcDirectory);
+            Log.Information(@"Creating unpacked toc for " + dlcDirectory);
+            if (dlcDirectory.Contains("DLC_CON_END") || dlcDirectory.Contains("DLC_EXP_Pack002"))
+            {
+                Debugger.Break();
+                throw new Exception("ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
+
+            }
             var watch = System.Diagnostics.Stopwatch.StartNew();
             MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
             if (ms != null)
@@ -220,7 +226,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (mode == AutoTOCMode.MODE_GAMEWIDE)
                 {
-                    RunGameWideAutoTOC();
+                    RunTOCOnGameTarget(gameWideModeTarget, x => Percent = x);
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>

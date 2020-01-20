@@ -402,9 +402,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-
                         <TextBlock Text="{DynamicResource string_AvailableMods}" FontWeight="Bold" VerticalAlignment="Center"/>
-
                     </DockPanel>
 
                     <StackPanel Name="FailedModsPopupPanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">

@@ -346,18 +346,28 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
-                    ReleaseBusyControl(); //release control
+                    //Install queue
 
                     bool continueInstalling = true;
-                    int modIndex = -1;
+                    int modIndex = 0;
                     //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
                     void modInstalled(bool successful)
                     {
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
-                            modIndex++;
                             ApplyMod(queue.ModsToInstall[modIndex], queue.Target, true, modInstalled);
+                            modIndex++;
+                        }
+                        else if (SelectedGameTarget.Game == Mod.MEGame.ME3)
+                        {
+                            //End
+                            var autoTocUI = new AutoTOC(SelectedGameTarget);
+                            autoTocUI.Close += (a1, b1) =>
+                            {
+                                ReleaseBusyControl();
+                            };
+                            ShowBusyControl(autoTocUI);
                         }
                     }
 
@@ -805,8 +815,7 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            ShowBusyControl(installationInformation); //Todo: Support the progress bar updates in the queue
-                                                      //installationInformation.ShowInfo();
+            ShowBusyControl(installationInformation);
         }
 
         private bool CanShowInstallInfo()
@@ -2403,7 +2412,7 @@ namespace MassEffectModManagerCore
 
         private void Documentation_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://me3tweaks.com/modmanager/documentation/moddesc");
+            Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/blob/master/moddesc.ini%20file%20format.md");
         }
 
         private void OpenMemoryAnalyzer_Click(object sender, RoutedEventArgs e)

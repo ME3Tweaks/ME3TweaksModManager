@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -80,12 +81,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                         MEUITMInstalled = true;
                         MEUITMVersion = alotInfo.MEUITMVER;
                     }
-                } else
+                }
+                else
                 {
                     ALOTInstalled = false;
-                    ALOTVersion = null; 
+                    ALOTVersion = null;
                     MEUITMInstalled = false;
-                    MEUITMVersion = 0; 
+                    MEUITMVersion = 0;
                 }
                 Log.Information(@"Getting game source for target " + TargetPath);
                 var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
@@ -201,6 +203,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
         public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
+        public ICollectionView ModifiedBasegameFilesView => CollectionViewSource.GetDefaultView(ModifiedBasegameFiles);
 
         public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback,
             Func<string, bool> restoreSfarConfirmationCallback,
