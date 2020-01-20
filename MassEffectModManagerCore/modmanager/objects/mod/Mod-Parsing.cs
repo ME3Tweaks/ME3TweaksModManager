@@ -295,6 +295,18 @@ namespace MassEffectModManagerCore.modmanager
             Game = expectedGame; //we will assign this later. This is for startup errors only
             var parser = new IniDataParser();
             var iniData = parser.Parse(iniText);
+
+            if (int.TryParse(iniData[@"ModManager"][@"minbuild"], out int minBuild))
+            {
+                if (App.BuildNumber < minBuild)
+                {
+                    ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
+                    Log.Error($"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
+                    LoadFailedReason = $"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.";
+                    return; //Won't set valid
+                }
+            }
+
             if (double.TryParse(iniData[@"ModManager"][@"cmmver"], out double parsedModCmmVer))
             {
                 ModDescTargetVersion = parsedModCmmVer;
