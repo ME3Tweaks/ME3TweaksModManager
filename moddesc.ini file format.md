@@ -83,7 +83,7 @@ modsite = http://example.com
 sourcedirs = DLC_YOUR_NAME_HERE
 destdirs = DLC_YOUR_NAME_HERE
 ```
-**modver** is be the version number of your mod.
+**modver** is the version number of your mod. Ensure it is follows one of these formats: W, W.X, W.X.Y, or W.X.Y.Z.
 
 #### If targeting cmmver 6 or higher
 The value should be a version number, such as _1.0.1_, _1.2.4.11_ or _1.2_, **but not 1**). A single value without a digit is not a version number. 
