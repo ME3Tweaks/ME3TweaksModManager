@@ -22,23 +22,40 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class MixinManager : MMBusyPanelBase
     {
         public ObservableCollectionExtended<Mixin> AvailableOfficialMixins { get; set; } = new ObservableCollectionExtended<Mixin>();
-        public Mixin SelectedMixin { get; private set; }
+        public Mixin SelectedMixin { get; set; }
 
         public MixinManager()
         {
             DataContext = this;
             MixinHandler.LoadME3TweaksPackage();
             AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x => x.PatchName));
+            ResetMixinsUIState();
             LoadCommands();
             InitializeComponent();
         }
 
-        public ICommand CloseCommand;
+        private void ResetMixinsUIState()
+        {
+            foreach (var m in AvailableOfficialMixins)
+            {
+                m.UISelectedForUse = false;
+            }
+        }
+
+        public ICommand CloseCommand { get; set; }
+        public ICommand ToggleSelectedMixinCommand { get; set; }
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(ClosePanel, CanClosePanel);
+            ToggleSelectedMixinCommand = new GenericCommand(ToggleSelectedMixin, MixinIsSelected);
         }
 
+        private void ToggleSelectedMixin()
+        {
+            SelectedMixin.UISelectedForUse = !SelectedMixin.UISelectedForUse;
+        }
+
+        private bool MixinIsSelected() => SelectedMixin != null;
         private bool CanClosePanel() => true;
 
         private void ClosePanel()
@@ -56,21 +73,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // throw new NotImplementedException();
         }
 
-        private void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void OnSelectedMixinChanged()
         {
 
         }
-
-        private void MixinList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0)
-            {
-                SelectedMixin = (Mixin)e.AddedItems[0];
-            }
-            else
-            {
-                SelectedMixin = null;
-            }
-        }
+        //private void MixinList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (e.AddedItems.Count > 0)
+        //    {
+        //        SelectedMixin = (Mixin)e.AddedItems[0];
+        //    }
+        //    else
+        //    {
+        //        SelectedMixin = null;
+        //    }
+        //}
     }
 }

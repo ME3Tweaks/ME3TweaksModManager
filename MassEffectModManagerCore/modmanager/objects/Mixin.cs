@@ -1,8 +1,11 @@
-﻿using System;
+﻿using MassEffectModManagerCore.ui;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Windows.Input;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -11,8 +14,10 @@ namespace MassEffectModManagerCore.modmanager.objects
     /// MixIns are patches that can be stacked onto the same file multipe times as long as the file size does not change.
     /// They are powered by JojoDiff patch files and applied through the JPatch class
     /// </summary>
-    public class Mixin
+    public class Mixin : INotifyPropertyChanged
     {
+        //UI ITEMS
+        public bool UISelectedForUse { get; set; }
         public string PatchName { get; set; }
         public string PatchDesc { get; set; }
         public string PatchDeveloper { get; set; }
@@ -41,5 +46,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return sb.ToString();
             }
         }
+
+        //public ICommand ToggleSelectedCommand { get; }
+        public Mixin()
+        {
+            //ToggleSelectedCommand = new GenericCommand(ToggleUISelected);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        //private void ToggleUISelected()
+        //{
+        //    UISelectedForUse = !UISelectedForUse;
+        //}
     }
 }

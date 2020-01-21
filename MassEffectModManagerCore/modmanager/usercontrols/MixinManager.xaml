@@ -7,25 +7,31 @@
              mc:Ignorable="d" 
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                        d:DesignHeight="450" d:DesignWidth="800"
                        Width="700" Height="500">
     <UserControl.Resources>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     </UserControl.Resources>
-    <DockPanel>
+    <DockPanel MaxWidth="700">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0" >
 
-            <Button MinWidth="70" Content="{DynamicResource string_restoreFromME3Tweaks}" Margin="5,0,0,0" Command="{Binding RestoreSelectedModCommand}" Padding="7,4"/>
+            <xctk:DropDownButton MinWidth="70" Margin="5,0,0,0" Content="Compile..." Command="{Binding RestoreSelectedModCommand}" Padding="7,4">
+                <xctk:DropDownButton.DropDownContent>
+                    <StackPanel>
+                        <Button Content="As a new mod" HorizontalContentAlignment="Left" ToolTip="Generates a new Mod Manager mod with these Mixins.&#10;Files are pulled from vanilla backup"/>
+                        <Button Content="Into existing mod" HorizontalContentAlignment="Left" ToolTip="Applies the Mixins to a mod you specify.&#10;Files in the mod are patched if the mod already uses them.&#10;Files not used by the mod are pulled from vanilla backup"/>
+                    </StackPanel>
+                </xctk:DropDownButton.DropDownContent>
+            </xctk:DropDownButton>
             <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Command="{Binding CloseCommand}" Padding="7,4"/>
         </StackPanel>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="7"/>
-                <ColumnDefinition Width="270"/>
+                <ColumnDefinition Width="280" MinWidth="140" MaxWidth="450"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="7"/>
+                <ColumnDefinition Width="*" MinWidth="50"/>
+                <!--<ColumnDefinition Width="7"/>-->
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="3"/>
@@ -37,24 +43,33 @@
                 <RowDefinition Height="3"/>
             </Grid.RowDefinitions>
             <!-- Header Panel -->
-            <TextBlock DockPanel.Dock="Top" Text="Mixin Manager" Grid.Row="1" Grid.Column="1" TextAlignment="Center" Grid.ColumnSpan="3" FontSize="22" FontWeight="Bold"/>
-            <TextBlock Text="Mixins are premade patch files that can be stacked onto each other as long as the filesize does not change.&#10;Mixins are currently only available for Mass Effect 3." Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" TextAlignment="Center" />
+            <TextBlock Text="Mixin Manager" Grid.Row="1" Grid.Column="0" TextAlignment="Center" Grid.ColumnSpan="4" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change.&#10;Mixins are currently only available for Mass Effect 3." 
+                       Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" TextAlignment="Center" />
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
-            <DockPanel Grid.Row="5" Grid.Column="1">
+            <DockPanel Grid.Row="5" Grid.Column="0">
                 <TextBlock DockPanel.Dock="Top" Text="Available Mixins" FontWeight="Bold"/>
-                <ListBox Name="MixinList_ListBox" ItemsSource="{Binding AvailableOfficialMixins}" SelectionChanged="MixinList_ListBox_OnSelectionChanged">
+                <ListBox Name="MixinList_ListBox" ItemsSource="{Binding AvailableOfficialMixins}" SelectedItem="{Binding SelectedMixin}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox/>
+                                <CheckBox IsChecked="{Binding UISelectedForUse}"/>
                                 <TextBlock Text="{Binding PatchName}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    <ListBox.Resources>
+                        <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                            <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxWithoutRippleStyle}" />
+                        </Style>
+                    </ListBox.Resources>
+                    <ListBox.InputBindings>
+                        <KeyBinding Key="Space" Command="{Binding ToggleSelectedMixinCommand}" />
+                    </ListBox.InputBindings>
                 </ListBox>
             </DockPanel>
-            <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch" />
-            <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2">
+            <GridSplitter Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" />
+            <DockPanel Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2">
                 <TextBlock DockPanel.Dock="Top" Text="Patch Description" FontWeight="Bold"/>
                 <!--<StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                     <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
@@ -64,7 +79,8 @@
                     </TextBlock>
                 </StackPanel>-->
                 <TextBox IsReadOnly="True" IsReadOnlyCaretVisible="False" 
-                         Text="{Binding SelectedMixin.UIText, Mode=OneWay}" TextWrapping="Wrap" VerticalContentAlignment="Top" HorizontalContentAlignment="Left"/>
+                         Text="{Binding SelectedMixin.UIText, Mode=OneWay}" 
+                         TextWrapping="Wrap" VerticalContentAlignment="Top" HorizontalContentAlignment="Left"/>
             </DockPanel>
         </Grid>
     </DockPanel>
