@@ -30,6 +30,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ConsoleKeybindingPanel : MMBusyPanelBase
     {
+        public bool OperationInProgress { get; set; }
         public bool IsListeningForKey { get; set; }
 
         #region Key texts
@@ -89,11 +90,144 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SetME3FullKeyCallback(string consoleKeyStr)
         {
-            SetME3Key(SelectedME3Target, consoleKeyStr: consoleKeyStr);
-            LoadME3Keys(SelectedME3Target);
+            SetME3KeyWithThread(SelectedME3Target, consoleKeyStr: consoleKeyStr);
         }
 
-        private void SetME3Key(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
+        private void SetME3MiniKeyCallback(string unrealKeyStr)
+        {
+            SetME3KeyWithThread(SelectedME3Target, typeKeyStr: unrealKeyStr);
+        }
+        private void ResetME3Keys()
+        {
+            SetME3KeyWithThread(SelectedME3Target, consoleKeyStr: "Tilde", typeKeyStr: "Tab");
+        }
+
+        private void SetME1KeyWithThread(string consoleKeyStr = null, string typeKeyStr = null, bool wipeTypeKey = false)
+        {
+            OperationInProgress = true;
+            ME1FullConsoleKeyText = "Updating keybind(s), please wait";
+            ME1MiniConsoleKeyText = "";
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ME2-ConsoleKeySetterThread");
+            nbw.DoWork += (a, b) =>
+            {
+                SetME1ConsoleKeybinds(consoleKeyStr, typeKeyStr, wipeTypeKey);
+                LoadME1Keys();
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                OperationInProgress = false;
+                CommandManager.InvalidateRequerySuggested();
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        private void SetME1ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
+        {
+            var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
+            if (File.Exists(iniFile))
+            {
+                var ini = DuplicatingIni.LoadIni(iniFile);
+                SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey);
+                var wasReadOnly = Utilities.ClearReadOnly(iniFile);
+                File.WriteAllText(iniFile, ini.ToString());
+                if (wasReadOnly)
+                {
+                    Utilities.SetReadOnly(iniFile);
+                }
+            }
+        }
+
+        private void SetME2KeyWithThread(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
+        {
+            OperationInProgress = true;
+            ME2FullConsoleKeyText = "Updating keybind(s), please wait";
+            ME2MiniConsoleKeyText = "";
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ME2-ConsoleKeySetterThread");
+            nbw.DoWork += (a, b) =>
+            {
+                SetME2ConsoleKeybinds(SelectedME2Target, consoleKeyStr, typeKeyStr);
+                LoadME2Keys(SelectedME2Target);
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                OperationInProgress = false;
+                CommandManager.InvalidateRequerySuggested();
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        public static void SetME2ConsoleKeybinds(GameTarget target, string consoleKeyStr, string typeKeyStr)
+        {
+            if (target.Game != Mod.MEGame.ME2) throw new Exception("Cannot set ME2 keybind for non-ME2 target");
+            var me2c = ME2Coalesced.OpenFromTarget(target);
+            var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals("BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
+            SetIniBasedKeybinds(bioinput.Value, consoleKeyStr, typeKeyStr);
+            me2c.Serialize();
+        }
+
+        private static void SetIniBasedKeybinds(DuplicatingIni bioinput, string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
+        {
+            var engineConsole = bioinput.Sections.FirstOrDefault(x => x.Header == @"Engine.Console");
+            if (engineConsole != null)
+            {
+                if (consoleKeyStr != null)
+                {
+                    var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
+                    if (consoleKey != null)
+                    {
+                        consoleKey.Value = consoleKeyStr;
+                    }
+                    else
+                    {
+                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry("ConsoleKey=" + typeKeyStr));
+                    }
+                }
+                var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
+                if (wipeTypeKey && typeKey != null)
+                {
+                    engineConsole.Entries.Remove(typeKey);
+                }
+                if (typeKeyStr != null)
+                {
+                    if (typeKey != null)
+                    {
+                        typeKey.Value = typeKeyStr;
+                    }
+                    else
+                    {
+                        //Create Typekey
+                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry("TypeKey=" + typeKeyStr));
+                    }
+                }
+            }
+        }
+
+        private void SetME3KeyWithThread(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
+        {
+            OperationInProgress = true;
+            ME3FullConsoleKeyText = "Updating keybind(s), please wait";
+            ME3MiniConsoleKeyText = "";
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ME3-ConsoleKeySetterThread");
+            nbw.DoWork += (a, b) =>
+            {
+                SetME3ConsoleKeybinds(SelectedME3Target, consoleKeyStr, typeKeyStr);
+                LoadME3Keys(SelectedME3Target);
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                OperationInProgress = false;
+                CommandManager.InvalidateRequerySuggested();
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Sets the TypeKey and ConsoleKey values for an ME3 game target. This method is synchronous.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="consoleKeyStr"></param>
+        /// <param name="typeKeyStr"></param>
+        public static void SetME3ConsoleKeybinds(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
         {
             var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
             Dictionary<string, string> coalescedFilemapping = null;
@@ -142,16 +276,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AutoTOC.RunTOCOnGameTarget(target);
         }
 
-        private void SetME3MiniKeyCallback(string unrealKeyStr)
-        {
-            SetME3Key(SelectedME3Target, typeKeyStr: unrealKeyStr);
-            LoadME3Keys(SelectedME3Target);
-        }
-        private void ResetME3Keys()
-        {
-            SetME3Key(SelectedME3Target, consoleKeyStr: "Tilde",typeKeyStr: "Tab");
-        }
-
         private void SetME2MiniKey()
         {
             KeyBeingAssigned = "Mass Effect 2 Mini Console";
@@ -168,17 +292,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SetME2FullKeyCallback(string unrealKeyStr)
         {
-
+            SetME2KeyWithThread(SelectedME2Target, unrealKeyStr, null);
         }
 
         private void SetME2MiniKeyCallback(string unrealKeyStr)
         {
-
+            SetME2KeyWithThread(SelectedME2Target, null, unrealKeyStr);
         }
 
         private void ResetME2Keys()
         {
-
+            SetME2KeyWithThread(SelectedME2Target, "Tilde", "Tab");
         }
 
 
@@ -198,21 +322,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SetME1FullKeyCallback(string unrealKeyStr)
         {
-            Debug.WriteLine("Key pressed: " + unrealKeyStr);
+            SetME1KeyWithThread(unrealKeyStr, null);
         }
 
         private void SetME1MiniKeyCallback(string unrealKeyStr)
         {
-            Debug.WriteLine("Key pressed: " + unrealKeyStr);
+            SetME1KeyWithThread(null, unrealKeyStr);
+
         }
 
         private void ResetME1Keys()
         {
-
+            SetME1KeyWithThread("Tilde", null, true);
         }
 
         #endregion
-        private bool NotListeningForKey() => !IsListeningForKey;
+        private bool NotListeningForKey() => !IsListeningForKey && !OperationInProgress;
+        public bool UIEnabled => !IsListeningForKey && !OperationInProgress;
 
         public string KeyBeingAssigned { get; set; }
 
@@ -221,6 +347,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
+            if (OperationInProgress) return; //do not handle key
             if (IsListeningForKey)
             {
                 var unrealString = ConvertToUnrealKeyString(e.Key == Key.System ? e.SystemKey : e.Key);
@@ -229,6 +356,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     IsListeningForKey = false;
                     OnKeyPressed?.Invoke(unrealString);
                     OnKeyPressed = null;
+                    //e.Handled = true;
                 }
             }
             else if (e.Key == Key.Escape)
@@ -492,25 +620,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return "ScrollLock";
                 case "Pause":
                     return "Pause";
-                case "one":
+                case "D1":
                     return "one";
-                case "two":
+                case "D2":
                     return "two";
-                case "three":
+                case "D3":
                     return "three";
-                case "four":
+                case "D4":
                     return "four";
-                case "five":
+                case "D5":
                     return "five";
-                case "six":
+                case "D6":
                     return "six";
-                case "seven":
+                case "D7":
                     return "seven";
-                case "eight":
+                case "D8":
                     return "eight";
-                case "nine":
+                case "D9":
                     return "nine";
-                case "zero":
+                case "D0":
                     return "zero";
                 case "Underscore":
                     return "Underscore";
@@ -523,6 +651,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 case "RightBracket":
                     return "RightBracket";
                 case "Enter":
+                case "Return":
                     return "Enter";
                 case "CapsLock":
                     return "CapsLock";
@@ -544,7 +673,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return "LeftControl";
                 case "LeftAlt":
                     return "LeftAlt";
-                case "SpaceBar":
+                case "Space":
                     return "SpaceBar";
                 case "RightAlt":
                     return "RightAlt";
@@ -570,15 +699,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return "Delete";
                 case "PageDown":
                     return "PageDown";
-                case "NumLock":
+                case "NumLock": //why?
                     return "NumLock";
-                case "Divide":
+                case "Divide": //needs to be numpad
                     return "Divide";
-                case "Multiply":
+                case "Multiply": //needs to be numpad
                     return "Multiply";
-                case "Subtract":
+                case "Subtract": //needs to be numpad
                     return "Subtract";
-                case "Add":
+                case "Add": //needs to be numpad
                     return "Add";
                 case "NumPadOne":
                     return "NumPadOne";

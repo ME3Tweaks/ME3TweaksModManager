@@ -64,7 +64,7 @@
             <TextBlock Grid.Column="1" Grid.Row="1" Text="Mass Effect 2 console keys are defined per game." />
             <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME2Targets}" SelectedItem="{Binding SelectedME2Target}" 
                       HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
-                      IsEnabled="{Binding IsListeningForKey, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
+                      IsEnabled="{Binding UIEnabled}"/>
             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME2FullConsoleKeyText}" />
             <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME2MiniConsoleKeyText}" />
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME2Target, Converter={StaticResource NullVisibilityConverter}}">
@@ -93,7 +93,7 @@
             <TextBlock Grid.Column="1" Grid.Row="1" Text="Mass Effect 3 console keys are defined per game." />
             <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME3Targets}" SelectedItem="{Binding SelectedME3Target}" 
                       HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" 
-                      IsEnabled="{Binding IsListeningForKey, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
+                      IsEnabled="{Binding UIEnabled}"/>
             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME3FullConsoleKeyText}"/>
             <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME3MiniConsoleKeyText}" />
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME3Target, Converter={StaticResource NullVisibilityConverter}}">

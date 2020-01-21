@@ -66,6 +66,10 @@ namespace MassEffectModManagerCore.modmanager.gameini
         }
 
 
+        /// <summary>
+        /// Converts this DuplicatingIni object into an ini file as a string.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

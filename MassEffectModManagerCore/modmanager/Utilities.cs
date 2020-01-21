@@ -159,6 +159,23 @@ namespace MassEffectModManagerCore
             return totalSize;
         }
 
+        internal static void SetReadOnly(string file)
+        {
+            new FileInfo(file).IsReadOnly = true;
+        }
+
+        /// <summary>
+        /// Clears the readonly flag, if any was set. Returns true if the file was originally readonly, false otherwise.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        internal static bool ClearReadOnly(string file)
+        {
+            var fi = new FileInfo(file);
+            var res = fi.IsReadOnly;
+            fi.IsReadOnly = false;
+            return res;
+        }
 
         public static bool EnableWritePermissionsToFolders(List<GameTarget> targets, bool me1ageia)
         {
