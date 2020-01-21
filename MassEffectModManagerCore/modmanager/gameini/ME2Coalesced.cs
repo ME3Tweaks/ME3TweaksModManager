@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
@@ -28,6 +30,21 @@ namespace MassEffectModManagerCore.modmanager.gameini
                 string filename = fs.ReadUnrealString();
                 string contents = fs.ReadUnrealString();
                 Inis[filename] = DuplicatingIni.ParseIni(contents);
+            }
+        }
+
+        public static ME2Coalesced OpenFromTarget(GameTarget target)
+        {
+            var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"Config", @"PC", @"Cooked", @"Coalesced.ini");
+            if (!File.Exists(coalPath)) return null;
+            try
+            {
+                return new ME2Coalesced(coalPath);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Cannot open ME2Coalesced file from target: " + e.Message);
+                return null;
             }
         }
 
