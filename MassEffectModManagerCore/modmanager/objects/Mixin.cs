@@ -1,4 +1,5 @@
-﻿using MassEffectModManagerCore.ui;
+﻿using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,6 +33,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                 sb.AppendLine("Part of " + TargetModule);
                 sb.AppendLine("Version " + PatchVersion);
                 sb.AppendLine("Developed by " + PatchDeveloper);
+                sb.AppendLine(PatchFilename);
+                if (!CanBeUsed)
+                {
+                    sb.AppendLine("This Mixin cannot be applied because the target module is not present in the game backup.");
+                }
                 return sb.ToString();
             }
         }

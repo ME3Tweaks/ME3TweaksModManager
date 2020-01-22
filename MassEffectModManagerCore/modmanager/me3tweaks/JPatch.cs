@@ -79,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             break;
                         case JojoOpcode.OPERATION_BKT:
                             //Backtrace, move backwards
-                            //Debug.WriteLine("Opcode BKT at 0x" + (patchData.Position - 1).ToString("X6"));
+                            Debug.WriteLine("Opcode BKT at 0x" + (patchData.Position - 1).ToString("X6"));
                             processEqlBktOpcode(sourceData, patchData, outData, true);
                             break;
                         case JojoOpcode.OPERATION_DEL:

@@ -164,53 +164,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 List<Mixin> allmixins = new List<Mixin>();
                 allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
+                MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
                 allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
 
-                var compilingListsPerModule = new Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>>();
-                var modules = allmixins.Select(x => x.TargetModule).Distinct().ToList();
-                foreach (var module in modules)
-                {
-                    var moduleMixinMapping = new Dictionary<string, List<Mixin>>();
-                    var mixinsForModule = allmixins.Where(x => x.TargetModule == module).ToList();
-                    foreach (var mixin in mixinsForModule)
-                    {
-                        List<Mixin> mixinListForFile;
-                        if (!moduleMixinMapping.TryGetValue(mixin.TargetFile, out mixinListForFile))
-                        {
-                            mixinListForFile = new List<Mixin>();
-                            moduleMixinMapping[mixin.TargetFile] = mixinListForFile;
-                        }
-
-                        //make sure finalizer is last
-                        if (mixin.IsFinalizer)
-                        {
-                            CLog.Information(
-                                $@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
-                                Settings.LogModMakerCompiler);
-                            mixinListForFile.Add(mixin);
-                        }
-                        else
-                        {
-                            CLog.Information(
-                                $@"Adding mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
-                                Settings.LogModMakerCompiler);
-                            mixinListForFile.Insert(0, mixin);
-                        }
-                    }
-
-                    //verify only one finalizer
-                    foreach (var list in moduleMixinMapping)
-                    {
-                        if (list.Value.Count(x => x.IsFinalizer) > 1)
-                        {
-                            Log.Error(@"ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
-                            //do something here to abort
-                        }
-                    }
-
-                    compilingListsPerModule[module] = moduleMixinMapping;
-                }
-
+                var compilingListsPerModule = MixinHandler.GetMixinApplicationList(allmixins);
                 int totalMixinsToApply = compilingListsPerModule.Sum(x => x.Value.Values.Sum(y => y.Count()));
                 int numMixinsApplied = 0;
                 SetCurrentMaxCallback(totalMixinsToApply);
@@ -240,8 +197,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             : Environment.ProcessorCount
                     }, mapping =>
                     {
-                        var dlcFolderName = chunkNameToDLCFoldername(mapping.Key.ToString());
-                        var outdir = Path.Combine(mod.ModPath, headerToModFoldername(mapping.Key), @"CookedPCConsole");
+                        var dlcFolderName = ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
+                        var outdir = Path.Combine(mod.ModPath, HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
                         Directory.CreateDirectory(outdir);
                         if (mapping.Key == ModJob.JobHeader.BASEGAME)
                         {
@@ -365,7 +322,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             else
             {
-                var dlcFolderName = chunkNameToDLCFoldername(chunkName);
+                var dlcFolderName = ModmakerChunkNameToDLCFoldername(chunkName);
                 var coalescedData = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, $"Default_{dlcFolderName}.bin");
                 coalescedFilename = $"Default_{dlcFolderName}.bin";
                 if (coalescedData != null)
@@ -786,7 +743,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     else
                     {
                         //DLC
-                        inGameDestdir = $@"BIOGame/DLC/{chunkNameToDLCFoldername(dirname)}/CookedPCConsole";
+                        inGameDestdir = $@"BIOGame/DLC/{ModmakerChunkNameToDLCFoldername(dirname)}/CookedPCConsole";
                     }
 
                     ini[headername]["replacefiles"] = inGameDestdir;
@@ -803,7 +760,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             File.WriteAllText(mod.ModDescPath, ini.ToString());
         }
 
-        private string headerToModFoldername(ModJob.JobHeader header)
+        public static string HeaderToDefaultFoldername(ModJob.JobHeader header)
         {
             switch (header)
             {
@@ -821,7 +778,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return header.ToString();
         }
 
-        private ModJob.JobHeader defaultFoldernameToHeader(string foldername)
+        public static ModJob.JobHeader defaultFoldernameToHeader(string foldername)
         {
             if (Enum.TryParse<ModJob.JobHeader>(foldername, out var header))
             {
@@ -843,7 +800,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             throw new Exception("Unknown default foldername: " + foldername);
         }
 
-        private string chunkNameToDLCFoldername(string chunkName)
+        public static string ModmakerChunkNameToDLCFoldername(string chunkName)
         {
             switch (chunkName)
             {

@@ -15,6 +15,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Linq;
 using MassEffectModManagerCore.GameDirectories;
+using Serilog;
+using System.Threading.Tasks;
+using System.Globalization;
+using IniParser.Model;
+using ME3Explorer.Packages;
+using MassEffectModManagerCore.modmanager.helpers;
+using System.Threading;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -25,6 +32,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public ObservableCollectionExtended<Mixin> AvailableOfficialMixins { get; set; } = new ObservableCollectionExtended<Mixin>();
         public Mixin SelectedMixin { get; set; }
+        public bool OperationInProgress { get; set; }
+        public long ProgressBarValue { get; set; }
+        public long ProgressBarMax { get; set; } = 100; //default
         public string BottomLeftMessage { get; set; } = "Select Mixins to compile";
         public bool AtLeastOneMixinSelected => AvailableOfficialMixins.Any(x => x.UISelectedForUse);
         public MixinManager()
@@ -91,10 +101,149 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ICommand CloseCommand { get; set; }
         public ICommand ToggleSelectedMixinCommand { get; set; }
+        public ICommand CompileAsNewModCommand { get; set; }
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(ClosePanel, CanClosePanel);
             ToggleSelectedMixinCommand = new GenericCommand(ToggleSelectedMixin, MixinIsSelected);
+            CompileAsNewModCommand = new GenericCommand(CompileAsNewMod, CanCompileAsNewMod);
+        }
+
+        private bool CanCompileAsNewMod() => SelectedMixin != null && !OperationInProgress;
+
+        private void CompileAsNewMod()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("MixinManager CompileAsNewModThread");
+            nbw.DoWork += (a, b) =>
+            {
+                BottomLeftMessage = "Compiling Mixins...";
+                OperationInProgress = true;
+                //DEBUG STUFF
+                int MaxModmakerCores = 1;
+                var modname = "MixinTest";
+                var modpath = Path.Combine(Utilities.GetME3ModsDirectory(), modname);
+
+                var mixins = AvailableOfficialMixins.Where(x => x.UISelectedForUse).ToList();
+                MixinHandler.LoadPatchDataForMixins(mixins); //before dynamic
+                var compilingListsPerModule = MixinHandler.GetMixinApplicationList(mixins);
+                ProgressBarMax = mixins.Count();
+                ProgressBarValue = 0;
+                int numdone = 0;
+                void completedSingleApplicationCallback()
+                {
+                    var val = Interlocked.Increment(ref numdone);
+                    ProgressBarValue = val;
+                }
+                //Mixins are ready to be applied
+                Parallel.ForEach(compilingListsPerModule,
+                        new ParallelOptions
+                        {
+                            MaxDegreeOfParallelism = Environment.ProcessorCount > MaxModmakerCores
+                                ? MaxModmakerCores
+                                : Environment.ProcessorCount
+                        }, mapping =>
+                        {
+                            var dlcFolderName = ModMakerCompiler.ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
+                            var outdir = Path.Combine(modpath, ModMakerCompiler.HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
+                            Directory.CreateDirectory(outdir);
+                            if (mapping.Key == ModJob.JobHeader.BASEGAME)
+                            {
+                                //basegame
+                                foreach (var file in mapping.Value)
+                                {
+                                    using var packageAsStream =
+                                        VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
+                                            Path.GetFileName(file.Key));
+                                    using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                                    using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
+                                        completedSingleApplicationCallback);
+                                    CLog.Information("Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                                    finalStream.Position = 0;
+                                    var package = MEPackageHandler.OpenMEPackage(finalStream);
+                                    var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                                    package.save(outfile, true);
+                                    //finalStream.WriteToFile(outfile);
+                                    //File.WriteAllBytes(outfile, finalStream.ToArray());
+                                }
+                            }
+                            else
+                            {
+                                //dlc
+                                var dlcPackage =
+                                        VanillaDatabaseService
+                                            .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                                foreach (var file in mapping.Value)
+                                {
+                                    using var packageAsStream =
+                                        VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key,
+                                            forcedDLC: dlcPackage);
+                                    using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                                    using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
+                                        completedSingleApplicationCallback);
+                                    CLog.Information("Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                                    finalStream.Position = 0;
+                                    var package = MEPackageHandler.OpenMEPackage(finalStream);
+                                    var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                                    package.save(outfile, true);
+                                    //finalStream.WriteToFile(outfile);
+                                }
+                            }
+                        });
+
+                MixinHandler.FreeME3TweaksPatchData();
+
+                //Generate moddesc
+                IniData ini = new IniData();
+                ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                ini[@"ModInfo"][@"game"] = @"ME3";
+                ini[@"ModInfo"][@"modname"] = modname;
+                ini[@"ModInfo"][@"moddev"] = App.AppVersionHR;
+                ini[@"ModInfo"][@"moddesc"] = "Compiled from the following mixins:";
+                ini[@"ModInfo"][@"modver"] = "1.0";
+
+                generateRepaceFilesMapping(ini, modpath);
+                File.WriteAllText(Path.Combine(modpath, @"moddesc.ini"), ini.ToString());
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                OperationInProgress = false;
+                OnClosing(DataEventArgs.Empty); //update to new mod path
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        private void generateRepaceFilesMapping(IniData ini, string modpath)
+        {
+            var dirs = Directory.GetDirectories(modpath);
+            foreach (var dir in dirs)
+            {
+                //automap
+                var dirname = Path.GetFileName(dir);
+                var headername = ModMakerCompiler.defaultFoldernameToHeader(dirname).ToString();
+                ini[headername]["moddir"] = dirname;
+                if (dirname != "BALANCE_CHANGES")
+                {
+                    ini[headername]["newfiles"] = "CookedPCConsole";
+
+                    string inGameDestdir;
+                    if (dirname == "BASEGAME")
+                    {
+                        inGameDestdir = @"BIOGame/CookedPCConsole";
+                    }
+                    else
+                    {
+                        //DLC
+                        inGameDestdir = $@"BIOGame/DLC/{ModMakerCompiler.ModmakerChunkNameToDLCFoldername(dirname)}/CookedPCConsole";
+                    }
+
+                    ini[headername]["replacefiles"] = inGameDestdir;
+                    ini[headername]["gamedirectorystructure"] = "true";
+                }
+                else
+                {
+                    ini[headername]["newfiles"] = "ServerCoalesced.bin"; //BALANCE_CHANGES
+                }
+            }
         }
 
         private void ToggleSelectedMixin()
@@ -124,6 +273,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
 
         }
+
+
         //private void MixinList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         //{
         //    if (e.AddedItems.Count > 0)

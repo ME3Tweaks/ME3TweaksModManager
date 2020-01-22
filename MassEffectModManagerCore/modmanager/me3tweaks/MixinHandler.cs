@@ -46,7 +46,59 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static List<Mixin> ME3TweaksPackageMixins = new List<Mixin>();
         public static List<Mixin> UserMixins = new List<Mixin>();
+        /// <summary>
+        /// Gets a dictionary of module=> [filename, list of mixins] to apply.
+        /// </summary>
+        /// <param name="allmixins"></param>
+        /// <returns></returns>
+        public static Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>> GetMixinApplicationList(List<Mixin> allmixins)
+        {
+            var compilingListsPerModule = new Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>>();
+            var modules = allmixins.Select(x => x.TargetModule).Distinct().ToList();
+            foreach (var module in modules)
+            {
+                var moduleMixinMapping = new Dictionary<string, List<Mixin>>();
+                var mixinsForModule = allmixins.Where(x => x.TargetModule == module).ToList();
+                foreach (var mixin in mixinsForModule)
+                {
+                    List<Mixin> mixinListForFile;
+                    if (!moduleMixinMapping.TryGetValue(mixin.TargetFile, out mixinListForFile))
+                    {
+                        mixinListForFile = new List<Mixin>();
+                        moduleMixinMapping[mixin.TargetFile] = mixinListForFile;
+                    }
 
+                    //make sure finalizer is last
+                    if (mixin.IsFinalizer)
+                    {
+                        CLog.Information(
+                            $@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
+                            Settings.LogModMakerCompiler);
+                        mixinListForFile.Add(mixin);
+                    }
+                    else
+                    {
+                        CLog.Information(
+                            $@"Adding mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
+                            Settings.LogModMakerCompiler);
+                        mixinListForFile.Insert(0, mixin);
+                    }
+                }
+
+                //verify only one finalizer
+                foreach (var list in moduleMixinMapping)
+                {
+                    if (list.Value.Count(x => x.IsFinalizer) > 1)
+                    {
+                        Log.Error(@"ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
+                        //do something here to abort
+                    }
+                }
+
+                compilingListsPerModule[module] = moduleMixinMapping;
+            }
+            return compilingListsPerModule;
+        }
         internal static bool MixinPackageAvailable()
         {
             return File.Exists(MixinPackagePath);
@@ -98,15 +150,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
+        /// <summary>
+        /// Fetches a mixin by it's ID. This does not load the patch data.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         internal static Mixin GetMixinByME3TweaksID(int id)
         {
-            var mixin = ME3TweaksPackageMixins.FirstOrDefault(x => x.ME3TweaksID == id);
-            if (mixin.PatchData != null) return mixin;
-
-            //Load patch data.
-            var patchData = GetPatchDataForMixin(mixin);
-            mixin.PatchData = patchData;
-            return mixin;
+            return ME3TweaksPackageMixins.FirstOrDefault(x => x.ME3TweaksID == id);
         }
 
         /// <summary>
@@ -129,21 +180,29 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return dynamic;
         }
 
-        private static MemoryStream GetPatchDataForMixin(Mixin mixin)
+        private static MemoryStream GetPatchDataForMixin(ZipArchive zip, Mixin mixin)
+        {
+            var patchfile = zip.GetEntry(mixin.PatchFilename);
+            if (patchfile != null)
+            {
+                using var patchStream = patchfile.Open();
+                MemoryStream patchData = MixinMemoryStreamManager.GetStream();
+                patchStream.CopyTo(patchData);
+                patchData.Position = 0;
+                return patchData;
+            }
+            return null;
+        }
+
+        public static void LoadPatchDataForMixins(List<Mixin> mixins)
         {
             using (var file = File.OpenRead(MixinPackagePath))
             using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
             {
-                var patchfile = zip.GetEntry(mixin.PatchFilename);
-                if (patchfile != null)
+                foreach(var mixin in mixins)
                 {
-                    using var patchStream = patchfile.Open();
-                    MemoryStream patchData = MixinMemoryStreamManager.GetStream();
-                    patchStream.CopyTo(patchData);
-                    patchData.Position = 0;
-                    return patchData;
+                    mixin.PatchData = GetPatchDataForMixin(zip, mixin);
                 }
-                return null;
             }
         }
 
