@@ -17,7 +17,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:chrome="clr-namespace:Xceed.Wpf.Toolkit.Chromes"
-                    xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes">
+                    xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
 
 
   <!-- =============================================================================== -->
@@ -34,9 +35,9 @@
     <Setter Property="FocusVisualStyle"
             Value="{x:Null}" />
     <Setter Property="Background"
-            Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonNormalBackgroundKey}}" />
+            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
     <Setter Property="BorderBrush"
-            Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonNormalOuterBorderKey}}" />
+            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" />
     <Setter Property="BorderThickness"
             Value="1" />
     <Setter Property="Template">
@@ -70,10 +71,10 @@
               </MultiTrigger.Conditions>
               <Setter TargetName="OuterBorder"
                       Property="BorderBrush"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonDisabledOuterBorderKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" />
               <Setter TargetName="OuterBorder"
                       Property="Background"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ControlDisabledBackgroundKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
             </MultiTrigger>
 
             <!-- if button is enabled and pressed -->
@@ -86,10 +87,10 @@
               </MultiTrigger.Conditions>
               <Setter TargetName="OuterBorder"
                       Property="BorderBrush"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonPressedOuterBorderKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" />
               <Setter TargetName="OuterBorder"
                       Property="Background"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonPressedBackgroundKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
             </MultiTrigger>
 
             <!-- if button is enabled, is not checked, the mouse is over, and not pressed -->
@@ -106,10 +107,10 @@
               </MultiTrigger.Conditions>
               <Setter TargetName="OuterBorder"
                       Property="BorderBrush"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonMouseOverOuterBorderKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" />
               <Setter TargetName="OuterBorder"
                       Property="Background"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonMouseOverBackgroundKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
             </MultiTrigger>
 
             <!-- if button is enabled, checked, the mouse is not over, and it is not pressed -->
@@ -126,10 +127,10 @@
               </MultiTrigger.Conditions>
               <Setter TargetName="OuterBorder"
                       Property="BorderBrush"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonPressedOuterBorderKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.AccentInteractionBorderBrush}}" />
               <Setter TargetName="OuterBorder"
                       Property="Background"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonPressedBackgroundKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.AccentInteractionBrush}}" />
             </MultiTrigger>
 
             <!-- if button is focused, is enabled, not pressed, and the mouse is not over -->
@@ -146,10 +147,10 @@
               </MultiTrigger.Conditions>
               <Setter TargetName="OuterBorder"
                       Property="BorderBrush"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonFocusedOuterBorderKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.AccentInteractionBorderBrush}}" />
               <Setter TargetName="OuterBorder"
                       Property="Background"
-                      Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonFocusedBackgroundKey}}" />
+                      Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
             </MultiTrigger>
 
             <!-- if not rendered normally -->

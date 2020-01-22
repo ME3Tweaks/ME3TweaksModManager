@@ -16,22 +16,11 @@ namespace MassEffectModManagerCore.modmanager.objects
     /// </summary>
     public class Mixin : INotifyPropertyChanged
     {
+        public event EventHandler UIStatusChanging;
+
         //UI ITEMS
+        public void OnUISelectedForUseChanged() => UIStatusChanging?.Invoke(this, EventArgs.Empty);
         public bool UISelectedForUse { get; set; }
-        public string PatchName { get; set; }
-        public string PatchDesc { get; set; }
-        public string PatchDeveloper { get; set; }
-        public int PatchVersion { get; set; }
-        //public string TargetVersion { get; set; }
-        public ModJob.JobHeader TargetModule { get; set; }
-        public string TargetFile { get; set; }
-        public int TargetSize { get; set; }
-        public bool IsFinalizer { get; set; }
-        //public string patchurl { get; set; }
-        public string FolderName { get; set; }
-        public int ME3TweaksID { get; set; }
-        public string PatchFilename { get; internal set; }
-        public MemoryStream PatchData { get; internal set; }
         public string UIText
         {
             get
@@ -46,6 +35,24 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return sb.ToString();
             }
         }
+
+        public bool CanBeUsed { get; set; }
+
+        //Manifest items
+        public string PatchName { get; set; }
+        public string PatchDesc { get; set; }
+        public string PatchDeveloper { get; set; }
+        public int PatchVersion { get; set; }
+        //public string TargetVersion { get; set; }
+        public ModJob.JobHeader TargetModule { get; set; }
+        public string TargetFile { get; set; }
+        public int TargetSize { get; set; }
+        public bool IsFinalizer { get; set; }
+        //public string patchurl { get; set; }
+        public string FolderName { get; set; }
+        public int ME3TweaksID { get; set; }
+        public string PatchFilename { get; internal set; }
+        public MemoryStream PatchData { get; internal set; }
 
         //public ICommand ToggleSelectedCommand { get; }
         public Mixin()

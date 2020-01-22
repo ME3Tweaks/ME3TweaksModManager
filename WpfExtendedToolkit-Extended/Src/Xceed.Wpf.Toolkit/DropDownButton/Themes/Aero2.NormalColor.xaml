@@ -20,7 +20,8 @@
                     xmlns:conv="clr-namespace:Xceed.Wpf.Toolkit.Core.Converters"
                     xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes"
                     xmlns:local="clr-namespace:Xceed.Wpf.Toolkit"
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../../Themes/Aero2/Common.xaml" />
@@ -44,11 +45,11 @@
     <Setter Property="VerticalContentAlignment"
             Value="Center" />
     <Setter Property="Background"
-            Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonNormalBackgroundKey}}" />
+            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
     <Setter Property="BorderBrush"
-            Value="{DynamicResource {x:Static themes:ResourceKeys.ButtonNormalOuterBorderKey}}" />
+            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" />
     <Setter Property="DropDownContentBackground"
-            Value="{StaticResource PanelBackgroundBrush}" />
+            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
     <Setter Property="Padding"
             Value="3" />
     <Setter Property="Template">
@@ -94,7 +95,7 @@
                             Width="9"
                             Height="5"
                             Data="{StaticResource DownArrowGeometry}"
-                            Fill="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                            Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                             Margin="0,1,0,0" />
                     </Grid>
                   </Grid>
@@ -124,7 +125,7 @@
               </Popup.Resources>
               <Border BorderThickness="1"
                       Background="{TemplateBinding DropDownContentBackground}"
-                      BorderBrush="{StaticResource PopupDarkBorderBrush}"
+                      BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"
                       MaxHeight="{TemplateBinding MaxDropDownHeight}">
                 <ScrollViewer x:Name="DropDownScrollViewer"
                               VerticalScrollBarVisibility="Auto">
