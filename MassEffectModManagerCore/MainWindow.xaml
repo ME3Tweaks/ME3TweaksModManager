@@ -231,6 +231,9 @@
                             <Image Source="/modmanager/toolicons/me3explorer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Developer tools" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <MenuItem Header="Backup File Fetcher" Command="{Binding BackupFileFetcherCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"/>
+
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_BackupRestore}" Padding="4">
                     <MenuItem Header="{DynamicResource string_Backup}" Command="{Binding BackupCommand}" ToolTip="{DynamicResource string_Createentiregamebackups}" />

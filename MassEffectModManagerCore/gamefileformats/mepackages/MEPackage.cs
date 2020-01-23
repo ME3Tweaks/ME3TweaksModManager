@@ -395,7 +395,10 @@ namespace ME3Explorer.Packages
             inStream.JumpTo(NameOffset);
             for (int i = 0; i < NameCount; i++)
             {
-                names.Add(inStream.ReadUnrealString());
+                //Debug.Write($"Reading name at 0x{inStream.Position:X6}: ");
+                var name = inStream.ReadUnrealString();
+                //Debug.WriteLine(name);
+                names.Add(name);
                 if (Game == Mod.MEGame.ME1)
                     inStream.Skip(8);
                 else if (Game == Mod.MEGame.ME2)

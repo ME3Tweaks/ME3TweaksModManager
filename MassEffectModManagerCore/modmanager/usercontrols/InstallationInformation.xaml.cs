@@ -88,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (!string.IsNullOrWhiteSpace(ModifiedFilesFilterText) && obj is GameTarget.ModifiedFileObject mobj)
             {
-                return mobj.FilePath.Contains(ModifiedFilesFilterText, StringComparison.InvariantCulture);
+                return mobj.FilePath.Contains(ModifiedFilesFilterText, StringComparison.InvariantCultureIgnoreCase);
             }
             return true;
         }

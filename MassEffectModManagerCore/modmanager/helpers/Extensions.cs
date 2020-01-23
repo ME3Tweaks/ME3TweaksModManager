@@ -124,9 +124,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static void WriteToFile(this MemoryStream stream, string outfile)
         {
+            long oldPos = stream.Position;
             stream.Position = 0;
             using (FileStream file = new FileStream(outfile, FileMode.Create, System.IO.FileAccess.Write))
                 stream.CopyTo(file);
+            stream.Position = oldPos;
         }
 
         public static void WriteInt64ToStream(this Stream stream, long value)

@@ -328,6 +328,16 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return MEDirectories.GetInstalledDLC(target).Where(x => !MEDirectories.OfficialDLC(target.Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).ToList();
         }
 
+        /// <summary>
+        /// Gets list of DLC directories that are made by BioWare
+        /// </summary>
+        /// <param name="target">Target to get dlc from</param>
+        /// <returns>List of DLC foldernames</returns>
+        internal static List<string> GetInstalledOfficialDLC(GameTarget target)
+        {
+            return MEDirectories.GetInstalledDLC(target).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).ToList();
+        }
+
         internal static bool ValidateTargetDLCConsistency(GameTarget target, Action<string> inconsistentDLCCallback = null)
         {
             if (target.Game != Mod.MEGame.ME3) return true; //No consistency check except for ME3

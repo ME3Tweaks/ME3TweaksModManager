@@ -199,7 +199,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             using (var file = File.OpenRead(MixinPackagePath))
             using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
             {
-                foreach(var mixin in mixins)
+                foreach (var mixin in mixins)
                 {
                     mixin.PatchData = GetPatchDataForMixin(zip, mixin);
                 }
@@ -214,11 +214,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        internal static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, Action notifyApplicationDone = null)
+        internal static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, Action notifyApplicationDone = null, Action<string> failedApplicationCallback = null)
         {
             foreach (var mixin in mixins)
             {
-                CLog.Information(@"Applying mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
+                Log.Information(@"Applying mixin: " + mixin.PatchName);
                 if (decompressedStream.Length == mixin.TargetSize)
                 {
                     var outStream = MixinMemoryStreamManager.GetStream();
@@ -230,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        CLog.Information(@"Applied mixin: " + mixin.PatchName, Settings.LogModMakerCompiler);
+                        Log.Information(@"Applied mixin: " + mixin.PatchName);
                         decompressedStream.Dispose();
                         decompressedStream = outStream; //pass through
                     }
@@ -238,6 +238,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 else
                 {
                     Log.Error($@"Mixin {mixin.PatchName} cannot be applied to this data, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}");
+                    failedApplicationCallback?.Invoke($"{mixin.PatchName} cannot be applied to {mixin.TargetFile}. Expected size { mixin.TargetSize} but received source data size of { decompressedStream.Length}");
                 }
 
                 notifyApplicationDone?.Invoke();

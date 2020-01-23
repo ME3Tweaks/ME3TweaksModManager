@@ -54,7 +54,8 @@
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="0">
                 <TextBlock DockPanel.Dock="Top" Text="Available Mixins" FontWeight="Bold"/>
-                <ListBox Name="MixinList_ListBox" ItemsSource="{Binding AvailableOfficialMixins}" SelectedItem="{Binding SelectedMixin}">
+                <ListBox Name="MixinList_ListBox" ItemsSource="{Binding AvailableOfficialMixins}" SelectedItem="{Binding SelectedMixin}" 
+                         IsTextSearchEnabled="True" TextSearch.TextPath="PatchName">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

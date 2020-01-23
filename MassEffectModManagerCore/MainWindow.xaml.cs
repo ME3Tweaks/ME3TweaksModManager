@@ -281,6 +281,7 @@ namespace MassEffectModManagerCore
         public ICommand MixinLibraryCommand { get; set; }
         public ICommand BatchModInstallerCommand { get; set; }
         public ICommand ImportDLCModFromGameCommand { get; set; }
+        public ICommand BackupFileFetcherCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -314,6 +315,14 @@ namespace MassEffectModManagerCore
             MixinLibraryCommand = new GenericCommand(OpenMixinManagerPanel, CanOpenMixinManagerPanel);
             BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
             ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
+            BackupFileFetcherCommand = new GenericCommand(OpenBackupFileFetcher);
+        }
+
+        private void OpenBackupFileFetcher()
+        {
+            var fetcher = new BackupFileFetcher();
+            fetcher.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(fetcher);
         }
 
         private bool CanOpenConsoleKeyKeybinder()
@@ -392,7 +401,13 @@ namespace MassEffectModManagerCore
         private void OpenMixinManagerPanel()
         {
             var mixinManager = new MixinManager();
-            mixinManager.Close += (a, b) => { ReleaseBusyControl(); };
+            mixinManager.Close += (a, b) => {
+                ReleaseBusyControl();
+                if (b.Data is string moddescpath)
+                {
+                    LoadMods(moddescpath);
+                }
+            };
             ShowBusyControl(mixinManager);
         }
 
@@ -1378,6 +1393,15 @@ namespace MassEffectModManagerCore
 
         public void LoadMods(Mod modToHighlight = null)
         {
+            LoadMods(modToHighlight?.ModPath);
+        }
+
+        /// <summary>
+        /// Reload mods. Highlight the specified mod that matches the path if any
+        /// </summary>
+        /// <param name="modpathToHighlight"></param>
+        public void LoadMods(string modpathToHighlight)
+        {
             try
             {
                 Utilities.EnsureModDirectories();
@@ -1450,9 +1474,9 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                if (modToHighlight != null)
+                if (modpathToHighlight != null)
                 {
-                    args.Result = VisibleFilteredMods.FirstOrDefault(x => x.ModPath == modToHighlight.ModPath);
+                    args.Result = VisibleFilteredMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
                 }
 
 
