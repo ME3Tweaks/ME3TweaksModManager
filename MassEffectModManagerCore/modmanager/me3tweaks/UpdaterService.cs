@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -44,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 string updatexml = wc.DownloadStringAwareOfEncoding(updateFinalRequest);
 
-                 XElement rootElement = XElement.Parse(updatexml);
+                XElement rootElement = XElement.Parse(updatexml);
                 var modUpdateInfos = (from e in rootElement.Elements("mod")
                                       select new ModUpdateInfo
                                       {
@@ -123,29 +124,34 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             using var wc = new System.Net.WebClient();
             try
             {
+                Debug.WriteLine(updateFinalRequest);
                 string updatexml = wc.DownloadStringAwareOfEncoding(updateFinalRequest);
 
                 XElement rootElement = XElement.Parse(updatexml);
-                var modUpdateInfos = (from e in rootElement.Elements("mod")
-                                      select new ModUpdateInfo
-                                      {
-                                          changelog = (string)e.Attribute("changelog"),
-                                          versionstr = (string)e.Attribute("version"),
-                                          updatecode = (int)e.Attribute("updatecode"),
-                                          serverfolder = (string)e.Attribute("folder"),
-                                          sourceFiles = (from f in e.Elements("sourcefile")
-                                                         select new SourceFile
-                                                         {
-                                                             lzmahash = (string)f.Attribute("lzmahash"),
-                                                             hash = (string)f.Attribute("hash"),
-                                                             size = (int)f.Attribute("size"),
-                                                             lzmasize = (int)f.Attribute("lzmasize"),
-                                                             relativefilepath = f.Value,
-                                                             timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
-                                                         }).ToList(),
-                                          blacklistedFiles = e.Elements("blacklistedfile").Select(x => x.Value).ToList()
-                                      }).ToList();
-                foreach (var modUpdateInfo in modUpdateInfos)
+
+
+                #region classic mods
+                var modUpdateInfos = new List<ModUpdateInfo>();
+                var classicUpdateInfos = (from e in rootElement.Elements("mod")
+                                          select new ModUpdateInfo
+                                          {
+                                              changelog = (string)e.Attribute("changelog"),
+                                              versionstr = (string)e.Attribute("version"),
+                                              updatecode = (int)e.Attribute("updatecode"),
+                                              serverfolder = (string)e.Attribute("folder"),
+                                              sourceFiles = (from f in e.Elements("sourcefile")
+                                                             select new SourceFile
+                                                             {
+                                                                 lzmahash = (string)f.Attribute("lzmahash"),
+                                                                 hash = (string)f.Attribute("hash"),
+                                                                 size = (int)f.Attribute("size"),
+                                                                 lzmasize = (int)f.Attribute("lzmasize"),
+                                                                 relativefilepath = f.Value,
+                                                                 timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
+                                                             }).ToList(),
+                                              blacklistedFiles = e.Elements("blacklistedfile").Select(x => x.Value).ToList()
+                                          }).ToList();
+                foreach (var modUpdateInfo in classicUpdateInfos)
                 {
                     modUpdateInfo.ResolveVersionVar();
                     //Calculate update information
@@ -198,14 +204,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
                     }
                 }
+
+                modUpdateInfos.AddRange(classicUpdateInfos);
+                #endregion
+
+                #region modmaker mods
+                var modmakerModUpdateInfos = (from e in rootElement.Elements("modmakermod")
+                                              select new ModMakerModUpdateInfo
+                                              {
+                                                  ModMakerId = (int)e.Attribute("id"),
+                                                  versionstr = (string)e.Attribute("version"),
+                                                  PublishDate = DateTime.ParseExact((string)e.Attribute("publishdate"), "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                                  changelog = (string)e.Attribute("changelog")
+                                              }).ToList();
+                modUpdateInfos.AddRange(modmakerModUpdateInfos);
+                #endregion
+
+                #region Nexus Mod Third Party
+
+                #endregion
                 return modUpdateInfos;
             }
             catch (Exception e)
             {
                 Log.Error("Error checking for mod updates: " + App.FlattenException(e));
-                Crashes.TrackError(e, new Dictionary<string, string>() { { "Update check URL", updateFinalRequest
-    }
-});
+                Crashes.TrackError(e, new Dictionary<string, string>() {
+                    { "Update check URL", updateFinalRequest }
+                });
             }
             return null;
         }
@@ -370,6 +395,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return destPath;
         }
 
+        [DebuggerDisplay("ModMakerModUpdateInfo | Code {ModMakerId}")]
+        public class ModMakerModUpdateInfo : ModUpdateInfo
+        {
+            public int ModMakerId;
+            public string UIStatusString { get; set; }
+            public DateTime PublishDate { get; internal set; }
+            public int OverallProgressValue { get; set; }
+            public int OverallProgressMax { get; set; }
+
+            internal override void SetLocalizedInfo()
+            {
+                base.SetLocalizedInfo();
+                UIStatusString = $"ModMaker Code {ModMakerId}";
+            }
+        }
+
         [DebuggerDisplay("ModUpdateInfo | {mod.ModName} with {filesToDelete.Count} FTDelete and {applicableUpdates.Count} FTDownload")]
         public class ModUpdateInfo : INotifyPropertyChanged
         {
@@ -435,7 +476,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             /// <summary>
             /// This object now has enough variables set to resolve localization strings
             /// </summary>
-            internal void SetLocalizedInfo()
+            internal virtual void SetLocalizedInfo()
             {
                 LocalizedLocalVersionString = M3L.GetString(M3L.string_interp_localVersion, mod.ModVersionString);
                 LocalizedServerVersionString = M3L.GetString(M3L.string_interp_serverVersion, versionstr);

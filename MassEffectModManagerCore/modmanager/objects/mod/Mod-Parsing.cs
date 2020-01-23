@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager
             get
             {
                 if (ModClassicUpdateCode > 0) return true;
-                //if (ModModMakerID > 0) return true; //Not available yet
+                if (ModModMakerID > 0) return true; 
                 //Nexus update check? //Not available yet. Will likely require whitelisting.
 
                 return false;

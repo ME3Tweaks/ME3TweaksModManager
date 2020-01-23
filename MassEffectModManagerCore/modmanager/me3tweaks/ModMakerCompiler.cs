@@ -40,6 +40,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public Action SetModNotFoundCallback;
 
         private const int MaxModmakerCores = 4;
+
+        private int OverallProgressMax;
+        private int OverallProgressValue;
+
         public ModMakerCompiler(int code = 0)
         {
             this.code = code;
@@ -58,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (File.Exists(cachedFilename))
                 {
                     //Going to compile cached item
-                    Log.Information("Compiling cached modmaker mode with code " + code);
+                    Log.Information(@"Compiling cached modmaker mode with code " + code);
                     return CompileMod(File.ReadAllText(cachedFilename));
                 }
             }
@@ -78,6 +82,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var mod = GenerateLibraryModFromDocument(xmlDoc);
             if (mod != null)
             {
+                calculateNumberOfTasks(xmlDoc);
                 compileTLKs(xmlDoc, mod); //Compile TLK
                 compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
@@ -92,6 +97,41 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 return null;
             }
         }
+
+        private void calculateNumberOfTasks(XDocument xmlDoc)
+        {
+            int numTasks = 0;
+            //TLK
+            var tlkNode = xmlDoc.XPathSelectElement(@"/ModMaker/TLKData");
+            if (tlkNode != null)
+            {
+                var tlknodescount = tlkNode.Elements().Count();
+                numTasks += tlknodescount * TLK_OVERALL_WEIGHT; //TLK is worth 3 units
+            }
+
+            //MIXINS
+            var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
+            if (mixinNode != null)
+            {
+                var mmixins = mixinNode.Elements("MixIn").Count();
+                var dmixins = mixinNode.Elements("DynamicMixIn").Count();
+                numTasks += (mmixins + dmixins) * MIXIN_OVERALL_WEIGHT; //Mixin is 1 unit.
+            }
+
+            //COALESCED
+            var jobs = xmlDoc.XPathSelectElements(@"/ModMaker/ModData/*");
+            if (jobs != null)
+            {
+                foreach (var job in jobs)
+                {
+                    numTasks += job.Elements().Count() * COALESCED_CHUNK_OVERALL_WEIGHT;
+                }
+            }
+
+            OverallProgressMax = numTasks;
+            SetOverallMaxCallback?.Invoke(numTasks);
+        }
+
 
         private void compileTLKs(XDocument xmlDoc, Mod mod)
         {
@@ -141,7 +181,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                       CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
                           Settings.LogModMakerCompiler);
                       SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
+                      var numOverallDone = Interlocked.Add(ref OverallProgressValue, TLK_OVERALL_WEIGHT);
+                      SetOverallValueCallback?.Invoke(numOverallDone);
                   });
+
             }
             else
             {
@@ -170,8 +213,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var compilingListsPerModule = MixinHandler.GetMixinApplicationList(allmixins);
                 int totalMixinsToApply = compilingListsPerModule.Sum(x => x.Value.Values.Sum(y => y.Count()));
                 int numMixinsApplied = 0;
-                SetCurrentMaxCallback(totalMixinsToApply);
-                SetCurrentValueCallback(0);
+                SetCurrentMaxCallback?.Invoke(totalMixinsToApply);
+                SetCurrentValueCallback?.Invoke(0);
                 SetCurrentTaskIndeterminateCallback?.Invoke(false);
                 SetCurrentTaskStringCallback?.Invoke("Applying Mixins");
 
@@ -185,6 +228,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
 
                     SetCurrentValueCallback?.Invoke(numdone);
+                    var numOverallDone = Interlocked.Add(ref OverallProgressValue, MIXIN_OVERALL_WEIGHT);
+                    SetOverallValueCallback?.Invoke(numOverallDone);
                 }
 
                 ;
@@ -592,6 +637,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             var numdone = Interlocked.Increment(ref numDoneCoalescedFileChunks);
             SetCurrentValueCallback?.Invoke(numdone);
+
+            var numOverallDone = Interlocked.Add(ref OverallProgressValue, COALESCED_CHUNK_OVERALL_WEIGHT);
+            SetOverallValueCallback?.Invoke(numOverallDone);
             return targetDocument.ToString();
         }
 
@@ -600,6 +648,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// </summary>
         private static readonly string CollectorsPlatWave5WrongText = "(Difficulty=DO_Level3,Enemies=( (EnemyType=\"WAVE_COL_Scion\"), (EnemyType=\"WAVE_COL_Praetorian\", MinCount=1, MaxCount=1), (EnemyType=\"WAVE_CER_Phoenix\", MinCount=2, MaxCount=2), (EnemyType=\"WAVE_CER_Phantom\", MinCount=3, MaxCount=3) ))";
 
+        private int MIXIN_OVERALL_WEIGHT = 1;
+        private int TLK_OVERALL_WEIGHT = 4;
+        private int COALESCED_CHUNK_OVERALL_WEIGHT = 2;
 
 
         /// <summary>
@@ -721,6 +772,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         private void finalizeModdesc(XDocument doc, Mod mod)
         {
+            SetCurrentTaskStringCallback?.Invoke("Finalizing mod");
             //Update moddesc
             IniData ini = new FileIniDataParser().ReadFile(mod.ModDescPath);
             var dirs = Directory.GetDirectories(mod.ModPath);
@@ -895,7 +947,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ini[@"ModInfo"][@"moddev"] = modDev;
             ini[@"ModInfo"][@"moddesc"] = modDescription;
             ini[@"ModInfo"][@"modver"] = modVersion;
-            ini[@"ModInfo"][@"modmakercode"] = code.ToString();
+            ini[@"ModInfo"][@"modid"] = code.ToString();
             ini[@"ModInfo"][@"compiledagainst"] = modmakerServerVer;
             ini[@"ModInfo"][@"modsite"] = @"https://me3tweaks.com/modmaker/mods/" + code;
 

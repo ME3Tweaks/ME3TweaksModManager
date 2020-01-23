@@ -127,7 +127,7 @@
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
                     <MenuItem Header="{DynamicResource string_Checkforupdates}" Command="{Binding SelectedModCheckForUpdatesCommand}" />
                     <MenuItem Header="{DynamicResource string_RestoremodfromME3Tweaks}" Command="{Binding RestoreModFromME3TweaksCommand}" />
-                    <Separator />
+                    <!--<Separator />-->
                     <!--<MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />-->
                     <!-- Will implement later, maybe. Not sure -->
                     <MenuItem Header="{DynamicResource string_Developeroptions}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">

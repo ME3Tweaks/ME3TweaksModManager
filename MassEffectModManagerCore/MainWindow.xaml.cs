@@ -401,7 +401,8 @@ namespace MassEffectModManagerCore
         private void OpenMixinManagerPanel()
         {
             var mixinManager = new MixinManager();
-            mixinManager.Close += (a, b) => {
+            mixinManager.Close += (a, b) =>
+            {
                 ReleaseBusyControl();
                 if (b.Data is string moddescpath)
                 {
@@ -1521,7 +1522,27 @@ namespace MassEffectModManagerCore
             var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode);
             if (allModsInManifest != null)
             {
-                var updates = allModsInManifest.Where(x => x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0).ToList();
+
+                //Calculate CLASSIC Updates
+                var updates = allModsInManifest.Where(x => x.updatecode > 0 && (x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0)).ToList();
+
+                //Calculate MODMAKER Updates
+                foreach (var mm in updatableMods.Where(x => x.ModModMakerID > 0))
+                {
+                    var matchingServerMod = allModsInManifest.FirstOrDefault(x => x is OnlineContent.ModMakerModUpdateInfo mmui && mmui.ModMakerId == mm.ModModMakerID);
+                    if (matchingServerMod != null)
+                    {
+                        var serverVer = Version.Parse(matchingServerMod.versionstr + ".0"); //can't have single digit version
+                        if (serverVer > mm.ParsedModVersion)
+                        {
+                            matchingServerMod.mod = mm;
+                            updates.Add(matchingServerMod);
+                            matchingServerMod.SetLocalizedInfo();
+                        }
+                    }
+                }
+
+                updates = updates.Distinct().ToList();
                 if (updates.Count > 0)
                 {
                     Application.Current.Dispatcher.Invoke(delegate
