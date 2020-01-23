@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager
             get
             {
                 if (ModClassicUpdateCode > 0) return true;
-                if (ModModMakerID > 0) return true; 
+                if (ModModMakerID > 0) return true;
                 //Nexus update check? //Not available yet. Will likely require whitelisting.
 
                 return false;
@@ -417,6 +417,13 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             string game = iniData[@"ModInfo"][@"game"];
+            if (parsedModCmmVer >= 6 && game == null)
+            {
+                //Not allowed. You MUST specify game on cmmver 6 or higher
+                Log.Error($@"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.");
+                LoadFailedReason = $"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.";
+                return;
+            }
             switch (game)
             {
                 //case null: //will have to find a way to deal with the null case, in the event it's an ME3 mod manager mod from < 6.0.
@@ -727,6 +734,19 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
+                    //MultiLists: Mod Manager 6.0
+                    //Must be parsed before AltFile as AltFiles can access these lists.
+                    if (ModDescTargetVersion >= 6.0)
+                    {
+                        int i = 1;
+                        while (true)
+                        {
+                            var multilist = iniData[headerAsString][@"multilist" + i];
+                            if (multilist == null) break; //no more to parse
+                            headerJob.MultiLists[i] = multilist.Split(';');
+                            i++;
+                        }
+                    }
 
                     //Altfiles: Mod Manager 4.2
                     string altfilesStr = (ModDescTargetVersion >= 4.2 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString][@"altfiles"] : null;
@@ -753,6 +773,12 @@ namespace MassEffectModManagerCore.modmanager
                                 return;
                             }
                         }
+                    }
+
+                    if (!headerJob.ValidateAltFiles(out string failureReason))
+                    {
+                        LoadFailedReason = failureReason;
+                        return; //Error will be 
                     }
 
                     CLog.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
@@ -835,8 +861,6 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-
-
                     //Altfiles: Mod Manager 4.2
                     string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData[@"CUSTOMDLC"][@"altfiles"] : null;
                     if (!string.IsNullOrEmpty(altfilesStr))
@@ -864,7 +888,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    //MultiAltLists: Mod Manager 6.0
+                    //MultiLists: Mod Manager 6.0
                     //Must be parsed before AltDLC as AltDLC can access these lists.
                     if (ModDescTargetVersion >= 6.0)
                     {

@@ -149,6 +149,8 @@
                     <Separator Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem Header="Debug Build Items" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem Header="Reload selected mod" Click="ReloadSelectedMod_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Debug Print All Referenced Files" Click="DebugPrintReferencedFiles_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Debug Print Installation Queue" Click="DebugPrintInstallationQueue_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
                     <MenuItem Header="Stamp current target with ALOT marker" Click="StampCurrentTargetWithALOT_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
                     <MenuItem Header="Strip current target ALOT marker" Click="StripCurrentTargetALOTMarker_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
                     <!--<MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />-->

@@ -1006,5 +1006,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AlternateOptions.ClearEx(); //remove collection of items
             base.OnClosing(DataEventArgs.Empty);
         }
+
+        private void DebugPrintInstallationQueue_Click(object sender, RoutedEventArgs e)
+        {
+            if (ModBeingInstalled != null)
+            {
+                var queues = ModBeingInstalled.GetInstallationQueues(gameTarget);
+                Debug.WriteLine("Installation Queue:");
+                foreach (var job in queues.Item1)
+                {
+                    foreach (var file in job.Value.unpackedJobMapping)
+                    {
+                        Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+                    }
+                }
+
+                foreach (var job in queues.Item2)
+                {
+                    foreach (var file in job.Item3)
+                    {
+                        Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+                    }
+                }
+            }
+        }
     }
 }

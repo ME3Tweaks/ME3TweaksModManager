@@ -260,7 +260,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {
-                GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
+                GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null; //TODO: FORCE OPTIONGROUP TO HAVE ONE ITEM CHECKEDBYDFEAULT. HAVE TO CHECK AT HIGHER LEVEL IN PARSER
             }
 
             if (Condition == AltDLCCondition.COND_MANUAL && properties.TryGetValue(@"CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))

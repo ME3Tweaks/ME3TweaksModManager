@@ -6,6 +6,7 @@ using System.Linq;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -422,6 +423,31 @@ namespace MassEffectModManagerCore.modmanager
 
             ReadOnlyIndicators.Add(sourceRelativePath);
             return null;
+        }
+
+        public bool ValidateAltFiles(out string failureReason)
+        {
+            var optionGroups = AlternateFiles.Select(x => x.GroupName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct();
+
+            foreach (var group in optionGroups)
+            {
+                var checkedByDefaultForGroups = AlternateFiles.Count(x => x.CheckedByDefault && x.GroupName == group);
+                if (checkedByDefaultForGroups == 0)
+                {
+                    Log.Error($@"Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct set in their group with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'");
+                    failureReason = $"Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct in their group set with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'.";
+                    return false;
+                }
+                if (checkedByDefaultForGroups > 1)
+                {
+                    Log.Error($@"Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
+                    failureReason = $"Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'.";
+                    return false;
+                }
+            }
+
+            failureReason = null;
+            return true; //validated
         }
     }
 }

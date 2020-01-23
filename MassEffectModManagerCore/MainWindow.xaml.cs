@@ -2605,5 +2605,42 @@ namespace MassEffectModManagerCore
                 SelectedGameTarget.ReloadGameTarget();
             }
         }
+
+        private void DebugPrintReferencedFiles_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedMod != null)
+            {
+                var refed = SelectedMod.GetAllRelativeReferences();
+                Debug.WriteLine("Referenced files:");
+                foreach (var refx in refed)
+                {
+                    Debug.WriteLine(refx);
+                }
+            }
+        }
+
+        private void DebugPrintInstallationQueue_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedMod != null)
+            {
+                var queues = SelectedMod.GetInstallationQueues(InstallationTargets.FirstOrDefault(x => x.Game == SelectedMod.Game));
+                Debug.WriteLine("Installation Queue:");
+                foreach (var job in queues.Item1)
+                {
+                    foreach (var file in job.Value.unpackedJobMapping)
+                    {
+                        Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+                    }
+                }
+
+                foreach (var job in queues.Item2)
+                {
+                    foreach (var file in job.Item3)
+                    {
+                        Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+                    }
+                }
+            }
+        }
     }
 }

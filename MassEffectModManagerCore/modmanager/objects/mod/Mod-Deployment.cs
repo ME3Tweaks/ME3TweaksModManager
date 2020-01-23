@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                         else if (dlc.MultiListSourceFiles != null)
                         {
-                            foreach(var mf in dlc.MultiListSourceFiles)
+                            foreach (var mf in dlc.MultiListSourceFiles)
                             {
                                 var relpath = Path.Combine(ModPath, dlc.MultiListRootPath, mf).Substring(ModPath.Length + 1);
                                 references.Add(relpath);
@@ -63,13 +63,31 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     if (file.HasRelativeFile())
                     {
-                        if (IsInArchive)
+                        if (file.AltFile != null)
                         {
-                            references.Add(FilesystemInterposer.PathCombine(true, ModPath, file.AltFile));
+                            if (IsInArchive)
+                            {
+                                references.Add(FilesystemInterposer.PathCombine(true, ModPath, file.AltFile));
+                            }
+                            else
+                            {
+                                references.Add(file.AltFile);
+                            }
                         }
-                        else
+                        else if (file.MultiListSourceFiles != null)
                         {
-                            references.Add(file.AltFile);
+                            foreach (var mf in file.MultiListSourceFiles)
+                            {
+                                var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, file.MultiListRootPath, mf);
+                                if (IsInArchive)
+                                {
+                                    references.Add(relPath);
+                                }
+                                else
+                                {
+                                    references.Add(relPath.Substring(ModPath.Length+1));
+                                }
+                            }
                         }
                     }
                 }

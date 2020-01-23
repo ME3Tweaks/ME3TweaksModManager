@@ -10,6 +10,7 @@
              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
+             xmlns:massEffectModManagerCore="clr-namespace:MassEffectModManagerCore"
              mc:Ignorable="d" 
              Height="Auto" MinWidth="300" MaxWidth="480">
     <local:MMBusyPanelBase.Resources>
@@ -22,6 +23,8 @@
             <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,15,0,0">
                 <TextBlock Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap" MaxWidth="350" HorizontalAlignment="Left" 
                            Text="{DynamicResource string_ui_allAlternatesAreAutomatic}"/>
+                <Image Name="BottomBarGameID_Image" Source="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25"  DockPanel.Dock="Left" VerticalAlignment="Bottom"/>
+                <Button Content="Debug Print Queue" Click="DebugPrintInstallationQueue_Click" Visibility="{x:Static massEffectModManagerCore:App.DebugOnlyVisibility}" Margin="0,10,0,0"  DockPanel.Dock="Left"/>
 
                 <Button Content="{DynamicResource string_install}" DockPanel.Dock="Right" Padding="40,5" Click="InstallStart_Click" Margin="0,10,0,0" ToolTip="{DynamicResource string_installMod}"/>
                 <Button Content="{DynamicResource string_cancel}" DockPanel.Dock="Right" Padding="5" Margin="0,10,5,0" Click="InstallCancel_Click" ToolTip="{DynamicResource string_abortInstallingMod}"/>

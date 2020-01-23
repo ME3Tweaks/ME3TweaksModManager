@@ -19,6 +19,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             OP_SUBSTITUTE,
             OP_NOINSTALL,
             OP_INSTALL,
+            OP_APPLY_MULTILISTFILES,
             OP_NOTHING //Used for alt groups
         }
 
@@ -52,12 +53,18 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// In-game relative path that will be operated on according to the specified operation
         /// </summary>
         public string ModFile { get; private set; }
+        public string MultiListRootPath { get; }
+        public string[] MultiListSourceFiles { get; }
+        /// <summary>
+        /// In-game relative path that will be targeted as the root. It's like ModFile but more descriptive for multilist implementations.
+        /// </summary>
+        public string MultiListTargetPath { get; }
 
         internal bool HasRelativeFile()
         {
             if (Operation == AltFileOperation.INVALID_OPERATION) return false;
             if (Operation == AltFileOperation.OP_NOINSTALL) return false;
-            if (Operation == AltFileOperation.OP_NOTHING) return false;
+            if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES) return true;
             return AltFile != null;
         }
 
@@ -65,7 +72,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
         /// </summary>
         public string SubstituteFile;
-
 
         //public const string OPERATION_SUBSTITUTE = "OP_SUBSTITUTE"; //swap a file in a job
         //public const string OPERATION_NOINSTALL = "OP_NOINSTALL"; //do not install a file
@@ -111,14 +117,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 foreach (var dlc in conditionalList)
                 {
-                    //if (modForValidating.Game == Mod.MEGame.ME3)
-                    //{
                     if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
                     {
                         ConditionalDLC.Add(foldername);
                         continue;
                     }
-                    //}
                     if (!dlc.StartsWith(@"DLC_"))
                     {
                         Log.Error(@"An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
@@ -129,10 +132,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         ConditionalDLC.Add(dlc);
                     }
-
                 }
             }
 
+            //todo: ensure ModOperation is set before trying to parse it
 
             if (!Enum.TryParse(properties[@"ModOperation"], out Operation))
             {
@@ -147,6 +150,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 Description = description;
             }
 
+
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
@@ -158,83 +162,130 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (Operation != AltFileOperation.OP_NOTHING)
             {
-                if (properties.TryGetValue(@"ModFile", out string modfile))
+                int multilistid = -1;
+                if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES)
                 {
-                    ModFile = modfile.TrimStart('\\', '/').Replace('/', '\\');
-                }
-                else
-                {
-                    Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files. Friendlyname: {FriendlyName}");
-                    ValidAlternate = false;
-                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_noModFileDeclared, FriendlyName);
-                    return;
-                }
-
-                if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
-                {
-                    var modFilePath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
-                    var pathSplit = ModFile.Split('\\');
-                    if (pathSplit.Length > 0)
+                    if (properties.TryGetValue(@"MultiListRootPath", out var rootpath))
                     {
-                        var dlcName = pathSplit[0];
-                        var jobKey = associatedJob.CustomDLCFolderMapping.FirstOrDefault(x => x.Value.Equals(dlcName, StringComparison.InvariantCultureIgnoreCase));
-                        if (jobKey.Key != null)
-                        {
-                            //if (associatedJob.CustomDLCFolderMapping.TryGetValue(ModFile, out var sourceFile))
-                            //{
+                        MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.";
+                        return;
+                    }
 
-                            //}
+                    if (properties.TryGetValue(@"MultiListTargetPath", out var targetpath))
+                    {
+                        MultiListTargetPath = targetpath.TrimStart('\\', '/').Replace('/', '\\');
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.";
+                        return;
+                    }
+
+                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out multilistid))
+                    {
+                        if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
+                        {
+                            MultiListSourceFiles = ml;
                         }
                         else
                         {
-
-                            Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
+                            Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
-                            LoadFailedReason = "Dummy placeholder";
-                            //LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_couldNotFindModFile, FriendlyName, ModFile);
+                            var id = @"multilist" + multilistid;
+                            LoadFailedReason = $"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task:" + $@" multilist{id}";
                             return;
                         }
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.";
+                        return;
                     }
                 }
                 else
                 {
-                    if (!associatedJob.FilesToInstall.TryGetValue(ModFile, out var sourceFile))
+                    if (properties.TryGetValue(@"ModFile", out string modfile))
                     {
-                        Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) specified but does not exist in job: {ModFile}");
+                        ModFile = modfile.TrimStart('\\', '/').Replace('/', '\\');
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files except when using . Friendlyname: {FriendlyName}");
                         ValidAlternate = false;
-                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_couldNotFindModFile, FriendlyName, ModFile);
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_noModFileDeclared, FriendlyName);
                         return;
                     }
-                }
 
-                if (properties.TryGetValue(@"AltFile", out string altfile))
-                {
-                    AltFile = altfile;
-                }
-                else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
-                {
-                    AltFile = maltfile;
-                }
+                    if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
+                    {
+                        //Verify target folder is reachable by the mod
+                        var modFilePath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
+                        var pathSplit = ModFile.Split('\\');
+                        if (pathSplit.Length > 0)
+                        {
+                            var dlcName = pathSplit[0];
+                            var jobKey = associatedJob.CustomDLCFolderMapping.FirstOrDefault(x => x.Value.Equals(dlcName, StringComparison.InvariantCultureIgnoreCase));
+                            if (jobKey.Key != null)
+                            {
+                                //todo: Find DLC target to make sure this rule can actually be applied. Somewhat difficult logic here
+                            }
+                            else
+                            {
 
-                properties.TryGetValue(@"SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
+                                Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
+                                ValidAlternate = false;
+                                LoadFailedReason = "Dummy placeholder"; //Do not localize
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!associatedJob.FilesToInstall.TryGetValue(ModFile, out var sourceFile))
+                        {
+                            Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) specified but does not exist in job: {ModFile}");
+                            ValidAlternate = false;
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_couldNotFindModFile, FriendlyName, ModFile);
+                            return;
+                        }
+                    }
 
-                //workaround for 4.5
-                if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
-                {
-                    AltFile = SubstituteFile;
-                }
+                    if (properties.TryGetValue(@"AltFile", out string altfile))
+                    {
+                        AltFile = altfile;
+                    }
+                    else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
+                    {
+                        AltFile = maltfile;
+                    }
 
-                if (!string.IsNullOrEmpty(AltFile))
-                {
-                    AltFile = AltFile.Replace('/', '\\'); //Standardize paths
-                }
+                    properties.TryGetValue(@"SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
 
-                //This needs reworked from java's hack implementation
-                //Need to identify mods using substitution features
+                    //workaround for 4.5
+                    if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
+                    {
+                        AltFile = SubstituteFile;
+                    }
 
-                if (Operation == AltFileOperation.OP_INSTALL || Operation == AltFileOperation.OP_SUBSTITUTE)
-                {
-                    if (MultiMappingFile == null)
+                    if (!string.IsNullOrEmpty(AltFile))
+                    {
+                        AltFile = AltFile.Replace('/', '\\'); //Standardize paths
+                    }
+
+                    //This needs reworked from java's hack implementation
+                    //Need to identify mods using substitution features
+
+                    if (Operation == AltFileOperation.OP_INSTALL || Operation == AltFileOperation.OP_SUBSTITUTE)
                     {
                         //Validate file
                         var altPath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AltFile);
@@ -249,11 +300,6 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                         //Ensure it is not part of  DLC directory itself.
                         var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
-                        //Todo
-                    }
-                    else
-                    {
-                        //Multimapping, Todo
                     }
                 }
             }
