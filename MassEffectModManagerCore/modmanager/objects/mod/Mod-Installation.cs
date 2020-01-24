@@ -240,8 +240,9 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     Debug.WriteLine(@"Checking alt conditions for application: " + altFile.FriendlyName);
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOTHING) continue; //skip nothing
-                    
-                    if (altFile.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES || altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
+                    if (altFile.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES) continue; //do not apply in the main loop.
+
+                    if (altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //Alt applies to this file
                         switch (altFile.Operation)
@@ -293,32 +294,6 @@ namespace MassEffectModManagerCore.modmanager
                                 }
                                 altApplied = true;
                                 break;
-                            case AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES:
-                                foreach (var multifile in altFile.MultiListSourceFiles)
-                                {
-                                    //same logic as substitute, just different logging.
-                                    CLog.Information($@"Adding {multifile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_APPLY_MULTILISTFILES", Settings.LogModInstallation);
-                                    if (job.JobDirectory != null && (multifile.StartsWith(job.JobDirectory) && job.Header == ModJob.JobHeader.CUSTOMDLC))
-                                    {
-                                        installationMapping[destFile] = new InstallSourceFile(multifile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
-                                        {
-                                            AltApplied = true,
-                                            IsFullRelativeFilePath = true
-                                        }; //use alternate file as key instead
-                                    }
-                                    else
-                                    {
-                                        installationMapping[destFile] = new InstallSourceFile(multifile)
-                                        {
-                                            AltApplied = true,
-                                            IsFullRelativeFilePath = true
-                                        }; //use alternate file as key instead
-                                    }
-                                }
-
-                                altApplied = true;
-                                break;
-
                         }
                         break;
                     }
@@ -331,6 +306,36 @@ namespace MassEffectModManagerCore.modmanager
                 installationMapping[destFile] = new InstallSourceFile(sourceFile);
                 CLog.Information($@"Adding {job.Header} file to installation {(isSFAR ? @"SFAR" : @"unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation); //do not localize
 
+            }
+
+            //Apply autolist alternate files
+
+            foreach (var altFile in job.AlternateFiles.Where(x => x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES))
+            {
+                foreach (var multifile in altFile.MultiListSourceFiles)
+                {
+                    CLog.Information(
+                        $@"Adding multilist files {multifile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_APPLY_MULTILISTFILES",
+                        Settings.LogModInstallation);
+                    string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
+
+                    installationMapping[altFile.MultiListTargetPath + '\\' + multifile] = new InstallSourceFile(relativeSourcePath)
+                    {
+                        AltApplied = true,
+                        IsFullRelativeFilePath = true
+                    }; //use alternate file as key instead
+                    //}
+
+                    //not sure if there should be an else case here.
+                    //else
+                    //{
+                    //    installationMapping[destFile] = new InstallSourceFile(multifile)
+                    //    {
+                    //        AltApplied = true,
+                    //        IsFullRelativeFilePath = true
+                    //    }; //use alternate file as key instead
+                    //}
+                }
             }
         }
 

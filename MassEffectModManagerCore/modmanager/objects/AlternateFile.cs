@@ -165,6 +165,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                 int multilistid = -1;
                 if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES)
                 {
+                    if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
+                    {
+                        //This cannot be used on custom dlc
+                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES on the CUSTOM DLC task - this operation is not supported on this header. Use the altdlc version instead, see the moddesc.ini documentation.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES on the CUSTOM DLC task - this operation is not supported on this header. Use the altdlc version instead, see the moddesc.ini documentation.";
+                        return;
+                    }
                     if (properties.TryGetValue(@"MultiListRootPath", out var rootpath))
                     {
                         MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
