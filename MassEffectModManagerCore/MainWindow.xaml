@@ -145,15 +145,6 @@
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Openmodfolder}" Click="OpenModFolder_Click" />
                     <MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" />
-
-                    <Separator Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="Debug Build Items" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="Reload selected mod" Click="ReloadSelectedMod_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
-                    <MenuItem Header="Debug Print All Referenced Files" Click="DebugPrintReferencedFiles_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
-                    <MenuItem Header="Debug Print Installation Queue" Click="DebugPrintInstallationQueue_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
-                    <MenuItem Header="Stamp current target with ALOT marker" Click="StampCurrentTargetWithALOT_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
-                    <MenuItem Header="Strip current target ALOT marker" Click="StripCurrentTargetALOTMarker_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
-                    <!--<MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />-->
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_Tools}" Padding="4">
                     <MenuItem Header="{DynamicResource string_Runofficialgameconfigurationtool}">
@@ -235,12 +226,25 @@
                     </MenuItem>
                     <MenuItem Header="Developer tools" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <MenuItem Header="Backup File Fetcher" Command="{Binding BackupFileFetcherCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"/>
-
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_BackupRestore}" Padding="4">
                     <MenuItem Header="{DynamicResource string_Backup}" Command="{Binding BackupCommand}" ToolTip="{DynamicResource string_Createentiregamebackups}" />
                     <MenuItem Header="{DynamicResource string_Restore}" Command="{Binding RestoreCommand}" ToolTip="{DynamicResource string_Restoreagamefrombackup}" />
                 </MenuItem>
+                <MenuItem Header="Debug" Visibility="{x:Static local:App.DebugOnlyVisibility}" >
+                    <MenuItem Header="Requires selected mod" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem Header="Reload selected mod" Click="ReloadSelectedMod_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Debug Print All Referenced Files" Click="DebugPrintReferencedFiles_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Debug Print Installation Queue" Click="DebugPrintInstallationQueue_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Requires selected target" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem Header="Stamp current target with ALOT marker" Click="StampCurrentTargetWithALOT_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Strip current target ALOT marker" Click="StripCurrentTargetALOTMarker_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Requires nothing" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem Header="Show welcome panel" Click="ShowWelcomePanel_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                    <MenuItem Header="Show backup nag" Click="ShowBackupNag_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}"  />
+                </MenuItem>
+
+
                 <MenuItem Name="HelpMenuItem" Header="{DynamicResource string_Help}" Padding="4">
                     <MenuItem Name="DynamicHelp_MenuItem" Header="{DynamicResource string_DynamicHelp}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_Diagnostics}" Style="{StaticResource MenuItemHeaderStyle}" />

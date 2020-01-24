@@ -133,6 +133,7 @@ namespace MassEffectModManagerCore
             {
                 SetLanguage(App.InitialLanguage, true);
             }
+
             PopulateTargets();
             AttachListeners();
             SetTheme();
@@ -142,10 +143,7 @@ namespace MassEffectModManagerCore
                 InstallationTargets_ComboBox.SelectedItem = InstallationTargets[0];
             }
 
-            backgroundTaskEngine = new BackgroundTaskEngine((updateText) =>
-            {
-                Application.Current.Dispatcher.Invoke(() => { CurrentOperationText = updateText; });
-            },
+            backgroundTaskEngine = new BackgroundTaskEngine((updateText) => { Application.Current.Dispatcher.Invoke(() => { CurrentOperationText = updateText; }); },
                 () =>
                 {
                     Application.Current.Dispatcher.Invoke(delegate
@@ -231,6 +229,7 @@ namespace MassEffectModManagerCore
                     {
                         FailedModsString = @"";
                     }
+
                     if (isclosing || isopening)
                     {
                         Application.Current.Dispatcher.Invoke(delegate
@@ -240,6 +239,7 @@ namespace MassEffectModManagerCore
                             {
                                 sb = sb.Clone();
                             }
+
                             Storyboard.SetTarget(sb, FailedModsPopupPanel);
                             sb.Begin();
                         });
@@ -282,6 +282,7 @@ namespace MassEffectModManagerCore
         public ICommand BatchModInstallerCommand { get; set; }
         public ICommand ImportDLCModFromGameCommand { get; set; }
         public ICommand BackupFileFetcherCommand { get; set; }
+
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -371,6 +372,7 @@ namespace MassEffectModManagerCore
 
                     bool continueInstalling = true;
                     int modIndex = 0;
+
                     //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
                     void modInstalled(bool successful)
                     {
@@ -384,10 +386,7 @@ namespace MassEffectModManagerCore
                         {
                             //End
                             var autoTocUI = new AutoTOC(SelectedGameTarget);
-                            autoTocUI.Close += (a1, b1) =>
-                            {
-                                ReleaseBusyControl();
-                            };
+                            autoTocUI.Close += (a1, b1) => { ReleaseBusyControl(); };
                             ShowBusyControl(autoTocUI);
                         }
                     }
@@ -469,6 +468,7 @@ namespace MassEffectModManagerCore
                     EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
                 });
             }
+
             if (!ME2NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME2)");
@@ -478,6 +478,7 @@ namespace MassEffectModManagerCore
                     EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
                 });
             }
+
             if (!ME3NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME3)");
@@ -1109,7 +1110,7 @@ namespace MassEffectModManagerCore
 
                     if (gameSelected == Mod.MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32 directory.
-                                                                //Test for cmmvanilla
+                    //Test for cmmvanilla
                     if (File.Exists(Path.Combine(result, @"cmmvanilla")))
                     {
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCannotAddTargetCmmVanilla), M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1502,6 +1503,7 @@ namespace MassEffectModManagerCore
                     ModsList_ListBox.SelectedItem = m;
                     ModsList_ListBox.ScrollIntoView(m);
                 }
+
                 ModsLoaded = true;
             };
             bw.RunWorkerAsync();
@@ -1757,6 +1759,7 @@ namespace MassEffectModManagerCore
             {
                 sb = sb.Clone();
             }
+
             Storyboard.SetTarget(sb, VisitWebsitePanel);
             sb.Begin();
         }
@@ -1910,6 +1913,7 @@ namespace MassEffectModManagerCore
                         Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
                         updateCheckTask.finishedUiText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
+
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
 
                     if (App.OnlineManifest != null)
@@ -1947,6 +1951,7 @@ namespace MassEffectModManagerCore
                             bgTask.finishedUiText = "Error loading Mixins";
 
                         }
+
                         backgroundTaskEngine.SubmitJobCompletion(bgTask);
                     }
                     else
@@ -2025,6 +2030,7 @@ namespace MassEffectModManagerCore
                     Settings.LastContentCheck = DateTime.Now;
                     Settings.Save();
                 }
+
                 Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
             };
@@ -2100,6 +2106,7 @@ namespace MassEffectModManagerCore
                 {
                     LoadedTips.Clear();
                 }
+
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
             }
         }
@@ -2247,6 +2254,7 @@ namespace MassEffectModManagerCore
                             return;
                         }
                     }
+
                     //set default HQ lod
                     Utilities.SetLODs(selectedGameTarget, true, me12k, false);
                 }
@@ -2302,9 +2310,11 @@ namespace MassEffectModManagerCore
                     case @".7z":
                     case @".zip":
                     case @".exe":
-                        Analytics.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> {
-                            { @"Method", @"Drag & drop" },
-                            { @"Filename", Path.GetFileName(files[0]) } });
+                        Analytics.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string>
+                        {
+                            {@"Method", @"Drag & drop"},
+                            {@"Filename", Path.GetFileName(files[0])}
+                        });
                         openModImportUI(files[0]);
                         break;
                     //TPF, .mod, .mem
@@ -2575,6 +2585,7 @@ namespace MassEffectModManagerCore
             {
                 Log.Error(@"Could not set localized dynamic help: " + e.Message);
             }
+
             if (!startup)
             {
                 AuthToNexusMods();
@@ -2641,6 +2652,31 @@ namespace MassEffectModManagerCore
                     }
                 }
             }
+        }
+
+        private void ShowBackupNag_Click(object sender, RoutedEventArgs e)
+        {
+            ShowBackupNag();
+        }
+
+        private void ShowBackupNag()
+        {
+            var nagPanel = new BackupNagSystem();
+            nagPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is bool openBackup && openBackup)
+                {
+                    ShowBackupPane();
+                }
+
+            };
+            ShowBusyControl(nagPanel);
+        }
+
+        private void ShowWelcomePanel_Click(object sender, RoutedEventArgs e)
+        {
+            ShowPreviewPanel();
         }
     }
 }
