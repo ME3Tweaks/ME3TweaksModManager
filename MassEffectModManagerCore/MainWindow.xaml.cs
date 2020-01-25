@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
+using System.Xml;
 using AdonisUI;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
@@ -2354,6 +2356,12 @@ namespace MassEffectModManagerCore
                         Analytics.TrackEvent(@"User opened me2mod file", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;
+                    case @".xaml":
+                        if (Settings.DeveloperMode)
+                        {
+                            LoadExternalLocalizationDictionary(files[0]);
+                        }
+                        break;
                 }
             }
         }
@@ -2402,7 +2410,10 @@ namespace MassEffectModManagerCore
                 string ext = Path.GetExtension(files[0]).ToLower();
                 if (!SupportedDroppableExtensions.Contains(ext))
                 {
-                    e.Effects = DragDropEffects.None;
+                    if (!Settings.DeveloperMode || ext != ".xaml") //dev mode supports .xaml file drop for localization
+                    {
+                        e.Effects = DragDropEffects.None;
+                    }
                 }
             }
             else
@@ -2584,7 +2595,7 @@ namespace MassEffectModManagerCore
             SetLanguage(lang, false);
         }
 
-        public void SetLanguage(string lang, bool startup)
+        public void SetLanguage(string lang, bool startup, ResourceDictionary forcedDictionary = null)
         {
             Log.Information(@"Setting language to " + lang);
             foreach (var item in languageMenuItems)
@@ -2593,7 +2604,7 @@ namespace MassEffectModManagerCore
             }
 
             //Set language.
-            var resourceDictionary = new ResourceDictionary
+            var resourceDictionary = forcedDictionary ?? new ResourceDictionary
             {
                 // Pick uri from configuration
                 Source = new Uri($@"pack://application:,,,/ME3TweaksModManager;component/modmanager/localizations/{lang}.xaml", UriKind.Absolute)
@@ -2617,6 +2628,25 @@ namespace MassEffectModManagerCore
                 AuthToNexusMods();
                 FailedMods.RaiseBindableCountChanged();
                 CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
+            }
+        }
+
+        private void LoadExternalLocalizationDictionary(string filepath)
+        {
+            string filename = Path.GetFileNameWithoutExtension(filepath);
+            string extension = Path.GetExtension(filepath);
+            if (App.SupportedLanguages.Contains(filename) && extension == ".xaml" && Settings.DeveloperMode)
+            {
+                //Load external dictionary
+                try
+                {
+                    var extDictionary = (ResourceDictionary)XamlReader.Load(new XmlTextReader(filepath));
+                    SetLanguage(filename, false, extDictionary);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Error loading external localization file: " + e.Message);
+                }
             }
         }
 
