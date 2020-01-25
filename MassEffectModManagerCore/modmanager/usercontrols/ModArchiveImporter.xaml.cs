@@ -456,6 +456,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build and feed it a virtual one.
                         IniData virtualModDesc = new IniData();
                         virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
+                        virtualModDesc[@"ModInfo"][@"game"] = "ME3";
                         virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
                         virtualModDesc[@"ModInfo"][@"moddev"] = thirdPartyInfo.moddev;
                         virtualModDesc[@"ModInfo"][@"modsite"] = thirdPartyInfo.modsite;
