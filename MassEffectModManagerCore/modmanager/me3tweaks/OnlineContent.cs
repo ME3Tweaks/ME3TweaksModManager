@@ -22,6 +22,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
         private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice";
+        private const string ModMakerTopModsEndpoint = "https://me3tweaks.com/modmaker/api/topmods";
 
         public static readonly string ModmakerModsEndpoint = "https://me3tweaks.com/modmaker/download.php?id=";
 
@@ -128,6 +129,24 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             using var wc = new ShortTimeoutWebClient();
             string moddesc = wc.DownloadStringAwareOfEncoding(ThirdPartyModDescURL + name);
             return moddesc;
+        }
+
+        public static List<ServerModMakerModInfo> FetchTopModMakerMods()
+        {
+            var topModsJson = FetchRemoteString(ModMakerTopModsEndpoint);
+            if (topModsJson != null)
+            {
+                try
+                {
+                    return JsonConvert.DeserializeObject<List<ServerModMakerModInfo>>(topModsJson);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Error converting top mods response to json: " + e.Message);
+                }
+            }
+
+            return new List<ServerModMakerModInfo>();
         }
 
         public static string FetchExeTransform(string name)
@@ -428,6 +447,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             return (responseStream, downloadError);
+        }
+
+        public class ServerModMakerModInfo
+        {
+
+            public string mod_id { get; set; }
+            public string mod_name { get; set; }
+            public string mod_desc { get; set; }
+            public string revision { get; set; }
+            public string username { get; set; }
+
+            public string UIRevisionString => $" Revision {revision}";
+            public string UICodeString => $"Code {mod_id}";
         }
     }
 }

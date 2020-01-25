@@ -1321,6 +1321,10 @@ namespace MassEffectModManagerCore
             }
 
             LoadMods();
+            if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
+            {
+                ShowBackupNag();
+            }
             PerformStartupNetworkFetches(true);
         }
 
@@ -2683,7 +2687,11 @@ namespace MassEffectModManagerCore
 
         private void ShowBackupNag()
         {
-            var nagPanel = new BackupNagSystem();
+            var nagPanel = new BackupNagSystem(
+                InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1),
+                InstallationTargets.Any(x => x.Game == Mod.MEGame.ME2),
+                InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3)
+            );
             nagPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();

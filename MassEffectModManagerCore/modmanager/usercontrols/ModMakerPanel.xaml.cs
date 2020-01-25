@@ -25,6 +25,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         private bool KeepOpenWhenThreadFinishes;
         public string ModMakerCode { get; set; }
+        public OnlineContent.ServerModMakerModInfo SelectedTopMod { get; set; }
         public long CurrentTaskValue { get; private set; }
         public long CurrentTaskMaximum { get; private set; } = 100;
         public bool CurrentTaskIndeterminate { get; private set; }
@@ -32,26 +33,62 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long OverallMaximum { get; private set; } = 100;
         public bool OverallIndeterminate { get; private set; }
         public bool CompileInProgress { get; set; }
-        public string DownloadAndModNameText { get; set; } = "Enter a ModMaker mod code";
+        public string DownloadAndModNameText { get; set; } = "Enter ModMaker mod code or select from the top mods";
         public string CurrentTaskString { get; set; }
         public ModMakerPanel()
         {
             DataContext = this;
             LoadCommands();
             InitializeComponent();
+            GetTopMods();
         }
+
+        private void GetTopMods()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ModMaker-TopModsFetch");
+            nbw.DoWork += (a, b) =>
+            {
+                b.Result= OnlineContent.FetchTopModMakerMods();
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Error == null && b.Result is List<OnlineContent.ServerModMakerModInfo> topMods)
+                {
+                    TopMods.ReplaceAll(topMods);
+                }
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        public ObservableCollectionExtended<OnlineContent.ServerModMakerModInfo> TopMods { get; } = new ObservableCollectionExtended<OnlineContent.ServerModMakerModInfo>();
+
         public ICommand DownloadCompileCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
+        public ICommand OpenModMakerCommand { get; private set; }
 
         private void LoadCommands()
         {
             DownloadCompileCommand = new GenericCommand(StartCompiler, CanStartCompiler);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
+            OpenModMakerCommand = new GenericCommand(OpenModMaker);
+        }
+
+        private void OpenModMaker()
+        {
+            Utilities.OpenWebpage("https://me3tweaks.com/modmaker");
         }
 
         private void ClosePanel()
         {
             OnClosing(DataEventArgs.Empty);
+        }
+
+        public void OnSelectedTopModChanged()
+        {
+            if (SelectedTopMod != null)
+            {
+                ModMakerCode = SelectedTopMod.mod_id;
+            }
         }
 
         private bool CanClose() => !CompileInProgress;
