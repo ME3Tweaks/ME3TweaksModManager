@@ -26,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     public partial class OnlineContent
     {
-        public const string UpdaterServiceManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch";
+        public const string UpdaterServiceManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch"; //2 = debug
         public const string UpdaterServiceCodeValidationEndpoint = "https://me3tweaks.com/mods/latestxml/updatecodevalidation";
         private const string UpdateStorageRoot = "https://me3tweaks.com/mods/updates/";
 
@@ -104,6 +104,20 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         updateFinalRequest += "&";
                     }
                     updateFinalRequest += "classicupdatecode[]=" + mod.ModClassicUpdateCode;
+                }
+                else if (mod.NexusModID > 0)
+                {
+                    //Nexus style
+                    if (first)
+                    {
+                        updateFinalRequest += "?";
+                        first = false;
+                    }
+                    else
+                    {
+                        updateFinalRequest += "&";
+                    }
+                    updateFinalRequest += "nexusupdatecode[]=" + mod.Game.ToString().Substring(2) + "-" + mod.NexusModID;
                 }
                 //else if (mod.NexusModID > 0)
                 //{
@@ -221,7 +235,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #endregion
 
                 #region Nexus Mod Third Party
-
+                var nexusModsUpdateInfo = (from e in rootElement.Elements("nexusmod")
+                                           select new NexusModUpdateInfo
+                                           {
+                                               NexusModsId = (int)e.Attribute("id"),
+                                               GameId = (int)e.Attribute("game"),
+                                               versionstr = (string)e.Attribute("version"),
+                                               UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute("updated_timestamp")).DateTime
+                                           }).ToList();
+                modUpdateInfos.AddRange(nexusModsUpdateInfo);
                 #endregion
                 return modUpdateInfos;
             }
@@ -408,6 +430,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 base.SetLocalizedInfo();
                 UIStatusString = $"ModMaker Code {ModMakerId}";
+            }
+        }
+
+        public class NexusModUpdateInfo : ModUpdateInfo
+        {
+            public int NexusModsId;
+            public int GameId;
+            public string UIStatusString { get; set; }
+            public DateTime UpdatedTime { get; internal set; }
+
+            internal override void SetLocalizedInfo()
+            {
+                base.SetLocalizedInfo();
+                UIStatusString = $"Updated {UpdatedTime.ToString("d")}";
+                DownloadButtonText = "Open NexusMods page";
+                changelog = "This mod has an update available on NexusMods. To update it, download the mod from NexusMods and import it into Mod Manager.";
             }
         }
 

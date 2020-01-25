@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreMod()
         {
-            return SelectedMod != null && SelectedMod.IsUpdatable;
+            return SelectedMod != null && SelectedMod.IsME3TweaksUpdatable;
         }
 
         private bool CanDebugReload()

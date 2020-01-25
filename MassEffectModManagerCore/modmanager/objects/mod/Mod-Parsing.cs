@@ -73,11 +73,24 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (ModClassicUpdateCode > 0) return true;
                 if (ModModMakerID > 0) return true;
-                //Nexus update check? //Not available yet. Will likely require whitelisting.
-
+                if (NexusModID > 0) return true;
                 return false;
             }
         }
+
+        /// <summary>
+        /// Indicates if this mod has the relevant information attached to it for updates from ME3Tweaks That is, classic update code or modmaker id
+        /// </summary>
+        public bool IsME3TweaksUpdatable
+        {
+            get
+            {
+                if (ModClassicUpdateCode > 0) return true;
+                if (ModModMakerID > 0) return true;
+                return false;
+            }
+        }
+
         public string DisplayedModDescription
         {
             get

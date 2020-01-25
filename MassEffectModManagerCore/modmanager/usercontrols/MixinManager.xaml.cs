@@ -167,9 +167,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         using var packageAsStream =
                                             VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
                                                 Path.GetFileName(file.Key));
-                                        packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
+                                        //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
                                         using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
-                                        decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");
+                                        //decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");
 
                                         using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                             completedSingleApplicationCallback, failedApplicationCallback);

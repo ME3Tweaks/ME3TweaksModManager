@@ -1542,6 +1542,28 @@ namespace MassEffectModManagerCore
                     }
                 }
 
+                //Calculate NEXUSMOD Updates
+                foreach (var mm in updatableMods.Where(x => x.NexusModID > 0 && x.ModClassicUpdateCode == 0)) //check zero as Mgamerz's mods will list me3tweaks with a nexus code still for integrations
+                {
+                    var matchingServerMod = allModsInManifest.FirstOrDefault(x => x is OnlineContent.NexusModUpdateInfo nmui && nmui.NexusModsId == mm.NexusModID && Enum.Parse<Mod.MEGame>(@"ME" + nmui.GameId) == mm.Game);
+                    if (matchingServerMod != null)
+                    {
+                        if (Version.TryParse(matchingServerMod.versionstr, out var serverVer))
+                        {
+                            if (serverVer > mm.ParsedModVersion)
+                            {
+                                matchingServerMod.mod = mm;
+                                updates.Add(matchingServerMod);
+                                matchingServerMod.SetLocalizedInfo();
+                            }
+                        }
+                        else
+                        {
+                            Log.Error("Cannot parse nexusmods version of mod, skipping update check for " + mm.ModName + ". Server version string is " + matchingServerMod.versionstr);
+                        }
+                    }
+                }
+
                 updates = updates.Distinct().ToList();
                 if (updates.Count > 0)
                 {
