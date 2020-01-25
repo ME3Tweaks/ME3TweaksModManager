@@ -413,12 +413,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Information(@"ME3Tweaks does not have additional version information for this file");
+                            Log.Information(@"ME3Tweaks does not have additional version information for this file.");
                             Analytics.TrackEvent("Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
                                 {"Filename", Path.GetFileName(filepath)},
                                 {"MD5", md5}
                             });
+                            foreach (Mod compressedMod in internalModList)
+                            {
+                                compressedMod.ModVersionString = "Unknown";
+                            }
                         }
                     }
 
