@@ -30,6 +30,7 @@ namespace MassEffectModManagerCore
     [Localizable(false)]
     public partial class App : Application
     {
+        public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
         /// <summary>
         /// Registry key for Mass Effect Mod Manager itself. This likely won't be used much
         /// </summary>
@@ -286,6 +287,35 @@ namespace MassEffectModManagerCore
                     Log.Error("Unable to get the list of installed antivirus products: " + e.Message);
                 }
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
+                //Build 104 changed location of settings from AppData to ProgramData.
+                if (!AppDataExistedAtBoot)
+                {
+                    //First time booting something that uses ProgramData
+                    //see if data exists in AppData
+                    var oldDir = Utilities.GetPre104DataFolder();
+                    if (oldDir != null)
+                    {
+                        //Exists. We should migrate it
+                        try
+                        {
+                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(Utilities.GetAppDataFolder()), aboutToCopyCallback: (a) =>
+                            {
+                                Log.Information("Migrating file from AppData to ProgramData: " + a);
+                                return true;
+                            });
+
+                            Log.Information("Deleting old data directory: " + oldDir);
+                            Utilities.DeleteFilesAndFoldersRecursively(oldDir);
+                            Log.Information("Migration from pre 104 settings to 104+ settings completed");
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("Unable to migrate old settings: " + e.Message);
+                        }
+                    }
+                }
+
+
                 Log.Information("Loading settings");
                 Settings.Load();
                 if (!Settings.EnableTelemetry)

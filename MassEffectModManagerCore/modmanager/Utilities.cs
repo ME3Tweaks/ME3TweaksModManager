@@ -767,14 +767,25 @@ namespace MassEffectModManagerCore
             }
         }
 
-        internal static string GetAppDataFolder()
+        internal static string GetAppDataFolder(bool createIfMissing = true)
         {
             var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ME3TweaksModManager");
-            if (!Directory.Exists(folder))
+            if (createIfMissing && !Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
             }
             return folder;
+        }
+
+        internal static string GetPre104DataFolder()
+        {
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
+            if (Directory.Exists(folder))
+            {
+                return folder;
+            }
+
+            return null;
         }
 
         public static Stream GetResourceStream(string assemblyResource)
