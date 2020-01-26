@@ -78,13 +78,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void BeginInstallingMod()
         {
             ModIsInstalling = true;
-            Log.Information($@"BeginInstallingMod(): {ModBeingInstalled.ModName}");
-            NamedBackgroundWorker bw = new NamedBackgroundWorker($@"ModInstaller-{ModBeingInstalled.ModName}");
-            bw.WorkerReportsProgress = true;
-            bw.DoWork += InstallModBackgroundThread;
-            bw.RunWorkerCompleted += ModInstallationCompleted;
-            //bw.ProgressChanged += ModProgressChanged;
-            bw.RunWorkerAsync();
+            if (CheckForGameBackup())
+            {
+                Log.Information($@"BeginInstallingMod(): {ModBeingInstalled.ModName}");
+                NamedBackgroundWorker bw = new NamedBackgroundWorker($@"ModInstaller-{ModBeingInstalled.ModName}");
+                bw.WorkerReportsProgress = true;
+                bw.DoWork += InstallModBackgroundThread;
+                bw.RunWorkerCompleted += ModInstallationCompleted;
+                //bw.ProgressChanged += ModProgressChanged;
+                bw.RunWorkerAsync();
+            }
+            else
+            {
+                Log.Error(@"User aborted installation because they did not have a backup available");
+                InstallationSucceeded = false;
+                InstallationCancelled = true;
+                OnClosing(DataEventArgs.Empty);
+            }
+        }
+
+        private bool CheckForGameBackup()
+        {
+            var hasAnyGameModificationJobs = ModBeingInstalled.InstallationJobs.Any(x => x.Header != ModJob.JobHeader.CUSTOMDLC && x.Header != ModJob.JobHeader.BALANCE_CHANGES);
+            if (!hasAnyGameModificationJobs) return true; //Backup not required for DLC-only mods. Or balance change jobs
+            var hasBackup = Utilities.GetGameBackupPath(ModBeingInstalled.Game);
+            if (hasBackup == null)
+            {
+                var installAnyways = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"There is no backup for {Utilities.GetGameName(ModBeingInstalled.Game)} - installing {ModBeingInstalled.ModName} will require you to repair the game in order to remove it, which may invalidate other mods that are in use.\n\nInstall this mod without a backup?", "No backup", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                return installAnyways == MessageBoxResult.Yes;
+            }
+
+            return true; //has backup
         }
 
         private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
