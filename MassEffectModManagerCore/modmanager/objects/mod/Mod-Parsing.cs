@@ -320,6 +320,8 @@ namespace MassEffectModManagerCore.modmanager
                 }
             }
 
+            int.TryParse(iniData[@"ModManager"][@"importedby"], out int importedByBuild);
+
             if (double.TryParse(iniData[@"ModManager"][@"cmmver"], out double parsedModCmmVer))
             {
                 ModDescTargetVersion = parsedModCmmVer;
@@ -430,7 +432,7 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             string game = iniData[@"ModInfo"][@"game"];
-            if (parsedModCmmVer >= 6 && game == null)
+            if (parsedModCmmVer >= 6 && game == null && importedByBuild > 0)
             {
                 //Not allowed. You MUST specify game on cmmver 6 or higher
                 Log.Error($@"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.");
