@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace MassEffectModManagerCore.ui
+namespace LocalizationHelper
 {
     public class RelayCommand : ICommand
     {
@@ -41,7 +41,6 @@ namespace MassEffectModManagerCore.ui
             _execute = execute;
             _canExecute = canExecute;
         }
-
 
         public bool CanExecute(object parameter)
         {

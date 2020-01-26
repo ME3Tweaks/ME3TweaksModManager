@@ -165,7 +165,7 @@ namespace LocalizationHelper
                         }
 
                         //notes for previous item?
-                        
+
                         //We don't care in localizations about this, they just have to exist.
                         continue;
                     }
@@ -213,15 +213,70 @@ namespace LocalizationHelper
 
         public LocalizationCategory SelectedCategory { get; set; }
         public ObservableCollectionExtended<LocalizationCategory> LocalizationCategories { get; } = new ObservableCollectionExtended<LocalizationCategory>();
-
+        public ICommand SaveLocalizationCommand { get; set; }
         private void LoadCommands()
         {
-
+            SaveLocalizationCommand = new GenericCommand(SaveLocalization, CanSaveLocalization);
         }
 
-        public void SerializeLocalization(string localization)
+        private bool CanSaveLocalization()
         {
+            int numChecked = 0;
+            if (ShowGerman) numChecked++;
+            if (ShowRussian) numChecked++;
+            if (ShowPolish) numChecked++;
+            if (ShowFrench) numChecked++;
+            if (ShowSpanish) numChecked++;
+            if (numChecked == 1) return true;
+            return false;
+        }
 
+        private void SaveLocalization()
+        {
+            //throw new NotImplementedException();
+            string lang = null;
+            if (ShowGerman) lang = "deu";
+            if (ShowRussian) lang = "rus";
+            if (ShowPolish) lang = "pol";
+            if (ShowFrench) lang = "fra";
+            if (ShowSpanish) lang = "esn";
+
+            StringBuilder sb = new StringBuilder();
+            //Add header
+            sb.AppendLine("<ResourceDictionary\txmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"");
+            sb.AppendLine("\t\t\t\t\txmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
+            sb.AppendLine("\t\t\t\t\txmlns:system=\"clr-namespace:System;assembly=System.Runtime\"");
+
+            bool isFirst = true;
+            foreach (var cat in LocalizationCategories)
+            {
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else
+                {
+                    sb.AppendLine(); //blank line
+                }
+
+                sb.AppendLine($"\t<!-- {cat.CategoryName} -->");
+                foreach (var str in cat.LocalizedStringsForSection)
+                {
+                    string line = $"    <system:String x:Key=\"{str.key}\"";
+                    if (str.preservewhitespace)
+                    {
+                        line += " xml:space=\"preserve\"";
+                    }
+                    line += $">{str.GetString(lang)}</system:String>";
+                    sb.AppendLine(line);
+                    if (!string.IsNullOrWhiteSpace(str.notes))
+                    {
+                        line = $"\t<!-- {str.notes} -->";
+                        sb.AppendLine(line);
+                    }
+                }
+            }
+            Debug.WriteLine(sb.ToString());
         }
 
         [DebuggerDisplay("LocCat {CategoryName} with {LocalizedStringsForSection.Count} entries")]
@@ -246,11 +301,38 @@ namespace LocalizationHelper
             public string FRA { get; set; }
             public string ESN { get; set; }
 
+            public string GetString(string lang)
+            {
+                lang = lang.ToLower();
+                switch (lang)
+                {
+                    case "int":
+                        return INT;
+                    case "deu":
+                        return DEU;
+                    case "rus":
+                        return RUS;
+                    case "pol":
+                        return POL;
+                    case "fra":
+                        return FRA;
+                    case "esn":
+                        return ESN;
+                    default:
+                        throw new NotImplementedException("Langauge not supported by this tool: " + lang);
+                }
+            }
+
 
             public event PropertyChangedEventHandler PropertyChanged;
 
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void Find_Clicked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
