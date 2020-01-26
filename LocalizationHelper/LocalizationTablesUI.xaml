@@ -20,14 +20,23 @@
         <FrameworkElement x:Name="DataContextReference" Visibility="Collapsed"/>
         <!-- This is used for data grid to get reference -->
         <GridSplitter Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch"/>
-        <TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>
+        <ComboBox Grid.Column="0" Margin="5,0,0,0" ItemsSource="{Binding LocalizationBranches}" SelectedItem="{Binding SelectedBranch}" />
         <TextBlock Text="Strings" Grid.Row="0" Grid.Column="2" FontWeight="Bold"/>
         <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LocalizationCategories}" SelectedItem="{Binding SelectedCategory}" DisplayMemberPath="CategoryName" Margin="5,0,0,0"/>
-        <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}" AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false">
+        <DataGrid Name="DataGridTable" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}"
+                  AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false" CanUserDeleteRows="False"
+                  SelectedItem="{Binding SelectedDataGridItem}">
             <DataGrid.Resources>
                 <DataTemplate x:Key="LocTextEditorTemplate" >
                     <TextBox Width="200" TextWrapping="Wrap" Text="{Binding DEU}"/>
                 </DataTemplate>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                <Setter Property="Background" Value="CadetBlue" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Key" Binding="{Binding key}" IsReadOnly="True" Width="Auto"/>
@@ -48,7 +57,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowRussian, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -121,7 +130,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <StatusBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Padding="5,0" HorizontalAlignment="Stretch">
-            <TextBox Width="150" Margin="0"/>
+            <TextBox Width="150" Margin="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
             <Button Content="Find" Padding="7,0" Click="Find_Clicked"/>
             <CheckBox Content="German" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowGerman}" DockPanel.Dock="Left"/>
                 <CheckBox Content="Russian" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowRussian}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
@@ -129,7 +138,7 @@
                 <CheckBox Content="French" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowFrench}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                 <CheckBox Content="Spanish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowSpanish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                 <StatusBarItem HorizontalAlignment="Right">
-                    <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" />
+                    <Button Content="Copy localization to clipboard" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" />
                 </StatusBarItem>
         </StatusBar>
     </Grid>

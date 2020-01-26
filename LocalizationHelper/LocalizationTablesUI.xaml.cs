@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,6 +17,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Octokit;
+using Application = Octokit.Application;
 
 namespace LocalizationHelper
 {
@@ -39,88 +42,120 @@ namespace LocalizationHelper
         public bool ShowPolish { get; set; }
         public bool ShowFrench { get; set; }
         public bool ShowSpanish { get; set; }
-
-        private void LoadLocalizations()
+        public ObservableCollectionExtended<string> LocalizationBranches { get; } = new ObservableCollectionExtended<string>();
+        public string SelectedBranch { get; set; }
+        private void LoadLocalizations(string branch = null)
         {
             BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += (x, y) =>
+            bw.DoWork += async (x, y) =>
             {
-                var dictionaries = new Dictionary<string, string>();
-                string endpoint = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/103-localization/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
-                WebClient client = new WebClient();
-                foreach (var lang in LocalizedString.Languages)
+                if (!LocalizationBranches.Any())
                 {
-                    var url = endpoint + lang + ".xaml";
-                    var dict = client.DownloadStringAwareOfEncoding(url);
-                    dictionaries[lang] = dict;
+                    var ghclient = new GitHubClient(new ProductHeaderValue(@"ME3TweaksModManager"));
+                    try
+                    {
+                        var branches = ghclient.Repository.Branch.GetAll("ME3Tweaks", "ME3TweaksModManager").Result;
+                        var locbranches = branches.Where(x => x.Name.Contains("localization"));
+                        System.Windows.Application.Current.Dispatcher.Invoke(delegate { LocalizationBranches.ReplaceAll(locbranches.Select(x => x.Name)); });
+                    }
+                    catch (Exception e)
+                    {
+                        System.Windows.Application.Current.Dispatcher.Invoke(delegate { MessageBox.Show("Error getting list of localization branches: " + e.Message); });
+                        return;
+                    }
                 }
 
-                //Parse INT.
-                int currentLine = 3; //Skip header.
-                LocalizationCategory cat = null;
-                int numBlankLines = 0;
-                List<LocalizationCategory> categories = new List<LocalizationCategory>();
-                var intLines = Regex.Split(dictionaries["int"], "\r\n|\r|\n");
-                for (int i = 3; i < intLines.Length - 2; i++)
+                if (LocalizationBranches.Any())
                 {
-                    var line = intLines[i].Trim();
-                    if (string.IsNullOrWhiteSpace(line))
+                    if (branch == null)
                     {
-                        numBlankLines++;
-                        continue;
+                        branch = LocalizationBranches.First();
+                        SelectedBranch = branch;
+                        oldBranch = branch;
                     }
-                    if (line.StartsWith("<!--") && line.EndsWith("-->"))
+
+                    var dictionaries = new Dictionary<string, string>();
+                    string endpoint = $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
+                    WebClient client = new WebClient();
+                    foreach (var lang in LocalizedString.Languages)
                     {
-                        //Comment - parse
-                        line = line.Substring(4);
-                        line = line.Substring(0, line.Length - 3);
-                        line = line.Trim();
-                        if (numBlankLines > 0 || cat == null)
+                        var url = endpoint + lang + ".xaml";
+                        var dict = client.DownloadStringAwareOfEncoding(url);
+                        dictionaries[lang] = dict;
+                    }
+
+                    //Parse INT.
+                    int currentLine = 3; //Skip header.
+                    LocalizationCategory cat = null;
+                    int numBlankLines = 0;
+                    List<LocalizationCategory> categories = new List<LocalizationCategory>();
+                    var intLines = Regex.Split(dictionaries["int"], "\r\n|\r|\n");
+                    for (int i = 3; i < intLines.Length - 2; i++)
+                    {
+                        var line = intLines[i].Trim();
+                        if (string.IsNullOrWhiteSpace(line))
                         {
-                            //New category?
-                            if (cat != null)
+                            numBlankLines++;
+                            continue;
+                        }
+
+                        if (line.StartsWith("<!--") && line.EndsWith("-->"))
+                        {
+                            //Comment - parse
+                            line = line.Substring(4);
+                            line = line.Substring(0, line.Length - 3);
+                            line = line.Trim();
+                            if (numBlankLines > 0 || cat == null)
                             {
-                                categories.Add(cat);
+                                //New category?
+                                if (cat != null)
+                                {
+                                    categories.Add(cat);
+                                }
+
+                                cat = new LocalizationCategory()
+                                {
+                                    CategoryName = line
+                                };
                             }
 
-                            cat = new LocalizationCategory()
+                            //notes for previous item?
+                            var prevItem = cat.LocalizedStringsForSection.LastOrDefault();
+                            if (prevItem != null)
                             {
-                                CategoryName = line
-                            };
+                                prevItem.notes = line;
+                            }
+                            //Debug.WriteLine(line);
+
+                            //New Category
+                            //line = line.
+                            continue;
                         }
 
-                        //notes for previous item?
-                        var prevItem = cat.LocalizedStringsForSection.LastOrDefault();
-                        if (prevItem != null)
+                        numBlankLines = 0;
+                        var lineInfo = extractInfo(line);
+                        LocalizedString ls = new LocalizedString()
                         {
-                            prevItem.notes = line;
-                        }
-                        //Debug.WriteLine(line);
-
-                        //New Category
-                        //line = line.
-                        continue;
+                            key = lineInfo.key,
+                            preservewhitespace = lineInfo.preserveWhitespace,
+                            INT = lineInfo.text
+                        };
+                        if (ls.INT == null) Debugger.Break();
+                        cat.LocalizedStringsForSection.Add(ls);
                     }
 
-                    numBlankLines = 0;
-                    var lineInfo = extractInfo(line);
-                    LocalizedString ls = new LocalizedString()
+                    if (cat != null)
                     {
-                        key = lineInfo.key,
-                        preservewhitespace = lineInfo.preserveWhitespace,
-                        INT = lineInfo.text
-                    };
-                    if (ls.INT == null) Debugger.Break();
-                    cat.LocalizedStringsForSection.Add(ls);
-                }
+                        categories.Add(cat);
+                    }
 
-                if (cat != null)
+                    parseLocalizations(categories, dictionaries);
+                    y.Result = categories;
+                }
+                else
                 {
-                    categories.Add(cat);
+                    System.Windows.Application.Current.Dispatcher.Invoke(delegate { MessageBox.Show("Could not find any branches on ME3TweaksModManager repo containing name 'localization'"); });
                 }
-
-                parseLocalizations(categories, dictionaries);
-                y.Result = categories;
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
@@ -130,6 +165,24 @@ namespace LocalizationHelper
                 }
             };
             bw.RunWorkerAsync();
+        }
+
+        private string oldBranch = null;
+
+        public void OnSelectedBranchChanged()
+        {
+            if (oldBranch != null)
+            {
+                if (SelectedBranch != null)
+                {
+                    LoadLocalizations(SelectedBranch);
+                    oldBranch = SelectedBranch;
+                }
+                else
+                {
+                    LocalizationCategories.ClearEx();
+                }
+            }
         }
 
         private void parseLocalizations(List<LocalizationCategory> categories, Dictionary<string, string> dictionaries)
@@ -277,6 +330,8 @@ namespace LocalizationHelper
                 }
             }
             Debug.WriteLine(sb.ToString());
+            Clipboard.SetText(sb.ToString());
+            MessageBox.Show($"The contents for the {lang}.xaml file have been copied to your clipboard. Paste into the github editor to update it, then submit a pull request. Once the request is approved, it will be reflected in this program's interface.");
         }
 
         [DebuggerDisplay("LocCat {CategoryName} with {LocalizedStringsForSection.Count} entries")]
@@ -330,9 +385,122 @@ namespace LocalizationHelper
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public LocalizedString SelectedDataGridItem { get; set; }
+
+        public string SearchText { get; set; }
         private void Find_Clicked(object sender, RoutedEventArgs e)
         {
 
+            int indexOfCurrentCategory = SelectedCategory != null ? LocalizationCategories.IndexOf(SelectedCategory) : 0;
+            Debug.WriteLine("Current cat index: " + indexOfCurrentCategory);
+
+            int numCategories = LocalizationCategories.Count(); //might need to +1 this
+            string searchTerm = SearchText.ToLower();
+            LocalizedString itemToHighlight = null;
+            LocalizationCategory catToHighlight = null;
+            for (int i = 0; i < numCategories; i++)
+            {
+                bool found = false;
+                LocalizationCategory cat = LocalizationCategories[(i + indexOfCurrentCategory) % LocalizationCategories.Count()];
+                int startSearchIndex = 0;
+                int numToSearch = cat.LocalizedStringsForSection.Count();
+                if (i == 0 && cat == SelectedCategory && SelectedDataGridItem != null)
+                {
+                    startSearchIndex = cat.LocalizedStringsForSection.IndexOf(SelectedDataGridItem) + 1;
+                    numToSearch -= startSearchIndex;
+                }
+                Debug.WriteLine(cat.CategoryName);
+                for (int j = 0; j < numToSearch; j++)
+                {
+                    var ls = cat.LocalizedStringsForSection[(j + startSearchIndex) % cat.LocalizedStringsForSection.Count];
+
+                    //Key
+                    if (ls.key.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
+
+                    //English
+                    if (ls.INT.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
+
+                    //German
+                    if (ShowGerman && ls.DEU.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
+
+                    //Russian
+                    if (ShowRussian && ls.RUS.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
+
+                    //Polish
+                    if (ShowPolish && ls.POL.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
+
+                    //French
+                    if (ShowFrench && ls.FRA.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
+
+                    //Spanish
+                    if (ShowSpanish && ls.ESN.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
+
+                }
+                if (found)
+                {
+                    break;
+                }
+            }
+
+            if (itemToHighlight == null)
+            {
+                SystemSounds.Beep.Play();
+            }
+            else
+            {
+                SelectedCategory = catToHighlight;
+                SelectedDataGridItem = itemToHighlight;
+                DataGridTable.ScrollIntoView(SelectedDataGridItem);
+            }
         }
     }
 }
