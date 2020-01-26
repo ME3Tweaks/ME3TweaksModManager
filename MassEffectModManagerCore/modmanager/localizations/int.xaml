@@ -688,7 +688,7 @@
     <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {0} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
     <!-- 0 = source file path in moddesc -->
 
-    <!-- ReadOnlyOption -->
+    <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
     <system:String x:Key="string_makeConfigFilesReadonly">Make config files read-only</system:String>
 

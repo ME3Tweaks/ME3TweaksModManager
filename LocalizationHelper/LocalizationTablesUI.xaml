@@ -1,0 +1,98 @@
+﻿<Window x:Class="LocalizationHelper.LocalizationTablesUI"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LocalizationHelper"
+        mc:Ignorable="d"
+        Title="LocalizationTablesUI" Height="450" Width="800">
+    <Grid Margin="0,5,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <FrameworkElement x:Name="DataContextReference" Visibility="Collapsed"/>
+        <!-- This is used for data grid to get reference -->
+
+        <TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>
+        <TextBlock Text="Strings" Grid.Row="0" Grid.Column="1" FontWeight="Bold"/>
+        <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LocalizationCategories}" SelectedItem="{Binding SelectedCategory}" DisplayMemberPath="CategoryName" Margin="5,0,0,0"/>
+        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}" AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Key" Binding="{Binding key}" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="Newlines" Binding="{Binding preservewhitespace}" Width="60"  IsReadOnly="True" />
+                <DataGridTextColumn Header="Notes" Binding="{Binding notes}" MaxWidth="250" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="English" Binding="{Binding INT}" MaxWidth="250" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Russian" Binding="{Binding RUS}" MaxWidth="250" Visibility="{Binding DataContext.ShowRussian, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Polish" Binding="{Binding POL}" MaxWidth="250" Visibility="{Binding DataContext.ShowPolish, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="French" Binding="{Binding FRA}" MaxWidth="250" Visibility="{Binding DataContext.ShowFrench, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Spanish" Binding="{Binding ESN}" MaxWidth="250" Visibility="{Binding DataContext.ShowSpanish, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StatusBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Padding="5,0" HorizontalAlignment="Stretch">
+                <CheckBox Content="German" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowGerman}" DockPanel.Dock="Left"/>
+                <CheckBox Content="Russian" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowRussian}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                <CheckBox Content="Polish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowPolish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                <CheckBox Content="French" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowFrench}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                <CheckBox Content="Spanish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowSpanish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                <StatusBarItem HorizontalAlignment="Right">
+                    <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" />
+                </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
