@@ -4,6 +4,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Authors>Mgamerz</Authors>
+    <Company>ME3Tweaks</Company>
+    <Product>ME3Tweaks Mod Manager Localizer</Product>
+    <Description>Localizes the ME3Tweaks files from github</Description>
+    <Copyright>2020 ME3Tweaks</Copyright>
+    <ApplicationIcon>localizericon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
