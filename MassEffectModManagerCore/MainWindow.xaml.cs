@@ -2031,6 +2031,9 @@ namespace MassEffectModManagerCore
                     ME3UnrealObjectInfo.loadfromJSON();
                     ME2UnrealObjectInfo.loadfromJSON();
                     ME1UnrealObjectInfo.loadfromJSON();
+
+                    //var p = MEPackageHandler.OpenMEPackage(@"Z:\ME3-Backup\BIOGame\CookedPCConsole\BioP_MPSlum.pcc");
+                    //p.save(@"C:\users\mgame\desktop\mpslum_m3_decompressed.pcc");
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                     var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));

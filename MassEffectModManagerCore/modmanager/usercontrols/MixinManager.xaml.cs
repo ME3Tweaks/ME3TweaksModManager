@@ -96,7 +96,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             foreach (var m in AvailableOfficialMixins)
             {
-                m.UISelectedForUse = true; //DEBUG ONLY
+                m.UISelectedForUse = false; //DEBUG ONLY
             }
         }
 
@@ -168,7 +168,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                             VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
                                                 Path.GetFileName(file.Key));
                                         //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
-                                        using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                                        using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream,true);
                                         //decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");
 
                                         using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
@@ -177,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         finalStream.Position = 0;
                                         var package = MEPackageHandler.OpenMEPackage(finalStream);
                                         var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                        package.save(outfile, true);
+                                        package.save(outfile, false); // don't compress
                                         //finalStream.WriteToFile(outfile);
                                         //File.WriteAllBytes(outfile, finalStream.ToArray());
                                     } catch (Exception e)

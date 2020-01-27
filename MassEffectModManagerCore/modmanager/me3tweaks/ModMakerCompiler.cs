@@ -253,7 +253,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 using var packageAsStream =
                                     VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
                                         Path.GetFileName(file.Key));
-                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                     completedSingleApplicationCallback);
                                 CLog.Information("Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
@@ -276,7 +276,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 using var packageAsStream =
                                     VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key,
                                         forcedDLC: dlcPackage);
-                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                     completedSingleApplicationCallback);
                                 CLog.Information("Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
