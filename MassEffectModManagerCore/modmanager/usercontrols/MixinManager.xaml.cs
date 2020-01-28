@@ -135,8 +135,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 #if DEBUG
                 int numCoresToApplyWith = 1;
 #else
-                var numCores = Environment.ProcessorCount;
-                if (numCores > 4) numCores = 4; //no more than 4 as this uses a lot of memory
+                var numCoresToApplyWith = Environment.ProcessorCount;
+                if (numCoresToApplyWith > 4) numCores = 4; //no more than 4 as this uses a lot of memory
 #endif
 
                 var mixins = AvailableOfficialMixins.Where(x => x.UISelectedForUse).ToList();
