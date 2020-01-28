@@ -34,8 +34,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                 sb.AppendLine("Version " + PatchVersion);
                 sb.AppendLine("Developed by " + PatchDeveloper);
                 sb.AppendLine(PatchFilename);
+                if (IsFinalizer)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine("This is a finalizer Mixin. Finalizer Mixins change the filesize of the source file, and as such, only one finalizer mixin can be applied to a file. Once this Mixin is applied, you cannot apply other Mixins that apply to this file.");
+                }
                 if (!CanBeUsed)
                 {
+                    sb.AppendLine();
                     sb.AppendLine("This Mixin cannot be applied because the target module is not present in the game backup.");
                 }
                 return sb.ToString();

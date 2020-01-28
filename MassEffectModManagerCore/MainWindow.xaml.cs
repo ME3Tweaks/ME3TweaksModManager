@@ -107,8 +107,17 @@ namespace MassEffectModManagerCore
 
 
         public Mod SelectedMod { get; set; }
+        /// <summary>
+        /// Mods currently visible in the left panel
+        /// </summary>
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
+        /// <summary>
+        /// All mods that successfully loaded.
+        /// </summary>
         public ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ObservableCollectionExtended<Mod>();
+        /// <summary>
+        /// All mods that failed to load
+        /// </summary>
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
 

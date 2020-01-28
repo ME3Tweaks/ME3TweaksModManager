@@ -279,8 +279,6 @@ namespace MassEffectModManagerCore.modmanager
                     }
                 };
 
-
-
                 archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
                 Log.Information(@"File extraction completed.");
 
