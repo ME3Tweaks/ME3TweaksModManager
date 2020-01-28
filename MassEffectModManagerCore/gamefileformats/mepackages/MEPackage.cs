@@ -247,15 +247,8 @@ namespace ME3Explorer.Packages
                 //var additionalPackagesToCook = new string[additionalPackagesToCookCount];
                 for (int i = 0; i < additionalPackagesToCookCount; i++)
                 {
-                    int strLen = stream.ReadInt32();
-                    if (strLen > 0)
-                    {
-                        AdditionalPackagesToCook.Add(stream.ReadStringASCIINull(strLen));
-                    }
-                    else
-                    {
-                        AdditionalPackagesToCook.Add(stream.ReadStringUnicodeNull(strLen * -2));
-                    }
+                    var packageStr = stream.ReadUnrealString();
+                    AdditionalPackagesToCook.Add(packageStr);
                 }
             }
             #endregion
@@ -837,13 +830,11 @@ namespace ME3Explorer.Packages
                     if (Game == Mod.MEGame.ME2)
                     {
                         //ME2 Uses ASCII
-                        ms.WriteInt32(pname.Length);
-                        ms.WriteStringASCIINull(pname);
+                        ms.WriteUnrealStringASCII(pname);
                     }
                     else
                     {
-                        ms.WriteInt32(pname.Length * -2);
-                        ms.WriteStringUnicodeNull(pname);
+                        ms.WriteUnrealStringUnicode(pname);
                     }
                 }
             }

@@ -99,7 +99,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             foreach (var m in AvailableOfficialMixins)
             {
-                m.UISelectedForUse = true; //DEBUG ONLY
+                m.UISelectedForUse = false; //DEBUG ONLY
             }
         }
 
