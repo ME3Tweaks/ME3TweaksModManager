@@ -23,7 +23,9 @@
                     <StackPanel Width="200">
                         <TextBlock Text="Compile into a new mod" FontWeight="Bold"/>
                         <TextBlock Text="Mod name:"/>
-                        <xctk:WatermarkTextBox Watermark="Mod name" Text="{Binding NewModName, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
+                        <xctk:WatermarkTextBox Watermark="Mod name" Text="{Binding NewModName, UpdateSourceTrigger=PropertyChanged}" 
+                                               IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
+                                               KeyDown="ModName_OnKeyDownHandler"/>
                         <Button Content="Compile as a new mod" HorizontalAlignment="Right" ToolTip="Generates a new Mod Manager mod with these Mixins.&#10;Files are pulled from vanilla backup"
                                 Command="{Binding CompileAsNewModCommand}" Margin="0,3,0,0"/>
                         <StackPanel>
