@@ -221,6 +221,38 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return null;
         }
 
+        /// <summary>
+        /// Fetches a DLC file from ME1/ME2 backup.
+        /// </summary>
+        /// <param name="game">game to fetch from</param>
+        /// <param name="dlcfoldername">DLC foldername</param>
+        /// <param name="filename">filename</param>
+        /// <returns></returns>
+        internal static MemoryStream FetchME1ME2DLCFile(Mod.MEGame game, string dlcfoldername, string filename)
+        {
+            if (game == Mod.MEGame.ME3) throw new Exception("Cannot call this method with game = ME3");
+            var backupPath = Utilities.GetGameBackupPath(game);
+            if (backupPath == null/* && target == null*/) return null; //can't fetch
+
+            string dlcPath = MEDirectories.DLCPath(game);
+            string dlcFolderPath = Path.Combine(dlcPath, dlcfoldername);
+
+            string[] files = Directory.GetFiles(dlcFolderPath, Path.GetFileName(filename), SearchOption.AllDirectories);
+            if (files.Count() == 1)
+            {
+                //file found
+                return new MemoryStream(File.ReadAllBytes(files[0]));
+            }
+            else
+            {
+                //ambiguous or file not found
+                Log.Error($"Could not find {filename} DLC file (or found multiple) in backup for {game}: {filename}");
+            }
+
+            return null;
+        }
+
+
         public static bool IsFileVanilla(GameTarget target, string file, bool md5check = false)
         {
             var database = LoadDatabaseFor(target.Game, target.IsPolishME1);
