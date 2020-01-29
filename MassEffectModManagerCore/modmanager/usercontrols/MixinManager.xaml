@@ -70,8 +70,9 @@
                 <RowDefinition Height="3"/>
             </Grid.RowDefinitions>
             <!-- Header Panel -->
-            <TextBlock Text="Mixin Manager" Grid.Row="1" Grid.Column="0" TextAlignment="Center" Grid.ColumnSpan="4" FontSize="22" FontWeight="Bold"/>
-            <TextBlock Text="Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change.&#10;Mixins are currently only available for Mass Effect 3." 
+            <TextBlock Text="Mixin Library" Grid.Row="1" Grid.Column="0" TextAlignment="Center" Grid.ColumnSpan="4" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change. Additional customizable Mixins are available on ME3Tweaks ModMaker. Mixins are currently only available for Mass Effect 3." 
+                       TextWrapping="Wrap"
                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" TextAlignment="Center" />
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="0">
@@ -82,7 +83,7 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox IsChecked="{Binding UISelectedForUse}" IsEnabled="{Binding CanBeUsed}"/>
-                                <fa:ImageAwesome Icon="Lock" Foreground="Red" Visibility="{Binding IsFinalizer, Converter={StaticResource BoolToVisibilityConverter}}" Height="12" Width="16"/>
+                                <fa:ImageAwesome Icon="Lock" Foreground="Red" Visibility="{Binding IsFinalizer, Converter={StaticResource BoolToVisibilityConverter}}" Height="12" Width="16" ToolTip="This Mixin is a finalizer"/>
                                 <TextBlock Text="{Binding PatchName}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">

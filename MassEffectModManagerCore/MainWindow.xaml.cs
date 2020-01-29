@@ -1330,8 +1330,11 @@ namespace MassEffectModManagerCore
             {
                 ShowPreviewPanel();
             }
+            else
+            {
+                LoadMods();
+            }
 
-            LoadMods();
             if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
             {
                 ShowBackupNag();
@@ -1342,7 +1345,14 @@ namespace MassEffectModManagerCore
         private void ShowPreviewPanel()
         {
             var previewPanel = new PreviewWelcomePanel();
-            previewPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            previewPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is bool loadMods)
+                {
+                    LoadMods();
+                }
+            };
             ShowBusyControl(previewPanel);
         }
 
@@ -2512,7 +2522,7 @@ namespace MassEffectModManagerCore
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
         }
 
-        private bool ChooseModLibraryPath(bool loadModsAfterSelecting)
+        internal bool ChooseModLibraryPath(bool loadModsAfterSelecting)
         {
             CommonOpenFileDialog m = new CommonOpenFileDialog
             {

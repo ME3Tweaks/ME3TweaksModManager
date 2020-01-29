@@ -56,8 +56,8 @@
                     <MenuItem Header="{DynamicResource string_Options}">
                         <MenuItem Header="{DynamicResource string_ModManager}" Style="{StaticResource MenuItemHeaderStyle}" />
                         <MenuItem Name="SetModLibraryPath_MenuItem" Header="{DynamicResource string_Setmodlibrarypath}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}" />
-                        <MenuItem Name="BetaMode_MenuItem" Header="Opt into beta updates" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}" ToolTip="Enables beta updates, overriding soak testing settings from ME3Tweaks.&#10;These builds may be less stable but have features that need to be tested." IsCheckable="True" />
-                        <MenuItem Name="DeveloperMode_MenuItem" Header="{DynamicResource string_Developermode}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="{DynamicResource string_Enabledeveloper-orientedfeatures}" IsCheckable="True" />
+                        <MenuItem Name="BetaMode_MenuItem" Header="Opt into beta updates" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}" ToolTip="Enables beta updates, overriding soak testing settings from ME3Tweaks.&#10;These builds may be less stable but have features that need to be tested" IsCheckable="True" />
+                        <MenuItem Name="DeveloperMode_MenuItem" Header="{DynamicResource string_Developermode}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="{DynamicResource string_EnableDeveloperOrientedFeatures}" IsCheckable="True" />
                         <MenuItem Name="DarkMode_MenuItem" Visibility="Visible" Header="{DynamicResource string_Darktheme}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}" ToolTip="{DynamicResource string_SwitchUItodarktheme}" IsCheckable="True" />
                         <MenuItem Header="{DynamicResource string_Language}">
                             <MenuItem.Icon>
@@ -100,10 +100,10 @@
                             </MenuItem>
                         </MenuItem>
                         <MenuItem Header="{DynamicResource string_Logging}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" IsCheckable="True" />
-                        <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" IsCheckable="True" />
-                        <MenuItem Name="LogModMakerCompiler_MenuItem" Header="{DynamicResource string_LogModMakerCompiler}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" IsCheckable="True" />
-                        <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" IsCheckable="True" />
+                        <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" ToolTip="Enables/disables submission of analytics and crash logs"  IsCheckable="True" />
+                        <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}"  ToolTip="Log detailed information about mods loading from the library or archives" IsCheckable="True" />
+                        <MenuItem Name="LogModMakerCompiler_MenuItem" Header="{DynamicResource string_LogModMakerCompiler}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}"  ToolTip="Log detailed information when ModMaker compiler is running" IsCheckable="True" />
+                        <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}"  ToolTip="Log detailed installation information" IsCheckable="True" />
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="{DynamicResource string_Checkforcontentupdates}" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}" />
@@ -116,13 +116,13 @@
                         <MenuItem Header="{DynamicResource string_ImportmodfromArchive}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
                         <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" Command="{Binding ImportDLCModFromGameCommand}" ToolTip="Import an already-installed DLC mod into Mod Manager" />
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_DownloadModMakermod}" Command="{Binding DownloadModMakerModCommand}"/>
+                    <MenuItem Header="{DynamicResource string_DownloadModMakermod}" Command="{Binding DownloadModMakerModCommand}" ToolTip="Download and compile mods made on ME3Tweaks ModMaker"/>
                     <MenuItem Header="{DynamicResource string_ASIModManager}" Click="ASIModManager_Click" ToolTip="{DynamicResource string_ASIManagerTooltip}" />
                     <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
-                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" Command="{Binding BatchModInstallerCommand}" />
+                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" Command="{Binding BatchModInstallerCommand}" ToolTip="Create and install groups of mods serially"/>
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
-                    <MenuItem Header="{DynamicResource string_MixInLibrary}" Command="{Binding MixinLibraryCommand}"/>
+                    <MenuItem Header="{DynamicResource string_MixInLibrary}" Command="{Binding MixinLibraryCommand}" ToolTip="Contains library of premade patch files"/>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">
                     <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />

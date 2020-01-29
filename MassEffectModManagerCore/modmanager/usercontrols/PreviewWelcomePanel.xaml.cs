@@ -21,8 +21,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public PreviewWelcomePanel()
         {
+            DataContext = this;
+            LibraryDir = Settings.ModLibraryPath;
+            LoadCommands();
             InitializeComponent();
         }
+
+        public ICommand ChangeLibraryDirCommand { get; set; }
+        private void LoadCommands()
+        {
+            ChangeLibraryDirCommand = new GenericCommand(ChangeLibraryDir);
+        }
+
+        private void ChangeLibraryDir()
+        {
+            if (mainwindow.ChooseModLibraryPath(false))
+            {
+                LibraryDir = Settings.ModLibraryPath;
+            }
+        }
+
+        public string LibraryDir { get; set; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -35,7 +54,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CloseInternal()
         {
-            OnClosing(DataEventArgs.Empty);
+            OnClosing(new DataEventArgs(true));
             Settings.ShowedPreviewPanel = true;
             Settings.Save();
         }

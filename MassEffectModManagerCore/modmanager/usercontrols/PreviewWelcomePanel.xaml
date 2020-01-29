@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                       xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-                       MaxWidth="450">
-    <StackPanel Margin="5">
+                       MaxWidth="500">
+    <StackPanel>
         <TextBlock Text="{DynamicResource string_previewPanelTitle}" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10"/>
         <TextBlock TextWrapping="Wrap" Text="{DynamicResource string_previewPanelIntro}"/>
 
@@ -105,27 +106,27 @@
                 </Grid>
             </DockPanel>
 
-            <DockPanel Grid.Row="1" Grid.ColumnSpan="2">
-                <TextBlock DockPanel.Dock="Top" Text="Mod library location" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
-                <TextBlock DockPanel.Dock="Top" Text="Mods that are imported into Mod Manager will be stored at this location." TextAlignment="Center" Margin="0,5,0,0"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="100"/>
-                    </Grid.ColumnDefinitions>
-                    <xctk:WatermarkTextBox Watermark="Library location"/>
-                    <Button Content="Browse" Grid.Column="1"/>
-                </Grid>
+            <DockPanel Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Background="AliceBlue">
                 
 
             </DockPanel>
         </Grid>
+        <TextBlock DockPanel.Dock="Top" Text="Is your language missing? Come to the ME3Tweaks Discord and you can help translate it to your local language." TextWrapping="Wrap" TextAlignment="Left"  Margin="0,5,0,0" FontWeight="Bold"/>
+        <TextBlock DockPanel.Dock="Top" Text="Mod library location" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
+        <TextBlock DockPanel.Dock="Top" Text="Mods that are imported into Mod Manager will be stored at this location." TextAlignment="Left" Margin="0,5,0,0"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <xctk:WatermarkTextBox Watermark="Library location" SnapsToDevicePixels="True" Margin="0,0,2,0" IsReadOnly="True"
+                                   IsReadOnlyCaretVisible="False" Text="{Binding LibraryDir}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}"/>
+            <Button Content="Browse" Grid.Column="1" Command="{Binding ChangeLibraryDirCommand}"/>
+        </Grid>
         <TextBlock DockPanel.Dock="Bottom" Text="You can change your settings at any time through the Actions menu." TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-
             <Button Content="{DynamicResource string_joinDiscord}" Click="JoinDiscord_Click" Padding="7,4" Margin="4,0"/>
             <Button Content="{DynamicResource string_close}" Click="Close_Clicked" Padding="7,4"/>
-
         </StackPanel>
     </StackPanel>
 </local:MMBusyPanelBase>
