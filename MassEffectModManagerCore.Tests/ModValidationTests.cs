@@ -102,7 +102,7 @@ namespace MassEffectModManagerCore.Tests
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
                 Console.WriteLine($"Inspecting archive: { archive}");
                 ModArchiveImporter.InspectArchive(archive, addModCallback, failedModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
-                Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count, $"{archive} did not parse correct amount of mods.");
+                Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count(x=>x.ValidMod), $"{archive} did not parse correct amount of mods.");
             }
         }
 

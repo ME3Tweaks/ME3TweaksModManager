@@ -243,7 +243,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
+            if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
+            {
+                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, "ME3Tweaks ModMaker requires a game backup of Mass Effect 3 in order to function. A backup of this game was not found.", "No backup available", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void CompilationInProgress()
