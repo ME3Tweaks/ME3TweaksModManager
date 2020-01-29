@@ -283,15 +283,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
                         Mod m = new Mod(entry, archiveFile);
-                        if (m.ValidMod)
+                        if (!m.ValidMod)
                         {
-                            addCompressedModCallback?.Invoke(m);
-                            internalModList.Add(m);
+                            m.SelectedForImport = false;
                         }
-                        else
-                        {
-                            failedToLoadModeCallback?.Invoke(m);
-                        }
+
+                        addCompressedModCallback?.Invoke(m);
+                        internalModList.Add(m);
+                        //}
+                        //else
+                        //{
+                        //    failedToLoadModeCallback?.Invoke(m);
+                        //}
                     }
                 }
                 else if (me2mods.Count > 0)
@@ -791,7 +794,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm && cm.ExeExtractionTransform == null && !TaskRunning/*&& CurrentlyDirectInstallSupportedJobs.ContainsAll(cm.Mod.InstallationJobs.Select(x => x.Header)*/;
+            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm && 
+                   cm.ExeExtractionTransform == null  &&cm.ValidMod
+                   && !TaskRunning;
         }
 
         private void InstallCompressedMod()
