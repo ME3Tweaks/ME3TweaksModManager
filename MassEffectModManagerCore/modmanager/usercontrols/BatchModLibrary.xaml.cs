@@ -92,7 +92,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            //throw new NotImplementedException();
+            if (e.Key == Key.Escape)
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()

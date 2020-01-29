@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker("ModMaker-TopModsFetch");
             nbw.DoWork += (a, b) =>
             {
-                b.Result= OnlineContent.FetchTopModMakerMods();
+                b.Result = OnlineContent.FetchTopModMakerMods();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -231,11 +231,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentTaskMaximum = obj;
         }
 
-        private bool CanStartCompiler() => int.TryParse(ModMakerCode, out var _) && !CompileInProgress;
+        private bool CanStartCompiler() => int.TryParse(ModMakerCode, out var _) && !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Escape && CanClose())
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()

@@ -223,11 +223,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape && !UpdateInProgress)
-            {
-                e.Handled = true;
-                OnClosing(DataEventArgs.Empty);
-            }
+            // We don't accept ESCAPE here
         }
 
         public override void OnPanelVisible()

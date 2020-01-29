@@ -39,7 +39,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ArchiveScanned { get; set; }
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            if (!TaskRunning && e.Key == Key.Escape)
+            if (e.Key == Key.Escape && CanCancel())
             {
                 OnClosing(DataEventArgs.Empty);
             }
