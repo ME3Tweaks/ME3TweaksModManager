@@ -2770,5 +2770,10 @@ namespace MassEffectModManagerCore
         {
             ShowPreviewPanel();
         }
+
+        private void OpenME3TweaksModMaker_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.OpenWebpage("https://me3tweaks.com/modmaker");
+        }
     }
 }
