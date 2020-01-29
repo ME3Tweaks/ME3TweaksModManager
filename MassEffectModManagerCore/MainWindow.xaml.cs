@@ -1896,7 +1896,7 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest();
+                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
                         //#if DEBUG
                         //                    if (int.Parse(manifest["latest_build_number"]) > 0)
                         //#else
@@ -2458,6 +2458,7 @@ namespace MassEffectModManagerCore
 
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
         {
+            //When this method is called, the value has already changed. So check against the opposite boolean state.
             var callingMember = (MenuItem)sender;
             if (callingMember == SetModLibraryPath_MenuItem)
             {
@@ -2466,6 +2467,15 @@ namespace MassEffectModManagerCore
             else if (callingMember == DarkMode_MenuItem)
             {
                 SetTheme();
+            }
+            else if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
+            {
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this,"Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?" ,"Enabling beta mode", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    Settings.BetaMode = false; //turn back off.
+                    return;
+                }
             }
             else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
             {

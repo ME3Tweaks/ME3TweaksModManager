@@ -58,6 +58,12 @@ namespace MassEffectModManagerCore.modmanager
             get => _enableTelemetry;
             set => SetProperty(ref _enableTelemetry, value);
         }
+        private static bool _betaMode = false;
+        public static bool BetaMode
+        {
+            get => _betaMode;
+            set => SetProperty(ref _betaMode, value);
+        }
 
         private static string _updaterServiceUsername;
         public static string UpdaterServiceUsername
@@ -152,6 +158,7 @@ namespace MassEffectModManagerCore.modmanager
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
+            BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
             UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
@@ -167,7 +174,6 @@ namespace MassEffectModManagerCore.modmanager
 
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
-
 
             Loaded = true;
         }
@@ -295,6 +301,7 @@ namespace MassEffectModManagerCore.modmanager
             SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
             SaveSettingString(settingsIni, "ModManager", "Language", Language);
             SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
+            SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
             SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
             try
             {
