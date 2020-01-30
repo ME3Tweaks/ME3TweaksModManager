@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker("ModMaker-TopModsFetch");
             nbw.DoWork += (a, b) =>
             {
-                b.Result= OnlineContent.FetchTopModMakerMods();
+                b.Result = OnlineContent.FetchTopModMakerMods();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -231,16 +231,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentTaskMaximum = obj;
         }
 
-        private bool CanStartCompiler() => int.TryParse(ModMakerCode, out var _) && !CompileInProgress;
+        private bool CanStartCompiler() => int.TryParse(ModMakerCode, out var _) && !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Escape && CanClose())
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()
         {
-
+            if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
+            {
+                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, "ME3Tweaks ModMaker requires a game backup of Mass Effect 3 in order to function. A backup of this game was not found.", "No backup available", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void CompilationInProgress()

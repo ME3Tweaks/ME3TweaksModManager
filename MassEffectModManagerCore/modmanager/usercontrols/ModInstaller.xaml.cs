@@ -211,20 +211,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
             numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * (ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
             Debug.WriteLine(@"Number of expected installation tasks: " + numFilesToInstall);
-            void FileInstalledCallback(string target)
-            {
-                numdone++;
-                Debug.WriteLine(@"Installed: " + target);
-                Action = M3L.GetString(M3L.string_installing);
-                var now = DateTime.Now;
-                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
-                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
-                {
-                    //Don't update UI too often. Once per second is enough.
-                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
-                    lastPercentUpdateTime = now;
-                }
-            }
+            
 
             //Stage: Unpacked files build map
 
@@ -386,6 +373,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Information($@"Deleting existing DLC directory: {path}");
                     Utilities.DeleteFilesAndFoldersRecursively(path);
+                }
+            }
+
+            void FileInstalledCallback(string target)
+            {
+                numdone++;
+                var fileMapping = fullPathMappingDisk.FirstOrDefault(x=>x.Value == target);
+                CLog.Information($@"Installed: {fileMapping.Key} -> {target}", Settings.LogModInstallation);
+                //Debug.WriteLine(@"Installed: " + target);
+                Action = M3L.GetString(M3L.string_installing);
+                var now = DateTime.Now;
+                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
+                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+                {
+                    //Don't update UI too often. Once per second is enough.
+                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
+                    lastPercentUpdateTime = now;
                 }
             }
 
@@ -870,7 +874,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            //throw new NotImplementedException();
+            if (e.Key == Key.Escape && !ModIsInstalling)
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         private void AlternateItem_MouseUp(object sender, MouseButtonEventArgs e)

@@ -8,6 +8,7 @@
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                       xmlns:fa="http://schemas.fontawesome.io/icons/"
                        d:DesignHeight="450" d:DesignWidth="800"
                        Width="700" Height="500">
     <UserControl.Resources>
@@ -17,14 +18,35 @@
 
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0" >
             <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Command="{Binding CloseCommand}" Padding="7,4" DockPanel.Dock="Right"/>
-            <xctk:DropDownButton MinWidth="70" Margin="5,0,0,0" Content="Compile..." IsEnabled="{Binding AtLeastOneMixinSelected}"  Padding="7,4"  DockPanel.Dock="Right">
+            <xctk:DropDownButton MinWidth="70" Margin="5,0,0,0" Content="Compile..." IsEnabled="{Binding AtLeastOneMixinSelected}"  Padding="7,4"  DockPanel.Dock="Right" >
                 <xctk:DropDownButton.DropDownContent>
-                    <StackPanel>
-                        <Button Content="As a new mod" HorizontalContentAlignment="Left" ToolTip="Generates a new Mod Manager mod with these Mixins.&#10;Files are pulled from vanilla backup"
-                                Command="{Binding CompileAsNewModCommand}"/>
-                        <Button Content="Into existing mod" HorizontalContentAlignment="Left" IsEnabled="false"
+                    <StackPanel Width="200">
+                        <TextBlock Text="Compile into a new mod" FontWeight="Bold"/>
+                        <TextBlock Text="Mod name:"/>
+                        <xctk:WatermarkTextBox Watermark="Mod name" Text="{Binding NewModName, UpdateSourceTrigger=PropertyChanged}" 
+                                               IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
+                                               KeyDown="ModName_OnKeyDownHandler"/>
+                        <Button Content="Compile as a new mod" HorizontalAlignment="Right" ToolTip="Generates a new Mod Manager mod with these Mixins.&#10;Files are pulled from vanilla backup"
+                                Command="{Binding CompileAsNewModCommand}" Margin="0,3,0,0"/>
+                        <StackPanel>
+                            <TextBlock Text="Or" FontWeight="Bold" TextAlignment="Center" Margin="0,20" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                            <TextBlock Text="Compile into an existing mod" FontWeight="Bold" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                            <TextBlock Text="This feature is not yet available." TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                            <ComboBox ItemsSource="{Binding ME3Mods}" IsEnabled="False">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0"/>
+                                            <TextBlock Text="{Binding ModName}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button Content="Compile into existing mod" HorizontalAlignment="Right" IsEnabled="false"
                                 ToolTip="Applies the Mixins to a mod you specify.&#10;Files in the mod are patched if the mod already uses them.&#10;Files not used by the mod are pulled from vanilla backup"
                                 />
+                        </StackPanel>
+
                     </StackPanel>
                 </xctk:DropDownButton.DropDownContent>
             </xctk:DropDownButton>
@@ -48,8 +70,9 @@
                 <RowDefinition Height="3"/>
             </Grid.RowDefinitions>
             <!-- Header Panel -->
-            <TextBlock Text="Mixin Manager" Grid.Row="1" Grid.Column="0" TextAlignment="Center" Grid.ColumnSpan="4" FontSize="22" FontWeight="Bold"/>
-            <TextBlock Text="Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change.&#10;Mixins are currently only available for Mass Effect 3." 
+            <TextBlock Text="Mixin Library" Grid.Row="1" Grid.Column="0" TextAlignment="Center" Grid.ColumnSpan="4" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change. Additional customizable Mixins are available on ME3Tweaks ModMaker. Mixins are currently only available for Mass Effect 3." 
+                       TextWrapping="Wrap"
                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" TextAlignment="Center" />
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="0">
@@ -60,11 +83,12 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox IsChecked="{Binding UISelectedForUse}" IsEnabled="{Binding CanBeUsed}"/>
+                                <fa:ImageAwesome Icon="Lock" Foreground="Red" Visibility="{Binding IsFinalizer, Converter={StaticResource BoolToVisibilityConverter}}" Height="12" Width="16" ToolTip="This Mixin is a finalizer"/>
                                 <TextBlock Text="{Binding PatchName}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding CanBeUsed}" Value="False">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CanBeUsed}" Value="False">
                                                     <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>

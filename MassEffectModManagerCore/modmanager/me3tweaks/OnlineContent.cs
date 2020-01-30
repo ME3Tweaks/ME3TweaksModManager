@@ -26,10 +26,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static readonly string ModmakerModsEndpoint = "https://me3tweaks.com/modmaker/download.php?id=";
 
-        public static Dictionary<string, string> FetchOnlineStartupManifest()
+        public static Dictionary<string, string> FetchOnlineStartupManifest(bool betamode)
         {
             using var wc = new ShortTimeoutWebClient();
-            string json = wc.DownloadString(StartupManifestURL);
+            var fetchUrl = StartupManifestURL;
+            if (betamode) fetchUrl += "&beta=true";
+            string json = wc.DownloadString(fetchUrl);
             App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             return App.ServerManifest;
         }

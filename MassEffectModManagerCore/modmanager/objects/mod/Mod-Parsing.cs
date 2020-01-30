@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager
         // Constants
 
         //Mod variables
-        public bool ValidMod;
+        public bool ValidMod { get; private set; }
         public List<ModJob> InstallationJobs = new List<ModJob>();
 
         //private List<ModJob> jobs;
@@ -233,7 +233,18 @@ namespace MassEffectModManagerCore.modmanager
         {
             Log.Information($@"Loading moddesc.ini from archive: {Path.GetFileName(archive.FileName)} => {moddescArchiveEntry.FileName}");
             MemoryStream ms = new MemoryStream();
-            archive.ExtractFile(moddescArchiveEntry.FileName, ms);
+            try
+            {
+                archive.ExtractFile(moddescArchiveEntry.FileName, ms);
+            }
+            catch (Exception e)
+            {
+                ModName = "Load Failed";
+                Log.Error("Error loading moddesc.ini from archive! Error: " + e.Message);
+                LoadFailedReason = $"An error occured while reading the moddesc.ini file from this archive: {e.Message}";
+                return;
+            }
+
             ms.Position = 0;
             string iniText = new StreamReader(ms).ReadToEnd();
             ModPath = Path.GetDirectoryName(moddescArchiveEntry.FileName);

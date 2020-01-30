@@ -107,8 +107,17 @@ namespace MassEffectModManagerCore
 
 
         public Mod SelectedMod { get; set; }
+        /// <summary>
+        /// Mods currently visible in the left panel
+        /// </summary>
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
+        /// <summary>
+        /// All mods that successfully loaded.
+        /// </summary>
         public ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ObservableCollectionExtended<Mod>();
+        /// <summary>
+        /// All mods that failed to load
+        /// </summary>
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
 
@@ -1321,8 +1330,11 @@ namespace MassEffectModManagerCore
             {
                 ShowPreviewPanel();
             }
+            else
+            {
+                LoadMods();
+            }
 
-            LoadMods();
             if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
             {
                 ShowBackupNag();
@@ -1333,7 +1345,14 @@ namespace MassEffectModManagerCore
         private void ShowPreviewPanel()
         {
             var previewPanel = new PreviewWelcomePanel();
-            previewPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            previewPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is bool loadMods)
+                {
+                    LoadMods();
+                }
+            };
             ShowBusyControl(previewPanel);
         }
 
@@ -1887,7 +1906,7 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest();
+                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
                         //#if DEBUG
                         //                    if (int.Parse(manifest["latest_build_number"]) > 0)
                         //#else
@@ -2452,6 +2471,7 @@ namespace MassEffectModManagerCore
 
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
         {
+            //When this method is called, the value has already changed. So check against the opposite boolean state.
             var callingMember = (MenuItem)sender;
             if (callingMember == SetModLibraryPath_MenuItem)
             {
@@ -2460,6 +2480,15 @@ namespace MassEffectModManagerCore
             else if (callingMember == DarkMode_MenuItem)
             {
                 SetTheme();
+            }
+            else if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
+            {
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this,"Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?" ,"Enabling beta mode", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    Settings.BetaMode = false; //turn back off.
+                    return;
+                }
             }
             else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
             {
@@ -2496,7 +2525,7 @@ namespace MassEffectModManagerCore
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
         }
 
-        private bool ChooseModLibraryPath(bool loadModsAfterSelecting)
+        internal bool ChooseModLibraryPath(bool loadModsAfterSelecting)
         {
             CommonOpenFileDialog m = new CommonOpenFileDialog
             {
@@ -2743,6 +2772,11 @@ namespace MassEffectModManagerCore
         private void ShowWelcomePanel_Click(object sender, RoutedEventArgs e)
         {
             ShowPreviewPanel();
+        }
+
+        private void OpenME3TweaksModMaker_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.OpenWebpage("https://me3tweaks.com/modmaker");
         }
     }
 }

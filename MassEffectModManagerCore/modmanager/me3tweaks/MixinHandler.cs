@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.IO;
 using ByteSizeLib;
 using System.Runtime;
+using SQLite;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -51,7 +52,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// </summary>
         /// <param name="allmixins"></param>
         /// <returns></returns>
-        public static Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>> GetMixinApplicationList(List<Mixin> allmixins)
+        public static Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>> GetMixinApplicationList(List<Mixin> allmixins, Action<string> errorCallback = null)
         {
             var compilingListsPerModule = new Dictionary<ModJob.JobHeader, Dictionary<string, List<Mixin>>>();
             var modules = allmixins.Select(x => x.TargetModule).Distinct().ToList();
@@ -91,9 +92,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (list.Value.Count(x => x.IsFinalizer) > 1)
                     {
                         Log.Error(@"ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
+                        string error = $"Cannot apply mixins to the following file {list.Key}: There are multiple finalizers selected for this file. Only one finalizer Mixin may be applied to a file, as the others will be unable to apply.\n\nFinalizers:";
+                        foreach (var fin in list.Value.Where(x => x.IsFinalizer))
+                        {
+                            error += "\n"; //do not localize
+                            error += fin.PatchName;
+                        }
+                        errorCallback?.Invoke(error);
+                        list.Value.Clear(); //remove items
+
                         //do something here to abort
                     }
                 }
+
+                var uniuqe = moduleMixinMapping.Where(x => x.Value.Any());
+                moduleMixinMapping = uniuqe.ToDictionary(x => x.Key, x => x.Value);
 
                 compilingListsPerModule[module] = moduleMixinMapping;
             }
