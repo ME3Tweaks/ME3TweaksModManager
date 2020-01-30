@@ -322,6 +322,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Debugger.Break();
                         }
                         string destFile = Path.Combine(sfarStagingDirectory, sfarJob.job.JobDirectory, fileToInstall.Value.FilePath);
+                        if (fileToInstall.Value.IsFullRelativeFilePath)
+                        {
+                            destFile = Path.Combine(sfarStagingDirectory, fileToInstall.Value.FilePath);
+                        }
                         fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
                         fullPathMappingDisk[sourceFile] = destFile; //used for redirection
                         Debug.WriteLine($@"SFAR Disk Staging: {fileToInstall.Key} => {destFile}");
