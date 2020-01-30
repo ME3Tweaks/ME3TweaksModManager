@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Net;
@@ -17,8 +18,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using Octokit;
 using Application = Octokit.Application;
+using Path = System.IO.Path;
 
 namespace LocalizationHelper
 {
@@ -190,59 +193,62 @@ namespace LocalizationHelper
             var langs = LocalizedString.Languages.Where(x => x != "int");
             foreach (var lang in langs)
             {
-                var langLines = Regex.Split(dictionaries[lang], "\r\n|\r|\n");
-                int numBlankLines = 0;
-                LocalizationCategory cat = null;
-                for (int i = 3; i < langLines.Length - 2; i++)
+                if (dictionaries.ContainsKey(lang))
                 {
-                    var line = langLines[i].Trim();
-                    if (string.IsNullOrWhiteSpace(line))
+                    var langLines = Regex.Split(dictionaries[lang], "\r\n|\r|\n");
+                    int numBlankLines = 0;
+                    LocalizationCategory cat = null;
+                    for (int i = 3; i < langLines.Length - 2; i++)
                     {
-                        numBlankLines++;
-                        continue;
-                    }
-
-                    if (line.StartsWith("<!--") && line.EndsWith("-->"))
-                    {
-                        //Comment - parse
-                        line = line.Substring(4);
-                        line = line.Substring(0, line.Length - 3);
-                        line = line.Trim();
-                        if (numBlankLines > 0 || cat == null)
+                        var line = langLines[i].Trim();
+                        if (string.IsNullOrWhiteSpace(line))
                         {
-                            cat = categories.FirstOrDefault(x => x.CategoryName == line);
-                            if (cat == null)
-                            {
-                                Debugger.Break();
-                            }
+                            numBlankLines++;
+                            continue;
                         }
 
-                        //notes for previous item?
+                        if (line.StartsWith("<!--") && line.EndsWith("-->"))
+                        {
+                            //Comment - parse
+                            line = line.Substring(4);
+                            line = line.Substring(0, line.Length - 3);
+                            line = line.Trim();
+                            if (numBlankLines > 0 || cat == null)
+                            {
+                                cat = categories.FirstOrDefault(x => x.CategoryName == line);
+                                if (cat == null)
+                                {
+                                    Debugger.Break();
+                                }
+                            }
 
-                        //We don't care in localizations about this, they just have to exist.
-                        continue;
-                    }
+                            //notes for previous item?
 
-                    numBlankLines = 0;
-                    var lineInfo = extractInfo(line);
-                    LocalizedString ls = cat.LocalizedStringsForSection.FirstOrDefault(x => x.key == lineInfo.key);
-                    switch (lang)
-                    {
-                        case "rus":
-                            ls.RUS = lineInfo.text;
-                            break;
-                        case "deu":
-                            ls.DEU = lineInfo.text;
-                            break;
-                        case "pol":
-                            ls.POL = lineInfo.text;
-                            break;
-                        case "fra":
-                            ls.FRA = lineInfo.text;
-                            break;
-                        case "esn":
-                            ls.ESN = lineInfo.text;
-                            break;
+                            //We don't care in localizations about this, they just have to exist.
+                            continue;
+                        }
+
+                        numBlankLines = 0;
+                        var lineInfo = extractInfo(line);
+                        LocalizedString ls = cat.LocalizedStringsForSection.FirstOrDefault(x => x.key == lineInfo.key);
+                        switch (lang)
+                        {
+                            case "rus":
+                                ls.RUS = lineInfo.text;
+                                break;
+                            case "deu":
+                                ls.DEU = lineInfo.text;
+                                break;
+                            case "pol":
+                                ls.POL = lineInfo.text;
+                                break;
+                            case "fra":
+                                ls.FRA = lineInfo.text;
+                                break;
+                            case "esn":
+                                ls.ESN = lineInfo.text;
+                                break;
+                        }
                     }
                 }
             }
@@ -267,13 +273,83 @@ namespace LocalizationHelper
         public LocalizationCategory SelectedCategory { get; set; }
         public ObservableCollectionExtended<LocalizationCategory> LocalizationCategories { get; } = new ObservableCollectionExtended<LocalizationCategory>();
         public ICommand SaveLocalizationCommand { get; set; }
+        public ICommand CopyLocalizationCommand { get; set; }
+        public ICommand LoadLocalizationCommand { get; set; }
         private void LoadCommands()
         {
             SaveLocalizationCommand = new GenericCommand(SaveLocalization, CanSaveLocalization);
+            CopyLocalizationCommand = new GenericCommand(CopyLocalization, CanSaveLocalization);
+            LoadLocalizationCommand = new GenericCommand(LoadLocalization, CanSaveLocalization);
+        }
+
+        private void CopyLocalization()
+        {
+            string lang = null;
+            if (ShowGerman) lang = "deu";
+            if (ShowRussian) lang = "rus";
+            if (ShowPolish) lang = "pol";
+            if (ShowFrench) lang = "fra";
+            if (ShowSpanish) lang = "esn";
+
+            var sb = CreateXamlDocument();
+            Clipboard.SetText(sb);
+            MessageBox.Show($"The contents for the {lang}.xaml file have been copied to your clipboard. Paste into the github editor to update it, then submit a pull request. Once the request is approved, it will be reflected in this program's interface.");
+        }
+
+        private void LoadLocalization()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Title = "Select [lang].xaml file",
+                Filter = "Xaml files|*.xaml"
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var fname = openFileDialog.FileName;
+                var basename = Path.GetFileNameWithoutExtension(fname);
+                if (!LocalizedString.Languages.Contains(basename, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    MessageBox.Show("Filename must be XXX.xaml, with XXX being your language code. The file selected does not match a supported language.");
+                    return;
+                }
+
+                //Wipe existing strings for that lang
+                foreach (var cat in LocalizationCategories)
+                {
+                    foreach (var ls in cat.LocalizedStringsForSection)
+                    {
+                        switch (basename)
+                        {
+                            case "rus":
+                                ls.RUS = null;
+                                break;
+                            case "deu":
+                                ls.DEU = null;
+                                break;
+                            case "pol":
+                                ls.POL = null;
+                                break;
+                            case "fra":
+                                ls.FRA = null;
+                                break;
+                            case "esn":
+                                ls.ESN = null;
+                                break;
+                        }
+                    }
+                }
+
+                //Load lang from file
+                var dict = new Dictionary<string, string>();
+                dict[basename] = File.ReadAllText(fname);
+                parseLocalizations(LocalizationCategories.ToList(), dict);
+                MessageBox.Show("Loaded localization for " + basename + ".");
+            }
         }
 
         private bool CanSaveLocalization()
         {
+            if (!LocalizationCategories.Any()) return false;
             int numChecked = 0;
             if (ShowGerman) numChecked++;
             if (ShowRussian) numChecked++;
@@ -284,9 +360,8 @@ namespace LocalizationHelper
             return false;
         }
 
-        private void SaveLocalization()
+        private string CreateXamlDocument()
         {
-            //throw new NotImplementedException();
             string lang = null;
             if (ShowGerman) lang = "deu";
             if (ShowRussian) lang = "rus";
@@ -329,9 +404,38 @@ namespace LocalizationHelper
                     }
                 }
             }
-            Debug.WriteLine(sb.ToString());
-            Clipboard.SetText(sb.ToString());
-            MessageBox.Show($"The contents for the {lang}.xaml file have been copied to your clipboard. Paste into the github editor to update it, then submit a pull request. Once the request is approved, it will be reflected in this program's interface.");
+
+            return sb.ToString();
+
+        }
+
+        private void SaveLocalization()
+        {
+            string lang = null;
+            if (ShowGerman) lang = "deu";
+            if (ShowRussian) lang = "rus";
+            if (ShowPolish) lang = "pol";
+            if (ShowFrench) lang = "fra";
+            if (ShowSpanish) lang = "esn";
+
+            var sb = CreateXamlDocument();
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            {
+                Title = "Save localization file",
+                Filter = "Xaml files|*.xaml",
+                FileName = $"{lang}.xaml"
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                if (Path.GetFileNameWithoutExtension(saveFileDialog.FileName).Length != 3)
+                {
+                    MessageBox.Show($"Filename must match localization 3 character name ({lang}).");
+                    return;
+                }
+                File.WriteAllText(saveFileDialog.FileName, sb);
+                MessageBox.Show($"Saved.");
+            }
         }
 
         [DebuggerDisplay("LocCat {CategoryName} with {LocalizedStringsForSection.Count} entries")]

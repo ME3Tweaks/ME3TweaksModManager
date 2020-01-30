@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
         mc:Ignorable="d"
-        Title="ME3Tweaks Mod Manager Localizer" Height="450" Width="800">
+        Title="ME3Tweaks Mod Manager Localizer" Height="750" Width="1400">
     <Grid Margin="0,5,0,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="290"/>
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -138,7 +138,11 @@
                 <CheckBox Content="French" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowFrench}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                 <CheckBox Content="Spanish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowSpanish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                 <StatusBarItem HorizontalAlignment="Right">
-                    <Button Content="Copy localization to clipboard" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Copy localization to clipboard" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding CopyLocalizationCommand}" />
+                    <Button Content="Load localization from disk" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding LoadLocalizationCommand}" Margin="5,0" />
+                    <Button Content="Save localization to disk" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}"/>
+                </StackPanel>
                 </StatusBarItem>
         </StatusBar>
     </Grid>

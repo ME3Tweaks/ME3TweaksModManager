@@ -31,12 +31,12 @@
             <xctk:WatermarkTextBox Watermark="Type to filter" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME2, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='1'}"/>
             <xctk:WatermarkTextBox Watermark="Type to filter" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME3, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='2'}"/>
         </DockPanel>
-        <Grid VerticalAlignment="Center">
-            <StackPanel Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Stretch">
+        <Grid VerticalAlignment="Stretch">
+            <StackPanel Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 <fa:ImageAwesome Icon="Spinner" SpinDuration="1" Width="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10" Spin="True"/>
                 <TextBlock Text="Getting list of files from backup" HorizontalAlignment="Center" FontWeight="Bold"/>
             </StackPanel>
-            <TabControl SelectedIndex="{Binding SelectedGameIndex}" Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
+            <TabControl SelectedIndex="{Binding SelectedGameIndex}" VerticalAlignment="Stretch" Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
                 <!-- ME1 -->
                 <TabItem>
                     <TabItem.Header>
