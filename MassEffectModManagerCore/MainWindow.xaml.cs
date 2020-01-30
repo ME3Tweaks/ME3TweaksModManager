@@ -2032,11 +2032,14 @@ namespace MassEffectModManagerCore
                     ME2UnrealObjectInfo.loadfromJSON();
                     ME1UnrealObjectInfo.loadfromJSON();
 
-                    //var p = MEPackageHandler.OpenMEPackage(@"Z:\ME3-Backup\BIOGame\CookedPCConsole\BioP_MPSlum.pcc");
-                    //p.save(@"C:\users\mgame\desktop\mpslum_m3_decompressed.pcc");
+                    
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                    var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));
+#if DEBUG
+                    //DEBUG STUFF
+                    //var p = MEPackageHandler.OpenMEPackage(@"Z:\ME3-Backup\BIOGame\CookedPCConsole\BioP_MPSlum.pcc");
+                    //p.save(@"C:\users\mgame\desktop\mpslum_m3_decompressed.pcc");
+                    //var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));
 
                     //Dev
                     //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
@@ -2050,7 +2053,7 @@ namespace MassEffectModManagerCore
                     //var modified = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2NoMinigames-Vanilla\BioGame\CookedPC\Startup_INT.pcc");
                     //var target = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2 Controller\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
                     //ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
-
+#endif
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
