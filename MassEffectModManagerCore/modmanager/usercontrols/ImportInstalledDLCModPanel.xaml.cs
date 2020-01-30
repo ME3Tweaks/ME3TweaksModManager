@@ -180,6 +180,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     TPMITelemetrySubmissionForm.TelemetryPackage tp = TPMITelemetrySubmissionForm.GetTelemetryPackageForDLC(SelectedTarget.Game,
                         MEDirectories.DLCPath(SelectedTarget),
                         SelectedDLCFolder.DLCFolderName,
+                        SelectedDLCFolder.DLCFolderName, //same as foldername as this is already installed
                         ModNameText,
                         @"N/A",
                         ModSiteText,

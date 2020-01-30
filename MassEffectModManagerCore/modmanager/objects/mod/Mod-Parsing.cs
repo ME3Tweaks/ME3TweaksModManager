@@ -95,6 +95,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             get
             {
+                if (LoadFailedReason != null) return LoadFailedReason;
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(ModDescription);
                 sb.AppendLine(@"=============================");
@@ -214,13 +215,13 @@ namespace MassEffectModManagerCore.modmanager
             Log.Information(@"Converting an RCW mod to an M3 mod.");
             Game = MEGame.ME2;
             ModDescTargetVersion = 6.0;
-
             ModDeveloper = rcw.Author;
             ModName = rcw.ModName;
             ModDescription = M3L.GetString(M3L.string_modparsing_defaultRCWDescription);
             ModJob rcwJob = new ModJob(ModJob.JobHeader.ME2_RCWMOD);
             rcwJob.RCW = rcw;
             InstallationJobs.Add(rcwJob);
+            ValidMod = true;
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, new WeakReference(this));
         }
 

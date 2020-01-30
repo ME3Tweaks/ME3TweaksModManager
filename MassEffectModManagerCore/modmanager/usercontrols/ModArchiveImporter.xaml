@@ -58,7 +58,6 @@
             <TextBox Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left">
                 <TextBox.Text>
                     <PriorityBinding>
-                        <Binding Path="SelectedMod.LoadFailedReason" Mode="OneWay" />
                         <Binding Path="SelectedMod.DisplayedModDescription" Mode="OneWay" />
                         <Binding Path="NoModSelectedText" Mode="OneWay" />
                     </PriorityBinding>
