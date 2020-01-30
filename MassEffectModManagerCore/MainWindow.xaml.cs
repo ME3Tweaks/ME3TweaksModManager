@@ -2051,7 +2051,7 @@ namespace MassEffectModManagerCore
                     ME2UnrealObjectInfo.loadfromJSON();
                     ME1UnrealObjectInfo.loadfromJSON();
 
-                    
+
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 #if DEBUG
@@ -2106,6 +2106,25 @@ namespace MassEffectModManagerCore
                         ContentCheckInProgress = false;
                     }
                 }
+
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker("BackupCheck");
+                nbw.DoWork += (a, b) =>
+                {
+                    var me1CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME1) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME1, false) != null;
+                    var me2CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME2) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME2, false) != null;
+                    var me3CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME3, false) != null;
+
+                    if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
+                    {
+                        var bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", "Checking backups", "Finished checking backups");
+                        if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(Mod.MEGame.ME1);
+                        if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(Mod.MEGame.ME2);
+                        if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(Mod.MEGame.ME3);
+
+                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    }
+                };
+                nbw.RunWorkerAsync();
 
                 StartupCompleted = true;
                 CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
@@ -2483,7 +2502,7 @@ namespace MassEffectModManagerCore
             }
             else if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this,"Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?" ,"Enabling beta mode", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?", "Enabling beta mode", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     Settings.BetaMode = false; //turn back off.

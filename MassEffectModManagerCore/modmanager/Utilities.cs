@@ -1062,7 +1062,7 @@ namespace MassEffectModManagerCore
             return (string)Registry.GetValue(key, name, null);
         }
 
-        public static string GetGameBackupPath(Mod.MEGame game)
+        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true)
         {
             string path;
             switch (game)
@@ -1085,9 +1085,13 @@ namespace MassEffectModManagerCore
                 return null;
             }
             //Super basic validation
-            if (!Directory.Exists(path + @"\BIOGame") || !Directory.Exists(path + @"\Binaries"))
+            if (!Directory.Exists(Path.Combine(path, @"BIOGame")) || !Directory.Exists(Path.Combine(path, @"Binaries")))
             {
                 return null;
+            }
+            if (forceCmmVanilla && !File.Exists(Path.Combine(path, @"cmm_vanilla")))
+            {
+                return null; //do not accept alot installer backups that are missing cmm_vanilla as they are not vanilla.
             }
             return path;
         }
