@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
 
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+    //Localizable(false) //Leave this here for localizer tool!
     partial class OnlineContent
     {
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
@@ -451,6 +454,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return (responseStream, downloadError);
         }
 
+        [Localizable(true)]
         public class ServerModMakerModInfo
         {
 
@@ -460,8 +464,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string revision { get; set; }
             public string username { get; set; }
 
-            public string UIRevisionString => $" Revision {revision}";
-            public string UICodeString => $"Code {mod_id}";
+            public string UIRevisionString => M3L.GetString(M3L.string_interp_revisionX, revision);
+            public string UICodeString => M3L.GetString(M3L.string_interp_codeX, mod_id);
         }
     }
 }

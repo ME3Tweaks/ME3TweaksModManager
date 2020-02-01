@@ -247,9 +247,24 @@ namespace LocalizationHelper
             var filelines = File.ReadAllLines(sender as string);
             HashSet<string> s = new HashSet<string>();
             HashSet<string> origStrForSubsOnly = new HashSet<string>();
+            bool sectionIsLocalizable = true;
             foreach (var line in filelines)
             {
                 if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
+                if (line.Contains("Localizable(true)", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    sectionIsLocalizable = true;
+                    continue; //ignore this line.
+                }
+
+                if (line.Contains("Localizable(false)", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    sectionIsLocalizable = false;
+                    continue; //ignore this line.
+                }
+
+                if (!sectionIsLocalizable) continue; //not localizable
+
                 var commentIndex = line.IndexOf("//");
                 var matches = r.Matches(line);
                 foreach (var match in matches)

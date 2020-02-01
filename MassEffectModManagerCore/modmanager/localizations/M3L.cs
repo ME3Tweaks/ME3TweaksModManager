@@ -803,5 +803,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_applyingMixins = "string_applyingMixins";
 		public static readonly string string_compilingCoalescedFiles = "string_compilingCoalescedFiles";
 		public static readonly string string_finalizingMod = "string_finalizingMod";
+		public static readonly string string_interp_revisionX = "string_interp_revisionX";
+		public static readonly string string_interp_codeX = "string_interp_codeX";
 	}
 }

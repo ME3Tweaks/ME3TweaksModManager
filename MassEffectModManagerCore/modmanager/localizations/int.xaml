@@ -938,4 +938,10 @@
     <system:String x:Key="string_applyingMixins">Applying Mixins</system:String>
     <system:String x:Key="string_compilingCoalescedFiles">Compiling Coalesced files</system:String>
     <system:String x:Key="string_finalizingMod">Finalizing mod</system:String>
+
+    <!-- Online Content -->
+    <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
+    <!-- 0= ModMaker Mod Revision -->
+    <system:String x:Key="string_interp_codeX">Code {0}</system:String>
+    <!-- 0=ModMaker ID/Code -->
 </ResourceDictionary>
