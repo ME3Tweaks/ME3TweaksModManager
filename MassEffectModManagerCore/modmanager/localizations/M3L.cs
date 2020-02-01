@@ -491,6 +491,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_openInExplorer = "string_openInExplorer";
 		public static readonly string string_clickToOpenALOTInstaller = "string_clickToOpenALOTInstaller";
 		public static readonly string string_manageTexturesWithALOTInstaller = "string_manageTexturesWithALOTInstaller";
+		public static readonly string string_enable = "string_enable";
+		public static readonly string string_disable = "string_disable";
+		public static readonly string string_disabled = "string_disabled";
 		public static readonly string string_selectALogToView = "string_selectALogToView";
 		public static readonly string string_collectingLogInformation = "string_collectingLogInformation";
 		public static readonly string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
@@ -891,9 +894,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_exportExtract = "string_exportExtract";
 		public static readonly string string_typeToFilter = "string_typeToFilter";
 		public static readonly string string_gettingListOfFilesFromBackup = "string_gettingListOfFilesFromBackup";
-		public static readonly string string_massEffect = "string_massEffect";
-		public static readonly string string_massEffect2 = "string_massEffect2";
-		public static readonly string string_massEffect3 = "string_massEffect3";
 		public static readonly string string_interp_XgamesNotBackedUp = "string_interp_XgamesNotBackedUp";
 		public static readonly string string_interp_XgameNotBackedUp = "string_interp_XgameNotBackedUp";
 		public static readonly string string_allGamesBackedUp = "string_allGamesBackedUp";
@@ -925,6 +925,16 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_noInstallsOfGameManagedByModManager = "string_noInstallsOfGameManagedByModManager";
 		public static readonly string string_interp_fullConsoleBoundToConsolekeyValue = "string_interp_fullConsoleBoundToConsolekeyValue";
 		public static readonly string string_interp_miniConsoleBoundToTypekeyValue = "string_interp_miniConsoleBoundToTypekeyValue";
+		public static readonly string string_consoleKeyKeybinder = "string_consoleKeyKeybinder";
+		public static readonly string string_description_consoleKeyKeybinder = "string_description_consoleKeyKeybinder";
+		public static readonly string string_listeningForKeypress = "string_listeningForKeypress";
+		public static readonly string string_pressAnyKeyOnYourKeyboardToAssignItFor = "string_pressAnyKeyOnYourKeyboardToAssignItFor";
+		public static readonly string string_cancelKeyAssignment = "string_cancelKeyAssignment";
+		public static readonly string string_changeFullKey = "string_changeFullKey";
+		public static readonly string string_changeMiniKey = "string_changeMiniKey";
+		public static readonly string string_setToDefaultKeys = "string_setToDefaultKeys";
+		public static readonly string string_massEffect2ConsoleKeysAreDefinedPerGame = "string_massEffect2ConsoleKeysAreDefinedPerGame";
+		public static readonly string string_massEffect3ConsoleKeysAreDefinedPerGame = "string_massEffect3ConsoleKeysAreDefinedPerGame";
 		public static readonly string string_updaterService = "string_updaterService";
 		public static readonly string string_setChangelog = "string_setChangelog";
 		public static readonly string string_updaterServiceSettings = "string_updaterServiceSettings";
@@ -962,5 +972,28 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_modUploadedToUpdaterService = "string_modUploadedToUpdaterService";
 		public static readonly string string_uploadAborted = "string_uploadAborted";
 		public static readonly string string_interp_uploadingFilesToServerXY = "string_interp_uploadingFilesToServerXY";
+		public static readonly string string_selectMixinsToCompile = "string_selectMixinsToCompile";
+		public static readonly string string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup = "string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup";
+		public static readonly string string_interp_dialogCreatingNewModWithExistingName = "string_interp_dialogCreatingNewModWithExistingName";
+		public static readonly string string_compilingMixins = "string_compilingMixins";
+		public static readonly string string_interp_errorApplyingMixinsForFile = "string_interp_errorApplyingMixinsForFile";
+		public static readonly string string_compiledFromTheFollowingMixins = "string_compiledFromTheFollowingMixins";
+		public static readonly string string_failedToApplyAllMixins = "string_failedToApplyAllMixins";
+		public static readonly string string_theFollowingMixinsFailedToApply = "string_theFollowingMixinsFailedToApply";
+		public static readonly string string_compile = "string_compile";
+		public static readonly string string_compileIntoANewMod = "string_compileIntoANewMod";
+		public static readonly string string_modNameColon = "string_modNameColon";
+		public static readonly string string_tooltip_generatesNewMod = "string_tooltip_generatesNewMod";
+		public static readonly string string_compileAsANewMod = "string_compileAsANewMod";
+		public static readonly string string_or = "string_or";
+		public static readonly string string_compileIntoAnExistingMod = "string_compileIntoAnExistingMod";
+		public static readonly string string_thisFeatureIsNotYetAvailable = "string_thisFeatureIsNotYetAvailable";
+		public static readonly string string_tooltip_appliesMixinsToAMod = "string_tooltip_appliesMixinsToAMod";
+		public static readonly string string_compileIntoExistingMod = "string_compileIntoExistingMod";
+		public static readonly string string_mixinLibrary = "string_mixinLibrary";
+		public static readonly string string_header_mixinsArePremadePatches = "string_header_mixinsArePremadePatches";
+		public static readonly string string_availableMixins = "string_availableMixins";
+		public static readonly string string_tooltip_thisMixinIsAFinalizer = "string_tooltip_thisMixinIsAFinalizer";
+		public static readonly string string_patchDescription = "string_patchDescription";
 	}
 }

@@ -483,6 +483,9 @@
     <system:String x:Key="string_openInExplorer">Open in Explorer</system:String>
     <system:String x:Key="string_clickToOpenALOTInstaller">Click to open ALOT Installer</system:String>
     <system:String x:Key="string_manageTexturesWithALOTInstaller">Manage textures with ALOT Installer</system:String>
+    <system:String x:Key="string_enable">Enable</system:String>
+    <system:String x:Key="string_disable">DisCable</system:String>
+    <system:String x:Key="string_disabled">Disabled</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -1071,9 +1074,6 @@
     <system:String x:Key="string_exportExtract">Export/Extract</system:String>
     <system:String x:Key="string_typeToFilter">Type to filter</system:String>
     <system:String x:Key="string_gettingListOfFilesFromBackup">Getting list of files from backup</system:String>
-    <system:String x:Key="string_massEffect">Mass Effect</system:String>
-    <system:String x:Key="string_massEffect2">Mass Effect 2</system:String>
-    <system:String x:Key="string_massEffect3">Mass Effect 3</system:String>
 
     <!-- Backup Nag System -->
     <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
@@ -1094,7 +1094,7 @@
     <system:String x:Key="string_mergingMods">Merging mods</system:String>
     <system:String x:Key="string_deployingModsTo7z">Deploying mods to .7z</system:String>
 
-    <!-- Console Keybinder -->
+    <!-- Console Key Keybinder -->
     <system:String x:Key="string_massEffectFullConsole">Mass Effect Full Console</system:String>
     <system:String x:Key="string_massEffectMiniConsole">Mass Effect Mini Console</system:String>
     <system:String x:Key="string_massEffect2MiniConsole">Mass Effect 2 Mini Console</system:String>
@@ -1115,6 +1115,17 @@
     <!-- 0=consolekey.Value -->
     <system:String x:Key="string_interp_miniConsoleBoundToTypekeyValue">Mini console bound to {0}</system:String>
     <!-- 0=typekey.Value -->
+    <system:String x:Key="string_consoleKeyKeybinder">Console Key Keybinder</system:String>
+    <!-- In game it is "Console Key", and this is keybinder, hence Console Key Keybinder -->
+    <system:String x:Key="string_description_consoleKeyKeybinder">This tool lets you set what keys are used to open the console and miniconsole in each Mass Effect game.</system:String>
+    <system:String x:Key="string_listeningForKeypress">Listening for keypress</system:String>
+    <system:String x:Key="string_pressAnyKeyOnYourKeyboardToAssignItFor">Press any key on your keyboard to assign it for:</system:String>
+    <system:String x:Key="string_cancelKeyAssignment">Cancel key assignment</system:String>
+    <system:String x:Key="string_changeFullKey">Change full key</system:String>
+    <system:String x:Key="string_changeMiniKey">Change mini key</system:String>
+    <system:String x:Key="string_setToDefaultKeys">Set to default keys</system:String>
+    <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Mass Effect 2 console keys are defined per game.</system:String>
+    <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Mass Effect 3 console keys are defined per game.</system:String>
 
     <!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Updater Service</system:String>
@@ -1161,4 +1172,35 @@
     <system:String x:Key="string_uploadAborted">Upload aborted</system:String>
     <system:String x:Key="string_interp_uploadingFilesToServerXY">Uploading files to server {0}/{1}</system:String>
     <!-- 0=amount uploaded 1=total to upload -->
+
+    <!-- Mixin Library -->
+    <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>
+    <system:String x:Key="string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup">No game backup of ME3 is available. Mixins cannot be used without a backup.</system:String>
+    <!-- appears in bottom left of mixin library if ME3 backup cannot be found -->
+    <system:String xml:space="preserve" x:Key="string_interp_dialogCreatingNewModWithExistingName">Creating a mod with the name '{0}' will delete the existing mod directory in the mod library:\n{1}\n\nContinue?</system:String>
+    <!-- 0=NewModName 1=modpath -->
+    <system:String x:Key="string_compilingMixins">Compiling Mixins...</system:String>
+    <system:String x:Key="string_interp_errorApplyingMixinsForFile">Error applying mixins ({0}) for file {1}: {2}</system:String>
+    <!-- 0=List of mixins that targeted the file 1=Target file 2=Error message | This appears in a list-->
+    <system:String x:Key="string_compiledFromTheFollowingMixins">Compiled from the following mixins:</system:String>
+    <system:String x:Key="string_failedToApplyAllMixins">Failed to apply all Mixins</system:String>
+    <system:String x:Key="string_theFollowingMixinsFailedToApply">The following Mixins failed to apply.</system:String>
+
+    <system:String x:Key="string_compile">Compile...</system:String>
+    <system:String x:Key="string_compileIntoANewMod">Compile into a new mod</system:String>
+    <system:String x:Key="string_modNameColon">Mod name:</system:String>
+    <!-- This is here cause of how xaml works. It's not duplicate -->
+    <system:String xml:space="preserve" x:Key="string_tooltip_generatesNewMod">Generates a new Mod Manager mod with these Mixins.\nFiles are pulled from vanilla backup</system:String>
+    <system:String x:Key="string_compileAsANewMod">Compile as a new mod</system:String>
+    <system:String x:Key="string_or">Or</system:String>
+    <!-- as in X or Y -->
+    <system:String x:Key="string_compileIntoAnExistingMod">Compile into an existing mod</system:String>
+    <system:String x:Key="string_thisFeatureIsNotYetAvailable">This feature is not yet available.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_appliesMixinsToAMod">Applies the Mixins to a mod you specify.\nFiles in the mod are patched if the mod already uses them.\nFiles not used by the mod are pulled from vanilla backup</system:String>
+    <system:String x:Key="string_compileIntoExistingMod">Compile into existing mod</system:String>
+    <system:String x:Key="string_mixinLibrary">Mixin Library</system:String>
+    <system:String x:Key="string_header_mixinsArePremadePatches">Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change. Additional customizable Mixins are available on ME3Tweaks ModMaker. Mixins are currently only available for Mass Effect 3.</system:String>
+    <system:String x:Key="string_availableMixins">Available Mixins</system:String>
+    <system:String x:Key="string_tooltip_thisMixinIsAFinalizer">This Mixin is a finalizer</system:String>
+    <system:String x:Key="string_patchDescription">Patch Description</system:String>
 </ResourceDictionary>

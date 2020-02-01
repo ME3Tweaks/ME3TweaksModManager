@@ -1,40 +1,29 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupFileFetcher"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-                       xmlns:fa="http://schemas.fontawesome.io/icons/"
-                       xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-                       mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-                       Height="400" Width="500">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupFileFetcher" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Height="400" Width="500">
     <UserControl.Resources>
         <DataTemplate x:Key="FileTemplate">
             <DockPanel>
-                <TextBlock Text="{Binding Module}" DockPanel.Dock="Right"/>
-                <TextBlock Text="{Binding Filename}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Module}" DockPanel.Dock="Right" />
+                <TextBlock Text="{Binding Filename}" FontWeight="Bold" />
             </DockPanel>
         </DataTemplate>
         <Style x:Key="FileContainerStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
     </UserControl.Resources>
     <DockPanel>
-        <TextBlock Text="Backup File Fetcher" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
-        <TextBlock Text="Backup File Fetcher can be used to quickly fetch vanilla versions of files from backups." TextWrapping="Wrap" Margin="0,0,0,10"  HorizontalAlignment="Center" DockPanel.Dock="Top"/>
+        <TextBlock Text="{DynamicResource string_backupFileFetcher}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top" />
+        <TextBlock Text="{DynamicResource string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups}" TextWrapping="Wrap" Margin="0,0,0,10" HorizontalAlignment="Center" DockPanel.Dock="Top" />
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
-            <Button Content="Close" Padding="7,4" DockPanel.Dock="Right" Command="{Binding CloseCommand}" HorizontalAlignment="Right"/>
-            <Button Content="Export/Extract" Padding="7,4" DockPanel.Dock="Right" Command="{Binding FetchFileCommand}" HorizontalAlignment="Right" Margin="5,0"/>
-            <xctk:WatermarkTextBox Watermark="Type to filter" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME1, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='0'}"/>
-            <xctk:WatermarkTextBox Watermark="Type to filter" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME2, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='1'}"/>
-            <xctk:WatermarkTextBox Watermark="Type to filter" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME3, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='2'}"/>
+            <Button Content="{DynamicResource string_close}" Padding="7,4" DockPanel.Dock="Right" Command="{Binding CloseCommand}" HorizontalAlignment="Right" />
+            <Button Content="{DynamicResource string_exportExtract}" Padding="7,4" DockPanel.Dock="Right" Command="{Binding FetchFileCommand}" HorizontalAlignment="Right" Margin="5,0" />
+            <xctk:WatermarkTextBox Watermark="{DynamicResource string_typeToFilter}" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME1, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='0'}" />
+            <xctk:WatermarkTextBox Watermark="{DynamicResource string_typeToFilter}" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME2, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='1'}" />
+            <xctk:WatermarkTextBox Watermark="{DynamicResource string_typeToFilter}" Width="200" HorizontalAlignment="Left" Text="{Binding FilterTextME3, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='2'}" />
         </DockPanel>
         <Grid VerticalAlignment="Stretch">
             <StackPanel Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                <fa:ImageAwesome Icon="Spinner" SpinDuration="1" Width="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10" Spin="True"/>
-                <TextBlock Text="Getting list of files from backup" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <fa:ImageAwesome Icon="Spinner" SpinDuration="1" Width="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10" Spin="True" />
+                <TextBlock Text="{DynamicResource string_gettingListOfFilesFromBackup}" HorizontalAlignment="Center" FontWeight="Bold" />
             </StackPanel>
             <TabControl SelectedIndex="{Binding SelectedGameIndex}" VerticalAlignment="Stretch" Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
                 <!-- ME1 -->
@@ -46,10 +35,7 @@
                         </StackPanel>
                     </TabItem.Header>
                     <DockPanel>
-                        <ListBox ItemsSource="{Binding ME1FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME1File}"
-                             TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}">
-
-                        </ListBox>
+                        <ListBox ItemsSource="{Binding ME1FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME1File}" TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}"></ListBox>
                     </DockPanel>
                 </TabItem>
                 <!-- ME2 -->
@@ -61,10 +47,7 @@
                         </StackPanel>
                     </TabItem.Header>
                     <DockPanel>
-                        <ListBox ItemsSource="{Binding ME2FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME2File}"
-                             TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}">
-
-                        </ListBox>
+                        <ListBox ItemsSource="{Binding ME2FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME2File}" TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}"></ListBox>
                     </DockPanel>
                 </TabItem>
                 <!-- ME3 -->
@@ -76,14 +59,10 @@
                         </StackPanel>
                     </TabItem.Header>
                     <DockPanel>
-                        <ListBox ItemsSource="{Binding ME3FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME3File}"
-                             TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}">
-
-                        </ListBox>
+                        <ListBox ItemsSource="{Binding ME3FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME3File}" TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}"></ListBox>
                     </DockPanel>
                 </TabItem>
             </TabControl>
         </Grid>
-
     </DockPanel>
 </local:MMBusyPanelBase>
