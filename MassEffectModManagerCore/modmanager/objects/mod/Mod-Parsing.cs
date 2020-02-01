@@ -241,9 +241,9 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                ModName = "Load Failed";
+                ModName = M3L.GetString(M3L.string_loadFailed);
                 Log.Error(@"Error loading moddesc.ini from archive! Error: " + e.Message);
-                LoadFailedReason = $"An error occured while reading the moddesc.ini file from this archive: {e.Message}";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_errorReadingArchiveModdesc, e.Message);
                 return;
             }
 
@@ -328,7 +328,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
                     Log.Error($@"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
-                    LoadFailedReason = $"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.";
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_cannotLoadBuildTooOld, minBuild, App.BuildNumber);
                     return; //Won't set valid
                 }
             }
@@ -449,7 +449,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 //Not allowed. You MUST specify game on cmmver 6 or higher
                 Log.Error($@"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.");
-                LoadFailedReason = $"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_missingModInfoGameDescriptor, ModName);
                 return;
             }
             switch (game)
@@ -1281,7 +1281,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
 
                         Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
-                        LoadFailedReason = $"This mod contains a blacklisted mod file: {fullpath}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_blacklistedfileFound, fullpath);
                         return;
                     }
                 }
@@ -1303,7 +1303,7 @@ namespace MassEffectModManagerCore.modmanager
             //        {
 
             //            Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
-            //            LoadFailedReason = $"This mod contains a blacklisted mod file: {fullpath}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.";
+            //            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_blacklistedfileFound, fullpath);
             //            return;
             //        }
             //    }

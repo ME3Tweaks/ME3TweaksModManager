@@ -715,6 +715,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_validation_modparsing_loadfailed_cmm1CoalFileMissing = "string_validation_modparsing_loadfailed_cmm1CoalFileMissing";
 		public static readonly string string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing = "string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing";
 		public static readonly string string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod = "string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod";
+		public static readonly string string_loadFailed = "string_loadFailed";
+		public static readonly string string_interp_errorReadingArchiveModdesc = "string_interp_errorReadingArchiveModdesc";
+		public static readonly string string_interp_validation_modparsing_cannotLoadBuildTooOld = "string_interp_validation_modparsing_cannotLoadBuildTooOld";
+		public static readonly string string_interp_validation_modparsing_missingModInfoGameDescriptor = "string_interp_validation_modparsing_missingModInfoGameDescriptor";
+		public static readonly string string_interp_validation_modparsing_blacklistedfileFound = "string_interp_validation_modparsing_blacklistedfileFound";
 		public static readonly string string_tooltip_hello = "string_tooltip_hello";
 		public static readonly string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public static readonly string string_libraries = "string_libraries";

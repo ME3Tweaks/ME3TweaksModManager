@@ -393,7 +393,6 @@
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
 
-
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
     <system:String x:Key="string_pleaseWait">Please wait</system:String>
@@ -730,7 +729,7 @@
     <system:String x:Key="string_interp_vPatchingIntoAlternate">VPatching into alternate: {0}</system:String>
     <!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
 
-    <!-- Mod-Installation -->
+    <!-- Mod-Parsing -->
     <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String>
     <!-- requires manual setup -->
     <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String>
@@ -835,6 +834,15 @@
     <!-- 0 = filepath -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod">Error occured while creating basegame job for legacy 1.0 mod: {0}</system:String>
     <!-- 0 = error message -->
+    <system:String x:Key="string_loadFailed">Load Failed</system:String>
+    <system:String x:Key="string_interp_errorReadingArchiveModdesc">An error occured while reading the moddesc.ini file from this archive: {0}</system:String>
+    <!-- 0=e.Message -->
+    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">This mod specifies it can only load on M3 builds {0} or higher. The current build number is {1}.</system:String>
+    <!-- 0=minBuild 1=App.BuildNumber -->
+    <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">{0} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.</system:String>
+    <!-- 0=ModName -->
+    <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">This mod contains a blacklisted mod file: {0}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.</system:String>
+    <!-- 0=fullpath -->
 
     <!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hello!</system:String>
