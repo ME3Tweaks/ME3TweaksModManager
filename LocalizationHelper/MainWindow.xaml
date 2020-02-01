@@ -28,7 +28,7 @@
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Generate target .cs" Click="PushCSStrings_Clicked" IsEnabled="{Binding SelectedCS}"  ToolTip="Add the strings results to the int.xaml file and then click generate to build modified .cs based on int.xaml substitutions."/>
         <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Generate target .xaml" Click="PushXamlStrings_Clicked" IsEnabled="{Binding SelectedXAML}"/>
 
-        <Button Grid.Row="2" Grid.Column="4" Content="Synchronize localizations" Click="Synchronize_Clicked"/>
+        <Button Grid.Row="2" Grid.Column="4" Content="Update M3L keys" Click="Synchronize_Clicked"/>
         <Button Grid.Row="0" Grid.Column="5" Content="Check .cs localizations" Click="Check_Clicked"/>
         <Button Grid.Row="1" Grid.Column="5" Content="Check .xaml localizations" Click="CheckXamls_Clicked"/>
         <Button Grid.Row="2" Grid.Column="5" Content="Check newline/spaces " Click="CheckXmlSpacePreserve_Clicked"/>

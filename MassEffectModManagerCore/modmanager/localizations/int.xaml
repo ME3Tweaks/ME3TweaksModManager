@@ -930,4 +930,12 @@
     <!-- 0=Filename -->
     <system:String x:Key="string_interp_cannotApplyMixinWrongSize">{0} cannot be applied to {1}. Expected size {2} but received source data size of {3}</system:String>
     <!-- 0=Mixin name 1=mixin.TargetFile 2= mixin.TargetSize 3=Required filesize. This text shows up in a list so not having period at end is OK-->
+
+    <!-- ModMaker Compiler -->
+    <system:String x:Key="string_modNotFoundOnServer">Mod not found on server</system:String>
+    <system:String x:Key="string_compilingTLKFiles">Compiling TLK files</system:String>
+    <system:String x:Key="string_preparingMixinPatchData">Preparing Mixin patch data</system:String>
+    <system:String x:Key="string_applyingMixins">Applying Mixins</system:String>
+    <system:String x:Key="string_compilingCoalescedFiles">Compiling Coalesced files</system:String>
+    <system:String x:Key="string_finalizingMod">Finalizing mod</system:String>
 </ResourceDictionary>

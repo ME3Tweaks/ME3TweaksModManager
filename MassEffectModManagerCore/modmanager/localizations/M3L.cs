@@ -797,5 +797,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_resetIniItemsExceptBasic = "string_resetIniItemsExceptBasic";
 		public static readonly string string_interp_cannotApplyMultipleFinalizers = "string_interp_cannotApplyMultipleFinalizers";
 		public static readonly string string_interp_cannotApplyMixinWrongSize = "string_interp_cannotApplyMixinWrongSize";
+		public static readonly string string_modNotFoundOnServer = "string_modNotFoundOnServer";
+		public static readonly string string_compilingTLKFiles = "string_compilingTLKFiles";
+		public static readonly string string_preparingMixinPatchData = "string_preparingMixinPatchData";
+		public static readonly string string_applyingMixins = "string_applyingMixins";
+		public static readonly string string_compilingCoalescedFiles = "string_compilingCoalescedFiles";
+		public static readonly string string_finalizingMod = "string_finalizingMod";
 	}
 }
