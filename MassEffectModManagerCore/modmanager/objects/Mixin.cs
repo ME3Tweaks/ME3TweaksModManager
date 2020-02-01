@@ -1,4 +1,5 @@
-﻿using MassEffectModManagerCore.modmanager.me3tweaks;
+﻿using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
@@ -29,20 +30,20 @@ namespace MassEffectModManagerCore.modmanager.objects
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(PatchDesc);
                 sb.AppendLine();
-                sb.AppendLine("Applies to file " + TargetFile);
-                sb.AppendLine("Part of " + TargetModule);
-                sb.AppendLine("Version " + PatchVersion);
-                sb.AppendLine("Developed by " + PatchDeveloper);
+                sb.AppendLine(M3L.GetString(M3L.string_interp_appliesToX, TargetFile));
+                sb.AppendLine(M3L.GetString(M3L.string_interp_partOfX, TargetModule));
+                sb.AppendLine(M3L.GetString(M3L.string_interp_versionX, PatchVersion));
+                sb.AppendLine(M3L.GetString(M3L.string_interp_developedByX, PatchDeveloper));
                 sb.AppendLine(PatchFilename);
                 if (IsFinalizer)
                 {
                     sb.AppendLine();
-                    sb.AppendLine("This is a finalizer Mixin. Finalizer Mixins change the filesize of the source file, and as such, only one finalizer mixin can be applied to a file. Once this Mixin is applied, you cannot apply other Mixins that apply to this file.");
+                    sb.AppendLine(M3L.GetString(M3L.string_mixin_finalizerDescription));
                 }
                 if (!CanBeUsed)
                 {
                     sb.AppendLine();
-                    sb.AppendLine("This Mixin cannot be applied because the target module is not present in the game backup.");
+                    sb.AppendLine(M3L.GetString(M3L.string_mixin_cannotApplyNoSource));
                 }
                 return sb.ToString();
             }

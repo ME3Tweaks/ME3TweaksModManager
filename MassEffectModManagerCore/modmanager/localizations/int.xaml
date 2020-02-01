@@ -963,7 +963,7 @@
     <system:String x:Key="string_interp_codeX">Code {0}</system:String>
     <!-- 0=ModMaker ID/Code -->
 
-        <!-- Updater Service-->
+    <!-- Updater Service-->
     <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
     <!-- 0=sourcefile.relativefilepath 1=sourcefile.size 2=decompressedStream.Length -->
     <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
@@ -981,5 +981,18 @@
     <!-- 0=FilesToDeleteUIString -->
     <system:String x:Key="string_interp_XfilesWillBeDownloaded">{0} file(s) will be downloaded ({1})</system:String>
     <!-- 0=applicableUpdates.Count 1=TotalBytesHR -->
+
+    <!-- Mixin Class-->
+    <system:String x:Key="string_interp_appliesToX">Applies to file {0}</system:String>
+    <!-- 0=TargetFile -->
+    <system:String x:Key="string_interp_partOfX">Part of {0}</system:String>
+    <!-- 0=TargetModule -->
+    <system:String x:Key="string_interp_versionX">Version {0}</system:String>
+    <!-- 0=PatchVersion -->
+    <system:String x:Key="string_interp_developedByX">Developed by {0}</system:String>
+    <!-- 0=PatchDeveloper -->
+    <system:String x:Key="string_mixin_finalizerDescription">This is a finalizer Mixin. Finalizer Mixins change the filesize of the source file, and as such, only one finalizer mixin can be applied to a file. Once this Mixin is applied, you cannot apply other Mixins that apply to this file.</system:String>
+    <system:String x:Key="string_mixin_cannotApplyNoSource">This Mixin cannot be applied because the target module is not present in the game backup.</system:String>
+
 
 </ResourceDictionary>
