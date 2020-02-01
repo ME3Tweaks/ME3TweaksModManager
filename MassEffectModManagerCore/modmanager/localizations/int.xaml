@@ -656,6 +656,17 @@
     <!-- 0 = Friendlyname , 1 = specified folder path -->
     <system:String x:Key="string_autoApplied">Auto Applied</system:String>
     <system:String x:Key="string_notApplicable">Not applicable</system:String>
+    <system:String x:Key="string_interp_altdlc_multilistMissingMultiListRootPath">Alternate DLC ({0}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altdlc_multilistMissingMultiListX">Alternate DLC ({0}) Multilist ID does not exist as part of the task: {1}</system:String>
+    <!-- 0=FriendlyName 1=id -->
+    <system:String x:Key="string_interp_altdlc_multilistIdNotIntegerOrMissing">Alternate DLC ({0}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altdlc_multilistMissingFileInMultilist">Alternate DLC ({0}) specifies a multilist (index {1}) that contains file that does not exist: {2}</system:String>
+    <!-- 0=FriendlyName 1=multilistid 2=multif -->
+    <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.</system:String>
+    <!-- 0=FriendlyName -->
+
 
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
