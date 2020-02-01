@@ -103,7 +103,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             //Check Auth
             OperationInProgress = true;
-            SettingsSubtext = "Validating settings";
+            SettingsSubtext = M3L.GetString(M3L.string_validatingSettings);
 
             CheckAuth(authCompletedCallback: (result) =>
             {
@@ -126,9 +126,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (mod != null)
                         {
                             StartPreparingModWrapper();
-                        } else
+                        }
+                        else
                         {
-                            CurrentActionText = "Settings saved";
+                            CurrentActionText = M3L.GetString(M3L.string_settingsSaved);
                         }
                     }
                 }
@@ -138,7 +139,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    SettingsSubtext = "Error validating settings";
+                    SettingsSubtext = M3L.GetString(M3L.string_errorValidatingSettings);
                 }
                 OperationInProgress = false;
             });
@@ -200,19 +201,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (string.IsNullOrWhiteSpace(mod.UpdaterServiceServerFolder))
                 {
                     HideChangelogArea();
-                    CurrentActionText = "Mod must have the serverfolder descriptor set under UPDATES header";
+                    CurrentActionText = M3L.GetString(M3L.string_modMissingUpdatesDescriptor);
                     return;
                 }
             }
 
             if (SettingsExpanded)
             {
-                CurrentActionText = "Enter your ME3Tweaks Updater Service information";
-                SettingsSubtext = "Press save to validate settings";
+                CurrentActionText = M3L.GetString(M3L.string_enterYourME3TweaksUpdaterServiceInformation);
+                SettingsSubtext = M3L.GetString(M3L.string_pressSaveToValidateSettings);
             }
             else if (mod != null)
             {
-                CurrentActionText = "Authenticating to ME3Tweaks";
+                CurrentActionText = M3L.GetString(M3L.string_authenticatingToME3Tweaks);
                 CheckAuth(authCompletedCallback: (result) =>
                 {
                     if (result is bool?)
@@ -227,8 +228,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (SettingsExpanded)
                         {
-                            CurrentActionText = "Enter Updater Service settings";
-                            SettingsSubtext = "Press save to validate settings";
+                            CurrentActionText = M3L.GetString(M3L.string_enterUpdaterServiceSettings);
+                            SettingsSubtext = M3L.GetString(M3L.string_pressSaveToValidateSettings);
                         }
                     }
                 });
@@ -270,16 +271,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     try
                     {
                         sftp.Connect();
-                        currentOp = "Checking LZMA storage directory";
+                        currentOp = M3L.GetString(M3L.string_checkingLZMAStorageDirectory);
                         sftp.ChangeDirectory(LZMAStoragePath);
-                        currentOp = "Checking manifests storage directory";
+                        currentOp = M3L.GetString(M3L.string_checkingManifestsStorageDirectory);
                         sftp.ChangeDirectory(ManifestStoragePath);
                         b.Result = true;
                     }
                     catch (Exception e)
                     {
                         Log.Information($@"Error logging in during operation '{currentOp}': " + e.Message);
-                        b.Result = $"Error validating settings: {currentOp}: {e.Message}";
+                        b.Result = M3L.GetString(M3L.string_interp_errorValidatingSettingsXY, currentOp, e.Message);
                     }
                 }
             };
@@ -302,15 +303,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             using var wc = new System.Net.WebClient();
             try
             {
-                CurrentActionText = "Checking if updater service is configured for mod";
+                CurrentActionText = M3L.GetString(M3L.string_checkingIfUpdaterServiceIsConfiguredForMod);
                 string validationUrl = $@"{UpdaterServiceCodeValidationEndpoint}?updatecode={mod.ModClassicUpdateCode}&updatexmlname={mod.UpdaterServiceServerFolderShortname}.xml";
                 string isBeingServed = wc.DownloadStringAwareOfEncoding(validationUrl);
                 if (string.IsNullOrWhiteSpace(isBeingServed) || isBeingServed != @"true") //we don't parse for bool because it might have a different text that is not specifically true or false. It might
-                                                                                         // have an error for example
+                                                                                          // have an error for example
                 {
                     //Not being served
                     Log.Error(@"This mod is not configured for use on the Updater Service. Please contact Mgamerz.");
-                    CurrentActionText = "Server not configured for mod - contact Mgamerz";
+                    CurrentActionText = M3L.GetString(M3L.string_serverNotConfiguredForModContactMgamerz);
                     HideChangelogArea();
                     return;
                 }
@@ -318,7 +319,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             catch (Exception ex)
             {
                 Log.Error(@"Error validating mod is configured on updater service: " + ex.Message);
-                CurrentActionText = $"Error checking updater service configuration:\n{ex.Message}";
+                CurrentActionText = M3L.GetString(M3L.string_interp_errorCheckingUpdaterServiceConfiguration, ex.Message);
                 HideChangelogArea();
                 return;
             }
@@ -335,10 +336,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         //server is newer or same as version we are pushing
-                        var response = M3L.ShowDialog(mainwindow, $"The server version is the same or higher version of the mod you are already uploading. Are you sure you want to push this version to the ME3Tweaks Updater Service? Clients who have a newer or same version of the mod will not see an update.\n\nLocal version: {mod.ParsedModVersion}\nServer version: {latestVersionOnServer}", "Server version same or newer than local", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var response = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_serverVersionSameOrNewerThanLocal, mod.ParsedModVersion, latestVersionOnServer), M3L.GetString(M3L.string_serverVersionSameOrNewerThanLocal), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         if (response == MessageBoxResult.No)
                         {
-                            CurrentActionText = "Upload aborted - mod on server is same or newer than local one being uploaded";
+                            CurrentActionText = M3L.GetString(M3L.string_uploadAbortedModOnServerIsSameOrNewerThanLocalOneBeingUploaded);
                             HideChangelogArea();
                             cancel = true;
                             return;
@@ -366,12 +367,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             bool? canceledCheckCallback() => CancelOperations;
-            CurrentActionText = "Compressing mod for updater service";
+            CurrentActionText = M3L.GetString(M3L.string_compressingModForUpdaterService);
             var lzmaStagingPath = OnlineContent.StageModForUploadToUpdaterService(mod, files, totalModSizeUncompressed, canceledCheckCallback, updateCurrentTextCallback);
             #endregion
             if (CancelOperations) { AbortUpload(); return; }
             #region hash mod and build server manifest
-            CurrentActionText = "Building server manifest";
+            CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest);
 
             long amountHashed = 0;
             ConcurrentDictionary<string, SourceFile> manifestFiles = new ConcurrentDictionary<string, SourceFile>();
@@ -390,7 +391,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 sf.lzmasize = new FileInfo(lFile).Length;
                 manifestFiles.TryAdd(x, sf);
                 var done = Interlocked.Add(ref amountHashed, sf.size);
-                CurrentActionText = $"Building server manifest {Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
+                CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@"{Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
             });
             if (CancelOperations) { AbortUpload(); return; }
 
@@ -462,7 +463,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (CancelOperations) { AbortUpload(); return; }
 
-                CurrentActionText = "Waiting for changelog to be set";
+                CurrentActionText = M3L.GetString(M3L.string_waitingForChangelogToBeSet);
                 Thread.Sleep(250);  //wait for changelog to be set.
             }
 
@@ -485,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var finalManifestText = stringWriter.GetStringBuilder().ToString();
 
             #region Connect to ME3Tweaks
-            CurrentActionText = "Connecting to ME3Tweaks Updater Service";
+            CurrentActionText = M3L.GetString(M3L.string_connectingToME3TweaksUpdaterService);
             Log.Information(@"Connecting to ME3Tweaks as " + Username);
             string host = @"ftp.me3tweaks.com";
             string username = Username;
@@ -496,7 +497,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Log.Information(@"Connected to ME3Tweaks over SSH (SFTP)");
 
-            CurrentActionText = "Connected to ME3Tweaks Updater Service";
+            CurrentActionText = M3L.GetString(M3L.string_connectedToME3TweaksUpdaterService);
             var serverFolderName = mod.UpdaterServiceServerFolderShortname;
 
             //sftp.ChangeDirectory(LZMAStoragePath);
@@ -507,7 +508,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bool justMadeFolder = false;
             if (!sftp.Exists(serverModPath))
             {
-                CurrentActionText = "Creating server folder for mod";
+                CurrentActionText = M3L.GetString(M3L.string_creatingServerFolderForMod);
                 Log.Information(@"Creating server folder for mod: " + serverModPath);
                 sftp.CreateDirectory(serverModPath);
                 justMadeFolder = true;
@@ -516,14 +517,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
 
             //Open SSH connection as we will need to hash files out afterwards.
-            Log.Information("Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
+            Log.Information(@"Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
             using SshClient sshClient = new SshClient(host, username, password);
             sshClient.Connect();
-            Log.Information("Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
+            Log.Information(@"Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
 
             if (!justMadeFolder && dirContents.Any(x => x.Name != @"." && x.Name != @".."))
             {
-                CurrentActionText = "Hashing files on server for delta";
+                CurrentActionText = M3L.GetString(M3L.string_hashingFilesOnServerForDelta);
                 serverHashes = getServerHashes(sshClient, serverFolderName, serverModPath);
             }
             //Calculate what needs to be updated or removed from server
@@ -616,7 +617,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             int numDone = 0;
             if (dirsToCreateOnServerSorted.Count > 0)
             {
-                CurrentActionText = "Creating mod directories on server";
+                CurrentActionText = M3L.GetString(M3L.string_creatingModDirectoriesOnServer);
                 foreach (var f in dirsToCreateOnServerSorted)
                 {
                     var serverFolderStr = serverModPath + @"/" + f;
@@ -630,7 +631,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
                     }
                     numDone++;
-                    CurrentActionText = "Creating mod directories on server" + @" " + Math.Round(numDone * 100.0 / numFoldersToCreate) + @"%";
+                    CurrentActionText = M3L.GetString(M3L.string_creatingModDirectoriesOnServer) + @" " + Math.Round(numDone * 100.0 / numFoldersToCreate) + @"%";
 
                 }
             }
@@ -648,11 +649,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 using (Stream fileStream = new FileStream(fullPath, FileMode.Open))
                 {
                     sftp.UploadFile(fileStream, serverFilePath, true, (x) =>
-                       {
-                           if (CancelOperations) { CurrentActionText = "Aborting upload"; return; }
-                           amountUploaded = amountUploadedBeforeChunk + (long)x;
-                           CurrentActionText = $"Uploading files to server {ByteSize.FromBytes(amountUploaded).ToString(@"0.00")}/{ByteSize.FromBytes(amountToUpload).ToString(@"0.00")}";
-                       });
+                    {
+                        if (CancelOperations) { CurrentActionText = M3L.GetString(M3L.string_abortingUpload); return; }
+                        amountUploaded = amountUploadedBeforeChunk + (long)x;
+                        var uploadedHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
+                        var totalUploadHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
+                        CurrentActionText = M3L.GetString(M3L.string_interp_uploadingFilesToServerXY, uploadedHR, totalUploadHR);
+                    });
                 }
             }
             if (CancelOperations) { AbortUpload(); return; }
@@ -660,7 +663,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             int numdone = 0;
             foreach (var file in filesToDeleteOffServer)
             {
-                CurrentActionText = $"Deleting obsolete mod files from server {numdone}/{filesToDeleteOffServer.Count}";
+                CurrentActionText = M3L.GetString(M3L.string_interp_deletingObsoleteFiles, numdone, filesToDeleteOffServer.Count);
                 var fullPath = $@"{LZMAStoragePath}/{ serverFolderName}/{ file}";
                 Log.Information(@"Deleting unused file off server: " + fullPath);
                 sftp.DeleteFile(fullPath);
@@ -674,25 +677,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Log.Information(@"Uploading manifest to server: " + serverManifestPath);
             sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
             {
-                CurrentActionText = $"Uploading update manifest to server {ByteSize.FromBytes(amountUploaded).ToString(@"0.00")}/{ByteSize.FromBytes(amountToUpload).ToString(@"0.00")}";
+                var uploadedAmountHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
+                var uploadAmountTotalHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
+                CurrentActionText = M3L.GetString(M3L.string_uploadingUpdateManifestToServer) + $@"{uploadedAmountHR}/{uploadAmountTotalHR}";
             });
 
-            CurrentActionText = "Validating mod on server";
+            CurrentActionText = M3L.GetString(M3L.string_validatingModOnServer);
             var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
             var badHashes = verifyHashes(manifestFiles, serverHashes);
             if (badHashes.Any())
             {
-                CurrentActionText = "Some hashes on server are incorrect - contact Mgamerz";
+                CurrentActionText = M3L.GetString(M3L.string_someHashesOnServerAreIncorrectContactMgamerz);
             }
             else
             {
-                CurrentActionText = "Mod uploaded to Updater Service";
+                CurrentActionText = M3L.GetString(M3L.string_modUploadedToUpdaterService);
             }
         }
 
         private void AbortUpload()
         {
-            CurrentActionText = "Upload aborted";
+            CurrentActionText = M3L.GetString(M3L.string_uploadAborted);
         }
 
         private Dictionary<string, string> getServerHashes(SshClient sshClient, string serverFolderName, string serverModPath)

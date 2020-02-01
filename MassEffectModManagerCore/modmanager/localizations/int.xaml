@@ -1111,4 +1111,44 @@
     <system:String x:Key="string_setChangelog">Set changelog</system:String>
     <system:String x:Key="string_updaterServiceSettings">Updater Service settings</system:String>
     <system:String x:Key="string_tooltip_cancelTheCurrentUploadTask">Cancel the current upload task</system:String>
+
+    <system:String x:Key="string_validatingSettings">Validating settings</system:String>
+    <system:String x:Key="string_settingsSaved">Settings saved</system:String>
+    <system:String x:Key="string_errorValidatingSettings">Error validating settings</system:String>
+    <system:String x:Key="string_modMissingUpdatesDescriptor">Mod must have the serverfolder descriptor set under UPDATES header</system:String>
+    <system:String x:Key="string_enterYourME3TweaksUpdaterServiceInformation">Enter your ME3Tweaks Updater Service information</system:String>
+    <system:String x:Key="string_pressSaveToValidateSettings">Press save to validate settings</system:String>
+    <system:String x:Key="string_authenticatingToME3Tweaks">Authenticating to ME3Tweaks</system:String>
+    <system:String x:Key="string_enterUpdaterServiceSettings">Enter Updater Service settings</system:String>
+    <system:String x:Key="string_checkingLZMAStorageDirectory">Checking LZMA storage directory</system:String>
+    <system:String x:Key="string_checkingManifestsStorageDirectory">Checking manifests storage directory</system:String>
+    <system:String x:Key="string_interp_errorValidatingSettingsXY">Error validating settings: {0}: {1}</system:String>
+    <!-- 0=String of operation that failed, 1= error message -->
+    <system:String x:Key="string_checkingIfUpdaterServiceIsConfiguredForMod">Checking if updater service is configured for mod</system:String>
+    <system:String x:Key="string_serverNotConfiguredForModContactMgamerz">Server not configured for mod - contact Mgamerz</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorCheckingUpdaterServiceConfiguration">Error checking updater service configuration:\n{0}</system:String>
+    <!-- 0=ex.Message -->
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_serverVersionSameOrNewerThanLocal">The server version is the same or higher version of the mod you are already uploading. Are you sure you want to push this version to the ME3Tweaks Updater Service? Clients who have a newer or same version of the mod will not see an update.\n\nLocal version: {0}\nServer version: {1}</system:String>
+    <!-- 0=mod.ParsedModVersion 1=latestVersionOnServer -->
+    <system:String x:Key="string_serverVersionSameOrNewerThanLocal">Server version same or newer than local</system:String>
+    <system:String x:Key="string_uploadAbortedModOnServerIsSameOrNewerThanLocalOneBeingUploaded">Upload aborted - mod on server is same or newer than local one being uploaded</system:String>
+    <system:String x:Key="string_compressingModForUpdaterService">Compressing mod for updater service</system:String>
+    <system:String x:Key="string_buildingServerManifest">Building server manifest</system:String>
+    <!-- 0= Percent # -->
+    <system:String x:Key="string_waitingForChangelogToBeSet">Waiting for changelog to be set</system:String>
+    <system:String x:Key="string_connectingToME3TweaksUpdaterService">Connecting to ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_connectedToME3TweaksUpdaterService">Connected to ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_creatingServerFolderForMod">Creating server folder for mod</system:String>
+    <system:String x:Key="string_hashingFilesOnServerForDelta">Hashing files on server for delta</system:String>
+    <system:String x:Key="string_creatingModDirectoriesOnServer">Creating mod directories on server</system:String>
+    <system:String x:Key="string_abortingUpload">Aborting upload</system:String>
+    <system:String x:Key="string_interp_deletingObsoleteFiles">Deleting obsolete mod files from server {0}/{1}</system:String>
+    <!-- 0=Num files deleted, 1=Num files to delete -->
+    <system:String x:Key="string_uploadingUpdateManifestToServer">Uploading update manifest to server</system:String>
+    <system:String x:Key="string_validatingModOnServer">Validating mod on server</system:String>
+    <system:String x:Key="string_someHashesOnServerAreIncorrectContactMgamerz">Some hashes on server are incorrect - contact Mgamerz</system:String>
+    <system:String x:Key="string_modUploadedToUpdaterService">Mod uploaded to Updater Service</system:String>
+    <system:String x:Key="string_uploadAborted">Upload aborted</system:String>
+    <system:String x:Key="string_interp_uploadingFilesToServerXY">Uploading files to server {0}/{1}</system:String>
+    <!-- 0=amount uploaded 1=total to upload -->
 </ResourceDictionary>
