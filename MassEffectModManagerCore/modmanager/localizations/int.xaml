@@ -716,6 +716,10 @@
     <!-- 0 = destination file path in moddesc -->
     <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {0} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
     <!-- 0 = source file path in moddesc -->
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct in their 0 set with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{0}'.</system:String>
+    <!-- 0=group. Shown if no items in group have CheckedByDefault -->
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their 0. The failing option group name is '{0}'.</system:String>
+    <!-- 0=group. Shown if more than one item in group has CheckedByDefault-->
 
     <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
