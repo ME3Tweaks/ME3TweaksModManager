@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var hasBackup = Utilities.GetGameBackupPath(ModBeingInstalled.Game);
             if (hasBackup == null)
             {
-                var installAnyways = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"There is no backup for {Utilities.GetGameName(ModBeingInstalled.Game)} - installing {ModBeingInstalled.ModName} will require you to repair the game in order to remove it, which may invalidate other mods that are in use.\n\nInstall this mod without a backup?", "No backup", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                var installAnyways = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, Utilities.GetGameName(ModBeingInstalled.Game), ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
                 return installAnyways == MessageBoxResult.Yes;
             }
 

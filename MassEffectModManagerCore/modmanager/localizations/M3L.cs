@@ -317,6 +317,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_dialogInvalidRCWFile = "string_dialogInvalidRCWFile";
 		public static readonly string string_interp_dialogNotEnoughSpaceToInstall = "string_interp_dialogNotEnoughSpaceToInstall";
 		public static readonly string string_dialogInvalidME2Coalesced = "string_dialogInvalidME2Coalesced";
+		public static readonly string string_interp_dialog_noBackupForXInstallingY = "string_interp_dialog_noBackupForXInstallingY";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -878,7 +879,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_fileFetched = "string_fileFetched";
 		public static readonly string string_backupFileFetcher = "string_backupFileFetcher";
 		public static readonly string string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups = "string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups";
-		public static readonly string string_close = "string_close";
 		public static readonly string string_exportExtract = "string_exportExtract";
 		public static readonly string string_typeToFilter = "string_typeToFilter";
 		public static readonly string string_gettingListOfFilesFromBackup = "string_gettingListOfFilesFromBackup";
@@ -890,12 +890,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_allGamesBackedUp = "string_allGamesBackedUp";
 		public static readonly string string_description_vanillaBackupRequired = "string_description_vanillaBackupRequired";
 		public static readonly string string_description_missingBackupWillLimitFeatures = "string_description_missingBackupWillLimitFeatures";
-		public static readonly string string_close = "string_close";
 		public static readonly string string_openBackupManager = "string_openBackupManager";
 		public static readonly string string_restores = "string_restores";
 		public static readonly string string_restoringIndividualFiles = "string_restoringIndividualFiles";
 		public static readonly string string_restoringDLC = "string_restoringDLC";
-		public static readonly string string_fullGameRestore = "string_fullGameRestore";
 		public static readonly string string_uninstallingALOT = "string_uninstallingALOT";
 		public static readonly string string_modding = "string_modding";
 		public static readonly string string_mE3TweaksModMaker = "string_mE3TweaksModMaker";
