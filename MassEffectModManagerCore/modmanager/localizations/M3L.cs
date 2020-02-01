@@ -324,6 +324,15 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_joinDiscord = "string_joinDiscord";
 		public static readonly string string_close = "string_close";
 		public static readonly string string_tooltip_translationIsInProgressButIsNotYetAvailable = "string_tooltip_translationIsInProgressButIsNotYetAvailable";
+		public static readonly string string_theme = "string_theme";
+		public static readonly string string_light = "string_light";
+		public static readonly string string_dark = "string_dark";
+		public static readonly string string_isYourLanguageMissing = "string_isYourLanguageMissing";
+		public static readonly string string_modLibraryLocation = "string_modLibraryLocation";
+		public static readonly string string_description_modsImportedAreStoredInLibrary = "string_description_modsImportedAreStoredInLibrary";
+		public static readonly string string_libraryLocation = "string_libraryLocation";
+		public static readonly string string_browse = "string_browse";
+		public static readonly string string_changeSettingsInActionsMenu = "string_changeSettingsInActionsMenu";
 		public static readonly string string_tooltip_multithreadDeployment = "string_tooltip_multithreadDeployment";
 		public static readonly string string_multiThreadedCompression = "string_multiThreadedCompression";
 		public static readonly string string_deploy = "string_deploy";

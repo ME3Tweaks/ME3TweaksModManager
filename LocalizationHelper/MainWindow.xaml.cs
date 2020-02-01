@@ -120,31 +120,33 @@ namespace LocalizationHelper
                     string text = (string)item.Attribute("Text");
                     string watermark = (string)item.Attribute("Watermark");
 
-                    if (header != null && !header.StartsWith("{"))
+                    if (header != null && !header.StartsWith("{") && isNotLangWord(header))
                     {
                         localizations[header] = $"string_{toCamelCase(header)}";
                         //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
-                    if (tooltip != null && !tooltip.StartsWith("{"))
+                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip))
                     {
                         localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
                         //item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
-                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/"))
+                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content))
                     {
                         localizations[content] = $"string_{toCamelCase(content)}";
                         //item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
-                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _))
+                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark))
                     {
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
                        //item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
                     }
 
-                    if (text != null && !text.StartsWith("{") && text.Length > 1
+                    if (text != null && !text.StartsWith("{") 
+                                     && text.Length > 1
+                                     && isNotLangWord(text)
                         && text != "BioGame"
                         && text != "BioParty"
                         && text != "BioEngine" && text != "DLC_MOD_")
@@ -634,17 +636,12 @@ namespace LocalizationHelper
 
                             if (header != null && !header.StartsWith("{")
                                                && header != "+"
-                                && header != "Deutsch"
-                                && header != "English"
-                                && header != "French"
-                                && header != "Polski"
-                                && header != "Russian"
+                                               && isNotLangWord(header)
                                                && header != "Reload selected mod" //debug only
-                                               && header != "русский"
                                 && header != "ME1"
                                 && header != "ME2"
-                                               && header != "ME3"
-                                               )
+                                && header != "ME3"
+                                )
                             {
                                 localizations[header] = $"string_{toCamelCase(header)}";
                                 item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
@@ -658,12 +655,8 @@ namespace LocalizationHelper
 
                             if (content != null && !content.StartsWith("{")
                                                 && !content.StartsWith("/images")
-                                                && content != "+"
-                                                && content != "Deutsch"
-                                                && content != "English"
-                                                && content != "French"
-                                                && content != "Polski"
-                                                && content != "Russian"
+                                                && content.Length > 1
+                                                && isNotLangWord(content)
                                                 && content != "ME1"
                                                 && content != "ME2"
                                                 && content != "ME3")
@@ -673,17 +666,13 @@ namespace LocalizationHelper
                             }
 
                             if (text != null && !text.StartsWith("{")
-                                             && text != "Deutsch"
-                                && text != "English"
-                                && text != "French"
-                                && text != "Polski"
-                                && text != "Russian"
+                                             && isNotLangWord(text)
                                              && text != "+"
                                              && text != "!"
                                              && text != "DLC_MOD_"
                                              && text != "ME1"
-                                && text != "ME2"
-                                && text != "ME3"
+                                             && text != "ME2"
+                                             && text != "ME3"
                                              && text != "BioGame"
                                              && text != "BioParty"
                                              && text != "BioEngine")
@@ -706,6 +695,17 @@ namespace LocalizationHelper
                     }
                 }
             }
+        }
+
+        private bool isNotLangWord(string header)
+        {
+            if (header.Equals("Deutsch", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (header.Equals("English", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (header.Equals("Español", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (header.Equals("Français", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (header.Equals("Polski", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (header.Equals("Pусский", StringComparison.InvariantCultureIgnoreCase)) return false;
+            return true;
         }
 
         private void CheckXmlSpacePreserve_Clicked(object sender, RoutedEventArgs e)

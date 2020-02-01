@@ -265,7 +265,7 @@
     <!-- 0=driveletter 1=ModBeingInstalled.ModName 2,3=number of bytes (in MB/KB/GB etc)  -->
     <system:String x:Key="string_dialogInvalidME2Coalesced">The Coalesced.ini file for this installation of Mass Effect 2 appears to be malformed (header bytes are wrong). The installation has been aborted.</system:String>
 
-    <!-- Startup preview panel -->
+    <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
     <system:String x:Key="string_howToChangeLanguage">You can change your language at any time from the Actions > Options menu. Note that all support is provided in English only.</system:String>
@@ -274,6 +274,17 @@
     <system:String x:Key="string_close">Close</system:String>
     <!-- Close (as in close dialog) -->
     <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Translation is in progress but is not yet available</system:String>
+    <system:String x:Key="string_theme">Theme</system:String>
+    <system:String x:Key="string_light">Light</system:String>
+    <system:String x:Key="string_dark">Dark</system:String>
+    <system:String x:Key="string_isYourLanguageMissing">Is your language missing? Come to the ME3Tweaks Discord and you can help translate it to your local language.</system:String>
+    <system:String x:Key="string_modLibraryLocation">Mod library location</system:String>
+    <system:String x:Key="string_description_modsImportedAreStoredInLibrary">Mods that are imported into Mod Manager will be stored at this location.</system:String>
+    <system:String x:Key="string_libraryLocation">Library location</system:String>
+    <system:String x:Key="string_browse">Browse</system:String>
+    <system:String x:Key="string_changeSettingsInActionsMenu">You can change your settings at any time through the Actions menu.</system:String>
+
+
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
