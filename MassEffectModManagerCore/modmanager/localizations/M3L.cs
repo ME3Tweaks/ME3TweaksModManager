@@ -571,6 +571,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_restoringTextureLODs = "string_restoringTextureLODs";
 		public static readonly string string_entireGameDirectoryWillBeDeleted = "string_entireGameDirectoryWillBeDeleted";
 		public static readonly string string_youMaySeeElevationPromptOnRestore = "string_youMaySeeElevationPromptOnRestore";
+		public static readonly string string_dialog_restoringXWillDeleteGameDir = "string_dialog_restoringXWillDeleteGameDir";
+		public static readonly string string_gameTargetWillBeDeleted = "string_gameTargetWillBeDeleted";
 		public static readonly string string_hashingFiles = "string_hashingFiles";
 		public static readonly string string_creatingArchive = "string_creatingArchive";
 		public static readonly string string_submitToME3Tweaks = "string_submitToME3Tweaks";
@@ -839,6 +841,20 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_mixin_cannotApplyNoSource = "string_mixin_cannotApplyNoSource";
 		public static readonly string string_dialog_changingGameWillClearGroup = "string_dialog_changingGameWillClearGroup";
 		public static readonly string string_changingGameWillClearGroup = "string_changingGameWillClearGroup";
+		public static readonly string string_title_installGroupEditor = "string_title_installGroupEditor";
+		public static readonly string string_moveModsToRightSideToAdd = "string_moveModsToRightSideToAdd";
+		public static readonly string string_game = "string_game";
+		public static readonly string string_availableModsForGroup = "string_availableModsForGroup";
+		public static readonly string string_addModToInstallGroup = "string_addModToInstallGroup";
+		public static readonly string string_cancelEditing = "string_cancelEditing";
+		public static readonly string string_saveGroup = "string_saveGroup";
+		public static readonly string string_groupName = "string_groupName";
+		public static readonly string string_groupDescription = "string_groupDescription";
+		public static readonly string string_modsInInstallGroup = "string_modsInInstallGroup";
+		public static readonly string string_directionsInstallGroupEditor = "string_directionsInstallGroupEditor";
+		public static readonly string string_removeModFromInstallGroup = "string_removeModFromInstallGroup";
+		public static readonly string string_moveDown = "string_moveDown";
+		public static readonly string string_moveUp = "string_moveUp";
 		public static readonly string string_selectDestinationLocation = "string_selectDestinationLocation";
 		public static readonly string string_packageFile = "string_packageFile";
 		public static readonly string string_interp_fileFetchedAndWrittenToX = "string_interp_fileFetchedAndWrittenToX";
@@ -846,5 +862,25 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_XgamesNotBackedUp = "string_interp_XgamesNotBackedUp";
 		public static readonly string string_interp_XgameNotBackedUp = "string_interp_XgameNotBackedUp";
 		public static readonly string string_allGamesBackedUp = "string_allGamesBackedUp";
+		public static readonly string string_massEffectFullConsole = "string_massEffectFullConsole";
+		public static readonly string string_massEffectMiniConsole = "string_massEffectMiniConsole";
+		public static readonly string string_massEffect2MiniConsole = "string_massEffect2MiniConsole";
+		public static readonly string string_massEffect2FullConsole = "string_massEffect2FullConsole";
+		public static readonly string string_massEffect3MiniConsole = "string_massEffect3MiniConsole";
+		public static readonly string string_massEffect3FullConsole = "string_massEffect3FullConsole";
+		public static readonly string string_updatingKeybindsPleaseWait = "string_updatingKeybindsPleaseWait";
+		public static readonly string string_fullConsoleNotBoundToAKey = "string_fullConsoleNotBoundToAKey";
+		public static readonly string string_interp_fullConsoleBoundToX = "string_interp_fullConsoleBoundToX";
+		public static readonly string string_miniConsoleNotBoundToAKey = "string_miniConsoleNotBoundToAKey";
+		public static readonly string string_interp_miniConsoleBoundToX = "string_interp_miniConsoleBoundToX";
+		public static readonly string string_bioInputiniFileIsMissing = "string_bioInputiniFileIsMissing";
+		public static readonly string string_runGameToGenerateFile = "string_runGameToGenerateFile";
+		public static readonly string string_noInstallsOfGameManagedByModManager = "string_noInstallsOfGameManagedByModManager";
+		public static readonly string string_interp_fullConsoleBoundToConsolekeyValue = "string_interp_fullConsoleBoundToConsolekeyValue";
+		public static readonly string string_interp_miniConsoleBoundToTypekeyValue = "string_interp_miniConsoleBoundToTypekeyValue";
+		public static readonly string string_updaterService = "string_updaterService";
+		public static readonly string string_setChangelog = "string_setChangelog";
+		public static readonly string string_updaterServiceSettings = "string_updaterServiceSettings";
+		public static readonly string string_tooltip_cancelTheCurrentUploadTask = "string_tooltip_cancelTheCurrentUploadTask";
 	}
 }

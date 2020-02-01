@@ -118,33 +118,43 @@ namespace LocalizationHelper
                     string tooltip = (string)item.Attribute("ToolTip");
                     string content = (string)item.Attribute("Content");
                     string text = (string)item.Attribute("Text");
+                    string watermark = (string)item.Attribute("Watermark");
 
                     if (header != null && !header.StartsWith("{"))
                     {
                         localizations[header] = $"string_{toCamelCase(header)}";
-                        item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
+                        //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
                     if (tooltip != null && !tooltip.StartsWith("{"))
                     {
                         localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
-                        item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
+                        //item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
-                    if (content != null && !content.StartsWith("{") && content != "+")
+                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/"))
                     {
                         localizations[content] = $"string_{toCamelCase(content)}";
-                        item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
+                        //item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
-                    if (text != null && !text.StartsWith("{"))
+                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _))
+                    {
+                        localizations[watermark] = $"string_{toCamelCase(watermark)}";
+                       //item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
+                    }
+
+                    if (text != null && !text.StartsWith("{") && text.Length > 1
+                        && text != "BioGame"
+                        && text != "BioParty"
+                        && text != "BioEngine" && text != "DLC_MOD_")
                     {
                         localizations[text] = $"string_{toCamelCase(text)}";
-                        item.Attribute("Text").Value = $"{{DynamicResource {localizations[text]}}}";
+                        //item.Attribute("Text").Value = $"{{DynamicResource {localizations[text]}}}";
                     }
                 }
 
-                ResultTextBox.Text = doc.ToString();
+                //ResultTextBox.Text = doc.ToString();
                 StringBuilder sb = new StringBuilder();
                 foreach (var v in localizations)
                 {
@@ -380,6 +390,8 @@ namespace LocalizationHelper
                 cleanedWord = cleanedWord.Replace("\\", "");
                 cleanedWord = cleanedWord.Replace("{", "");
                 cleanedWord = cleanedWord.Replace("}", "");
+                cleanedWord = cleanedWord.Replace("-", "");
+                cleanedWord = cleanedWord.Replace(",", "");
                 if (first)
                 {
                     res += caseFirst(cleanedWord, false);
@@ -480,7 +492,7 @@ namespace LocalizationHelper
 
         private void PushXamlStrings_Clicked(object sender, RoutedEventArgs e)
         {
-            var sourceStringsXaml = "";
+            var sourceStringsXaml = StringsTextBox.Text;
             sourceStringsXaml = "<ResourceDictionary xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"  xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" xmlns:system=\"clr-namespace:System;assembly=System.Runtime\" >" + sourceStringsXaml + "</ResourceDictionary>";
             XDocument xdoc = XDocument.Parse(sourceStringsXaml);
             XNamespace system = "clr-namespace:System;assembly=System.Runtime";
@@ -489,8 +501,8 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var file = Path.Combine(M3folder, @"MainWindow.xaml");
-            string[] attributes = { "Header", "ToolTip", "Content", "Text" };
+            var file = Path.Combine(M3folder, SelectedFile);
+            string[] attributes = { "Header", "ToolTip", "Content", "Text", "Watermark" };
             try
             {
                 XDocument doc = XDocument.Load(file);

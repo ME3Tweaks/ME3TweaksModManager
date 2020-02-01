@@ -590,6 +590,9 @@
     <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Changing the active boot target to one with ALOT installed will prompt you enable high resolution texture settings again.</system:String>
     <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods or restoring specific files/SFARs, use the restore options from the Target Info button instead.</system:String>
     <system:String x:Key="string_youMaySeeElevationPromptOnRestore">You may see an elevation prompt when trying to restore your game. This is ME3Tweaks Mod Manager granting your user account permission to the new game directory after the old one has been deleted.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_restoringXWillDeleteGameDir">Restoring {0} will completely delete the game directory and then copy the backup into the original location.\n\nDelete this installation and restore it from backup?</system:String>
+    <!-- 0=Utilities.GetGameName(Game) -->
+    <system:String x:Key="string_gameTargetWillBeDeleted">Game target will be deleted</system:String>
 
     <!-- Test archive generator-->
     <system:String x:Key="string_hashingFiles">Hashing files</system:String>
@@ -1006,9 +1009,24 @@
     <system:String x:Key="string_mixin_finalizerDescription">This is a finalizer Mixin. Finalizer Mixins change the filesize of the source file, and as such, only one finalizer mixin can be applied to a file. Once this Mixin is applied, you cannot apply other Mixins that apply to this file.</system:String>
     <system:String x:Key="string_mixin_cannotApplyNoSource">This Mixin cannot be applied because the target module is not present in the game backup.</system:String>
 
-    <!-- Batch Mod Queue Editor -->
+    <!--Install Group Editor -->
     <system:String xml:space="preserve" x:Key="string_dialog_changingGameWillClearGroup">Changing the game this install group is for will empty the current list of mods in the group.\n\nContinue?</system:String>
     <system:String x:Key="string_changingGameWillClearGroup">Changing game will clear group</system:String>
+    <system:String x:Key="string_title_installGroupEditor">Install Group Editor</system:String>
+    <system:String x:Key="string_moveModsToRightSideToAdd">Move mods to the right side to add them to the install group.</system:String>
+    <system:String x:Key="string_game">Game</system:String>
+    <!-- Label for the three game buttons -->
+    <system:String x:Key="string_availableModsForGroup">Available mods for group</system:String>
+    <system:String x:Key="string_addModToInstallGroup">Add mod to install group</system:String>
+    <system:String x:Key="string_cancelEditing">Cancel editing</system:String>
+    <system:String x:Key="string_saveGroup">Save group</system:String>
+    <system:String x:Key="string_groupName">Group name</system:String>
+    <system:String x:Key="string_groupDescription">Group description</system:String>
+    <system:String x:Key="string_modsInInstallGroup">Mods in install group</system:String>
+    <system:String x:Key="string_directionsInstallGroupEditor">Mods will install in this order. Mods that configure themselves based on other mods should be installed last.</system:String>
+    <system:String x:Key="string_removeModFromInstallGroup">Remove mod from install group</system:String>
+    <system:String x:Key="string_moveDown">Move down</system:String>
+    <system:String x:Key="string_moveUp">Move up</system:String>
 
     <!-- Backup File Fetcher (Devs only) -->
     <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
@@ -1024,4 +1042,31 @@
     <!-- 0 in this item will the value of 1.  -->
     <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
 
+    <!-- Console Keybinder -->
+    <system:String x:Key="string_massEffectFullConsole">Mass Effect Full Console</system:String>
+    <system:String x:Key="string_massEffectMiniConsole">Mass Effect Mini Console</system:String>
+    <system:String x:Key="string_massEffect2MiniConsole">Mass Effect 2 Mini Console</system:String>
+    <system:String x:Key="string_massEffect2FullConsole">Mass Effect 2 Full Console</system:String>
+    <system:String x:Key="string_massEffect3MiniConsole">Mass Effect 3 Mini Console</system:String>
+    <system:String x:Key="string_massEffect3FullConsole">Mass Effect 3 Full Console</system:String>
+    <system:String x:Key="string_updatingKeybindsPleaseWait">Updating keybind(s), please wait</system:String>
+    <system:String x:Key="string_fullConsoleNotBoundToAKey">Full console not bound to a key</system:String>
+    <system:String x:Key="string_interp_fullConsoleBoundToX">Full console bound to {0}</system:String>
+    <!-- 0= UDK Key Name (Tilde, Tab, F, etc) -->
+    <system:String x:Key="string_miniConsoleNotBoundToAKey">Mini console not bound to a key</system:String>
+    <system:String x:Key="string_interp_miniConsoleBoundToX">Mini console bound to {0}</system:String>
+    <!-- 0= UDK Key Name (Tilde, Tab, F, etc) -->
+    <system:String x:Key="string_bioInputiniFileIsMissing">BioInput.ini file is missing</system:String>
+    <system:String x:Key="string_runGameToGenerateFile">Run game to generate file</system:String>
+    <system:String x:Key="string_noInstallsOfGameManagedByModManager">No installs of game managed by Mod Manager</system:String>
+    <system:String x:Key="string_interp_fullConsoleBoundToConsolekeyValue">Full console bound to {0}</system:String>
+    <!-- 0=consolekey.Value -->
+    <system:String x:Key="string_interp_miniConsoleBoundToTypekeyValue">Mini console bound to {0}</system:String>
+    <!-- 0=typekey.Value -->
+
+    <!-- Updater Service Panel -->
+    <system:String x:Key="string_updaterService">Updater Service</system:String>
+    <system:String x:Key="string_setChangelog">Set changelog</system:String>
+    <system:String x:Key="string_updaterServiceSettings">Updater Service settings</system:String>
+    <system:String x:Key="string_tooltip_cancelTheCurrentUploadTask">Cancel the current upload task</system:String>
 </ResourceDictionary>

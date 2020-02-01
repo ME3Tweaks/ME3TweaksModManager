@@ -18,6 +18,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Serilog;
@@ -76,14 +77,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SetME3MiniKey()
         {
-            KeyBeingAssigned = "Mass Effect 3 Mini Console";
+            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect3MiniConsole);
             IsListeningForKey = true;
             OnKeyPressed = SetME3MiniKeyCallback;
         }
 
         private void SetME3FullKey()
         {
-            KeyBeingAssigned = "Mass Effect 3 Full Console";
+            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect3FullConsole);
             IsListeningForKey = true;
             OnKeyPressed = SetME3FullKeyCallback;
         }
@@ -105,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SetME1KeyWithThread(string consoleKeyStr = null, string typeKeyStr = null, bool wipeTypeKey = false)
         {
             OperationInProgress = true;
-            ME1FullConsoleKeyText = "Updating keybind(s), please wait";
+            ME1FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
             ME1MiniConsoleKeyText = "";
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME2-ConsoleKeySetterThread");
             nbw.DoWork += (a, b) =>
@@ -140,7 +141,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SetME2KeyWithThread(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
         {
             OperationInProgress = true;
-            ME2FullConsoleKeyText = "Updating keybind(s), please wait";
+            ME2FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
             ME2MiniConsoleKeyText = "";
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME2-ConsoleKeySetterThread");
             nbw.DoWork += (a, b) =>
@@ -205,7 +206,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SetME3KeyWithThread(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
         {
             OperationInProgress = true;
-            ME3FullConsoleKeyText = "Updating keybind(s), please wait";
+            ME3FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
             ME3MiniConsoleKeyText = "";
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3-ConsoleKeySetterThread");
             nbw.DoWork += (a, b) =>
@@ -278,14 +279,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SetME2MiniKey()
         {
-            KeyBeingAssigned = "Mass Effect 2 Mini Console";
+            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect2MiniConsole);
             IsListeningForKey = true;
             OnKeyPressed = SetME2MiniKeyCallback;
         }
 
         private void SetME2FullKey()
         {
-            KeyBeingAssigned = "Mass Effect 2 Full Console";
+            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect2FullConsole);
             IsListeningForKey = true;
             OnKeyPressed = SetME2FullKeyCallback;
         }
@@ -308,14 +309,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SetME1FullKey()
         {
-            KeyBeingAssigned = "Mass Effect Full Console";
+            KeyBeingAssigned = M3L.GetString(M3L.string_massEffectFullConsole);
             IsListeningForKey = true;
             OnKeyPressed = SetME1FullKeyCallback;
         }
 
         private void SetME1MiniKey()
         {
-            KeyBeingAssigned = "Mass Effect Mini Console";
+            KeyBeingAssigned = M3L.GetString(M3L.string_massEffectMiniConsole);
             IsListeningForKey = true;
             OnKeyPressed = SetME1MiniKeyCallback;
         }
@@ -394,35 +395,35 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
                         if (consoleKey == null)
                         {
-                            ME1FullConsoleKeyText = "Full console not bound to a key";
+                            ME1FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
                         }
                         else
                         {
-                            ME1FullConsoleKeyText = $"Full console bound to {consoleKey.Value}";
+                            ME1FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consoleKey.Value);
                         }
 
                         var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
                         if (typeKey == null)
                         {
-                            ME1MiniConsoleKeyText = "Mini console not bound to a key";
+                            ME1MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
                         }
                         else
                         {
-                            ME1MiniConsoleKeyText = $"Mini console bound to {typeKey.Value}";
+                            ME1MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typeKey.Value);
                         }
                     }
                 }
                 else
                 {
                     HasME1Install = false;
-                    ME1FullConsoleKeyText = "BioInput.ini file is missing";
-                    ME1MiniConsoleKeyText = "Run game to generate file";
+                    ME1FullConsoleKeyText = M3L.GetString(M3L.string_bioInputiniFileIsMissing);
+                    ME1MiniConsoleKeyText = M3L.GetString(M3L.string_runGameToGenerateFile);
                 }
             }
             else
             {
                 HasME1Install = false;
-                ME1FullConsoleKeyText = "No installs of game managed by Mod Manager";
+                ME1FullConsoleKeyText = M3L.GetString(M3L.string_noInstallsOfGameManagedByModManager);
                 ME1MiniConsoleKeyText = "";
             }
         }
@@ -435,7 +436,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                ME2FullConsoleKeyText = "No installs of game managed by Mod Manager";
+                ME2FullConsoleKeyText = M3L.GetString(M3L.string_noInstallsOfGameManagedByModManager);
                 ME2MiniConsoleKeyText = "";
             }
         }
@@ -448,7 +449,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                ME3FullConsoleKeyText = "No installs of game managed by Mod Manager";
+                ME3FullConsoleKeyText = M3L.GetString(M3L.string_noInstallsOfGameManagedByModManager);
                 ME3MiniConsoleKeyText = "";
             }
         }
@@ -464,21 +465,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
                 if (consoleKey == null)
                 {
-                    ME2FullConsoleKeyText = "Full console not bound to a key";
+                    ME2FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
                 }
                 else
                 {
-                    ME2FullConsoleKeyText = $"Full console bound to {consoleKey.Value}";
+                    ME2FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consoleKey.Value);
                 }
 
                 var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
                 if (typeKey == null)
                 {
-                    ME2MiniConsoleKeyText = "Mini console not bound to a key";
+                    ME2MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
                 }
                 else
                 {
-                    ME2MiniConsoleKeyText = $"Mini console bound to {typeKey.Value}";
+                    ME2MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typeKey.Value);
                 }
             }
         }
@@ -505,20 +506,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var typekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
             if (consolekey != null)
             {
-                ME3FullConsoleKeyText = $"Full console bound to {consolekey.Value}";
+                ME3FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
             }
             else
             {
-                ME3FullConsoleKeyText = "Full console not bound to a key";
+                ME3FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
             }
 
             if (typekey != null)
             {
-                ME3MiniConsoleKeyText = $"Mini console bound to {typekey.Value}";
+                ME3MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
             }
             else
             {
-                ME3MiniConsoleKeyText = "Mini console not bound to a key";
+                ME3MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
             }
         }
 

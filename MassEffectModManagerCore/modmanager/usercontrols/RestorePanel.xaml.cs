@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return;
                 }
 
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, $"Restoring {Utilities.GetGameName(Game)} will completely delete the game directory and then copy the backup into the original location.\n\nDelete this installation and restore it from backup?", "Game target will be deleted", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     NamedBackgroundWorker bw = new NamedBackgroundWorker(Game + @"-Restore");
