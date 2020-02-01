@@ -134,8 +134,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_Grantswritepermissionstogamedirectories = "string_Grantswritepermissionstogamedirectories";
 		public static readonly string string_RunAutoTOC = "string_RunAutoTOC";
 		public static readonly string string_RunsAutoTOCToolTip = "string_RunsAutoTOCToolTip";
-		public static readonly string string_EnableconsoleinME1 = "string_EnableconsoleinME1";
-		public static readonly string string_EnableME1ConsoleTooltip = "string_EnableME1ConsoleTooltip";
+		public static readonly string string_consoleCommandKeybinder = "string_consoleCommandKeybinder";
+		public static readonly string string_tooltip_consoleCommandKeybinder = "string_tooltip_consoleCommandKeybinder";
 		public static readonly string string_Additionalmoddingtools = "string_Additionalmoddingtools";
 		public static readonly string string_ALOTInstaller = "string_ALOTInstaller";
 		public static readonly string string_ALOTInstallerTooltip = "string_ALOTInstallerTooltip";
@@ -273,6 +273,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_supportedFiles = "string_supportedFiles";
 		public static readonly string string_interp_XmodsFailedToLoad = "string_interp_XmodsFailedToLoad";
 		public static readonly string string_setLanguageToX = "string_setLanguageToX";
+		public static readonly string string_loadingMixins = "string_loadingMixins";
+		public static readonly string string_loadedMixins = "string_loadedMixins";
+		public static readonly string string_failedToUpdateMixinPackage = "string_failedToUpdateMixinPackage";
+		public static readonly string string_errorLoadingMixinPackage = "string_errorLoadingMixinPackage";
+		public static readonly string string_checkingBackups = "string_checkingBackups";
+		public static readonly string string_finishedCheckingBackups = "string_finishedCheckingBackups";
+		public static readonly string string_dialog_optingIntoBeta = "string_dialog_optingIntoBeta";
+		public static readonly string string_enablingBetaMode = "string_enablingBetaMode";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";

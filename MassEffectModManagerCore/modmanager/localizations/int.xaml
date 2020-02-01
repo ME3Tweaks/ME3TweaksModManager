@@ -209,8 +209,18 @@
     <!-- 0 = number -->
     <system:String x:Key="string_setLanguageToX">Set language to English</system:String>
     <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
+    <system:String x:Key="string_loadingMixins">Loading Mixins</system:String>
+    <system:String x:Key="string_loadedMixins">Loaded Mixins</system:String>
+    <system:String x:Key="string_failedToUpdateMixinPackage">Failed to update Mixin package</system:String>
+    <system:String x:Key="string_errorLoadingMixinPackage">Error loading Mixin package</system:String>
+    <system:String x:Key="string_checkingBackups">Checking backups</system:String>
+    <system:String x:Key="string_finishedCheckingBackups">Finished checking backups</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_optingIntoBeta">Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?</system:String>
+    <system:String x:Key="string_enablingBetaMode">Enabling beta mode</system:String>
 
-    <!-- Mod Installer Panel -->
+
+
+<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
     <system:String x:Key="string_brokenTexturesWarning">Broken Textures Warning</system:String>

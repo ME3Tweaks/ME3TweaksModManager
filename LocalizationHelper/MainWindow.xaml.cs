@@ -124,6 +124,8 @@ namespace LocalizationHelper
 
             //return;
             //Update all of the other xaml files
+            return; //skip other langauges as it's now handled by localizer tool
+            /*
             var localizationMapping = Directory.GetFiles(localizationsFolder, "*.xaml").Where(y => Path.GetFileName(y) != "int.xaml").ToDictionary(y => y, y => File.ReadAllLines(y).ToList());
             var intlines = File.ReadAllLines(intfile);
             for (int i = 3; i < intlines.Length - 1; i++) //-1 to avoid resource dictionary line
@@ -158,7 +160,7 @@ namespace LocalizationHelper
 
                     }
                 }
-            }
+            }*/
 
         }
 
