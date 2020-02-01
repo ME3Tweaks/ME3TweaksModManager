@@ -876,6 +876,15 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_packageFile = "string_packageFile";
 		public static readonly string string_interp_fileFetchedAndWrittenToX = "string_interp_fileFetchedAndWrittenToX";
 		public static readonly string string_fileFetched = "string_fileFetched";
+		public static readonly string string_backupFileFetcher = "string_backupFileFetcher";
+		public static readonly string string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups = "string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups";
+		public static readonly string string_close = "string_close";
+		public static readonly string string_exportExtract = "string_exportExtract";
+		public static readonly string string_typeToFilter = "string_typeToFilter";
+		public static readonly string string_gettingListOfFilesFromBackup = "string_gettingListOfFilesFromBackup";
+		public static readonly string string_massEffect = "string_massEffect";
+		public static readonly string string_massEffect2 = "string_massEffect2";
+		public static readonly string string_massEffect3 = "string_massEffect3";
 		public static readonly string string_interp_XgamesNotBackedUp = "string_interp_XgamesNotBackedUp";
 		public static readonly string string_interp_XgameNotBackedUp = "string_interp_XgameNotBackedUp";
 		public static readonly string string_allGamesBackedUp = "string_allGamesBackedUp";

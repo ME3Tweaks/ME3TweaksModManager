@@ -1052,6 +1052,15 @@
     <system:String x:Key="string_interp_fileFetchedAndWrittenToX">File fetched and written to {0}.</system:String>
     <!-- 0=m.FileName -->
     <system:String x:Key="string_fileFetched">File fetched</system:String>
+    <system:String x:Key="string_backupFileFetcher">Backup File Fetcher</system:String>
+    <system:String x:Key="string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups">Backup File Fetcher can be used to quickly fetch vanilla versions of files from backups.</system:String>
+    <system:String x:Key="string_close">Close</system:String>
+    <system:String x:Key="string_exportExtract">Export/Extract</system:String>
+    <system:String x:Key="string_typeToFilter">Type to filter</system:String>
+    <system:String x:Key="string_gettingListOfFilesFromBackup">Getting list of files from backup</system:String>
+    <system:String x:Key="string_massEffect">Mass Effect</system:String>
+    <system:String x:Key="string_massEffect2">Mass Effect 2</system:String>
+    <system:String x:Key="string_massEffect3">Mass Effect 3</system:String>
 
     <!-- Backup Nag System -->
     <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
@@ -1059,6 +1068,21 @@
     <system:String x:Key="string_interp_XgameNotBackedUp">{0} game not backed up</system:String>
     <!-- 0 in this item will the value of 1.  -->
     <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
+
+    <system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager requires unmodified game backups to perform certain actions.</system:String>
+    <system:String x:Key="string_description_missingBackupWillLimitFeatures">Without a backup of a game, the following features of Mod Manager will be disabled or have limited functionality for that game:</system:String>
+    <system:String x:Key="string_close">Close</system:String>
+    <system:String x:Key="string_openBackupManager">Open Backup Manager</system:String>
+    <system:String x:Key="string_restores">Restores</system:String>
+    <system:String x:Key="string_restoringIndividualFiles">Restoring individual files</system:String>
+    <system:String x:Key="string_restoringDLC">Restoring DLC</system:String>
+    <system:String x:Key="string_fullGameRestore">Full game restore</system:String>
+    <system:String x:Key="string_uninstallingALOT">Uninstalling ALOT</system:String>
+    <system:String x:Key="string_modding">Modding</system:String>
+    <system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
+    <system:String x:Key="string_mixins">Mixins</system:String>
+    <system:String x:Key="string_mergingMods">Merging mods</system:String>
+    <system:String x:Key="string_deployingModsTo7z">Deploying mods to .7z</system:String>
 
     <!-- Console Keybinder -->
     <system:String x:Key="string_massEffectFullConsole">Mass Effect Full Console</system:String>

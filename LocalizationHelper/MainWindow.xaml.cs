@@ -120,25 +120,25 @@ namespace LocalizationHelper
                     string text = (string)item.Attribute("Text");
                     string watermark = (string)item.Attribute("Watermark");
 
-                    if (header != null && !header.StartsWith("{") && isNotLangWord(header))
+                    if (header != null && !header.StartsWith("{") && isNotLangWord(header) && isNotGameName(header))
                     {
                         localizations[header] = $"string_{toCamelCase(header)}";
                         //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
-                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip))
+                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip) && isNotGameName(tooltip))
                     {
                         localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
                         //item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
-                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content))
+                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content) && isNotGameName(content))
                     {
                         localizations[content] = $"string_{toCamelCase(content)}";
                         //item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
-                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark))
+                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotGameName(watermark))
                     {
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
                        //item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
@@ -147,6 +147,7 @@ namespace LocalizationHelper
                     if (text != null && !text.StartsWith("{") 
                                      && text.Length > 1
                                      && isNotLangWord(text)
+                                     && isNotGameName(text)
                         && text != "BioGame"
                         && text != "BioParty"
                         && text != "BioEngine" && text != "DLC_MOD_")
@@ -637,10 +638,8 @@ namespace LocalizationHelper
                             if (header != null && !header.StartsWith("{")
                                                && header != "+"
                                                && isNotLangWord(header)
+                                                && isNotGameName(header)
                                                && header != "Reload selected mod" //debug only
-                                && header != "ME1"
-                                && header != "ME2"
-                                && header != "ME3"
                                 )
                             {
                                 localizations[header] = $"string_{toCamelCase(header)}";
@@ -657,22 +656,18 @@ namespace LocalizationHelper
                                                 && !content.StartsWith("/images")
                                                 && content.Length > 1
                                                 && isNotLangWord(content)
-                                                && content != "ME1"
-                                                && content != "ME2"
-                                                && content != "ME3")
+                                                && isNotGameName(content)
+                            )
                             {
                                 localizations[content] = $"string_{toCamelCase(content)}";
                                 item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                             }
 
                             if (text != null && !text.StartsWith("{")
+                                             && text.Length > 1
                                              && isNotLangWord(text)
-                                             && text != "+"
-                                             && text != "!"
+                                             && isNotGameName(text)
                                              && text != "DLC_MOD_"
-                                             && text != "ME1"
-                                             && text != "ME2"
-                                             && text != "ME3"
                                              && text != "BioGame"
                                              && text != "BioParty"
                                              && text != "BioEngine")
@@ -697,14 +692,25 @@ namespace LocalizationHelper
             }
         }
 
-        private bool isNotLangWord(string header)
+        private bool isNotGameName(string str)
         {
-            if (header.Equals("Deutsch", StringComparison.InvariantCultureIgnoreCase)) return false;
-            if (header.Equals("English", StringComparison.InvariantCultureIgnoreCase)) return false;
-            if (header.Equals("Español", StringComparison.InvariantCultureIgnoreCase)) return false;
-            if (header.Equals("Français", StringComparison.InvariantCultureIgnoreCase)) return false;
-            if (header.Equals("Polski", StringComparison.InvariantCultureIgnoreCase)) return false;
-            if (header.Equals("Pусский", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Mass Effect", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Mass Effect 2", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Mass Effect 3", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("ME1", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("ME2", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("ME3", StringComparison.InvariantCultureIgnoreCase)) return false;
+            return true;
+        }
+
+        private bool isNotLangWord(string str)
+        {
+            if (str.Equals("Deutsch", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("English", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Español", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Français", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Polski", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Pусский", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 
