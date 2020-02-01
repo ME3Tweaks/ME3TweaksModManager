@@ -53,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
             return msgBox.MessageBoxResult;
         }
 
-        internal static string GetString(string resourceKey, params string[] interpolationItems)
+        internal static string GetString(string resourceKey, params object[] interpolationItems)
         {
             try
             {
