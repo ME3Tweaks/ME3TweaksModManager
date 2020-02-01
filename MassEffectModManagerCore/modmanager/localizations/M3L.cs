@@ -995,5 +995,13 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_availableMixins = "string_availableMixins";
 		public static readonly string string_tooltip_thisMixinIsAFinalizer = "string_tooltip_thisMixinIsAFinalizer";
 		public static readonly string string_patchDescription = "string_patchDescription";
+		public static readonly string string_batchModInstaller = "string_batchModInstaller";
+		public static readonly string string_description_batchModInstallerAllowsSerialInstall = "string_description_batchModInstallerAllowsSerialInstall";
+		public static readonly string string_createANewInstallGroup = "string_createANewInstallGroup";
+		public static readonly string string_installGroups = "string_installGroups";
+		public static readonly string string_groupInformation = "string_groupInformation";
+		public static readonly string string_installThisGroup = "string_installThisGroup";
+		public static readonly string string_editGroup = "string_editGroup";
+		public static readonly string string_tooltip_targetToInstallThisModGroupTo = "string_tooltip_targetToInstallThisModGroupTo";
 	}
 }

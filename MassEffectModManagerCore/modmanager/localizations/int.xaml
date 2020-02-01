@@ -1203,4 +1203,14 @@
     <system:String x:Key="string_availableMixins">Available Mixins</system:String>
     <system:String x:Key="string_tooltip_thisMixinIsAFinalizer">This Mixin is a finalizer</system:String>
     <system:String x:Key="string_patchDescription">Patch Description</system:String>
+
+    <!-- Batch Mod Library (Install Group List) -->
+    <system:String x:Key="string_batchModInstaller">Batch Mod Installer</system:String>
+    <system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Batch Mod Installer allows you to install a group of mods all in a row, allowing you to quickly recreate a specific installation of the game.</system:String>
+    <system:String x:Key="string_createANewInstallGroup">Create a new install group</system:String>
+    <system:String x:Key="string_installGroups">Install groups</system:String>
+    <system:String x:Key="string_groupInformation">Group information</system:String>
+    <system:String x:Key="string_installThisGroup">Install this group</system:String>
+    <system:String x:Key="string_editGroup">Edit group</system:String>
+    <system:String x:Key="string_tooltip_targetToInstallThisModGroupTo">Target to install this mod group to</system:String>
 </ResourceDictionary>
