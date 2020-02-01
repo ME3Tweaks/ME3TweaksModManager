@@ -1003,5 +1003,25 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_installThisGroup = "string_installThisGroup";
 		public static readonly string string_editGroup = "string_editGroup";
 		public static readonly string string_tooltip_targetToInstallThisModGroupTo = "string_tooltip_targetToInstallThisModGroupTo";
+		public static readonly string string_importAnInstalledDLCMod = "string_importAnInstalledDLCMod";
+		public static readonly string string_description_importFromGameToModManager = "string_description_importFromGameToModManager";
+		public static readonly string string_modsInstalledByManagedSolutionCannotBeImported = "string_modsInstalledByManagedSolutionCannotBeImported";
+		public static readonly string string_importMod = "string_importMod";
+		public static readonly string string_thisInstallationHasBeenTextureModded = "string_thisInstallationHasBeenTextureModded";
+		public static readonly string string_cannotImportModsFromTextureModdedTarget = "string_cannotImportModsFromTextureModdedTarget";
+		public static readonly string string_thisModHasNotBeenCatalogedByME3TweaksYet = "string_thisModHasNotBeenCatalogedByME3TweaksYet";
+		public static readonly string string_pleaseEnterModInfoForTPMI = "string_pleaseEnterModInfoForTPMI";
+		public static readonly string string_nameOfThisModRequired = "string_nameOfThisModRequired";
+		public static readonly string string_modURL = "string_modURL";
+		public static readonly string string_dialog_invalidModNameWillResolveToNothing = "string_dialog_invalidModNameWillResolveToNothing";
+		public static readonly string string_invalidModName = "string_invalidModName";
+		public static readonly string string_interp_insufficientDiskSpaceToImport = "string_interp_insufficientDiskSpaceToImport";
+		public static readonly string string_insufficientFreeDiskSpace = "string_insufficientFreeDiskSpace";
+		public static readonly string string_interp_dialog_importingWillDeleteExistingMod = "string_interp_dialog_importingWillDeleteExistingMod";
+		public static readonly string string_sameNamedModInLibrary = "string_sameNamedModInLibrary";
+		public static readonly string string_interp_couldNotDeleteExistingModDirectory = "string_interp_couldNotDeleteExistingModDirectory";
+		public static readonly string string_errorDeletingModFolder = "string_errorDeletingModFolder";
+		public static readonly string string_importedFromGame = "string_importedFromGame";
+		public static readonly string string_defaultDescriptionForImportedMod = "string_defaultDescriptionForImportedMod";
 	}
 }

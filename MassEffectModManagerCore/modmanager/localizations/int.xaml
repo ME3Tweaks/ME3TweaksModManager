@@ -1213,4 +1213,30 @@
     <system:String x:Key="string_installThisGroup">Install this group</system:String>
     <system:String x:Key="string_editGroup">Edit group</system:String>
     <system:String x:Key="string_tooltip_targetToInstallThisModGroupTo">Target to install this mod group to</system:String>
+
+    <!-- Import Installed DLC Mod Panel -->
+    <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
+    <system:String x:Key="string_description_importFromGameToModManager">You can import a mod from a game installation into Mod Manager using this importer, which will allow you to install the mod quickly and easily later. Mods imported this way don't support configuration options, updates, and other Mod Manager features. Import mods from archive for full feature support.</system:String>
+    <system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mods that were installed via Mod Manager or ALOT Installer cannot be imported through this importer.</system:String>
+    <system:String x:Key="string_importMod">Import mod</system:String>
+    <system:String x:Key="string_thisInstallationHasBeenTextureModded">This installation has been texture modded</system:String>
+    <system:String x:Key="string_cannotImportModsFromTextureModdedTarget">You cannot import mods from a game installation that has had texture mods installed into it.</system:String>
+    <system:String x:Key="string_thisModHasNotBeenCatalogedByME3TweaksYet">This mod has not been cataloged by ME3Tweaks yet</system:String>
+    <system:String x:Key="string_pleaseEnterModInfoForTPMI">This mod does not appear to be part of the ME3Tweaks Third Party Mod Identification service (TPMI). This service helps users and developers identify mods in Mod Manager and in other tools. Please enter the following information. This information will be sent to ME3Tweaks for review before it is added to the TPMI service.</system:String>
+    <system:String x:Key="string_nameOfThisModRequired">Name of this mod (required)</system:String>
+    <system:String x:Key="string_modURL">Mod URL</system:String>
+    <system:String x:Key="string_dialog_invalidModNameWillResolveToNothing">The specified mod name cannot be used as it will result in an invalid foldername on the filesystem. Please choose a different name.</system:String>
+    <system:String x:Key="string_invalidModName">Invalid mod name</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_insufficientDiskSpaceToImport">There is not enough space on {0} to import this mod.\n\nRequired space: {1}\nFree space: {2}</system:String>
+    <!-- 0=Path to library 1=size of mod dir 2=free space on library drive -->
+    <system:String x:Key="string_insufficientFreeDiskSpace">Insufficient free disk space</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_importingWillDeleteExistingMod">There is already an existing mod at the following location:\n{0}\n\nImporting this mod with this name will delete and overwrite this mod in your library. If this is not intentional, please choose a different name.\n\nDelete the existing mod and import the installed one?</system:String>
+    <!-- 0=existing mod directory path -->
+    <system:String x:Key="string_sameNamedModInLibrary">Same named mod in library</system:String>
+    <system:String x:Key="string_interp_couldNotDeleteExistingModDirectory">Could not delete existing mod directory: {0}</system:String>
+    <!-- 0=error message-->
+    <system:String x:Key="string_errorDeletingModFolder">Error deleting mod folder</system:String>
+    <system:String x:Key="string_importedFromGame">Imported from game</system:String>
+    <system:String x:Key="string_defaultDescriptionForImportedMod">This mod was imported from an installation of {0} at {1}.</system:String>
+    <!-- 0=game name 1=time-->
 </ResourceDictionary>

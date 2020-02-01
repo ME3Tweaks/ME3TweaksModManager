@@ -138,7 +138,8 @@ namespace LocalizationHelper
                         //item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
-                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotGameName(watermark))
+                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotGameName(watermark)
+                        && !watermark.StartsWith("http"))
                     {
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
                         //item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
@@ -394,6 +395,7 @@ namespace LocalizationHelper
                 cleanedWord = cleanedWord.Replace("{", "");
                 cleanedWord = cleanedWord.Replace("}", "");
                 cleanedWord = cleanedWord.Replace("-", "");
+                cleanedWord = cleanedWord.Replace("'", "");
                 cleanedWord = cleanedWord.Replace(",", "");
                 if (first)
                 {
