@@ -53,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
             return msgBox.MessageBoxResult;
         }
 
-        internal static string GetString(string resourceKey, params string[] interpolationItems)
+        internal static string GetString(string resourceKey, params object[] interpolationItems)
         {
             try
             {
@@ -332,6 +332,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_compressiongModForDistribution = "string_compressiongModForDistribution";
 		public static readonly string string_verifyModVersion = "string_verifyModVersion";
 		public static readonly string string_recommendedVersionFormatNotFollowed = "string_recommendedVersionFormatNotFollowed";
+		public static readonly string string_moddescMissingModsite = "string_moddescMissingModsite";
+		public static readonly string string_noModWebsiteSet = "string_noModWebsiteSet";
+		public static readonly string string_interp_invalidAudioPointerOutsideAFC = "string_interp_invalidAudioPointerOutsideAFC";
 		public static readonly string string_verifyURLIsCorrect = "string_verifyURLIsCorrect";
 		public static readonly string string_validation_badUrl = "string_validation_badUrl";
 		public static readonly string string_modUrlErrorsWereFound = "string_modUrlErrorsWereFound";

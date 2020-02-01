@@ -149,10 +149,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     obj.Icon = FontAwesomeIcon.TimesCircle;
                     obj.Foreground = Brushes.Red;
-                    obj.ItemText = "moddesc.ini is missing modsite descriptor";
+                    obj.ItemText = M3L.GetString(M3L.string_moddescMissingModsite);
                     obj.Spinning = false;
                     obj.HasError = true;
-                    obj.Errors.Add("No mod website URL was set - typically the ModInfo modsite descriptor should point to NexusMods page. This also enables users to endorse your mod on NexusMods through Mod Manager.");
+                    obj.Errors.Add(M3L.GetString(M3L.string_noModWebsiteSet));
                 }
                 else
                 {
@@ -404,12 +404,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add($"Invalid audio pointer found that points outside of target file stream: {Path.GetFileName(wwisestream.FileRef.FilePath)} Export {wwisestream.UIndex} {wwisestream.ObjectName} points to offset {audioOffset} in AFC file {afcPath} but the AFC is only {audioStream.Length} bytes long");
+                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
                                     if (audioStream is FileStream) audioStream.Close();
                                     continue;
                                 }
 
-                                if ( audioStream.ReadStringASCIINull(4) != @"RIFF")
+                                if (audioStream.ReadStringASCIINull(4) != @"RIFF")
                                 {
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
