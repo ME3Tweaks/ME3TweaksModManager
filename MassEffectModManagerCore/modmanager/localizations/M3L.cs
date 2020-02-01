@@ -795,5 +795,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_save = "string_save";
 		public static readonly string string_saved = "string_saved";
 		public static readonly string string_resetIniItemsExceptBasic = "string_resetIniItemsExceptBasic";
+		public static readonly string string_interp_cannotApplyMultipleFinalizers = "string_interp_cannotApplyMultipleFinalizers";
+		public static readonly string string_interp_cannotApplyMixinWrongSize = "string_interp_cannotApplyMixinWrongSize";
 	}
 }

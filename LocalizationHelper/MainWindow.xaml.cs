@@ -148,6 +148,10 @@ namespace LocalizationHelper
                     sb.AppendLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:String>");
                 }
                 StringsTextBox.Text = sb.ToString();
+                if (string.IsNullOrEmpty(sb.ToString()))
+                {
+                    StringsTextBox.Text = "No strings needing localized in " + SelectedFile;
+                }
             }
             catch (Exception ex)
             {
@@ -328,7 +332,10 @@ namespace LocalizationHelper
                 sb.AppendLine(str);
             }
             StringsTextBox.Text = sb.ToString();
-
+            if (string.IsNullOrEmpty(sb.ToString()))
+            {
+                StringsTextBox.Text = "No strings needing localized in " + SelectedFile;
+            }
             //Debug.WriteLine("<!-- Subs only -->");
 
 
@@ -444,6 +451,7 @@ namespace LocalizationHelper
                 }
                 sb.AppendLine(newline);
             }
+
             ResultTextBox.Text = sb.ToString();
         }
 

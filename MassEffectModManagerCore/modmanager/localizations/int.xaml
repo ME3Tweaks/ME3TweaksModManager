@@ -924,4 +924,10 @@
     <system:String x:Key="string_save">Save</system:String>
     <system:String x:Key="string_saved">Saved</system:String>
     <system:String x:Key="string_resetIniItemsExceptBasic">Ini values have been reset to default (except basic settings). Press save to commit changes.</system:String>
+
+    <!-- Mixin Handler -->
+    <system:String xml:space="preserve" x:Key="string_interp_cannotApplyMultipleFinalizers">Cannot apply mixins to {0}: There are multiple finalizers selected for this file. Only one finalizer Mixin may be applied to a file, as the others will be unable to apply.\n\nFinalizers:</system:String>
+    <!-- 0=Filename -->
+    <system:String x:Key="string_interp_cannotApplyMixinWrongSize">{0} cannot be applied to {1}. Expected size {2} but received source data size of {3}</system:String>
+    <!-- 0=Mixin name 1=mixin.TargetFile 2= mixin.TargetSize 3=Required filesize. This text shows up in a list so not having period at end is OK-->
 </ResourceDictionary>

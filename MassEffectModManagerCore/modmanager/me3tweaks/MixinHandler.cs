@@ -15,6 +15,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.IO;
 using ByteSizeLib;
 using System.Runtime;
+using MassEffectModManagerCore.modmanager.localizations;
 using SQLite;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -33,7 +34,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static RecyclableMemoryStreamManager MixinMemoryStreamManager { get; private set; }
         public static string ServerMixinHash;
         public static readonly string MixinPackageEndpoint = @"https://me3tweaks.com/mixins/mixinlibrary.zip";
-        public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), "Mixins", "me3tweaks")).FullName, "mixinlibrary.zip");
+        public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"Mixins", @"me3tweaks")).FullName, @"mixinlibrary.zip");
 
         public static bool IsMixinPackageUpToDate()
         {
@@ -94,7 +95,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (list.Value.Count(x => x.IsFinalizer) > 1)
                     {
                         Log.Error(@"ERROR: MORE THAN ONE FINALIZER IS PRESENT FOR FILE: " + list.Key);
-                        string error = $"Cannot apply mixins to the following file {list.Key}: There are multiple finalizers selected for this file. Only one finalizer Mixin may be applied to a file, as the others will be unable to apply.\n\nFinalizers:";
+                        string error = M3L.GetString(M3L.string_interp_cannotApplyMultipleFinalizers, list.Key);
                         foreach (var fin in list.Value.Where(x => x.IsFinalizer))
                         {
                             error += "\n"; //do not localize
@@ -128,7 +129,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     using (var file = File.OpenRead(MixinPackagePath))
                     using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
                     {
-                        var manifest = zip.GetEntry("manifest.xml");
+                        var manifest = zip.GetEntry(@"manifest.xml");
                         if (manifest != null)
                         {
                             //parse manifest.
@@ -137,31 +138,31 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             XDocument manifestDoc = XDocument.Parse(manifestText);
                             ME3TweaksPackageMixins = manifestDoc.Root.Elements().Select(elem => new Mixin()
                             {
-                                PatchName = elem.Element("patchname").Value,
-                                PatchDesc = elem.Element("patchdesc").Value,
-                                PatchDeveloper = elem.Element("patchdev").Value,
-                                PatchVersion = int.Parse(elem.Element("patchver").Value),
+                                PatchName = elem.Element(@"patchname").Value,
+                                PatchDesc = elem.Element(@"patchdesc").Value,
+                                PatchDeveloper = elem.Element(@"patchdev").Value,
+                                PatchVersion = int.Parse(elem.Element(@"patchver").Value),
                                 //targetversion = elem.Element("").Value,
-                                TargetModule = Enum.Parse<ModJob.JobHeader>(elem.Element("targetmodule").Value),
-                                TargetFile = elem.Element("targetfile").Value,
-                                TargetSize = int.Parse(elem.Element("targetsize").Value),
-                                IsFinalizer = elem.Element("finalizer").Value == "1" ? true : false,
-                                PatchFilename = elem.Element("filename").Value,
+                                TargetModule = Enum.Parse<ModJob.JobHeader>(elem.Element(@"targetmodule").Value),
+                                TargetFile = elem.Element(@"targetfile").Value,
+                                TargetSize = int.Parse(elem.Element(@"targetsize").Value),
+                                IsFinalizer = elem.Element(@"finalizer").Value == "1" ? true : false,
+                                PatchFilename = elem.Element(@"filename").Value,
                                 //patchurl = elem.Element("").Value,
                                 //folder = elem.Element("").Value,
-                                ME3TweaksID = int.Parse(elem.Element("me3tweaksid").Value)
+                                ME3TweaksID = int.Parse(elem.Element(@"me3tweaksid").Value)
                             }).ToList();
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error loading me3tweaks mixin package: " + e.Message);
+                    Log.Error(@"Error loading me3tweaks mixin package: " + e.Message);
                 }
             }
             else
             {
-                Log.Warning("Cannot load ME3Tweaks package: Local cached file does not exist");
+                Log.Warning(@"Cannot load ME3Tweaks package: Local cached file does not exist");
             }
         }
 
@@ -184,10 +185,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             Mixin dynamic = new Mixin()
             {
-                TargetModule = Enum.Parse<ModJob.JobHeader>(element.Attribute("targetmodule").Value),
-                TargetFile = element.Attribute("targetfile").Value,
-                PatchName = element.Attribute("name").Value,
-                TargetSize = int.Parse(element.Attribute("targetsize").Value)
+                TargetModule = Enum.Parse<ModJob.JobHeader>(element.Attribute(@"targetmodule").Value),
+                TargetFile = element.Attribute(@"targetfile").Value,
+                PatchName = element.Attribute(@"name").Value,
+                TargetSize = int.Parse(element.Attribute(@"targetsize").Value)
             };
             var hexStr = element.Value;
             byte[] hexData = Utilities.HexStringToByteArray(hexStr);
@@ -254,7 +255,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 else
                 {
                     Log.Error($@"Mixin {mixin.PatchName} cannot be applied to this data, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}");
-                    failedApplicationCallback?.Invoke($"{mixin.PatchName} cannot be applied to {mixin.TargetFile}. Expected size { mixin.TargetSize} but received source data size of { decompressedStream.Length}");
+                    failedApplicationCallback?.Invoke(M3L.GetString(M3L.string_interp_cannotApplyMixinWrongSize, mixin.PatchName, mixin.TargetFile, mixin.TargetSize, decompressedStream.Length));
                 }
 
                 notifyApplicationDone?.Invoke();
@@ -286,7 +287,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 MixinMemoryStreamManager = new RecyclableMemoryStreamManager(MB * 4, MB * 128, MB * 256);
                 MixinMemoryStreamManager.GenerateCallStacks = true;
                 MixinMemoryStreamManager.AggressiveBufferReturn = true;
-                MemoryAnalyzer.AddTrackedMemoryItem("Mixin Memory Stream Manager", new WeakReference(MixinMemoryStreamManager));
+                MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Memory Stream Manager", new WeakReference(MixinMemoryStreamManager));
             }
             if (isResetting)
             {
