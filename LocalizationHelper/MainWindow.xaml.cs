@@ -248,8 +248,9 @@ namespace LocalizationHelper
             HashSet<string> s = new HashSet<string>();
             HashSet<string> origStrForSubsOnly = new HashSet<string>();
             bool sectionIsLocalizable = true;
-            foreach (var line in filelines)
+            for (int x = 0; x < filelines.Length; x++)
             {
+                var line = filelines[x];
                 if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
                 if (line.Contains("Localizable(true)", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -325,7 +326,7 @@ namespace LocalizationHelper
 
                         string commentStr = "";
                         if (comment.Length > 0) commentStr = "<!--" + comment + " -->";
-
+                        Debug.WriteLine(x + "\t\t" + subbedStr);
                         s.Add($"    <system:String{(xmlPreserve ? " xml:space=\"preserve\"" : "")} x:Key=\"{strname}\">{subbedStr}</system:String> " + commentStr);
                         if (substitutions.Count > 0)
                         {

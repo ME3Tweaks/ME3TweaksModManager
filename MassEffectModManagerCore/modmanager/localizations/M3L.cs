@@ -629,6 +629,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_altfile_noModFileDeclared = "string_interp_validation_altfile_noModFileDeclared";
 		public static readonly string string_interp_validation_altfile_specifiedAltFileDoesntExist = "string_interp_validation_altfile_specifiedAltFileDoesntExist";
 		public static readonly string string_interp_validation_altfile_couldNotFindModFile = "string_interp_validation_altfile_couldNotFindModFile";
+		public static readonly string string_interp_altfile_multilistMissingMultiListRootPath = "string_interp_altfile_multilistMissingMultiListRootPath";
+		public static readonly string string_interp_altfile_multilistMissingMultiListTargetPath = "string_interp_altfile_multilistMissingMultiListTargetPath";
+		public static readonly string string_interp_altfile_multilistMissingFileInMultiList = "string_interp_altfile_multilistMissingFileInMultiList";
+		public static readonly string string_interp_altfile_multilistIdNotIntegerOrMissing = "string_interp_altfile_multilistIdNotIntegerOrMissing";
 		public static readonly string string_interp_ui_alotInstalledVersion = "string_interp_ui_alotInstalledVersion";
 		public static readonly string string_ui_alotNotInstalled = "string_ui_alotNotInstalled";
 		public static readonly string string_interp_invalidTargetMissingFile = "string_interp_invalidTargetMissingFile";

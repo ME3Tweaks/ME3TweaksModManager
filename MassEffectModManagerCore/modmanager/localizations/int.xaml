@@ -667,7 +667,6 @@
     <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.</system:String>
     <!-- 0=FriendlyName -->
 
-
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
     <system:String x:Key="string_validation_altfile_unknownCondition">Alternate File specifies unknown/unsupported condition:</system:String>
@@ -682,6 +681,14 @@
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
     <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate File {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
     <!-- 0 = Friendly name, 1 = Filepath-->
+    <system:String x:Key="string_interp_altfile_multilistMissingMultiListRootPath">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_multilistMissingMultiListTargetPath">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_multilistMissingFileInMultiList">Alternate File ({0}) Multilist ID does not exist as part of the task:</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
+    <!-- 0=FriendlyName -->
 
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
