@@ -245,7 +245,7 @@
     <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
     <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
-    <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
+    <system:String x:Key="string_requiredContentMissing">Required content mismsing</system:String>
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
     <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.</system:String>
@@ -991,6 +991,18 @@
     <system:String x:Key="string_applyingMixins">Applying Mixins</system:String>
     <system:String x:Key="string_compilingCoalescedFiles">Compiling Coalesced files</system:String>
     <system:String x:Key="string_finalizingMod">Finalizing mod</system:String>
+
+    <!-- ModMaker Panel -->
+    <system:String x:Key="string_enterModMakerModCodeOrSelectFromTheTopMods">Enter ModMaker mod code or select from the top mods</system:String>
+    <system:String x:Key="string_downloadingModDeltaFromME3Tweaks">Downloading mod delta from ME3Tweaks</system:String>
+    <system:String x:Key="string_dialog_me3tweaksModMakerRequiresBackup">ME3Tweaks ModMaker requires a game backup of Mass Effect 3 in order to function. An unmodified backup of this game was not found.</system:String>
+    <system:String x:Key="string_noBackupAvailable">No backup available</system:String>
+    <system:String x:Key="string_description_modmakerOnlineModCreationTool">ME3Tweaks ModMaker is an online mod creation tool for Mass Effect 3. You can create mods with an easy point and click interface, allowing you to customize thousands of documented gameplay variables and scripts.</system:String>
+    <system:String x:Key="string_openME3TweaksModMaker">Open ME3Tweaks ModMaker</system:String>
+    <system:String x:Key="string_modMakerCode">ModMaker Code</system:String>
+    <system:String x:Key="string_download">Download</system:String>
+    <!-- as in download mod -->
+    <system:String x:Key="string_overallProgress">Overall progress</system:String>
 
     <!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>

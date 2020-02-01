@@ -839,6 +839,15 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_applyingMixins = "string_applyingMixins";
 		public static readonly string string_compilingCoalescedFiles = "string_compilingCoalescedFiles";
 		public static readonly string string_finalizingMod = "string_finalizingMod";
+		public static readonly string string_enterModMakerModCodeOrSelectFromTheTopMods = "string_enterModMakerModCodeOrSelectFromTheTopMods";
+		public static readonly string string_downloadingModDeltaFromME3Tweaks = "string_downloadingModDeltaFromME3Tweaks";
+		public static readonly string string_dialog_me3tweaksModMakerRequiresBackup = "string_dialog_me3tweaksModMakerRequiresBackup";
+		public static readonly string string_noBackupAvailable = "string_noBackupAvailable";
+		public static readonly string string_description_modmakerOnlineModCreationTool = "string_description_modmakerOnlineModCreationTool";
+		public static readonly string string_openME3TweaksModMaker = "string_openME3TweaksModMaker";
+		public static readonly string string_modMakerCode = "string_modMakerCode";
+		public static readonly string string_download = "string_download";
+		public static readonly string string_overallProgress = "string_overallProgress";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
 		public static readonly string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";

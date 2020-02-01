@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -33,7 +34,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long OverallMaximum { get; private set; } = 100;
         public bool OverallIndeterminate { get; private set; }
         public bool CompileInProgress { get; set; }
-        public string DownloadAndModNameText { get; set; } = "Enter ModMaker mod code or select from the top mods";
+        public string DownloadAndModNameText { get; set; } = M3L.GetString(M3L.string_enterModMakerModCodeOrSelectFromTheTopMods);
         public string CurrentTaskString { get; set; }
         public ModMakerPanel()
         {
@@ -75,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenModMaker()
         {
-            Utilities.OpenWebpage("https://me3tweaks.com/modmaker");
+            Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
         }
 
         private void ClosePanel()
@@ -116,16 +117,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (total != -1)
                             {
-                                DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString(@"0")}%";
+                                var suffix = $@"{(done * 100.0 / total).ToString(@"0")}%"; //do not localize
+                                DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks) + suffix;
                             }
                             else
                             {
-                                DownloadAndModNameText = "Downloading mod delta from ME3Tweaks";
+                                DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks);
                             }
                         });
                         if (download.errorMessage == null)
                         {
-                            DownloadAndModNameText = "Decompressing delta";
+                            DownloadAndModNameText = M3L.GetString(M3L.string_decompressingDelta);
                             // OK
                             var decompressed = SevenZipHelper.LZMA.DecompressLZMAFile(download.result.ToArray());
                             modDelta = Encoding.UTF8.GetString(decompressed);
@@ -146,7 +148,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //failed to download LZMA.
                         var download = OnlineContent.DownloadToMemory(normalEndpoint, (done, total) =>
                         {
-                            DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString(@"0")}%";
+                            var suffix = $"{(done * 100.0 / total).ToString(@"0")}%"; //do not localize
+                            DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks) + suffix;
                         });
                         if (download.errorMessage == null)
                         {
@@ -245,7 +248,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, "ME3Tweaks ModMaker requires a game backup of Mass Effect 3 in order to function. An unmodified backup of this game was not found.", "No backup available", MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

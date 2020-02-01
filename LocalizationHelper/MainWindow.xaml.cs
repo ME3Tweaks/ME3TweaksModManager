@@ -141,10 +141,10 @@ namespace LocalizationHelper
                     if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotGameName(watermark))
                     {
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
-                       //item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
+                        //item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
                     }
 
-                    if (text != null && !text.StartsWith("{") 
+                    if (text != null && !text.StartsWith("{")
                                      && text.Length > 1
                                      && isNotLangWord(text)
                                      && isNotGameName(text)
@@ -342,7 +342,7 @@ namespace LocalizationHelper
 
                         string commentStr = "";
                         if (comment.Length > 0) commentStr = "<!--" + comment + " -->";
-                        Debug.WriteLine(x + "\t\t" + subbedStr);
+                        Debug.WriteLine((x + 1) + "\t\t" + subbedStr);
                         s.Add($"    <system:String{(xmlPreserve ? " xml:space=\"preserve\"" : "")} x:Key=\"{strname}\">{subbedStr}</system:String> " + commentStr);
                         if (substitutions.Count > 0)
                         {
