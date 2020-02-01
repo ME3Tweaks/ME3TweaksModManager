@@ -113,8 +113,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
             if (mixinNode != null)
             {
-                var mmixins = mixinNode.Elements("MixIn").Count();
-                var dmixins = mixinNode.Elements("DynamicMixIn").Count();
+                var mmixins = mixinNode.Elements(@"MixIn").Count();
+                var dmixins = mixinNode.Elements(@"DynamicMixIn").Count();
                 numTasks += (mmixins + dmixins) * MIXIN_OVERALL_WEIGHT; //Mixin is 1 unit.
             }
 
@@ -148,16 +148,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 Parallel.ForEach(tlknodes, new ParallelOptions() { MaxDegreeOfParallelism = MaxModmakerCores }, tlknode =>
                   {
                       var lang = tlknode.Name;
-                      string loggingPrefix = $"[TLK][{lang}]: ";
-                      var newstringnodes = tlknode.Elements("TLKProperty");
-                      string filename = "BIOGame_" + lang + ".tlk";
+                      string loggingPrefix = $@"[TLK][{lang}]: ";
+                      var newstringnodes = tlknode.Elements(@"TLKProperty");
+                      string filename = $@"BIOGame_{lang}.tlk";
                       var vanillaTLK = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, filename);
                       var tf = new TalkFileME2ME3();
                       tf.LoadTlkDataFromStream(vanillaTLK);
                       SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
                       foreach (var strnode in newstringnodes)
                       {
-                          var id = int.Parse(strnode.Attribute("id").Value);
+                          var id = int.Parse(strnode.Attribute(@"id").Value);
                           var matchingref = tf.StringRefs.FirstOrDefault(x => x.StringID == id);
                           if (matchingref != null)
                           {
@@ -167,13 +167,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                           }
                           else
                           {
-                              Log.Warning($"{loggingPrefix} Could not find string id {id} in TLK");
+                              Log.Warning($@"{loggingPrefix} Could not find string id {id} in TLK");
                           }
                       }
 
                       SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //modify
 
-                      string outfolder = Path.Combine(mod.ModPath, "BASEGAME", "CookedPCConsole");
+                      string outfolder = Path.Combine(mod.ModPath, @"BASEGAME", @"CookedPCConsole");
                       Directory.CreateDirectory(outfolder);
                       string outfile = Path.Combine(outfolder, filename);
                       CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
@@ -201,9 +201,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
             if (mixinNode != null)
             {
-                var me3tweaksmixinsdata = mixinNode.Elements("MixIn")
-                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf("v")))).ToList();
-                var dynamicmixindata = mixinNode.Elements("DynamicMixIn").ToList();
+                var me3tweaksmixinsdata = mixinNode.Elements(@"MixIn")
+                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf(@"v")))).ToList();
+                var dynamicmixindata = mixinNode.Elements(@"DynamicMixIn").ToList();
 
                 List<Mixin> allmixins = new List<Mixin>();
                 allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
@@ -335,19 +335,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private bool compileCoalescedChunk(XElement xmlChunk, Mod mod)
         {
             var chunkName = xmlChunk.Name.LocalName;
-            string loggingPrefix = $"ModMaker Compiler [{chunkName}]";
+            string loggingPrefix = $@"ModMaker Compiler [{chunkName}]";
             //var header = Enum.Parse(typeof(ModJob.JobHeader), chunkName);
             //string dlcFoldername = ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[header];
             var outPath = Directory.CreateDirectory(Path.Combine(mod.ModPath, chunkName)).FullName;
-            Debug.WriteLine("Compiling chunk: " + chunkName);
+            Debug.WriteLine(@"Compiling chunk: " + chunkName);
 
             //File fetch
             Dictionary<string, string> coalescedFilemapping = null;
             string coalescedFilename = null;
-            if (chunkName == "BASEGAME")
+            if (chunkName == @"BASEGAME")
             {
-                var coalPath = Path.Combine(Utilities.GetGameBackupPath(MEGame.ME3), "BioGame", "CookedPCConsole", "Coalesced.bin");
-                coalescedFilename = "Coalesced.bin";
+                var coalPath = Path.Combine(Utilities.GetGameBackupPath(MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                coalescedFilename = @"Coalesced.bin";
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
@@ -355,28 +355,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 else
                 {
-                    Log.Error("Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
+                    Log.Error(@"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
                     return false;
                 }
             }
-            else if (chunkName == "BALANCE_CHANGES")
+            else if (chunkName == @"BALANCE_CHANGES")
             {
-                var serverCoalesced = Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
+                var serverCoalesced = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
                 coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(serverCoalesced);
-                coalescedFilename = "ServerCoalesced.bin";
+                coalescedFilename = @"ServerCoalesced.bin";
             }
             else
             {
                 var dlcFolderName = ModmakerChunkNameToDLCFoldername(chunkName);
-                var coalescedData = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, $"Default_{dlcFolderName}.bin");
-                coalescedFilename = $"Default_{dlcFolderName}.bin";
+                var coalescedData = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, $@"Default_{dlcFolderName}.bin");
+                coalescedFilename = $@"Default_{dlcFolderName}.bin";
                 if (coalescedData != null)
                 {
                     coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(coalescedData);
                 }
                 else
                 {
-                    Log.Error("Could not get file data for coalesced chunk: " + chunkName);
+                    Log.Error(@"Could not get file data for coalesced chunk: " + chunkName);
                     return false;
                 }
             }
@@ -386,17 +386,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 // get filenames for chunk
                 foreach (var fileNode in xmlChunk.Elements())
                 {
-                    Debug.WriteLine($"{loggingPrefix} {fileNode.Name.LocalName}");
-                    var matchingCoalFile = coalescedFilemapping[fileNode.Name + ".xml"];
+                    Debug.WriteLine($@"{loggingPrefix} {fileNode.Name.LocalName}");
+                    var matchingCoalFile = coalescedFilemapping[fileNode.Name + @".xml"];
                     var coalFileDoc = XDocument.Parse(matchingCoalFile);
-                    string updatedDocumentText = compileCoalescedChunkFile(coalFileDoc, fileNode, $"{loggingPrefix}[{fileNode.Name}]: ");
-                    coalescedFilemapping[fileNode.Name + ".xml"] = updatedDocumentText;
+                    string updatedDocumentText = compileCoalescedChunkFile(coalFileDoc, fileNode, $@"{loggingPrefix}[{fileNode.Name}]: ");
+                    coalescedFilemapping[fileNode.Name + @".xml"] = updatedDocumentText;
                 }
                 CLog.Information($"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
                 var newFileStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
 
-                var outFolder = Path.Combine(mod.ModPath, chunkName, "CookedPCConsole");
-                if (chunkName == "BALANCE_CHANGES")
+                var outFolder = Path.Combine(mod.ModPath, chunkName, @"CookedPCConsole");
+                if (chunkName == @"BALANCE_CHANGES")
                 {
                     outFolder = Path.Combine(mod.ModPath, chunkName);
                 }
@@ -410,10 +410,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return true;
         }
 
-        private const string OP_ADDITION = "addition";
-        private const string OP_SUBTRACTION = "subtraction";
-        private const string OP_ASSIGNMENT = "assignment";
-        private const string OP_MODIFY = "modify"; //same as assignment, except used for array values
+        private const string OP_ADDITION = @"addition";
+        private const string OP_SUBTRACTION = @"subtraction";
+        private const string OP_ASSIGNMENT = @"assignment";
+        private const string OP_MODIFY = @"modify"; //same as assignment, except used for array values
 
         /// <summary>
         /// Compile's a chunk's subfile. e.g. DLC_CON_MP5's BioGame file.
@@ -425,22 +425,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             //Sections
             #region Sections
-            var sectionsToHandle = modDeltaDocument.Elements("Section");
+            var sectionsToHandle = modDeltaDocument.Elements(@"Section");
             foreach (var section in sectionsToHandle)
             {
-                var sectionName = section.Attribute("name").Value;
-                var operation = section.Attribute("operation").Value;
+                var sectionName = section.Attribute(@"name").Value;
+                var operation = section.Attribute(@"operation").Value;
                 if (operation == OP_ADDITION)
                 {
-                    var sectionsGroup = targetDocument.XPathSelectElement("/CoalesceAsset/Sections");
-                    var newSection = new XElement("Section");
-                    newSection.SetAttributeValue("name", sectionName);
+                    var sectionsGroup = targetDocument.XPathSelectElement(@"/CoalesceAsset/Sections");
+                    var newSection = new XElement(@"Section");
+                    newSection.SetAttributeValue(@"name", sectionName);
                     sectionsGroup.Add(newSection);
                     CLog.Information($"{loggingPrefix}Added section: {sectionName}", Settings.LogModMakerCompiler);
                 }
                 else if (operation == OP_SUBTRACTION)
                 {
-                    var targetSection = targetDocument.XPathSelectElement($"/CoalesceAsset/Sections/Section[@name='{sectionName}']");
+                    var targetSection = targetDocument.XPathSelectElement($@"/CoalesceAsset/Sections/Section[@name='{sectionName}']");
                     if (targetSection != null)
                     {
                         targetSection.Remove();
@@ -456,19 +456,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             #region Properties - Assignments
             // Really old modmaker stuff did not assign operations to everything. The default was Assignment
-            var deltaPropertyAssignments = modDeltaDocument.Elements("Property")
-                .Where(x => x.Attribute("operation") == null || x.Attribute("operation").Value == OP_ASSIGNMENT);
+            var deltaPropertyAssignments = modDeltaDocument.Elements(@"Property")
+                .Where(x => x.Attribute(@"operation") == null || x.Attribute(@"operation").Value == OP_ASSIGNMENT);
             foreach (var deltaProperty in deltaPropertyAssignments)
             {
-                var sectionName = deltaProperty.Attribute("path").Value;
-                var propertyName = deltaProperty.Attribute("name").Value;
-                var type = deltaProperty.Attribute("type").Value;
+                var sectionName = deltaProperty.Attribute(@"path").Value;
+                var propertyName = deltaProperty.Attribute(@"name").Value;
+                var type = deltaProperty.Attribute(@"type").Value;
                 var value = deltaProperty.Value;
 
-                var targetElement = targetDocument.XPathSelectElement($"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
+                var targetElement = targetDocument.XPathSelectElement($@"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
                 if (targetElement == null)
                 {
-                    Debug.WriteLine($"Not found {sectionName}']/Property[@name='{propertyName}' and type '{type}'");
+                    Debug.WriteLine($@"Not found {sectionName}']/Property[@name='{propertyName}' and type '{type}'");
                 }
                 else
                 {
@@ -488,17 +488,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #endregion
 
             #region Properties - Subtraction
-            var deltaPropertySubtractions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation") != null && x.Attribute("operation").Value == OP_SUBTRACTION);
+            var deltaPropertySubtractions = modDeltaDocument.Elements(@"Property").Where(x => x.Attribute(@"operation") != null && x.Attribute(@"operation").Value == OP_SUBTRACTION);
             foreach (var deltaProperty in deltaPropertySubtractions)
             {
-                var sectionName = deltaProperty.Attribute("path").Value;
-                var propertyName = deltaProperty.Attribute("name").Value;
+                var sectionName = deltaProperty.Attribute(@"path").Value;
+                var propertyName = deltaProperty.Attribute(@"name").Value;
                 var value = deltaProperty.Value;
 
-                var targetElement = targetDocument.XPathSelectElement($"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
+                var targetElement = targetDocument.XPathSelectElement($@"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
                 if (targetElement == null)
                 {
-                    CLog.Warning($"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                    CLog.Warning($@"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                 }
                 else
                 {
@@ -517,88 +517,84 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #endregion
 
             #region Properties = Addition
-            var deltaPropertyAdditions = modDeltaDocument.Elements("Property").Where(x => x.Attribute("operation") != null && x.Attribute("operation").Value == OP_ADDITION);
+            var deltaPropertyAdditions = modDeltaDocument.Elements(@"Property").Where(x => x.Attribute(@"operation") != null && x.Attribute(@"operation").Value == OP_ADDITION);
             foreach (var deltaProperty in deltaPropertyAdditions)
             {
-                var sectionName = deltaProperty.Attribute("path").Value;
-                var propertyName = deltaProperty.Attribute("name").Value;
+                var sectionName = deltaProperty.Attribute(@"path").Value;
+                var propertyName = deltaProperty.Attribute(@"name").Value;
                 var value = deltaProperty.Value;
-                var type = deltaProperty.Attribute("type").Value;
+                var type = deltaProperty.Attribute(@"type").Value;
 
-                var targetElement = targetDocument.XPathSelectElement($"/CoalesceAsset/Sections/Section[@name='{sectionName}']");
+                var targetElement = targetDocument.XPathSelectElement($@"/CoalesceAsset/Sections/Section[@name='{sectionName}']");
                 if (targetElement == null)
                 {
-                    CLog.Warning($"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                    CLog.Warning($@"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                 }
                 else
                 {
-                    var newSection = new XElement("Property", value);
-                    newSection.SetAttributeValue("name", propertyName);
-                    newSection.SetAttributeValue("type", type);
+                    var newSection = new XElement(@"Property", value);
+                    newSection.SetAttributeValue(@"name", propertyName);
+                    newSection.SetAttributeValue(@"type", type);
                     targetElement.Add(newSection);
-                    CLog.Information($"{loggingPrefix}Added property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                    CLog.Information($@"{loggingPrefix}Added property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                 }
             }
             #endregion
 
             #region ArrayProperty
-            var deltaArrayProperties = modDeltaDocument.Elements("ArrayProperty");
+            var deltaArrayProperties = modDeltaDocument.Elements(@"ArrayProperty");
             foreach (var deltaProperty in deltaArrayProperties)
             {
                 try
                 {
-                    var pathTokens = deltaProperty.Attribute("path").Value.Split('&');
+                    var pathTokens = deltaProperty.Attribute(@"path").Value.Split('&');
                     var sectionName = pathTokens[0];
                     var propertyName = pathTokens[1];
-                    var matchOnType = deltaProperty.Attribute("matchontype").Value;
-                    var type = deltaProperty.Attribute("type").Value;
+                    var matchOnType = deltaProperty.Attribute(@"matchontype").Value;
+                    var type = deltaProperty.Attribute(@"type").Value;
                     var value = deltaProperty.Value;
                     var arrayContainer = targetDocument.XPathSelectElement(
-                        $"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
+                        $@"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
 
                     if (arrayContainer == null)
                     {
                         Log.Error(
-                            $"{loggingPrefix}Did not find arrayproperty @name='{sectionName}']/Property[@name='{propertyName}' and @type='{matchOnType}']");
+                            $@"{loggingPrefix}Did not find arrayproperty @name='{sectionName}']/Property[@name='{propertyName}' and @type='{matchOnType}']");
                     }
                     else
                     {
                         //Log.Information($"{loggingPrefix}Found array countainer {sectionName} => {propertyName}");
-                        var operation = deltaProperty.Attribute("operation").Value;
+                        var operation = deltaProperty.Attribute(@"operation").Value;
                         if (operation == OP_ADDITION)
                         {
-                            var newArrayElement = new XElement("Value", value);
-                            newArrayElement.SetAttributeValue("type", type);
+                            var newArrayElement = new XElement(@"Value", value);
+                            newArrayElement.SetAttributeValue(@"type", type);
                             arrayContainer.Add(newArrayElement);
-                            CLog.Information(
-                                $"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}",
-                                Settings.LogModMakerCompiler);
+                            CLog.Information($@"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}", Settings.LogModMakerCompiler);
                         }
                         else if (operation == OP_SUBTRACTION)
                         {
-                            var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
-                            var values = arrayContainer.Descendants("Value");
+                            var matchingAlgorithm = deltaProperty.Attribute(@"arraytype").Value;
+                            var values = arrayContainer.Descendants(@"Value");
                             var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values,
                                 matchingAlgorithm, matchOnType, value);
                             if (matchingItem == null)
                             {
-                                CLog.Warning(
-                                    $"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
+                                CLog.Warning($@"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
                                     Settings.LogModMakerCompiler);
                             }
                             else
                             {
                                 matchingItem.Remove();
-                                CLog.Information(
-                                    $"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
+                                CLog.Information($@"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
                                     Settings.LogModMakerCompiler);
                             }
                         }
                         else if (operation == OP_ASSIGNMENT || operation == OP_MODIFY)
                         {
                             //Algorithms based
-                            var matchingAlgorithm = deltaProperty.Attribute("arraytype").Value;
-                            var values = arrayContainer.Descendants("Value");
+                            var matchingAlgorithm = deltaProperty.Attribute(@"arraytype").Value;
+                            var values = arrayContainer.Descendants(@"Value");
                             var matchingItem = findArrayElementBasedOnAlgoritm(sectionName, propertyName, values,
                                 matchingAlgorithm, matchOnType, value);
                             if (matchingItem == null)
@@ -610,7 +606,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             else
                             {
                                 //Debug.WriteLine($"Found matching item {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}");
-                                if (matchingAlgorithm == "wavelist")
+                                if (matchingAlgorithm == @"wavelist")
                                 {
                                     //On Jan 7 2020 I discovered a bug in the output code of ME3Tweaks ModMaker server publisher that has been present since late 2014.
                                     //The , between enemies in the wavelist lists would not be output if the enemy did not have emax set (max num on field). 
@@ -618,7 +614,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     //and since I was building modmaker I opted to stress test my implementation
                                     //by making the client also parse and rebuild the string, even though this was not necessary as the assignment data was already known.
                                     //M3 does not parse the item beyond identification purposes, so an )( items will need to be substituted for ),(, but only for arraytype wavelist.
-                                    matchingItem.Value = value.Replace(")(", "),("); //assign
+                                    matchingItem.Value = value.Replace(@")(", @"),("); //assign
                                 }
                                 else
                                 {
@@ -630,7 +626,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error applying delta property: " + e.Message);
+                    Log.Error(@"Error applying delta property: " + e.Message);
                 }
             }
             #endregion
@@ -646,7 +642,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <summary>
         /// This is the vanilla value for Plat Collectors Wave 5. It should be Do_Level4 but bioware set it to 3.
         /// </summary>
-        private static readonly string CollectorsPlatWave5WrongText = "(Difficulty=DO_Level3,Enemies=( (EnemyType=\"WAVE_COL_Scion\"), (EnemyType=\"WAVE_COL_Praetorian\", MinCount=1, MaxCount=1), (EnemyType=\"WAVE_CER_Phoenix\", MinCount=2, MaxCount=2), (EnemyType=\"WAVE_CER_Phantom\", MinCount=3, MaxCount=3) ))";
+        private static readonly string CollectorsPlatWave5WrongText = "(Difficulty=DO_Level3,Enemies=( (EnemyType=\"WAVE_COL_Scion\"), (EnemyType=\"WAVE_COL_Praetorian\", MinCount=1, MaxCount=1), (EnemyType=\"WAVE_CER_Phoenix\", MinCount=2, MaxCount=2), (EnemyType=\"WAVE_CER_Phantom\", MinCount=3, MaxCount=3) ))"; //do not localize
 
         private int MIXIN_OVERALL_WEIGHT = 1;
         private int TLK_OVERALL_WEIGHT = 4;
@@ -665,43 +661,43 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             switch (matchingAlgorithm)
             {
-                case "exactvalue":
+                case @"exactvalue":
                     {
-                        return values.FirstOrDefault(x => x.Value == value && matchOnType == x.Attribute("type").Value);
+                        return values.FirstOrDefault(x => x.Value == value && matchOnType == x.Attribute(@"type").Value);
                     }
-                case "id":
+                case @"id":
                     {
                         var newValues = StringStructParser.GetCommaSplitValues(value);
                         foreach (var element in values)
                         {
-                            if (matchesOnIdentifier("ID", matchOnType, element, newValues))
+                            if (matchesOnIdentifier(@"ID", matchOnType, element, newValues))
                             {
                                 return element;
                             }
                         }
-                        CLog.Warning("Could not find element using ID algorithm for value " + value, Settings.LogModMakerCompiler);
+                        CLog.Warning(@"Could not find element using ID algorithm for value " + value, Settings.LogModMakerCompiler);
                         break;
                     }
-                case "wavecost":
-                case "enemytype":
+                case @"wavecost":
+                case @"enemytype":
                     {
                         var newValues = StringStructParser.GetCommaSplitValues(value);
                         foreach (var element in values)
                         {
-                            if (matchesOnIdentifier("EnemyType", matchOnType, element, newValues))
+                            if (matchesOnIdentifier(@"EnemyType", matchOnType, element, newValues))
                             {
                                 return element;
                             }
                         }
-                        CLog.Warning("Could not find element using enemytype/wavecost algorithm for value " + value, Settings.LogModMakerCompiler);
+                        CLog.Warning(@"Could not find element using enemytype/wavecost algorithm for value " + value, Settings.LogModMakerCompiler);
                         break;
                     }
-                case "biodifficulty":
+                case @"biodifficulty":
                     {
                         var newValues = StringStructParser.GetCommaSplitValues(value);
                         foreach (var element in values)
                         {
-                            if (matchesOnIdentifier("Category", matchOnType, element, newValues))
+                            if (matchesOnIdentifier(@"Category", matchOnType, element, newValues))
                             {
                                 return element;
                             }
@@ -709,33 +705,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         CLog.Warning("Could not find element using category algorithm for value " + value, Settings.LogModMakerCompiler);
                     }
                     break;
-                case "wavelist":
+                case @"wavelist":
                     {
                         //Collector Plat Wave 5 is set to DO_Level3 even though it should be 4.
                         var newValues = StringStructParser.GetCommaSplitValues(value);
                         foreach (var element in values)
                         {
-                            if (matchesOnIdentifier("Difficulty", matchOnType, element, newValues))
+                            if (matchesOnIdentifier(@"Difficulty", matchOnType, element, newValues))
                             {
                                 return element;
                             }
-                            else if (newValues["Difficulty"] == "DO_Level4" && sectionName == "sfxwave_horde_collector5 sfxwave_horde_collector" && propertyName == "enemies" && element.Value == CollectorsPlatWave5WrongText)
+                            else if (newValues[@"Difficulty"] == @"DO_Level4" && sectionName == @"sfxwave_horde_collector5 sfxwave_horde_collector" && propertyName == @"enemies" && element.Value == CollectorsPlatWave5WrongText)
                             {
-                                Debug.WriteLine("Found wrong collectors wave 5 data from bioware, returning");
+                                Debug.WriteLine(@"Found wrong collectors wave 5 data from bioware, returning");
                                 return element;
                             }
                         }
                         CLog.Warning("Could not find element using wavelist algorithm for value " + value, Settings.LogModMakerCompiler);
                     }
                     break;
-                case "possessionwaves":
-                case "shareddifficulty":
-                case "wavebudget":
+                case @"possessionwaves":
+                case @"shareddifficulty":
+                case @"wavebudget":
                     {
                         var newValues = StringStructParser.GetCommaSplitValues(value);
                         foreach (var element in values)
                         {
-                            if (matchesOnIdentifier("Difficulty", matchOnType, element, newValues))
+                            if (matchesOnIdentifier(@"Difficulty", matchOnType, element, newValues))
                             {
                                 return element;
                             }
@@ -743,12 +739,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         CLog.Warning("Could not find element using shareddifficulty/wavebudget/possessionwaves algorithm for value " + value, Settings.LogModMakerCompiler);
                     }
                     break;
-                case "waveclass":
+                case @"waveclass":
                     {
                         var newValues = StringStructParser.GetCommaSplitValues(value);
                         foreach (var element in values)
                         {
-                            if (matchesOnIdentifier("WaveClassName", matchOnType, element, newValues))
+                            if (matchesOnIdentifier(@"WaveClassName", matchOnType, element, newValues))
                             {
                                 return element;
                             }
@@ -757,15 +753,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     CLog.Warning("Could not find element using enemytype algorithm for value " + value, Settings.LogModMakerCompiler);
                     break;
                 default:
-                    Log.Error($"Unknown array value matching algorithm: { matchingAlgorithm}. Ths modification of this value will be skipped: {sectionName} -> {propertyName} for {value}");
+                    Log.Error($@"Unknown array value matching algorithm: { matchingAlgorithm}. Ths modification of this value will be skipped: {sectionName} -> {propertyName} for {value}");
                     break;
             }
             return null;
         }
         private bool matchesOnIdentifier(string identifierKey, string matchOnType, XElement element, Dictionary<string, string> newValues)
         {
-            var type = element.Attribute("type").Value;
-            if (type != matchOnType) return false;
+            var type = element.Attribute(@"type").Value;
+            if (!type.Equals(matchOnType, StringComparison.InvariantCultureIgnoreCase)) return false;
             var elementValues = StringStructParser.GetCommaSplitValues(element.Value);
             return elementValues[identifierKey] == newValues[identifierKey];
         }
@@ -782,13 +778,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 //automap
                 var dirname = Path.GetFileName(dir);
                 var headername = defaultFoldernameToHeader(dirname).ToString();
-                ini[headername]["moddir"] = dirname;
-                if (dirname != "BALANCE_CHANGES")
+                ini[headername][@"moddir"] = dirname;
+                if (dirname != @"BALANCE_CHANGES")
                 {
-                    ini[headername]["newfiles"] = "CookedPCConsole";
+                    ini[headername][@"newfiles"] = @"CookedPCConsole";
 
                     string inGameDestdir;
-                    if (dirname == "BASEGAME")
+                    if (dirname == @"BASEGAME")
                     {
                         inGameDestdir = @"BIOGame/CookedPCConsole";
                     }
@@ -798,17 +794,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         inGameDestdir = $@"BIOGame/DLC/{ModmakerChunkNameToDLCFoldername(dirname)}/CookedPCConsole";
                     }
 
-                    ini[headername]["replacefiles"] = inGameDestdir;
-                    ini[headername]["gamedirectorystructure"] = "true";
+                    ini[headername][@"replacefiles"] = inGameDestdir;
+                    ini[headername][@"gamedirectorystructure"] = @"true";
                 }
                 else
                 {
-                    ini[headername]["newfiles"] = "ServerCoalesced.bin"; //BALANCE_CHANGES
+                    ini[headername][@"newfiles"] = @"ServerCoalesced.bin"; //BALANCE_CHANGES
                 }
             }
 
-            ini["ModInfo"]["compiledagainst"] = doc.XPathSelectElement("/ModMaker/ModInfo/ModMakerVersion").Value;
-            CLog.Information("Writing finalized moddesc to library", Settings.LogModMakerCompiler);
+            ini[@"ModInfo"][@"compiledagainst"] = doc.XPathSelectElement(@"/ModMaker/ModInfo/ModMakerVersion").Value;
+            CLog.Information(@"Writing finalized moddesc to library", Settings.LogModMakerCompiler);
             File.WriteAllText(mod.ModDescPath, ini.ToString());
         }
 
@@ -817,15 +813,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             switch (header)
             {
                 case ModJob.JobHeader.RESURGENCE:
-                    return "MP1";
+                    return @"MP1";
                 case ModJob.JobHeader.REBELLION:
-                    return "MP2";
+                    return @"MP2";
                 case ModJob.JobHeader.EARTH:
-                    return "MP3";
+                    return @"MP3";
                 case ModJob.JobHeader.RETALIATION:
-                    return "MP4";
+                    return @"MP4";
                 case ModJob.JobHeader.RECKONING:
-                    return "MP5";
+                    return @"MP5";
             }
             return header.ToString();
         }
@@ -838,73 +834,73 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             switch (foldername)
             {
-                case "MP1":
+                case @"MP1":
                     return ModJob.JobHeader.RESURGENCE;
-                case "MP2":
+                case @"MP2":
                     return ModJob.JobHeader.REBELLION;
-                case "MP3":
+                case @"MP3":
                     return ModJob.JobHeader.EARTH;
-                case "MP4":
+                case @"MP4":
                     return ModJob.JobHeader.RETALIATION;
-                case "MP5":
+                case @"MP5":
                     return ModJob.JobHeader.RECKONING;
             }
-            throw new Exception("Unknown default foldername: " + foldername);
+            throw new Exception(@"Unknown default foldername: " + foldername);
         }
 
         public static string ModmakerChunkNameToDLCFoldername(string chunkName)
         {
             switch (chunkName)
             {
-                case "BASEGAME":
+                case @"BASEGAME":
                     return null; //kind of a hack. This is not a DLC folder but i don't want to return error log
-                case "RESURGENCE":
-                case "MP1":
-                    return "DLC_CON_MP1";
-                case "REBELLION":
-                case "MP2":
-                    return "DLC_CON_MP2";
-                case "EARTH":
-                case "MP3":
-                    return "DLC_CON_MP3";
-                case "RETALIATION":
-                case "MP4":
-                    return "DLC_CON_MP4";
-                case "RECKONING":
-                case "MP5":
-                    return "DLC_CON_MP5";
-                case "PATCH1":
-                    return "DLC_UPD_Patch01";
-                case "PATCH2":
-                    return "DLC_UPD_Patch02";
-                //case "BASEGAME":
-                //    return "Coalesced";
-                case "TESTPATCH":
-                    return "DLC_TestPatch"; //special case, must be handled 
-                case "FROM_ASHES":
-                    return "DLC_HEN_PR";
-                case "APPEARANCE":
-                    return "DLC_CON_APP01";
-                case "FIREFIGHT":
-                    return "DLC_CON_GUN01";
-                case "GROUNDSIDE":
-                    return "DLC_CON_GUN02";
-                case "EXTENDED_CUT":
-                    return "DLC_CON_END";
-                case "LEVIATHAN":
-                    return "DLC_EXP_Pack001";
-                case "OMEGA":
-                    return "DLC_EXP_Pack002";
-                case "CITADEL":
-                    return "DLC_EXP_Pack003";
-                case "CITADEL_BASE":
-                    return "DLC_EXP_Pack003_Base";
+                case @"RESURGENCE":
+                case @"MP1":
+                    return @"DLC_CON_MP1";
+                case @"REBELLION":
+                case @"MP2":
+                    return @"DLC_CON_MP2";
+                case @"EARTH":
+                case @"MP3":
+                    return @"DLC_CON_MP3";
+                case @"RETALIATION":
+                case @"MP4":
+                    return @"DLC_CON_MP4";
+                case @"RECKONING":
+                case @"MP5":
+                    return @"DLC_CON_MP5";
+                case @"PATCH1":
+                    return @"DLC_UPD_Patch01";
+                case @"PATCH2":
+                    return @"DLC_UPD_Patch02";
+                //case @"BASEGAME":
+                //    return @"Coalesced";
+                case @"TESTPATCH":
+                    return @"DLC_TestPatch"; //special case, must be handled 
+                case @"FROM_ASHES":
+                    return @"DLC_HEN_PR";
+                case @"APPEARANCE":
+                    return @"DLC_CON_APP01";
+                case @"FIREFIGHT":
+                    return @"DLC_CON_GUN01";
+                case @"GROUNDSIDE":
+                    return @"DLC_CON_GUN02";
+                case @"EXTENDED_CUT":
+                    return @"DLC_CON_END";
+                case @"LEVIATHAN":
+                    return @"DLC_EXP_Pack001";
+                case @"OMEGA":
+                    return @"DLC_EXP_Pack002";
+                case @"CITADEL":
+                    return @"DLC_EXP_Pack003";
+                case @"CITADEL_BASE":
+                    return @"DLC_EXP_Pack003_Base";
 
                 //Special case
-                //case "BALANCE_CHANGES":
-                //    return "ServerCoalesced";
+                //case @"BALANCE_CHANGES":
+                //    return @"ServerCoalesced";
                 default:
-                    Log.Error("Unkonwn chunk name: " + chunkName);
+                    Log.Error(@"Unknown chunk name: " + chunkName);
                     return null;
             }
         }
@@ -931,7 +927,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             var modDev = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Author").Value;
             var revisionElement = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Revision");
-            string modVersion = "1";
+            string modVersion = @"1";
             if (revisionElement != null)
             {
                 modVersion = revisionElement.Value;

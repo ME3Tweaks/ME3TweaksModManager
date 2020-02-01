@@ -3,6 +3,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -18,6 +19,7 @@ using SQLite;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+    [Localizable(false)]
     /// <summary>
     /// Handler class for the ME3Tweaks Mixin Package
     /// </summary>
@@ -227,6 +229,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
+        [Localizable(true)]
         internal static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, Action notifyApplicationDone = null, Action<string> failedApplicationCallback = null)
         {
             foreach (var mixin in mixins)

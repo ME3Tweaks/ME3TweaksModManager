@@ -270,22 +270,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     try
                     {
                         sftp.Connect();
-                        currentOp = "Checking LZMA Storage Directory";
+                        currentOp = "Checking LZMA storage directory";
                         sftp.ChangeDirectory(LZMAStoragePath);
-                        currentOp = "Checking Manifests Storage Directory";
+                        currentOp = "Checking manifests storage directory";
                         sftp.ChangeDirectory(ManifestStoragePath);
                         b.Result = true;
                     }
                     catch (Exception e)
                     {
                         Log.Information($@"Error logging in during operation '{currentOp}': " + e.Message);
-                        b.Result = "Error validating settings: " + currentOp + @": " + e.Message;
+                        b.Result = $"Error validating settings: {currentOp}: {e.Message}";
                     }
                 }
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                Log.Information("Auth checked");
+                Log.Information(@"Auth checked");
                 OperationInProgress = false;
                 authCompletedCallback?.Invoke(b.Result);
             };
@@ -305,7 +305,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CurrentActionText = "Checking if updater service is configured for mod";
                 string validationUrl = $@"{UpdaterServiceCodeValidationEndpoint}?updatecode={mod.ModClassicUpdateCode}&updatexmlname={mod.UpdaterServiceServerFolderShortname}.xml";
                 string isBeingServed = wc.DownloadStringAwareOfEncoding(validationUrl);
-                if (string.IsNullOrWhiteSpace(isBeingServed) || isBeingServed != "true") //we don't parse for bool because it might have a different text that is not specifically true or false. It might
+                if (string.IsNullOrWhiteSpace(isBeingServed) || isBeingServed != @"true") //we don't parse for bool because it might have a different text that is not specifically true or false. It might
                                                                                          // have an error for example
                 {
                     //Not being served
@@ -396,28 +396,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Build document
             XmlDocument xmlDoc = new XmlDocument();
-            XmlNode rootNode = xmlDoc.CreateElement("mod");
+            XmlNode rootNode = xmlDoc.CreateElement(@"mod");
             xmlDoc.AppendChild(rootNode);
 
             foreach (var mf in manifestFiles)
             {
                 if (CancelOperations) { AbortUpload(); return; }
 
-                XmlNode sourceNode = xmlDoc.CreateElement("sourcefile");
+                XmlNode sourceNode = xmlDoc.CreateElement(@"sourcefile");
 
-                var size = xmlDoc.CreateAttribute("size");
+                var size = xmlDoc.CreateAttribute(@"size");
                 size.InnerText = mf.Value.size.ToString();
 
-                var hash = xmlDoc.CreateAttribute("hash");
+                var hash = xmlDoc.CreateAttribute(@"hash");
                 hash.InnerText = mf.Value.hash;
 
-                var lzmasize = xmlDoc.CreateAttribute("lzmasize");
+                var lzmasize = xmlDoc.CreateAttribute(@"lzmasize");
                 lzmasize.InnerText = mf.Value.lzmasize.ToString();
 
-                var lzmahash = xmlDoc.CreateAttribute("lzmahash");
+                var lzmahash = xmlDoc.CreateAttribute(@"lzmahash");
                 lzmahash.InnerText = mf.Value.lzmahash;
 
-                var timestamp = xmlDoc.CreateAttribute("timestamp");
+                var timestamp = xmlDoc.CreateAttribute(@"timestamp");
                 timestamp.InnerText = mf.Value.timestamp.ToString();
 
                 sourceNode.InnerText = mf.Key;
@@ -435,21 +435,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (CancelOperations) { AbortUpload(); return; }
 
-                var bfn = xmlDoc.CreateElement("blacklistedfile");
+                var bfn = xmlDoc.CreateElement(@"blacklistedfile");
                 bfn.InnerText = bf;
                 rootNode.AppendChild(bfn);
             }
 
             if (CancelOperations) { AbortUpload(); return; }
-            var updatecode = xmlDoc.CreateAttribute("updatecode");
+            var updatecode = xmlDoc.CreateAttribute(@"updatecode");
             updatecode.InnerText = mod.ModClassicUpdateCode.ToString();
             rootNode.Attributes.Append(updatecode);
 
-            var version = xmlDoc.CreateAttribute("version");
+            var version = xmlDoc.CreateAttribute(@"version");
             version.InnerText = mod.ParsedModVersion.ToString();
             rootNode.Attributes.Append(version);
 
-            var serverfolder = xmlDoc.CreateAttribute("folder");
+            var serverfolder = xmlDoc.CreateAttribute(@"folder");
             serverfolder.InnerText = mod.UpdaterServiceServerFolder;
             rootNode.Attributes.Append(serverfolder);
 
@@ -467,13 +467,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             #region Finish building manifest
-            var changelog = xmlDoc.CreateAttribute("changelog");
+            var changelog = xmlDoc.CreateAttribute(@"changelog");
             changelog.InnerText = ChangelogText;
             rootNode.Attributes.Append(changelog);
 
             using var stringWriter = new StringWriterWithEncoding(Encoding.UTF8);
             XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true; settings.IndentChars = " ";
+            settings.Indent = true; settings.IndentChars = @" ";
             settings.Encoding = Encoding.UTF8;
             using var xmlTextWriter = XmlWriter.Create(stringWriter, settings);
             xmlDoc.WriteTo(xmlTextWriter);
@@ -521,7 +521,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             sshClient.Connect();
             Log.Information("Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
 
-            if (!justMadeFolder && dirContents.Any(x => x.Name != "." && x.Name != ".."))
+            if (!justMadeFolder && dirContents.Any(x => x.Name != @"." && x.Name != @".."))
             {
                 CurrentActionText = "Hashing files on server for delta";
                 serverHashes = getServerHashes(sshClient, serverFolderName, serverModPath);
@@ -560,7 +560,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (!manifestFiles.Any(x => (x.Key + @".lzma") == serverfile.Replace('/', '\\')))
                 {
-                    Log.Information("File exists on server but not locally: " + serverfile);
+                    Log.Information(@"File exists on server but not locally: " + serverfile);
                     filesToDeleteOffServer.Add(serverfile);
                 }
             }
@@ -573,13 +573,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var f in filesToUploadToServer)
             {
                 string foldername = f;
-                var lastIndex = foldername.LastIndexOf("\\");
+                var lastIndex = foldername.LastIndexOf(@"\");
 
                 while (lastIndex > 0)
                 {
                     foldername = foldername.Substring(0, lastIndex);
                     directoriesToCreate.Add(foldername.Replace('\\', '/'));
-                    lastIndex = foldername.LastIndexOf("\\");
+                    lastIndex = foldername.LastIndexOf(@"\");
                 }
             }
 
@@ -588,12 +588,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //{
             //    if (info.Attributes.HasFlag(FileAttributes.Directory))
             //    {
-            //        string subPath = remotePath + "/" + info.Name;
+            //        string subPath = remotePath + @"/" + info.Name;
             //        if (!client.Exists(subPath))
             //        {
             //            client.CreateDirectory(subPath);
             //        }
-            //        UploadDirectory(client, info.FullName, remotePath + "/" + info.Name, uploadCallback);
+            //        UploadDirectory(client, info.FullName, remotePath + @"/" + info.Name, uploadCallback);
             //    }
             //    else
             //    {
@@ -603,7 +603,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //                "Uploading {0} ({1:N0} bytes)",
             //                info.FullName, ((FileInfo)info).Length);
 
-            //            client.UploadFile(fileStream, remotePath + "/" + info.Name, uploadCallback);
+            //            client.UploadFile(fileStream, remotePath + @"/" + info.Name, uploadCallback);
             //        }
             //    }
             //}
@@ -619,7 +619,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CurrentActionText = "Creating mod directories on server";
                 foreach (var f in dirsToCreateOnServerSorted)
                 {
-                    var serverFolderStr = serverModPath + "/" + f;
+                    var serverFolderStr = serverModPath + @"/" + f;
                     if (!sftp.Exists(serverFolderStr))
                     {
                         Log.Information(@"Creating directory on server: " + serverFolderStr);
@@ -630,7 +630,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
                     }
                     numDone++;
-                    CurrentActionText = "Creating mod directories on server" + " " + Math.Round(numDone * 100.0 / numFoldersToCreate) + "%";
+                    CurrentActionText = "Creating mod directories on server" + @" " + Math.Round(numDone * 100.0 / numFoldersToCreate) + @"%";
 
                 }
             }
@@ -642,8 +642,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (CancelOperations) { AbortUpload(); return; }
                 var fullPath = Path.Combine(lzmaStagingPath, file + @".lzma");
-                var serverFilePath = serverModPath + "/" + file.Replace("\\", "/") + @".lzma";
-                Log.Information(@"Uploading file " + fullPath + " to " + serverFilePath);
+                var serverFilePath = serverModPath + @"/" + file.Replace(@"\", @"/") + @".lzma";
+                Log.Information(@"Uploading file " + fullPath + @" to " + serverFilePath);
                 long amountUploadedBeforeChunk = amountUploaded;
                 using (Stream fileStream = new FileStream(fullPath, FileMode.Open))
                 {
@@ -651,7 +651,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                        {
                            if (CancelOperations) { CurrentActionText = "Aborting upload"; return; }
                            amountUploaded = amountUploadedBeforeChunk + (long)x;
-                           CurrentActionText = $"Uploading files to server {ByteSize.FromBytes(amountUploaded).ToString("0.00")}/{ByteSize.FromBytes(amountToUpload).ToString("0.00")}";
+                           CurrentActionText = $"Uploading files to server {ByteSize.FromBytes(amountUploaded).ToString(@"0.00")}/{ByteSize.FromBytes(amountToUpload).ToString(@"0.00")}";
                        });
                 }
             }
@@ -674,7 +674,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Log.Information(@"Uploading manifest to server: " + serverManifestPath);
             sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
             {
-                CurrentActionText = $"Uploading update manifest to server {ByteSize.FromBytes(amountUploaded).ToString("0.00")}/{ByteSize.FromBytes(amountToUpload).ToString("0.00")}";
+                CurrentActionText = $"Uploading update manifest to server {ByteSize.FromBytes(amountUploaded).ToString(@"0.00")}/{ByteSize.FromBytes(amountToUpload).ToString(@"0.00")}";
             });
 
             CurrentActionText = "Validating mod on server";
@@ -699,14 +699,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
             string commandStr = @"find " + serverModPath + @" -type f -exec md5sum '{}' \;";
-            Log.Information("Hash command: " + commandStr);
+            Log.Information(@"Hash command: " + commandStr);
             var command = sshClient.CreateCommand(commandStr);
             command.CommandTimeout = TimeSpan.FromMinutes(1);
             command.Execute();
             var answer = command.Result;
             if (CancelOperations) { AbortUpload(); return serverHashes; }
 
-            foreach (var hashpair in answer.Split("\n"))
+            foreach (var hashpair in answer.Split("\n")) //do not localize
             {
                 if (string.IsNullOrWhiteSpace(hashpair)) continue; //last line will be blank
                 string md5 = hashpair.Substring(0, 32);
@@ -714,7 +714,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
                 serverHashes[path] = md5;
-                Debug.WriteLine(md5 + " for file " + path);
+                Debug.WriteLine(md5 + @" for file " + path);
             }
 
             return serverHashes;
@@ -727,21 +727,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var file = hashpair.Key;
                 var manifestMD5 = hashpair.Value.lzmahash;
-                if (serverhashes.TryGetValue(file + ".lzma", out var serverMD5))
+                if (serverhashes.TryGetValue(file + @".lzma", out var serverMD5))
                 {
                     if (manifestMD5 != serverMD5)
                     {
-                        Debug.WriteLine("ERROR ON SERVER HASH FOR FILE " + file);
+                        Debug.WriteLine(@"ERROR ON SERVER HASH FOR FILE " + file);
                         badHashes.Add(file);
                     }
                     else
                     {
-                        Debug.WriteLine("Server hash OK for " + file);
+                        Debug.WriteLine(@"Server hash OK for " + file);
                     }
                 }
                 else
                 {
-                    Debug.WriteLine("Extra file on server that is not present in manifest " + file);
+                    Debug.WriteLine(@"Extra file on server that is not present in manifest " + file);
                 }
             }
             return badHashes;
@@ -750,7 +750,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)
         {
-            Debug.WriteLine("Uploading directory {0} to {1}", localPath, remotePath);
+            Debug.WriteLine($@"Uploading directory {localPath} to {remotePath}");
 
             IEnumerable<FileSystemInfo> infos =
                 new DirectoryInfo(localPath).EnumerateFileSystemInfos();
@@ -758,22 +758,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (info.Attributes.HasFlag(FileAttributes.Directory))
                 {
-                    string subPath = remotePath + "/" + info.Name;
+                    string subPath = remotePath + @"/" + info.Name;
                     if (!client.Exists(subPath))
                     {
                         client.CreateDirectory(subPath);
                     }
-                    UploadDirectory(client, info.FullName, remotePath + "/" + info.Name, uploadCallback);
+                    UploadDirectory(client, info.FullName, remotePath + @"/" + info.Name, uploadCallback);
                 }
                 else
                 {
                     using (Stream fileStream = new FileStream(info.FullName, FileMode.Open))
                     {
                         Debug.WriteLine(
-                            "Uploading {0} ({1:N0} bytes)",
+                            @"Uploading {0} ({1:N0} bytes)",
                             info.FullName, ((FileInfo)info).Length);
 
-                        client.UploadFile(fileStream, remotePath + "/" + info.Name, uploadCallback);
+                        client.UploadFile(fileStream, remotePath + @"/" + info.Name, uploadCallback);
                     }
                 }
             }

@@ -14,7 +14,6 @@ namespace MassEffectModManagerCore.modmanager
     public partial class Mod
     {
         internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
-        private bool v;
 
         /// <summary>
         /// Generates a blank mod object. You must specify you know what you are doing for this by specifying if this is a valid mod or not.

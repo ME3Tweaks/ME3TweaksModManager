@@ -59,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (mixin.TargetModule == ModJob.JobHeader.TESTPATCH)
                     {
                         string biogame = MEDirectories.BioGamePath(backupPath);
-                        var sfar = Path.Combine(biogame, "Patches", "PCConsole", "Patch_001.sfar");
+                        var sfar = Path.Combine(biogame, @"Patches", @"PCConsole", @"Patch_001.sfar");
                         if (File.Exists(sfar))
                         {
                             mixin.CanBeUsed = true;
@@ -123,14 +123,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CompileAsNewMod()
         {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("MixinManager CompileAsNewModThread");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MixinManager CompileAsNewModThread");
             List<string> failedApplications = new List<string>();
             var modname = NewModName;
             var modpath = Path.Combine(Utilities.GetME3ModsDirectory(), Utilities.SanitizePath(modname));
             var result = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"Creating a mod with the name '{NewModName}' will delete the existing mod directory in the mod library:\n{modpath}\n\nContinue?", "Mod already exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
             if (result == MessageBoxResult.No)
             {
-                Log.Information("User has aborted mixin compiliation due to same-named mod existing");
+                Log.Information(@"User has aborted mixin compiliation due to same-named mod existing");
                 return; //abort.
             }
 
@@ -159,7 +159,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Error building list
                     modpath = null;
-                    Log.Information("Aborting mixin install due to incompatible selection of mixins");
+                    Log.Information(@"Aborting mixin install due to incompatible selection of mixins");
                     return;
                 }
 
@@ -217,8 +217,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                             catch (Exception e)
                             {
-                                var mixinsStr = string.Join(", ", file.Value.Select(x => x.PatchName));
-                                Log.Error($"Error in mixin application for file {file.Key}: {e.Message}");
+                                var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
+                                Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
                                 failedApplicationCallback($"Error applying mixins ({mixinsStr}) for file {file.Key}: {e.Message}");
                             }
                         }
@@ -235,7 +235,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
-                                CLog.Information("Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                                CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
@@ -243,8 +243,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
-                                var mixinsStr = string.Join(", ", file.Value.Select(x => x.PatchName));
-                                Log.Error($"Error in mixin application for file {file.Key}: {e.Message}");
+                                var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
+                                Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
                                 failedApplicationCallback($"Error applying mixins ({mixinsStr}) for file {file.Key}: {e.Message}");
                             }
 
@@ -262,7 +262,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ini[@"ModInfo"][@"modname"] = modname;
                 ini[@"ModInfo"][@"moddev"] = App.AppVersionHR;
                 ini[@"ModInfo"][@"moddesc"] = "Compiled from the following mixins:";
-                ini[@"ModInfo"][@"modver"] = "1.0";
+                ini[@"ModInfo"][@"modver"] = @"1.0";
 
                 generateRepaceFilesMapping(ini, modpath);
                 File.WriteAllText(Path.Combine(modpath, @"moddesc.ini"), ini.ToString());
@@ -298,13 +298,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //automap
                 var dirname = Path.GetFileName(dir);
                 var headername = ModMakerCompiler.defaultFoldernameToHeader(dirname).ToString();
-                ini[headername]["moddir"] = dirname;
-                if (dirname != "BALANCE_CHANGES")
+                ini[headername][@"moddir"] = dirname;
+                if (dirname != @"BALANCE_CHANGES")
                 {
-                    ini[headername]["newfiles"] = "CookedPCConsole";
+                    ini[headername][@"newfiles"] = @"CookedPCConsole";
 
                     string inGameDestdir;
-                    if (dirname == "BASEGAME")
+                    if (dirname == @"BASEGAME")
                     {
                         inGameDestdir = @"BIOGame/CookedPCConsole";
                     }
@@ -314,12 +314,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         inGameDestdir = $@"BIOGame/DLC/{ModMakerCompiler.ModmakerChunkNameToDLCFoldername(dirname)}/CookedPCConsole";
                     }
 
-                    ini[headername]["replacefiles"] = inGameDestdir;
-                    ini[headername]["gamedirectorystructure"] = "true";
+                    ini[headername][@"replacefiles"] = inGameDestdir;
+                    ini[headername][@"gamedirectorystructure"] = @"true";
                 }
                 else
                 {
-                    ini[headername]["newfiles"] = "ServerCoalesced.bin"; //BALANCE_CHANGES
+                    ini[headername][@"newfiles"] = @"ServerCoalesced.bin"; //BALANCE_CHANGES
                 }
             }
         }

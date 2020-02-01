@@ -1,6 +1,7 @@
 ﻿using MassEffectModManagerCore.modmanager.helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+    [Localizable(false)]
 
     /// <summary>
     /// A C# Implemention of JoJoDiff's JPatch functionality

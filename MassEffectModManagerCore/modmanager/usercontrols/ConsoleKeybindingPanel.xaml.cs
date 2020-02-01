@@ -99,7 +99,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
         private void ResetME3Keys()
         {
-            SetME3KeyWithThread(SelectedME3Target, consoleKeyStr: "Tilde", typeKeyStr: "Tab");
+            SetME3KeyWithThread(SelectedME3Target, consoleKeyStr: @"Tilde", typeKeyStr: @"Tab");
         }
 
         private void SetME1KeyWithThread(string consoleKeyStr = null, string typeKeyStr = null, bool wipeTypeKey = false)
@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OperationInProgress = true;
             ME1FullConsoleKeyText = "Updating keybind(s), please wait";
             ME1MiniConsoleKeyText = "";
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ME2-ConsoleKeySetterThread");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME2-ConsoleKeySetterThread");
             nbw.DoWork += (a, b) =>
             {
                 SetME1ConsoleKeybinds(consoleKeyStr, typeKeyStr, wipeTypeKey);
@@ -142,7 +142,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OperationInProgress = true;
             ME2FullConsoleKeyText = "Updating keybind(s), please wait";
             ME2MiniConsoleKeyText = "";
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ME2-ConsoleKeySetterThread");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME2-ConsoleKeySetterThread");
             nbw.DoWork += (a, b) =>
             {
                 SetME2ConsoleKeybinds(SelectedME2Target, consoleKeyStr, typeKeyStr);
@@ -158,9 +158,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static void SetME2ConsoleKeybinds(GameTarget target, string consoleKeyStr, string typeKeyStr)
         {
-            if (target.Game != Mod.MEGame.ME2) throw new Exception("Cannot set ME2 keybind for non-ME2 target");
+            if (target.Game != Mod.MEGame.ME2) throw new Exception(@"Cannot set ME2 keybind for non-ME2 target");
             var me2c = ME2Coalesced.OpenFromTarget(target);
-            var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals("BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
+            var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
             SetIniBasedKeybinds(bioinput.Value, consoleKeyStr, typeKeyStr);
             me2c.Serialize();
         }
@@ -179,7 +179,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry("ConsoleKey=" + typeKeyStr));
+                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey=" + typeKeyStr));
                     }
                 }
                 var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
@@ -196,7 +196,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         //Create Typekey
-                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry("TypeKey=" + typeKeyStr));
+                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey=" + typeKeyStr));
                     }
                 }
             }
@@ -207,7 +207,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OperationInProgress = true;
             ME3FullConsoleKeyText = "Updating keybind(s), please wait";
             ME3MiniConsoleKeyText = "";
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ME3-ConsoleKeySetterThread");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3-ConsoleKeySetterThread");
             nbw.DoWork += (a, b) =>
             {
                 SetME3ConsoleKeybinds(SelectedME3Target, consoleKeyStr, typeKeyStr);
@@ -253,8 +253,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
-                var consoleKeyElement = new XElement("Property", consoleKeyStr);
-                consoleKeyElement.SetAttributeValue("name", "consolekey");
+                var consoleKeyElement = new XElement(@"Property", consoleKeyStr);
+                consoleKeyElement.SetAttributeValue(@"name", @"consolekey");
                 consoleElement.Add(consoleKeyElement);
             }
 
@@ -265,8 +265,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
-                var consoleKeyElement = new XElement("Property", typeKeyStr);
-                consoleKeyElement.SetAttributeValue("name", "typekey");
+                var consoleKeyElement = new XElement(@"Property", typeKeyStr);
+                consoleKeyElement.SetAttributeValue(@"name", @"typekey");
                 consoleElement.Add(consoleKeyElement);
             }
 
@@ -302,7 +302,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ResetME2Keys()
         {
-            SetME2KeyWithThread(SelectedME2Target, "Tilde", "Tab");
+            SetME2KeyWithThread(SelectedME2Target, @"Tilde", @"Tab");
         }
 
 
@@ -333,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ResetME1Keys()
         {
-            SetME1KeyWithThread("Tilde", null, true);
+            SetME1KeyWithThread(@"Tilde", null, true);
         }
 
         #endregion
@@ -455,9 +455,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadME2Keys(GameTarget target)
         {
-            if (target.Game != Mod.MEGame.ME2) throw new Exception("Cannot load ME2 keys from target that is not ME2");
+            if (target.Game != Mod.MEGame.ME2) throw new Exception(@"Cannot load ME2 keys from target that is not ME2");
             var me2c = ME2Coalesced.OpenFromTarget(target);
-            var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals("BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
+            var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
             var engineConsole = bioinput.Value.Sections.FirstOrDefault(x => x.Header == @"Engine.Console");
             if (engineConsole != null)
             {
@@ -534,205 +534,205 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Oh god...
             switch (key.ToString())
             {
-                case "F1":
-                    return "F1";
-                case "F2":
-                    return "F2";
-                case "F3":
-                    return "F3";
-                case "F4":
-                    return "F4";
-                case "F5":
-                    return "F5";
-                case "F6":
-                    return "F6";
-                case "F7":
-                    return "F7";
-                case "F8":
-                    return "F8";
-                case "F9":
-                    return "F9";
-                case "F10":
-                    return "F10";
-                case "F11":
-                    return "F11";
-                case "F12":
-                    return "F12";
-                case "A":
-                    return "A";
-                case "B":
-                    return "B";
-                case "C":
-                    return "C";
-                case "D":
-                    return "D";
-                case "E":
-                    return "E";
-                case "F":
-                    return "F";
-                case "G":
-                    return "G";
-                case "H":
-                    return "H";
-                case "I":
-                    return "I";
-                case "J":
-                    return "J";
-                case "K":
-                    return "K";
-                case "L":
-                    return "L";
-                case "M":
-                    return "M";
-                case "N":
-                    return "N";
-                case "O":
-                    return "O";
-                case "P":
-                    return "P";
-                case "Q":
-                    return "Q";
-                case "R":
-                    return "R";
-                case "S":
-                    return "S";
-                case "T":
-                    return "T";
-                case "U":
-                    return "U";
-                case "V":
-                    return "V";
-                case "W":
-                    return "W";
-                case "X":
-                    return "X";
-                case "Y":
-                    return "Y";
-                case "Z":
-                    return "Z";
-                case "Escape":
-                    return "Escape";
-                case "Tab":
-                    return "Tab";
-                case "Tilde":
-                    return "Tilde";
-                case "ScrollLock":
-                    return "ScrollLock";
-                case "Pause":
-                    return "Pause";
-                case "D1":
-                    return "one";
-                case "D2":
-                    return "two";
-                case "D3":
-                    return "three";
-                case "D4":
-                    return "four";
-                case "D5":
-                    return "five";
-                case "D6":
-                    return "six";
-                case "D7":
-                    return "seven";
-                case "D8":
-                    return "eight";
-                case "D9":
-                    return "nine";
-                case "D0":
-                    return "zero";
-                case "Underscore":
-                    return "Underscore";
-                case "Equals":
-                    return "Equals";
-                case "Backslash":
-                    return "Backslash";
-                case "LeftBracket":
-                    return "LeftBracket";
-                case "RightBracket":
-                    return "RightBracket";
-                case "Enter":
-                case "Return":
-                    return "Enter";
-                case "CapsLock":
-                    return "CapsLock";
-                case "Semicolon":
-                    return "Semicolon";
-                case "Quote":
-                    return "Quote";
-                case "LeftShift":
-                    return "LeftShift";
-                case "Comma":
-                    return "Comma";
-                case "Period":
-                    return "Period";
-                case "Slash":
-                    return "Slash";
-                case "RightShift":
-                    return "RightShift";
-                case "LeftControl":
-                    return "LeftControl";
-                case "LeftAlt":
-                    return "LeftAlt";
-                case "Space":
-                    return "SpaceBar";
-                case "RightAlt":
-                    return "RightAlt";
-                case "RightControl":
-                    return "RightControl";
-                case "Left":
-                    return "Left";
-                case "Up":
-                    return "Up";
-                case "Down":
-                    return "Down";
-                case "Right":
-                    return "Right";
-                case "Home":
-                    return "Home";
-                case "End":
-                    return "End";
-                case "Insert":
-                    return "Insert";
-                case "PageUp":
-                    return "PageUp";
-                case "Delete":
-                    return "Delete";
-                case "PageDown":
-                    return "PageDown";
-                case "NumLock": //why?
-                    return "NumLock";
-                case "Divide": //needs to be numpad
-                    return "Divide";
-                case "Multiply": //needs to be numpad
-                    return "Multiply";
-                case "Subtract": //needs to be numpad
-                    return "Subtract";
-                case "Add": //needs to be numpad
-                    return "Add";
-                case "NumPadOne":
-                    return "NumPadOne";
-                case "NumPadTwo":
-                    return "NumPadTwo";
-                case "NumPadThree":
-                    return "NumPadThree";
-                case "NumPadFour":
-                    return "NumPadFour";
-                case "NumPadFive":
-                    return "NumPadFive";
-                case "NumPadSix":
-                    return "NumPadSix";
-                case "NumPadSeven":
-                    return "NumPadSeven";
-                case "NumPadEight":
-                    return "NumPadEight";
-                case "NumPadNine":
-                    return "NumPadNine";
-                case "NumPadZero":
-                    return "NumPadZero";
-                case "Decimal":
-                    return "Decimal";
+                case @"F1":
+                    return @"F1";
+                case @"F2":
+                    return @"F2";
+                case @"F3":
+                    return @"F3";
+                case @"F4":
+                    return @"F4";
+                case @"F5":
+                    return @"F5";
+                case @"F6":
+                    return @"F6";
+                case @"F7":
+                    return @"F7";
+                case @"F8":
+                    return @"F8";
+                case @"F9":
+                    return @"F9";
+                case @"F10":
+                    return @"F10";
+                case @"F11":
+                    return @"F11";
+                case @"F12":
+                    return @"F12";
+                case @"A":
+                    return @"A";
+                case @"B":
+                    return @"B";
+                case @"C":
+                    return @"C";
+                case @"D":
+                    return @"D";
+                case @"E":
+                    return @"E";
+                case @"F":
+                    return @"F";
+                case @"G":
+                    return @"G";
+                case @"H":
+                    return @"H";
+                case @"I":
+                    return @"I";
+                case @"J":
+                    return @"J";
+                case @"K":
+                    return @"K";
+                case @"L":
+                    return @"L";
+                case @"M":
+                    return @"M";
+                case @"N":
+                    return @"N";
+                case @"O":
+                    return @"O";
+                case @"P":
+                    return @"P";
+                case @"Q":
+                    return @"Q";
+                case @"R":
+                    return @"R";
+                case @"S":
+                    return @"S";
+                case @"T":
+                    return @"T";
+                case @"U":
+                    return @"U";
+                case @"V":
+                    return @"V";
+                case @"W":
+                    return @"W";
+                case @"X":
+                    return @"X";
+                case @"Y":
+                    return @"Y";
+                case @"Z":
+                    return @"Z";
+                case @"Escape":
+                    return @"Escape";
+                case @"Tab":
+                    return @"Tab";
+                case @"Tilde":
+                    return @"Tilde";
+                case @"ScrollLock":
+                    return @"ScrollLock";
+                case @"Pause":
+                    return @"Pause";
+                case @"D1":
+                    return @"one";
+                case @"D2":
+                    return @"two";
+                case @"D3":
+                    return @"three";
+                case @"D4":
+                    return @"four";
+                case @"D5":
+                    return @"five";
+                case @"D6":
+                    return @"six";
+                case @"D7":
+                    return @"seven";
+                case @"D8":
+                    return @"eight";
+                case @"D9":
+                    return @"nine";
+                case @"D0":
+                    return @"zero";
+                case @"Underscore":
+                    return @"Underscore";
+                case @"Equals":
+                    return @"Equals";
+                case @"Backslash":
+                    return @"Backslash";
+                case @"LeftBracket":
+                    return @"LeftBracket";
+                case @"RightBracket":
+                    return @"RightBracket";
+                case @"Enter":
+                case @"Return":
+                    return @"Enter";
+                case @"CapsLock":
+                    return @"CapsLock";
+                case @"Semicolon":
+                    return @"Semicolon";
+                case @"Quote":
+                    return @"Quote";
+                case @"LeftShift":
+                    return @"LeftShift";
+                case @"Comma":
+                    return @"Comma";
+                case @"Period":
+                    return @"Period";
+                case @"Slash":
+                    return @"Slash";
+                case @"RightShift":
+                    return @"RightShift";
+                case @"LeftControl":
+                    return @"LeftControl";
+                case @"LeftAlt":
+                    return @"LeftAlt";
+                case @"Space":
+                    return @"SpaceBar";
+                case @"RightAlt":
+                    return @"RightAlt";
+                case @"RightControl":
+                    return @"RightControl";
+                case @"Left":
+                    return @"Left";
+                case @"Up":
+                    return @"Up";
+                case @"Down":
+                    return @"Down";
+                case @"Right":
+                    return @"Right";
+                case @"Home":
+                    return @"Home";
+                case @"End":
+                    return @"End";
+                case @"Insert":
+                    return @"Insert";
+                case @"PageUp":
+                    return @"PageUp";
+                case @"Delete":
+                    return @"Delete";
+                case @"PageDown":
+                    return @"PageDown";
+                case @"NumLock": //why?
+                    return @"NumLock";
+                case @"Divide": //needs to be numpad
+                    return @"Divide";
+                case @"Multiply": //needs to be numpad
+                    return @"Multiply";
+                case @"Subtract": //needs to be numpad
+                    return @"Subtract";
+                case @"Add": //needs to be numpad
+                    return @"Add";
+                case @"NumPadOne":
+                    return @"NumPadOne";
+                case @"NumPadTwo":
+                    return @"NumPadTwo";
+                case @"NumPadThree":
+                    return @"NumPadThree";
+                case @"NumPadFour":
+                    return @"NumPadFour";
+                case @"NumPadFive":
+                    return @"NumPadFive";
+                case @"NumPadSix":
+                    return @"NumPadSix";
+                case @"NumPadSeven":
+                    return @"NumPadSeven";
+                case @"NumPadEight":
+                    return @"NumPadEight";
+                case @"NumPadNine":
+                    return @"NumPadNine";
+                case @"NumPadZero":
+                    return @"NumPadZero";
+                case @"Decimal":
+                    return @"Decimal";
                 default:
-                    Debug.WriteLine("Unknown key: " + key);
+                    Debug.WriteLine(@"Unknown key: " + key);
                     break;
             }
 

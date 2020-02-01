@@ -133,7 +133,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     SubmitText = M3L.GetString(M3L.string_submitting);
-                    Log.Information($"Submitting telemetry to ME3Tweaks for {ModName} TelemetryPackage");
+                    Log.Information($@"Submitting telemetry to ME3Tweaks for {ModName} TelemetryPackage");
                     var result = await url.GetAsync().ReceiveString();
                     SubmitText = M3L.GetString(M3L.string_submitted);
                     TelemetrySubmitted = true;

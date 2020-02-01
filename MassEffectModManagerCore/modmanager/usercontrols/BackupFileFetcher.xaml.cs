@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var result = m.ShowDialog(mainwindow);
             if (result.Value)
             {
-                if (fileTofetch.Module == "BASEGAME")
+                if (fileTofetch.Module == @"BASEGAME")
                 {
                     var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
@@ -91,13 +91,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SaveFileDialog m = new SaveFileDialog
             {
                 Title = "Select destination location",
-                Filter = "Package file|*" + Path.GetExtension(fileTofetch.Filename),
+                Filter = "Package file" + @"|*" + Path.GetExtension(fileTofetch.Filename),
                 FileName = fileTofetch.Filename
             };
             var result = m.ShowDialog(mainwindow);
             if (result.Value)
             {
-                if (fileTofetch.Module == "BASEGAME")
+                if (fileTofetch.Module == @"BASEGAME")
                 {
                     var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
@@ -119,13 +119,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SaveFileDialog m = new SaveFileDialog
             {
                 Title = "Select destination location",
-                Filter = "Package file|*" + Path.GetExtension(fileTofetch.Filename),
+                Filter = "Package file" + @"|*" + Path.GetExtension(fileTofetch.Filename),
                 FileName = fileTofetch.Filename
             };
             var result = m.ShowDialog(mainwindow);
             if (result.Value)
             {
-                if (fileTofetch.Module == "BASEGAME")
+                if (fileTofetch.Module == @"BASEGAME")
                 {
                     var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME1, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
@@ -167,7 +167,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("BackupFileFetcher-Load");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupFileFetcher-Load");
             nbw.DoWork += (a, b) =>
             {
                 LoadME1FilesList();
@@ -194,14 +194,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var cookedPath = MEDirectories.CookedPath(target);
                 foreach (var f in Extensions.GetFiles(cookedPath, @"\.u|\.upk|\.sfm", SearchOption.AllDirectories))
                 {
-                    me1files.Add(new BackupFile("BASEGAME", Path.GetFileName(f)));
+                    me1files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
 
                 var dlcDir = MEDirectories.DLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
                 foreach (var v in officialDLC)
                 {
-                    var cookedDLCPath = Path.Combine(dlcDir, v, "CookedPC");
+                    var cookedDLCPath = Path.Combine(dlcDir, v, @"CookedPC");
                     if (Directory.Exists(cookedDLCPath))
                     {
                         foreach (var f in Extensions.GetFiles(cookedDLCPath, @"\.u|\.upk|\.sfm", SearchOption.AllDirectories))
@@ -216,7 +216,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ME1Files.ReplaceAll(me1files);
             });
-            Debug.WriteLine("Num ME1 files: " + ME2Files.Count);
+            Debug.WriteLine(@"Num ME1 files: " + ME2Files.Count);
         }
 
         private void LoadME2FilesList()
@@ -228,19 +228,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var target = new GameTarget(Mod.MEGame.ME2, bup, false);
                 var cookedPath = MEDirectories.CookedPath(target);
-                foreach (var f in Directory.EnumerateFiles(cookedPath, "*.pcc", SearchOption.TopDirectoryOnly))
+                foreach (var f in Directory.EnumerateFiles(cookedPath, @"*.pcc", SearchOption.TopDirectoryOnly))
                 {
-                    me2files.Add(new BackupFile("BASEGAME", Path.GetFileName(f)));
+                    me2files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
 
                 var dlcDir = MEDirectories.DLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
                 foreach (var v in officialDLC)
                 {
-                    var cookedDLCPath = Path.Combine(dlcDir, v, "CookedPC");
+                    var cookedDLCPath = Path.Combine(dlcDir, v, @"CookedPC");
                     if (Directory.Exists(cookedDLCPath))
                     {
-                        foreach (var f in Directory.EnumerateFiles(cookedDLCPath, "*.pcc", SearchOption.TopDirectoryOnly))
+                        foreach (var f in Directory.EnumerateFiles(cookedDLCPath, @"*.pcc", SearchOption.TopDirectoryOnly))
                         {
                             me2files.Add(new BackupFile(v, Path.GetFileName(f)));
                         }
@@ -251,7 +251,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ME2Files.ReplaceAll(me2files);
             });
-            Debug.WriteLine("Num ME2 files: " + ME2Files.Count);
+            Debug.WriteLine(@"Num ME2 files: " + ME2Files.Count);
         }
 
         private ObservableCollectionExtended<BackupFile> ME1Files { get; } = new ObservableCollectionExtended<BackupFile>();
@@ -315,22 +315,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var target = new GameTarget(Mod.MEGame.ME3, bup, false);
                 var cookedPath = MEDirectories.CookedPath(target);
-                foreach (var f in Directory.EnumerateFiles(cookedPath, "*.pcc", SearchOption.TopDirectoryOnly))
+                foreach (var f in Directory.EnumerateFiles(cookedPath, @"*.pcc", SearchOption.TopDirectoryOnly))
                 {
-                    me3files.Add(new BackupFile("BASEGAME", Path.GetFileName(f)));
+                    me3files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
 
                 var dlcDir = MEDirectories.DLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
                 foreach (var v in officialDLC)
                 {
-                    var sfarPath = Path.Combine(dlcDir, v, "CookedPCConsole", "Default.sfar");
+                    var sfarPath = Path.Combine(dlcDir, v, @"CookedPCConsole", @"Default.sfar");
                     if (File.Exists(sfarPath))
                     {
                         DLCPackage dlc = new DLCPackage(sfarPath);
                         foreach (var f in dlc.Files)
                         {
-                            if (f.FileName.EndsWith(".pcc"))
+                            if (f.FileName.EndsWith(@".pcc"))
                             {
                                 me3files.Add(new BackupFile(v, Path.GetFileName(f.FileName)));
                             }
@@ -342,7 +342,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ME3Files.ReplaceAll(me3files);
             });
-            Debug.WriteLine("Num ME3 files: " + ME3Files.Count);
+            Debug.WriteLine(@"Num ME3 files: " + ME3Files.Count);
         }
 
         public class BackupFile

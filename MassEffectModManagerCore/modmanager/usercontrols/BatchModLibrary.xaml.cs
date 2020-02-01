@@ -195,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             result.BackingFilename = Path.GetFileName(queueFile);
             string[] lines = File.ReadAllLines(queueFile);
             int line = 0;
-            if (Path.GetExtension(queueFile) == ".biq")
+            if (Path.GetExtension(queueFile) == @".biq")
             {
                 //New Mod Manager 6 format
                 if (Enum.TryParse<Mod.MEGame>(lines[line], out var game))

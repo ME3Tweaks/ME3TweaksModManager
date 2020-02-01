@@ -1559,7 +1559,7 @@ namespace MassEffectModManagerCore
                     var matchingServerMod = allModsInManifest.FirstOrDefault(x => x is OnlineContent.ModMakerModUpdateInfo mmui && mmui.ModMakerId == mm.ModModMakerID);
                     if (matchingServerMod != null)
                     {
-                        var serverVer = Version.Parse(matchingServerMod.versionstr + ".0"); //can't have single digit version
+                        var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
                         if (serverVer > mm.ParsedModVersion)
                         {
                             matchingServerMod.mod = mm;
@@ -1586,7 +1586,7 @@ namespace MassEffectModManagerCore
                         }
                         else
                         {
-                            Log.Error("Cannot parse nexusmods version of mod, skipping update check for " + mm.ModName + ". Server version string is " + matchingServerMod.versionstr);
+                            Log.Error($@"Cannot parse nexusmods version of mod, skipping update check for {mm.ModName}. Server version string is { matchingServerMod.versionstr}");
                         }
                     }
                 }
@@ -1818,7 +1818,7 @@ namespace MassEffectModManagerCore
 
         private void ExitApplication_Click(object sender, RoutedEventArgs e)
         {
-            Environment.Exit(0);
+            Application.Current.Shutdown();
         }
 
         private void OpenModFolder_Click(object sender, RoutedEventArgs e)
@@ -1969,32 +1969,32 @@ namespace MassEffectModManagerCore
                         try
                         {
                             //Mixins
-                            MixinHandler.ServerMixinHash = App.OnlineManifest["mixinpackagemd5"];
+                            MixinHandler.ServerMixinHash = App.OnlineManifest[@"mixinpackagemd5"];
                             if (!MixinHandler.IsMixinPackageUpToDate())
                             {
                                 //Download new package.
                                 var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
                                 if (memoryPackage.errorMessage != null)
                                 {
-                                    Log.Error("Error fetching mixin package: " + memoryPackage.errorMessage);
+                                    Log.Error(@"Error fetching mixin package: " + memoryPackage.errorMessage);
                                     bgTask.finishedUiText = "Failed to update mixin package";
                                 }
                                 else
                                 {
                                     File.WriteAllBytes(MixinHandler.MixinPackagePath, memoryPackage.result.ToArray());
-                                    Log.Information("Wrote ME3Tweaks Mixin Package to disk");
+                                    Log.Information(@"Wrote ME3Tweaks Mixin Package to disk");
                                     MixinHandler.LoadME3TweaksPackage();
                                 }
                             }
                             else
                             {
-                                Log.Information("ME3Tweaks Mixin Package is up to date");
+                                Log.Information(@"ME3Tweaks Mixin Package is up to date");
                                 MixinHandler.LoadME3TweaksPackage();
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Error("Error fetching mixin package: " + e.Message);
+                            Log.Error(@"Error fetching mixin package: " + e.Message);
                             bgTask.finishedUiText = "Error loading Mixins";
 
                         }
@@ -2107,7 +2107,7 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                NamedBackgroundWorker nbw = new NamedBackgroundWorker("BackupCheck");
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
                 nbw.DoWork += (a, b) =>
                 {
                     var me1CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME1) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME1, false) != null;
@@ -2454,7 +2454,7 @@ namespace MassEffectModManagerCore
                 string ext = Path.GetExtension(files[0]).ToLower();
                 if (!SupportedDroppableExtensions.Contains(ext))
                 {
-                    if (!Settings.DeveloperMode || ext != ".xaml") //dev mode supports .xaml file drop for localization
+                    if (!Settings.DeveloperMode || ext != @".xaml") //dev mode supports .xaml file drop for localization
                     {
                         e.Effects = DragDropEffects.None;
                     }
@@ -2689,7 +2689,7 @@ namespace MassEffectModManagerCore
         {
             string filename = Path.GetFileNameWithoutExtension(filepath);
             string extension = Path.GetExtension(filepath);
-            if (App.SupportedLanguages.Contains(filename) && extension == ".xaml" && Settings.DeveloperMode)
+            if (App.SupportedLanguages.Contains(filename) && extension == @".xaml" && Settings.DeveloperMode)
             {
                 //Load external dictionary
                 try
@@ -2699,7 +2699,7 @@ namespace MassEffectModManagerCore
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error loading external localization file: " + e.Message);
+                    Log.Error(@"Error loading external localization file: " + e.Message);
                 }
             }
         }
@@ -2732,7 +2732,7 @@ namespace MassEffectModManagerCore
             if (SelectedMod != null)
             {
                 var refed = SelectedMod.GetAllRelativeReferences();
-                Debug.WriteLine("Referenced files:");
+                Debug.WriteLine(@"Referenced files:");
                 foreach (var refx in refed)
                 {
                     Debug.WriteLine(refx);
@@ -2745,7 +2745,7 @@ namespace MassEffectModManagerCore
             if (SelectedMod != null)
             {
                 var queues = SelectedMod.GetInstallationQueues(InstallationTargets.FirstOrDefault(x => x.Game == SelectedMod.Game));
-                Debug.WriteLine("Installation Queue:");
+                Debug.WriteLine(@"Installation Queue:");
                 foreach (var job in queues.Item1)
                 {
                     foreach (var file in job.Value.unpackedJobMapping)

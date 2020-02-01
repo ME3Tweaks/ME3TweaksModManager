@@ -29,14 +29,14 @@ namespace LocalizationHelper
     {
         public MainWindow()
         {
-            var text = File.ReadAllLines(@"C:\users\mgame\desktop\unrealkeys");
-            foreach (var line in text)
-            {
-                var unrealStr = line.Substring(0,line.IndexOf(" "));
+            //var text = File.ReadAllLines(@"C:\users\mgame\desktop\unrealkeys");
+            //foreach (var line in text)
+            //{
+            //    var unrealStr = line.Substring(0,line.IndexOf(" "));
 
-                Debug.WriteLine($"case \"{unrealStr}\":\n\treturn \"{unrealStr}\";");
-            }
-            Environment.Exit(0);
+            //    Debug.WriteLine($"case \"{unrealStr}\":\n\treturn \"{unrealStr}\";");
+            //}
+            //Environment.Exit(0);
             InitializeComponent();
         }
 

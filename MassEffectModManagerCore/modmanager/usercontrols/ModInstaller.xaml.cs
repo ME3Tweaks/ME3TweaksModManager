@@ -211,7 +211,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
             numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * (ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
             Debug.WriteLine(@"Number of expected installation tasks: " + numFilesToInstall);
-            
+
 
             //Stage: Unpacked files build map
 
@@ -383,7 +383,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             void FileInstalledCallback(string target)
             {
                 numdone++;
-                var fileMapping = fullPathMappingDisk.FirstOrDefault(x=>x.Value == target);
+                var fileMapping = fullPathMappingDisk.FirstOrDefault(x => x.Value == target);
                 CLog.Information($@"Installed: {fileMapping.Key} -> {target}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 Action = M3L.GetString(M3L.string_installing);
@@ -535,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             catch (Exception e)
             {
                 Crashes.TrackError(e);
-                Log.Error("Error parsing ME2Coalesced. We will abort this installation");
+                Log.Error(@"Error parsing ME2Coalesced: " + e.Message + @". We will abort this installation");
                 return ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED;
             }
             RCWMod rcw = ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD).RCW;
@@ -550,10 +550,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (me2cF.Key == null)
                 {
                     Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF.FileName);
-                    Crashes.TrackError(new Exception("Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
+                    Crashes.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
                     {
-                        { "me2mod mod name", rcw.ModName },
-                        { "Missing file", rcwF.FileName }
+                        { @"me2mod mod name", rcw.ModName },
+                        { @"Missing file", rcwF.FileName }
                     });
                     return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
                 }
@@ -564,11 +564,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (section == null)
                     {
                         Log.Error($@"RCW mod specifies a section in {rcwF.FileName} that does not exist in the local coalesced: {rcwS.SectionName}");
-                        Crashes.TrackError(new Exception("Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
+                        Crashes.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
                         {
-                            { "me2mod mod name", rcw.ModName },
-                            { "File", rcwF.FileName },
-                            { "Missing Section", rcwS.SectionName }
+                            { @"me2mod mod name", rcw.ModName },
+                            { @"File", rcwF.FileName },
+                            { @"Missing Section", rcwS.SectionName }
                         });
                         return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
                     }
@@ -1047,7 +1047,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (ModBeingInstalled != null)
             {
                 var queues = ModBeingInstalled.GetInstallationQueues(gameTarget);
-                Debug.WriteLine("Installation Queue:");
+                Debug.WriteLine(@"Installation Queue:");
                 foreach (var job in queues.Item1)
                 {
                     foreach (var file in job.Value.unpackedJobMapping)

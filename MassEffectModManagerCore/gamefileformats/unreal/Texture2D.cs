@@ -274,7 +274,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                     }
                     else
                     {
-                        var tfcs = loadedFiles.Where(x => x.EndsWith(".tfc")).ToList();
+                        var tfcs = loadedFiles.Where(x => x.EndsWith(@".tfc")).ToList();
 
                         var fullPath = loadedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(archive, StringComparison.InvariantCultureIgnoreCase));
                         if (fullPath != null)
@@ -283,7 +283,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                         }
                         else
                         {
-                            throw new FileNotFoundException($"Externally referenced texture cache not found: {archive}.");
+                            throw new FileNotFoundException($@"Externally referenced texture cache not found: {archive}.");
                         }
                     }
                 }

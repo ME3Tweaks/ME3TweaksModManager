@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 mui.UIStatusString = "Downloading delta";
                 var normalEndpoint = OnlineContent.ModmakerModsEndpoint + mui.ModMakerId;
-                var lzmaEndpoint = normalEndpoint + "&method=lzma";
+                var lzmaEndpoint = normalEndpoint + @"&method=lzma";
 
                 string modDelta = null;
 
@@ -96,12 +96,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Error("Error downloading lzma mod delta to memory: " + download.errorMessage);
+                        Log.Error(@"Error downloading lzma mod delta to memory: " + download.errorMessage);
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error downloading LZMA mod delta to memory: " + e.Message);
+                    Log.Error(@"Error downloading LZMA mod delta to memory: " + e.Message);
                 }
 
                 if (modDelta == null)
@@ -115,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Error("Error downloading decompressed mod delta to memory: " + download.errorMessage);
+                        Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
                     }
                 }
 
@@ -150,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //compiler.SetCompileStarted = CompilationInProgress;
                     //compiler.SetModNotFoundCallback = ModNotFound;
                     Mod m = compiler.DownloadAndCompileMod(modDelta);
-                    File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + ".xml"), modDelta);
+                    File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
                     mui.DownloadButtonText = "Updated";
                     mui.UIStatusString = $"ModMaker Code {mui.ModMakerId}";
                     mui.UpdateInProgress = false;

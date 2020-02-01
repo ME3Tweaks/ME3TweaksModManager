@@ -66,7 +66,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (string.IsNullOrWhiteSpace(destinationName))
             {
                 //cannot use this name
-                Log.Error("Invalid mod name: " + ModNameText);
+                Log.Error(@"Invalid mod name: " + ModNameText);
                 Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, "The specified mod name cannot be used as it will result in an invalid foldername on the filesystem. Please choose a different name.", "Invalid mod name", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var outDir = Path.Combine(library, destinationName);
             if (Directory.Exists(outDir))
             {
-                var okToDelete = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"There is already an existing mod at the following location:\n{outDir}\n\nImporting this mod with this name will delete and overwrite this mod in your library. If this is not intentional, please choose a different name.\n\nDelete the existing mod and import the installed one?", "Same name mod in library", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var okToDelete = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"There is already an existing mod at the following location:\n{outDir}\n\nImporting this mod with this name will delete and overwrite this mod in your library. If this is not intentional, please choose a different name.\n\nDelete the existing mod and import the installed one?", "Same named mod in library", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (okToDelete == MessageBoxResult.No)
                 {
                     return; //cancel
@@ -108,14 +108,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("GameDLCModImporter");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"GameDLCModImporter");
             bw.DoWork += ImportDLCFolder_BackgroundThread;
             bw.RunWorkerCompleted += (a, b) =>
             {
-                Analytics.TrackEvent("Imported a mod from game installation", new Dictionary<string, string>()
+                Analytics.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
                 {
-                    {"Game", SelectedTarget.Game.ToString()},
-                    {"Folder", SelectedDLCFolder.DLCFolderName}
+                    {@"Game", SelectedTarget.Game.ToString()},
+                    {@"Folder", SelectedDLCFolder.DLCFolderName}
                 });
                 OperationInProgress = false;
                 OnClosing(new DataEventArgs(b.Result));
@@ -170,7 +170,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Generate and load mod
             Mod m = new Mod(moddescPath, Mod.MEGame.ME3);
             e.Result = m;
-            Log.Information("Mod import complete.");
+            Log.Information(@"Mod import complete.");
 
             if (!CurrentModInTPMI)
             {

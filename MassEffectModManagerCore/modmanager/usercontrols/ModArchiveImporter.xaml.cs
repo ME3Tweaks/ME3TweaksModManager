@@ -430,8 +430,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Log.Information(@"ME3Tweaks does not have additional version information for this file.");
                             Analytics.TrackEvent("Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
-                                {"Filename", Path.GetFileName(filepath)},
-                                {"MD5", md5}
+                                {@"Filename", Path.GetFileName(filepath)},
+                                {@"MD5", md5}
                             });
                             foreach (Mod compressedMod in internalModList)
                             {
@@ -444,10 +444,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //Try straight up TPMI import?
                         Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
-                        Analytics.TrackEvent("Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                        Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                         {
-                            {"Filename", Path.GetFileName(filepath)},
-                            {"MD5", md5}
+                            {@"Filename", Path.GetFileName(filepath)},
+                            {@"MD5", md5}
                         });
                     }
                 }
@@ -475,7 +475,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         IniData virtualModDesc = new IniData();
                         virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
                         virtualModDesc[@"ModManager"][@"importedby"] = App.BuildNumber.ToString();
-                        virtualModDesc[@"ModInfo"][@"game"] = "ME3";
+                        virtualModDesc[@"ModInfo"][@"game"] = @"ME3";
                         virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
                         virtualModDesc[@"ModInfo"][@"moddev"] = thirdPartyInfo.moddev;
                         virtualModDesc[@"ModInfo"][@"modsite"] = thirdPartyInfo.modsite;

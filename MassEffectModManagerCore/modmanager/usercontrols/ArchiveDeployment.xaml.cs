@@ -484,7 +484,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.HasError = false;
             item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
-            var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == ".tfc").ToList();
+            var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == @".tfc").ToList();
             int numChecked = 0;
             GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
             var errors = new List<string>();

@@ -97,13 +97,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 PercentDownloaded = e.ProgressPercentage;
             };
             var asset = latestRelease.Assets[0];
-            if (Path.GetFileName(executable) == "MassEffectModder.exe")
+            if (Path.GetFileName(executable) == @"MassEffectModder.exe")
             {
                 //Requires specific asset
-                asset = latestRelease.Assets.FirstOrDefault(x => x.Name == "MassEffectModder-v" + latestRelease.TagName + ".7z");
+                asset = latestRelease.Assets.FirstOrDefault(x => x.Name == @"MassEffectModder-v" + latestRelease.TagName + @".7z");
                 if (asset == null)
                 {
-                    Log.Error("Error downloading Mass Effect Modder: Could not find asset in latest release!");
+                    Log.Error(@"Error downloading Mass Effect Modder: Could not find asset in latest release!");
                     return;
                 }
             }

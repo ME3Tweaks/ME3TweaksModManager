@@ -376,7 +376,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 get
                 {
-                    return DLCFolderName.StartsWith("xDLC") ? "Enable" : "Disable";
+                    return DLCFolderName.StartsWith(@"xDLC") ? "Enable" : "Disable";
                 }
             }
 
@@ -489,7 +489,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 if (disabled)
                 {
-                    DLCFolderNameString += " - Disabled";
+                    DLCFolderNameString += @" - " + "Disabled";
                 }
             }
 
@@ -499,7 +499,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var source = dlcFolderPath;
                 var dlcdir = Directory.GetParent(dlcFolderPath).FullName;
-                var newdlcname = DLCFolderName.StartsWith("xDLC") ? DLCFolderName.TrimStart('x') : "x" + DLCFolderName;
+                var newdlcname = DLCFolderName.StartsWith(@"xDLC") ? DLCFolderName.TrimStart('x') : @"x" + DLCFolderName;
                 var target = Path.Combine(dlcdir, newdlcname);
                 try
                 {
@@ -509,7 +509,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Unable to toggle DLC: " + e.Message);
+                    Log.Error(@"Unable to toggle DLC: " + e.Message);
                 }
                 //TriggerPropertyChangedFor(nameof(DLCFolderName));
             }

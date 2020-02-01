@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void GetTopMods()
         {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ModMaker-TopModsFetch");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModMaker-TopModsFetch");
             nbw.DoWork += (a, b) =>
             {
                 b.Result = OnlineContent.FetchTopModMakerMods();
@@ -103,9 +103,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Todo: Add checkbox to use local version instead
                 if (int.TryParse(ModMakerCode, out var code))
                 {
-                    DownloadAndModNameText = "Downloading mod delta from ME3Tweaks";
+                    DownloadAndModNameText = @"Downloading mod delta from ME3Tweaks";
                     var normalEndpoint = OnlineContent.ModmakerModsEndpoint + code;
-                    var lzmaEndpoint = normalEndpoint + "&method=lzma";
+                    var lzmaEndpoint = normalEndpoint + @"&method=lzma";
 
                     string modDelta = null;
 
@@ -116,11 +116,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (total != -1)
                             {
-                                DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString("0")}%";
+                                DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString(@"0")}%";
                             }
                             else
                             {
-                                DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks";
+                                DownloadAndModNameText = "Downloading mod delta from ME3Tweaks";
                             }
                         });
                         if (download.errorMessage == null)
@@ -133,12 +133,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error("Error downloading lzma mod delta to memory: " + download.errorMessage);
+                            Log.Error(@"Error downloading lzma mod delta to memory: " + download.errorMessage);
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Error downloading LZMA mod delta to memory: " + e.Message);
+                        Log.Error(@"Error downloading LZMA mod delta to memory: " + e.Message);
                     }
 
                     if (modDelta == null)
@@ -146,7 +146,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //failed to download LZMA.
                         var download = OnlineContent.DownloadToMemory(normalEndpoint, (done, total) =>
                         {
-                            DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString("0")}%";
+                            DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString(@"0")}%";
                         });
                         if (download.errorMessage == null)
                         {
@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error("Error downloading decompressed mod delta to memory: " + download.errorMessage);
+                            Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
                         }
                     }
 
@@ -174,7 +174,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         compiler.SetCompileStarted = CompilationInProgress;
                         compiler.SetModNotFoundCallback = ModNotFound;
                         Mod m = compiler.DownloadAndCompileMod(modDelta);
-                        File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + ".xml"), modDelta);
+                        File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + @".xml"), modDelta);
                         b.Result = m;
                     }
                 }
@@ -245,7 +245,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, "ME3Tweaks ModMaker requires a game backup of Mass Effect 3 in order to function. A backup of this game was not found.", "No backup available", MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, "ME3Tweaks ModMaker requires a game backup of Mass Effect 3 in order to function. An unmodified backup of this game was not found.", "No backup available", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

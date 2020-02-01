@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -123,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager
                 sb.AppendLine(M3L.GetString(M3L.string_modparsing_installationInformationSplitter));
                 if (Settings.DeveloperMode)
                 {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString()));
+                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture)));
                 }
                 var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
@@ -241,7 +242,7 @@ namespace MassEffectModManagerCore.modmanager
             catch (Exception e)
             {
                 ModName = "Load Failed";
-                Log.Error("Error loading moddesc.ini from archive! Error: " + e.Message);
+                Log.Error(@"Error loading moddesc.ini from archive! Error: " + e.Message);
                 LoadFailedReason = $"An error occured while reading the moddesc.ini file from this archive: {e.Message}";
                 return;
             }
@@ -326,7 +327,7 @@ namespace MassEffectModManagerCore.modmanager
                 if (App.BuildNumber < minBuild)
                 {
                     ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
-                    Log.Error($"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
+                    Log.Error($@"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
                     LoadFailedReason = $"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.";
                     return; //Won't set valid
                 }
@@ -403,7 +404,7 @@ namespace MassEffectModManagerCore.modmanager
                 try
                 {
                     //try to extract nexus mods ID
-                    var nexusIndex = ModWebsite.IndexOf(@"nexusmods.com/");
+                    var nexusIndex = ModWebsite.IndexOf(@"nexusmods.com/", StringComparison.InvariantCultureIgnoreCase);
                     if (nexusIndex > 0)
                     {
                         string nexusId = ModWebsite.Substring(nexusIndex + @"nexusmods.com/".Length); // http:/
@@ -416,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager
 
                         nexusId = nexusId.Substring(6).TrimEnd('/'); // /mods/ and any / after number in the event url has that in it.
 
-                        int questionMark = nexusId.IndexOf(@"?");
+                        int questionMark = nexusId.IndexOf(@"?", StringComparison.InvariantCultureIgnoreCase);
                         if (questionMark > 0)
                         {
                             nexusId = nexusId.Substring(0, questionMark);
@@ -483,7 +484,7 @@ namespace MassEffectModManagerCore.modmanager
             if (ModDescTargetVersion < 6 && Game != MEGame.ME3)
             {
                 Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 6.0 do not support ME1 or ME2.");
-                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString());
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
                 return;
             }
 

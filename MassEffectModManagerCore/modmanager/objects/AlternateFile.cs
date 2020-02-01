@@ -252,7 +252,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                                 Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = "Dummy placeholder"; //Do not localize
+                                LoadFailedReason = @"Dummy placeholder"; 
                                 return;
                             }
                         }
