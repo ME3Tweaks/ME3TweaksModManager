@@ -218,6 +218,60 @@
     <system:String xml:space="preserve" x:Key="string_dialog_optingIntoBeta">Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?</system:String>
     <system:String x:Key="string_enablingBetaMode">Enabling beta mode</system:String>
 
+    <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks.&#10;These builds may be less stable but have features that need to be tested</system:String>
+    <system:String x:Key="string_tooltip_toggleTelemetry">Enables/disables submission of analytics and crash logs</system:String>
+    <system:String x:Key="string_tooltip_logModLoading">Log detailed information about mods loading from the library or archives</system:String>
+    <system:String x:Key="string_tooltip_logModMakerCompiler">Log detailed information when ModMaker compiler is running</system:String>
+    <system:String x:Key="string_tooltip_logModInstaller">Log detailed installation information</system:String>
+    <system:String x:Key="string_tooltip_importAnAlreadyinstalledDLCMod">Import an already-installed DLC mod into Mod Manager</system:String>
+    <system:String x:Key="string_tooltip_downloadME3TweaksMod">Download and compile mods made on ME3Tweaks ModMaker</system:String>
+    <system:String x:Key="string_tooltip_createME3TweaksModMakerMod">Develop gameplay mods using an easy, well documented web application</system:String>
+    <system:String x:Key="string_tooltip_batchModInstaller">Create and install groups of mods serially</system:String>
+    <system:String x:Key="string_tooltip_mixinLibrary">Contains library of premade patch files</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_checksForUpdatesToThisMod">Checks for updates to this mod.&#10;Mods hosted on NexusMods must be whitelisted by ME3Tweaks for update checks</system:String>
+    <system:String x:Key="string_tooltip_forcesUpdateCheck">Forces a mod to perform an update even if it is the latest version of the mod</system:String>
+    <system:String x:Key="string_packageModForRelease">Package mod for release</system:String>
+    <system:String x:Key="string_tooltip_deployTo7z">Prepares a mod for distribution by running tests against the mod,\nthen compresses it in way that makes it fast to load in Mod Manager</system:String>
+    <system:String x:Key="string_mE3TweaksUpdaterService">ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_tooltip_uploadToUpdaterService">Uploads this mod to the ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_editUpdaterServiceSettings">Edit updater service settings</system:String>
+    <system:String x:Key="string_tooltip_updaterServiceSettings">Allows you to adjust Updater Service settings</system:String>
+    <system:String x:Key="string_thirdPartyIdentificationService">Third Party Identification Service</system:String>
+    <system:String x:Key="string_tooltip_submitTPMI">Submits information about this mod to ME3Tweaks</system:String>
+    <system:String x:Key="string_debugging">Debugging</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_removesThisModFromYourLibrary">Removes this mod from your mod library.&#10;This does NOT remove it from any game installations</system:String>
+    <system:String x:Key="string_developerTools">Developer tools</system:String>
+    <system:String x:Key="string_backupFileFetcher">Backup File Fetcher</system:String>
+    <system:String x:Key="string_tooltip_backupFileFetcher">Search and fetch files from Basegame and DLC, including SFARs</system:String>
+    <system:String x:Key="string_debug">Debug</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_requiresSelectedMod">Requires selected mod</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_reloadSelectedMod">Reload selected mod</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_debugPrintAllReferencedFiles">Debug Print All Referenced Files</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_debugPrintInstallationQueue">Debug Print Installation Queue</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_requiresSelectedTarget">Requires selected target</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_stampCurrentTargetWithALOTMarker">Stamp current target with ALOT marker</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_stripCurrentTargetALOTMarker">Strip current target ALOT marker</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_requiresNothing">Requires nothing</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_showWelcomePanel">Show welcome panel</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_showBackupNag">Show backup nag</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_tooltip_endorseM3OnNexus">Endorse ME3Tweaks Mod Manager on the Nexus pages</system:String>
+    <system:String x:Key="string_tooltip_manageNexusModsIntegration">Manage NexusMods integration</system:String>
+
+
+
+
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
@@ -1069,7 +1123,6 @@
     <system:String x:Key="string_interp_fileFetchedAndWrittenToX">File fetched and written to {0}.</system:String>
     <!-- 0=m.FileName -->
     <system:String x:Key="string_fileFetched">File fetched</system:String>
-    <system:String x:Key="string_backupFileFetcher">Backup File Fetcher</system:String>
     <system:String x:Key="string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups">Backup File Fetcher can be used to quickly fetch vanilla versions of files from backups.</system:String>
     <system:String x:Key="string_exportExtract">Export/Extract</system:String>
     <system:String x:Key="string_typeToFilter">Type to filter</system:String>
