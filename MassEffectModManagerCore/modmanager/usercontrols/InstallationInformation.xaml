@@ -1,5 +1,4 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" mc:Ignorable="d" MinWidth="600" MaxHeight="500" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" d:DesignHeight="550" d:DesignWidth="800">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" mc:Ignorable="d" MinWidth="600" MaxHeight="500" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" d:DesignHeight="550" d:DesignWidth="800">
     <UserControl.Resources>
         <converters:GameToImageIconConverter x:Key="GameToImageIconConverter" />
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter" />
@@ -11,9 +10,7 @@
     <StackPanel MaxHeight="520">
         <TextBlock Text="{DynamicResource string_installationInformation}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock Text="{DynamicResource string_installationInformationSubheader}" TextAlignment="Center" />
-        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" 
-                  IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedItem="{Binding SelectedTarget}"
-                  Margin="0,5" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+        <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedItem="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
         <TabControl DataContext="{Binding SelectedTarget}" Padding="0" BorderThickness="1" Margin="0">
             <TabItem Header="{DynamicResource string_installedDLCmods}" Padding="0">
                 <DockPanel Height="300" Margin="-8">
@@ -55,10 +52,8 @@
                                             <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{Binding TextColor}" Text="{Binding DLCFolderNameString}" TextAlignment="Left" IsEnabled="False" FontSize="10" VerticalAlignment="Center" />
                                             <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{Binding TextColor}" Text="{Binding InstalledBy}" TextAlignment="Right" IsEnabled="False" FontSize="10" VerticalAlignment="Center" />
                                             <DockPanel Background="Transparent" Grid.Row="0" Grid.Column="1" LastChildFill="False" HorizontalAlignment="Right">
-                                                <Button Content="{Binding EnableDisableText}" Foreground="{Binding TextColor}"  Command="{Binding EnableDisableCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
-                                                    AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding="7,2" Margin="5,0,0,0" />
-                                                <Button Content="{DynamicResource string_delete}" Foreground="{Binding TextColor}" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
-                                                    AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding="7,2" Margin="5,0,0,0" />
+                                                <Button Content="{Binding EnableDisableText}" Foreground="{Binding TextColor}" Command="{Binding EnableDisableCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,                                                      AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding="7,2" Margin="5,0,0,0" />
+                                                <Button Content="{DynamicResource string_delete}" Foreground="{Binding TextColor}" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,                                                      AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding="7,2" Margin="5,0,0,0" />
                                             </DockPanel>
                                         </Grid>
                                     </DockPanel>
@@ -71,9 +66,8 @@
             <TabItem Header="{DynamicResource string_modifiedBasegameFiles}" Margin="0" Padding="0">
                 <DockPanel Height="300" Margin="-8">
                     <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <xctk:WatermarkTextBox Watermark="Type to filter" Width="170" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="5,0" Text="{Binding ModifiedFilesFilterText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="{DynamicResource string_restoreallmodifiedbasegamefiles}" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
-                            AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedBasegame}" ToolTip="{DynamicResource string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles}" />
+                        <xctk:WatermarkTextBox Watermark="{DynamicResource string_typeToFilter}" Width="170" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="5,0" Text="{Binding ModifiedFilesFilterText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="{DynamicResource string_restoreallmodifiedbasegamefiles}" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,                              AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedBasegame}" ToolTip="{DynamicResource string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles}" />
                     </DockPanel>
                     <ItemsControl ItemsSource="{Binding ModifiedBasegameFilesView}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                         <ItemsControl.ItemTemplate>
