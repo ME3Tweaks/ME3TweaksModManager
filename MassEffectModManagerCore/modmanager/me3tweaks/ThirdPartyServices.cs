@@ -93,7 +93,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string updatecode { get; set; } //has to be string I guess
 
             public int MountPriorityInt => string.IsNullOrWhiteSpace(mountpriority) ? 0 : int.Parse(mountpriority);
-            public string StarterKitString => $"{MountPriorityInt} - {modname}{(modulenumber != null ? " - Module # " + modulenumber : "")}";
+            public string StarterKitString => $"{MountPriorityInt} - {modname}{(modulenumber != null ? " - Module # " + modulenumber : "")}"; //not worth localizing
 
             public event PropertyChangedEventHandler PropertyChanged;
         }

@@ -263,8 +263,12 @@ namespace LocalizationHelper
                     continue; //ignore this line.
                 }
 
-                if (!sectionIsLocalizable) continue; //not localizable
+                if (!sectionIsLocalizable && !line.Contains("//force localize"))
+                {
+                    continue;
+                }
 
+                if (line.Contains("[DebuggerDisplay(")) continue; //skip these lines
                 var commentIndex = line.IndexOf("//");
                 var matches = r.Matches(line);
                 foreach (var match in matches)

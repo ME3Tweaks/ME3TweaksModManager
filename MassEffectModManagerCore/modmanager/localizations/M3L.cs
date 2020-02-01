@@ -805,5 +805,15 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_finalizingMod = "string_finalizingMod";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
+		public static readonly string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";
+		public static readonly string string_interp_decompressedFileWrongHash = "string_interp_decompressedFileWrongHash";
+		public static readonly string string_applying = "string_applying";
+		public static readonly string string_interp_compressingModForUpdaterServicePercent = "string_interp_compressingModForUpdaterServicePercent";
+		public static readonly string string_interp_ModmakerCodeX = "string_interp_ModmakerCodeX";
+		public static readonly string string_interp_updatedDateX = "string_interp_updatedDateX";
+		public static readonly string string_openNexusModsPage = "string_openNexusModsPage";
+		public static readonly string string_nexusModsUpdateInstructions = "string_nexusModsUpdateInstructions";
+		public static readonly string string_interp_XfilesWillBeDeleted = "string_interp_XfilesWillBeDeleted";
+		public static readonly string string_interp_XfilesWillBeDownloaded = "string_interp_XfilesWillBeDownloaded";
 	}
 }

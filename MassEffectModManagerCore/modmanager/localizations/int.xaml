@@ -944,4 +944,24 @@
     <!-- 0= ModMaker Mod Revision -->
     <system:String x:Key="string_interp_codeX">Code {0}</system:String>
     <!-- 0=ModMaker ID/Code -->
+
+        <!-- Updater Service-->
+    <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
+    <!-- 0=sourcefile.relativefilepath 1=sourcefile.size 2=decompressedStream.Length -->
+    <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
+    <!-- 0= sourcefile.relativefilepath 1= sourcefile.hash 2= decompressedMD5 -->
+    <system:String x:Key="string_applying">Applying</system:String>
+    <system:String x:Key="string_interp_compressingModForUpdaterServicePercent">Compressing mod for updater service {0}%</system:String>
+    <!-- 0=Math.Round(totalDone * 100.0 / totalAmountToCompress) -->
+    <system:String x:Key="string_interp_ModmakerCodeX">ModMaker Code {0}</system:String>
+    <!-- 0=ModMakerId -->
+    <system:String x:Key="string_interp_updatedDateX">Updated {0}</system:String>
+    <!-- 0=updatedTime -->
+    <system:String x:Key="string_openNexusModsPage">Open NexusMods page</system:String>
+    <system:String x:Key="string_nexusModsUpdateInstructions">This mod has an update available on NexusMods. To update it, download the mod from NexusMods and import it into Mod Manager.</system:String>
+    <system:String x:Key="string_interp_XfilesWillBeDeleted">{0} file(s) will be deleted</system:String>
+    <!-- 0=FilesToDeleteUIString -->
+    <system:String x:Key="string_interp_XfilesWillBeDownloaded">{0} file(s) will be downloaded ({1})</system:String>
+    <!-- 0=applicableUpdates.Count 1=TotalBytesHR -->
+
 </ResourceDictionary>

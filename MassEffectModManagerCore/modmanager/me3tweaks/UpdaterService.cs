@@ -24,6 +24,7 @@ using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+    //Localizable(false) //do not remove for localizer!
     public partial class OnlineContent
     {
         public const string UpdaterServiceManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch"; //2 = debug
@@ -257,6 +258,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return null;
         }
 
+        [Localizable(true)]
         public static bool UpdateMod(ModUpdateInfo updateInfo, string stagingDirectory, Action<string> errorMessageCallback)
         {
             string modPath = updateInfo.mod.ModPath;
@@ -264,65 +266,65 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             bool cancelDownloading = false;
             var stagedFileMapping = new ConcurrentDictionary<string, string>();
             Parallel.ForEach(updateInfo.applicableUpdates, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (sourcefile) =>
-               {
-                   if (!cancelDownloading)
-                   {
-                       void downloadProgressCallback(long received, long totalToReceived)
-                       {
-                           sourcefile.AmountDownloaded = received;
-                           updateInfo.RecalculateAmountDownloaded();
-                       }
+            {
+                if (!cancelDownloading)
+                {
+                    void downloadProgressCallback(long received, long totalToReceived)
+                    {
+                        sourcefile.AmountDownloaded = received;
+                        updateInfo.RecalculateAmountDownloaded();
+                    }
 
-                       string fullurl = serverRoot + sourcefile.relativefilepath.Replace('\\', '/') + ".lzma";
-                       var downloadedFile = OnlineContent.DownloadToMemory(fullurl, downloadProgressCallback, sourcefile.lzmahash);
-                       if (downloadedFile.errorMessage != null && !cancelDownloading)
-                       {
-                           errorMessageCallback?.Invoke(downloadedFile.errorMessage);
-                           cancelDownloading = true;
-                           return;
-                       }
+                    string fullurl = serverRoot + sourcefile.relativefilepath.Replace('\\', '/') + @".lzma";
+                    var downloadedFile = OnlineContent.DownloadToMemory(fullurl, downloadProgressCallback, sourcefile.lzmahash);
+                    if (downloadedFile.errorMessage != null && !cancelDownloading)
+                    {
+                        errorMessageCallback?.Invoke(downloadedFile.errorMessage);
+                        cancelDownloading = true;
+                        return;
+                    }
 
 
-                       if (cancelDownloading)
-                       {
-                           return; //Concurrency for long running download to memory
-                       }
-                       //Hash OK
-                       string stagingFile = Path.Combine(stagingDirectory, sourcefile.relativefilepath);
-                       Directory.CreateDirectory(Directory.GetParent(stagingFile).FullName);
+                    if (cancelDownloading)
+                    {
+                        return; //Concurrency for long running download to memory
+                    }
+                    //Hash OK
+                    string stagingFile = Path.Combine(stagingDirectory, sourcefile.relativefilepath);
+                    Directory.CreateDirectory(Directory.GetParent(stagingFile).FullName);
 
-                       //Decompress file
-                       MemoryStream decompressedStream = new MemoryStream();
-                       SevenZipHelper.LZMA.DecompressLZMAStream(downloadedFile.result, decompressedStream);
-                       //SevenZipExtractor.DecompressStream(downloadedFile.result, decompressedStream, null, null);
+                    //Decompress file
+                    MemoryStream decompressedStream = new MemoryStream();
+                    SevenZipHelper.LZMA.DecompressLZMAStream(downloadedFile.result, decompressedStream);
+                    //SevenZipExtractor.DecompressStream(downloadedFile.result, decompressedStream, null, null);
 
-                       //Hash check output
-                       if (decompressedStream.Length != sourcefile.size)
-                       {
-                           Log.Error($"Decompressed file ({sourcefile.relativefilepath}) is not of correct size. Expected: {sourcefile.size}, got: {decompressedStream.Length}");
-                           errorMessageCallback?.Invoke(downloadedFile.errorMessage); //this should be a specific error message
-                           cancelDownloading = true;
-                           return;
-                       }
+                    //Hash check output
+                    if (decompressedStream.Length != sourcefile.size)
+                    {
+                        Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) is not of correct size. Expected: {sourcefile.size}, got: {decompressedStream.Length}");
+                        errorMessageCallback?.Invoke(M3L.GetString(M3L.string_interp_decompressedFileNotCorrectSize, sourcefile.relativefilepath, sourcefile.size, decompressedStream.Length)); //force localize
+                        cancelDownloading = true;
+                        return;
+                    }
 
-                       var decompressedMD5 = Utilities.CalculateMD5(decompressedStream);
-                       if (decompressedMD5 != sourcefile.hash)
-                       {
-                           Log.Error($"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
-                           errorMessageCallback?.Invoke(downloadedFile.errorMessage); //this should be a specific error message
-                           cancelDownloading = true;
-                           return;
-                       }
+                    var decompressedMD5 = Utilities.CalculateMD5(decompressedStream);
+                    if (decompressedMD5 != sourcefile.hash)
+                    {
+                        Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
+                        errorMessageCallback?.Invoke(M3L.GetString(M3L.string_interp_decompressedFileWrongHash, sourcefile.relativefilepath, sourcefile.hash, decompressedMD5)); //force localize
+                        cancelDownloading = true;
+                        return;
+                    }
 
-                       File.WriteAllBytes(stagingFile, decompressedStream.ToArray());
-                       if (sourcefile.timestamp != 0)
-                       {
-                           File.SetLastWriteTimeUtc(stagingFile, new DateTime(sourcefile.timestamp));
-                       }
-                       Log.Information("Wrote updater staged file: " + stagingFile);
-                       stagedFileMapping[stagingFile] = Path.Combine(modPath, sourcefile.relativefilepath);
-                   }
-               });
+                    File.WriteAllBytes(stagingFile, decompressedStream.ToArray());
+                    if (sourcefile.timestamp != 0)
+                    {
+                        File.SetLastWriteTimeUtc(stagingFile, new DateTime(sourcefile.timestamp));
+                    }
+                    Log.Information(@"Wrote updater staged file: " + stagingFile);
+                    stagedFileMapping[stagingFile] = Path.Combine(modPath, sourcefile.relativefilepath);
+                }
+            });
             if (cancelDownloading)
             {
                 //callback already should have occured
@@ -330,15 +332,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             //All files have been downloaded successfully.
-            //TODO:... Have to figure out some way to do this. Will have to likely go through mod-parsing.
-            updateInfo.DownloadButtonText = "Applying";
+            updateInfo.DownloadButtonText = M3L.GetString(M3L.string_applying);
             //Apply update
             if (stagedFileMapping.Count > 0)
             {
-                Log.Information("Applying staged update to mod directory");
+                Log.Information(@"Applying staged update to mod directory");
                 foreach (var file in stagedFileMapping)
                 {
-                    Log.Information($"Applying update file: {file.Key} => {file.Value}");
+                    Log.Information($@"Applying update file: {file.Key} => {file.Value}");
                     Directory.CreateDirectory(Directory.GetParent(file.Value).FullName);
                     File.Copy(file.Key, file.Value, true);
                 }
@@ -348,7 +349,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             foreach (var file in updateInfo.filesToDelete)
             {
                 var fileToDelete = Path.Combine(modPath, file);
-                Log.Information("Deleting file for mod update: " + fileToDelete);
+                Log.Information(@"Deleting file for mod update: " + fileToDelete);
                 File.Delete(fileToDelete);
             }
 
@@ -359,6 +360,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return true;
         }
 
+        [Localizable(true)]
         public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null)
         {
             //create staging dir
@@ -373,16 +375,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             long amountDone = 0;
             //run files 
             Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1) }, x =>
-             {
-                 var canceledCheck = canceledCallback?.Invoke();
-                 if (canceledCheck.HasValue && canceledCheck.Value)
-                 {
-                     return; //skip
-                 }
-                 LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
-                 var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
-                 updateUiTextCallback?.Invoke($"Compressing mod for updater service {Math.Round(totalDone * 100.0 / totalAmountToCompress)}%");
-             });
+            {
+                var canceledCheck = canceledCallback?.Invoke();
+                if (canceledCheck.HasValue && canceledCheck.Value)
+                {
+                    return; //skip
+                }
+                LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
+                var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
+                updateUiTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingModForUpdaterServicePercent, Math.Round(totalDone * 100.0 / totalAmountToCompress))); //force localize
+            });
             return stagingPath;
         }
 
@@ -417,6 +419,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return destPath;
         }
 
+        [Localizable(true)]
         [DebuggerDisplay("ModMakerModUpdateInfo | Code {ModMakerId}")]
         public class ModMakerModUpdateInfo : ModUpdateInfo
         {
@@ -429,10 +432,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             internal override void SetLocalizedInfo()
             {
                 base.SetLocalizedInfo();
-                UIStatusString = $"ModMaker Code {ModMakerId}";
+                UIStatusString = M3L.GetString(M3L.string_interp_ModmakerCodeX, ModMakerId);
             }
         }
 
+        [Localizable(true)]
         public class NexusModUpdateInfo : ModUpdateInfo
         {
             public int NexusModsId;
@@ -443,12 +447,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             internal override void SetLocalizedInfo()
             {
                 base.SetLocalizedInfo();
-                UIStatusString = $"Updated {UpdatedTime.ToString("d")}";
-                DownloadButtonText = "Open NexusMods page";
-                changelog = "This mod has an update available on NexusMods. To update it, download the mod from NexusMods and import it into Mod Manager.";
+                var updatedTime = UpdatedTime.ToString(@"d"); //doing it this outside of statement makes it easier for localizer tool
+                UIStatusString = M3L.GetString(M3L.string_interp_updatedDateX, updatedTime);
+                DownloadButtonText = M3L.GetString(M3L.string_openNexusModsPage);
+                changelog = M3L.GetString(M3L.string_nexusModsUpdateInstructions);
             }
         }
 
+        [Localizable(true)]
         [DebuggerDisplay("ModUpdateInfo | {mod.ModName} with {filesToDelete.Count} FTDelete and {applicableUpdates.Count} FTDownload")]
         public class ModUpdateInfo : INotifyPropertyChanged
         {
@@ -476,32 +482,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 CurrentBytesDownloaded = sourceFiles.Sum(x => x.AmountDownloaded);
                 RemainingDataToDownload = ""; //trigger value change
             }
-            public string FilesToDeleteUIString
-            {
-                get
-                {
-                    if (filesToDelete.Count != 1)
-                    {
-                        //Todo: Requires localization
-                        return filesToDelete.Count + " files will be deleted";
-                    }
+            public string FilesToDeleteUIString => M3L.GetString(M3L.string_interp_XfilesWillBeDeleted, FilesToDeleteUIString);
 
-                    return "1 file will be deleted";
-                }
-            }
 
-            public string FilesToDownloadUIString
-            {
-                get
-                {
-                    if (applicableUpdates.Count != 1)
-                    {
-                        return $"{applicableUpdates.Count} files will be downloaded ({TotalBytesHR})";
-                    }
-
-                    return $"1 file will be downloaded ({TotalBytesHR})";
-                }
-            }
+            public string FilesToDownloadUIString => M3L.GetString(M3L.string_interp_XfilesWillBeDownloaded, applicableUpdates.Count, TotalBytesHR);
 
             /// <summary>
             /// This mod has enough info to try to resolve version string
@@ -526,7 +510,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string TotalBytesHR => ByteSize.FromBytes(TotalBytesToDownload).ToString();
             public string RemainingDataToDownload
             {
-                get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? ByteSize.FromBytes(TotalBytesToDownload - CurrentBytesDownloaded).ToString("0.00") : "";
+                get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? ByteSize.FromBytes(TotalBytesToDownload - CurrentBytesDownloaded).ToString(@"0.00") : "";
                 set { } //do nothing.
             }
         }
