@@ -284,8 +284,6 @@
     <system:String x:Key="string_browse">Browse</system:String>
     <system:String x:Key="string_changeSettingsInActionsMenu">You can change your settings at any time through the Actions menu.</system:String>
 
-
-
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
     <system:String x:Key="string_multiThreadedCompression">Multi-threaded compression</system:String>
@@ -534,7 +532,10 @@
     <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract">There is not enough space on the disk to import the selected mods into your mod library.\nRequired space: {0}\nAvailable space: {1}</system:String>
     <!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
     <system:String x:Key="string_insufficientDiskSpace">Insufficient disk space</system:String>
-
+    <system:String x:Key="string_archiveError">Archive error</system:String>
+    <system:String x:Key="string_couldNotInspectArchive7zException">Could not inspect archive due to an exception thrown by 7z. The archive may be corrupt.</system:String>
+    <system:String x:Key="string_unknown">Unknown</system:String>
+    <!-- This is the version number string that is set when a mod is imported (third party) but the version number is not able to be determined -->
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -549,6 +550,12 @@
     <!-- 0 = version string -->
     <system:String x:Key="string_interp_serverVersion">Server version: {0}</system:String>
     <!-- 0 = version string -->
+    <system:String x:Key="string_compiling">Compiling</system:String>
+    <system:String x:Key="string_downloadingDelta">Downloading delta</system:String>
+    <system:String x:Key="string_decompressingDelta">Decompressing delta</system:String>
+    <system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
+    <!-- 0= modmaker code #-->
+    <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager has detected updates for the following mods in your library.</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>

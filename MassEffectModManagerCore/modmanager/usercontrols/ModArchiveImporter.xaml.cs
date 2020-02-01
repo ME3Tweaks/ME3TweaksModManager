@@ -284,8 +284,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //error reading archive!
                     Mod failed = new Mod(false);
-                    failed.ModName = "Archive error";
-                    failed.LoadFailedReason = "Could not inspect archive due to an exception thrown by 7z. It may be corrupt.";
+                    failed.ModName = M3L.GetString(M3L.string_archiveError);
+                    failed.LoadFailedReason = M3L.GetString(M3L.string_couldNotInspectArchive7zException);
                     Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occured! It may be corrupt. The specific error was: {svae.Message}");
                     failedToLoadModeCallback?.Invoke(failed);
                     addCompressedModCallback?.Invoke(failed);
@@ -428,14 +428,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             Log.Information(@"ME3Tweaks does not have additional version information for this file.");
-                            Analytics.TrackEvent("Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                            Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
                                 {@"Filename", Path.GetFileName(filepath)},
                                 {@"MD5", md5}
                             });
                             foreach (Mod compressedMod in internalModList)
                             {
-                                compressedMod.ModVersionString = "Unknown";
+                                compressedMod.ModVersionString = M3L.GetString(M3L.string_unknown);
                             }
                         }
                     }

@@ -527,6 +527,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_insufficientDiskSpaceToExtractSelectedMods = "string_insufficientDiskSpaceToExtractSelectedMods";
 		public static readonly string string_interp_dialogNotEnoughFreeSpaceToExtract = "string_interp_dialogNotEnoughFreeSpaceToExtract";
 		public static readonly string string_insufficientDiskSpace = "string_insufficientDiskSpace";
+		public static readonly string string_archiveError = "string_archiveError";
+		public static readonly string string_couldNotInspectArchive7zException = "string_couldNotInspectArchive7zException";
+		public static readonly string string_unknown = "string_unknown";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";
@@ -535,6 +538,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_updated = "string_updated";
 		public static readonly string string_interp_localVersion = "string_interp_localVersion";
 		public static readonly string string_interp_serverVersion = "string_interp_serverVersion";
+		public static readonly string string_compiling = "string_compiling";
+		public static readonly string string_downloadingDelta = "string_downloadingDelta";
+		public static readonly string string_decompressingDelta = "string_decompressingDelta";
+		public static readonly string string_interp_modMakerCodeX = "string_interp_modMakerCodeX";
+		public static readonly string string_modManagerDetectedModUpdates = "string_modManagerDetectedModUpdates";
 		public static readonly string string_anUpdateToME3TweaksModManagerIsAvailable = "string_anUpdateToME3TweaksModManagerIsAvailable";
 		public static readonly string string_downloadingUpdate = "string_downloadingUpdate";
 		public static readonly string string_preparingToApplyUpdate = "string_preparingToApplyUpdate";

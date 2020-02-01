@@ -70,13 +70,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModmakerModUpdaterThread-" + mui.mod.ModName);
             bw.DoWork += (a, b) =>
             {
-                mui.DownloadButtonText = "Compiling";
+                mui.DownloadButtonText = M3L.GetString(M3L.string_compiling);
 
                 OperationInProgress = true;
                 mui.UpdateInProgress = true;
                 mui.Indeterminate = false;
 
-                mui.UIStatusString = "Downloading delta";
+                mui.UIStatusString = M3L.GetString(M3L.string_downloadingDelta);
                 var normalEndpoint = OnlineContent.ModmakerModsEndpoint + mui.ModMakerId;
                 var lzmaEndpoint = normalEndpoint + @"&method=lzma";
 
@@ -88,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var download = OnlineContent.DownloadToMemory(lzmaEndpoint);
                     if (download.errorMessage == null)
                     {
-                        mui.UIStatusString = "Decompressing delta";
+                        mui.UIStatusString = M3L.GetString(M3L.string_decompressingDelta);
                         // OK
                         var decompressed = SevenZipHelper.LZMA.DecompressLZMAFile(download.result.ToArray());
                         modDelta = Encoding.UTF8.GetString(decompressed);
@@ -151,8 +151,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //compiler.SetModNotFoundCallback = ModNotFound;
                     Mod m = compiler.DownloadAndCompileMod(modDelta);
                     File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
-                    mui.DownloadButtonText = "Updated";
-                    mui.UIStatusString = $"ModMaker Code {mui.ModMakerId}";
+                    mui.DownloadButtonText = M3L.GetString(M3L.string_updated);
+                    mui.UIStatusString = M3L.GetString(M3L.string_interp_modMakerCodeX, mui.ModMakerId);
                     mui.UpdateInProgress = false;
                     mui.CanUpdate = false;
                     AnyModUpdated = true;
@@ -160,10 +160,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
-                {
-                    OperationInProgress = false;
-                    CommandManager.InvalidateRequerySuggested();
-                };
+            {
+                OperationInProgress = false;
+                CommandManager.InvalidateRequerySuggested();
+            };
             bw.RunWorkerAsync();
         }
 
