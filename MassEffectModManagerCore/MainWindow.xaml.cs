@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore
         public bool ME2NexusEndorsed { get; set; }
         public bool ME3NexusEndorsed { get; set; }
 
-
+        public string VisitWebsiteText { get; set; }
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
         public string ME3ASILoaderText { get; set; }
@@ -1774,11 +1774,14 @@ namespace MassEffectModManagerCore
                     CurrentModEndorsementStatus = $@"{M3L.GetString(M3L.string_cannotEndorseMod)} ({M3L.GetString(M3L.string_notAuthenticated)})";
                 }
 
+                VisitWebsiteText = SelectedMod.ModWebsite != Mod.DefaultWebsite ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
+
                 //CurrentDescriptionText = newSelectedMod.DisplayedModDescription;
             }
             else
             {
                 SelectedMod = null;
+                VisitWebsiteText = "";
                 SetWebsitePanelVisibility(false);
                 CurrentDescriptionText = DefaultDescriptionText;
             }
@@ -2682,6 +2685,7 @@ namespace MassEffectModManagerCore
                 AuthToNexusMods();
                 FailedMods.RaiseBindableCountChanged();
                 CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
+                VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
             }
         }
 

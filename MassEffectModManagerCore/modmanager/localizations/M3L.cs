@@ -320,6 +320,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_showBackupNag = "string_showBackupNag";
 		public static readonly string string_tooltip_endorseM3OnNexus = "string_tooltip_endorseM3OnNexus";
 		public static readonly string string_tooltip_manageNexusModsIntegration = "string_tooltip_manageNexusModsIntegration";
+		public static readonly string string_interp_visitSelectedModWebSite = "string_interp_visitSelectedModWebSite";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";

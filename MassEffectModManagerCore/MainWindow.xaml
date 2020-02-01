@@ -406,7 +406,7 @@
                     <StackPanel Name="VisitWebsitePanel" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
               <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
-                <TextBlock Text="{Binding SelectedMod.ModName, StringFormat=Visit {0}\'s web site}" />
+                <TextBlock Text="{Binding VisitWebsiteText}" />
               </Hyperlink>
             </TextBlock>
                     </StackPanel>

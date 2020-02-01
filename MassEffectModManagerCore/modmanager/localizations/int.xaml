@@ -268,9 +268,8 @@
     <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_tooltip_endorseM3OnNexus">Endorse ME3Tweaks Mod Manager on the Nexus pages</system:String>
     <system:String x:Key="string_tooltip_manageNexusModsIntegration">Manage NexusMods integration</system:String>
-
-
-
+    <system:String x:Key="string_interp_visitSelectedModWebSite">Visit {0}'s web site</system:String>
+    <!-- 0=SelectedMod.ModName -->
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
