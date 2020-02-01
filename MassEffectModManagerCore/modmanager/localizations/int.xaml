@@ -1002,5 +1002,9 @@
     <system:String x:Key="string_mixin_finalizerDescription">This is a finalizer Mixin. Finalizer Mixins change the filesize of the source file, and as such, only one finalizer mixin can be applied to a file. Once this Mixin is applied, you cannot apply other Mixins that apply to this file.</system:String>
     <system:String x:Key="string_mixin_cannotApplyNoSource">This Mixin cannot be applied because the target module is not present in the game backup.</system:String>
 
+    <!-- Batch Mod Queue Editor -->
+    <system:String xml:space="preserve" x:Key="string_dialog_changingGameWillClearGroup">Changing the game this install group is for will empty the current list of mods in the group.\n\nContinue?</system:String>
+    <system:String x:Key="string_changingGameWillClearGroup">Changing game will clear group</system:String>
+
 
 </ResourceDictionary>

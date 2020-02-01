@@ -835,5 +835,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_developedByX = "string_interp_developedByX";
 		public static readonly string string_mixin_finalizerDescription = "string_mixin_finalizerDescription";
 		public static readonly string string_mixin_cannotApplyNoSource = "string_mixin_cannotApplyNoSource";
+		public static readonly string string_dialog_changingGameWillClearGroup = "string_dialog_changingGameWillClearGroup";
+		public static readonly string string_changingGameWillClearGroup = "string_changingGameWillClearGroup";
 	}
 }

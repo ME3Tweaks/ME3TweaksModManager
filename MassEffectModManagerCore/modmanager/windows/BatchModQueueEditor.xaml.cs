@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 
@@ -262,7 +263,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (newgame == SelectedGame) return; //don't care
             if (ModsInGroup.Count > 0 && newgame != SelectedGame)
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, "Changing the game this install group is for will empty the current list of mods in the group.\n\nContinue?", "Changing game will clear group", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_changingGameWillClearGroup), M3L.GetString(M3L.string_changingGameWillClearGroup), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     ModsInGroup.ClearEx();
