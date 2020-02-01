@@ -62,8 +62,8 @@ namespace LocalizationHelper
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "LogCollector.cs").Substring(rootLen));
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
-            files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.cs").Substring(rootLen));
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml.cs").Substring(rootLen));
+            files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
             files.Add("MainWindow.xaml");
             files.Add("MainWindow.xaml.cs");
             files.Sort();

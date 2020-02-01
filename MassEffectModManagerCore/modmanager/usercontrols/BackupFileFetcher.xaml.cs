@@ -1,6 +1,7 @@
 ﻿using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.Win32;
@@ -64,8 +65,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BackupFile fileTofetch = SelectedME3File;
             SaveFileDialog m = new SaveFileDialog
             {
-                Title = "Select destination location",
-                Filter = "Package file|*" + Path.GetExtension(fileTofetch.Filename),
+                Title = M3L.GetString(M3L.string_selectDestinationLocation),
+                Filter = M3L.GetString(M3L.string_packageFile) + @"|*" + Path.GetExtension(fileTofetch.Filename),
                 FileName = fileTofetch.Filename
             };
             var result = m.ShowDialog(mainwindow);
@@ -81,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var fetchedfilestream = VanillaDatabaseService.FetchFileFromVanillaSFAR(fileTofetch.Module, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
-                Xceed.Wpf.Toolkit.MessageBox.Show($"File fetched and written to {m.FileName}.", "File fetched");
+                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
             }
         }
 
@@ -90,8 +91,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BackupFile fileTofetch = SelectedME2File;
             SaveFileDialog m = new SaveFileDialog
             {
-                Title = "Select destination location",
-                Filter = "Package file" + @"|*" + Path.GetExtension(fileTofetch.Filename),
+                Title = M3L.GetString(M3L.string_selectDestinationLocation),
+                Filter = M3L.GetString(M3L.string_packageFile) + @"|*" + Path.GetExtension(fileTofetch.Filename),
                 FileName = fileTofetch.Filename
             };
             var result = m.ShowDialog(mainwindow);
@@ -109,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            Xceed.Wpf.Toolkit.MessageBox.Show($"File fetched and written to {m.FileName}.", "File fetched");
+            Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
         }
 
 
@@ -118,8 +119,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BackupFile fileTofetch = SelectedME1File;
             SaveFileDialog m = new SaveFileDialog
             {
-                Title = "Select destination location",
-                Filter = "Package file" + @"|*" + Path.GetExtension(fileTofetch.Filename),
+                Title = M3L.GetString(M3L.string_selectDestinationLocation),
+                Filter = M3L.GetString(M3L.string_packageFile) + @"|*" + Path.GetExtension(fileTofetch.Filename),
                 FileName = fileTofetch.Filename
             };
             var result = m.ShowDialog(mainwindow);
@@ -136,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
             }
-            Xceed.Wpf.Toolkit.MessageBox.Show($"File fetched and written to {m.FileName}.", "File fetched");
+            Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
         }
 
         private bool CanFetchFile()

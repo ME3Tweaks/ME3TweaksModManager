@@ -839,5 +839,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_mixin_cannotApplyNoSource = "string_mixin_cannotApplyNoSource";
 		public static readonly string string_dialog_changingGameWillClearGroup = "string_dialog_changingGameWillClearGroup";
 		public static readonly string string_changingGameWillClearGroup = "string_changingGameWillClearGroup";
+		public static readonly string string_selectDestinationLocation = "string_selectDestinationLocation";
+		public static readonly string string_packageFile = "string_packageFile";
+		public static readonly string string_interp_fileFetchedAndWrittenToX = "string_interp_fileFetchedAndWrittenToX";
+		public static readonly string string_fileFetched = "string_fileFetched";
+		public static readonly string string_interp_XgamesNotBackedUp = "string_interp_XgamesNotBackedUp";
+		public static readonly string string_interp_XgameNotBackedUp = "string_interp_XgameNotBackedUp";
+		public static readonly string string_allGamesBackedUp = "string_allGamesBackedUp";
 	}
 }

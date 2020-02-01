@@ -1010,5 +1010,18 @@
     <system:String xml:space="preserve" x:Key="string_dialog_changingGameWillClearGroup">Changing the game this install group is for will empty the current list of mods in the group.\n\nContinue?</system:String>
     <system:String x:Key="string_changingGameWillClearGroup">Changing game will clear group</system:String>
 
+    <!-- Backup File Fetcher (Devs only) -->
+    <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
+    <system:String x:Key="string_packageFile">Package file</system:String>
+    <system:String x:Key="string_interp_fileFetchedAndWrittenToX">File fetched and written to {0}.</system:String>
+    <!-- 0=m.FileName -->
+    <system:String x:Key="string_fileFetched">File fetched</system:String>
+
+    <!-- Backup Nag System -->
+    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
+    <!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
+    <system:String x:Key="string_interp_XgameNotBackedUp">{0} game not backed up</system:String>
+    <!-- 0 in this item will the value of 1.  -->
+    <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
 
 </ResourceDictionary>
