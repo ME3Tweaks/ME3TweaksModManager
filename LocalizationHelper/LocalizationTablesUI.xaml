@@ -24,7 +24,8 @@
                 <FrameworkElement x:Name="DataContextReference" Visibility="Collapsed"/>
                 <!-- This is used for data grid to get reference -->
                 <GridSplitter Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch"/>
-                <TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>
+                <!--<TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>-->
+                <ComboBox Grid.Column="0" Grid.Row="0" Margin="5,0,0,0" ItemsSource="{Binding LocalizationBranches}" SelectedItem="{Binding SelectedBranch}"/>
                 <TextBlock Text="Strings" Grid.Row="0" Grid.Column="2" FontWeight="Bold"/>
                 <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LocalizationCategories}" SelectedItem="{Binding SelectedCategory}" DisplayMemberPath="CategoryName" Margin="5,0,0,0"/>
                 <DataGrid Name="DataGridTable" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}" AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false">
@@ -145,7 +146,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding LocalizedTips}" AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false">
+                <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding LocalizedTips}" AutoGenerateColumns="False" AlternatingRowBackground="BlanchedAlmond" AlternationCount="2" CanUserAddRows="false">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="English" Binding="{Binding INT}" MaxWidth="250" IsReadOnly="True">
                             <DataGridTextColumn.ElementStyle>
@@ -234,13 +235,50 @@
                     <CheckBox Content="French" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowFrench}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                     <CheckBox Content="Spanish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowSpanish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                     <StatusBarItem HorizontalAlignment="Right">
-                        <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" />
+                        <Button Content="Save language values to .txt" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveTipsLocalizationCommand}" />
                     </StatusBarItem>
                 </StatusBar>
             </Grid>
         </TabItem>
         <TabItem Header="Dynamic Help">
-
+            <Grid Margin="0,5,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <avalonEdit:TextEditor Grid.Column="0" Grid.Row="1"
+                                       xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                                       Name="intViewer"
+                                       SyntaxHighlighting="XML"
+                                       FontFamily="Consolas"
+                                       FontSize="10pt"
+                                       IsReadOnly="true"/>
+                <avalonEdit:TextEditor Grid.Column="2" Grid.Row="1"
+                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                    Name="localizedEditor"
+                    SyntaxHighlighting="XML"
+                    FontFamily="Consolas"
+                    FontSize="10pt"/>
+                <StatusBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Padding="5,0" HorizontalAlignment="Stretch">
+                    <StatusBarItem HorizontalAlignment="Right">
+                        <Button Content="Load language" Command="{Binding LoadLocalizedHelpMenuCommand}" Padding="7,4"/>
+                    </StatusBarItem>
+                        <CheckBox Content="German" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowGerman}" DockPanel.Dock="Left"/>
+                    <CheckBox Content="Russian" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowRussian}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <CheckBox Content="Polish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowPolish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <CheckBox Content="French" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowFrench}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <CheckBox Content="Spanish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowSpanish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <StatusBarItem HorizontalAlignment="Right">
+                        <Button Content="Save dynamic help xml file" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizedHelpMenuCommand}" />
+                    </StatusBarItem>
+                </StatusBar>
+            </Grid>
         </TabItem>
     </TabControl>
 
