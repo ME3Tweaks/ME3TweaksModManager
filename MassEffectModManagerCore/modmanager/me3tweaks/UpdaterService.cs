@@ -482,7 +482,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 CurrentBytesDownloaded = sourceFiles.Sum(x => x.AmountDownloaded);
                 RemainingDataToDownload = ""; //trigger value change
             }
-            public string FilesToDeleteUIString => M3L.GetString(M3L.string_interp_XfilesWillBeDeleted, FilesToDeleteUIString);
+            public string FilesToDeleteUIString => M3L.GetString(M3L.string_interp_XfilesWillBeDeleted, filesToDelete.Count);
 
 
             public string FilesToDownloadUIString => M3L.GetString(M3L.string_interp_XfilesWillBeDownloaded, applicableUpdates.Count, TotalBytesHR);
