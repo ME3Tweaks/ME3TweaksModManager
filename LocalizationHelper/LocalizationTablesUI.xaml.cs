@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using Octokit;
 using Application = Octokit.Application;
 using Path = System.IO.Path;
@@ -46,11 +47,12 @@ namespace LocalizationHelper
         public bool ShowFrench { get; set; }
         public bool ShowSpanish { get; set; }
         public ObservableCollectionExtended<string> LocalizationBranches { get; } = new ObservableCollectionExtended<string>();
+        public ObservableCollectionExtended<LocalizedString> LocalizedTips { get; } = new ObservableCollectionExtended<LocalizedString>();
         public string SelectedBranch { get; set; }
         private void LoadLocalizations(string branch = null)
         {
             BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += async (x, y) =>
+            bw.DoWork += (x, y) =>
             {
                 if (!LocalizationBranches.Any())
                 {
@@ -160,6 +162,48 @@ namespace LocalizationHelper
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(delegate { MessageBox.Show("Could not find any branches on ME3TweaksModManager repo containing name 'localization'"); });
                 }
+
+                string tipsEndpoint = "https://me3tweaks.com/modmanager/services/tipsservice";
+                string contents;
+                using var wc = new System.Net.WebClient();
+                var tipsJson = wc.DownloadString(tipsEndpoint);
+                var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(tipsJson);
+                var langs = LocalizedString.Languages.Where(x => x != "int");
+                var locTips = new List<LocalizedString>();
+                for (int i = 0; i < jsonObj["int"].Count; i++)
+                {
+                    LocalizedString ls = new LocalizedString()
+                    {
+                        INT = jsonObj["int"][i]
+                    };
+                    foreach (var lang in langs)
+                    {
+                        if (jsonObj[lang].Count <= i) continue; //skip
+                        switch (lang)
+                        {
+                            case "rus":
+                                ls.RUS = jsonObj["rus"][i];
+                                break;
+                            case "deu":
+                                ls.DEU = jsonObj["deu"][i];
+                                break;
+                            case "pol":
+                                ls.POL = jsonObj["pol"][i];
+                                break;
+                            case "fra":
+                                ls.FRA = jsonObj["fra"][i];
+                                break;
+                            case "esn":
+                                ls.ESN = jsonObj["esn"][i];
+                                break;
+                        }
+                    }
+                    locTips.Add(ls);
+                }
+                System.Windows.Application.Current.Dispatcher.Invoke(delegate
+                {
+                    LocalizedTips.ReplaceAll(locTips);
+                });
             };
             bw.RunWorkerCompleted += (a, b) =>
             {

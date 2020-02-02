@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
         mc:Ignorable="d"
-        Title="ME3Tweaks Mod Manager Localizer" Height="450" Width="800">
+        Title="ME3Tweaks Mod Manager Localizer" 
+        Height="450" 
+        Width="800">
     <TabControl>
         <TabItem Header="Mod Manager">
             <Grid Margin="0,5,0,0">
@@ -25,7 +27,7 @@
                 <TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>
                 <TextBlock Text="Strings" Grid.Row="0" Grid.Column="2" FontWeight="Bold"/>
                 <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LocalizationCategories}" SelectedItem="{Binding SelectedCategory}" DisplayMemberPath="CategoryName" Margin="5,0,0,0"/>
-                <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}" AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false">
+                <DataGrid Name="DataGridTable" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}" AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false">
                     <DataGrid.Resources>
                         <DataTemplate x:Key="LocTextEditorTemplate" >
                             <TextBox Width="200" TextWrapping="Wrap" Text="{Binding DEU}"/>
@@ -50,7 +52,7 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowRussian, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -145,8 +147,6 @@
                 </Grid.RowDefinitions>
                 <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding LocalizedTips}" AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Key" Binding="{Binding key}" IsReadOnly="True" Width="Auto"/>
-                        <DataGridCheckBoxColumn Header="Newlines" Binding="{Binding preservewhitespace}" Width="60"  IsReadOnly="True" />
                         <DataGridTextColumn Header="English" Binding="{Binding INT}" MaxWidth="250" IsReadOnly="True">
                             <DataGridTextColumn.ElementStyle>
                                 <Style>
@@ -155,7 +155,7 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowRussian, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -227,6 +227,16 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+                <StatusBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Padding="5,0" HorizontalAlignment="Stretch">
+                    <CheckBox Content="German" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowGerman}" DockPanel.Dock="Left"/>
+                    <CheckBox Content="Russian" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowRussian}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <CheckBox Content="Polish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowPolish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <CheckBox Content="French" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowFrench}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <CheckBox Content="Spanish" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowSpanish}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
+                    <StatusBarItem HorizontalAlignment="Right">
+                        <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" />
+                    </StatusBarItem>
+                </StatusBar>
             </Grid>
         </TabItem>
         <TabItem Header="Dynamic Help">
