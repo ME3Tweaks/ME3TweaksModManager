@@ -89,7 +89,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
-                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownCondition)}  {properties[@"Condition"]}";
+                var condition = properties[@"Condition"];
+                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownCondition)} {condition}";
                 return;
             }
 
@@ -97,7 +98,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}"); //do not localize
                 ValidAlternate = false;
-                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownOperation)} {properties[@"ModOperation"]}";
+                var operation = properties[@"ModOperation"];
+                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownOperation)} {operation}";
                 return;
             }
 
@@ -128,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListRootPath, FriendlyName);
                         return;
                     }
                     if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out multilistid))
@@ -142,7 +144,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             Log.Error($@"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
-                            LoadFailedReason = $"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the task: {id}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListX, FriendlyName, id);
                             return;
                         }
                     }
@@ -150,7 +152,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
                 }
@@ -245,7 +247,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (!FilesystemInterposer.FileExists(path, modForValidating.Archive))
                         {
                             Log.Error($@"Alternate DLC ({FriendlyName}) specifies a multilist (index {multilistid}) that contains file that does not exist: {multif}");
-                            LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies a multilist (index {multilistid}) that contains file that does not exist: {multif}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingFileInMultilist, FriendlyName, multilistid, multif);
                             return;
                         }
                     }
@@ -274,7 +276,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     Log.Error($@"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.");
                     ValidAlternate = false;
-                    LoadFailedReason = $"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.";
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_emptyConditionalDLCList, FriendlyName);
                     return;
                 }
             }

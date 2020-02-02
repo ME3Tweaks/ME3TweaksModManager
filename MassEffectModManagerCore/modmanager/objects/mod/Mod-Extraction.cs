@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -279,8 +280,6 @@ namespace MassEffectModManagerCore.modmanager
                     }
                 };
 
-
-
                 archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
                 Log.Information(@"File extraction completed.");
 
@@ -376,7 +375,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 //Write moddesc.ini
                 IniData ini = new IniData();
-                ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
+                ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
                 ini[@"ModInfo"][@"game"] = @"ME2";
                 ini[@"ModInfo"][@"modname"] = ModName;
                 ini[@"ModInfo"][@"moddev"] = ModDeveloper;

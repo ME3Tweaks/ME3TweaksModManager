@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -543,6 +544,16 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Debug.WriteLine("Failed to get parent directory: " + ex.Message);
             }
             return path;
+        }
+
+        public static IEnumerable<string> GetFiles(string path,
+            string searchPatternExpression = "",
+            SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            Regex reSearchPattern = new Regex(searchPatternExpression, RegexOptions.IgnoreCase);
+            return Directory.EnumerateFiles(path, "*", searchOption)
+                .Where(file =>
+                    reSearchPattern.IsMatch(Path.GetExtension(file)));
         }
 
         /// <summary>

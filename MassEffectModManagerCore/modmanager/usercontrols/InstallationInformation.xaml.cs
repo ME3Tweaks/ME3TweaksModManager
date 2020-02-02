@@ -376,7 +376,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 get
                 {
-                    return DLCFolderName.StartsWith("xDLC") ? "Enable" : "Disable";
+                    return DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
                 }
             }
 
@@ -435,7 +435,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void parseInstalledBy(bool disabled, bool modNamePrefersTPMI)
             {
-                DLCFolderNameString = DLCFolderName.TrimStart('x'); //this string is not to show "Disabled"
+                DLCFolderNameString = DLCFolderName.TrimStart('x'); //this string is not to show M3L.GetString(M3L.string_disabled)
                 var metaFile = Path.Combine(dlcFolderPath, @"_metacmm.txt");
                 if (File.Exists(metaFile))
                 {
@@ -489,17 +489,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 if (disabled)
                 {
-                    DLCFolderNameString += " - Disabled";
+                    DLCFolderNameString += @" - " + M3L.GetString(M3L.string_disabled);
                 }
             }
-
-
 
             private void ToggleDLC()
             {
                 var source = dlcFolderPath;
                 var dlcdir = Directory.GetParent(dlcFolderPath).FullName;
-                var newdlcname = DLCFolderName.StartsWith("xDLC") ? DLCFolderName.TrimStart('x') : "x" + DLCFolderName;
+                var newdlcname = DLCFolderName.StartsWith(@"xDLC") ? DLCFolderName.TrimStart('x') : @"x" + DLCFolderName;
                 var target = Path.Combine(dlcdir, newdlcname);
                 try
                 {
@@ -509,7 +507,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Unable to toggle DLC: " + e.Message);
+                    Log.Error(@"Unable to toggle DLC: " + e.Message);
                 }
                 //TriggerPropertyChangedFor(nameof(DLCFolderName));
             }

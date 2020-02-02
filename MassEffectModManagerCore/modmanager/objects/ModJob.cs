@@ -435,13 +435,13 @@ namespace MassEffectModManagerCore.modmanager
                 if (checkedByDefaultForGroups == 0)
                 {
                     Log.Error($@"Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct set in their group with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'");
-                    failureReason = $"Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct in their group set with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'.";
+                    failureReason = M3L.GetString(M3L.string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault, group);
                     return false;
                 }
                 if (checkedByDefaultForGroups > 1)
                 {
                     Log.Error($@"Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
-                    failureReason = $"Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'.";
+                    failureReason = M3L.GetString(M3L.string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault, group);
                     return false;
                 }
             }

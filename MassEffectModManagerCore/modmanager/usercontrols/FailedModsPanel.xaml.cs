@@ -42,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
 #if DEBUG
             Mod m = new Mod(SelectedMod.ModDescPath, Mod.MEGame.Unknown);
-            Debug.WriteLine("Is valid: " + m.ValidMod);
+            Debug.WriteLine(@"Is valid: " + m.ValidMod);
 #endif
         }
 

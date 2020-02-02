@@ -3,12 +3,14 @@
 using Serilog;
 using Serilog.Sinks.RollingFile.Extension;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+    [Localizable(false)]
     class LogCollector
     {
         public static string CollectLogs(string logfile)

@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 
@@ -27,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ME1Installed { get; set; }
         public bool ME2Installed { get; set; }
         public bool ME3Installed { get; set; }
-        public bool AnyGameMissingBackup  => (!ME1BackedUp && ME1Installed) || (!ME2BackedUp && ME2Installed) || (!ME3BackedUp && ME3Installed);
+        public bool AnyGameMissingBackup => (!ME1BackedUp && ME1Installed) || (!ME2BackedUp && ME2Installed) || (!ME3BackedUp && ME3Installed);
 
         public string Title
         {
@@ -40,15 +41,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (numGamesNotBackedUp > 1)
                 {
-                    return $"{numGamesNotBackedUp} games not backed up";
+                    return M3L.GetString(M3L.string_interp_XgamesNotBackedUp, numGamesNotBackedUp);
                 }
 
                 if (numGamesNotBackedUp > 0)
                 {
-                    return $"{numGamesNotBackedUp} game not backed up";
+                    return M3L.GetString(M3L.string_interp_XgameNotBackedUp, numGamesNotBackedUp);
                 }
 
-                return "All games backed up";
+                return M3L.GetString(M3L.string_allGamesBackedUp);
             }
         }
 
@@ -113,7 +114,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Escape)
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()

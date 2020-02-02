@@ -92,7 +92,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            //throw new NotImplementedException();
+            if (e.Key == Key.Escape)
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()
@@ -192,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             result.BackingFilename = Path.GetFileName(queueFile);
             string[] lines = File.ReadAllLines(queueFile);
             int line = 0;
-            if (Path.GetExtension(queueFile) == ".biq")
+            if (Path.GetExtension(queueFile) == @".biq")
             {
                 //New Mod Manager 6 format
                 if (Enum.TryParse<Mod.MEGame>(lines[line], out var game))

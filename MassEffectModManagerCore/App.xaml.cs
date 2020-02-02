@@ -30,18 +30,23 @@ namespace MassEffectModManagerCore
     [Localizable(false)]
     public partial class App : Application
     {
+        public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
+
         /// <summary>
         /// Registry key for Mass Effect Mod Manager itself. This likely won't be used much
         /// </summary>
         internal const string REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ME3Tweaks Mod Manager";
+
         /// <summary>
         /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
         /// </summary>
         internal const string REGISTRY_KEY_ME3CMM = @"HKEY_CURRENT_USER\Software\Mass Effect 3 Mod Manager";
+
         /// <summary>
         /// ALOT Addon Registry Key, used for ME1 and ME2 backups
         /// </summary>
         internal const string BACKUP_REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
+
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
@@ -66,6 +71,7 @@ namespace MassEffectModManagerCore
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
         public const double HighestSupportedModDesc = 6.0;
+
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern bool SetDllDirectory(string lpPathName);
 
@@ -140,6 +146,7 @@ namespace MassEffectModManagerCore
                 string updateDestinationPath = null;
 
                 #region Command line
+
                 if (args.Length > 1)
                 {
                     var result = Parser.Default.ParseArguments<Options>(args);
@@ -149,14 +156,16 @@ namespace MassEffectModManagerCore
                         if (parsedCommandLineArgs.Value.UpdateBoot)
                         {
                             //Update unpacked and process was run.
-                            Environment.Exit(0);
+                            Application.Current.Shutdown();
                         }
+
                         if (parsedCommandLineArgs.Value.UpdateDest != null)
                         {
                             if (File.Exists(parsedCommandLineArgs.Value.UpdateDest))
                             {
                                 updateDestinationPath = parsedCommandLineArgs.Value.UpdateDest;
                             }
+
                             //if (parsedCommandLineArgs.Value.BootingNewUpdate)
                             //{
                             //    Thread.Sleep(1000); //Delay boot to ensure update executable finishes
@@ -180,12 +189,14 @@ namespace MassEffectModManagerCore
                         {
                             App.UpdatedFrom = parsedCommandLineArgs.Value.UpdateFromBuild;
                         }
+
                         if (parsedCommandLineArgs.Value.BootingNewUpdate)
                         {
                             App.BootingUpdate = true;
                         }
                     }
                 }
+
                 #endregion
 
 
@@ -222,6 +233,7 @@ namespace MassEffectModManagerCore
                 }
 
                 #region Update mode boot
+
                 /*
                 if (updateDestinationPath != null)
                 {
@@ -264,13 +276,15 @@ namespace MassEffectModManagerCore
                     Log.Information($"Booting new update: {updateDestinationPath} {psi.Arguments}");
 
                     Process.Start(psi);
-                    Environment.Exit(0);
+                            Application.Current.Shutdown();
                     Current.Shutdown();
                     
                 }*/
+
                 #endregion
+
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
-               new FrameworkPropertyMetadata(true));
+                    new FrameworkPropertyMetadata(true));
 
                 try
                 {
@@ -285,7 +299,37 @@ namespace MassEffectModManagerCore
                 {
                     Log.Error("Unable to get the list of installed antivirus products: " + e.Message);
                 }
+
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
+                //Build 104 changed location of settings from AppData to ProgramData.
+                if (!AppDataExistedAtBoot)
+                {
+                    //First time booting something that uses ProgramData
+                    //see if data exists in AppData
+                    var oldDir = Utilities.GetPre104DataFolder();
+                    if (oldDir != null)
+                    {
+                        //Exists. We should migrate it
+                        try
+                        {
+                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(Utilities.GetAppDataFolder()), aboutToCopyCallback: (a) =>
+                            {
+                                Log.Information("Migrating file from AppData to ProgramData: " + a);
+                                return true;
+                            });
+
+                            Log.Information("Deleting old data directory: " + oldDir);
+                            Utilities.DeleteFilesAndFoldersRecursively(oldDir);
+                            Log.Information("Migration from pre 104 settings to 104+ settings completed");
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("Unable to migrate old settings: " + e.Message);
+                        }
+                    }
+                }
+
+
                 Log.Information("Loading settings");
                 Settings.Load();
                 if (!Settings.EnableTelemetry)
@@ -317,14 +361,16 @@ namespace MassEffectModManagerCore
             }
         }
 
-        public static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra" };
+        public static string[] SupportedLanguages = {"int", "pol", "rus", "deu", "fra"};
         public static Dictionary<string, string> ServerManifest { get; set; }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
+
         /// <summary>
         /// Accesses the third party identification server. Key is the game enum as a string, results are dictionary of DLCName => Info.
         /// </summary>
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
+
         internal static string BugReportURL = "https://github.com/ME3Tweaks/ME3TweaksModManager/issues";
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
         public static bool BootingUpdate;
@@ -424,6 +470,15 @@ namespace MassEffectModManagerCore
             }
 
             return stringBuilder.ToString();
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            if (e.ApplicationExitCode == 0)
+            {
+                Log.Information("Application exiting normally");
+                Log.CloseAndFlush();
+            }
         }
     }
 

@@ -108,7 +108,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error($@"Alternate File specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
-                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownCondition)} {properties[@"Condition"]}";
+                var condition = properties[@"Condition"];
+                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownCondition)} {condition}";
                 return;
             }
 
@@ -141,7 +142,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Log.Error(@"Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"]);
                 ValidAlternate = false;
-                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownOperation)} { properties[@"ModOperation"]}";
+                var operation = properties[@"ModOperation"];
+                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownOperation)} {operation}";
                 return;
             }
 
@@ -181,7 +183,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingMultiListRootPath, FriendlyName);
                         return;
                     }
 
@@ -193,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingMultiListTargetPath, FriendlyName);
                         return;
                     }
 
@@ -208,7 +210,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
-                            LoadFailedReason = $"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task:" + $@" multilist{id}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{id}";
                             return;
                         }
                     }
@@ -216,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
                 }
@@ -252,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                                 Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = "Dummy placeholder"; //Do not localize
+                                LoadFailedReason = @"Dummy placeholder";
                                 return;
                             }
                         }

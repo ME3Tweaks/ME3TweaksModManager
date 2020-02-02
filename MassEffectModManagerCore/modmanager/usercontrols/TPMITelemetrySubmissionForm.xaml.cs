@@ -19,6 +19,7 @@ using IniParser;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Serilog;
 
@@ -50,16 +51,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        private bool CanClosePanel() => !TelemetryPackages.Any(x => TelemetrySubmissionInProgress);
+        private bool CanClosePanel() => !TelemetryPackages.Any(x => x.TelemetrySubmissionInProgress);
 
-        private bool CanSubmitTelemetry() => !TelemetrySubmissionInProgress;
-
-        public bool TelemetrySubmissionInProgress { get; }
         public Mod TelemetryMod { get; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape && !TelemetrySubmissionInProgress)
+            if (e.Key == Key.Escape && !TelemetryPackages.Any(x=>x.TelemetrySubmissionInProgress))
             {
                 OnClosing(DataEventArgs.Empty);
             }
@@ -101,7 +99,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public string SubmitText { get; set; } = M3L.GetString(M3L.string_submitToME3Tweaks);
 
-            private bool TelemetrySubmissionInProgress { get; set; }
+            internal bool TelemetrySubmissionInProgress { get; set; }
             private bool TelemetrySubmitted { get; set; }
 
             private bool CanSubmitPackage() => !TelemetrySubmitted && !TelemetrySubmissionInProgress;
@@ -135,7 +133,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     SubmitText = M3L.GetString(M3L.string_submitting);
-                    Log.Information($"Submitting telemetry to ME3Tweaks for {ModName} TelemetryPackage");
+                    Log.Information($@"Submitting telemetry to ME3Tweaks for {ModName} TelemetryPackage");
                     var result = await url.GetAsync().ReceiveString();
                     SubmitText = M3L.GetString(M3L.string_submitted);
                     TelemetrySubmitted = true;
@@ -149,20 +147,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
 
             List<TelemetryPackage> telemetryPackages = new List<TelemetryPackage>();
-            foreach (var mapping in TelemetryMod.GetJob(ModJob.JobHeader.CUSTOMDLC).CustomDLCFolderMapping)
+            var foldersToPrepare = TelemetryMod.GetJob(ModJob.JobHeader.CUSTOMDLC).CustomDLCFolderMapping;
+            var alternates = TelemetryMod.GetJob(ModJob.JobHeader.CUSTOMDLC).AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC);
+            foldersToPrepare.AddRange(alternates.ToDictionary(x => Path.GetFileName(x.AlternateDLCFolder), x => Path.GetFileName(x.DestinationDLCFolder)));
+            foreach (var mapping in foldersToPrepare)
             {
-                var tp = GetTelemetryPackageForModDLC(TelemetryMod, mapping.Key); //this might need to be changed if it's not same source/dest dirs.
+                var tp = GetTelemetryPackageForModDLC(TelemetryMod, mapping.Key, mapping.Value); //this might need to be changed if it's not same source/dest dirs.
                 telemetryPackages.Add(tp);
             }
 
             e.Result = telemetryPackages;
         }
 
-        private TelemetryPackage GetTelemetryPackageForModDLC(Mod telemetryMod, string dlcFoldername)
+        private TelemetryPackage GetTelemetryPackageForModDLC(Mod telemetryMod, string dlcFoldername, string inGameName)
         {
             return GetTelemetryPackageForDLC(telemetryMod.Game,
                 TelemetryMod.ModPath,
                 dlcFoldername,
+                inGameName,
                 TelemetryMod.ModName,
                 TelemetryMod.ModDeveloper,
                 TelemetryMod.ModWebsite,
@@ -170,11 +172,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         }
 
-        public static TelemetryPackage GetTelemetryPackageForDLC(Mod.MEGame game, string dlcDirectory, string dlcFoldername, string modName, string modAuthor, string modSite, Mod telemetryMod)
+        public static TelemetryPackage GetTelemetryPackageForDLC(Mod.MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, Mod telemetryMod)
         {
             TelemetryPackage tp = new TelemetryPackage();
             var sourceDir = Path.Combine(dlcDirectory, dlcFoldername);
-            tp.DLCFolderName = dlcFoldername;
+            tp.DLCFolderName = destinationDLCName; //this most times will be the same as dlcFoldername, but in case of alternates, it might not be
             if (telemetryMod != null && telemetryMod.HumanReadableCustomDLCNames.TryGetValue(dlcFoldername, out var modNameIni))
             {
                 tp.ModName = modNameIni;

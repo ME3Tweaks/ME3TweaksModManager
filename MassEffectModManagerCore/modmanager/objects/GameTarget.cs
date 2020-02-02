@@ -583,7 +583,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     fs.WriteInt32(100); //installer version
                     fs.WriteUInt32(MEMI_TAG);
                 }
-                Log.Information("Stamped ALOT for game. Installer 100, v 6.8, MEUITM 4");
+                Log.Information(@"Stamped ALOT for game. Installer 100, v 6.8, MEUITM 4");
             }
             catch (Exception e)
             {
@@ -605,7 +605,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     fs.Position -= 4;
                     fs.WriteUInt32(1234); //erase memi tag
                 }
-                Log.Information("Chaged MEMI Tag for game to 1234.");
+                Log.Information(@"Changed MEMI Tag for game to 1234.");
             }
             catch (Exception e)
             {

@@ -221,6 +221,38 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return null;
         }
 
+        /// <summary>
+        /// Fetches a DLC file from ME1/ME2 backup.
+        /// </summary>
+        /// <param name="game">game to fetch from</param>
+        /// <param name="dlcfoldername">DLC foldername</param>
+        /// <param name="filename">filename</param>
+        /// <returns></returns>
+        internal static MemoryStream FetchME1ME2DLCFile(Mod.MEGame game, string dlcfoldername, string filename)
+        {
+            if (game == Mod.MEGame.ME3) throw new Exception("Cannot call this method with game = ME3");
+            var backupPath = Utilities.GetGameBackupPath(game);
+            if (backupPath == null/* && target == null*/) return null; //can't fetch
+
+            string dlcPath = MEDirectories.DLCPath(game);
+            string dlcFolderPath = Path.Combine(dlcPath, dlcfoldername);
+
+            string[] files = Directory.GetFiles(dlcFolderPath, Path.GetFileName(filename), SearchOption.AllDirectories);
+            if (files.Count() == 1)
+            {
+                //file found
+                return new MemoryStream(File.ReadAllBytes(files[0]));
+            }
+            else
+            {
+                //ambiguous or file not found
+                Log.Error($"Could not find {filename} DLC file (or found multiple) in backup for {game}: {filename}");
+            }
+
+            return null;
+        }
+
+
         public static bool IsFileVanilla(GameTarget target, string file, bool md5check = false)
         {
             var database = LoadDatabaseFor(target.Game, target.IsPolishME1);
@@ -456,5 +488,55 @@ namespace MassEffectModManagerCore.modmanager.helpers
             ["90d51c84b278b273e41fbe75682c132e"] = "Origin - Alternate",
             ["70dc87862da9010aad1acd7d0c2c857b"] = "Origin - Russian",
         };
+
+        internal static void CheckAndTagBackup(Mod.MEGame game)
+        {
+            Log.Information("Validating backup for " + Utilities.GetGameName(game));
+            var targetPath = Utilities.GetGameBackupPath(game, false);
+            Log.Information("Backup location: " + targetPath);
+            GameTarget target = new GameTarget(game, targetPath, false);
+            var validationFailedReason = target.ValidateTarget();
+            if (target.IsValid)
+            {
+                List<string> nonVanillaFiles = new List<string>();
+                void nonVanillaFileFoundCallback(string filepath)
+                {
+                    Log.Error($@"Non-vanilla file found: {filepath}");
+                    nonVanillaFiles.Add(filepath);
+                }
+
+                List<string> inconsistentDLC = new List<string>();
+                void inconsistentDLCFoundCallback(string filepath)
+                {
+                    if (target.Supported)
+                    {
+                        Log.Error($@"DLC is in an inconsistent state: {filepath}");
+                        inconsistentDLC.Add(filepath);
+                    }
+                    else
+                    {
+                        Log.Error(@"Detected an inconsistent DLC, likely due to an unofficial copy of the game");
+                    }
+                }
+                Log.Information("Validating backup...");
+
+                VanillaDatabaseService.LoadDatabaseFor(game);
+                bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback);
+                bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(target, inconsistentDLCCallback: inconsistentDLCFoundCallback);
+                List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(target);
+
+                if (isVanilla && isDLCConsistent && !dlcModsInstalled.Any())
+                {
+                    //Backup is OK
+                    //Tag
+                    File.Create(Path.Combine(targetPath, "cmm_vanilla")).Close();
+                    Log.Information("Wrote cmm_vanilla to validated backup");
+                }
+            }
+            else
+            {
+                Log.Information("Backup target is invalid. This backup cannot not be used. Reason: " + validationFailedReason);
+            }
+        }
     }
 }

@@ -16,6 +16,15 @@ namespace MassEffectModManagerCore.modmanager
         internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
 
         /// <summary>
+        /// Generates a blank mod object. You must specify you know what you are doing for this by specifying if this is a valid mod or not.
+        /// </summary>
+        /// <param name="iKnowWhatImDoing"></param>
+        public Mod(bool valid)
+        {
+            ValidMod = valid;
+        }
+
+        /// <summary>
         /// Gets all files referenced by this mod. This does not include moddessc.ini by default
         /// </summary>
         /// <param name="includeModdesc">Include moddesc.ini in the results</param>

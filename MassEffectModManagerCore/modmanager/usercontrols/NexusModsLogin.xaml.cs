@@ -92,8 +92,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var authInfo = NexusModsUtilities.AuthToNexusMods(APIKeyText).Result;
                     if (authInfo != null)
                     {
-                        using FileStream fs = new FileStream(Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey"), FileMode.Create);
-                        File.WriteAllBytes(Path.Combine(Utilities.GetNexusModsCache(), "entropy"), NexusModsUtilities.EncryptStringToStream(APIKeyText, fs));
+                        using FileStream fs = new FileStream(Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
+                        File.WriteAllBytes(Path.Combine(Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(APIKeyText, fs));
                         mainwindow.NexusUsername = authInfo.Name;
                         mainwindow.NexusUserID = authInfo.UserID;
                         SetAuthorized(true);
@@ -136,7 +136,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            //throw new NotImplementedException();
+            if (e.Key == Key.Escape && CanClose())
+            {
+                e.Handled = true;
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()

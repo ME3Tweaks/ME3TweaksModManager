@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Unreal;
@@ -174,6 +175,7 @@ namespace ME3Explorer.Packages
 
         //saving
         void save(bool compress = false);
+        MemoryStream saveToStream(bool compress = false, bool includeAdditionalPackagesToCook = true);
         void save(string path, bool compress = false);
         byte[] getHeader();
         //ObservableCollection<GenericWindow> Tools { get; }

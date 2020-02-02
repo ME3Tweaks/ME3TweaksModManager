@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore
         public bool ME2NexusEndorsed { get; set; }
         public bool ME3NexusEndorsed { get; set; }
 
-
+        public string VisitWebsiteText { get; set; }
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
         public string ME3ASILoaderText { get; set; }
@@ -107,8 +107,17 @@ namespace MassEffectModManagerCore
 
 
         public Mod SelectedMod { get; set; }
+        /// <summary>
+        /// Mods currently visible in the left panel
+        /// </summary>
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
+        /// <summary>
+        /// All mods that successfully loaded.
+        /// </summary>
         public ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ObservableCollectionExtended<Mod>();
+        /// <summary>
+        /// All mods that failed to load
+        /// </summary>
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
 
@@ -1321,8 +1330,11 @@ namespace MassEffectModManagerCore
             {
                 ShowPreviewPanel();
             }
+            else
+            {
+                LoadMods();
+            }
 
-            LoadMods();
             if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
             {
                 ShowBackupNag();
@@ -1333,7 +1345,14 @@ namespace MassEffectModManagerCore
         private void ShowPreviewPanel()
         {
             var previewPanel = new PreviewWelcomePanel();
-            previewPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            previewPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is bool loadMods)
+                {
+                    LoadMods();
+                }
+            };
             ShowBusyControl(previewPanel);
         }
 
@@ -1540,7 +1559,7 @@ namespace MassEffectModManagerCore
                     var matchingServerMod = allModsInManifest.FirstOrDefault(x => x is OnlineContent.ModMakerModUpdateInfo mmui && mmui.ModMakerId == mm.ModModMakerID);
                     if (matchingServerMod != null)
                     {
-                        var serverVer = Version.Parse(matchingServerMod.versionstr + ".0"); //can't have single digit version
+                        var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
                         if (serverVer > mm.ParsedModVersion)
                         {
                             matchingServerMod.mod = mm;
@@ -1567,7 +1586,7 @@ namespace MassEffectModManagerCore
                         }
                         else
                         {
-                            Log.Error("Cannot parse nexusmods version of mod, skipping update check for " + mm.ModName + ". Server version string is " + matchingServerMod.versionstr);
+                            Log.Error($@"Cannot parse nexusmods version of mod, skipping update check for {mm.ModName}. Server version string is { matchingServerMod.versionstr}");
                         }
                     }
                 }
@@ -1755,11 +1774,14 @@ namespace MassEffectModManagerCore
                     CurrentModEndorsementStatus = $@"{M3L.GetString(M3L.string_cannotEndorseMod)} ({M3L.GetString(M3L.string_notAuthenticated)})";
                 }
 
+                VisitWebsiteText = SelectedMod.ModWebsite != Mod.DefaultWebsite ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
+
                 //CurrentDescriptionText = newSelectedMod.DisplayedModDescription;
             }
             else
             {
                 SelectedMod = null;
+                VisitWebsiteText = "";
                 SetWebsitePanelVisibility(false);
                 CurrentDescriptionText = DefaultDescriptionText;
             }
@@ -1799,7 +1821,7 @@ namespace MassEffectModManagerCore
 
         private void ExitApplication_Click(object sender, RoutedEventArgs e)
         {
-            Environment.Exit(0);
+            Application.Current.Shutdown();
         }
 
         private void OpenModFolder_Click(object sender, RoutedEventArgs e)
@@ -1887,7 +1909,7 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest();
+                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
                         //#if DEBUG
                         //                    if (int.Parse(manifest["latest_build_number"]) > 0)
                         //#else
@@ -1946,37 +1968,37 @@ namespace MassEffectModManagerCore
 
                     if (App.OnlineManifest != null)
                     {
-                        bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"MixinFetch", "Loading Mixins", "Loaded Mixins");
+                        bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"MixinFetch", M3L.GetString(M3L.string_loadingMixins), M3L.GetString(M3L.string_loadedMixins));
                         try
                         {
                             //Mixins
-                            MixinHandler.ServerMixinHash = App.OnlineManifest["mixinpackagemd5"];
+                            MixinHandler.ServerMixinHash = App.OnlineManifest[@"mixinpackagemd5"];
                             if (!MixinHandler.IsMixinPackageUpToDate())
                             {
                                 //Download new package.
                                 var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
                                 if (memoryPackage.errorMessage != null)
                                 {
-                                    Log.Error("Error fetching mixin package: " + memoryPackage.errorMessage);
-                                    bgTask.finishedUiText = "Failed to update mixin package";
+                                    Log.Error(@"Error fetching mixin package: " + memoryPackage.errorMessage);
+                                    bgTask.finishedUiText = M3L.GetString(M3L.string_failedToUpdateMixinPackage);
                                 }
                                 else
                                 {
                                     File.WriteAllBytes(MixinHandler.MixinPackagePath, memoryPackage.result.ToArray());
-                                    Log.Information("Wrote ME3Tweaks Mixin Package to disk");
+                                    Log.Information(@"Wrote ME3Tweaks Mixin Package to disk");
                                     MixinHandler.LoadME3TweaksPackage();
                                 }
                             }
                             else
                             {
-                                Log.Information("ME3Tweaks Mixin Package is up to date");
+                                Log.Information(@"ME3Tweaks Mixin Package is up to date");
                                 MixinHandler.LoadME3TweaksPackage();
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Error("Error fetching mixin package: " + e.Message);
-                            bgTask.finishedUiText = "Error loading Mixins";
+                            Log.Error(@"Error fetching mixin package: " + e.Message);
+                            bgTask.finishedUiText = M3L.GetString(M3L.string_errorLoadingMixinPackage);
 
                         }
 
@@ -2031,9 +2053,15 @@ namespace MassEffectModManagerCore
                     ME3UnrealObjectInfo.loadfromJSON();
                     ME2UnrealObjectInfo.loadfromJSON();
                     ME1UnrealObjectInfo.loadfromJSON();
+
+
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                    var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));
+#if DEBUG
+                    //DEBUG STUFF
+                    //var p = MEPackageHandler.OpenMEPackage(@"Z:\ME3-Backup\BIOGame\CookedPCConsole\BioP_MPSlum.pcc");
+                    //p.save(@"C:\users\mgame\desktop\mpslum_m3_decompressed.pcc");
+                    //var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));
 
                     //Dev
                     //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
@@ -2047,7 +2075,7 @@ namespace MassEffectModManagerCore
                     //var modified = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2NoMinigames-Vanilla\BioGame\CookedPC\Startup_INT.pcc");
                     //var target = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2 Controller\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
                     //ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
-
+#endif
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
@@ -2081,6 +2109,25 @@ namespace MassEffectModManagerCore
                         ContentCheckInProgress = false;
                     }
                 }
+
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
+                nbw.DoWork += (a, b) =>
+                {
+                    var me1CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME1) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME1, false) != null;
+                    var me2CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME2) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME2, false) != null;
+                    var me3CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME3, false) != null;
+
+                    if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
+                    {
+                        var bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
+                        if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(Mod.MEGame.ME1);
+                        if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(Mod.MEGame.ME2);
+                        if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(Mod.MEGame.ME3);
+
+                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    }
+                };
+                nbw.RunWorkerAsync();
 
                 StartupCompleted = true;
                 CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
@@ -2410,7 +2457,7 @@ namespace MassEffectModManagerCore
                 string ext = Path.GetExtension(files[0]).ToLower();
                 if (!SupportedDroppableExtensions.Contains(ext))
                 {
-                    if (!Settings.DeveloperMode || ext != ".xaml") //dev mode supports .xaml file drop for localization
+                    if (!Settings.DeveloperMode || ext != @".xaml") //dev mode supports .xaml file drop for localization
                     {
                         e.Effects = DragDropEffects.None;
                     }
@@ -2446,6 +2493,7 @@ namespace MassEffectModManagerCore
 
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
         {
+            //When this method is called, the value has already changed. So check against the opposite boolean state.
             var callingMember = (MenuItem)sender;
             if (callingMember == SetModLibraryPath_MenuItem)
             {
@@ -2454,6 +2502,15 @@ namespace MassEffectModManagerCore
             else if (callingMember == DarkMode_MenuItem)
             {
                 SetTheme();
+            }
+            else if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
+            {
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_optingIntoBeta), M3L.GetString(M3L.string_enablingBetaMode), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    Settings.BetaMode = false; //turn back off.
+                    return;
+                }
             }
             else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
             {
@@ -2490,7 +2547,7 @@ namespace MassEffectModManagerCore
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
         }
 
-        private bool ChooseModLibraryPath(bool loadModsAfterSelecting)
+        internal bool ChooseModLibraryPath(bool loadModsAfterSelecting)
         {
             CommonOpenFileDialog m = new CommonOpenFileDialog
             {
@@ -2628,6 +2685,7 @@ namespace MassEffectModManagerCore
                 AuthToNexusMods();
                 FailedMods.RaiseBindableCountChanged();
                 CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
+                VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
             }
         }
 
@@ -2635,7 +2693,7 @@ namespace MassEffectModManagerCore
         {
             string filename = Path.GetFileNameWithoutExtension(filepath);
             string extension = Path.GetExtension(filepath);
-            if (App.SupportedLanguages.Contains(filename) && extension == ".xaml" && Settings.DeveloperMode)
+            if (App.SupportedLanguages.Contains(filename) && extension == @".xaml" && Settings.DeveloperMode)
             {
                 //Load external dictionary
                 try
@@ -2645,7 +2703,7 @@ namespace MassEffectModManagerCore
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error loading external localization file: " + e.Message);
+                    Log.Error(@"Error loading external localization file: " + e.Message);
                 }
             }
         }
@@ -2678,7 +2736,7 @@ namespace MassEffectModManagerCore
             if (SelectedMod != null)
             {
                 var refed = SelectedMod.GetAllRelativeReferences();
-                Debug.WriteLine("Referenced files:");
+                Debug.WriteLine(@"Referenced files:");
                 foreach (var refx in refed)
                 {
                     Debug.WriteLine(refx);
@@ -2691,7 +2749,7 @@ namespace MassEffectModManagerCore
             if (SelectedMod != null)
             {
                 var queues = SelectedMod.GetInstallationQueues(InstallationTargets.FirstOrDefault(x => x.Game == SelectedMod.Game));
-                Debug.WriteLine("Installation Queue:");
+                Debug.WriteLine(@"Installation Queue:");
                 foreach (var job in queues.Item1)
                 {
                     foreach (var file in job.Value.unpackedJobMapping)
@@ -2737,6 +2795,11 @@ namespace MassEffectModManagerCore
         private void ShowWelcomePanel_Click(object sender, RoutedEventArgs e)
         {
             ShowPreviewPanel();
+        }
+
+        private void OpenME3TweaksModMaker_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
         }
     }
 }

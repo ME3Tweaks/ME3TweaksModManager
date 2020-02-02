@@ -1,60 +1,46 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ImportInstalledDLCModPanel"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             Width="500">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ImportInstalledDLCModPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="500">
     <DockPanel>
-        <TextBlock Text="Import an installed DLC mod" FontWeight="Bold" FontSize="20" DockPanel.Dock="Top" TextAlignment="Center"/>
-        <TextBlock Text="You can import a mod from a game installation into Mod Manager using this importer, which will allow you to install the mod quickly and easily later. Mods imported this way don't support configuration options, updates, and other Mod Manager features. Import mods from archive for full feature support." 
-                   TextWrapping="Wrap" DockPanel.Dock="Top" TextAlignment="Center" Margin="0,0,0,5"/>
-        <ComboBox ItemsSource="{Binding InstallationTargets}" HorizontalContentAlignment="Stretch" IsEditable="False" SelectedItem="{Binding SelectedTarget}"
-                  Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="{DynamicResource string_tooltip_currentTarget}"
-                  ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" DockPanel.Dock="Top"/>
+        <TextBlock Text="{DynamicResource string_importAnInstalledDLCMod}" FontWeight="Bold" FontSize="20" DockPanel.Dock="Top" TextAlignment="Center" />
+        <TextBlock Text="{DynamicResource string_description_importFromGameToModManager}" TextWrapping="Wrap" DockPanel.Dock="Top" TextAlignment="Center" Margin="0,0,0,5" />
+        <ComboBox ItemsSource="{Binding InstallationTargets}" HorizontalContentAlignment="Stretch" IsEditable="False" SelectedItem="{Binding SelectedTarget}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" DockPanel.Dock="Top" />
         <Grid DockPanel.Dock="Bottom" Margin="0,5,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="Mods that were installed via Mod Manager or ALOT Installer cannot be imported through this importer." TextWrapping="Wrap"  TextAlignment="Left"/>
-            <Button Grid.Row="0" Grid.Column="1" Content="Import mod" Command="{Binding ImportSelectedDLCFolderCommand}" HorizontalAlignment="Right"/>
-            <Button Grid.Row="1" Grid.Column="1" Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Margin="0,3,0,0"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="{DynamicResource string_modsInstalledByManagedSolutionCannotBeImported}" TextWrapping="Wrap" TextAlignment="Left" />
+            <Button Grid.Row="0" Grid.Column="1" Content="{DynamicResource string_importMod}" Command="{Binding ImportSelectedDLCFolderCommand}" HorizontalAlignment="Right" />
+            <Button Grid.Row="1" Grid.Column="1" Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Margin="0,3,0,0" />
         </Grid>
         <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding SelectedTarget.ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}}">
-            <TextBlock Text="This installation has been texture modded" FontWeight="Bold" Foreground="Red"/>
-            <TextBlock Text="You cannot import mods from a game installation that has had texture mods installed into it." TextWrapping="Wrap" DockPanel.Dock ="Bottom"  Foreground="Red"/>
+            <TextBlock Text="{DynamicResource string_thisInstallationHasBeenTextureModded}" FontWeight="Bold" Foreground="Red" />
+            <TextBlock Text="{DynamicResource string_cannotImportModsFromTextureModdedTarget}" TextWrapping="Wrap" DockPanel.Dock="Bottom" Foreground="Red" />
         </StackPanel>
         <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding CurrentModInTPMI, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
-            <TextBlock Text="This mod has not been cataloged by ME3Tweaks yet" FontWeight="Bold"/>
-            <TextBlock Text="This mod does not appear to be part of the ME3Tweaks Third Party Mod Identification service (TPMI). This service helps users and developers identify mods in Mod Manager and in other tools. Please enter the following information. This information will be sent to ME3Tweaks for review before it is added to the TPMI service." TextWrapping="Wrap" DockPanel.Dock ="Bottom"/>
-            <TextBlock Text="Mod Name" FontWeight="Bold"/>
-            <xctk:WatermarkTextBox Watermark="Name of this mod (required)" Text="{Binding ModNameText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
-            <TextBlock Text="Mod URL" FontWeight="Bold"/>
-            <xctk:WatermarkTextBox Watermark="https://nexusmods.com/masseffect... (recommended)" Text="{Binding ModSiteText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
+            <TextBlock Text="{DynamicResource string_thisModHasNotBeenCatalogedByME3TweaksYet}" FontWeight="Bold" />
+            <TextBlock Text="{DynamicResource string_pleaseEnterModInfoForTPMI}" TextWrapping="Wrap" DockPanel.Dock="Bottom" />
+            <TextBlock Text="{DynamicResource string_modName}" FontWeight="Bold" />
+            <xctk:WatermarkTextBox Watermark="{DynamicResource string_nameOfThisModRequired}" Text="{Binding ModNameText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+            <TextBlock Text="{DynamicResource string_modURL}" FontWeight="Bold" />
+            <xctk:WatermarkTextBox Watermark="https://nexusmods.com/masseffect... (recommended)" Text="{Binding ModSiteText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
         </StackPanel>
-
-        <ProgressBar Height="10" DockPanel.Dock="Bottom" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMax}" IsIndeterminate="False"/>
+        <ProgressBar Height="10" DockPanel.Dock="Bottom" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMax}" IsIndeterminate="False" />
         <ListBox ItemsSource="{Binding InstalledDLCModsForGame}" Height="150" BorderThickness="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedDLCFolder}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel HorizontalAlignment="Stretch" IsEnabled="{Binding InstalledByManagedSolution, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">
-                        <TextBlock Text="{Binding DLCFolderName}" FontWeight="Bold" MinWidth="200"/>
-                        <TextBlock Text="{Binding ModName}" Margin="5,0,0,0" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding DLCFolderName}" FontWeight="Bold" MinWidth="200" />
+                        <TextBlock Text="{Binding ModName}" Margin="5,0,0,0" HorizontalAlignment="Right" />
                     </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
-                    <Setter Property="IsEnabled" Value="{Binding InstalledByManagedSolution, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
+                    <Setter Property="IsEnabled" Value="{Binding InstalledByManagedSolution, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>

@@ -22,6 +22,7 @@
 using MassEffectModManagerCore.modmanager.helpers;
 using SevenZip;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -29,6 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace SevenZipHelper
 {
+    [Localizable(false)]
     public static class LZMA
     {
         [DllImport("sevenzipwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]

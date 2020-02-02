@@ -209,6 +209,67 @@
     <!-- 0 = number -->
     <system:String x:Key="string_setLanguageToX">Set language to English</system:String>
     <!-- Translate this to your local language! This string comes up when language is set your localization. So change it to set to deu, set to pol, etc.-->
+    <system:String x:Key="string_loadingMixins">Loading Mixins</system:String>
+    <system:String x:Key="string_loadedMixins">Loaded Mixins</system:String>
+    <system:String x:Key="string_failedToUpdateMixinPackage">Failed to update Mixin package</system:String>
+    <system:String x:Key="string_errorLoadingMixinPackage">Error loading Mixin package</system:String>
+    <system:String x:Key="string_checkingBackups">Checking backups</system:String>
+    <system:String x:Key="string_finishedCheckingBackups">Finished checking backups</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_optingIntoBeta">Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?</system:String>
+    <system:String x:Key="string_enablingBetaMode">Enabling beta mode</system:String>
+
+    <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks.&#10;These builds may be less stable but have features that need to be tested</system:String>
+    <system:String x:Key="string_tooltip_toggleTelemetry">Enables/disables submission of analytics and crash logs</system:String>
+    <system:String x:Key="string_tooltip_logModLoading">Log detailed information about mods loading from the library or archives</system:String>
+    <system:String x:Key="string_tooltip_logModMakerCompiler">Log detailed information when ModMaker compiler is running</system:String>
+    <system:String x:Key="string_tooltip_logModInstaller">Log detailed installation information</system:String>
+    <system:String x:Key="string_tooltip_importAnAlreadyinstalledDLCMod">Import an already-installed DLC mod into Mod Manager</system:String>
+    <system:String x:Key="string_tooltip_downloadME3TweaksMod">Download and compile mods made on ME3Tweaks ModMaker</system:String>
+    <system:String x:Key="string_tooltip_createME3TweaksModMakerMod">Develop gameplay mods using an easy, well documented web application</system:String>
+    <system:String x:Key="string_tooltip_batchModInstaller">Create and install groups of mods serially</system:String>
+    <system:String x:Key="string_tooltip_mixinLibrary">Contains library of premade patch files</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_checksForUpdatesToThisMod">Checks for updates to this mod.&#10;Mods hosted on NexusMods must be whitelisted by ME3Tweaks for update checks</system:String>
+    <system:String x:Key="string_tooltip_forcesUpdateCheck">Forces a mod to perform an update even if it is the latest version of the mod</system:String>
+    <system:String x:Key="string_packageModForRelease">Package mod for release</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_deployTo7z">Prepares a mod for distribution by running tests against the mod,&#10;then compresses it in way that makes it fast to load in Mod Manager</system:String>
+    <system:String x:Key="string_mE3TweaksUpdaterService">ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_tooltip_uploadToUpdaterService">Uploads this mod to the ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_editUpdaterServiceSettings">Edit updater service settings</system:String>
+    <system:String x:Key="string_tooltip_updaterServiceSettings">Allows you to adjust Updater Service settings</system:String>
+    <system:String x:Key="string_thirdPartyIdentificationService">Third Party Identification Service</system:String>
+    <system:String x:Key="string_tooltip_submitTPMI">Submits information about this mod to ME3Tweaks</system:String>
+    <system:String x:Key="string_debugging">Debugging</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_removesThisModFromYourLibrary">Removes this mod from your mod library.&#10;This does NOT remove it from any game installations</system:String>
+    <system:String x:Key="string_developerTools">Developer tools</system:String>
+    <system:String x:Key="string_backupFileFetcher">Backup File Fetcher</system:String>
+    <system:String x:Key="string_tooltip_backupFileFetcher">Search and fetch files from Basegame and DLC, including SFARs</system:String>
+    <system:String x:Key="string_debug">Debug</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_requiresSelectedMod">Requires selected mod</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_reloadSelectedMod">Reload selected mod</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_debugPrintAllReferencedFiles">Debug Print All Referenced Files</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_debugPrintInstallationQueue">Debug Print Installation Queue</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_requiresSelectedTarget">Requires selected target</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_stampCurrentTargetWithALOTMarker">Stamp current target with ALOT marker</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_stripCurrentTargetALOTMarker">Strip current target ALOT marker</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_requiresNothing">Requires nothing</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_showWelcomePanel">Show welcome panel</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_showBackupNag">Show backup nag</system:String>
+    <!-- This is debug only and doesn't need to be translated -->
+    <system:String x:Key="string_tooltip_endorseM3OnNexus">Endorse ME3Tweaks Mod Manager on the Nexus pages</system:String>
+    <system:String x:Key="string_tooltip_manageNexusModsIntegration">Manage NexusMods integration</system:String>
+    <system:String x:Key="string_interp_visitSelectedModWebSite">Visit {0}'s web site</system:String>
+    <!-- 0=SelectedMod.ModName -->
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
@@ -237,7 +298,7 @@
     <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
     <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
-    <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
+    <system:String x:Key="string_requiredContentMissing">Required content mismsing</system:String>
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
     <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.</system:String>
@@ -254,10 +315,12 @@
     <system:String x:Key="string_abortInstallingMod">Abort installing this mod</system:String>
     <system:String x:Key="string_dialogInvalidRCWFile">The .me2mod file that this mod uses is not valid or cannot be safely applied to your game installation. Installation has been aborted. Check the Mod Manager logs from the Help menu for more information.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughSpaceToInstall">There is not enough space on {0} to install {1}.\nRequired space: {2}\nAvailable space: {3}</system:String>
-    <!-- 0=driveletter 1=ModBeingInstalled.ModName 2,3=number of bytes (in MB/KB/GB etc)  -->
+    <!-- 0=driveletter, 1=ModBeingInstalled.ModName 2, 3=number of bytes (in MB/KB/GB etc)  -->
     <system:String x:Key="string_dialogInvalidME2Coalesced">The Coalesced.ini file for this installation of Mass Effect 2 appears to be malformed (header bytes are wrong). The installation has been aborted.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_noBackupForXInstallingY">There is no backup for {0} - installing {1} will require you to repair the game in order to remove it, which may invalidate other mods that are in use.\n\nInstall this mod without a backup?</system:String>
+    <!-- 0=Game name (Mass Effect, Mass Effect 2/3) 1=Mod name -->
 
-    <!-- Startup preview panel -->
+    <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
     <system:String x:Key="string_howToChangeLanguage">You can change your language at any time from the Actions > Options menu. Note that all support is provided in English only.</system:String>
@@ -266,6 +329,15 @@
     <system:String x:Key="string_close">Close</system:String>
     <!-- Close (as in close dialog) -->
     <system:String x:Key="string_tooltip_translationIsInProgressButIsNotYetAvailable">Translation is in progress but is not yet available</system:String>
+    <system:String x:Key="string_theme">Theme</system:String>
+    <system:String x:Key="string_light">Light</system:String>
+    <system:String x:Key="string_dark">Dark</system:String>
+    <system:String x:Key="string_isYourLanguageMissing">Is your language missing? Come to the ME3Tweaks Discord and you can help translate it to your local language.</system:String>
+    <system:String x:Key="string_modLibraryLocation">Mod library location</system:String>
+    <system:String x:Key="string_description_modsImportedAreStoredInLibrary">Mods that are imported into Mod Manager will be stored at this location.</system:String>
+    <system:String x:Key="string_libraryLocation">Library location</system:String>
+    <system:String x:Key="string_browse">Browse</system:String>
+    <system:String x:Key="string_changeSettingsInActionsMenu">You can change your settings at any time through the Actions menu.</system:String>
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
@@ -277,6 +349,10 @@
     <system:String x:Key="string_verifyModVersion">Verify mod version is correct</system:String>
     <system:String x:Key="string_recommendedVersionFormatNotFollowed">Recommended version format not followed ({0})</system:String>
     <!-- 0 = X.X or X.X[.X[.X]] (literal string) -->
+    <system:String x:Key="string_moddescMissingModsite">moddesc.ini is missing modsite descriptor</system:String>
+    <system:String x:Key="string_noModWebsiteSet">No mod website URL was set - typically the ModInfo modsite descriptor should point to NexusMods page. This also enables users to endorse your mod on NexusMods through Mod Manager.</system:String>
+    <system:String x:Key="string_interp_invalidAudioPointerOutsideAFC">Invalid audio pointer found that points outside of target file stream: {0} Export {1} {2} points to offset {3} in AFC file {4} but the AFC is only {5} bytes long</system:String>
+    <!-- 0=PCC Filepath 1=Export Index # 2=Export Name 3=Audio Offset in Hex 4=AFC Filepath 5=AFC Length -->
 
     <system:String x:Key="string_verifyURLIsCorrect">Verify URL is correct:</system:String>
     <system:String x:Key="string_validation_badUrl">Validation failed when attempting to validate the mod URL. A mod URL makes it easy for users to find your mod after importing it in the event they need assistance. A valid NexusMods URL to your mod is required if you want to have in-app endorsement support without using the [ModInfo] NexusCode descriptor.</system:String>
@@ -381,7 +457,6 @@
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
 
-
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
     <system:String x:Key="string_pleaseWait">Please wait</system:String>
@@ -461,6 +536,9 @@
     <system:String x:Key="string_openInExplorer">Open in Explorer</system:String>
     <system:String x:Key="string_clickToOpenALOTInstaller">Click to open ALOT Installer</system:String>
     <system:String x:Key="string_manageTexturesWithALOTInstaller">Manage textures with ALOT Installer</system:String>
+    <system:String x:Key="string_enable">Enable</system:String>
+    <system:String x:Key="string_disable">DisCable</system:String>
+    <system:String x:Key="string_disabled">Disabled</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -512,7 +590,10 @@
     <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract">There is not enough space on the disk to import the selected mods into your mod library.\nRequired space: {0}\nAvailable space: {1}</system:String>
     <!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
     <system:String x:Key="string_insufficientDiskSpace">Insufficient disk space</system:String>
-
+    <system:String x:Key="string_archiveError">Archive error</system:String>
+    <system:String x:Key="string_couldNotInspectArchive7zException">Could not inspect archive due to an exception thrown by 7z. The archive may be corrupt.</system:String>
+    <system:String x:Key="string_unknown">Unknown</system:String>
+    <!-- This is the version number string that is set when a mod is imported (third party) but the version number is not able to be determined -->
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -527,6 +608,12 @@
     <!-- 0 = version string -->
     <system:String x:Key="string_interp_serverVersion">Server version: {0}</system:String>
     <!-- 0 = version string -->
+    <system:String x:Key="string_compiling">Compiling</system:String>
+    <system:String x:Key="string_downloadingDelta">Downloading delta</system:String>
+    <system:String x:Key="string_decompressingDelta">Decompressing delta</system:String>
+    <system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
+    <!-- 0= modmaker code #-->
+    <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager has detected updates for the following mods in your library.</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
@@ -579,6 +666,9 @@
     <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Changing the active boot target to one with ALOT installed will prompt you enable high resolution texture settings again.</system:String>
     <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods or restoring specific files/SFARs, use the restore options from the Target Info button instead.</system:String>
     <system:String x:Key="string_youMaySeeElevationPromptOnRestore">You may see an elevation prompt when trying to restore your game. This is ME3Tweaks Mod Manager granting your user account permission to the new game directory after the old one has been deleted.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_restoringXWillDeleteGameDir">Restoring {0} will completely delete the game directory and then copy the backup into the original location.\n\nDelete this installation and restore it from backup?</system:String>
+    <!-- 0=Utilities.GetGameName(Game) -->
+    <system:String x:Key="string_gameTargetWillBeDeleted">Game target will be deleted</system:String>
 
     <!-- Test archive generator-->
     <system:String x:Key="string_hashingFiles">Hashing files</system:String>
@@ -601,7 +691,7 @@
     <system:String x:Key="string_mountFlagColon">Mount Flag:</system:String>
     <system:String x:Key="string_moduleNumberColon">Module Number:</system:String>
 
-    <!-- Messageboxes (cancel is defined previously) -->
+    <!-- Messageboxes -->
     <system:String x:Key="string_no">No</system:String>
     <system:String x:Key="string_ok">OK</system:String>
     <system:String x:Key="string_yes">Yes</system:String>
@@ -644,6 +734,16 @@
     <!-- 0 = Friendlyname , 1 = specified folder path -->
     <system:String x:Key="string_autoApplied">Auto Applied</system:String>
     <system:String x:Key="string_notApplicable">Not applicable</system:String>
+    <system:String x:Key="string_interp_altdlc_multilistMissingMultiListRootPath">Alternate DLC ({0}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altdlc_multilistMissingMultiListX">Alternate DLC ({0}) Multilist ID does not exist as part of the task: {1}</system:String>
+    <!-- 0=FriendlyName 1=id -->
+    <system:String x:Key="string_interp_altdlc_multilistIdNotIntegerOrMissing">Alternate DLC ({0}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altdlc_multilistMissingFileInMultilist">Alternate DLC ({0}) specifies a multilist (index {1}) that contains file that does not exist: {2}</system:String>
+    <!-- 0=FriendlyName 1=multilistid 2=multif -->
+    <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.</system:String>
+    <!-- 0=FriendlyName -->
 
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
@@ -659,6 +759,14 @@
     <!-- 0 = Operation, 1 = Alternate file item in the altfile struct-->
     <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate File {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
     <!-- 0 = Friendly name, 1 = Filepath-->
+    <system:String x:Key="string_interp_altfile_multilistMissingMultiListRootPath">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_multilistMissingMultiListTargetPath">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_multilistMissingFileInMultiList">Alternate File ({0}) Multilist ID does not exist as part of the task:</system:String>
+    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
+    <!-- 0=FriendlyName -->
 
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
@@ -687,6 +795,10 @@
     <!-- 0 = destination file path in moddesc -->
     <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {0} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
     <!-- 0 = source file path in moddesc -->
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct in their 0 set with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{0}'.</system:String>
+    <!-- 0=group. Shown if no items in group have CheckedByDefault -->
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their 0. The failing option group name is '{0}'.</system:String>
+    <!-- 0=group. Shown if more than one item in group has CheckedByDefault-->
 
     <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
@@ -700,7 +812,7 @@
     <system:String x:Key="string_interp_vPatchingIntoAlternate">VPatching into alternate: {0}</system:String>
     <!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
 
-    <!-- Mod-Installation -->
+    <!-- Mod-Parsing -->
     <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String>
     <!-- requires manual setup -->
     <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String>
@@ -719,7 +831,7 @@
     <system:String x:Key="string_modparsing_configCanChangeIfOtherDLCFound">Configuration of this mod can change if any of the following DLC are present at installation time:</system:String>
     <system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Requires the following DLC to install:</system:String>
     <system:String x:Key="string_modparsing_defaultRCWDescription" xml:space="preserve">RCW mod that applies changes to ME2 Coalesced.ini.\n\nRCW mods are applied directly to the Coalesced.ini file - it is not rebuilt from a vanilla version. This means applying the mod twice may have unintended side effects as duplicate keys may be created.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Error occured parsing archive moddesc.ini {0}: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Error occured parsing moddesc.ini file at {0}: {1}</system:String>
     <!-- 0 = moddescpath 1 = error message-->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Error occured parsing {0}: {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message-->
@@ -805,6 +917,15 @@
     <!-- 0 = filepath -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod">Error occured while creating basegame job for legacy 1.0 mod: {0}</system:String>
     <!-- 0 = error message -->
+    <system:String x:Key="string_loadFailed">Load Failed</system:String>
+    <system:String x:Key="string_interp_errorReadingArchiveModdesc">An error occured while reading the moddesc.ini file from this archive: {0}</system:String>
+    <!-- 0=e.Message -->
+    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">This mod specifies it can only load on M3 builds {0} or higher. The current build number is {1}.</system:String>
+    <!-- 0=minBuild 1=App.BuildNumber -->
+    <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">{0} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.</system:String>
+    <!-- 0=ModName -->
+    <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">This mod contains a blacklisted mod file: {0}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.</system:String>
+    <!-- 0=fullpath -->
 
     <!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hello!</system:String>
@@ -912,4 +1033,262 @@
     <system:String x:Key="string_save">Save</system:String>
     <system:String x:Key="string_saved">Saved</system:String>
     <system:String x:Key="string_resetIniItemsExceptBasic">Ini values have been reset to default (except basic settings). Press save to commit changes.</system:String>
+
+    <!-- Mixin Handler -->
+    <system:String xml:space="preserve" x:Key="string_interp_cannotApplyMultipleFinalizers">Cannot apply mixins to {0}: There are multiple finalizers selected for this file. Only one finalizer Mixin may be applied to a file, as the others will be unable to apply.\n\nFinalizers:</system:String>
+    <!-- 0=Filename -->
+    <system:String x:Key="string_interp_cannotApplyMixinWrongSize">{0} cannot be applied to {1}. Expected size {2} but received source data size of {3}</system:String>
+    <!-- 0=Mixin name 1=mixin.TargetFile 2= mixin.TargetSize 3=Required filesize. This text shows up in a list so not having period at end is OK-->
+
+    <!-- ModMaker Compiler -->
+    <system:String x:Key="string_modNotFoundOnServer">Mod not found on server</system:String>
+    <system:String x:Key="string_compilingTLKFiles">Compiling TLK files</system:String>
+    <system:String x:Key="string_preparingMixinPatchData">Preparing Mixin patch data</system:String>
+    <system:String x:Key="string_applyingMixins">Applying Mixins</system:String>
+    <system:String x:Key="string_compilingCoalescedFiles">Compiling Coalesced files</system:String>
+    <system:String x:Key="string_finalizingMod">Finalizing mod</system:String>
+
+    <!-- ModMaker Panel -->
+    <system:String x:Key="string_enterModMakerModCodeOrSelectFromTheTopMods">Enter ModMaker mod code or select from the top mods</system:String>
+    <system:String x:Key="string_downloadingModDeltaFromME3Tweaks">Downloading mod delta from ME3Tweaks</system:String>
+    <system:String x:Key="string_dialog_me3tweaksModMakerRequiresBackup">ME3Tweaks ModMaker requires a game backup of Mass Effect 3 in order to function. An unmodified backup of this game was not found.</system:String>
+    <system:String x:Key="string_noBackupAvailable">No backup available</system:String>
+    <system:String x:Key="string_description_modmakerOnlineModCreationTool">ME3Tweaks ModMaker is an online mod creation tool for Mass Effect 3. You can create mods with an easy point and click interface, allowing you to customize thousands of documented gameplay variables and scripts.</system:String>
+    <system:String x:Key="string_openME3TweaksModMaker">Open ME3Tweaks ModMaker</system:String>
+    <system:String x:Key="string_modMakerCode">ModMaker Code</system:String>
+    <system:String x:Key="string_download">Download</system:String>
+    <!-- as in download mod -->
+    <system:String x:Key="string_overallProgress">Overall progress</system:String>
+
+    <!-- Online Content -->
+    <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
+    <!-- 0= ModMaker Mod Revision -->
+    <system:String x:Key="string_interp_codeX">Code {0}</system:String>
+    <!-- 0=ModMaker ID/Code -->
+
+    <!-- Updater Service-->
+    <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
+    <!-- 0=sourcefile.relativefilepath 1=sourcefile.size 2=decompressedStream.Length -->
+    <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
+    <!-- 0= sourcefile.relativefilepath 1= sourcefile.hash 2= decompressedMD5 -->
+    <system:String x:Key="string_applying">Applying</system:String>
+    <system:String x:Key="string_interp_compressingModForUpdaterServicePercent">Compressing mod for updater service {0}%</system:String>
+    <!-- 0=Math.Round(totalDone * 100.0 / totalAmountToCompress) -->
+    <system:String x:Key="string_interp_ModmakerCodeX">ModMaker Code {0}</system:String>
+    <!-- 0=ModMakerId -->
+    <system:String x:Key="string_interp_updatedDateX">Updated {0}</system:String>
+    <!-- 0=updatedTime -->
+    <system:String x:Key="string_openNexusModsPage">Open NexusMods page</system:String>
+    <system:String x:Key="string_nexusModsUpdateInstructions">This mod has an update available on NexusMods. To update it, download the mod from NexusMods and import it into Mod Manager.</system:String>
+    <system:String x:Key="string_interp_XfilesWillBeDeleted">{0} file(s) will be deleted</system:String>
+    <!-- 0=FilesToDeleteUIString -->
+    <system:String x:Key="string_interp_XfilesWillBeDownloaded">{0} file(s) will be downloaded ({1})</system:String>
+    <!-- 0=applicableUpdates.Count 1=TotalBytesHR -->
+
+    <!-- Mixin Class-->
+    <system:String x:Key="string_interp_appliesToX">Applies to file {0}</system:String>
+    <!-- 0=TargetFile -->
+    <system:String x:Key="string_interp_partOfX">Part of {0}</system:String>
+    <!-- 0=TargetModule -->
+    <system:String x:Key="string_interp_versionX">Version {0}</system:String>
+    <!-- 0=PatchVersion -->
+    <system:String x:Key="string_interp_developedByX">Developed by {0}</system:String>
+    <!-- 0=PatchDeveloper -->
+    <system:String x:Key="string_mixin_finalizerDescription">This is a finalizer Mixin. Finalizer Mixins change the filesize of the source file, and as such, only one finalizer mixin can be applied to a file. Once this Mixin is applied, you cannot apply other Mixins that apply to this file.</system:String>
+    <system:String x:Key="string_mixin_cannotApplyNoSource">This Mixin cannot be applied because the target module is not present in the game backup.</system:String>
+
+    <!--Install Group Editor -->
+    <system:String xml:space="preserve" x:Key="string_dialog_changingGameWillClearGroup">Changing the game this install group is for will empty the current list of mods in the group.\n\nContinue?</system:String>
+    <system:String x:Key="string_changingGameWillClearGroup">Changing game will clear group</system:String>
+    <system:String x:Key="string_title_installGroupEditor">Install Group Editor</system:String>
+    <system:String x:Key="string_moveModsToRightSideToAdd">Move mods to the right side to add them to the install group.</system:String>
+    <system:String x:Key="string_game">Game</system:String>
+    <!-- Label for the three game buttons -->
+    <system:String x:Key="string_availableModsForGroup">Available mods for group</system:String>
+    <system:String x:Key="string_addModToInstallGroup">Add mod to install group</system:String>
+    <system:String x:Key="string_cancelEditing">Cancel editing</system:String>
+    <system:String x:Key="string_saveGroup">Save group</system:String>
+    <system:String x:Key="string_groupName">Group name</system:String>
+    <system:String x:Key="string_groupDescription">Group description</system:String>
+    <system:String x:Key="string_modsInInstallGroup">Mods in install group</system:String>
+    <system:String x:Key="string_directionsInstallGroupEditor">Mods will install in this order. Mods that configure themselves based on other mods should be installed last.</system:String>
+    <system:String x:Key="string_removeModFromInstallGroup">Remove mod from install group</system:String>
+    <system:String x:Key="string_moveDown">Move down</system:String>
+    <system:String x:Key="string_moveUp">Move up</system:String>
+
+    <!-- Backup File Fetcher (Devs only) -->
+    <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
+    <system:String x:Key="string_packageFile">Package file</system:String>
+    <system:String x:Key="string_interp_fileFetchedAndWrittenToX">File fetched and written to {0}.</system:String>
+    <!-- 0=m.FileName -->
+    <system:String x:Key="string_fileFetched">File fetched</system:String>
+    <system:String x:Key="string_backupFileFetcherCanBeUsedToQuicklyFetchVanillaVersionsOfFilesFromBackups">Backup File Fetcher can be used to quickly fetch vanilla versions of files from backups.</system:String>
+    <system:String x:Key="string_exportExtract">Export/Extract</system:String>
+    <system:String x:Key="string_typeToFilter">Type to filter</system:String>
+    <system:String x:Key="string_gettingListOfFilesFromBackup">Getting list of files from backup</system:String>
+
+    <!-- Backup Nag System -->
+    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
+    <!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
+    <system:String x:Key="string_interp_XgameNotBackedUp">{0} game not backed up</system:String>
+    <!-- 0 in this item will the value of 1.  -->
+    <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
+    <system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager requires unmodified game backups to perform certain actions.</system:String>
+    <system:String x:Key="string_description_missingBackupWillLimitFeatures">Without a backup of a game, the following features of Mod Manager will be disabled or have limited functionality for that game:</system:String>
+    <system:String x:Key="string_openBackupManager">Open Backup Manager</system:String>
+    <system:String x:Key="string_restores">Restores</system:String>
+    <system:String x:Key="string_restoringIndividualFiles">Restoring individual files</system:String>
+    <system:String x:Key="string_restoringDLC">Restoring DLC</system:String>
+    <system:String x:Key="string_uninstallingALOT">Uninstalling ALOT</system:String>
+    <system:String x:Key="string_modding">Modding</system:String>
+    <system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
+    <system:String x:Key="string_mixins">Mixins</system:String>
+    <system:String x:Key="string_mergingMods">Merging mods</system:String>
+    <system:String x:Key="string_deployingModsTo7z">Deploying mods to .7z</system:String>
+
+    <!-- Console Key Keybinder -->
+    <system:String x:Key="string_massEffectFullConsole">Mass Effect Full Console</system:String>
+    <system:String x:Key="string_massEffectMiniConsole">Mass Effect Mini Console</system:String>
+    <system:String x:Key="string_massEffect2MiniConsole">Mass Effect 2 Mini Console</system:String>
+    <system:String x:Key="string_massEffect2FullConsole">Mass Effect 2 Full Console</system:String>
+    <system:String x:Key="string_massEffect3MiniConsole">Mass Effect 3 Mini Console</system:String>
+    <system:String x:Key="string_massEffect3FullConsole">Mass Effect 3 Full Console</system:String>
+    <system:String x:Key="string_updatingKeybindsPleaseWait">Updating keybind(s), please wait</system:String>
+    <system:String x:Key="string_fullConsoleNotBoundToAKey">Full console not bound to a key</system:String>
+    <system:String x:Key="string_interp_fullConsoleBoundToX">Full console bound to {0}</system:String>
+    <!-- 0= UDK Key Name (Tilde, Tab, F, etc) -->
+    <system:String x:Key="string_miniConsoleNotBoundToAKey">Mini console not bound to a key</system:String>
+    <system:String x:Key="string_interp_miniConsoleBoundToX">Mini console bound to {0}</system:String>
+    <!-- 0= UDK Key Name (Tilde, Tab, F, etc) -->
+    <system:String x:Key="string_bioInputiniFileIsMissing">BioInput.ini file is missing</system:String>
+    <system:String x:Key="string_runGameToGenerateFile">Run game to generate file</system:String>
+    <system:String x:Key="string_noInstallsOfGameManagedByModManager">No installs of game managed by Mod Manager</system:String>
+    <system:String x:Key="string_interp_fullConsoleBoundToConsolekeyValue">Full console bound to {0}</system:String>
+    <!-- 0=consolekey.Value -->
+    <system:String x:Key="string_interp_miniConsoleBoundToTypekeyValue">Mini console bound to {0}</system:String>
+    <!-- 0=typekey.Value -->
+    <system:String x:Key="string_consoleKeyKeybinder">Console Key Keybinder</system:String>
+    <!-- In game it is "Console Key", and this is keybinder, hence Console Key Keybinder -->
+    <system:String x:Key="string_description_consoleKeyKeybinder">This tool lets you set what keys are used to open the console and miniconsole in each Mass Effect game.</system:String>
+    <system:String x:Key="string_listeningForKeypress">Listening for keypress</system:String>
+    <system:String x:Key="string_pressAnyKeyOnYourKeyboardToAssignItFor">Press any key on your keyboard to assign it for:</system:String>
+    <system:String x:Key="string_cancelKeyAssignment">Cancel key assignment</system:String>
+    <system:String x:Key="string_changeFullKey">Change full key</system:String>
+    <system:String x:Key="string_changeMiniKey">Change mini key</system:String>
+    <system:String x:Key="string_setToDefaultKeys">Set to default keys</system:String>
+    <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Mass Effect 2 console keys are defined per game.</system:String>
+    <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Mass Effect 3 console keys are defined per game.</system:String>
+
+    <!-- Updater Service Panel -->
+    <system:String x:Key="string_updaterService">Updater Service</system:String>
+    <system:String x:Key="string_setChangelog">Set changelog</system:String>
+    <system:String x:Key="string_updaterServiceSettings">Updater Service settings</system:String>
+    <system:String x:Key="string_tooltip_cancelTheCurrentUploadTask">Cancel the current upload task</system:String>
+
+    <system:String x:Key="string_validatingSettings">Validating settings</system:String>
+    <system:String x:Key="string_settingsSaved">Settings saved</system:String>
+    <system:String x:Key="string_errorValidatingSettings">Error validating settings</system:String>
+    <system:String x:Key="string_modMissingUpdatesDescriptor">Mod must have the serverfolder descriptor set under UPDATES header</system:String>
+    <system:String x:Key="string_enterYourME3TweaksUpdaterServiceInformation">Enter your ME3Tweaks Updater Service information</system:String>
+    <system:String x:Key="string_pressSaveToValidateSettings">Press save to validate settings</system:String>
+    <system:String x:Key="string_authenticatingToME3Tweaks">Authenticating to ME3Tweaks</system:String>
+    <system:String x:Key="string_enterUpdaterServiceSettings">Enter Updater Service settings</system:String>
+    <system:String x:Key="string_checkingLZMAStorageDirectory">Checking LZMA storage directory</system:String>
+    <system:String x:Key="string_checkingManifestsStorageDirectory">Checking manifests storage directory</system:String>
+    <system:String x:Key="string_interp_errorValidatingSettingsXY">Error validating settings: {0}: {1}</system:String>
+    <!-- 0=String of operation that failed, 1= error message -->
+    <system:String x:Key="string_checkingIfUpdaterServiceIsConfiguredForMod">Checking if updater service is configured for mod</system:String>
+    <system:String x:Key="string_serverNotConfiguredForModContactMgamerz">Server not configured for mod - contact Mgamerz</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorCheckingUpdaterServiceConfiguration">Error checking updater service configuration:\n{0}</system:String>
+    <!-- 0=ex.Message -->
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_serverVersionSameOrNewerThanLocal">The server version is the same or higher version of the mod you are already uploading. Are you sure you want to push this version to the ME3Tweaks Updater Service? Clients who have a newer or same version of the mod will not see an update.\n\nLocal version: {0}\nServer version: {1}</system:String>
+    <!-- 0=mod.ParsedModVersion 1=latestVersionOnServer -->
+    <system:String x:Key="string_serverVersionSameOrNewerThanLocal">Server version same or newer than local</system:String>
+    <system:String x:Key="string_uploadAbortedModOnServerIsSameOrNewerThanLocalOneBeingUploaded">Upload aborted - mod on server is same or newer than local one being uploaded</system:String>
+    <system:String x:Key="string_compressingModForUpdaterService">Compressing mod for updater service</system:String>
+    <system:String x:Key="string_buildingServerManifest">Building server manifest</system:String>
+    <!-- 0= Percent # -->
+    <system:String x:Key="string_waitingForChangelogToBeSet">Waiting for changelog to be set</system:String>
+    <system:String x:Key="string_connectingToME3TweaksUpdaterService">Connecting to ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_connectedToME3TweaksUpdaterService">Connected to ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_creatingServerFolderForMod">Creating server folder for mod</system:String>
+    <system:String x:Key="string_hashingFilesOnServerForDelta">Hashing files on server for delta</system:String>
+    <system:String x:Key="string_creatingModDirectoriesOnServer">Creating mod directories on server</system:String>
+    <system:String x:Key="string_abortingUpload">Aborting upload</system:String>
+    <system:String x:Key="string_interp_deletingObsoleteFiles">Deleting obsolete mod files from server {0}/{1}</system:String>
+    <!-- 0=Num files deleted, 1=Num files to delete -->
+    <system:String x:Key="string_uploadingUpdateManifestToServer">Uploading update manifest to server</system:String>
+    <system:String x:Key="string_validatingModOnServer">Validating mod on server</system:String>
+    <system:String x:Key="string_someHashesOnServerAreIncorrectContactMgamerz">Some hashes on server are incorrect - contact Mgamerz</system:String>
+    <system:String x:Key="string_modUploadedToUpdaterService">Mod uploaded to Updater Service</system:String>
+    <system:String x:Key="string_uploadAborted">Upload aborted</system:String>
+    <system:String x:Key="string_interp_uploadingFilesToServerXY">Uploading files to server {0}/{1}</system:String>
+    <!-- 0=amount uploaded 1=total to upload -->
+
+    <!-- Mixin Library -->
+    <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>
+    <system:String x:Key="string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup">No game backup of ME3 is available. Mixins cannot be used without a backup.</system:String>
+    <!-- appears in bottom left of mixin library if ME3 backup cannot be found -->
+    <system:String xml:space="preserve" x:Key="string_interp_dialogCreatingNewModWithExistingName">Creating a mod with the name '{0}' will delete the existing mod directory in the mod library:\n{1}\n\nContinue?</system:String>
+    <!-- 0=NewModName 1=modpath -->
+    <system:String x:Key="string_compilingMixins">Compiling Mixins...</system:String>
+    <system:String x:Key="string_interp_errorApplyingMixinsForFile">Error applying mixins ({0}) for file {1}: {2}</system:String>
+    <!-- 0=List of mixins that targeted the file 1=Target file 2=Error message | This appears in a list-->
+    <system:String x:Key="string_compiledFromTheFollowingMixins">Compiled from the following mixins:</system:String>
+    <system:String x:Key="string_failedToApplyAllMixins">Failed to apply all Mixins</system:String>
+    <system:String x:Key="string_theFollowingMixinsFailedToApply">The following Mixins failed to apply.</system:String>
+
+    <system:String x:Key="string_compile">Compile...</system:String>
+    <system:String x:Key="string_compileIntoANewMod">Compile into a new mod</system:String>
+    <system:String x:Key="string_modNameColon">Mod name:</system:String>
+    <!-- This is here cause of how xaml works. It's not duplicate -->
+    <system:String xml:space="preserve" x:Key="string_tooltip_generatesNewMod">Generates a new Mod Manager mod with these Mixins.\nFiles are pulled from vanilla backup</system:String>
+    <system:String x:Key="string_compileAsANewMod">Compile as a new mod</system:String>
+    <system:String x:Key="string_or">Or</system:String>
+    <!-- as in X or Y -->
+    <system:String x:Key="string_compileIntoAnExistingMod">Compile into an existing mod</system:String>
+    <system:String x:Key="string_thisFeatureIsNotYetAvailable">This feature is not yet available.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_appliesMixinsToAMod">Applies the Mixins to a mod you specify.\nFiles in the mod are patched if the mod already uses them.\nFiles not used by the mod are pulled from vanilla backup</system:String>
+    <system:String x:Key="string_compileIntoExistingMod">Compile into existing mod</system:String>
+    <system:String x:Key="string_mixinLibrary">Mixin Library</system:String>
+    <system:String x:Key="string_header_mixinsArePremadePatches">Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change. Additional customizable Mixins are available on ME3Tweaks ModMaker. Mixins are currently only available for Mass Effect 3.</system:String>
+    <system:String x:Key="string_availableMixins">Available Mixins</system:String>
+    <system:String x:Key="string_tooltip_thisMixinIsAFinalizer">This Mixin is a finalizer</system:String>
+    <system:String x:Key="string_patchDescription">Patch Description</system:String>
+
+    <!-- Batch Mod Library (Install Group List) -->
+    <system:String x:Key="string_batchModInstaller">Batch Mod Installer</system:String>
+    <system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Batch Mod Installer allows you to install a group of mods all in a row, allowing you to quickly recreate a specific installation of the game.</system:String>
+    <system:String x:Key="string_createANewInstallGroup">Create a new install group</system:String>
+    <system:String x:Key="string_installGroups">Install groups</system:String>
+    <system:String x:Key="string_groupInformation">Group information</system:String>
+    <system:String x:Key="string_installThisGroup">Install this group</system:String>
+    <system:String x:Key="string_editGroup">Edit group</system:String>
+    <system:String x:Key="string_tooltip_targetToInstallThisModGroupTo">Target to install this mod group to</system:String>
+
+    <!-- Import Installed DLC Mod Panel -->
+    <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
+    <system:String x:Key="string_description_importFromGameToModManager">You can import a mod from a game installation into Mod Manager using this importer, which will allow you to install the mod quickly and easily later. Mods imported this way don't support configuration options, updates, and other Mod Manager features. Import mods from archive for full feature support.</system:String>
+    <system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mods that were installed via Mod Manager or ALOT Installer cannot be imported through this importer.</system:String>
+    <system:String x:Key="string_importMod">Import mod</system:String>
+    <system:String x:Key="string_thisInstallationHasBeenTextureModded">This installation has been texture modded</system:String>
+    <system:String x:Key="string_cannotImportModsFromTextureModdedTarget">You cannot import mods from a game installation that has had texture mods installed into it.</system:String>
+    <system:String x:Key="string_thisModHasNotBeenCatalogedByME3TweaksYet">This mod has not been cataloged by ME3Tweaks yet</system:String>
+    <system:String x:Key="string_pleaseEnterModInfoForTPMI">This mod does not appear to be part of the ME3Tweaks Third Party Mod Identification service (TPMI). This service helps users and developers identify mods in Mod Manager and in other tools. Please enter the following information. This information will be sent to ME3Tweaks for review before it is added to the TPMI service.</system:String>
+    <system:String x:Key="string_nameOfThisModRequired">Name of this mod (required)</system:String>
+    <system:String x:Key="string_modURL">Mod URL</system:String>
+    <system:String x:Key="string_dialog_invalidModNameWillResolveToNothing">The specified mod name cannot be used as it will result in an invalid foldername on the filesystem. Please choose a different name.</system:String>
+    <system:String x:Key="string_invalidModName">Invalid mod name</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_insufficientDiskSpaceToImport">There is not enough space on {0} to import this mod.\n\nRequired space: {1}\nFree space: {2}</system:String>
+    <!-- 0=Path to library 1=size of mod dir 2=free space on library drive -->
+    <system:String x:Key="string_insufficientFreeDiskSpace">Insufficient free disk space</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_importingWillDeleteExistingMod">There is already an existing mod at the following location:\n{0}\n\nImporting this mod with this name will delete and overwrite this mod in your library. If this is not intentional, please choose a different name.\n\nDelete the existing mod and import the installed one?</system:String>
+    <!-- 0=existing mod directory path -->
+    <system:String x:Key="string_sameNamedModInLibrary">Same named mod in library</system:String>
+    <system:String x:Key="string_interp_couldNotDeleteExistingModDirectory">Could not delete existing mod directory: {0}</system:String>
+    <!-- 0=error message-->
+    <system:String x:Key="string_errorDeletingModFolder">Error deleting mod folder</system:String>
+    <system:String x:Key="string_importedFromGame">Imported from game</system:String>
+    <system:String x:Key="string_defaultDescriptionForImportedMod">This mod was imported from an installation of {0} at {1}.</system:String>
+    <!-- 0=game name 1=time-->
 </ResourceDictionary>

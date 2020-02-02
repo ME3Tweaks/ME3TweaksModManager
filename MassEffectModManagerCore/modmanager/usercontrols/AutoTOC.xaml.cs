@@ -63,7 +63,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static bool RunTOCOnGameTarget(GameTarget target, Action<int> percentDoneCallback = null)
         {
-            Log.Information("Autotocing game: " + target.TargetPath);
+            Log.Information(@"Autotocing game: " + target.TargetPath);
 
             //get toc target folders, ensuring we clean up the inputs a bit.
             string baseDir = Path.GetFullPath(Path.Combine(target.TargetPath, @"BIOGame"));
@@ -154,12 +154,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public static void CreateUnpackedTOC(string dlcDirectory)
         {
             Log.Information(@"Creating unpacked toc for " + dlcDirectory);
-            if (dlcDirectory.Contains("DLC_CON_END") || dlcDirectory.Contains("DLC_EXP_Pack002"))
+#if DEBUG
+            if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
             {
                 Debugger.Break();
-                throw new Exception("ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
-
+                throw new Exception(@"ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
             }
+#endif
             var watch = System.Diagnostics.Stopwatch.StartNew();
             MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
             if (ms != null)

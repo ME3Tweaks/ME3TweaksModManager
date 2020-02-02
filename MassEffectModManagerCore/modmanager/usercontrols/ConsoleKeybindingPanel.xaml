@@ -1,22 +1,12 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ConsoleKeybindingPanel"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             Width="400">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ConsoleKeybindingPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="400">
     <StackPanel>
-        <TextBlock Text="Console Key Keybinder" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top"/>
-        <TextBlock Text="This tool lets you set what keys are used to open the console and miniconsole in each Mass Effect game." TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top"/>
-
+        <TextBlock Text="{DynamicResource string_consoleKeyKeybinder}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
+        <TextBlock Text="{DynamicResource string_description_consoleKeyKeybinder}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
         <StackPanel Visibility="{Binding IsListeningForKey, Converter={StaticResource BoolToVisibilityConverter}}">
-            <TextBlock Text="Listening for keypress" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise"  FontSize="28"/>
-            <TextBlock Text="Press any key on your keyboard to assign it for:" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise"  FontSize="16"/>
-            <TextBlock Text="{Binding KeyBeingAssigned}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise"  FontSize="16"/>
-            <Button Content="Cancel key assignment" HorizontalAlignment="Center" Margin="0,5,0,0" Click="CancelKeyAssignment_Click"/>
+            <TextBlock Text="{DynamicResource string_listeningForKeypress}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="28" />
+            <TextBlock Text="{DynamicResource string_pressAnyKeyOnYourKeyboardToAssignItFor}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
+            <TextBlock Text="{Binding KeyBeingAssigned}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
+            <Button Content="{DynamicResource string_cancelKeyAssignment}" HorizontalAlignment="Center" Margin="0,5,0,0" Click="CancelKeyAssignment_Click" />
         </StackPanel>
         <!-- ME1 -->
         <Grid Margin="0,5,5,5">
@@ -38,12 +28,11 @@
             <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ME1FullConsoleKeyText}" />
             <TextBlock Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding ME1MiniConsoleKeyText}" />
             <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Visibility="{Binding HasME1Install, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Button Content="Change full key" Command="{Binding ChangeME1FullCommand}"/>
-                <Button Content="Change mini key" Margin="3,0"  Command="{Binding ChangeME1MiniCommand}"/>
-                <Button Content="Set to default keys"  Command="{Binding DefaultME1KeysCommand}"/>
+                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeME1FullCommand}" />
+                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeME1MiniCommand}" />
+                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultME1KeysCommand}" />
             </StackPanel>
         </Grid>
-
         <!-- ME2 -->
         <Grid Margin="0,5,5,5">
             <Grid.ColumnDefinitions>
@@ -61,16 +50,14 @@
             </Grid.RowDefinitions>
             <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="/images/gameicons/ME2_48.ico" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
             <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect 2" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="Mass Effect 2 console keys are defined per game." />
-            <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME2Targets}" SelectedItem="{Binding SelectedME2Target}" 
-                      HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
-                      IsEnabled="{Binding UIEnabled}"/>
+            <TextBlock Grid.Column="1" Grid.Row="1" Text="{DynamicResource string_massEffect2ConsoleKeysAreDefinedPerGame}" />
+            <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME2Targets}" SelectedItem="{Binding SelectedME2Target}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding UIEnabled}" />
             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME2FullConsoleKeyText}" />
             <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME2MiniConsoleKeyText}" />
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME2Target, Converter={StaticResource NullVisibilityConverter}}">
-                <Button Content="Change full key" Command="{Binding ChangeME2FullCommand}"/>
-                <Button Content="Change mini key" Margin="3,0"  Command="{Binding ChangeME2MiniCommand}"/>
-                <Button Content="Set to default keys"  Command="{Binding DefaultME2KeysCommand}"/>
+                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeME2FullCommand}" />
+                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeME2MiniCommand}" />
+                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultME2KeysCommand}" />
             </StackPanel>
         </Grid>
         <!-- ME3 -->
@@ -90,18 +77,16 @@
             </Grid.RowDefinitions>
             <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="/images/gameicons/ME3_48.ico" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
             <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect 3" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="Mass Effect 3 console keys are defined per game." />
-            <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME3Targets}" SelectedItem="{Binding SelectedME3Target}" 
-                      HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" 
-                      IsEnabled="{Binding UIEnabled}"/>
-            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME3FullConsoleKeyText}"/>
+            <TextBlock Grid.Column="1" Grid.Row="1" Text="{DynamicResource string_massEffect3ConsoleKeysAreDefinedPerGame}" />
+            <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME3Targets}" SelectedItem="{Binding SelectedME3Target}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding UIEnabled}" />
+            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME3FullConsoleKeyText}" />
             <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME3MiniConsoleKeyText}" />
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME3Target, Converter={StaticResource NullVisibilityConverter}}">
-                <Button Content="Change full key" Command="{Binding ChangeME3FullCommand}"/>
-                <Button Content="Change mini key" Margin="3,0"  Command="{Binding ChangeME3MiniCommand}"/>
-                <Button Content="Set to default keys"  Command="{Binding DefaultME3KeysCommand}"/>
+                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeME3FullCommand}" />
+                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeME3MiniCommand}" />
+                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultME3KeysCommand}" />
             </StackPanel>
         </Grid>
-        <Button Content="Close" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}"/>
+        <Button Content="{DynamicResource string_close}" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
     </StackPanel>
 </local:MMBusyPanelBase>

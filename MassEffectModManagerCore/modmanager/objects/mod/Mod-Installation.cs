@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 
 using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
 using SevenZip;
@@ -161,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager
                 else if (job.Header == ModJob.JobHeader.BASEGAME || job.Header == ModJob.JobHeader.BALANCE_CHANGES || job.Header == ModJob.JobHeader.ME1_CONFIG)
                 {
                     #region Installation: BASEGAME, BALANCE CHANGES, ME1 CONFIG
-                    var installationMapping = new Dictionary<string, InstallSourceFile>();
+                    var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
                     unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     buildInstallationQueue(job, installationMapping, false);
                     #endregion
@@ -177,7 +178,7 @@ namespace MassEffectModManagerCore.modmanager
 
                         if (File.Exists(sfarPath))
                         {
-                            var installationMapping = new Dictionary<string, InstallSourceFile>();
+                            var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
                             if (new FileInfo(sfarPath).Length == 32)
                             {
                                 //Unpacked
@@ -205,7 +206,7 @@ namespace MassEffectModManagerCore.modmanager
                     //Unpacked
                     if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
-                        var installationMapping = new Dictionary<string, InstallSourceFile>();
+                        var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
                         unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                         buildInstallationQueue(job, installationMapping, false);
                     }
@@ -226,7 +227,7 @@ namespace MassEffectModManagerCore.modmanager
             return (unpackedJobInstallationMapping, sfarInstallationJobs);
         }
 
-        private void buildInstallationQueue(ModJob job, Dictionary<string, InstallSourceFile> installationMapping, bool isSFAR)
+        private void buildInstallationQueue(ModJob job, CaseInsensitiveDictionary<InstallSourceFile> installationMapping, bool isSFAR)
         {
             CLog.Information(@"Building installation queue for " + job.Header, Settings.LogModInstallation);
             foreach (var entry in job.FilesToInstall)
@@ -310,16 +311,17 @@ namespace MassEffectModManagerCore.modmanager
 
             //Apply autolist alternate files
 
-            foreach (var altFile in job.AlternateFiles.Where(x => x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES))
+            foreach (var altFile in job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES))
             {
                 foreach (var multifile in altFile.MultiListSourceFiles)
                 {
                     CLog.Information(
-                        $@"Adding multilist files {multifile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_APPLY_MULTILISTFILES",
+                        $@"Adding multilist file {multifile} to install (from {altFile.MultiListRootPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_APPLY_MULTILISTFILES",
                         Settings.LogModInstallation);
                     string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
 
-                    installationMapping[altFile.MultiListTargetPath + '\\' + multifile] = new InstallSourceFile(relativeSourcePath)
+                    var targetPath = altFile.MultiListTargetPath + '\\' + multifile;
+                    installationMapping[targetPath] = new InstallSourceFile(relativeSourcePath)
                     {
                         AltApplied = true,
                         IsFullRelativeFilePath = true
@@ -385,6 +387,7 @@ namespace MassEffectModManagerCore.modmanager
             return list;
         }
 
+        [DebuggerDisplay("InstallSourceFile {FilePath} IsFullRelPath: {IsFullRelativeFilePath}")]
         public class InstallSourceFile
         {
             /// <summary>

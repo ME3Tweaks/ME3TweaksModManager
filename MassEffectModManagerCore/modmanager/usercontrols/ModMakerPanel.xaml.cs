@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -33,7 +34,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long OverallMaximum { get; private set; } = 100;
         public bool OverallIndeterminate { get; private set; }
         public bool CompileInProgress { get; set; }
-        public string DownloadAndModNameText { get; set; } = "Enter ModMaker mod code or select from the top mods";
+        public string DownloadAndModNameText { get; set; } = M3L.GetString(M3L.string_enterModMakerModCodeOrSelectFromTheTopMods);
         public string CurrentTaskString { get; set; }
         public ModMakerPanel()
         {
@@ -45,10 +46,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void GetTopMods()
         {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ModMaker-TopModsFetch");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModMaker-TopModsFetch");
             nbw.DoWork += (a, b) =>
             {
-                b.Result= OnlineContent.FetchTopModMakerMods();
+                b.Result = OnlineContent.FetchTopModMakerMods();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -75,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenModMaker()
         {
-            Utilities.OpenWebpage("https://me3tweaks.com/modmaker");
+            Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
         }
 
         private void ClosePanel()
@@ -103,9 +104,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Todo: Add checkbox to use local version instead
                 if (int.TryParse(ModMakerCode, out var code))
                 {
-                    DownloadAndModNameText = "Downloading mod delta from ME3Tweaks";
+                    DownloadAndModNameText = @"Downloading mod delta from ME3Tweaks";
                     var normalEndpoint = OnlineContent.ModmakerModsEndpoint + code;
-                    var lzmaEndpoint = normalEndpoint + "&method=lzma";
+                    var lzmaEndpoint = normalEndpoint + @"&method=lzma";
 
                     string modDelta = null;
 
@@ -116,16 +117,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (total != -1)
                             {
-                                DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString("0")}%";
+                                var suffix = $@"{(done * 100.0 / total).ToString(@"0")}%"; //do not localize
+                                DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks) + suffix;
                             }
                             else
                             {
-                                DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks";
+                                DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks);
                             }
                         });
                         if (download.errorMessage == null)
                         {
-                            DownloadAndModNameText = "Decompressing delta";
+                            DownloadAndModNameText = M3L.GetString(M3L.string_decompressingDelta);
                             // OK
                             var decompressed = SevenZipHelper.LZMA.DecompressLZMAFile(download.result.ToArray());
                             modDelta = Encoding.UTF8.GetString(decompressed);
@@ -133,12 +135,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error("Error downloading lzma mod delta to memory: " + download.errorMessage);
+                            Log.Error(@"Error downloading lzma mod delta to memory: " + download.errorMessage);
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Error downloading LZMA mod delta to memory: " + e.Message);
+                        Log.Error(@"Error downloading LZMA mod delta to memory: " + e.Message);
                     }
 
                     if (modDelta == null)
@@ -146,7 +148,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //failed to download LZMA.
                         var download = OnlineContent.DownloadToMemory(normalEndpoint, (done, total) =>
                         {
-                            DownloadAndModNameText = $"Downloading mod delta from ME3Tweaks {(done * 100.0 / total).ToString("0")}%";
+                            var suffix = $"{(done * 100.0 / total).ToString(@"0")}%"; //do not localize
+                            DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks) + suffix;
                         });
                         if (download.errorMessage == null)
                         {
@@ -155,7 +158,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error("Error downloading decompressed mod delta to memory: " + download.errorMessage);
+                            Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
                         }
                     }
 
@@ -174,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         compiler.SetCompileStarted = CompilationInProgress;
                         compiler.SetModNotFoundCallback = ModNotFound;
                         Mod m = compiler.DownloadAndCompileMod(modDelta);
-                        File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + ".xml"), modDelta);
+                        File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + @".xml"), modDelta);
                         b.Result = m;
                     }
                 }
@@ -231,16 +234,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentTaskMaximum = obj;
         }
 
-        private bool CanStartCompiler() => int.TryParse(ModMakerCode, out var _) && !CompileInProgress;
+        private bool CanStartCompiler() => int.TryParse(ModMakerCode, out var _) && !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Escape && CanClose())
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()
         {
-
+            if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
+            {
+                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void CompilationInProgress()

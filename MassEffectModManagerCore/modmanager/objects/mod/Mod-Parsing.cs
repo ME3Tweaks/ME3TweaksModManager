@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,7 @@ namespace MassEffectModManagerCore.modmanager
         // Constants
 
         //Mod variables
-        public bool ValidMod;
+        public bool ValidMod { get; private set; }
         public List<ModJob> InstallationJobs = new List<ModJob>();
 
         //private List<ModJob> jobs;
@@ -95,6 +96,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             get
             {
+                if (LoadFailedReason != null) return LoadFailedReason;
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(ModDescription);
                 sb.AppendLine(@"=============================");
@@ -122,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager
                 sb.AppendLine(M3L.GetString(M3L.string_modparsing_installationInformationSplitter));
                 if (Settings.DeveloperMode)
                 {
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString()));
+                    sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture)));
                 }
                 var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
@@ -214,13 +216,13 @@ namespace MassEffectModManagerCore.modmanager
             Log.Information(@"Converting an RCW mod to an M3 mod.");
             Game = MEGame.ME2;
             ModDescTargetVersion = 6.0;
-
             ModDeveloper = rcw.Author;
             ModName = rcw.ModName;
             ModDescription = M3L.GetString(M3L.string_modparsing_defaultRCWDescription);
             ModJob rcwJob = new ModJob(ModJob.JobHeader.ME2_RCWMOD);
             rcwJob.RCW = rcw;
             InstallationJobs.Add(rcwJob);
+            ValidMod = true;
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (RCW) - " + ModName, new WeakReference(this));
         }
 
@@ -233,7 +235,18 @@ namespace MassEffectModManagerCore.modmanager
         {
             Log.Information($@"Loading moddesc.ini from archive: {Path.GetFileName(archive.FileName)} => {moddescArchiveEntry.FileName}");
             MemoryStream ms = new MemoryStream();
-            archive.ExtractFile(moddescArchiveEntry.FileName, ms);
+            try
+            {
+                archive.ExtractFile(moddescArchiveEntry.FileName, ms);
+            }
+            catch (Exception e)
+            {
+                ModName = M3L.GetString(M3L.string_loadFailed);
+                Log.Error(@"Error loading moddesc.ini from archive! Error: " + e.Message);
+                LoadFailedReason = M3L.GetString(M3L.string_interp_errorReadingArchiveModdesc, e.Message);
+                return;
+            }
+
             ms.Position = 0;
             string iniText = new StreamReader(ms).ReadToEnd();
             ModPath = Path.GetDirectoryName(moddescArchiveEntry.FileName);
@@ -314,11 +327,13 @@ namespace MassEffectModManagerCore.modmanager
                 if (App.BuildNumber < minBuild)
                 {
                     ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
-                    Log.Error($"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
-                    LoadFailedReason = $"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.";
+                    Log.Error($@"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_cannotLoadBuildTooOld, minBuild, App.BuildNumber);
                     return; //Won't set valid
                 }
             }
+
+            int.TryParse(iniData[@"ModManager"][@"importedby"], out int importedByBuild);
 
             if (double.TryParse(iniData[@"ModManager"][@"cmmver"], out double parsedModCmmVer))
             {
@@ -389,7 +404,7 @@ namespace MassEffectModManagerCore.modmanager
                 try
                 {
                     //try to extract nexus mods ID
-                    var nexusIndex = ModWebsite.IndexOf(@"nexusmods.com/");
+                    var nexusIndex = ModWebsite.IndexOf(@"nexusmods.com/", StringComparison.InvariantCultureIgnoreCase);
                     if (nexusIndex > 0)
                     {
                         string nexusId = ModWebsite.Substring(nexusIndex + @"nexusmods.com/".Length); // http:/
@@ -402,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager
 
                         nexusId = nexusId.Substring(6).TrimEnd('/'); // /mods/ and any / after number in the event url has that in it.
 
-                        int questionMark = nexusId.IndexOf(@"?");
+                        int questionMark = nexusId.IndexOf(@"?", StringComparison.InvariantCultureIgnoreCase);
                         if (questionMark > 0)
                         {
                             nexusId = nexusId.Substring(0, questionMark);
@@ -430,11 +445,11 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             string game = iniData[@"ModInfo"][@"game"];
-            if (parsedModCmmVer >= 6 && game == null)
+            if (parsedModCmmVer >= 6 && game == null && importedByBuild > 0)
             {
                 //Not allowed. You MUST specify game on cmmver 6 or higher
                 Log.Error($@"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.");
-                LoadFailedReason = $"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_missingModInfoGameDescriptor, ModName);
                 return;
             }
             switch (game)
@@ -469,7 +484,7 @@ namespace MassEffectModManagerCore.modmanager
             if (ModDescTargetVersion < 6 && Game != MEGame.ME3)
             {
                 Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 6.0 do not support ME1 or ME2.");
-                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString());
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
                 return;
             }
 
@@ -1266,7 +1281,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
 
                         Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
-                        LoadFailedReason = $"This mod contains a blacklisted mod file: {fullpath}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_blacklistedfileFound, fullpath);
                         return;
                     }
                 }
@@ -1288,7 +1303,7 @@ namespace MassEffectModManagerCore.modmanager
             //        {
 
             //            Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
-            //            LoadFailedReason = $"This mod contains a blacklisted mod file: {fullpath}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.";
+            //            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_blacklistedfileFound, fullpath);
             //            return;
             //        }
             //    }

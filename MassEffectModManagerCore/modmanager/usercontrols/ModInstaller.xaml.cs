@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var hasBackup = Utilities.GetGameBackupPath(ModBeingInstalled.Game);
             if (hasBackup == null)
             {
-                var installAnyways = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"There is no backup for {Utilities.GetGameName(ModBeingInstalled.Game)} - installing {ModBeingInstalled.ModName} will require you to repair the game in order to remove it, which may invalidate other mods that are in use.\n\nInstall this mod without a backup?", "No backup", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                var installAnyways = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, Utilities.GetGameName(ModBeingInstalled.Game), ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
                 return installAnyways == MessageBoxResult.Yes;
             }
 
@@ -211,20 +211,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
             numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * (ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
             Debug.WriteLine(@"Number of expected installation tasks: " + numFilesToInstall);
-            void FileInstalledCallback(string target)
-            {
-                numdone++;
-                Debug.WriteLine(@"Installed: " + target);
-                Action = M3L.GetString(M3L.string_installing);
-                var now = DateTime.Now;
-                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
-                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
-                {
-                    //Don't update UI too often. Once per second is enough.
-                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
-                    lastPercentUpdateTime = now;
-                }
-            }
+
 
             //Stage: Unpacked files build map
 
@@ -335,6 +322,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Debugger.Break();
                         }
                         string destFile = Path.Combine(sfarStagingDirectory, sfarJob.job.JobDirectory, fileToInstall.Value.FilePath);
+                        if (fileToInstall.Value.IsFullRelativeFilePath)
+                        {
+                            destFile = Path.Combine(sfarStagingDirectory, fileToInstall.Value.FilePath);
+                        }
                         fullPathMappingArchive[archiveIndex] = destFile; //used for extraction indexing
                         fullPathMappingDisk[sourceFile] = destFile; //used for redirection
                         Debug.WriteLine($@"SFAR Disk Staging: {fileToInstall.Key} => {destFile}");
@@ -386,6 +377,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Information($@"Deleting existing DLC directory: {path}");
                     Utilities.DeleteFilesAndFoldersRecursively(path);
+                }
+            }
+
+            void FileInstalledCallback(string target)
+            {
+                numdone++;
+                var fileMapping = fullPathMappingDisk.FirstOrDefault(x => x.Value == target);
+                CLog.Information($@"Installed: {fileMapping.Key} -> {target}", Settings.LogModInstallation);
+                //Debug.WriteLine(@"Installed: " + target);
+                Action = M3L.GetString(M3L.string_installing);
+                var now = DateTime.Now;
+                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
+                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+                {
+                    //Don't update UI too often. Once per second is enough.
+                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
+                    lastPercentUpdateTime = now;
                 }
             }
 
@@ -527,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             catch (Exception e)
             {
                 Crashes.TrackError(e);
-                Log.Error("Error parsing ME2Coalesced. We will abort this installation");
+                Log.Error(@"Error parsing ME2Coalesced: " + e.Message + @". We will abort this installation");
                 return ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED;
             }
             RCWMod rcw = ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD).RCW;
@@ -542,10 +550,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (me2cF.Key == null)
                 {
                     Log.Error(@"RCW mod specifies a file in coalesced that does not exist in the local one: " + rcwF.FileName);
-                    Crashes.TrackError(new Exception("Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
+                    Crashes.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File"), new Dictionary<string, string>()
                     {
-                        { "me2mod mod name", rcw.ModName },
-                        { "Missing file", rcwF.FileName }
+                        { @"me2mod mod name", rcw.ModName },
+                        { @"Missing file", rcwF.FileName }
                     });
                     return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
                 }
@@ -556,11 +564,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (section == null)
                     {
                         Log.Error($@"RCW mod specifies a section in {rcwF.FileName} that does not exist in the local coalesced: {rcwS.SectionName}");
-                        Crashes.TrackError(new Exception("Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
+                        Crashes.TrackError(new Exception(@"Unknown Internal ME2 Coalesced File Section"), new Dictionary<string, string>()
                         {
-                            { "me2mod mod name", rcw.ModName },
-                            { "File", rcwF.FileName },
-                            { "Missing Section", rcwS.SectionName }
+                            { @"me2mod mod name", rcw.ModName },
+                            { @"File", rcwF.FileName },
+                            { @"Missing Section", rcwS.SectionName }
                         });
                         return ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE;
                     }
@@ -870,7 +878,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            //throw new NotImplementedException();
+            if (e.Key == Key.Escape && !ModIsInstalling)
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         private void AlternateItem_MouseUp(object sender, MouseButtonEventArgs e)
@@ -1036,7 +1047,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (ModBeingInstalled != null)
             {
                 var queues = ModBeingInstalled.GetInstallationQueues(gameTarget);
-                Debug.WriteLine("Installation Queue:");
+                Debug.WriteLine(@"Installation Queue:");
                 foreach (var job in queues.Item1)
                 {
                     foreach (var file in job.Value.unpackedJobMapping)

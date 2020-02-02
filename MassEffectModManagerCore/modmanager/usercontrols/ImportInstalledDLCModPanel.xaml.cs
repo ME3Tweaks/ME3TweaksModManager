@@ -66,8 +66,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (string.IsNullOrWhiteSpace(destinationName))
             {
                 //cannot use this name
-                Log.Error("Invalid mod name: " + ModNameText);
-                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, "The specified mod name cannot be used as it will result in an invalid foldername on the filesystem. Please choose a different name.", "Invalid mod name", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error(@"Invalid mod name: " + ModNameText);
+                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_dialog_invalidModNameWillResolveToNothing), M3L.GetString(M3L.string_invalidModName), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Not enough space
                     Log.Error($@"Not enough disk space to import mod. Required space: {ByteSize.FromBytes(sourceSize)}, available space: {ByteSize.FromBytes(freeBytes)}");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"There is not enough space on {Path.GetPathRoot(library)} to import this mod.\n\nRequired space: {ByteSize.FromBytes(sourceSize)}\nFree space: {ByteSize.FromBytes(freeBytes)}", "Insufficient free disk space", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_insufficientDiskSpaceToImport, Path.GetPathRoot(library), ByteSize.FromBytes(sourceSize), ByteSize.FromBytes(freeBytes)), M3L.GetString(M3L.string_insufficientFreeDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var outDir = Path.Combine(library, destinationName);
             if (Directory.Exists(outDir))
             {
-                var okToDelete = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"There is already an existing mod at the following location:\n{outDir}\n\nImporting this mod with this name will delete and overwrite this mod in your library. If this is not intentional, please choose a different name.\n\nDelete the existing mod and import the installed one?", "Same name mod in library", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var okToDelete = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_dialog_importingWillDeleteExistingMod, outDir), M3L.GetString(M3L.string_sameNamedModInLibrary), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (okToDelete == MessageBoxResult.No)
                 {
                     return; //cancel
@@ -103,19 +103,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"Could not delete existing mod directory: {e.Message}", "Error deleting mod folder", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_couldNotDeleteExistingModDirectory, e.Message), M3L.GetString(M3L.string_errorDeletingModFolder), MessageBoxButton.OK, MessageBoxImage.Error);
                     return; //abort
                 }
             }
 
-            NamedBackgroundWorker bw = new NamedBackgroundWorker("GameDLCModImporter");
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"GameDLCModImporter");
             bw.DoWork += ImportDLCFolder_BackgroundThread;
             bw.RunWorkerCompleted += (a, b) =>
             {
-                Analytics.TrackEvent("Imported a mod from game installation", new Dictionary<string, string>()
+                Analytics.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
                 {
-                    {"Game", SelectedTarget.Game.ToString()},
-                    {"Folder", SelectedDLCFolder.DLCFolderName}
+                    {@"Game", SelectedTarget.Game.ToString()},
+                    {@"Folder", SelectedDLCFolder.DLCFolderName}
                 });
                 OperationInProgress = false;
                 OnClosing(new DataEventArgs(b.Result));
@@ -156,9 +156,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
             ini[@"ModInfo"][@"game"] = SelectedTarget.Game.ToString();
             ini[@"ModInfo"][@"modname"] = ModNameText;
-            ini[@"ModInfo"][@"moddev"] = "Imported from game";
-            ini[@"ModInfo"][@"moddesc"] = $"This mod was imported from an installation of {Utilities.GetGameName(SelectedTarget.Game)} at {DateTime.Now}.";
-            ini[@"ModInfo"][@"modver"] = "Unknown";
+            ini[@"ModInfo"][@"moddev"] = M3L.GetString(M3L.string_importedFromGame);
+            ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_defaultDescriptionForImportedMod, Utilities.GetGameName(SelectedTarget.Game), DateTime.Now);
+            ini[@"ModInfo"][@"modver"] = M3L.GetString(M3L.string_unknown);
 
             ini[@"CUSTOMDLC"][@"sourcedirs"] = SelectedDLCFolder.DLCFolderName;
             ini[@"CUSTOMDLC"][@"destdirs"] = SelectedDLCFolder.DLCFolderName;
@@ -170,7 +170,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Generate and load mod
             Mod m = new Mod(moddescPath, Mod.MEGame.ME3);
             e.Result = m;
-            Log.Information("Mod import complete.");
+            Log.Information(@"Mod import complete.");
 
             if (!CurrentModInTPMI)
             {
@@ -180,6 +180,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     TPMITelemetrySubmissionForm.TelemetryPackage tp = TPMITelemetrySubmissionForm.GetTelemetryPackageForDLC(SelectedTarget.Game,
                         MEDirectories.DLCPath(SelectedTarget),
                         SelectedDLCFolder.DLCFolderName,
+                        SelectedDLCFolder.DLCFolderName, //same as foldername as this is already installed
                         ModNameText,
                         @"N/A",
                         ModSiteText,
@@ -242,7 +243,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Escape && CanClosePanel())
+            {
+                ClosePanel();
+            }
         }
 
         public override void OnPanelVisible()

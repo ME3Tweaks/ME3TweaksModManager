@@ -143,7 +143,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public static void ExtractDefaultASIResources()
         {
             var outpath = CachedASIsFolder;
-            string[] defaultResources = { @"BalanceChangesReplacer-v2.0.asi", @"ME1-DLC-ModEnabler-v1.0.asi", @"ME3Logger_truncating-v1.0.asi", "manifest.xml" };
+            string[] defaultResources = { @"BalanceChangesReplacer-v2.0.asi", @"ME1-DLC-ModEnabler-v1.0.asi", @"ME3Logger_truncating-v1.0.asi", @"manifest.xml" };
             foreach (var file in defaultResources)
             {
                 var outfile = Path.Combine(CachedASIsFolder, file);
@@ -427,7 +427,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            //throw new NotImplementedException();
+            if (e.Key == Key.Escape && CanClosePanel())
+            {
+                OnClosing(DataEventArgs.Empty);
+            }
         }
 
         public override void OnPanelVisible()
@@ -716,11 +719,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (asi == null)
                 {
                     //how can this be?
-                    Log.Error("ASI is null for ApplyASI()!");
+                    Log.Error(@"ASI is null for ApplyASI()!");
                 }
                 if (SelectedTarget.TargetPath == null)
                 {
-                    Log.Error("Selected Target is null for ApplyASI()!");
+                    Log.Error(@"Selected Target is null for ApplyASI()!");
                 }
                 Log.Information($@"Installing {asi.Name} v{asi.Version} to target {SelectedTarget.TargetPath}");
                 //Check if this is actually installed or not (or outdated)
