@@ -58,7 +58,7 @@ namespace LocalizationHelper
                     try
                     {
                         var branches = ghclient.Repository.Branch.GetAll("ME3Tweaks", "ME3TweaksModManager").Result;
-                        var locbranches = branches.Where(x => x.Name.Contains("localization"));
+                        var locbranches = branches.Where(x => x.Name.Contains("master"));
                         System.Windows.Application.Current.Dispatcher.Invoke(delegate { LocalizationBranches.ReplaceAll(locbranches.Select(x => x.Name)); });
                     }
                     catch (Exception e)
@@ -143,6 +143,7 @@ namespace LocalizationHelper
                             preservewhitespace = lineInfo.preserveWhitespace,
                             INT = lineInfo.text
                         };
+                        if (lineInfo.key == null) Debugger.Break();
                         if (ls.INT == null) Debugger.Break();
                         cat.LocalizedStringsForSection.Add(ls);
                     }
@@ -197,7 +198,6 @@ namespace LocalizationHelper
                 {
                     var langLines = Regex.Split(dictionaries[lang], "\r\n|\r|\n");
                     int numBlankLines = 0;
-                    LocalizationCategory cat = null;
                     for (int i = 3; i < langLines.Length - 2; i++)
                     {
                         var line = langLines[i].Trim();
@@ -213,41 +213,38 @@ namespace LocalizationHelper
                             line = line.Substring(4);
                             line = line.Substring(0, line.Length - 3);
                             line = line.Trim();
-                            if (numBlankLines > 0 || cat == null)
+                            if (numBlankLines > 0)
                             {
-                                cat = categories.FirstOrDefault(x => x.CategoryName == line);
-                                if (cat == null)
-                                {
-                                    Debugger.Break();
-                                }
+                                continue; //skip this line. Only INT determines categories
                             }
-
-                            //notes for previous item?
-
                             //We don't care in localizations about this, they just have to exist.
                             continue;
                         }
 
                         numBlankLines = 0;
                         var lineInfo = extractInfo(line);
-                        LocalizedString ls = cat.LocalizedStringsForSection.FirstOrDefault(x => x.key == lineInfo.key);
-                        switch (lang)
+                        var t = categories.Select(x => x.LocalizedStringsForSection.FirstOrDefault(y => y.key == lineInfo.key)).Where(x => x != null).ToList();
+                        LocalizedString ls = t.FirstOrDefault();
+                        if (ls != null)
                         {
-                            case "rus":
-                                ls.RUS = lineInfo.text;
-                                break;
-                            case "deu":
-                                ls.DEU = lineInfo.text;
-                                break;
-                            case "pol":
-                                ls.POL = lineInfo.text;
-                                break;
-                            case "fra":
-                                ls.FRA = lineInfo.text;
-                                break;
-                            case "esn":
-                                ls.ESN = lineInfo.text;
-                                break;
+                            switch (lang)
+                            {
+                                case "rus":
+                                    ls.RUS = lineInfo.text;
+                                    break;
+                                case "deu":
+                                    ls.DEU = lineInfo.text;
+                                    break;
+                                case "pol":
+                                    ls.POL = lineInfo.text;
+                                    break;
+                                case "fra":
+                                    ls.FRA = lineInfo.text;
+                                    break;
+                                case "esn":
+                                    ls.ESN = lineInfo.text;
+                                    break;
+                            }
                         }
                     }
                 }

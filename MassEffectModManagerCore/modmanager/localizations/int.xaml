@@ -232,7 +232,7 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_checksForUpdatesToThisMod">Checks for updates to this mod.&#10;Mods hosted on NexusMods must be whitelisted by ME3Tweaks for update checks</system:String>
     <system:String x:Key="string_tooltip_forcesUpdateCheck">Forces a mod to perform an update even if it is the latest version of the mod</system:String>
     <system:String x:Key="string_packageModForRelease">Package mod for release</system:String>
-    <system:String x:Key="string_tooltip_deployTo7z">Prepares a mod for distribution by running tests against the mod,\nthen compresses it in way that makes it fast to load in Mod Manager</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_deployTo7z">Prepares a mod for distribution by running tests against the mod,&#10;then compresses it in way that makes it fast to load in Mod Manager</system:String>
     <system:String x:Key="string_mE3TweaksUpdaterService">ME3Tweaks Updater Service</system:String>
     <system:String x:Key="string_tooltip_uploadToUpdaterService">Uploads this mod to the ME3Tweaks Updater Service</system:String>
     <system:String x:Key="string_editUpdaterServiceSettings">Edit updater service settings</system:String>
