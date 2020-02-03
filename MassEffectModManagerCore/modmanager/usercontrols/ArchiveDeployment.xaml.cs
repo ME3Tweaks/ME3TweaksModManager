@@ -16,6 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ByteSizeLib;
 using Flurl.Util;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
@@ -352,6 +353,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 //local afc
                                 afcPath = localDirectoryAFCPath;
                             }
+                            else if (referencedFiles.Any(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase)))
+                            {
+                                //found afc in mod.
+                                //if there is multiple same-named AFCs in the mod, this might fail.
+                                afcPath = Path.Combine(ModBeingDeployed.ModPath, referencedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase)));
+                                if (!File.Exists(afcPath))
+                                {
+                                    Debugger.Break();
+                                }
+                            }
                             else
                             {
                                 //Check game
@@ -623,6 +634,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 compressor.CustomParameters.Add(@"mt", @"off");
             }
+            else
+            {
+                var foldersize = Utilities.GetSizeOfDirectory(ModBeingDeployed.ModPath);
+                if (foldersize > ByteSize.BytesInGigaByte * 1.25)
+                {
+                    //cap threads to prevent huge memory
+                    var cores = Environment.ProcessorCount;
+                    cores = Math.Min(cores, 5);
+                    compressor.CustomParameters.Add(@"mt", cores.ToString());
+                }
+            }
+
+
             compressor.CustomParameters.Add(@"yx", @"9");
             //compressor.CustomParameters.Add("x", "9");
             compressor.CustomParameters.Add(@"d", @"28");
