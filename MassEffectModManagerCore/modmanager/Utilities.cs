@@ -280,7 +280,6 @@ namespace MassEffectModManagerCore
         /// <returns>true, if write access is allowed, otherwise false</returns>
         public static bool IsDirectoryWritable(string dir)
         {
-            var files = Directory.GetFiles(dir);
             try
             {
                 System.IO.File.Create(Path.Combine(dir, "temp_m3.txt")).Close();
