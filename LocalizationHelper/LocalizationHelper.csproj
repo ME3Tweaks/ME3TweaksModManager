@@ -24,4 +24,9 @@
     <PackageReference Include="PropertyChanged.Fody" Version="3.2.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <TrimmerRootAssembly Include="System.Memory" />
+    <TrimmerRootAssembly Include="System.Net" />
+    <TrimmerRootAssembly Include="System.Linq.Queryable" />
+  </ItemGroup>
 </Project>
