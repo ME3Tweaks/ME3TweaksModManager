@@ -897,54 +897,61 @@ namespace MassEffectModManagerCore
             //Detect screen resolution - useful info for scene modders
             string resolution = @"Could not detect";
             var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare");
-            switch (SelectedGameTarget.Game)
+            try
             {
-                case Mod.MEGame.ME1:
-                    {
-                        iniFile = Path.Combine(iniFile, @"Mass Effect", @"Config", @"BIOEngine.ini");
-                        if (File.Exists(iniFile))
+                switch (SelectedGameTarget.Game)
+                {
+                    case Mod.MEGame.ME1:
                         {
-                            var dini = DuplicatingIni.LoadIni(iniFile);
-                            var section = dini.Sections.FirstOrDefault(x => x.Header == @"WinDrv.WindowsClient");
-                            if (section != null)
+                            iniFile = Path.Combine(iniFile, @"Mass Effect", @"Config", @"BIOEngine.ini");
+                            if (File.Exists(iniFile))
                             {
-                                var resx = section.Entries.FirstOrDefault(x => x.Key == @"StartupResolutionX");
-                                var resy = section.Entries.FirstOrDefault(x => x.Key == @"StartupResolutionY");
-                                if (resx != null && resy != null)
+                                var dini = DuplicatingIni.LoadIni(iniFile);
+                                var section = dini.Sections.FirstOrDefault(x => x.Header == @"WinDrv.WindowsClient");
+                                if (section != null)
                                 {
-                                    resolution = $@"{resx.Value}x{resy.Value}";
+                                    var resx = section.Entries.FirstOrDefault(x => x.Key == @"StartupResolutionX");
+                                    var resy = section.Entries.FirstOrDefault(x => x.Key == @"StartupResolutionY");
+                                    if (resx != null && resy != null)
+                                    {
+                                        resolution = $@"{resx.Value}x{resy.Value}";
+                                    }
                                 }
                             }
                         }
-                    }
-                    break;
-                case Mod.MEGame.ME2:
-                case Mod.MEGame.ME3:
-                    {
-                        iniFile = Path.Combine(iniFile, @"Mass Effect " + SelectedGameTarget.Game.ToString().Substring(2), @"BIOGame", @"Config", @"Gamersettings.ini");
-                        if (File.Exists(iniFile))
+                        break;
+                    case Mod.MEGame.ME2:
+                    case Mod.MEGame.ME3:
                         {
-                            var dini = DuplicatingIni.LoadIni(iniFile);
-                            var section = dini.Sections.FirstOrDefault(x => x.Header == @"SystemSettings");
-                            if (section != null)
+                            iniFile = Path.Combine(iniFile, @"Mass Effect " + SelectedGameTarget.Game.ToString().Substring(2), @"BIOGame", @"Config", @"Gamersettings.ini");
+                            if (File.Exists(iniFile))
                             {
-                                var resx = section.Entries.FirstOrDefault(x => x.Key == @"ResX");
-                                var resy = section.Entries.FirstOrDefault(x => x.Key == @"ResY");
-                                if (resx != null && resy != null)
+                                var dini = DuplicatingIni.LoadIni(iniFile);
+                                var section = dini.Sections.FirstOrDefault(x => x.Header == @"SystemSettings");
+                                if (section != null)
                                 {
-                                    resolution = $@"{resx.Value}x{resy.Value}";
+                                    var resx = section.Entries.FirstOrDefault(x => x.Key == @"ResX");
+                                    var resy = section.Entries.FirstOrDefault(x => x.Key == @"ResY");
+                                    if (resx != null && resy != null)
+                                    {
+                                        resolution = $@"{resx.Value}x{resy.Value}";
+                                    }
                                 }
                             }
                         }
-                    }
-                    break;
-            }
+                        break;
+                }
 
-            Analytics.TrackEvent(@"Launched game", new Dictionary<string, string>()
+                Analytics.TrackEvent(@"Launched game", new Dictionary<string, string>()
+                {
+                    {@"Game", game.ToString()},
+                    {@"Screen resolution", resolution}
+                });
+            }
+            catch (Exception e)
             {
-                {@"Game", game.ToString()},
-                {@"Screen resolution", resolution}
-            });
+                Log.Error(@"Error trying to detect screen resolution: " + e.Message);
+            }
             //var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
             //Process.Start(exePath);
 
@@ -1729,6 +1736,8 @@ namespace MassEffectModManagerCore
                     InstallationTargets_ComboBox.SelectedItem = installTarget;
                 }
 
+                VisitWebsiteText = SelectedMod.ModWebsite != Mod.DefaultWebsite ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
+
                 if (NexusModsUtilities.HasAPIKey)
                 {
                     if (SelectedMod.NexusModID > 0)
@@ -1744,13 +1753,17 @@ namespace MassEffectModManagerCore
                             var endorsed = await SelectedMod.GetEndorsementStatus(NexusUserID);
                             if (endorsed != null)
                             {
-                                if (SelectedMod.CanEndorse)
+                                if (SelectedMod != null)
                                 {
-                                    UpdatedEndorsementString();
-                                }
-                                else
-                                {
-                                    CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseMod);
+                                    //mod might have changed since we did BG thread wait.
+                                    if (SelectedMod.CanEndorse)
+                                    {
+                                        UpdatedEndorsementString();
+                                    }
+                                    else
+                                    {
+                                        CurrentModEndorsementStatus = M3L.GetString(M3L.string_cannotEndorseMod);
+                                    }
                                 }
                             }
                             else
@@ -1773,9 +1786,6 @@ namespace MassEffectModManagerCore
                 {
                     CurrentModEndorsementStatus = $@"{M3L.GetString(M3L.string_cannotEndorseMod)} ({M3L.GetString(M3L.string_notAuthenticated)})";
                 }
-
-                VisitWebsiteText = SelectedMod.ModWebsite != Mod.DefaultWebsite ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
-
                 //CurrentDescriptionText = newSelectedMod.DisplayedModDescription;
             }
             else
