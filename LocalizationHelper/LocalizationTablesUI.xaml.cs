@@ -691,7 +691,7 @@ namespace LocalizationHelper
 
         public LocalizedString SelectedDataGridItem { get; set; }
 
-        public string SearchText { get; set; }
+        public string SearchText { get; set; } = "";
         private void Find_Clicked(object sender, RoutedEventArgs e)
         {
 
@@ -700,6 +700,7 @@ namespace LocalizationHelper
 
             int numCategories = LocalizationCategories.Count(); //might need to +1 this
             string searchTerm = SearchText.ToLower();
+            if (string.IsNullOrEmpty(searchTerm)) return;
             LocalizedString itemToHighlight = null;
             LocalizationCategory catToHighlight = null;
             for (int i = 0; i < numCategories; i++)
@@ -739,7 +740,7 @@ namespace LocalizationHelper
                     }
 
                     //German
-                    if (ShowGerman && ls.DEU.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    if (ShowGerman && ls.DEU != null && ls.DEU.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //found
                         found = true;
@@ -749,7 +750,7 @@ namespace LocalizationHelper
                     }
 
                     //Russian
-                    if (ShowRussian && ls.RUS.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    if (ShowRussian && ls.RUS != null && ls.RUS.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //found
                         found = true;
@@ -759,7 +760,7 @@ namespace LocalizationHelper
                     }
 
                     //Polish
-                    if (ShowPolish && ls.POL.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    if (ShowPolish && ls.POL != null && ls.POL.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //found
                         found = true;
@@ -769,7 +770,7 @@ namespace LocalizationHelper
                     }
 
                     //French
-                    if (ShowFrench && ls.FRA.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    if (ShowFrench && ls.FRA != null && ls.FRA.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //found
                         found = true;
@@ -779,7 +780,7 @@ namespace LocalizationHelper
                     }
 
                     //Spanish
-                    if (ShowSpanish && ls.ESN.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    if (ShowSpanish && ls.ESN != null && ls.ESN.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //found
                         found = true;
@@ -804,6 +805,14 @@ namespace LocalizationHelper
                 SelectedCategory = catToHighlight;
                 SelectedDataGridItem = itemToHighlight;
                 DataGridTable.ScrollIntoView(SelectedDataGridItem);
+            }
+        }
+
+        private void SeachBox_OnKeyDownHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                Find_Clicked(null, null);
             }
         }
     }
