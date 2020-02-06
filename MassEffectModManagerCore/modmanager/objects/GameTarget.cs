@@ -381,7 +381,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                         UIString += @" - " + M3L.GetString(M3L.string_unpacked);
                     }
                     var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
-                    if (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin") && !Unpacked) Inconsistent = true;
+                    // not TOC is due to bug in autotoc
+                    if (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != "PCConsoleTOC") && !Unpacked) Inconsistent = true;
                 }
                 RestoreCommand = new GenericCommand(RestoreSFARWrapper, CanRestoreSFAR);
             }
@@ -453,7 +454,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             public static bool HasUnpackedFiles(string sfarFile)
             {
                 var unpackedFiles = Directory.GetFiles(Directory.GetParent(Directory.GetParent(sfarFile).FullName).FullName, @"*", SearchOption.AllDirectories);
-                return (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin"));
+                return (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != "PCConsoleTOC"));
             }
             private bool checkedForBackupFile;
             private bool canRestoreSfar;
