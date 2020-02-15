@@ -1,7 +1,7 @@
 <ResourceDictionary	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:system="clr-namespace:System;assembly=System.Runtime">
-	<!-- Main Window -->
+    <!-- Main Window -->
     <system:String x:Key="string_AvailableMods">Библиотека Модов</system:String>
     <system:String x:Key="string_Language">Язык</system:String>
     <system:String x:Key="string_Actions">Действия</system:String>
@@ -1286,3 +1286,4 @@
     <system:String x:Key="string_importedFromGame">Импортирован из игры</system:String>
     <system:String x:Key="string_defaultDescriptionForImportedMod">Этот мод был импортирован из установки {0} в {1)</system:String>
 	<!-- 0=game name 1=time -->
+</ResourceDictionary>
