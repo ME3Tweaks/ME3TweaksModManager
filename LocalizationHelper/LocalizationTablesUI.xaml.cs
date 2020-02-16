@@ -573,7 +573,7 @@ namespace LocalizationHelper
             //Add header
             sb.AppendLine("<ResourceDictionary\txmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"");
             sb.AppendLine("\t\t\t\t\txmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
-            sb.AppendLine("\t\t\t\t\txmlns:system=\"clr-namespace:System;assembly=System.Runtime\"");
+            sb.AppendLine("\t\t\t\t\txmlns:system=\"clr-namespace:System;assembly=System.Runtime\">");
 
             bool isFirst = true;
             foreach (var cat in LocalizationCategories)
@@ -604,7 +604,7 @@ namespace LocalizationHelper
                     }
                 }
             }
-
+            sb.AppendLine("</ResourceDictionary>");
             return sb.ToString();
 
         }
