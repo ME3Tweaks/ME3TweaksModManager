@@ -10,7 +10,7 @@
     <Description>Localizes the ME3Tweaks files from github</Description>
     <Copyright>2020 ME3Tweaks</Copyright>
     <ApplicationIcon>localizericon.ico</ApplicationIcon>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
