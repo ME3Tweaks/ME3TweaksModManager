@@ -1069,7 +1069,7 @@
     <!-- Updater Service-->
     <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
     <!-- 0=sourcefile.relativefilepath 1=sourcefile.size 2=decompressedStream.Length -->
-    <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
+    <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file ({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
     <!-- 0= sourcefile.relativefilepath 1= sourcefile.hash 2= decompressedMD5 -->
     <system:String x:Key="string_applying">Applying</system:String>
     <system:String x:Key="string_interp_compressingModForUpdaterServicePercent">Compressing mod for updater service {0}%</system:String>
