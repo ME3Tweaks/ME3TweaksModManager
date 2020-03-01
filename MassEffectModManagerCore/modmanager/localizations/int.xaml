@@ -332,7 +332,7 @@
     <system:String x:Key="string_theme">Theme</system:String>
     <system:String x:Key="string_light">Light</system:String>
     <system:String x:Key="string_dark">Dark</system:String>
-    <system:String x:Key="string_isYourLanguageMissing">Is your language missing? Come to the ME3Tweaks Discord and you can help translate it to your local language.</system:String>
+    <system:String x:Key="string_isYourLanguageMissing">Is your language missing? Come to the ME3Tweaks Discord and you can help translate Mod Manager to your local language.</system:String>
     <system:String x:Key="string_modLibraryLocation">Mod library location</system:String>
     <system:String x:Key="string_description_modsImportedAreStoredInLibrary">Mods that are imported into Mod Manager will be stored at this location.</system:String>
     <system:String x:Key="string_libraryLocation">Library location</system:String>
