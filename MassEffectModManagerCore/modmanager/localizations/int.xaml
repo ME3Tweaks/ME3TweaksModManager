@@ -920,7 +920,7 @@
     <system:String x:Key="string_loadFailed">Load Failed</system:String>
     <system:String x:Key="string_interp_errorReadingArchiveModdesc">An error occured while reading the moddesc.ini file from this archive: {0}</system:String>
     <!-- 0=e.Message -->
-    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">This mod specifies it can only load on M3 builds {0} or higher. The current build number is {1}.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">This mod specifies it can only load on Mod Manager builds {0} or higher. The current build number is {1}.</system:String>
     <!-- 0=minBuild 1=App.BuildNumber -->
     <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">{0} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.</system:String>
     <!-- 0=ModName -->
