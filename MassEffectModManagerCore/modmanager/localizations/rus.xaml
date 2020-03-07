@@ -917,7 +917,7 @@
     <system:String x:Key="string_loadFailed">Загрузка не удалась</system:String>
     <system:String x:Key="string_interp_errorReadingArchiveModdesc">Во процессе чтения файла moddesc.ini из архива возникла ошибка: {0}</system:String>
 	<!-- 0=e.Message -->
-    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">Данный мод предназначен для работы с версией M3 {0} или выше. Текущая версия: {1}. </system:String>
+    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">Данный мод предназначен для работы с версией Mod Manager {0} или выше. Текущая версия: {1}. </system:String>
 	<!-- 0=minBuild 1=App.BuildNumber -->
     <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">В {0] не настроен дескриптор ModInfo 'game', который требуется для всех модов, работающих с ModDesc 6 и выше.</system:String>
 	<!-- 0=ModName -->
