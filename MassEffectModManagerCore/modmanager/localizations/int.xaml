@@ -158,7 +158,7 @@
     <system:String x:Key="string_runningAutoTOC">Running AutoTOC</system:String>
     <system:String x:Key="string_ranAutoTOC">Ran AutoTOC</system:String>
     <system:String x:Key="string_nonModManagerModFound">Non-Mod Manager mod found</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks Discord.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks /ord.</system:String>
     <system:String x:Key="string_requiredFilesNotDownloaded">Required files unable to be downloaded</system:String>
     <system:String x:Key="string_checkingWritePermissions">Checking write permissions</system:String>
     <system:String x:Key="string_checkedUserWritePermissions">Checked user write permissions</system:String>
@@ -332,7 +332,7 @@
     <system:String x:Key="string_theme">Theme</system:String>
     <system:String x:Key="string_light">Light</system:String>
     <system:String x:Key="string_dark">Dark</system:String>
-    <system:String x:Key="string_isYourLanguageMissing">Is your language missing? Come to the ME3Tweaks Discord and you can help translate it to your local language.</system:String>
+    <system:String x:Key="string_isYourLanguageMissing">Is your language missing? Come to the ME3Tweaks Discord and you can help translate Mod Manager to your local language.</system:String>
     <system:String x:Key="string_modLibraryLocation">Mod library location</system:String>
     <system:String x:Key="string_description_modsImportedAreStoredInLibrary">Mods that are imported into Mod Manager will be stored at this location.</system:String>
     <system:String x:Key="string_libraryLocation">Library location</system:String>
@@ -537,7 +537,7 @@
     <system:String x:Key="string_clickToOpenALOTInstaller">Click to open ALOT Installer</system:String>
     <system:String x:Key="string_manageTexturesWithALOTInstaller">Manage textures with ALOT Installer</system:String>
     <system:String x:Key="string_enable">Enable</system:String>
-    <system:String x:Key="string_disable">DisCable</system:String>
+    <system:String x:Key="string_disable">Disable</system:String>
     <system:String x:Key="string_disabled">Disabled</system:String>
 
     <!-- Log uploader-->
@@ -795,9 +795,9 @@
     <!-- 0 = destination file path in moddesc -->
     <system:String x:Key="string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList">Failed to mark file for setting read-only: {0} does not exist in the installation map after being built, but is specified by the addreadonlytargets list.</system:String>
     <!-- 0 = source file path in moddesc -->
-    <system:String x:Key="string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct in their 0 set with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{0}'.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct in their set with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{0}'.</system:String>
     <!-- 0=group. Shown if no items in group have CheckedByDefault -->
-    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their 0. The failing option group name is '{0}'.</system:String>
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their set. The failing option group name is '{0}'.</system:String>
     <!-- 0=group. Shown if more than one item in group has CheckedByDefault-->
 
     <!-- ReadOnlyOption (Mod Installer) -->
@@ -920,7 +920,7 @@
     <system:String x:Key="string_loadFailed">Load Failed</system:String>
     <system:String x:Key="string_interp_errorReadingArchiveModdesc">An error occured while reading the moddesc.ini file from this archive: {0}</system:String>
     <!-- 0=e.Message -->
-    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">This mod specifies it can only load on M3 builds {0} or higher. The current build number is {1}.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">This mod specifies it can only load on Mod Manager builds {0} or higher. The current build number is {1}.</system:String>
     <!-- 0=minBuild 1=App.BuildNumber -->
     <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">{0} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.</system:String>
     <!-- 0=ModName -->
@@ -1069,7 +1069,7 @@
     <!-- Updater Service-->
     <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
     <!-- 0=sourcefile.relativefilepath 1=sourcefile.size 2=decompressedStream.Length -->
-    <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
+    <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file ({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
     <!-- 0= sourcefile.relativefilepath 1= sourcefile.hash 2= decompressedMD5 -->
     <system:String x:Key="string_applying">Applying</system:String>
     <system:String x:Key="string_interp_compressingModForUpdaterServicePercent">Compressing mod for updater service {0}%</system:String>
