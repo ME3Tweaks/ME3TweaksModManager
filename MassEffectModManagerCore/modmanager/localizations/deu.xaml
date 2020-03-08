@@ -243,27 +243,27 @@
     <system:String x:Key="string_developerTools">Entwickler-Werkzeuge</system:String>
     <system:String x:Key="string_backupFileFetcher">Datei aus Backup laden</system:String>
     <system:String x:Key="string_tooltip_backupFileFetcher">Suche und hole Dateien aus Hauptspiel und DLC, inklusive SFAR-Dateien</system:String>
-    <system:String x:Key="string_debug"></system:String>
+    <system:String x:Key="string_debug">Debug</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_requiresSelectedMod"></system:String>
+    <system:String x:Key="string_requiresSelectedMod">Requires selected mod</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_reloadSelectedMod"></system:String>
+    <system:String x:Key="string_reloadSelectedMod">Reload selected mod</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_debugPrintAllReferencedFiles"></system:String>
+    <system:String x:Key="string_debugPrintAllReferencedFiles">Print all referenced files</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_debugPrintInstallationQueue"></system:String>
+    <system:String x:Key="string_debugPrintInstallationQueue">Print Installation Queue</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_requiresSelectedTarget"></system:String>
+    <system:String x:Key="string_requiresSelectedTarget">Requires Selected Target</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_stampCurrentTargetWithALOTMarker"></system:String>
+    <system:String x:Key="string_stampCurrentTargetWithALOTMarker">Stamp current target with ALOT Marker</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_stripCurrentTargetALOTMarker"></system:String>
+    <system:String x:Key="string_stripCurrentTargetALOTMarker">Strip current target ALOT Marker</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_requiresNothing"></system:String>
+    <system:String x:Key="string_requiresNothing">Requires nothing</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_showWelcomePanel"></system:String>
+    <system:String x:Key="string_showWelcomePanel">Show welcome panel</system:String>
     <!-- This is debug only and doesn't need to be translated -->
-    <system:String x:Key="string_showBackupNag"></system:String>
+    <system:String x:Key="string_showBackupNag">Show backup nag</system:String>
     <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_tooltip_endorseM3OnNexus">Empfiel ME3Tweaks Mod Manager bei NexusMods</system:String>
     <system:String x:Key="string_tooltip_manageNexusModsIntegration">NexusMods-Integration verwalten</system:String>

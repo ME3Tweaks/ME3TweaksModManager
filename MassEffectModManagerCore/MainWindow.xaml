@@ -38,11 +38,13 @@
                             <MenuItem.Icon>
                                 <Image Source="/modmanager/localizations/icons/languageselector.png" RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
+                            <!--
                             <MenuItem Name="LanguageCZE_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/czech.png" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            -->
                             <MenuItem Name="LanguageDEU_MenuItem" Header="Deutsch" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/german.png" />
@@ -53,11 +55,13 @@
                                     <Image Source="/modmanager/localizations/icons/english.png" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <!--
                             <MenuItem Name="LanguageESN_MenuItem" Header="Español" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/spanish.png" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            
                             <MenuItem Name="LanguageFRA_MenuItem" Header="Français" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" IsEnabled="False">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/french.png" />
@@ -67,7 +71,7 @@
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/polish.png" />
                                 </MenuItem.Icon>
-                            </MenuItem>
+                            </MenuItem>-->
                             <MenuItem Name="LanguageRUS_MenuItem" Header="Pусский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/russian.png" />

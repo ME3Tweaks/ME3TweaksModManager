@@ -134,9 +134,10 @@ namespace MassEffectModManagerCore
             {
                 {@"int", LanguageINT_MenuItem},
                 {@"rus", LanguageRUS_MenuItem},
-                {@"pol", LanguagePOL_MenuItem},
+                //{@"pol", LanguagePOL_MenuItem},
                 {@"deu", LanguageDEU_MenuItem},
-                {@"fra", LanguageFRA_MenuItem}
+                //{@"fra", LanguageFRA_MenuItem}
+                //{@"esn", LanguageESN_MenuItem}
             };
 
             //Change language if not INT
@@ -2632,10 +2633,10 @@ namespace MassEffectModManagerCore
             {
                 lang = @"int";
             }
-            else if (sender == LanguagePOL_MenuItem)
-            {
-                lang = @"pol";
-            }
+            //else if (sender == LanguagePOL_MenuItem)
+            //{
+            //    lang = @"pol";
+            //}
             else if (sender == LanguageRUS_MenuItem)
             {
                 lang = @"rus";
@@ -2644,18 +2645,18 @@ namespace MassEffectModManagerCore
             {
                 lang = @"deu";
             }
-            else if (sender == LanguageESN_MenuItem)
-            {
-                lang = @"esn";
-            }
-            else if (sender == LanguageFRA_MenuItem)
-            {
-                lang = @"fra";
-            }
-            else if (sender == LanguageCZE_MenuItem)
-            {
-                lang = @"cze";
-            }
+            //else if (sender == LanguageESN_MenuItem)
+            //{
+            //    lang = @"esn";
+            //}
+            //else if (sender == LanguageFRA_MenuItem)
+            //{
+            //    lang = @"fra";
+            //}
+            //else if (sender == LanguageCZE_MenuItem)
+            //{
+            //    lang = @"cze";
+            //}
 
             Settings.Language = lang;
             Settings.Save();
