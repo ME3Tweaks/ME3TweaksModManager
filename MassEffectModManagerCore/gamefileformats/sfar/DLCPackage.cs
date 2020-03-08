@@ -77,7 +77,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                 DataOffset = con + DataOffset;
                 DataOffsetAdder = con + DataOffsetAdder;
                 RealDataOffset = DataOffset + DataOffsetAdder << 32;
-                if (BlockSizeIndex == 0xFFFFFFFF)
+                if (BlockSizeIndex == 0xFFFFFFFF) //Uncompressed
                 {
                     BlockOffsets = new long[1];
                     BlockOffsets[0] = RealDataOffset;
@@ -85,8 +85,9 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                     BlockSizes[0] = (ushort)UncompressedSize;
                     BlockTableOffset = 0;
                 }
-                else
+                else //Compressed
                 {
+
                     int numBlocks = (int)Math.Ceiling(UncompressedSize / (double)header.MaxBlockSize);
                     if (con.isLoading)
                     {
