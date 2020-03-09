@@ -7,6 +7,7 @@ using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using ME3Explorer;
+using ME3Explorer.Packages;
 using ME3Explorer.Unreal;
 
 namespace MassEffectModManagerCore.gamefileformats.sfar
@@ -551,8 +552,19 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
 
         public void AddFileQuick(string onDiskNewFile, string inArchivePath)
         {
+            byte[] newFileBytes;
+            if (Path.GetExtension(onDiskNewFile).ToLower() == @".pcc" && FileName.EndsWith(@"Patch_001.sfar", StringComparison.InvariantCultureIgnoreCase))
+            {
+                //Use the decompressed bytes - SFARs can't store compressed packages apparently!
+                var package = MEPackageHandler.OpenMEPackage(onDiskNewFile);
+                newFileBytes = package.saveToStream().ToArray();
+            }
+            else
+            {
+                newFileBytes = File.ReadAllBytes(onDiskNewFile);
+            }
+
             FileStream sfarStream = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            byte[] newFileBytes = File.ReadAllBytes(onDiskNewFile);
             //Create Entry
             List<FileEntryStruct> tmp = new List<FileEntryStruct>(Files);
             FileEntryStruct e = new FileEntryStruct();
@@ -674,20 +686,48 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
 
         public void ReplaceEntry(string filein, int Index)
         {
-            byte[] FileIN = File.ReadAllBytes(filein);
-            ReplaceEntry(FileIN, Index);
+            byte[] fileBytes;
+            if (Path.GetExtension(filein).ToLower() == ".pcc" && FileName.EndsWith("Patch_001.sfar", StringComparison.InvariantCultureIgnoreCase))
+            {
+                //if (FileName.Contains("Patch_001")) Debugger.Break();
+                //Use the decompressed bytes - SFARs can't store compressed packages apparently!
+                var package = MEPackageHandler.OpenMEPackage(filein);
+                if (package.IsCompressed)
+                {
+                    fileBytes = package.saveToStream().ToArray();
+                }
+                else
+                {
+                    fileBytes = File.ReadAllBytes(filein);
+                }
+            }
+            else
+            {
+                fileBytes = File.ReadAllBytes(filein);
+            }
+
+            ReplaceEntry(fileBytes, Index);
         }
 
         public void ReplaceEntry(byte[] FileIN, int Index)
         {
             FileStream fs = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            fs.Seek(0, SeekOrigin.End);
-            uint offset = (uint)fs.Length;
+            FileEntryStruct e = Files[Index];
+            if (e.BlockSizeIndex == 0xFFFFFFFF && e.RealUncompressedSize == FileIN.Length)
+            {
+                //overwrite existing data
+                fs.Seek(e.RealDataOffset, SeekOrigin.Begin);
+            }
+            else
+            {
+                fs.Seek(0, SeekOrigin.End);
+            }
+
+            uint offset = (uint) fs.Position;
             //append data
             fs.Write(FileIN, 0, FileIN.Length);
 
             //uncompressed entry
-            FileEntryStruct e = Files[Index];
             e.BlockSizes = new ushort[0];
             e.BlockOffsets = new long[1];
             e.BlockOffsets[0] = offset;
@@ -781,8 +821,8 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                 }
             }
 
-
-            if (tocNeedsUpdating)
+            //DEBUG TESTING!
+            if (tocNeedsUpdating || FileName.Contains("Patch_001"))
             {
                 MemoryStream newTocStream = TOCCreator.CreateTOCForEntries(entries);
                 byte[] newmem = newTocStream.ToArray();
