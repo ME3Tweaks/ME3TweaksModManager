@@ -23,6 +23,7 @@ using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
 using System.Threading;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.windows;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -44,6 +45,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public MixinManager()
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Library Panel", new WeakReference(this));
             DataContext = this;
             MixinHandler.LoadME3TweaksPackage();
             AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x => x.PatchName));
