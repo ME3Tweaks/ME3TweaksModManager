@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -38,6 +39,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string CurrentTaskString { get; set; }
         public ModMakerPanel()
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"ModMaker Panel", new WeakReference(this));
             DataContext = this;
             LoadCommands();
             InitializeComponent();

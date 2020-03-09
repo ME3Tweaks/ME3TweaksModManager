@@ -261,7 +261,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, true);
+                                package.save(outfile, true); //set to true once compression bugs are fixed
                                 //finalStream.WriteToFile(outfile);
                                 //File.WriteAllBytes(outfile, finalStream.ToArray());
                             }
@@ -284,7 +284,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, true);
+                                package.save(outfile, true); //set to true once compression bugs are fixed
                                 //finalStream.WriteToFile(outfile);
                             }
                         }

@@ -20,6 +20,7 @@ using Serilog;
 
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -40,6 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public InstallationInformation(List<GameTarget> targetsList, GameTarget selectedTarget)
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"Installation Information Panel", new WeakReference(this));
             DataContext = this;
             InstallationTargets.AddRange(targetsList);
             LoadCommands();
@@ -64,14 +66,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RemoveTarget()
         {
             Utilities.RemoveCachedTarget(SelectedTarget);
-            if (SelectedTarget != null)
-                SelectedTarget.ModifiedBasegameFilesView.Filter = null; OnClosing(new DataEventArgs(@"ReloadTargets"));
+            foreach (var installationTarget in InstallationTargets)
+            {
+                SelectedTarget.ModifiedBasegameFilesView.Filter = null;
+                installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
+            }
+            OnClosing(new DataEventArgs(@"ReloadTargets"));
         }
 
         private void ClosePanel()
         {
-            if (SelectedTarget != null)
+            foreach (var installationTarget in InstallationTargets)
+            {
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
+                installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
+            }
             OnClosing(DataEventArgs.Empty);
         }
 
@@ -542,8 +551,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenALOTInstaller_Click(object sender, RequestNavigateEventArgs e)
         {
-            if (SelectedTarget != null)
+            foreach (var installationTarget in InstallationTargets)
+            {
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
+                installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
+            }
             OnClosing(new DataEventArgs(@"ALOTInstaller"));
         }
 
@@ -556,8 +568,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (e.Key == Key.Escape && CanClose())
             {
-                if (SelectedTarget != null)
+                foreach (var installationTarget in InstallationTargets)
+                {
                     SelectedTarget.ModifiedBasegameFilesView.Filter = null;
+                    installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
+                }
                 OnClosing(DataEventArgs.Empty);
             }
         }

@@ -229,6 +229,15 @@ namespace MassEffectModManagerCore.modmanager.objects
             VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
         }
 
+        /// <summary>
+        /// Call this when the modified object lists are no longer necessary
+        /// </summary>
+        public void DumpModifiedFilesFromMemory()
+        {
+            ModifiedBasegameFiles.ClearEx();
+            ModifiedSFARFiles.ClearEx();
+        }
+
         public ObservableCollectionExtended<InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
 
         public void PopulateDLCMods(bool includeDisabled, Func<InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
