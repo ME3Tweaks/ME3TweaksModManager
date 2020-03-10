@@ -1,3 +1,5 @@
+!(Documentation Image)[images/documentation_header.png]
+
 This documentation is current as of Build 104.
 
 ME3Tweaks Mod Manager (which will be written as M3 from now on in this document) allows users to organize mods as well as deploy them into the each game of the Mass Effect Trilogy. It is designed to be friendly for users and powerful for developers - for example, as a developer, you do not need to worry about users not installing the binkw32 bypass or running AutoTOC - M3 takes care of this all in the background for users. You can focus on developing your mods and my program will take care of the user side of things.
@@ -5,7 +7,6 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
 **The documentation in this article is specific to M3** and should not be applied to Mass Effect 3 Mod Manager, as it does not support moddesc version 6 or higher, though some of the information will be relevant to both.
 
 ## Table of contents
- - [Why use ME3Tweaks Mod Manager instead of just a zip or an exe installer?](why_use_m3.md)
  - [moddesc.ini - the definition of an M3 mod](moddesc.ini.md)
  - [moddesc.ini: Data types](datatypes.md)
  - [moddesc.ini: Official DLC and Basegame Headers](officialdlc_and_basegame.md)
