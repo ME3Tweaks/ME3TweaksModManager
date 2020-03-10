@@ -271,7 +271,6 @@ The UPDATES header is used when deploying your mod as well as information about 
 |additionaldeploymentfolders|Unquoted Semicolon Separated List (String)|Folders specified here will be included in mod staging for deployments, and transitively for mods in the updater service. Note you can only specify top level folders with this descriptor, not files or subdirectories.|Optional for Updater Service, Optional for Deployment|5.1+|
 |additionaldeploymentfiles|Unquoted Semicolon Separated List (String)|Root-level files that should be included in your server update or included in your archives when deploying your mod. Only root level files are supported.|Optional for Updater Service, Optional for Deployment|6.0+|
 |updatecode|Integer|ME3Tweaks Updater Service update code. This is used to get the manifest from ME3Tweaks for classic mods. If you don't have an update code assigned from ME3Tweaks, don't use this descriptor.|No|6.0+|
-|nexuscode|Integer|NexusMods mod ID. This is part of your NexusMods URL. Whitelisted mods from developers that have agreed to always have up to date downloads and semantic versioning will query ME3Tweaks mod database to see if the local mod has an update. The information on ME3Tweaks is keyed by your NexusMods ID. NexusMod codes that are not whitelisted will not check for updates.|No|6.0+|
 
 Official DLC Task Headers
 Mod Manager 2.0 (cmmver 2) and above added support for modding official game DLC. M3 added support for ME1 and ME2 modding, which has an additional set of headers that are supported. 
