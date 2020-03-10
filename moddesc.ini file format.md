@@ -272,7 +272,7 @@ The UPDATES header is used when deploying your mod as well as information about 
 |additionaldeploymentfiles|Unquoted Semicolon Separated List (String)|Root-level files that should be included in your server update or included in your archives when deploying your mod. Only root level files are supported.|Optional for Updater Service, Optional for Deployment|6.0+|
 |updatecode|Integer|ME3Tweaks Updater Service update code. This is used to get the manifest from ME3Tweaks for classic mods. If you don't have an update code assigned from ME3Tweaks, don't use this descriptor.|No|6.0+|
 
-Official DLC Task Headers
+### Official DLC Task Headers
 Mod Manager 2.0 (cmmver 2) and above added support for modding official game DLC. M3 added support for ME1 and ME2 modding, which has an additional set of headers that are supported. 
 
 The following headers are supported, with their supported descriptors in the table below. BASEGAME is technically not a DLC (vanilla game) but keeps the same format. There are a few special task headers that will be explained further down in this document.
@@ -362,6 +362,7 @@ Note that `newfiles` and `replacefiles` behavior differs if `gamedirectorystruct
 |addfilestargets|Unquoted Semicolon Separated List (String)|File targets that will be added to this DLC. The paths should be relative to the base Mass Effect 3 folder. For example, you could put in /BIOGame/DLC/DLC_CON_MP4/CookedPCConsole/SFXPawn_ChubbyHusk.pcc. The order of these files to replace MUST match the addfiles list or they will install to the wrong place.|if using addfiles|4.1+, All games BASEGAME, Official DLC ME3 only|
 |addfilesreadonlytargets|Unquoted Semicolon Separated List (String)|File targets that should be set to read only on installation. This only works on files you are adding, not replacing. The paths should be relative to the base Mass Effect 3 folder and match items from addfilestargets exactly. The order does not matter. Making files read only makes it more difficult for users to modify them as programs will say they can't modify it, however it does not stop users from modifying them. This is useful to protect files that are used by the exec command.|No|4.3+, All games BASEGAME, Official DLC ME3 only|
 |jobdescription|Unquoted String|Description of the job, and why it is necessary. This text is shown if the DLC this job applies to is not installed. An example of this being used is with Interface Scaling Mod modifying the Retaliation MP DLC - the DLC may not be installed, but if the user does not play MP, it is not relevant. You should include a string saying is okay to skip this task if this DLC is not installed.|No|All|
+|multilist\[x]|Unquoted semicolon split list (relative file paths)|Use to denote a list of relative file paths to optionally add into a mod, so you can share files across alternate installation options. The \[x] denotes a number starting from 1 and counting up (yes, this is indexed starting at 1). This descriptor is only used in conjunction with `altdlc` and `altfiles` descriptors. See the section on [MultiLists](#multilists) below for how to use this advanced feature.|No|6.0+|
 
 #### Descriptors not supported by M3 that were supported in ME3CMM
  - **removefiletargets** - This descriptor could be dangerous if used incorrectly. There are no known mods that used this descriptor.
@@ -432,3 +433,83 @@ altdlc allows you to add a folder of files to a CustomDLC based on the installed
 |OptionGroup|String|Sets the group this alternate dlc is part of. All alternate dlc that have the same OptionGroup value will be part of a group. Option groups can only have one option picked out of the group. Essentailly, this makes the selector become a radio button. Ensure at least one item in the group has `CheckedByDefault` set.|No|
 |ApplicableAutoText|String|Sets the string that appears when the alternate is applicable. This item is not used if the condition is `COND_MANUAL`. If this value is not set, the default value is 'Auto Applied'. Do not localize this string into anything except English for your mod.|No|
 |NotApplicableAutoText|String|Sets the string that appears when the alternate is not applicable to the game target the user is installing the mod against. If this value is not set, the default value is 'Not applicable'. Do not localize this string into anything except English for your mod.|No|
+
+### MultiLists
+MultiLists are a feature of moddesc 6.0 that enable a developer to provide alternate installation options that use the same file in at least 2 or more variations. This feature was developed initially for PEOM to enable ending compatibility across 4 different ending options, with different options using different files but some common to multiple options. This feature prevents having to pack additional copies of files into the archive.
+
+MultiLists are defined as descriptors for official DLC headers as well as CUSTOMDLC as `multilistX`, where X is an integer counting up from one. The moddesc.ini parser will stop parsing as soon as the next integer is not found in the ini, so if you do `multilist1`, `multilist2`, and `multilist4`, M3 will only see `multilist1` and `multilist2`.
+
+Due to the ini file format,  these lists can be a bit messy. I suggest defining your list of files line by line and then using a text editor to replace the newlines with semicolons. 
+
+This example from PEOM applies to the CUSTOMDLC header:
+```
+[CUSTOMDLC]
+sourcedirs = DLC_CON_PEOM
+destdirs = DLC_CON_PEOM
+
+;Vanilla ending list (all files)
+multilist1 = CookedPCConsole\BioA_End002_Space.pcc;CookedPCConsole\BioD_End002.pcc;CookedPCConsole\BioD_End002_100Opening.pcc;CookedPCConsole\BioD_End002_100Opening_LOC_INT.pcc;CookedPCConsole\BioD_End002_200Tunnel.pcc;CookedPCConsole\BioD_End002_200Tunnel_LOC_INT.pcc;CookedPCConsole\BioD_End002_300TIMConflict.pcc;CookedPCConsole\BioD_End002_300TIMConflict_LOC_INT.pcc;CookedPCConsole\BioD_End002_400Guardian.pcc;CookedPCConsole\BioD_End002_400Guardian_LOC_INT.pcc;CookedPCConsole\BioD_End002_500Choice.pcc;CookedPCConsole\BioD_End002_710MemorialRed.pcc;CookedPCConsole\BioD_End002_710MemorialRed_LOC_INT.pcc;CookedPCConsole\BioD_End002_720MemorialBlue.pcc;CookedPCConsole\BioD_End002_720MemorialBlue_LOC_INT.pcc;CookedPCConsole\BioD_End002_730MemorialGreen.pcc;CookedPCConsole\BioD_End002_730MemorialGreen_LOC_INT.pcc;Movies\End04_Andromeda_Teaser.bik;Movies\Extended_Refusal.bik
+
+;Vanilla Ending + Thanemod
+multilist2 = CookedPCConsole\BioA_End002_Space.pcc;CookedPCConsole\BioD_End002.pcc;CookedPCConsole\BioD_End002_100Opening.pcc;CookedPCConsole\BioD_End002_100Opening_LOC_INT.pcc;CookedPCConsole\BioD_End002_200Tunnel.pcc;CookedPCConsole\BioD_End002_200Tunnel_LOC_INT.pcc;CookedPCConsole\BioD_End002_300TIMConflict.pcc;CookedPCConsole\BioD_End002_300TIMConflict_LOC_INT.pcc;CookedPCConsole\BioD_End002_400Guardian.pcc;CookedPCConsole\BioD_End002_400Guardian_LOC_INT.pcc;CookedPCConsole\BioD_End002_500Choice.pcc;Movies\End04_Andromeda_Teaser.bik;Movies\Extended_Refusal.bik
+
+;MEHEM, JAM
+multilist3 = CookedPCConsole\BioA_End002_Space.pcc;CookedPCConsole\BioD_End002.pcc;CookedPCConsole\BioD_End002_100Opening.pcc;CookedPCConsole\BioD_End002_100Opening_LOC_INT.pcc;CookedPCConsole\BioD_End002_200Tunnel.pcc;CookedPCConsole\BioD_End002_200Tunnel_LOC_INT.pcc
+
+;LIME (Nothing)
+```
+
+MultiLists are used in the alternate structs `altdlc` and `altfiles`.
+
+#### AltDLC MultiLists
+The following is an example from the PEOM moddesc.ini. The attributes have been put onto newlines for readability.
+```
+(Condition=COND_MANUAL, 
+OptionGroup=EndingCompat, 
+FriendlyName="Compatibility - Vanilla Ending + ThaneMod", 
+ModOperation=OP_ADD_MULTILISTFILES_TO_CUSTOMDLC, 
+DLCRequirements=DLC_CON_BackOff, 
+MultiListId=2, 
+MultiListRootPath="Compatibility/Endings", 
+ModDestDLC=DLC_CON_PEOM,	
+Description="Makes PEOM compatible with ThaneMod when the vanilla, original extended cut ending of the game is installed.")
+```
+
+The `ModOperation` specifies that you wil lbe adding a list of files from a multilist to the a custom DLC folder. The `MultiListId` is used to select which list you are going to be using for filepaths. `MultiListRootPath` is a relative path from the root of the mod folder to where your alternate files are stored. This path plus the paths in the multilist determine the source path of each file that M3 will add to the mod at install time. `ModDestDLC` is used to determine what DLC folder the files will be placed into - the filepath for each item in the multilist is appended to this.
+
+Because altdlc uses a destination DLC foldername (not a relative path), all items in the MultiListRootPath must be laid out as if it was a subfolder of the destination DLC path. 
+
+For ME3, this means that under MultiListRootPath there would be a folder named CookedPCConsole or Movies, and in these folders are the  files I am adding. It is not possible to put it as the root directory due to how complicated the code would become to support this scenario.
+
+### AltFile MultiLists
+`altfile` MultiLists work on Official Headers only. They cannot be used on the CUSTOMDLC header. You must use the `altdlc` version instead for that header.
+
+The following is an example from the ME2 - No Minigames moddesc.ini. The attributes have been put onto newlines for readability.
+```
+[BASEGAME]
+moddir = Vanilla\BioGame\CookedPC
+; This is the default, keyboard + mouse setup
+newfiles = SFXGame.pcc;Startup_BRA.pcc;Startup_DEU.pcc;Startup_FRA.pcc;Startup_INT.pcc;Startup_ITA.pcc;Startup_POL.pcc
+replacefiles = BIOGame\CookedPC\SFXGame.pcc;BIOGame\CookedPC\Startup_BRA.pcc;BIOGame\CookedPC\Startup_DEU.pcc;BIOGame\CookedPC\Startup_FRA.pcc;BIOGame\CookedPC\Startup_INT.pcc;BIOGame\CookedPC\Startup_ITA.pcc;BIOGame\CookedPC\Startup_POL.pcc
+
+; Multilist1: Controller version
+multilist1=SFXGame.pcc;Startup_BRA.pcc;Startup_DEU.pcc;Startup_FRA.pcc;Startup_INT.pcc;Startup_ITA.pcc;Startup_POL.pcc
+
+; The first alternate file group does nothing to provide user the default choice.
+; The second one uses the controller version by applying the files specified in multilist1 which fully supercedes the fileset
+altfiles=(
+(Condition=COND_MANUAL, 
+FriendlyName="No Mini Games - Keyboard/Mouse", Description="Select this option if you're playing on keyboard and mouse.", ModOperation=OP_NOTHING, OptionGroup=InputMethod, CheckedByDefault = true),
+
+(Condition=COND_MANUAL, 
+FriendlyName="No Mini Games - Controller", Description="Select this option if you're playing with a controller. You must install the ME2 Controller mod BEFORE this one, or this mod will not work.",
+ModOperation=OP_APPLY_MULTILISTFILES, 
+MultiListRootPath=ME2Controller\BioGame\CookedPC, 
+MultiListTargetPath=BIOGame\CookedPC, 
+MultiListId=1, 
+OptionGroup=InputMethod))
+```
+
+The `ModOperation` specifies that you wil lbe adding a list of files from a multilist to task. The `MultiListId` is used to select which list you are going to be using for filepaths. `MultiListRootPath` is a relative path from the root of the mod folder to where your alternate files are stored. This path plus the paths in the multilist determine the source path of each file that M3 will add to the mod at install time. `MultiListTargetPath` is the in-game path that will be installed to - the filepath for each item in the multilist is appended to this.
+
+If you need assistance developing a moddesc.ini for your mod, please come to the ME3Tweaks Discord.
