@@ -172,6 +172,16 @@ Note that these are separators, not end delimiters. You should only have them be
 ### Comments
 Comments are lines that being with `;`. They are essentially ignored.
 
+### Value types
+Some descriptors use value types (sometimes called data types). They are pretty much the same across sane programming langauges.
+
+ - **Integer**: 1, 2, 3, 0
+ - **Float**: 1.0, 2.1, 3.333
+ - **String**: _Hello_, _I am a string_, _Yes I sure am!_
+ - **Quoted string**: "_Hello_", "_I am a quoted string_", "_I am surrounded by quotations!_"
+
+
+
 ### moddesc.ini parser strictness
 In M3, the parser for a moddesc.ini file is more strict than it was for ME3CMM. A few examples of things that will cause a mod to fail parsing include:
  - A line without a `=` on it that is not a `;comment`, that is not a header, or is not blank. 
