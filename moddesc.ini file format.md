@@ -1,6 +1,4 @@
-THIS DOCUMENT IS A WORK IN PROGRESS FOR MOD MANAGER 6
-
-Current as of Build 103.
+This documentation is current as of Build 104.
 
 **This document is long! Do not let that dissuade you. It is just very thorough.**
 
@@ -91,7 +89,18 @@ The value should be a version number, such as _1.0.1_, _1.2.4.11_ or _1.2_, **bu
 #### If targeting cmmver 5.1 or lower
 The value should be a floating point number, such as 1.2 or 1.33. ME3CMM does not support Version numbers, only floating point numbers.
 
-The **modsite** value will be a clickable link in the description panel of the mod, so users can go directly to your mod's page (e.g. nexusmods page). If you don't know the NexusMods URL, you can find the base url of it once you start creating your mod page.
+The **modsite** value will be a clickable link in the description panel of the mod, so users can go directly to your mod's page (e.g. nexusmods page). If you don't know the NexusMods URL, you can find the base url of it once you start creating your mod page. If you use a NexusMods URL, ensure it is only the main page URL.
+
+Correct:
+```
+https://www.nexusmods.com/masseffect3/mods/811
+https://www.nexusmods.com/masseffect3/mods/807
+```
+Not correct:
+```
+https://www.nexusmods.com/masseffect3/mods/811?tab=posts
+https://www.nexusmods.com/masseffect3/mods/807?tab=files
+```
 
 ### Deploying your mod
 You should deploy your mod through M3 by going to the Mod Utils menu and doing Developer options > Deploy Mod. Deploying a mod prepares it for distribution through a highly optimized 7z file that features high compression (so users spend less time downloading, you spend less time uploading) while having very fast parsing support when the file is dropped onto M3.
@@ -189,7 +198,13 @@ moddesc.ini files have 4 main components:
 ![Moddesc](https://i.imgur.com/xCMVcLn.png)
 
 ### [ModManager] Header
-The [ModManager] header is a required header for all moddesc.ini files. It supports a single descriptor, **cmmver**, which is set to a specific version to tell Mod Manager how to parse the file, and what features may or may not be used by the parser. You may see this referred to as **moddesc version**. You assign this value to ensure forwards compatibility, in the event I have to change how moddesc parsing works - I will always strive to ensure a version targeting a previous version will remain usable in the future. 
+The [ModManager] header is a required header for all moddesc.ini files. It supports a few descriptors that are used to change how the moddesc.ini parser works.
+
+| Descriptor | Data type | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                        | Required | Supported versions |
+|------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|--------------------|
+| cmmver     | Float     | This descriptor is set to a specific version to tell Mod Manager how to parse the file, and what features may or may not be used by the parser. You may see this referred to as **moddesc version**. You assign this value to ensure forwards compatibility, in the event I have to change how moddesc parsing works - I will always strive to ensure a version targeting a previous version will remain usable in the future. | Yes      | 2.0+               |
+| importedby | Integer   | As a mod developer you should never set this value. This is a compatibility shim for mods imported into M3 before Build 103 to indicate they should force target Mass Effect 3. After Build 103 was created, the 'game' descriptor was forced to always be present, and this flag indicates that it should use ME3 for those mods.                                                                                             | No       | 6.0 (Build 103+)   |
+| minbuild   | Integer   | This descriptor is used to specify that a mod is only allowed to load on a specific build. For example, if a mod depends on features only present in Build 104, minbuild can be used to ensure users on Build 103 or lower cannot attempt to load the mod.                                                                                                                                                                     | No       | 6.0 (Build 104+)   |
 
 #### ME3 Mods
 If you are building a mod for ME3, the lowest version I suggest using is 5.0, as this is the last 32-bit mod manager version. Otherwise use whatever the latest version is, as deployment support typically is built around the latest version.
