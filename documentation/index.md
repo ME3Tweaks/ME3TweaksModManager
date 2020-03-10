@@ -1,4 +1,4 @@
-!(Documentation Image)[images/documentation_header.png]
+![Documentation Image](images/documentation_header.png)
 
 This documentation is current as of Build 104.
 
