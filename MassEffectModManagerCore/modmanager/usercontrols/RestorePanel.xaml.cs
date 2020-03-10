@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return;
                 }
 
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     NamedBackgroundWorker bw = new NamedBackgroundWorker(Game + @"-Restore");

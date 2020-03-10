@@ -250,7 +250,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

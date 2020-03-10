@@ -263,7 +263,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (newgame == SelectedGame) return; //don't care
             if (ModsInGroup.Count > 0 && newgame != SelectedGame)
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_changingGameWillClearGroup), M3L.GetString(M3L.string_changingGameWillClearGroup), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_changingGameWillClearGroup), M3L.GetString(M3L.string_changingGameWillClearGroup), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     ModsInGroup.ClearEx();
