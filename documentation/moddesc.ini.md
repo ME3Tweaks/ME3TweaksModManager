@@ -1,4 +1,4 @@
-!(Documentation Image)[images/documentation_moddesc.png]
+![Documentation Image](images/documentation_moddesc.png)
 
 # moddesc.ini - the definition of an M3 mod
 M3 mods are defined as folders in a mod user's mod library. In the library there are three folders: ME1, ME2, and ME3. Mods for each respective game go in each of these folders. Inside of these game folders are individual mod folders. In each mod folder, there is a **moddesc.ini file**, along with the modded files and folders that make up the mod. The moddesc.ini file describes the mod and what features of M3 the mod will use for both displaying the mod and its options to the user, as well as how the mod is installed. A moddesc.ini is what makes a mod an M3 compatible mod.
