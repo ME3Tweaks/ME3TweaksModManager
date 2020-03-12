@@ -56,10 +56,13 @@
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5" />
             <DockPanel Grid.Row="5" Grid.Column="0">
                 <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_availableMixins}" FontWeight="Bold" />
-                <ListBox Name="MixinList_ListBox" ItemsSource="{Binding AvailableOfficialMixins}" SelectedItem="{Binding SelectedMixin}" IsTextSearchEnabled="True" TextSearch.TextPath="PatchName">
+                <ListBox Name="MixinList_ListBox" ItemsSource="{Binding AvailableOfficialMixins}" 
+                         SelectedItem="{Binding SelectedMixin}" IsTextSearchEnabled="True" TextSearch.TextPath="PatchName"
+                         VirtualizingStackPanel.IsVirtualizing="True"
+                         VirtualizingStackPanel.VirtualizationMode="Recycling">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
+                            <VirtualizingStackPanel Orientation="Horizontal">
                                 <CheckBox IsChecked="{Binding UISelectedForUse}" IsEnabled="{Binding CanBeUsed}" />
                                 <fa:ImageAwesome Icon="Lock" Foreground="Red" Visibility="{Binding IsFinalizer, Converter={StaticResource BoolToVisibilityConverter}}" Height="12" Width="16" ToolTip="{DynamicResource string_tooltip_thisMixinIsAFinalizer}" />
                                 <TextBlock Text="{Binding PatchName}">
@@ -73,7 +76,7 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                            </StackPanel>
+                            </VirtualizingStackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.Resources>

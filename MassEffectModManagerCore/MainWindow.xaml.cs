@@ -2516,7 +2516,7 @@ namespace MassEffectModManagerCore
             }
             else if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
             {
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_optingIntoBeta), M3L.GetString(M3L.string_enablingBetaMode), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_optingIntoBeta), M3L.GetString(M3L.string_enablingBetaMode), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No)
                 {
                     Settings.BetaMode = false; //turn back off.

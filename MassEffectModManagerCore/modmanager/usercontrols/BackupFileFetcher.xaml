@@ -35,7 +35,10 @@
                         </StackPanel>
                     </TabItem.Header>
                     <DockPanel>
-                        <ListBox ItemsSource="{Binding ME1FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME1File}" TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}"></ListBox>
+                        <ListBox ItemsSource="{Binding ME1FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME1File}" 
+                                 TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" 
+                                 ItemContainerStyle="{StaticResource FileContainerStyle}"
+                        VirtualizingStackPanel.VirtualizationMode="Recycling"/>
                     </DockPanel>
                 </TabItem>
                 <!-- ME2 -->
@@ -47,7 +50,11 @@
                         </StackPanel>
                     </TabItem.Header>
                     <DockPanel>
-                        <ListBox ItemsSource="{Binding ME2FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME2File}" TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}"></ListBox>
+                        <ListBox ItemsSource="{Binding ME2FilesView}" IsTextSearchEnabled="True" 
+                                 SelectedItem="{Binding SelectedME2File}" TextSearch.TextPath="Filename" 
+                                 HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" 
+                                 ItemContainerStyle="{StaticResource FileContainerStyle}"
+                                 VirtualizingStackPanel.VirtualizationMode="Recycling"/>
                     </DockPanel>
                 </TabItem>
                 <!-- ME3 -->
@@ -59,7 +66,11 @@
                         </StackPanel>
                     </TabItem.Header>
                     <DockPanel>
-                        <ListBox ItemsSource="{Binding ME3FilesView}" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedME3File}" TextSearch.TextPath="Filename" HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" ItemContainerStyle="{StaticResource FileContainerStyle}"></ListBox>
+                        <ListBox ItemsSource="{Binding ME3FilesView}" IsTextSearchEnabled="True" 
+                                 SelectedItem="{Binding SelectedME3File}" TextSearch.TextPath="Filename" 
+                                 HorizontalAlignment="Stretch" ItemTemplate="{StaticResource FileTemplate}" 
+                                 ItemContainerStyle="{StaticResource FileContainerStyle}"
+                        VirtualizingStackPanel.VirtualizationMode="Recycling"/>
                     </DockPanel>
                 </TabItem>
             </TabControl>

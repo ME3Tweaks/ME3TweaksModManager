@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var hasBackup = Utilities.GetGameBackupPath(ModBeingInstalled.Game);
             if (hasBackup == null)
             {
-                var installAnyways = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, Utilities.GetGameName(ModBeingInstalled.Game), ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
+                var installAnyways = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, Utilities.GetGameName(ModBeingInstalled.Game), ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
                 return installAnyways == MessageBoxResult.Yes;
             }
 

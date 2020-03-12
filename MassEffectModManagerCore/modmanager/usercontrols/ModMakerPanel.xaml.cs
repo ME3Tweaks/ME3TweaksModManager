@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -38,6 +39,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string CurrentTaskString { get; set; }
         public ModMakerPanel()
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"ModMaker Panel", new WeakReference(this));
             DataContext = this;
             LoadCommands();
             InitializeComponent();
@@ -248,7 +250,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

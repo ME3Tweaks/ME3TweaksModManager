@@ -37,6 +37,7 @@ namespace ME3Explorer.Packages
 
         public int FullHeaderSize { get; private set; }
         public EPackageFlags Flags { get; private set; }
+        public int PackageTypeId { get; private set; }
 
         public override int NameCount { get; protected set; }
         public int NameOffset { get; private set; }
@@ -173,7 +174,8 @@ namespace ME3Explorer.Packages
 
             if (Game == Mod.MEGame.ME3 && Flags.HasFlag(EPackageFlags.Cooked))
             {
-                stream.SkipInt32(); //always 0
+                //This doesn't seem to be true!
+                PackageTypeId = stream.ReadInt32(); //0 = standard, 1 = patch ? Not entirely sure patch_001 files with byte = 0 game does not load
             }
 
             NameCount = stream.ReadInt32();
@@ -712,7 +714,10 @@ namespace ME3Explorer.Packages
 
             if (Game == Mod.MEGame.ME3 && Flags.HasFlag(EPackageFlags.Cooked))
             {
-                ms.WriteInt32(0);
+                //Restore Package ID
+                // 0 = Normal Packages
+                // 1 = Patch Packages
+                ms.WriteInt32(PackageTypeId);
             }
 
             ms.WriteInt32(NameCount);

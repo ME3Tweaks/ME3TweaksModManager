@@ -67,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //cannot use this name
                 Log.Error(@"Invalid mod name: " + ModNameText);
-                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_dialog_invalidModNameWillResolveToNothing), M3L.GetString(M3L.string_invalidModName), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_invalidModNameWillResolveToNothing), M3L.GetString(M3L.string_invalidModName), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Not enough space
                     Log.Error($@"Not enough disk space to import mod. Required space: {ByteSize.FromBytes(sourceSize)}, available space: {ByteSize.FromBytes(freeBytes)}");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_insufficientDiskSpaceToImport, Path.GetPathRoot(library), ByteSize.FromBytes(sourceSize), ByteSize.FromBytes(freeBytes)), M3L.GetString(M3L.string_insufficientFreeDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_insufficientDiskSpaceToImport, Path.GetPathRoot(library), ByteSize.FromBytes(sourceSize), ByteSize.FromBytes(freeBytes)), M3L.GetString(M3L.string_insufficientFreeDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var outDir = Path.Combine(library, destinationName);
             if (Directory.Exists(outDir))
             {
-                var okToDelete = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_dialog_importingWillDeleteExistingMod, outDir), M3L.GetString(M3L.string_sameNamedModInLibrary), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var okToDelete = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_importingWillDeleteExistingMod, outDir), M3L.GetString(M3L.string_sameNamedModInLibrary), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (okToDelete == MessageBoxResult.No)
                 {
                     return; //cancel
@@ -103,7 +103,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_couldNotDeleteExistingModDirectory, e.Message), M3L.GetString(M3L.string_errorDeletingModFolder), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_couldNotDeleteExistingModDirectory, e.Message), M3L.GetString(M3L.string_errorDeletingModFolder), MessageBoxButton.OK, MessageBoxImage.Error);
                     return; //abort
                 }
             }

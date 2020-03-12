@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var fetchedfilestream = VanillaDatabaseService.FetchFileFromVanillaSFAR(fileTofetch.Module, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
-                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
+                M3L.ShowDialog(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
             }
         }
 
@@ -110,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
+            M3L.ShowDialog(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
         }
 
 
@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
             }
-            Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
+            M3L.ShowDialog(M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
         }
 
         private bool CanFetchFile()

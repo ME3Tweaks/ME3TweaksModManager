@@ -30,6 +30,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
             return ShowDialog(owner, message, caption, buttons, image, MessageBoxResult.None);
         }
 
+        internal static MessageBoxResult ShowDialog(string message, string caption)
+        {
+            return ShowDialog(null, message, caption, MessageBoxButton.OK);
+        }
+
 		internal static MessageBoxResult ShowDialog(Window owner, string message)
 		{
 			return ShowDialog(owner, message, "", MessageBoxButton.OK);

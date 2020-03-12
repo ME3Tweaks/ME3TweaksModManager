@@ -270,6 +270,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                     }
 
+                    //these both are the same these days i guess, I honestly can't remember which one I wanted to use
                     if (properties.TryGetValue(@"AltFile", out string altfile))
                     {
                         AltFile = altfile;

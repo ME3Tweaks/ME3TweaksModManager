@@ -316,6 +316,11 @@ namespace MassEffectModManagerCore.modmanager
 
         private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp" };
 
+        /// <summary>
+        /// Main moddesc.ini parser
+        /// </summary>
+        /// <param name="iniText"></param>
+        /// <param name="expectedGame"></param>
         private void loadMod(string iniText, MEGame expectedGame)
         {
             Game = expectedGame; //we will assign this later. This is for startup errors only
