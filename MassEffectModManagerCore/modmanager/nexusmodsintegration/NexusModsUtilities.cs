@@ -48,6 +48,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         {
             try
             {
+                if (apiKey == null) return null;
                 var nexus = GetClient(apiKey);
                 Log.Information("Getting user information from NexusMods");
                 var userinfo = await nexus.Users.ValidateAsync();
