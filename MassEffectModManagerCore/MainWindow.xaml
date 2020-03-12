@@ -90,7 +90,7 @@
                     <MenuItem Header="{DynamicResource string_Exit}" Click="ExitApplication_Click" />
                 </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModManagement}" Padding="4">
-                    <MenuItem Header="Import and manage mods" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_importAndManageMods}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_ImportMod}">
                         <MenuItem Header="{DynamicResource string_HeaderDragDropFaster}" Style="{StaticResource MenuItemHeaderStyle}" />
                         <MenuItem Header="{DynamicResource string_ImportmodfromArchive}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
@@ -102,13 +102,13 @@
                     <MenuItem Header="{DynamicResource string_MixInLibrary}" Command="{Binding MixinLibraryCommand}" ToolTip="{DynamicResource string_tooltip_mixinLibrary}" />
                     <MenuItem Header="{DynamicResource string_BatchModInstaller}" Command="{Binding BatchModInstallerCommand}" ToolTip="{DynamicResource string_tooltip_batchModInstaller}" />
 
-                    <MenuItem Header="Library management" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_libraryManagement}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
 
-                    <MenuItem Header="Developer tools" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <MenuItem Header="{DynamicResource string_developerTools}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
                     <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                    <MenuItem Header="Controller/Interface Scaling Mod Compatiblity" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_controllerISMCompatibility}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
                     </MenuItem>
                 <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}">

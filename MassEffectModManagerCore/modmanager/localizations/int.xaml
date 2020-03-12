@@ -217,6 +217,9 @@
     <system:String x:Key="string_finishedCheckingBackups">Finished checking backups</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_optingIntoBeta">Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?</system:String>
     <system:String x:Key="string_enablingBetaMode">Enabling beta mode</system:String>
+    <system:String x:Key="string_controllerISMCompatibility">Controller/Interface Scaling Mod compatibility</system:String>
+    <system:String x:Key="string_importAndManageMods">Import + manage mods</system:String>
+    <system:String x:Key="string_libraryManagement">Library management</system:String>
 
     <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks.&#10;These builds may be less stable but have features that need to be tested</system:String>
