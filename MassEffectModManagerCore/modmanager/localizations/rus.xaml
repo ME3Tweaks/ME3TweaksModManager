@@ -331,7 +331,7 @@
     <system:String x:Key="string_theme">Тема</system:String>
     <system:String x:Key="string_light">Светлая</system:String>
     <system:String x:Key="string_dark">Темная</system:String>
-    <system:String x:Key="string_isYourLanguageMissing">Отсутствует ваш язык? Приходите на ME3Tweaks Discord и там вы сможете помочь сделать перевод на ваш родной язык.</system:String>
+    <system:String x:Key="string_isYourLanguageMissing">Отсутствует ваш язык? Приходите на ME3Tweaks Discord и там вы сможете помочь с переводом Mod Manager на ваш родной язык.</system:String>
     <system:String x:Key="string_modLibraryLocation">Расположение библиотеки модов.</system:String>
     <system:String x:Key="string_description_modsImportedAreStoredInLibrary">Моды, импортированные в Mod Manager, будут храниться по данному пути.</system:String>
     <system:String x:Key="string_libraryLocation">Расположение библиотеки</system:String>
@@ -783,9 +783,9 @@
 	<!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Не удалось добавить файл для замены при настройке мода: {0} не существует, но указан в задании.</system:String>
 	<!-- 0 = source file path in moddesc -->
-    <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe не резрешены в модах M3.</system:String>
-    <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll не разрешены в модах M3.</system:String>
-    <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi не разрешены в модах M3.</system:String>
+    <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe не резрешены в модах Mod Manager.</system:String>
+    <system:String x:Key="string_validation_modjob_dllFilesNotAllowed">.dll не разрешены в модах Mod Manager.</system:String>
+    <system:String x:Key="string_validation_modjob_asiFilesNotAllowed">.asi не разрешены в модах Mod Manager.</system:String>
     <system:String x:Key="string_interp_validation_modjob_additionalFileSpecifiedByJobDoesntExist">Не удалось добавить дополнительный файл при настройке мода: {0} не существует, но указан в задании.</system:String>
 	<!-- 0 = source file path in moddesc -->
     <system:String x:Key="string_interp_validation_modjob_additionalFileAlreadyMarkedForModification">Не удалось добавить дополнительный файл при настройке мода: {0} уже отмечен для модификации. Добавляемые файлы не могут совпадать друг с другом или с заменяемыми файлами.</system:String>
@@ -794,7 +794,7 @@
 	<!-- 0 = source file path in moddesc -->
     <system:String x:Key="string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Alternate Files, использующие функцию OptionGroup должны иметь в свое группе хотя бы одну структуру AlternaterFile с включенной опцией CheckedByDefault, так как хотя бы одна опция должна быть всегда выбрана.  Имя проблемной группы - '{0}'</system:String>
 	<!-- 0=group. Shown if no items in group have CheckedByDefault -->
-    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files, использующие функцию OptionGroup могут иметь своей группе только одну структуру AlternateFile с выбранной опцией CheckedByDefault.Имя проблемной группы - '{0}'</system:String>
+    <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files, использующие функцию OptionGroup могут иметь своей группе только одну структуру AlternateFile с выбранной опцией CheckedByDefault. Имя проблемной группы - '{0}'</system:String>
 	<!-- 0=group. Shown if more than one item in group has CheckedByDefault -->
 
 	<!-- ReadOnlyOption (Mod Installer) -->
@@ -857,7 +857,7 @@
 	<!-- 0 = header string in moddesc.ini -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerUnsupportedOnLTModdesc3">Заголовок задания ({0}) указан в качестве составляющей части мода, но данный заголовок предназначен только для версии ModDesc 3 и выше.</system:String>
 	<!-- 0 = header string in moddesc.ini -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport">Возникла ошибка во время автоматической привязки списка заменяемых файлов для {0}: {1}. Вероятно, это баг в M3, пожалуйста, сообщите об этом Mgamerz.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport">Возникла ошибка во время автоматической привязки списка заменяемых файлов для {0}: {1}. Вероятно, это баг в Mod Manager, пожалуйста, сообщите об этом Mgamerz.</system:String>
 	<!-- 0 = header string in moddesc.ini, 1 = error message -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound">Возникла ошибка во время парсинга списков заменяемых файлов для {0}: исходная директория {1} не была обнаружена и в задании был использован флаг gamedirectorystructure.</system:String>
 	<!-- 0 = header string in moddesc.ini, 1 = folder path -->
@@ -893,7 +893,7 @@
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_specifiedRCWFileDoesntExist">В моде определено задание ME2_RCWMOD, но указанный файл не существует: {0}</system:String>
 	<!-- 0 = filepath -->
     <system:String x:Key="string_validation_modparsing_loadfailed_cannotLoadCompressedRCWModThroughMainLoaderLikelyBug">Невозможно загрузить сжатый RCW-мод через основной загрузчик модов. Возможно этот мод включает в себя RCW-mod с другими заданиями, что запрещено.</system:String>
-    <system:String x:Key="string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod">RCW-моды на базе M3-модов могут содержать 1 мод внутри себя. Импортирование должно разделить эти мультимоды на одиночные.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod">RCW-моды на базе Mod Manager могут содержать только 1 мод внутри себя. Импортирование должно разделить эти мультимоды на одиночные.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified">В данном моде определено требуемое DLC, но оно не соответствует поддерживаемому значению или не начинается с DLC_. Проблемное значение: {0}</system:String>
 	<!-- 0 = value from moddesc.ini file -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated">Заголовок CustomDLC содержит в списке outdatedcustomdlc объект, являющися официальным DLC: {0}. Это запрещено.</system:String>
