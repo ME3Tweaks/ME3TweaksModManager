@@ -153,8 +153,16 @@ namespace MassEffectModManagerCore.modmanager
             {
                 File.Create(SettingsPath).Close();
             }
-
-            var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+            IniData settingsIni = null;
+            try
+            {
+                settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error reading settings.ini file: " + e.Message);
+                Log.Error("Mod Manager will use the defaults instead");
+            }
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
@@ -180,6 +188,7 @@ namespace MassEffectModManagerCore.modmanager
 
         private static bool LoadSettingBool(IniData ini, string section, string key, bool defaultValue)
         {
+            if (ini == null) return defaultValue;
             if (bool.TryParse(ini[section][key], out var boolValue))
             {
                 return boolValue;
@@ -192,6 +201,8 @@ namespace MassEffectModManagerCore.modmanager
 
         private static string LoadSettingString(IniData ini, string section, string key, string defaultValue)
         {
+            if (ini == null) return defaultValue;
+
             if (string.IsNullOrEmpty(ini[section][key]))
             {
                 return defaultValue;
@@ -204,6 +215,8 @@ namespace MassEffectModManagerCore.modmanager
 
         private static DateTime LoadSettingDateTime(IniData ini, string section, string key, DateTime defaultValue)
         {
+            if (ini == null) return defaultValue;
+
             if (string.IsNullOrEmpty(ini[section][key])) return defaultValue;
             try
             {
@@ -220,6 +233,8 @@ namespace MassEffectModManagerCore.modmanager
 
         private static int LoadSettingInt(IniData ini, string section, string key, int defaultValue)
         {
+            if (ini == null) return defaultValue;
+
             if (int.TryParse(ini[section][key], out var intValue))
             {
                 return intValue;

@@ -201,7 +201,6 @@ namespace MassEffectModManagerCore
 
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
-                POST_STARTUP = true;
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
 
@@ -331,7 +330,9 @@ namespace MassEffectModManagerCore
 
 
                 Log.Information("Loading settings");
+
                 Settings.Load();
+                
                 if (!Settings.EnableTelemetry)
                 {
                     Log.Warning("Telemetry is disabled :(");
@@ -353,6 +354,7 @@ namespace MassEffectModManagerCore
 
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
                 Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
+                POST_STARTUP = true; //this could be earlier but i'm not sure when crash handler actually is used, doesn't seem to be after setting it...
             }
             catch (Exception e)
             {
@@ -361,7 +363,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        public static string[] SupportedLanguages = {"int", /*"pol",*/ "rus", "deu"/*, "fra"*/};
+        public static string[] SupportedLanguages = { "int", /*"pol",*/ "rus", "deu"/*, "fra"*/};
         public static Dictionary<string, string> ServerManifest { get; set; }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
