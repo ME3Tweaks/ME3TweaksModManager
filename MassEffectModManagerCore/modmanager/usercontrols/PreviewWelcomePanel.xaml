@@ -24,8 +24,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="{DynamicResource string_selectYourLanguage}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
                 <TextBlock Grid.Column="4" Grid.ColumnSpan="2" Text="{DynamicResource string_theme}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
@@ -67,7 +65,7 @@
                     </StackPanel>
                 </Button>
                 <!-- Themes -->
-                <Button Grid.Column="4" Grid.Row="1" Margin="10,2,2,2" Click="ChangeTheme_Light_Clicked">
+                <Button Grid.Column="4" Grid.Row="1" Margin="12,2,2,2" Click="ChangeTheme_Light_Clicked">
                     <StackPanel>
                         <Image Source="/images/lighttheme.png" Width="64" />
                         <TextBlock Text="{DynamicResource string_light}" TextAlignment="Center" />
@@ -81,7 +79,7 @@
                 </Button>
             </Grid>
             <!--</DockPanel>-->
-            <DockPanel Grid.Column="1">
+            <!--<DockPanel Grid.Column="1" Background="Aqua">
                 <Grid HorizontalAlignment="Center" Margin="0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -92,7 +90,7 @@
                         <RowDefinition Height="79" />
                     </Grid.RowDefinitions>
                 </Grid>
-            </DockPanel>
+            </DockPanel>-->
             <DockPanel Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Background="AliceBlue"></DockPanel>
         </Grid>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_isYourLanguageMissing}" TextWrapping="Wrap" TextAlignment="Left" Margin="0,5,0,0" FontWeight="Bold" />

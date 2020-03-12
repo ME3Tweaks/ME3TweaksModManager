@@ -15,7 +15,7 @@
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
                 <ResourceDictionary Source="/ui/MMStyles.xaml"/>
-                <ResourceDictionary Source="/modmanager/localizations/deu.xaml"/>
+                <ResourceDictionary Source="/modmanager/localizations/int.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
