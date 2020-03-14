@@ -217,6 +217,10 @@
     <system:String x:Key="string_finishedCheckingBackups">Überprüfung der Backups abgeschlossen</system:String>
     <system:String x:Key="string_dialog_optingIntoBeta" xml:space="preserve">Durch Aktivieren der Beta-Updates kann Mod Manager auf Versionen aktualisiert werden, die noch nicht für den allgemeinen Einsatz freigegeben wurden. Diese Versionen sind nicht vollständig getestet und können instabil sein. Feedback zu Abstürzen dieser Versionen sind unverzichtbar, um ME3Tweaks Mod Manager verbessern zu können. Wenn du dich mit instabiler Software nicht wohl fühlst, solltest du diese Einstellung nicht aktivieren. Falls du dann zurück auf eine stabile Version willst, musst du manuell downgraden.\n\nBeta-Updates aktivieren?</system:String>
     <system:String x:Key="string_enablingBetaMode">Beta-Modus aktivieren</system:String>
+    <system:String x:Key="string_controllerISMCompatibility">Interface Scaling/Controller Mod Kompatibilität</system:String>
+    <system:String x:Key="string_importAndManageMods">Mods importieren und verwalten</system:String>
+    <system:String x:Key="string_libraryManagement">Bibliothek verwalten</system:String>
+
     <system:String x:Key="string_optIntoBetaUpdates">Beta-Updates aktivieren</system:String>
     <system:String x:Key="string_tooltip_optIntoBetaUpdates" xml:space="preserve">Aktiviert Beta-Updates, indem die "soak testing" Einstellung von ME3Tweaks überschrieben wird.&#10;Diese Versionen können weniger stabil sein, aber bieten Funktionen, die getestet werden müssen.</system:String>
     <system:String x:Key="string_tooltip_toggleTelemetry">De/Aktiviert die Übertragung von Analyseinformationen und Absturzprotokollen</system:String>
