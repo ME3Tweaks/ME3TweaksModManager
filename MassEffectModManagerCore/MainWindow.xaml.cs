@@ -2584,7 +2584,7 @@ namespace MassEffectModManagerCore
 
         private void Documentation_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/blob/master/moddesc.ini%20file%20format.md");
+            Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
         }
 
         private void OpenMemoryAnalyzer_Click(object sender, RoutedEventArgs e)
