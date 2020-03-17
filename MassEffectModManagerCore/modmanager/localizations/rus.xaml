@@ -217,6 +217,9 @@
     <system:String x:Key="string_finishedCheckingBackups">Проверка архивов завершена</system:String>
     <system:String x:Key="string_dialog_optingIntoBeta" xml:space="preserve">Включение бета-обновлений позволяет Mod Manager обновляться до версий, пока не сертифицированных для широкого распространения. Эти сборки не проходят полное тестирование и могут быть нестабильны. Обратная связь по вылетам и ошибкам этих сборок очень важна для улучшения ME3Tweaks Mod Manager. Если вам неудобно пользоваться нестабильным ПО, лучше не включать этот режим. Вам придется переустанавливать программу вручную, если вы решите вернуться к стабильной версии.\n\nВключить Бета-Режим?</system:String>
     <system:String x:Key="string_enablingBetaMode">Включение бета-режима</system:String>
+    <system:String x:Key="string_controllerISMCompatibility">Совместимость мода Interface Scaling/Controller</system:String>
+    <system:String x:Key="string_importAndManageMods">Импорт + управление модами</system:String>
+    <system:String x:Key="string_libraryManagement">Управление библиотекой</system:String>
     <system:String x:Key="string_optIntoBetaUpdates">Разрешить бета-обновления</system:String>
     <system:String x:Key="string_tooltip_optIntoBetaUpdates" xml:space="preserve">Включает бета-обновления, игнорируя настройки бета-тестирования с ME3Tweaks.&#10;Эти сборки могут быть менее стабильными, но содержат функции, которые нужно протестировать.</system:String>
     <system:String x:Key="string_tooltip_toggleTelemetry">Включает/отключает отправку аналитики и отчётов об ошибках.</system:String>
