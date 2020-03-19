@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager
                                 }
                                 else
                                 {
-                                    references.Add(relPath.Substring(ModPath.Length+1));
+                                    references.Add(relPath.Substring(ModPath.Length + 1));
                                 }
                             }
                         }
@@ -111,7 +111,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList());
             }
-            if (includeModdesc)
+            if (includeModdesc && GetJob(ModJob.JobHeader.ME2_RCWMOD) == null)
             {
                 references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/', '\\'));
             }
