@@ -404,7 +404,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += " DEBUG";
 #else
-                version += " PRERELEASE";
+                //version += " PRERELEASE";
 #endif
                 return $"{version}, Build {BuildNumber}";
             }
