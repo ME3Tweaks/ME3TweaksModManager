@@ -125,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ApplyUpdateFromStream(MemoryStream updatearchive)
         {
             Log.Information(@"Extracting update from memory");
-            ; SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
+            SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
             var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), M3L.GetString(M3L.string_update))).FullName;
             sve.ExtractArchive(outDirectory);
             var updaterExe = Path.Combine(outDirectory, @"ME3TweaksUpdater.exe");
@@ -178,7 +178,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 process.Start();
                 Log.Information(@"Stopping Mod Manager to apply update");
                 Log.CloseAndFlush();
-                Application.Current.Shutdown();
+                Environment.Exit(0);
             }
             else
             {

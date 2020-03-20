@@ -156,7 +156,8 @@ namespace MassEffectModManagerCore
                         if (parsedCommandLineArgs.Value.UpdateBoot)
                         {
                             //Update unpacked and process was run.
-                            Application.Current.Shutdown();
+                            Environment.Exit(0);
+                            return;
                         }
 
                         if (parsedCommandLineArgs.Value.UpdateDest != null)
@@ -194,6 +195,10 @@ namespace MassEffectModManagerCore
                         {
                             App.BootingUpdate = true;
                         }
+                    }
+                    else
+                    {
+                        Log.Error("Could not parse command line arguments!");
                     }
                 }
 
@@ -332,7 +337,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Loading settings");
 
                 Settings.Load();
-                
+
                 if (!Settings.EnableTelemetry)
                 {
                     Log.Warning("Telemetry is disabled :(");
@@ -345,8 +350,11 @@ namespace MassEffectModManagerCore
                     InitialLanguage = Settings.Language;
                 }
 
-                Log.Information("Ensuring mod directories");
+                
+                Log.Information("Deleting temp files (if any)");
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+                Log.Information("Initializing package handlers");
+
                 MEPackageHandler.Initialize();
 
                 Log.Information("Ensuring default ASI assets are present");
@@ -418,7 +426,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += " DEBUG";
 #else
-                version += " PRERELEASE";
+                //version += " PRERELEASE";
 #endif
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
