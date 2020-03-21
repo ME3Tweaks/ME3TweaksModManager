@@ -178,7 +178,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 process.Start();
                 Log.Information(@"Stopping Mod Manager to apply update");
                 Log.CloseAndFlush();
-                Environment.Exit(0);
+                Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
             }
             else
             {

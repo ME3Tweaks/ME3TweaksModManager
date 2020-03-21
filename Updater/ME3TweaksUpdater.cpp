@@ -5,6 +5,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <tlhelp32.h>
 
 void RunProcessWithArgs(LPCSTR lpApplicationName, LPSTR commandLine)
 {
@@ -36,9 +37,35 @@ void RunProcessWithArgs(LPCSTR lpApplicationName, LPSTR commandLine)
 	CloseHandle(pi.hThread);
 }
 
+void killME3TweaksModManager()
+{
+	PROCESSENTRY32 entry;
+	entry.dwSize = sizeof(PROCESSENTRY32);
+
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+	if (Process32First(snapshot, &entry) == TRUE)
+	{
+		while (Process32Next(snapshot, &entry) == TRUE)
+		{
+			if (_stricmp(entry.szExeFile, "ME3TweaksModManager.exe") == 0)
+			{
+				HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
+				if (hProcess)
+				{
+					TerminateProcess(hProcess, 0);
+					CloseHandle(hProcess);
+				}
+				// Do stuff..
+			}
+		}
+	}
+
+	CloseHandle(snapshot);
+}
+
 int main(int argc, char* argv[])
 {
-
 	char* updatingFrom = NULL;
 	char* updateDestination = NULL;
 	char* updateSource = NULL;
@@ -91,6 +118,9 @@ int main(int argc, char* argv[])
 		std::cout << "ERROR: --update-source-path and --update-dest-path are required.";
 		return 1;
 	}
+
+	//Fix for prerelease 104 hangs when shutting down in c#
+	killME3TweaksModManager();
 
 	bool updateInstalled = false;
 	for (int currentRetry = 0; currentRetry < 10; currentRetry++) {

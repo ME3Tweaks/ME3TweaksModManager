@@ -143,7 +143,6 @@ namespace MassEffectModManagerCore
 
                 string[] args = Environment.GetCommandLineArgs();
                 //Parsed<Options> parsedCommandLineArgs = null;
-                string updateDestinationPath = null;
 
                 #region Command line
 
@@ -156,35 +155,44 @@ namespace MassEffectModManagerCore
                         if (parsedCommandLineArgs.Value.UpdateBoot)
                         {
                             //Update unpacked and process was run.
-                            Environment.Exit(0);
+                            //Extract ME3TweaksUpdater.exe to ensure we have newest update executable in case we need to do update hotfixes
+                            
+                            var updaterExe = Path.Combine(Path.GetDirectoryName(ExecutableLocation), @"ME3TweaksUpdater.exe");
+                            if (File.Exists(updaterExe))
+                            {
+                                //write updated exe
+                                Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
+                            }
+
+                            Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
                             return;
                         }
 
-                        if (parsedCommandLineArgs.Value.UpdateDest != null)
-                        {
-                            if (File.Exists(parsedCommandLineArgs.Value.UpdateDest))
-                            {
-                                updateDestinationPath = parsedCommandLineArgs.Value.UpdateDest;
-                            }
+                        //if (parsedCommandLineArgs.Value.UpdateDest != null)
+                        //{
+                        //    if (File.Exists(parsedCommandLineArgs.Value.UpdateDest))
+                        //    {
+                        //        updateDestinationPath = parsedCommandLineArgs.Value.UpdateDest;
+                        //    }
 
-                            //if (parsedCommandLineArgs.Value.BootingNewUpdate)
-                            //{
-                            //    Thread.Sleep(1000); //Delay boot to ensure update executable finishes
-                            //    try
-                            //    {
-                            //        string updateFile = Path.Combine(exeFolder, "ME3TweaksModManager-Update.exe");
-                            //        if (File.Exists(updateFile))
-                            //        {
-                            //            File.Delete(updateFile);
-                            //            Log.Information("Deleted staged update");
-                            //        }
-                            //    }
-                            //    catch (Exception e)
-                            //    {
-                            //        Log.Warning("Unable to delete staged update: " + e.ToString());
-                            //    }
-                            //}
-                        }
+                        //    //if (parsedCommandLineArgs.Value.BootingNewUpdate)
+                        //    //{
+                        //    //    Thread.Sleep(1000); //Delay boot to ensure update executable finishes
+                        //    //    try
+                        //    //    {
+                        //    //        string updateFile = Path.Combine(exeFolder, "ME3TweaksModManager-Update.exe");
+                        //    //        if (File.Exists(updateFile))
+                        //    //        {
+                        //    //            File.Delete(updateFile);
+                        //    //            Log.Information("Deleted staged update");
+                        //    //        }
+                        //    //    }
+                        //    //    catch (Exception e)
+                        //    //    {
+                        //    //        Log.Warning("Unable to delete staged update: " + e.ToString());
+                        //    //    }
+                        //    //}
+                        //}
 
                         if (parsedCommandLineArgs.Value.UpdateFromBuild != 0)
                         {
@@ -198,7 +206,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        Log.Error("Could not parse command line arguments!");
+                        Log.Error("Could not parse command line arguments! Args: " + string.Join(' ', args));
                     }
                 }
 
@@ -350,9 +358,9 @@ namespace MassEffectModManagerCore
                     InitialLanguage = Settings.Language;
                 }
 
-                
                 Log.Information("Deleting temp files (if any)");
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+
                 Log.Information("Initializing package handlers");
 
                 MEPackageHandler.Initialize();
