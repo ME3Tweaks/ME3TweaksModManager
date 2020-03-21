@@ -156,12 +156,16 @@ namespace MassEffectModManagerCore
                         {
                             //Update unpacked and process was run.
                             //Extract ME3TweaksUpdater.exe to ensure we have newest update executable in case we need to do update hotfixes
-                            
-                            var updaterExe = Path.Combine(Path.GetDirectoryName(ExecutableLocation), @"ME3TweaksUpdater.exe");
+
+                            var updaterExe = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(ExecutableLocation)), @"ME3TweaksUpdater.exe");
                             if (File.Exists(updaterExe))
                             {
                                 //write updated exe
                                 Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Updater missing: " + updaterExe);
                             }
 
                             Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
