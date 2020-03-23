@@ -114,7 +114,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             get => _modMountPriority;
             set
             {
-                SetProperty(ref _modMountPriority, value);
+                    SetProperty(ref _modMountPriority, value);
                 var res = Validator.Validate(nameof(ModMountPriority));
                 if (res.IsValid)
                 {
@@ -657,17 +657,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             Validator.Validate(nameof(ModMountPriority));
         }
 
-        private int GetGameSpecificMountLimit()
-        {
-            switch (Game)
-            {
-                case MEGame.ME1:
-                case MEGame.ME2:
-                    return 500;
-                default:
-                    return 4800;
-            }
-        }
+        private int GetGameSpecificMountLimit() => MaxMountForGame;
 
         private void FieldText_Changed(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
