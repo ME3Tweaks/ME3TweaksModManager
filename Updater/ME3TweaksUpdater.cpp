@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 	//Update OK
 	std::string rebootArgs = "--completing-update";
 	if (updatingFrom) {
-		rebootArgs += " --update from " + std::string(updatingFrom);
+		rebootArgs += " --update-from " + std::string(updatingFrom);
 	}
 
 	std::cout << "Booting update: " << updateDestination << " " << rebootArgs;
