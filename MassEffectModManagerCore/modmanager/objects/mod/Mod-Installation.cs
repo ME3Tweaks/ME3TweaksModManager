@@ -387,7 +387,7 @@ namespace MassEffectModManagerCore.modmanager
             return list;
         }
 
-        [DebuggerDisplay("InstallSourceFile {FilePath} IsFullRelPath: {IsFullRelativeFilePath}")]
+        [DebuggerDisplay("InstallSourceFile {FilePath} IsFullRelPath: {IsFullRelativeFilePath}")] //do not localize
         public class InstallSourceFile
         {
             /// <summary>

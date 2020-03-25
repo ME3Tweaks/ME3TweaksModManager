@@ -20,7 +20,7 @@ using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager
 {
-    [DebuggerDisplay("Mod - {ModName}")]
+    [DebuggerDisplay("Mod - {ModName}")] //do not localize
     public partial class Mod : INotifyPropertyChanged
     {
         public enum MEGame

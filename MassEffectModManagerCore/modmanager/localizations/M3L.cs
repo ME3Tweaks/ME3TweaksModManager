@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Windows;
-using Microsoft.AppCenter.Crashes;
 using Serilog;
+using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore.modmanager.localizations
 {
@@ -465,6 +465,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_dialogInsufficientDiskSpace = "string_dialogInsufficientDiskSpace";
 		public static readonly string string_dialogBackupCannotBeSubdirectoryOfGame = "string_dialogBackupCannotBeSubdirectoryOfGame";
 		public static readonly string string_cannotCreateBackup = "string_cannotCreateBackup";
+		public static readonly string string_someDlcNotInstalled = "string_someDlcNotInstalled";
+		public static readonly string string_dialog_notAllDLCInstalled = "string_dialog_notAllDLCInstalled";
 		public static readonly string string_interp_downloadingX = "string_interp_downloadingX";
 		public static readonly string string_interp_extractingX = "string_interp_extractingX";
 		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";
@@ -896,6 +898,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_modMakerCode = "string_modMakerCode";
 		public static readonly string string_download = "string_download";
 		public static readonly string string_overallProgress = "string_overallProgress";
+		public static readonly string string_interp_modmakerDlcMissing = "string_interp_modmakerDlcMissing";
+		public static readonly string string_dlcMissing = "string_dlcMissing";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
 		public static readonly string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";

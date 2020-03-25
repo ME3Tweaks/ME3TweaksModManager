@@ -211,7 +211,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var missingDLC = string.Join("\n - ", listItems); //do not localize
                 missingDLC = @" - " + missingDLC; //add first -
-                result = Xceed.Wpf.Toolkit.MessageBox.Show(window, $"Some DLC required to compile this mod is not present in the game backup. You can continue to compile this mod, however modifications to the listed DLC will be skipped, and parts of the mod will not work.\n\nDLC missing from the backup:\n{missingDLC}\n\nTo add DLC to the backup, restore your game, delete the backup, add the DLC to your game from Origin, and then make a new backup.\n\nContinue compiling this mod?", "DLC missing", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                result = M3L.ShowDialog(window,
+                             M3L.GetString(M3L.string_interp_modmakerDlcMissing, missingDLC),
+                             M3L.GetString(M3L.string_dlcMissing),
+                             MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             });
             return result;
         }

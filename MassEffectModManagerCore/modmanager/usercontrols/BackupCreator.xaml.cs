@@ -154,11 +154,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (installedDLC.Count() < allOfficialDLC.Count())
                     {
-                        var dlcList = string.Join("\n - ", allOfficialDLC.Except(installedDLC).Select(x=> $"{MEDirectories.OfficialDLCNames(BackupSourceTarget.Game)[x]} ({x})"));
+                        var dlcList = string.Join("\n - ", allOfficialDLC.Except(installedDLC).Select(x => $@"{MEDirectories.OfficialDLCNames(BackupSourceTarget.Game)[x]} ({x})")); //do not localize
                         dlcList = @" - " + dlcList;
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            var cancelDueToNotAllDLC = Xceed.Wpf.Toolkit.MessageBox.Show(window, $"This target does not have have all OFFICIAL DLC installed. Ensure you have installed all OFFICIAL DLC you want to include in your backup, otherwise a game restore will not include all of it.\n\nThe following DLC is not installed:\n{dlcList}\n\nNote that you don't need all DLC in a backup (such as DLC you have not purchased), however some Mod Manager features depend on specific DLC being installed, such as ME3Tweaks ModMaker.\n\nMake a backup of this target?", "Some DLC not installed", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            var cancelDueToNotAllDLC = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_notAllDLCInstalled), M3L.GetString(M3L.string_someDlcNotInstalled), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                             if (cancelDueToNotAllDLC == MessageBoxResult.No)
                             {
                                 end = true;
@@ -291,9 +291,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             catch (Exception e)
                             {
                                 Crashes.TrackError(e, new Dictionary<string, string>() {
-                                    { "dlcFolderpath" , dlcFolderpath },
-                                    { "dlcSubStringLen" , dlcSubStringLen.ToString() },
-                                    { "file" , file }
+                                    { @"dlcFolderpath" , dlcFolderpath },
+                                    { @"dlcSubStringLen" , dlcSubStringLen.ToString() },
+                                    { @"file" , file }
                                 });
                             }
 

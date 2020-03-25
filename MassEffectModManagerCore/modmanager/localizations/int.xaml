@@ -445,6 +445,8 @@
     <system:String xml:space="preserve" x:Key="string_dialogBackupCannotBeSubdirectoryOfGame">A backup cannot be created in a subdirectory of a game target.\n\nSelected path: {0}\nConflicting target: {1}</system:String>
     <!-- 0=filepath  1=filepath -->
     <system:String x:Key="string_cannotCreateBackup">Cannot create backup</system:String>
+    <system:String x:Key="string_someDlcNotInstalled">Some DLC not installed</system:String>
+    <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">This target does not have have all OFFICIAL DLC installed. Ensure you have installed all OFFICIAL DLC you want to include in your backup, otherwise a game restore will not include all of it.\n\nThe following DLC is not installed:\n{dlcList}\n\nNote that you don't need all DLC in a backup (such as DLC you have not purchased), however some Mod Manager features depend on specific DLC being installed, such as ME3Tweaks ModMaker.\n\nMake a backup of this target?</system:String>
 
     <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Downloading {0}</system:String>
@@ -1061,6 +1063,9 @@
     <system:String x:Key="string_download">Download</system:String>
     <!-- as in download mod -->
     <system:String x:Key="string_overallProgress">Overall progress</system:String>
+    <system:String x:Key="string_interp_modmakerDlcMissing">Some DLC required to compile this mod is not present in the game backup. You can continue to compile this mod, however modifications to the listed DLC will be skipped, and parts of the mod will not work.\n\nDLC missing from the backup:\n{0}\n\nTo add DLC to the backup, restore your game, delete the backup, add the DLC to your game from Origin, and then make a new backup.\n\nContinue compiling this mod?</system:String>
+    <!-- 0 = bulleted list of DLC names -->
+    <system:String x:Key="string_dlcMissing">DLC missing</system:String>
 
     <!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
@@ -1180,8 +1185,8 @@
     <system:String x:Key="string_setToDefaultKeys">Set to default keys</system:String>
     <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Mass Effect 2 console keys are defined per game.</system:String>
     <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Mass Effect 3 console keys are defined per game.</system:String>
-
-    <system:String x:Key="string_interp_cannotReadME3Keybinds">The keybindings for the selected Mass Effect 3 target could not be loaded: {e.Message}</system:String>
+    <system:String x:Key="string_interp_cannotReadME3Keybinds">The keybindings for the selected Mass Effect 3 target could not be loaded: {0}</system:String>
+    <!-- 0 = error message -->
     <system:String x:Key="string_errorReadingKeybinds">Error reading keybinds</system:String>
 
     <!-- Updater Service Panel -->

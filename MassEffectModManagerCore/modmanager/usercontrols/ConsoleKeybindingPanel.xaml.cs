@@ -530,7 +530,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                M3L.ShowDialog(window, M3L.string_interp_cannotReadME3Keybinds, "Error reading keybinds", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error(@"Error reading keybinds: " + e.Message);
+                M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotReadME3Keybinds, e.Message), M3L.GetString(M3L.string_errorReadingKeybinds), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
