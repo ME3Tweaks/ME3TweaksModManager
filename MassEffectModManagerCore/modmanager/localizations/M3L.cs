@@ -900,6 +900,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_overallProgress = "string_overallProgress";
 		public static readonly string string_interp_modmakerDlcMissing = "string_interp_modmakerDlcMissing";
 		public static readonly string string_dlcMissing = "string_dlcMissing";
+		public static readonly string string_downloadAborted = "string_downloadAborted";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
 		public static readonly string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";

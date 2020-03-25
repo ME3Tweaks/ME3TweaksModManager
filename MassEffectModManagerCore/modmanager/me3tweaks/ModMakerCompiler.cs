@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (NotifySomeDLCIsMissing != null && !NotifySomeDLCIsMissing.Invoke(missingDlc))
                     {
                         //User canceled build
-                        SetModNameCallback?.Invoke("Download aborted"); //TODO LOCALIZE THIS
+                        SetModNameCallback?.Invoke(M3L.GetString(M3L.string_downloadAborted));
                         return null;
                     }
                 }

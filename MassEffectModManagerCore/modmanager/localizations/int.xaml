@@ -446,7 +446,8 @@
     <!-- 0=filepath  1=filepath -->
     <system:String x:Key="string_cannotCreateBackup">Cannot create backup</system:String>
     <system:String x:Key="string_someDlcNotInstalled">Some DLC not installed</system:String>
-    <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">This target does not have have all OFFICIAL DLC installed. Ensure you have installed all OFFICIAL DLC you want to include in your backup, otherwise a game restore will not include all of it.\n\nThe following DLC is not installed:\n{dlcList}\n\nNote that you don't need all DLC in a backup (such as DLC you have not purchased), however some Mod Manager features depend on specific DLC being installed, such as ME3Tweaks ModMaker.\n\nMake a backup of this target?</system:String>
+    <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">This target does not have have all OFFICIAL DLC installed. Ensure you have installed all OFFICIAL DLC you want to include in your backup, otherwise a game restore will not include all of it.\n\nThe following DLC is not installed:\n{0}\n\nNote that you don't need all DLC in a backup (such as DLC you have not purchased), however some Mod Manager features depend on specific DLC being installed, such as ME3Tweaks ModMaker.\n\nMake a backup of this target?</system:String>
+<!-- 0 = bulleted list of DLC -->
 
     <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Downloading {0}</system:String>
@@ -1063,9 +1064,10 @@
     <system:String x:Key="string_download">Download</system:String>
     <!-- as in download mod -->
     <system:String x:Key="string_overallProgress">Overall progress</system:String>
-    <system:String x:Key="string_interp_modmakerDlcMissing">Some DLC required to compile this mod is not present in the game backup. You can continue to compile this mod, however modifications to the listed DLC will be skipped, and parts of the mod will not work.\n\nDLC missing from the backup:\n{0}\n\nTo add DLC to the backup, restore your game, delete the backup, add the DLC to your game from Origin, and then make a new backup.\n\nContinue compiling this mod?</system:String>
+    <system:String x:Key="string_interp_modmakerDlcMissing" xml:space="preserve">Some DLC required to compile this mod is not present in the game backup. You can continue to compile this mod, however modifications to the listed DLC will be skipped, and parts of the mod will not work.\n\nDLC missing from the backup:\n{0}\n\nTo add DLC to the backup, restore your game, delete the backup, add the DLC to your game from Origin, and then make a new backup.\n\nContinue compiling this mod?</system:String>
     <!-- 0 = bulleted list of DLC names -->
     <system:String x:Key="string_dlcMissing">DLC missing</system:String>
+    <system:String x:Key="string_downloadAborted">Download aborted</system:String>
 
     <!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
