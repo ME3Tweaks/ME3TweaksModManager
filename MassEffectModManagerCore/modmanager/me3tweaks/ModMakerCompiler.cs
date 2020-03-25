@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.localizations;
 using static MassEffectModManagerCore.modmanager.Mod;
 
@@ -37,6 +38,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public Action<bool> SetCurrentTaskIndeterminateCallback;
         public Action<string> SetCurrentTaskStringCallback;
         public Action<string> SetModNameCallback;
+        public Func<List<string>, bool> NotifySomeDLCIsMissing;
         public Action SetCompileStarted;
         public Action SetModNotFoundCallback;
 
@@ -83,7 +85,30 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var mod = GenerateLibraryModFromDocument(xmlDoc);
             if (mod != null)
             {
-                calculateNumberOfTasks(xmlDoc);
+                var requiredDLC = calculateNumberOfTasks(xmlDoc);
+                //Check Required DLC
+                List<string> missingDlc = new List<string>();
+                var dlcFolderPath = Path.Combine(Utilities.GetGameBackupPath(MEGame.ME3), @"BioGame", @"DLC");
+                foreach (var reqDlc in requiredDLC)
+                {
+                    if (reqDlc == @"DLC_TestPatch") continue; //don't do this one
+                    var reqDlcSfar = Path.Combine(dlcFolderPath, reqDlc, "CookedPCConsole", "Default.sfar");
+                    if (!File.Exists(reqDlcSfar))
+                    {
+                        missingDlc.Add($@"{reqDlc} ({ME3Directory.OfficialDLCNames[reqDlc]})");
+                    }
+                }
+
+                if (missingDlc.Any())
+                {
+                    if (NotifySomeDLCIsMissing != null && !NotifySomeDLCIsMissing.Invoke(missingDlc))
+                    {
+                        //User canceled build
+                        SetModNameCallback?.Invoke("Download aborted"); //TODO LOCALIZE THIS
+                        return null;
+                    }
+                }
+
                 compileTLKs(xmlDoc, mod); //Compile TLK
                 compileMixins(xmlDoc, mod);
                 compileCoalesceds(xmlDoc, mod);
@@ -99,8 +124,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        private void calculateNumberOfTasks(XDocument xmlDoc)
+        private SortedSet<string> calculateNumberOfTasks(XDocument xmlDoc)
         {
+            SortedSet<string> requiredDLCFolders = new SortedSet<string>();
+            var backupDir = Utilities.GetGameBackupPath(MEGame.ME3, true);
+
+                var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
+                var dlcFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
+            
             int numTasks = 0;
             //TLK
             var tlkNode = xmlDoc.XPathSelectElement(@"/ModMaker/TLKData");
@@ -114,9 +145,35 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
             if (mixinNode != null)
             {
-                var mmixins = mixinNode.Elements(@"MixIn").Count();
-                var dmixins = mixinNode.Elements(@"DynamicMixIn").Count();
-                numTasks += (mmixins + dmixins) * MIXIN_OVERALL_WEIGHT; //Mixin is 1 unit.
+                int mixincount = 0;
+                var me3tweaksmixinsdata = mixinNode.Elements(@"MixIn")
+                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf(@"v")))).ToList();
+                foreach (var mixin in me3tweaksmixinsdata)
+                {
+
+                    var tmtext = MixinHandler.GetMixinByME3TweaksID(mixin).TargetModule;
+                    var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
+                    Debug.WriteLine(tm);
+                    if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
+                    if (tm == null|| tm == "TESTPATCH" || dlcFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        mixincount++;
+                    }
+                }
+
+                var dmixins = mixinNode.Elements(@"DynamicMixIn");
+                foreach (var mixin in dmixins)
+                {
+                    var tmtext = mixin.Attribute("targetmodule");
+                    var tm = ModmakerChunkNameToDLCFoldername(tmtext.Value);
+                    if (tm != null) requiredDLCFolders.Add(tm); //null is basegame or balance changes
+                    Debug.WriteLine(tm);
+                    if (tm == null || tm == "TESTPATCH" || dlcFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        mixincount++;
+                    }
+                }   
+                numTasks += mixincount * MIXIN_OVERALL_WEIGHT; //Mixin is 1 unit.
             }
 
             //COALESCED
@@ -125,12 +182,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 foreach (var job in jobs)
                 {
+                    var foldername = ModmakerChunkNameToDLCFoldername(job.Name.LocalName);
+                    if (foldername != null) requiredDLCFolders.Add(foldername);
                     numTasks += job.Elements().Count() * COALESCED_CHUNK_OVERALL_WEIGHT;
                 }
             }
 
             OverallProgressMax = numTasks;
             SetOverallMaxCallback?.Invoke(numTasks);
+            return requiredDLCFolders;
         }
 
 
@@ -210,6 +270,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
                 MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
                 allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
+
+                var backupDir = Utilities.GetGameBackupPath(MEGame.ME3, true);
+                if (backupDir != null)
+                {
+                    var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
+                    var dlcFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
+                    allmixins = allmixins.Where(x => x.TargetModule == ModJob.JobHeader.BASEGAME
+                                                     || x.TargetModule == ModJob.JobHeader.TESTPATCH 
+                        || dlcFolders.Contains(ModmakerChunkNameToDLCFoldername(x.TargetModule.ToString()))).ToList();
+                }
 
                 var compilingListsPerModule = MixinHandler.GetMixinApplicationList(allmixins);
                 int totalMixinsToApply = compilingListsPerModule.Sum(x => x.Value.Values.Sum(y => y.Count()));

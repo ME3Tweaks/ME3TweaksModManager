@@ -26,6 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class ModMakerPanel : MMBusyPanelBase
     {
         private bool KeepOpenWhenThreadFinishes;
+        public bool ShowCloseButton { get; set; }
         public string ModMakerCode { get; set; }
         public OnlineContent.ServerModMakerModInfo SelectedTopMod { get; set; }
         public long CurrentTaskValue { get; private set; }
@@ -178,6 +179,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         compiler.SetModNameCallback = SetModNameOrDownloadText;
                         compiler.SetCompileStarted = CompilationInProgress;
                         compiler.SetModNotFoundCallback = ModNotFound;
+                        compiler.NotifySomeDLCIsMissing = NotifySomeDLCIsMissing;
                         Mod m = compiler.DownloadAndCompileMod(modDelta);
                         File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + @".xml"), modDelta);
                         b.Result = m;
@@ -191,9 +193,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     OnClosing(new DataEventArgs(m));
                 }
+                else
+                {
+                    CloseProgressPanel();
+                    ShowCloseButton = true;
+                }
+                CommandManager.InvalidateRequerySuggested();
 
             };
             bw.RunWorkerAsync();
+        }
+
+        private bool NotifySomeDLCIsMissing(List<string> listItems)
+        {
+            bool result = false;
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                var missingDLC = string.Join("\n - ", listItems); //do not localize
+                missingDLC = @" - " + missingDLC; //add first -
+                result = Xceed.Wpf.Toolkit.MessageBox.Show(window, $"Some DLC required to compile this mod is not present in the game backup. You can continue to compile this mod, however modifications to the listed DLC will be skipped, and parts of the mod will not work.\n\nDLC missing from the backup:\n{missingDLC}\n\nTo add DLC to the backup, restore your game, delete the backup, add the DLC to your game from Origin, and then make a new backup.\n\nContinue compiling this mod?", "DLC missing", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+            });
+            return result;
         }
 
         private void ModNotFound()
@@ -270,6 +290,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 //Open Progress Panel
                 sb = this.FindResource(@"OpenProgressPanel") as Storyboard;
+                if (sb.IsSealed)
+                {
+                    sb = sb.Clone();
+                }
+                DownloadingProgressPanel.Height = DownloadingProgressPanel.ActualHeight;
+                Storyboard.SetTarget(sb, DownloadingProgressPanel);
+                sb.Begin();
+            });
+        }
+
+        public void CloseProgressPanel()
+        {
+            //Close entry dialog
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+
+                //Open Progress Panel
+                var sb = this.FindResource(@"CloseProgressPanel") as Storyboard;
                 if (sb.IsSealed)
                 {
                     sb = sb.Clone();

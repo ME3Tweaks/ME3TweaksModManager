@@ -14,6 +14,13 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
+        <Storyboard x:Key="CloseProgressPanel">
+            <DoubleAnimation To="0" Duration="0:0:0.35" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
     </UserControl.Resources>
     <StackPanel>
         <Image Source="/images/modmaker.png" MaxWidth="300" />
@@ -56,11 +63,15 @@
                 <Button Content="{DynamicResource string_download}" Command="{Binding DownloadCompileCommand}" Padding="20,0" />
             </DockPanel>
         </DockPanel>
+        
         <StackPanel Name="DownloadingProgressPanel" Height="0">
             <TextBlock Text="{DynamicResource string_overallProgress}" Margin="0,0,0,1" />
             <ProgressBar Value="{Binding OverallValue, Mode=OneWay}" Maximum="{Binding OverallMaximum, Mode=OneWay}" IsIndeterminate="{Binding OverallIndeterminate}" Height="16" />
             <TextBlock Text="{Binding CurrentTaskString}" Margin="0,5,0,1" />
             <ProgressBar Value="{Binding CurrentTaskValue, Mode=OneWay}" Maximum="{Binding CurrentTaskMaximum, Mode=OneWay}" IsIndeterminate="{Binding CurrentTaskIndeterminate}" Height="16" />
         </StackPanel>
+        <DockPanel Margin="0,5" DockPanel.Dock="Bottom" Visibility="{Binding ShowCloseButton, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" />
+        </DockPanel>
     </StackPanel>
 </local:MMBusyPanelBase>
