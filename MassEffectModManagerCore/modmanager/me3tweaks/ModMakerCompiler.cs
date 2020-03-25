@@ -129,9 +129,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             SortedSet<string> requiredDLCFolders = new SortedSet<string>();
             var backupDir = Utilities.GetGameBackupPath(MEGame.ME3, true);
 
-                var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
-                var dlcFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
-            
+            var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
+            DLCFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
+
             int numTasks = 0;
             //TLK
             var tlkNode = xmlDoc.XPathSelectElement(@"/ModMaker/TLKData");
@@ -155,9 +155,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
                     Debug.WriteLine(tm);
                     if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
-                    if (tm == null|| tm == "TESTPATCH" || dlcFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    if (tm == null || tm == "DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
                     {
                         mixincount++;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Not adding " + tm);
                     }
                 }
 
@@ -168,11 +172,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var tm = ModmakerChunkNameToDLCFoldername(tmtext.Value);
                     if (tm != null) requiredDLCFolders.Add(tm); //null is basegame or balance changes
                     Debug.WriteLine(tm);
-                    if (tm == null || tm == "TESTPATCH" || dlcFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    if (tm == null || tm == "DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
                     {
                         mixincount++;
                     }
-                }   
+                    else
+                    {
+                        Debug.WriteLine("Not adding " + tm);
+                    }
+                }
                 numTasks += mixincount * MIXIN_OVERALL_WEIGHT; //Mixin is 1 unit.
             }
 
@@ -184,7 +192,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var foldername = ModmakerChunkNameToDLCFoldername(job.Name.LocalName);
                     if (foldername != null) requiredDLCFolders.Add(foldername);
-                    numTasks += job.Elements().Count() * COALESCED_CHUNK_OVERALL_WEIGHT;
+                    if (job.Name.LocalName == "BASEGAME" || job.Name.LocalName == "BALANCE_CHANGES" || job.Name.LocalName == "TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        numTasks += job.Elements().Count() * COALESCED_CHUNK_OVERALL_WEIGHT;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Not adding " + foldername);
+                    }
                 }
             }
 
@@ -277,7 +292,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
                     var dlcFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
                     allmixins = allmixins.Where(x => x.TargetModule == ModJob.JobHeader.BASEGAME
-                                                     || x.TargetModule == ModJob.JobHeader.TESTPATCH 
+                                                     || x.TargetModule == ModJob.JobHeader.TESTPATCH
                         || dlcFolders.Contains(ModmakerChunkNameToDLCFoldername(x.TargetModule.ToString()))).ToList();
                 }
 
@@ -384,8 +399,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         CLog.Information(@"Found coalesced modifier for DLC: " + node.Name,
                             Settings.LogModMakerCompiler);
-                        jobCollection.Add(node);
-                        totalNumCoalescedFileChunks += node.Elements().Count();
+                        var foldername = ModmakerChunkNameToDLCFoldername(job.Name.LocalName);
+                        if (job.Name.LocalName == "BASEGAME" || job.Name.LocalName == "BALANCE_CHANGES" || job.Name.LocalName == "TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
+                        {
+                            jobCollection.Add(node);
+                            totalNumCoalescedFileChunks += node.Elements().Count();
+                        }
                     }
                 }
             }
@@ -717,6 +736,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private int MIXIN_OVERALL_WEIGHT = 1;
         private int TLK_OVERALL_WEIGHT = 4;
         private int COALESCED_CHUNK_OVERALL_WEIGHT = 2;
+        private List<string> DLCFolders;
 
 
         /// <summary>
