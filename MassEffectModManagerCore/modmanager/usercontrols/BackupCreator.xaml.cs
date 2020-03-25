@@ -20,6 +20,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 using MassEffectModManagerCore.modmanager.localizations;
 using ByteSizeLib;
+using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -231,37 +232,53 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         int dlcSubStringLen = dlcFolderpath.Length;
                         bool aboutToCopyCallback(string file)
                         {
-                            if (file.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
-                            if (file.StartsWith(dlcFolderpath))
+                            try
                             {
-                                //It's a DLC!
-                                string dlcname = file.Substring(dlcSubStringLen);
-                                dlcname = dlcname.Substring(0, dlcname.IndexOf('\\'));
-                                if (MEDirectories.OfficialDLCNames(BackupSourceTarget.Game).TryGetValue(dlcname, out var hrName))
+                                if (file.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
+                                if (file.StartsWith(dlcFolderpath))
                                 {
-                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, hrName);
+                                    //It's a DLC!
+                                    string dlcname = file.Substring(dlcSubStringLen);
+                                    dlcname = dlcname.Substring(0, dlcname.IndexOf('\\'));
+                                    if (MEDirectories.OfficialDLCNames(BackupSourceTarget.Game)
+                                        .TryGetValue(dlcname, out var hrName))
+                                    {
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, hrName);
+                                    }
+                                    else
+                                    {
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, dlcname);
+                                    }
                                 }
                                 else
                                 {
-                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, dlcname);
+                                    //It's basegame
+                                    if (file.EndsWith(@".bik"))
+                                    {
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                            M3L.string_movies);
+                                    }
+                                    else if (new FileInfo(file).Length > 52428800)
+                                    {
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                            Path.GetFileName(file));
+                                    }
+                                    else
+                                    {
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                            M3L.string_basegame);
+                                    }
                                 }
                             }
-                            else
+                            catch (Exception e)
                             {
-                                //It's basegame
-                                if (file.EndsWith(@".bik"))
-                                {
-                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, M3L.string_movies);
-                                }
-                                else if (new FileInfo(file).Length > 52428800)
-                                {
-                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, Path.GetFileName(file));
-                                }
-                                else
-                                {
-                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, M3L.string_basegame);
-                                }
+                                Crashes.TrackError(e, new Dictionary<string, string>() {
+                                    { "dlcFolderpath" , dlcFolderpath },
+                                    { "dlcSubStringLen" , dlcSubStringLen.ToString() },
+                                    { "file" , file }
+                                });
                             }
+
                             return true;
                         }
 

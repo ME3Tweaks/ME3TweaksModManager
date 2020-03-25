@@ -753,9 +753,9 @@ namespace MassEffectModManagerCore
         private void ShowUpdateCompletedPane()
         {
             var message = M3L.GetString(M3L.string_interp_modManagerHasBeenUpdatedTo, App.UpdatedFrom.ToString(), App.AppVersionAbout);
-            var archiveDeploymentPane = new UpdateCompletedPanel(M3L.GetString(M3L.string_updateCompleted), message);
-            archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(archiveDeploymentPane);
+            var updateCompletedPanel = new UpdateCompletedPanel(M3L.GetString(M3L.string_updateCompleted), message);
+            updateCompletedPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(updateCompletedPanel);
         }
 
         private bool CanShowDeploymentPane()
@@ -778,7 +778,6 @@ namespace MassEffectModManagerCore
             {
                 IsBusy = true;
                 BusyContent = control;
-
             }
             else
             {

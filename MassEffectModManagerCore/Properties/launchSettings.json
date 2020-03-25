@@ -1,7 +1,8 @@
 {
   "profiles": {
     "MassEffectModManagerCore": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--update-from 103 --completing-update"
     }
   }
 }

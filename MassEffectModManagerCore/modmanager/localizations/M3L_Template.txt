@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using Serilog;
+using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore.modmanager.localizations
 {
@@ -59,13 +60,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
             {
                 if (!resourceKey.StartsWith(@"string_")) throw new Exception(@"Localization keys must start with a string_ identifier!");
                 var str = (string)Application.Current.FindResource(resourceKey);
-				str = str.Replace(@"\n", Environment.NewLine);
+                str = str.Replace(@"\n", Environment.NewLine);
                 return string.Format(str, interpolationItems);
             }
             catch (Exception e)
             {
-                Log.Error($@"Error fetching string with key {resourceKey}: {e.ToString()}. Returning value of ERROR.");
-                return "ERROR!";
+                Log.Error($@"Error fetching string with key {resourceKey}: {e.ToString()}.");
+                Crashes.TrackError(e, new Dictionary<string, string> { { "String key", resourceKey } });
+                return $@"Error fetching string with key {resourceKey}: {e.ToString()}! Please report this to Mgamerz";
             }
         }
 
