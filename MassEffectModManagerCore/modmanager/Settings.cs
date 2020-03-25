@@ -301,25 +301,25 @@ namespace MassEffectModManagerCore.modmanager
             {
                 File.Create(SettingsPath).Close();
             }
-
-            var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
-            SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
-            SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
-            SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
-            SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
-            SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
-            SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
-            SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
-            SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
-            SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
-            SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
-            SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
-            SaveSettingString(settingsIni, "ModManager", "Language", Language);
-            SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
-            SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
-            SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
             try
             {
+                var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+                SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
+                SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
+                SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
+                SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
+                SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
+                SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
+                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
+                SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
+                SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
+                SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
+                SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
+                SaveSettingString(settingsIni, "ModManager", "Language", Language);
+                SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
+                SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
+                SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
+
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
             }
             catch (Exception e)
