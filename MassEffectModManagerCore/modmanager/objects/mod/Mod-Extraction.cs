@@ -371,7 +371,8 @@ namespace MassEffectModManagerCore.modmanager
             if (rcw != null)
             {
                 //Write RCW
-                rcw.WriteToFile(Path.Combine(modpath, ModName + @".me2mod"));
+                var sanitizedName = Utilities.SanitizePath(ModName);
+                rcw.WriteToFile(Path.Combine(modpath, sanitizedName + @".me2mod"));
 
                 //Write moddesc.ini
                 IniData ini = new IniData();
@@ -382,7 +383,7 @@ namespace MassEffectModManagerCore.modmanager
                 ini[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(ModDescription);
                 ini[@"ModInfo"][@"modver"] = @"1.0"; //Not going to bother looking this up to match the source
 
-                ini[@"ME2_RCWMOD"][@"modfile"] = ModName + @".me2mod";
+                ini[@"ME2_RCWMOD"][@"modfile"] = sanitizedName + @".me2mod";
                 var modDescPath = Path.Combine(modpath, @"moddesc.ini");
                 new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
             }

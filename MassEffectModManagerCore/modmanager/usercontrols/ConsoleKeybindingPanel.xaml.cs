@@ -487,39 +487,50 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadME3Keys(GameTarget target)
         {
             if (target.Game != Mod.MEGame.ME3) throw new Exception(@"Cannot load ME3 keys from target that is not ME3");
-            var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
-            Dictionary<string, string> coalescedFilemapping = null;
-            if (File.Exists(coalPath))
+            try
             {
-                using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
-            }
-            else
-            {
-                Log.Error(@"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
-                return;
-            }
+                var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                Dictionary<string, string> coalescedFilemapping = null;
+                if (File.Exists(coalPath))
+                {
+                    using FileStream fs = new FileStream(coalPath, FileMode.Open);
+                    coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                }
+                else
+                {
+                    Log.Error(
+                        @"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
+                    return;
+                }
 
-            var bioinputText = coalescedFilemapping[@"BioInput.xml"];
-            var coalFileDoc = XDocument.Parse(bioinputText);
-            var consolekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='consolekey']");
-            var typekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
-            if (consolekey != null)
-            {
-                ME3FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
-            }
-            else
-            {
-                ME3FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
-            }
+                var bioinputText = coalescedFilemapping[@"BioInput.xml"];
+                var coalFileDoc = XDocument.Parse(bioinputText);
+                var consolekey = coalFileDoc.XPathSelectElement(
+                    @"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='consolekey']");
+                var typekey =
+                    coalFileDoc.XPathSelectElement(
+                        @"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
+                if (consolekey != null)
+                {
+                    ME3FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
+                }
+                else
+                {
+                    ME3FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
+                }
 
-            if (typekey != null)
-            {
-                ME3MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
+                if (typekey != null)
+                {
+                    ME3MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
+                }
+                else
+                {
+                    ME3MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                }
             }
-            else
+            catch (Exception e)
             {
-                ME3MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                M3L.ShowDialog(window, M3L.string_interp_cannotReadME3Keybinds, "Error reading keybinds", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
