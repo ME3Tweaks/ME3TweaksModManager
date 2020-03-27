@@ -1064,7 +1064,7 @@
     <system:String x:Key="string_download">Download</system:String>
     <!-- as in download mod -->
     <system:String x:Key="string_overallProgress">Overall progress</system:String>
-    <system:String x:Key="string_interp_modmakerDlcMissing" xml:space="preserve">Some DLC required to compile this mod is not present in the game backup. You can continue to compile this mod, however modifications to the listed DLC will be skipped, and parts of the mod will not work.\n\nDLC missing from the backup:\n{0}\n\nTo add DLC to the backup, restore your game, delete the backup, add the DLC to your game from Origin, and then make a new backup.\n\nContinue compiling this mod?</system:String>
+    <system:String x:Key="string_interp_modmakerDlcMissing" xml:space="preserve">Some DLC required to compile this mod is not present in the game backup. You can continue to compile this mod, however modifications to the listed DLC will be skipped, and parts of the mod will not work.\n\nDLC missing from the backup:\n{0}\n\nTo add OFFICIAL DLC to the backup, restore your game, delete the backup, add the DLC to your game, and then make a new backup.\n\nContinue compiling this mod?</system:String>
     <!-- 0 = bulleted list of DLC names -->
     <system:String x:Key="string_dlcMissing">DLC missing</system:String>
     <system:String x:Key="string_downloadAborted">Download aborted</system:String>
