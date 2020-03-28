@@ -220,7 +220,6 @@
     <system:String x:Key="string_controllerISMCompatibility">Interface Scaling/Controller Mod Kompatibilität</system:String>
     <system:String x:Key="string_importAndManageMods">Mods importieren und verwalten</system:String>
     <system:String x:Key="string_libraryManagement">Bibliothek verwalten</system:String>
-
     <system:String x:Key="string_optIntoBetaUpdates">Beta-Updates aktivieren</system:String>
     <system:String x:Key="string_tooltip_optIntoBetaUpdates" xml:space="preserve">Aktiviert Beta-Updates, indem die "soak testing" Einstellung von ME3Tweaks überschrieben wird.&#10;Diese Versionen können weniger stabil sein, aber bieten Funktionen, die getestet werden müssen.</system:String>
     <system:String x:Key="string_tooltip_toggleTelemetry">De/Aktiviert die Übertragung von Analyseinformationen und Absturzprotokollen</system:String>
@@ -445,6 +444,8 @@
     <system:String x:Key="string_dialogBackupCannotBeSubdirectoryOfGame" xml:space="preserve">Ein Backup kann nicht in einen Unterordner eines Installationsziels erstellt werden\n\nGewählter Pfad: {0}\nKollidierendes Ziel: {1}</system:String>
 	<!-- 0=filepath  1=filepath -->
     <system:String x:Key="string_cannotCreateBackup">Backup kann nicht erstellt werden</system:String>
+    <system:String x:Key="string_someDlcNotInstalled">DLC nicht installiert</system:String>
+    <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">In diesem Ziel sind nicht alle OFFIZIELLEN DLCs installiert. Stelle sicher, dass du alle OFFIZIELLEN DLCs installiert hast, die dein Backup enthalten soll, ansonsten können nun fehlende DLCs nicht wiederhergestellt werden.\n\nDie folgenden DLCs sind nicht installiert:\n{0}\n\nHinweis: du brauchst nicht alle DLCs in einem Backup (z.B. wenn du ein DLC nicht besitzt), jedoch sind einige Mod Manager Funktionen von bestimmten DLCs abhängig und können dann nicht benutzt werden, wie beispielsweise ME3Tweaks ModMaker.\n\nBackup dieses Ziels erstellen?</system:String>
 
 	<!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
@@ -1060,6 +1061,10 @@
     <system:String x:Key="string_download">Herunterladen</system:String>
 	<!-- as in download mod -->
     <system:String x:Key="string_overallProgress">Gesamtfortschritt</system:String>
+    <system:String x:Key="string_interp_modmakerDlcMissing">Ein oder mehrere DLCs, die zum Kompilieren dieses Mods benötigt werden, sind nicht im Spiel-Backup enthalten. Du kannst das Kompilieren fortsetzen, aber Modifikationen die folgende DLCs betreffen werden übersprungen und daher der Mod nicht vollständig funktionieren.\n\nIm Backup fehlende DLCs:\n{0}\n\nUm OFFIZIELLE DLCs zum Backup hinzuzufügen, stelle dein Spiel wieder her, lösche das Backup, installiere fehlende DLCs, und erstelle schließlich ein neues Backup.\n\nKompilieren dieses Mods fortsetzen?</system:String>
+	<!-- 0 = bulleted list of DLC names -->
+    <system:String x:Key="string_dlcMissing">Fehlende DLCs</system:String>
+    <system:String x:Key="string_downloadAborted">Herunterladen abgebrochen</system:String>
 
 	<!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
@@ -1179,6 +1184,9 @@
     <system:String x:Key="string_setToDefaultKeys">Standard wiederherstellen</system:String>
     <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Mass Effect 2 Konsolen-Tastenbelegung kann pro Spiel festgelegt werden.</system:String>
     <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Mass Effect 3 Konsolen-Tastenbelegung kann pro Spiel festgelegt werden.</system:String>
+    <system:String x:Key="string_interp_cannotReadME3Keybinds">Die Tastenbelegung für das gewählte Mass Effect 3-Ziel konnte nicht geladen werden: {0}</system:String>
+	<!-- 0 = error message -->
+    <system:String x:Key="string_errorReadingKeybinds">Fehler beim Lesen der Tastenbelegung</system:String>
 
 	<!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Update-Dienst</system:String>
