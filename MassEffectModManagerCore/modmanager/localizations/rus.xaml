@@ -1,7 +1,7 @@
 <ResourceDictionary	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:system="clr-namespace:System;assembly=System.Runtime">
-    <!-- Main Window -->
+	<!-- Main Window -->
     <system:String x:Key="string_AvailableMods">Библиотека Модов</system:String>
     <system:String x:Key="string_Language">Язык</system:String>
     <system:String x:Key="string_Actions">Действия</system:String>
@@ -444,6 +444,9 @@
     <system:String x:Key="string_dialogBackupCannotBeSubdirectoryOfGame" xml:space="preserve">Архив не может быть создан внутри директории выбранной игры.\n\nУказанный путь: {0}\nКонфликт с путем: {1}</system:String>
 	<!-- 0=filepath  1=filepath -->
     <system:String x:Key="string_cannotCreateBackup">Невозможно создать архив</system:String>
+    <system:String x:Key="string_someDlcNotInstalled">Некоторые DLC не установлены</system:String>
+    <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">В целевой игре установлены не все ОФИЦИАЛЬНЫЕ DLC. Удостоверьтесь, что вы установили все ОФИЦИАЛЬНЫЕ DLC, которые нужно включать архив, иначе их не будет в игре после восстановления.\n\nСледующее DLC не установлено:\n{0}\nУчтите, что не нужно включать в архив все DLC (например те, которые вы не покупали), однако некоторые функции ModManager зависят от наличия определенных DLC, такие как ME3Tweaks ModMaker.\n\nСоздать архив данной игры? </system:String>
+	<!-- 0 = bulleted list of DLC -->
 
 	<!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
@@ -1059,6 +1062,10 @@
     <system:String x:Key="string_download">Скачать</system:String>
 	<!-- as in download mod -->
     <system:String x:Key="string_overallProgress">Общий прогресс</system:String>
+    <system:String x:Key="string_interp_modmakerDlcMissing" xml:space="preserve">Некоторые DLC, требуемые для компиляции данного мода, отсутствуют в архиве игры. Вы можете продолжить компиляцию данного мода, однако модификации указанных DLC будут пропущены и часть мода не будет работать.\n\nDLC, отсутствующие в архиве:\n{0}\n\nДля добавления ОФИЦИАЛЬНОГО DLC в архив, восстановите вашу игру, удалите архив, установите DLC в игру и затем создайте новый архив.\n\nПродолжить компиляцию данного мода?</system:String>
+	<!-- 0 = bulleted list of DLC names -->
+    <system:String x:Key="string_dlcMissing">DLC отсутствует</system:String>
+    <system:String x:Key="string_downloadAborted">Загрузка прервана</system:String>
 
 	<!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Ревизия {0}</system:String>
@@ -1178,6 +1185,9 @@
     <system:String x:Key="string_setToDefaultKeys">Установить клавиши по умолчанию</system:String>
     <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Клавиши консоли Mass Effect 2 определены игрой</system:String>
     <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Клавиши консоли Mass Effect 3 определены игрой</system:String>
+    <system:String x:Key="string_interp_cannotReadME3Keybinds">Невозможно загрузить привязки клавиш для выбранной установки Mass Effect 3: {0}</system:String>
+	<!-- 0 = error message -->
+    <system:String x:Key="string_errorReadingKeybinds">Ошибка чтения привязки клавиш</system:String>
 
 	<!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Updater Service</system:String>
