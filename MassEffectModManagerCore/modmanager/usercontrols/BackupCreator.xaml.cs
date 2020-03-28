@@ -158,7 +158,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         dlcList = @" - " + dlcList;
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            var cancelDueToNotAllDLC = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_notAllDLCInstalled), M3L.GetString(M3L.string_someDlcNotInstalled), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            var cancelDueToNotAllDLC = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_notAllDLCInstalled, dlcList), M3L.GetString(M3L.string_someDlcNotInstalled), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                             if (cancelDueToNotAllDLC == MessageBoxResult.No)
                             {
                                 end = true;
