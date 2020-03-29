@@ -445,7 +445,7 @@
 	<!-- 0=filepath  1=filepath -->
     <system:String x:Key="string_cannotCreateBackup">Невозможно создать архив</system:String>
     <system:String x:Key="string_someDlcNotInstalled">Некоторые DLC не установлены</system:String>
-    <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">В целевой игре установлены не все ОФИЦИАЛЬНЫЕ DLC. Удостоверьтесь, что вы установили все ОФИЦИАЛЬНЫЕ DLC, которые нужно включать архив, иначе их не будет в игре после восстановления.\n\nСледующее DLC не установлено:\n{0}\nУчтите, что не нужно включать в архив все DLC (например те, которые вы не покупали), однако некоторые функции ModManager зависят от наличия определенных DLC, такие как ME3Tweaks ModMaker.\n\nСоздать архив данной игры? </system:String>
+    <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">В целевой игре установлены не все ОФИЦИАЛЬНЫЕ DLC. Удостоверьтесь, что вы установили все ОФИЦИАЛЬНЫЕ DLC, которые нужно включать архив, иначе их не будет в игре после восстановления.\n\nСледующее DLC не установлено:\n{0}\nУчтите, что не нужно включать в архив все DLC (например те, которые вы не покупали), однако некоторые функции ModManager зависят от наличия определенных DLC, такие как ME3Tweaks ModMaker.\n\nСоздать архив данной игры?</system:String>
 	<!-- 0 = bulleted list of DLC -->
 
 	<!-- External tool launcher -->

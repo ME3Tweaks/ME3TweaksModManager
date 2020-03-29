@@ -585,9 +585,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                 using (FileStream fs = new FileStream(markerPAth, System.IO.FileMode.Open, FileAccess.ReadWrite))
                 {
                     fs.SeekEnd();
-                    fs.WriteInt32(4); //meuitm
-                    fs.WriteUInt16(6); //major
-                    fs.WriteByte(8); //minor
+                    fs.WriteInt32(0); //meuitm
+                    fs.WriteUInt16(0); //major
+                    fs.WriteByte(0); //minor
                     fs.WriteByte(0); //hotfix
                     //fs.WriteByte(0); //unused
                     fs.WriteInt32(100); //installer version
