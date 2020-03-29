@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -85,7 +86,7 @@ namespace MassEffectModManagerCore.Tests
             {
                 modsFoundInArchive.Clear();
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
-                Console.WriteLine($"Inspecting archive: { archive}");
+                Console.WriteLine($@"Inspecting archive: { archive}");
                 ModArchiveImporter.InspectArchive(archive, addModCallback, failedModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
                 var archiveZ = new SevenZipExtractor(archive);
                 foreach (var mod in modsFoundInArchive)
@@ -113,7 +114,17 @@ namespace MassEffectModManagerCore.Tests
                                 }
                             }
                         }
-                        mod.GetAllRelativeReferences(true, archiveZ); //test
+                        
+                        var refs = mod.GetAllRelativeReferences(!mod.IsVirtualized, archiveZ); //test
+                        //validate references are actually in this archive
+                        foreach (var fileREf in refs)
+                        {
+                            var expectedPath = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, fileREf);
+                            //var expectedPath = fileREf;
+                            var inArchiveFile = archiveZ.ArchiveFileData.FirstOrDefault(x => x.FileName == expectedPath);
+                            Assert.IsNotNull(inArchiveFile.FileName, "Relative referenced file was not found in archive: "+fileREf);
+                        }
+
                         var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                         foreach (var target in targetsForMod)
                         {

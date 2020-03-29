@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 foreach (var jobFile in job.FilesToInstall.Values)
                 {
-                    if (job.JobDirectory == @".")
+                    if (job.JobDirectory == @"." || job.JobDirectory == null)
                     {
                         references.Add(jobFile);
                     }
@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         if (dlc.AlternateDLCFolder != null)
                         {
-                            var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList();
+                            var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList();
                             references.AddRange(files);
                         }
                         else if (dlc.MultiListSourceFiles != null)
@@ -103,17 +103,18 @@ namespace MassEffectModManagerCore.modmanager
 
                 foreach (var customDLCmapping in job.CustomDLCFolderMapping)
                 {
-                    references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList());
+                    references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
                 }
             }
             references.AddRange(AdditionalDeploymentFiles);
             foreach (var additionalDeploymentDir in AdditionalDeploymentFolders)
             {
-                references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => IsInArchive ? x : x.Substring(ModPath.Length + 1)).ToList());
+                references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
             }
             if (includeModdesc && GetJob(ModJob.JobHeader.ME2_RCWMOD) == null)
             {
                 references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/', '\\'));
+                //references.Add(ModDescPath.TrimStart('/', '\\'));
             }
             return references.Distinct(StringComparer.InvariantCultureIgnoreCase).ToList();
         }
