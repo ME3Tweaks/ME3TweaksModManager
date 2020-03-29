@@ -132,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialogCreatingNewModWithExistingName, NewModName, modpath), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
             if (result == MessageBoxResult.No)
             {
-                Log.Information(@"User has aborted mixin compiliation due to same-named mod existing");
+                Log.Information(@"User has aborted mixin compilation due to same-named mod existing");
                 return; //abort.
             }
 

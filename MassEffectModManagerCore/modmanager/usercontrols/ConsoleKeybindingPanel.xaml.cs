@@ -21,6 +21,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 using Path = System.IO.Path;
 
@@ -113,6 +114,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 SetME1ConsoleKeybinds(consoleKeyStr, typeKeyStr, wipeTypeKey);
                 LoadME1Keys();
+                Analytics.TrackEvent(@"Set ME1 Console Keys", new Dictionary<string, string>()
+                {
+                    {@"Full Console Key", consoleKeyStr },
+                    {@"Mini Console Key", typeKeyStr }
+                });
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -148,6 +154,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 SetME2ConsoleKeybinds(SelectedME2Target, consoleKeyStr, typeKeyStr);
                 LoadME2Keys(SelectedME2Target);
+                Analytics.TrackEvent(@"Set ME2 Console Keys", new Dictionary<string, string>()
+                {
+                    {@"Full Console Key", consoleKeyStr },
+                    {@"Mini Console Key", typeKeyStr }
+                });
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -213,6 +224,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 SetME3ConsoleKeybinds(SelectedME3Target, consoleKeyStr, typeKeyStr);
                 LoadME3Keys(SelectedME3Target);
+                Analytics.TrackEvent(@"Set ME3 Console Keys", new Dictionary<string, string>()
+                {
+                    {@"Full Console Key", consoleKeyStr },
+                    {@"Mini Console Key", typeKeyStr }
+                });
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {

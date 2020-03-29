@@ -22,6 +22,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.localizations;
+using Microsoft.AppCenter.Analytics;
 using static MassEffectModManagerCore.modmanager.Mod;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -29,6 +30,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     public class ModMakerCompiler
     {
         private readonly int code;
+        private string modName;
 
         //Callbacks. The caller should set these to update the UI.
         public Action<int> SetOverallMaxCallback;
@@ -114,6 +116,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 compileCoalesceds(xmlDoc, mod);
                 finalizeModdesc(xmlDoc, mod);
                 MixinHandler.AttemptResetMemoryManager();
+                Analytics.TrackEvent(@"Downloaded ModMaker Mod", new Dictionary<string, string>()
+                {
+                    {@"Code", code.ToString() },
+                    {@"Mod Name", modName }
+                });
                 return mod;
             }
             else
@@ -1011,7 +1018,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 return null;
             }
             SetCompileStarted?.Invoke();
-            var modName = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Name").Value;
+            modName = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Name").Value;
             SetModNameCallback?.Invoke(modName);
             Log.Information(@"Compiling mod: " + modName);
 
