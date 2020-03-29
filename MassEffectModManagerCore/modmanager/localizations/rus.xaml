@@ -735,7 +735,7 @@
 	<!-- 0 = Friendlyname -->
     <system:String x:Key="string_interp_validation_altdlc_sourceDirectoryDoesntExist">Alternate DLC ({0}) определен, но исходная папка изменяемого DLC не существует: {1}</system:String>
 	<!-- 0 = Friendlyname , 1 = specified folder path -->
-    <system:String x:Key="string_autoApplied"></system:String>
+    <system:String x:Key="string_autoApplied">применено автоматически</system:String>
     <system:String x:Key="string_notApplicable">Неприменимо</system:String>
     <system:String x:Key="string_interp_altdlc_multilistMissingMultiListRootPath">В Alternate DLC ({0}) определена операция OP_ADD_MULTILISTFILES_TO_CUSTOMDLC, но не указан требуемый параметр MultiListRootPath.</system:String>
 	<!-- 0=FriendlyName -->
