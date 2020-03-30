@@ -1196,7 +1196,6 @@
     <system:String x:Key="string_setChangelog">Set changelog</system:String>
     <system:String x:Key="string_updaterServiceSettings">Updater Service settings</system:String>
     <system:String x:Key="string_tooltip_cancelTheCurrentUploadTask">Cancel the current upload task</system:String>
-
     <system:String x:Key="string_validatingSettings">Validating settings</system:String>
     <system:String x:Key="string_settingsSaved">Settings saved</system:String>
     <system:String x:Key="string_errorValidatingSettings">Error validating settings</system:String>
@@ -1236,6 +1235,10 @@
     <system:String x:Key="string_uploadAborted">Upload aborted</system:String>
     <system:String x:Key="string_interp_uploadingFilesToServerXY">Uploading files to server {0}/{1}</system:String>
     <!-- 0=amount uploaded 1=total to upload -->
+    <system:String x:Key="string_username">Username</system:String>
+    <system:String x:Key="string_password">Password</system:String>
+    <system:String x:Key="string_lZMAStoragePath">LZMA storage path</system:String>
+    <system:String x:Key="string_manifestsStoragePath">Manifests storage path</system:String>
 
     <!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>

@@ -310,7 +310,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                                                                           // have an error for example
                 {
                     //Not being served
-                    Log.Error(@"This mod is not configured for use on the Updater Service. Please contact Mgamerz.");
+                    Log.Error(@"This mod is not configured for serving on the Updater Service. Please contact Mgamerz.");
                     CurrentActionText = M3L.GetString(M3L.string_serverNotConfiguredForModContactMgamerz);
                     HideChangelogArea();
                     return;
@@ -732,7 +732,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var file = hashpair.Key;
                 var manifestMD5 = hashpair.Value.lzmahash;
-                if (serverhashes.TryGetValue(file + @".lzma", out var serverMD5))
+                if (serverhashes.TryGetValue(file.Replace(@"\", @"/") + @".lzma", out var serverMD5))
                 {
                     if (manifestMD5 != serverMD5)
                     {
