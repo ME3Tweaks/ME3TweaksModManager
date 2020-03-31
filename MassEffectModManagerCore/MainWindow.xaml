@@ -300,26 +300,12 @@
                 <!-- Header Panel -->
                 <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold" />
                 <TextBlock Text="{DynamicResource string_installationTarget}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0" />
-                <ComboBox Name="InstallationTargets_ComboBox" ItemsSource="{Binding InstallationTargets}" SelectionChanged="InstallationTargets_ComboBox_SelectedItemChanged" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
-                <!--<ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <DockPanel HorizontalAlignment="Stretch">
-                                <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
-                                <Image DockPanel.Dock="Left" Source="/images/origin.png" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
-                                <StackPanel ToolTip="This target has ALOT texture mod installed."  DockPanel.Dock="Right" Orientation="Horizontal"  Margin="3,0,0,0" Visibility="{Binding ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
-                                    <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
-                                    <TextBlock Text="{Binding ALOTVersion}"/>
-                                </StackPanel>
-                                <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
-                            </DockPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>-->
-                <!--<ComboBox.ItemContainerStyle>
-                        <Style TargetType="ComboBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="IsEnabled" Value="{Binding Selectable}" />
-                        </Style>
-                    </ComboBox.ItemContainerStyle>-->
+                <ComboBox ItemsSource="{Binding InstallationTargets}" 
+                          SelectedItem="{Binding SelectedGameTarget}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" 
+                          Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False" 
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
+                          ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
+                          ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
                 <Button Content="{DynamicResource string_addTarget}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}" />
                 <Button Content="{DynamicResource string_targetInfo}" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_targetInfo}" />
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5" />

@@ -150,10 +150,10 @@ namespace MassEffectModManagerCore
             AttachListeners();
             SetTheme();
             //Must be done after UI has initialized
-            if (InstallationTargets.Count > 0)
-            {
-                InstallationTargets_ComboBox.SelectedItem = InstallationTargets[0];
-            }
+            //if (InstallationTargets.Count > 0)
+            //{
+            //    SelectedGameTarget = InstallationTargets[0];
+            //}
 
             backgroundTaskEngine = new BackgroundTaskEngine((updateText) => { Application.Current.Dispatcher.Invoke(() => { CurrentOperationText = updateText; }); },
                 () =>
@@ -1176,7 +1176,8 @@ namespace MassEffectModManagerCore
         public bool IsLoadingMods { get; set; }
         public List<string> LoadedTips { get; } = new List<string>();
         public bool ModsLoaded { get; private set; } = false;
-        public GameTarget SelectedGameTarget { get; private set; }
+        public GameTarget SelectedGameTarget { get; set; }
+        private GameTarget previousGameTarget;
 
         private bool CanReloadMods()
         {
@@ -1185,7 +1186,7 @@ namespace MassEffectModManagerCore
 
         private bool CanApplyMod()
         {
-            return SelectedMod != null && InstallationTargets_ComboBox.SelectedItem is GameTarget gt && gt.Game == SelectedMod.Game;
+            return SelectedMod != null && SelectedGameTarget != null && SelectedGameTarget.Game == SelectedMod.Game;
         }
 
         /// <summary>
@@ -1708,16 +1709,18 @@ namespace MassEffectModManagerCore
                 var newTarget = InstallationTargets.FirstOrDefault(x => x.TargetPath == selectedTarget.TargetPath);
                 if (newTarget != null)
                 {
-                    InstallationTargets_ComboBox.SelectedItem = newTarget;
-                    SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
+                    SelectedGameTarget = newTarget;
                 }
             }
             else
             {
                 if (InstallationTargets.Count > 0)
                 {
-                    InstallationTargets_ComboBox.SelectedIndex = 0;
-                    SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
+                    var firstSelectableTarget = InstallationTargets.FirstOrDefault(x => x.Selectable);
+                    if (firstSelectableTarget != null)
+                    {
+                        SelectedGameTarget = firstSelectableTarget;
+                    }
                 }
             }
 
@@ -1733,7 +1736,7 @@ namespace MassEffectModManagerCore
                 var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == SelectedMod.Game);
                 if (installTarget != null)
                 {
-                    InstallationTargets_ComboBox.SelectedItem = installTarget;
+                    SelectedGameTarget = installTarget;
                 }
 
                 VisitWebsiteText = SelectedMod.ModWebsite != Mod.DefaultWebsite ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
@@ -2283,12 +2286,10 @@ namespace MassEffectModManagerCore
         private Dictionary<string, MenuItem> languageMenuItems;
         private bool hasDoneStartupModUpdateCheck;
 
-        private void InstallationTargets_ComboBox_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+        public void OnSelectedGameTargetChanged()
         {
             if (!RepopulatingTargets)
             {
-                var oldTarget = SelectedGameTarget;
-                SelectedGameTarget = InstallationTargets_ComboBox.SelectedItem as GameTarget;
                 if (!SelectedGameTarget.RegistryActive)
                 {
                     try
@@ -2300,7 +2301,6 @@ namespace MassEffectModManagerCore
 
                             //rescan
                             PopulateTargets(SelectedGameTarget);
-
                             UpdateLODsForTarget(SelectedGameTarget);
                         }
 
@@ -2441,7 +2441,7 @@ namespace MassEffectModManagerCore
                     var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == compressedModToInstall.Game);
                     if (installTarget != null)
                     {
-                        InstallationTargets_ComboBox.SelectedItem = installTarget;
+                        SelectedGameTarget = installTarget;
                         ApplyMod(compressedModToInstall);
                     }
                     else
