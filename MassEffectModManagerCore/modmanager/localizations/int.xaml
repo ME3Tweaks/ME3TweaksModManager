@@ -931,6 +931,8 @@
     <!-- 0=ModName -->
     <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">This mod contains a blacklisted mod file: {0}. This file must be removed from the mod folder or removed from the blacklisting in moddesc.ini so this mod can load.</system:String>
     <!-- 0=fullpath -->
+    <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Error using gamedirectorystructure option: No files were found to install in the specified path for job: {0}, path: {1}</system:String>
+    <!-- 0 = job/header name, 1 = filepath -->
 
     <!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hello!</system:String>

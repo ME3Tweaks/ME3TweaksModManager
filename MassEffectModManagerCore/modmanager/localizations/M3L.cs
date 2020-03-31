@@ -792,6 +792,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_modparsing_cannotLoadBuildTooOld = "string_interp_validation_modparsing_cannotLoadBuildTooOld";
 		public static readonly string string_interp_validation_modparsing_missingModInfoGameDescriptor = "string_interp_validation_modparsing_missingModInfoGameDescriptor";
 		public static readonly string string_interp_validation_modparsing_blacklistedfileFound = "string_interp_validation_modparsing_blacklistedfileFound";
+		public static readonly string string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles = "string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles";
 		public static readonly string string_tooltip_hello = "string_tooltip_hello";
 		public static readonly string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public static readonly string string_libraries = "string_libraries";
@@ -1023,6 +1024,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_modUploadedToUpdaterService = "string_modUploadedToUpdaterService";
 		public static readonly string string_uploadAborted = "string_uploadAborted";
 		public static readonly string string_interp_uploadingFilesToServerXY = "string_interp_uploadingFilesToServerXY";
+		public static readonly string string_username = "string_username";
+		public static readonly string string_password = "string_password";
+		public static readonly string string_lZMAStoragePath = "string_lZMAStoragePath";
+		public static readonly string string_manifestsStoragePath = "string_manifestsStoragePath";
 		public static readonly string string_selectMixinsToCompile = "string_selectMixinsToCompile";
 		public static readonly string string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup = "string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup";
 		public static readonly string string_interp_dialogCreatingNewModWithExistingName = "string_interp_dialogCreatingNewModWithExistingName";
