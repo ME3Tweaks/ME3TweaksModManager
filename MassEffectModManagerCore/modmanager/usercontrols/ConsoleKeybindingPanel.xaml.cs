@@ -399,7 +399,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool HasME1Install { get; set; } = true;
         private void LoadME1Keys()
         {
-            if (mainwindow.InstallationTargets.Any())
+            if (mainwindow.InstallationTargets.Where(x=>x.Selectable).Any())
             {
                 var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
                 if (File.Exists(iniFile))

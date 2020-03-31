@@ -251,7 +251,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets);
+            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable));
             SelectedTarget = InstallationTargets.FirstOrDefault();
         }
     }
