@@ -364,10 +364,10 @@ namespace MassEffectModManagerCore
                 if (!settingsExist)
                 {
                     //first boot?
-                    var currentCultureLang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-                    if (currentCultureLang == "de") InitialLanguage = "deu";
-                    if (currentCultureLang == "ru") InitialLanguage = "rus";
-                    Log.Information(@"This is a first boot. The system language code is " + CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                    var currentCultureLang = CultureInfo.InstalledUICulture.Name;
+                    if (currentCultureLang.StartsWith("de")) InitialLanguage = Settings.Language = "deu";
+                    if (currentCultureLang.StartsWith("ru")) InitialLanguage = Settings.Language = "rus";
+                    Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
                 Log.Information("Deleting temp files (if any)");

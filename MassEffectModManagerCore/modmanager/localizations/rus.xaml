@@ -638,7 +638,7 @@
     <system:String x:Key="string_updateInProgress">Обновление в процессе</system:String>
     <system:String x:Key="string_modManagerWillAutomaticallyRestart">Mod Manager автоматически перезагрузится для установки обновления. Это может занять несколько секунд после закрытия окна.</system:String>
     <system:String x:Key="string_notNow">Не сейчас</system:String>
-    <system:String x:Key="string_viewChangelog">Посмотреть историю изменений</system:String>
+    <system:String x:Key="string_viewChangelog">История изменений</system:String>
     <system:String x:Key="string_installUpdate">Установить обновление</system:String>
 
 	<!-- Restore panel -->
