@@ -347,7 +347,7 @@ namespace MassEffectModManagerCore
 
 
                 Log.Information("Loading settings");
-
+                var settingsExist = File.Exists(Settings.SettingsPath);
                 Settings.Load();
 
                 if (!Settings.EnableTelemetry)
@@ -360,6 +360,13 @@ namespace MassEffectModManagerCore
                 if (Settings.Language != "int" && SupportedLanguages.Contains(Settings.Language))
                 {
                     InitialLanguage = Settings.Language;
+                }
+                if (!settingsExist)
+                {
+                    //first boot?
+                    var currentCultureLang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                    if (currentCultureLang == "de") InitialLanguage = "deu";
+                    if (currentCultureLang == "ru") InitialLanguage = "rus";
                 }
 
                 Log.Information("Deleting temp files (if any)");

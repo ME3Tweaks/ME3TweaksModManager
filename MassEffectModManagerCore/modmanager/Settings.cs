@@ -145,7 +145,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModMakerCompiler, value);
         }
 
-        private static string SettingsPath = Path.Combine(Utilities.GetAppDataFolder(), "settings.ini");
+        public readonly static string SettingsPath = Path.Combine(Utilities.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
         {
