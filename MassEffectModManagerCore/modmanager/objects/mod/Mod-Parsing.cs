@@ -314,7 +314,7 @@ namespace MassEffectModManagerCore.modmanager
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
         }
 
-        private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp" };
+        private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp", @".usf" };
 
         /// <summary>
         /// Main moddesc.ini parser
@@ -693,12 +693,22 @@ namespace MassEffectModManagerCore.modmanager
                                                 return;
                                             }
                                         }
+                                        else
+                                        {
+                                            Log.Warning(@"File type/extension not supported by gamedirectorystructure scan: " + file);
+                                        }
                                     }
                                 }
                                 else
                                 {
                                     Log.Error($@"Error occured while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound, headerAsString, sourceDirectory);
+                                    return;
+                                }
+                                if (!headerJob.FilesToInstall.Any())
+                                {
+                                    Log.Error($@"Error using gamedirectorystructure option: No files were found to install in the specified path for job: {headerAsString}, Path: {sourceDirectory}");
+                                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles, headerAsString, sourceDirectory);
                                     return;
                                 }
                             }
@@ -715,6 +725,8 @@ namespace MassEffectModManagerCore.modmanager
                                 }
                             }
                         }
+
+                        
                     }
 
                     //Build additions (vars will be null if these aren't supported by target version)
