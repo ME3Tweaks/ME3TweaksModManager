@@ -203,7 +203,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public void OnSelectedDLCFolderChanged()
         {
             ModSiteText = "";
-            if (SelectedDLCFolder != null && !SelectedTarget.ALOTInstalled)
+            if (SelectedDLCFolder != null && SelectedTarget != null && !SelectedTarget.ALOTInstalled)
             {
                 App.ThirdPartyIdentificationService[SelectedTarget.Game.ToString()].TryGetValue(SelectedDLCFolder.DLCFolderName, out var tpmi);
                 CurrentModInTPMI = tpmi != null;
@@ -251,7 +251,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets);
+            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable));
             SelectedTarget = InstallationTargets.FirstOrDefault();
         }
     }
