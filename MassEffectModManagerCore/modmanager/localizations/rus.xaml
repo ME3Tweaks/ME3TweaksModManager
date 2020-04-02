@@ -479,7 +479,7 @@
 	<!-- Singular version of file -->
     <system:String x:Key="string_pluralFiles">файлов</system:String>
 	<!-- Plural version of file -->
-    <system:String x:Key="string_interp_XFilesNeedToBePatched">{0} {1} должны быть обновлены</system:String>
+    <system:String x:Key="string_interp_XFilesNeedToBePatched">Файлов требует обновления: {0}</system:String>
 	<!-- 0 = number, 1 = singular/plural version of file -->
     <system:String x:Key="string_interp_compatPackModDescription" xml:space="preserve">Сгенерированый пользователем пакет совместимости предназначен для интеграции надлежащих файлов интерфейса из текущей конфигурации игры в другие DLC-моды. Этот пакет был создан для работы со следующими модами и не должен использоваться с какой-либо иной конфигурацией.\n - {0}\n\nЭтот пакет совместимости был сгенерирован {1}</system:String>
 	<!-- 0 = bulleted dlc list, 1 = date time -->
