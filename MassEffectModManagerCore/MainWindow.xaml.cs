@@ -2657,11 +2657,15 @@ namespace MassEffectModManagerCore
             //    lang = @"cze";
             //}
 
-            Settings.Language = lang;
-            Settings.Save();
             SetLanguage(lang, false);
         }
 
+        /// <summary>
+        /// Sets the UI language. This will save the settings if it is not startup.
+        /// </summary>
+        /// <param name="lang"></param>
+        /// <param name="startup"></param>
+        /// <param name="forcedDictionary"></param>
         public void SetLanguage(string lang, bool startup, ResourceDictionary forcedDictionary = null)
         {
             Log.Information(@"Setting language to " + lang);
@@ -2677,7 +2681,7 @@ namespace MassEffectModManagerCore
                 Source = new Uri($@"pack://application:,,,/ME3TweaksModManager;component/modmanager/localizations/{lang}.xaml", UriKind.Absolute)
             };
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
-            App.CurrentLanguage = lang;
+            App.CurrentLanguage = Settings.Language = lang;
             SetTipsForLanguage();
             RefreshNexusStatus(true);
             try
@@ -2692,6 +2696,10 @@ namespace MassEffectModManagerCore
 
             if (!startup)
             {
+                if (forcedDictionary == null)
+                {
+                    Settings.Save(); //save this language option
+                }
                 AuthToNexusMods();
                 FailedMods.RaiseBindableCountChanged();
                 CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
