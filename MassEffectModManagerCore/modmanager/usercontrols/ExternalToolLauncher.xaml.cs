@@ -137,8 +137,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 PercentDownloaded = (int)progress.PercentDone;
                             };
                             archiveFile.Extracting += progressCallback;
-                            archiveFile.ExtractArchive(outputDiretory); // extract all
-                            LaunchTool(executable);
+                            try
+                            {
+                                archiveFile.ExtractArchive(outputDiretory); // extract all
+                                LaunchTool(executable);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error($"Could not launch external tool {executable} after download: {e.Message}");
+                                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"Error downloading and launching tool: {e.Message}", "Error launching tool", MessageBoxButton.OK, MessageBoxImage.Error);
+                                OnClosing(DataEventArgs.Empty);
+                            }
                         }
                         break;
                 }

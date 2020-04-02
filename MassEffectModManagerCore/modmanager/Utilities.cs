@@ -1000,7 +1000,22 @@ namespace MassEffectModManagerCore
             {
                 savedTargets.Add(path);
                 Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
-                File.WriteAllLines(cachefile, savedTargets);
+                try
+                {
+                    File.WriteAllLines(cachefile, savedTargets);
+                }
+                catch (Exception e)
+                {
+                    Thread.Sleep(300);
+                    try
+                    {
+                        File.WriteAllLines(cachefile, savedTargets);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Could not save cached targets on retry: " + ex.Message);
+                    }
+                }
             }
         }
 
