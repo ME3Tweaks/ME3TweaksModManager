@@ -1297,6 +1297,6 @@
 	<!-- 0=error message -->
     <system:String x:Key="string_errorDeletingModFolder">Ошибка удаления папки мода</system:String>
     <system:String x:Key="string_importedFromGame">Импортирован из игры</system:String>
-    <system:String x:Key="string_defaultDescriptionForImportedMod">Этот мод был импортирован из установки {0} в {1)</system:String>
+    <system:String x:Key="string_defaultDescriptionForImportedMod">Этот мод был импортирован из установки {0} в {1}</system:String>
 	<!-- 0=game name 1=time -->
 </ResourceDictionary>

@@ -343,3 +343,4 @@ healthchecksdb
 /MassEffectModManagerCore.Tests/coverage.cobertura.xml 
 /MassEffectModManagerCore/Deployment
 /LocalizationHelper/Deployment
+/MassEffectModManagerCore.Tests/testdata/exemods

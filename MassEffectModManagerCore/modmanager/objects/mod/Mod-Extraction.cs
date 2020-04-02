@@ -62,17 +62,22 @@ namespace MassEffectModManagerCore.modmanager
         }
 
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
-            Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null)
+            Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null,
+            bool testRun = false)
         {
             if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
             compressPackages &= Game == MEGame.ME3; //ME3 ONLY FOR NOW
-            var archiveFile = archivePath.EndsWith(@".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+            var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
+            var archiveFile = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
             using (archiveFile)
             {
                 var fileIndicesToExtract = new List<int>();
                 var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archiveFile);
-                //unsure if this is required?? doesn't work for MEHEM EXE
-                //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
+                if (isExe)
+                {
+                    //remap to mod root. Not entirely sure if this needs to be done for sub mods?
+                    referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
+                }
                 foreach (var info in archiveFile.ArchiveFileData)
                 {
                     if (referencedFiles.Contains(info.FileName))
@@ -280,7 +285,10 @@ namespace MassEffectModManagerCore.modmanager
                     }
                 };
 
-                archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                if (!testRun)
+                {
+                    archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                }
                 Log.Information(@"File extraction completed.");
 
 
@@ -303,27 +311,41 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     var parser = new IniDataParser().Parse(VirtualizedIniText);
                     parser[@"ModInfo"][@"modver"] = ModVersionString; //In event relay service resolved this
-                    File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), parser.ToString());
+                    if (!testRun)
+                    {
+                        File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), parser.ToString());
+                    }
                     IsVirtualized = false; //no longer virtualized
                 }
 
                 if (ExeExtractionTransform != null)
                 {
-                    var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");
-                    Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
-
-                    //Handle VPatching
-                    foreach (var transform in ExeExtractionTransform.VPatches)
+                    if (ExeExtractionTransform.VPatches.Any())
                     {
-                        var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
-                        var inputfile = Path.Combine(ModPath, transform.inputfile);
-                        var outputfile = Path.Combine(ModPath, transform.outputfile);
+                        var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");
+                        if (!testRun)
+                        {
+                            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
+                        }
+                        //Handle VPatching
+                        foreach (var transform in ExeExtractionTransform.VPatches)
+                        {
+                            var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
+                            var inputfile = Path.Combine(ModPath, transform.inputfile);
+                            var outputfile = Path.Combine(ModPath, transform.outputfile);
 
-                        var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\""; //do not localize
-                        Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
-                        Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
-                        updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
-                        Utilities.RunProcess(vpat, args, true, false, false, true);
+                            var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\""; //do not localize
+                            if (!testRun)
+                            {
+                                Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
+                            }
+                            Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
+                            updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
+                            if (!testRun)
+                            {
+                                Utilities.RunProcess(vpat, args, true, false, false, true);
+                            }
+                        }
                     }
 
                     //Handle copyfile
@@ -332,7 +354,10 @@ namespace MassEffectModManagerCore.modmanager
                         string srcfile = Path.Combine(ModPath, copyfile.inputfile);
                         string destfile = Path.Combine(ModPath, copyfile.outputfile);
                         Log.Information($@"Applying transform copyfile: {srcfile} -> {destfile}");
-                        File.Copy(srcfile, destfile, true);
+                        if (!testRun)
+                        {
+                            File.Copy(srcfile, destfile, true);
+                        }
                     }
 
                     if (ExeExtractionTransform.PostTransformModdesc != null)
@@ -340,7 +365,10 @@ namespace MassEffectModManagerCore.modmanager
                         //fetch online moddesc for this mod.
                         Log.Information(@"Fetching post-transform third party moddesc.");
                         var moddesc = OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
-                        File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), moddesc);
+                        if (!testRun)
+                        {
+                            File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), moddesc);
+                        }
                     }
                 }
 

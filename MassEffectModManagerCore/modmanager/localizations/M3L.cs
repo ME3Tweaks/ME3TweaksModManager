@@ -56,6 +56,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 
         internal static string GetString(string resourceKey, params object[] interpolationItems)
         {
+			if (Application.Current == null) return @"TESTRUN"; //running in test mode
             try
             {
                 if (!resourceKey.StartsWith(@"string_")) throw new Exception(@"Localization keys must start with a string_ identifier!");

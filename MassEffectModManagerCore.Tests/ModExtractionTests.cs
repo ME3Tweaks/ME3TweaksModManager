@@ -81,6 +81,7 @@ namespace MassEffectModManagerCore.Tests
             }
             #endregion
 
+            //Compressed Mods
 
             foreach (var archive in Directory.GetFiles(compressedModsDirectory))
             {
@@ -114,7 +115,7 @@ namespace MassEffectModManagerCore.Tests
                                 }
                             }
                         }
-                        
+
                         var refs = mod.GetAllRelativeReferences(!mod.IsVirtualized, archiveZ); //test
                         //validate references are actually in this archive
                         foreach (var fileREf in refs)
@@ -122,7 +123,7 @@ namespace MassEffectModManagerCore.Tests
                             var expectedPath = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, fileREf);
                             //var expectedPath = fileREf;
                             var inArchiveFile = archiveZ.ArchiveFileData.FirstOrDefault(x => x.FileName == expectedPath);
-                            Assert.IsNotNull(inArchiveFile.FileName, "Relative referenced file was not found in archive: "+fileREf);
+                            Assert.IsNotNull(inArchiveFile.FileName, "Relative referenced file was not found in archive: " + fileREf);
                         }
 
                         var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
@@ -157,6 +158,59 @@ namespace MassEffectModManagerCore.Tests
                         }
                     }
                 }
+            }
+
+            //EXE mods
+            var exeModsDirectory = Path.Combine(GlobalTest.GetTestDataDirectory(), "exemods");
+
+            if (Directory.Exists(exeModsDirectory))
+            {
+                foreach (var exe in Directory.GetFiles(exeModsDirectory))
+                {
+                    modsFoundInArchive.Clear();
+                    //var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(exe);
+                    Console.WriteLine($@"Inspecting exe: { exe}");
+                    ModArchiveImporter.InspectArchive(exe, addModCallback, failedModCallback, logMessageCallback);
+                    var archiveZ = new SevenZipExtractor(exe, InArchiveFormat.Nsis);
+                    foreach (var mod in modsFoundInArchive)
+                    {
+                        foreach (var job in mod.InstallationJobs)
+                        {
+                            List<string> selectedGroups = new List<string>();
+                            foreach (var altfile in job.AlternateFiles)
+                            {
+                                if (altfile.GroupName != null)
+                                {
+                                    if (selectedGroups.Contains(altfile.GroupName))
+                                    {
+                                        continue; //we already did first time of this. I know that's a weak test case...
+                                    }
+                                    selectedGroups.Add(altfile.GroupName);
+                                }
+
+                                altfile.IsSelected = true;
+                            }
+                        }
+
+
+                        var refs = mod.GetAllRelativeReferences(false, archiveZ); //test and get refs. exe mods will always be virtualized as they won't have a moddesc.ini file.
+                                                                                  //exe mods remap to subconetns
+                                                                                  //same code as Mod-Extraction.cs
+                        foreach (var fileREf in refs)
+                        {
+                            var expectedPath = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, fileREf);
+                            //var expectedPath = fileREf;
+                            var inArchiveFile = archiveZ.ArchiveFileData.FirstOrDefault(x => x.FileName == expectedPath);
+                            Assert.IsNotNull(inArchiveFile.FileName, "Relative referenced file was not found in archive: " + fileREf);
+                        }
+
+                        mod.ExtractFromArchive(exe, "", false, testRun: true);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("No exemods directory found. This section of testing will be skipped");
             }
         }
     }
