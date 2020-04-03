@@ -454,6 +454,9 @@
     <system:String x:Key="string_checkingForUpdates">Проверка обновлений</system:String>
     <system:String x:Key="string_interp_dialogUnableToDownloadX" xml:space="preserve">Невозможно загрузить {0}.\nПожалуйста, проверьте подключение к сети и попробуйте снова.\nЕсли проблема остается, обратитесь на ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_interp_failedToDownloadX">Не удалось скачать {0}</system:String>
+    <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Ошибка загрузки и запуска инструмента: {0}</system:String>
+    <!-- 0 = error message -->
+    <system:String x:Key="string_errorLaunchingTool">Ошибка запуска инструмента</system:String>
 
 	<!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Восстановить с ME3Tweaks</system:String>
