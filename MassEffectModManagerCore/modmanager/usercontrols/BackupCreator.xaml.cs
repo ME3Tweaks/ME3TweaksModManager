@@ -187,10 +187,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 };
                                 if (m.ShowDialog() == CommonFileDialogResult.Ok)
                                 {
+                                    backupPath = m.FileName;
                                     Log.Information(@"Backup path chosen: " + backupPath);
 
                                     //Check empty
-                                    backupPath = m.FileName;
                                     if (Directory.Exists(backupPath))
                                     {
                                         if (Directory.GetFiles(backupPath).Length > 0 ||

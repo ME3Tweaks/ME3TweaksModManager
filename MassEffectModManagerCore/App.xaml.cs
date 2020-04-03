@@ -318,11 +318,11 @@ namespace MassEffectModManagerCore
 
                 Log.Information("The following backup paths are listed in the registry:");
                 Log.Information("ME1: " + Utilities.GetGameBackupPath(Mod.MEGame.ME1), false);
-                Log.Information("ME1 vanilla: " + Utilities.GetGameBackupPath(Mod.MEGame.ME1), true);
+                Log.Information("ME1 (w/ vanilla check): " + Utilities.GetGameBackupPath(Mod.MEGame.ME1), true);
                 Log.Information("ME2: " + Utilities.GetGameBackupPath(Mod.MEGame.ME2), false);
-                Log.Information("ME2 vanilla: " + Utilities.GetGameBackupPath(Mod.MEGame.ME2), true);
+                Log.Information("ME2 (w/ vanilla check): " + Utilities.GetGameBackupPath(Mod.MEGame.ME2), true);
                 Log.Information("ME3: " + Utilities.GetGameBackupPath(Mod.MEGame.ME3), false);
-                Log.Information("ME3 vanilla: " + Utilities.GetGameBackupPath(Mod.MEGame.ME3), true);
+                Log.Information("ME3 (w/ vanilla check): " + Utilities.GetGameBackupPath(Mod.MEGame.ME3), true);
 
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 //Build 104 changed location of settings from AppData to ProgramData.
