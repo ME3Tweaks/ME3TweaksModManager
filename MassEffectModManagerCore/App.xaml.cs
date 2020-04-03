@@ -228,7 +228,7 @@ namespace MassEffectModManagerCore
                 Log.Information("ME3Tweaks Mod Manager " + version);
                 Log.Information("Application boot: " + DateTime.UtcNow.ToString());
                 Log.Information("Executable location: " + ExecutableLocation);
-
+                Log.Information("Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
                 var info = new FileInspector(App.ExecutableLocation);
                 var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
@@ -315,6 +315,14 @@ namespace MassEffectModManagerCore
                 {
                     Log.Error("Unable to get the list of installed antivirus products: " + e.Message);
                 }
+
+                Log.Information("The following backup paths are listed in the registry:");
+                Log.Information("ME1: " + Utilities.GetGameBackupPath(Mod.MEGame.ME1), false);
+                Log.Information("ME1 vanilla: " + Utilities.GetGameBackupPath(Mod.MEGame.ME1), true);
+                Log.Information("ME2: " + Utilities.GetGameBackupPath(Mod.MEGame.ME2), false);
+                Log.Information("ME2 vanilla: " + Utilities.GetGameBackupPath(Mod.MEGame.ME2), true);
+                Log.Information("ME3: " + Utilities.GetGameBackupPath(Mod.MEGame.ME3), false);
+                Log.Information("ME3 vanilla: " + Utilities.GetGameBackupPath(Mod.MEGame.ME3), true);
 
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 //Build 104 changed location of settings from AppData to ProgramData.

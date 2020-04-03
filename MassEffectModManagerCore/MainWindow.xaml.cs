@@ -1343,11 +1343,11 @@ namespace MassEffectModManagerCore
                 LoadMods();
             }
 
+            PerformStartupNetworkFetches(true);
             if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
             {
                 ShowBackupNag();
             }
-            PerformStartupNetworkFetches(true);
         }
 
         private void ShowPreviewPanel()
