@@ -185,6 +185,8 @@ namespace MassEffectModManagerCore.modmanager
                 archiveFile.Progressing += (sender, args) => { extractingCallback?.Invoke(args); };
                 string outputFilePathMapping(ArchiveFileInfo entryInfo)
                 {
+                    Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
+
                     string entryPath = entryInfo.FileName;
                     if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                     {
@@ -287,6 +289,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (!testRun)
                 {
+                    Log.Information(@"Extracting files...");
                     archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
                 }
                 Log.Information(@"File extraction completed.");

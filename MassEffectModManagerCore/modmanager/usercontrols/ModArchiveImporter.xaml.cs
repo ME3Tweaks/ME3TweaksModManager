@@ -330,7 +330,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Information(@"Querying third party importing service for information about this file");
+                    Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                     currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
                     var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
                     long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
@@ -411,7 +411,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //If no version information, check ME3Tweaks to see if it's been added recently
                         //see if server has information on version number
                         currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
-                        Log.Information(@"Querying ME3Tweaks for additional information");
+                        Log.Information(@"Querying ME3Tweaks for additional information for this file...");
                         var modInfo = OnlineContent.QueryModRelay(md5, size);
                         //todo: make this work offline.
                         if (modInfo != null && modInfo.TryGetValue(@"version", out string value))

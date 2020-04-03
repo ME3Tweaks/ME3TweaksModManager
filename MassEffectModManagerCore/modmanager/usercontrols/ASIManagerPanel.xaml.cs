@@ -186,11 +186,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedASIObject == null) return false;
             if (SelectedASIObject is ASIMod am)
             {
-                return Games.First(x => x.Game == am.Game).GameTargets.Any();
+                return Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false;
             }
             if (SelectedASIObject is InstalledASIMod iam)
             {
-                return Games.First(x => x.Game == iam.Game).GameTargets.Any();
+                return Games.FirstOrDefault(x => x.Game == iam.Game)?.GameTargets.Any() ?? false;
             }
             return false;
         }

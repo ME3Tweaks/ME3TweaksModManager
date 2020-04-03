@@ -41,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
-            Log.Information($@"Starting mod installer for mod: {modBeingInstalled.ModName} for game {modBeingInstalled.Game}");
+            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} for game {modBeingInstalled.Game}");
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
@@ -115,6 +115,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             bool testrun = false; //change to true to test
             Log.Information(@"Mod Installer Background thread starting");
+            if (!Settings.LogModInstallation)
+            {
+                Log.Information(@"Mod installation logging is off. If you want to view the installation log, turn it on in the settings and apply the mod again.");
+            }
             var installationJobs = ModBeingInstalled.InstallationJobs;
             var gameDLCPath = MEDirectories.DLCPath(gameTarget);
 
@@ -124,6 +128,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var missingRequiredDLC = ModBeingInstalled.ValidateRequiredModulesAreInstalled(gameTarget);
             if (missingRequiredDLC.Count > 0)
             {
+                Log.Error("Required DLC is missing for installation: " + string.Join(", ", missingRequiredDLC));
                 e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING, missingRequiredDLC);
                 return;
             }
@@ -132,6 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Check/warn on official headers
             if (!PrecheckHeaders(installationJobs))
             {
+                //logs handled in precheck
                 e.Result = ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
                 return;
             }
@@ -459,13 +465,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
             //Main installation step has completed
-            CLog.Information(@"Main stage of mod installation has completed", Settings.LogModInstallation);
+            Log.Information(@"Main stage of mod installation has completed");
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
 
             //Mark items read only
             foreach (var readonlytarget in mappedReadOnlyTargets)
             {
-                CLog.Information(@"Setting file to read-only: " + readonlytarget, Settings.LogModInstallation);
+                Log.Information(@"Setting file to read-only: " + readonlytarget);
                 File.SetAttributes(readonlytarget, File.GetAttributes(readonlytarget) | FileAttributes.ReadOnly);
             }
 
@@ -485,7 +491,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Action = M3L.GetString(M3L.string_installingSupportFiles);
             PercentVisibility = Visibility.Collapsed;
-            CLog.Information(@"Installing supporting ASI files", Settings.LogModInstallation);
+            Log.Information(@"Installing supporting ASI files");
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
                 //Todo: Convert to ASI Manager installer
@@ -522,6 +528,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Warning($@"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
                 e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
             }
+            Log.Information(@"<<<<<<< Finishing modinstaller");
+
         }
 
         private ModInstallCompletedStatus InstallAttachedRCWMod()

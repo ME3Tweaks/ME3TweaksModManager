@@ -2433,7 +2433,7 @@ namespace MassEffectModManagerCore
                 if (b.Data is List<Mod> modsImported)
                 {
                     ReleaseBusyControl();
-                    LoadMods(modsImported.Count == 1 ? modsImported.First() : null);
+                    LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null);
                 }
                 else if (b.Data is Mod compressedModToInstall)
                 {
