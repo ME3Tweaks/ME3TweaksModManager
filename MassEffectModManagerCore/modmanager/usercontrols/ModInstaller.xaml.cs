@@ -128,7 +128,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var missingRequiredDLC = ModBeingInstalled.ValidateRequiredModulesAreInstalled(gameTarget);
             if (missingRequiredDLC.Count > 0)
             {
-                Log.Error("Required DLC is missing for installation: " + string.Join(", ", missingRequiredDLC));
+                Log.Error(@"Required DLC is missing for installation: " + string.Join(@", ", missingRequiredDLC));
                 e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING, missingRequiredDLC);
                 return;
             }

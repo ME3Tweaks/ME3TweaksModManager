@@ -56,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 
         internal static string GetString(string resourceKey, params object[] interpolationItems)
         {
-			if (Application.Current == null) return @"TESTRUN"; //running in test mode
+        	if (Application.Current == null) return @"TESTRUN"; //running in test mode
             try
             {
                 if (!resourceKey.StartsWith(@"string_")) throw new Exception(@"Localization keys must start with a string_ identifier!");
@@ -473,6 +473,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";
 		public static readonly string string_interp_dialogUnableToDownloadX = "string_interp_dialogUnableToDownloadX";
 		public static readonly string string_interp_failedToDownloadX = "string_interp_failedToDownloadX";
+		public static readonly string string_interp_errorDownloadingAndLaunchingTool = "string_interp_errorDownloadingAndLaunchingTool";
+		public static readonly string string_errorLaunchingTool = "string_errorLaunchingTool";
 		public static readonly string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public static readonly string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public static readonly string string_failedMods = "string_failedMods";

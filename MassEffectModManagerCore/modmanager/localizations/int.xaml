@@ -455,6 +455,9 @@
     <system:String x:Key="string_checkingForUpdates">Checking for updates</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogUnableToDownloadX">Unable to download {0}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_interp_failedToDownloadX">Failed to download {0}</system:String>
+    <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Error downloading and launching tool: {0}</system:String>
+    <!-- 0 = error message -->
+    <system:String x:Key="string_errorLaunchingTool">Error launching tool</system:String>
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>

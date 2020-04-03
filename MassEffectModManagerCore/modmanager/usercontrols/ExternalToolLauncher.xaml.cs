@@ -144,8 +144,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
-                                Log.Error($"Could not launch external tool {executable} after download: {e.Message}");
-                                Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"Error downloading and launching tool: {e.Message}", "Error launching tool", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Log.Error($@"Could not launch external tool {executable} after download: {e.Message}");
+                                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool), MessageBoxButton.OK, MessageBoxImage.Error);
                                 OnClosing(DataEventArgs.Empty);
                             }
                         }
