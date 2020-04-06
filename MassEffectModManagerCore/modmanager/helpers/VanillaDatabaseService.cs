@@ -538,5 +538,55 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Log.Information("Backup target is invalid. This backup cannot not be used. Reason: " + validationFailedReason);
             }
         }
+
+        private static Dictionary<Mod.MEGame, List<string>> threeWayMergeMap = new Dictionary<Mod.MEGame, List<string>>()
+        {
+            { Mod.MEGame.ME1, new List<string>()
+                {
+                    "",
+                    ""
+                }
+            },{ Mod.MEGame.ME2, new List<string>()
+                {
+                    "SFXGame.pcc",
+                    "Engine.pcc"
+                }
+            },
+            { Mod.MEGame.ME3, new List<string>()
+                {
+                    "SFXGame.pcc",
+                    "Engine.pcc"
+                }
+            }
+        };
+
+        /// <summary>
+        /// Returrns the list of files that can potentially be three way merged
+        /// </summary>
+        /// <returns></returns>
+        internal static object GetThreeWayMergeFiles(GameTarget gameTarget, (Dictionary<ModJob, (Dictionary<string, Mod.InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, Mod.InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues)
+        {
+            var bgJob = installationQueues.unpackedJobMappings.FirstOrDefault(x => x.Key.Header == ModJob.JobHeader.BASEGAME);
+            if (bgJob.Key != null)
+            {
+                //Has basegame job.
+                var filemapping = bgJob.Value.fileMapping;
+                foreach (var f in filemapping)
+                {
+                    var fname = Path.GetFileName(f.Value.FilePath);
+                    if (IsThreeWayMergeEligible(gameTarget.Game, fname))
+                    {
+                        Debug.WriteLine("TWM ELIG");
+                    }
+                }
+
+            }
+            return new object();
+        }
+
+        private static bool IsThreeWayMergeEligible(Mod.MEGame game, string fname)
+        {
+            return threeWayMergeMap.TryGetValue(game, out var flist) && flist.Contains(fname, StringComparer.InvariantCultureIgnoreCase);
+        }
     }
 }

@@ -226,6 +226,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
             SortedSet<string> customDLCsBeingInstalled = new SortedSet<string>();
             List<string> mappedReadOnlyTargets = new List<string>();
+
+            //THREE WAY MERGE
+            var threeWayMergeFiles = VanillaDatabaseService.GetThreeWayMergeFiles(gameTarget, installationQueues);
+
+
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
                 foreach (var originalMapping in unpackedQueue.Value.fileMapping)
@@ -408,6 +413,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Direct copy
                 Log.Information($@"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
+
+                
+
                 CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
             }
             else

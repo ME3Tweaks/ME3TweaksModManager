@@ -19,6 +19,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         //Todo: Maybe support MEUITM. 
-        public override string ToString() => $@"{ALOTVER}.{ALOTUPDATEVER}";
+        public override string ToString()
+        {
+            if (ALOTVER == 0 && ALOTUPDATEVER == 0 && MEUITMVER == 0)
+            {
+                return "Texture modded";
+            }
+
+            return $@"{ALOTVER}.{ALOTUPDATEVER}";
+        }
     }
 }
