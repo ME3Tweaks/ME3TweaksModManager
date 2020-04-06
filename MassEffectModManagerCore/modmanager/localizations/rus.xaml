@@ -454,6 +454,9 @@
     <system:String x:Key="string_checkingForUpdates">Проверка обновлений</system:String>
     <system:String x:Key="string_interp_dialogUnableToDownloadX" xml:space="preserve">Невозможно загрузить {0}.\nПожалуйста, проверьте подключение к сети и попробуйте снова.\nЕсли проблема остается, обратитесь на ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_interp_failedToDownloadX">Не удалось скачать {0}</system:String>
+    <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Ошибка загрузки и запуска инструмента: {0}</system:String>
+    <!-- 0 = error message -->
+    <system:String x:Key="string_errorLaunchingTool">Ошибка запуска инструмента</system:String>
 
 	<!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Восстановить с ME3Tweaks</system:String>
@@ -929,6 +932,8 @@
 	<!-- 0=ModName -->
     <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">Данный мод содержит запрещенный файл: {0}. Файл должен быть удален из папки мода или черного списка в moddesc.ini, чтобы мод мог быть загружен.</system:String>
 	<!-- 0=fullpath -->
+    <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Ошибка в использовании опции gameredirectorystructure: для задания job {0} по указанному пути доступа path {1} файлы доя установки не найдены.</system:String>
+	<!-- 0 = job/header name, 1 = filepath -->
 
 	<!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Здравствуйте!</system:String>
@@ -1233,6 +1238,10 @@
     <system:String x:Key="string_uploadAborted">Загрузка прервана</system:String>
     <system:String x:Key="string_interp_uploadingFilesToServerXY">Загрузка файлов на сервер {0}/{1}</system:String>
 	<!-- 0=amount uploaded 1=total to upload -->
+    <system:String x:Key="string_username">Имя пользователя</system:String>
+    <system:String x:Key="string_password">Пароль</system:String>
+    <system:String x:Key="string_lZMAStoragePath">Путь хранения LZMA</system:String>
+    <system:String x:Key="string_manifestsStoragePath">Путь хранения манифестов</system:String>
 
 	<!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Выбор Mixins для компиляции</system:String>

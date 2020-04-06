@@ -369,6 +369,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             catch (Exception e)
             {
                 Log.Error("Exception trying to ensure static assets: " + e.Message);
+                Crashes.TrackError(new Exception(@"Could not download static supporting files: " + e.Message));
                 return false;
             }
 

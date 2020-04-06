@@ -1343,11 +1343,11 @@ namespace MassEffectModManagerCore
                 LoadMods();
             }
 
+            PerformStartupNetworkFetches(true);
             if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
             {
                 ShowBackupNag();
             }
-            PerformStartupNetworkFetches(true);
         }
 
         private void ShowPreviewPanel()
@@ -2028,7 +2028,6 @@ namespace MassEffectModManagerCore
                 success = OnlineContent.EnsureStaticAssets();
                 if (!success)
                 {
-                    Crashes.TrackError(new Exception(@"Could not download static supporting files"));
                     Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCouldNotDownloadStaticAssets), M3L.GetString(M3L.string_missingAssets), MessageBoxButton.OK, MessageBoxImage.Error); });
                     bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadStaticFiles);
                 }

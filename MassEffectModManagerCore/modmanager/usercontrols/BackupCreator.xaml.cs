@@ -177,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             string backupPath = null;
                             Application.Current.Dispatcher.Invoke(delegate
                             {
-                                Log.Error(@"Prompting user to select backup destination");
+                                Log.Information(@"Prompting user to select backup destination");
 
                                 CommonOpenFileDialog m = new CommonOpenFileDialog
                                 {
@@ -187,8 +187,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 };
                                 if (m.ShowDialog() == CommonFileDialogResult.Ok)
                                 {
-                                    //Check empty
                                     backupPath = m.FileName;
+                                    Log.Information(@"Backup path chosen: " + backupPath);
+
+                                    //Check empty
                                     if (Directory.Exists(backupPath))
                                     {
                                         if (Directory.GetFiles(backupPath).Length > 0 ||
@@ -333,13 +335,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                             BackupStatus = M3L.GetString(M3L.string_creatingBackup);
 
+                            Log.Information($@"Backing up {BackupSourceTarget.TargetPath} to {backupPath}");
 
                             CopyDir.CopyAll_ProgressBar(new DirectoryInfo(BackupSourceTarget.TargetPath),
                                 new DirectoryInfo(backupPath),
                                 totalItemsToCopyCallback: totalFilesToCopyCallback,
                                 aboutToCopyCallback: aboutToCopyCallback,
                                 fileCopiedCallback: fileCopiedCallback,
-                                ignoredExtensions: new[] {@"*.pdf", @"*.mp3"});
+                                ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
                             switch (Game)
                             {
                                 case Mod.MEGame.ME1:
@@ -352,6 +355,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         backupPath);
                                     break;
                             }
+                            Log.Information($@"Writing cmm_vanilla");
+
+                            File.Create(Path.Combine(backupPath, "cmm_vanilla")).Close();
+
+                            Log.Information($@"Backup completed.");
 
                             Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                             {
@@ -426,6 +434,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void EndBackup()
             {
+                Log.Information($@"EndBackup()");
                 ResetBackupStatus();
                 ProgressIndeterminate = false;
                 ProgressVisible = false;

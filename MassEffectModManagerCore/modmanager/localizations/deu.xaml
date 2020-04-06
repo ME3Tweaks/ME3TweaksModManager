@@ -446,6 +446,7 @@
     <system:String x:Key="string_cannotCreateBackup">Backup kann nicht erstellt werden</system:String>
     <system:String x:Key="string_someDlcNotInstalled">DLC nicht installiert</system:String>
     <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">In diesem Ziel sind nicht alle OFFIZIELLEN DLCs installiert. Stelle sicher, dass du alle OFFIZIELLEN DLCs installiert hast, die dein Backup enthalten soll, ansonsten können nun fehlende DLCs nicht wiederhergestellt werden.\n\nDie folgenden DLCs sind nicht installiert:\n{0}\n\nHinweis: du brauchst nicht alle DLCs in einem Backup (z.B. wenn du ein DLC nicht besitzt), jedoch sind einige Mod Manager Funktionen von bestimmten DLCs abhängig und können dann nicht benutzt werden, wie beispielsweise ME3Tweaks ModMaker.\n\nBackup dieses Ziels erstellen?</system:String>
+	<!-- 0 = bulleted list of DLC -->
 
 	<!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
@@ -453,6 +454,9 @@
     <system:String x:Key="string_checkingForUpdates">Suche nach Updates</system:String>
     <system:String x:Key="string_interp_dialogUnableToDownloadX" xml:space="preserve">Kann {0} nicht herunterladen.\nBitte überprüfe deine Netzwerkverbindung und probiere es erneut.\nFalls das Problem weiterhin besteht, kontaktiere uns im ME3Tweaks Discord (Englisch).</system:String>
     <system:String x:Key="string_interp_failedToDownloadX">Download von {0} fehlgeschlagen</system:String>
+    <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Fehler beim Herunterladen und Starten des Werkzeugs: {0}</system:String>
+	<!-- 0 = error message -->
+    <system:String x:Key="string_errorLaunchingTool">Fehler beim Starten eines Werkzeugs</system:String>
 
 	<!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Von ME3Tweaks wiederherstellen</system:String>
@@ -928,6 +932,8 @@
 	<!-- 0=ModName -->
     <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">Dieser Mod enthält eine Datei, die auf der schwarzen Liste steht: {0}. Diese Datei muss aus dem Mod-Ordner oder von der schwarzen Liste in moddesc.ini entfernt werden, damit dieser Mod geladen werden kann.</system:String>
 	<!-- 0=fullpath -->
+    <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Fehler in der gamedirectorystructure-Option: Im angegebenen Pfand wurden keine zu installierenden Dateien gefunden: {0}, Pfad: {1}</system:String>
+	<!-- 0 = job/header name, 1 = filepath -->
 
 	<!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hallo!</system:String>
@@ -1061,7 +1067,7 @@
     <system:String x:Key="string_download">Herunterladen</system:String>
 	<!-- as in download mod -->
     <system:String x:Key="string_overallProgress">Gesamtfortschritt</system:String>
-    <system:String x:Key="string_interp_modmakerDlcMissing">Ein oder mehrere DLCs, die zum Kompilieren dieses Mods benötigt werden, sind nicht im Spiel-Backup enthalten. Du kannst das Kompilieren fortsetzen, aber Modifikationen die folgende DLCs betreffen werden übersprungen und daher der Mod nicht vollständig funktionieren.\n\nIm Backup fehlende DLCs:\n{0}\n\nUm OFFIZIELLE DLCs zum Backup hinzuzufügen, stelle dein Spiel wieder her, lösche das Backup, installiere fehlende DLCs, und erstelle schließlich ein neues Backup.\n\nKompilieren dieses Mods fortsetzen?</system:String>
+    <system:String x:Key="string_interp_modmakerDlcMissing" xml:space="preserve">Ein oder mehrere DLCs, die zum Kompilieren dieses Mods benötigt werden, sind nicht im Spiel-Backup enthalten. Du kannst das Kompilieren fortsetzen, aber Modifikationen die folgende DLCs betreffen werden übersprungen und daher der Mod nicht vollständig funktionieren.\n\nIm Backup fehlende DLCs:\n{0}\n\nUm OFFIZIELLE DLCs zum Backup hinzuzufügen, stelle dein Spiel wieder her, lösche das Backup, installiere fehlende DLCs, und erstelle schließlich ein neues Backup.\n\nKompilieren dieses Mods fortsetzen?</system:String>
 	<!-- 0 = bulleted list of DLC names -->
     <system:String x:Key="string_dlcMissing">Fehlende DLCs</system:String>
     <system:String x:Key="string_downloadAborted">Herunterladen abgebrochen</system:String>
@@ -1232,6 +1238,10 @@
     <system:String x:Key="string_uploadAborted">Upload abgebrochen</system:String>
     <system:String x:Key="string_interp_uploadingFilesToServerXY">Lade Dateien zum Server hoch {0}/{1}</system:String>
 	<!-- 0=amount uploaded 1=total to upload -->
+    <system:String x:Key="string_username">Benutzername</system:String>
+    <system:String x:Key="string_password">Passwort</system:String>
+    <system:String x:Key="string_lZMAStoragePath">LZMA-Speicherort</system:String>
+    <system:String x:Key="string_manifestsStoragePath">Manifest-Speicherort</system:String>
 
 	<!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Wähle zu kompilierende Mixins</system:String>
