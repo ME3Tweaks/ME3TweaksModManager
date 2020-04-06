@@ -43,10 +43,14 @@ namespace MassEffectModManagerCore.modmanager
             //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
             foreach (var info in archiveFile.ArchiveFileData)
             {
-                if (referencedFiles.Contains(info.FileName))
+                if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains(ModPath)))
                 {
-                    //Log.Information(@"Adding file to extraction list: " + info.FileName);
-                    itemsToExtract.Add(info);
+                    var relativedName = info.FileName.Substring(ModPath.Length).TrimStart('\\');
+                    if (referencedFiles.Contains(relativedName))
+                    {
+                        //Log.Information(@"Adding file to extraction list: " + info.FileName);
+                        itemsToExtract.Add(info);
+                    }
                 }
             }
 
@@ -80,10 +84,14 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 foreach (var info in archiveFile.ArchiveFileData)
                 {
-                    if (referencedFiles.Contains(info.FileName))
+                    if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains(ModPath)))
                     {
-                        Log.Information(@"Adding file to extraction list: " + info.FileName);
-                        fileIndicesToExtract.Add(info.Index);
+                        var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
+                        if (referencedFiles.Contains(relativedName))
+                        {
+                            Log.Information(@"Adding file to extraction list: " + info.FileName);
+                            fileIndicesToExtract.Add(info.Index);
+                        }
                     }
                 }
                 #region old
@@ -291,6 +299,14 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     Log.Information(@"Extracting files...");
                     archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                }
+                else
+                {
+                    //test run mode
+                    if (fileIndicesToExtract.Count != referencedFiles.Count)
+                    {
+                        throw new Exception("The amount of referenced files does not match the amount of files that are going to be extracted!");
+                    }
                 }
                 Log.Information(@"File extraction completed.");
 
