@@ -13,8 +13,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     [Localizable(false)]
     partial class OnlineContent
     {
-        private static readonly string LatestHelpFileLink = StaticFilesBaseURL + "dynamichelp/latesthelp-localized.xml";
-        internal static readonly string HelpResourcesBaseURL = StaticFilesBaseURL + "dynamichelp/resources";
+        //private static readonly string LatestHelpFileLink = StaticFilesBaseURL_Github + "dynamichelp/latesthelp-localized.xml";
+        //internal static readonly string HelpResourcesBaseURL = StaticFilesBaseURL_Github + "dynamichelp/resources";
 
         public static List<SortableHelpElement> FetchLatestHelp(string language, bool preferLocal, bool overrideThrottling = false)
         {
@@ -51,27 +51,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             if (!localHelpExists || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
-                try
+                foreach (var staticendpoint in StaticFilesBaseEndpoints)
                 {
                     using var wc = new System.Net.WebClient();
-                    string xml = wc.DownloadStringAwareOfEncoding(LatestHelpFileLink);
-                    File.WriteAllText(Utilities.GetLocalHelpFile(), xml);
-                    return ParseLocalHelp(xml, language);
+                    try
+                    {
+                        string xml = wc.DownloadStringAwareOfEncoding(staticendpoint + @"dynamichelp/latesthelp-localized.xml");
+                        File.WriteAllText(Utilities.GetLocalHelpFile(), xml);
+                        return ParseLocalHelp(xml, language);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Error fetching online help from endpoint {staticendpoint}: {e.Message}");
+                    }
                 }
-                catch (Exception e)
+                if (cached != null)
                 {
-                    //Unable to fetch latest help.
-                    Log.Error("Error fetching online help: " + e.Message);
-
-                    if (cached != null)
-                    {
-                        Log.Warning("Using cached help instead");
-                    }
-                    else
-                    {
-                        Log.Error("Unable to display dynamic help: Could not fetch online asset and cached help asset does not exist.");
-                        return null;
-                    }
+                    Log.Warning("Using cached help instead");
+                }
+                else
+                {
+                    Log.Error("Unable to display dynamic help: Could not fetch online asset and cached help asset does not exist.");
+                    return null;
                 }
             }
 
@@ -161,22 +162,32 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (!File.Exists(localFile))
                 {
                     //Download
-                    using (var wc = new System.Net.WebClient())
+                    foreach (var staticendpoint in OnlineContent.StaticFilesBaseEndpoints)
                     {
-                        var fullURL = OnlineContent.HelpResourcesBaseURL + "/" + ResourceName;
-                        Log.Information("Downloading dynamic help image asset: " + fullURL);
-                        wc.DownloadFile(fullURL, localFile);
-                    }
+                        var fullURL = staticendpoint + "dynamichelp/resources/" + ResourceName;
 
-                    var md5OfDownloadedFile = Utilities.CalculateMD5(localFile);
-                    if (md5OfDownloadedFile != ResourceMD5)
-                    {
-                        Log.Error($"Downloaded asset has wrong hash. Expected: {ResourceMD5}, got: {md5OfDownloadedFile}");
-                        File.Delete(localFile);
-                    }
-                    else
-                    {
-                        Log.Information("Downloaded resource passed md5 check");
+                        try
+                        {
+                            using var wc = new System.Net.WebClient();
+
+                            Log.Information("Downloading dynamic help image asset: " + fullURL);
+                            wc.DownloadFile(fullURL, localFile);
+
+                            var md5OfDownloadedFile = Utilities.CalculateMD5(localFile);
+                            if (md5OfDownloadedFile != ResourceMD5)
+                            {
+                                Log.Error($"Downloaded asset has wrong hash. Expected: {ResourceMD5}, got: {md5OfDownloadedFile}");
+                                File.Delete(localFile);
+                            }
+                            else
+                            {
+                                Log.Information("Downloaded resource passed md5 check");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("Error downloading dynamic help asset from endpoint " + fullURL);
+                        }
                     }
                 }
             }
