@@ -805,8 +805,12 @@
 	<!-- 0=group. Shown if no items in group have CheckedByDefault -->
     <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files, использующие функцию OptionGroup могут иметь своей группе только одну структуру AlternateFile с выбранной опцией CheckedByDefault. Имя проблемной группы - '{0}'</system:String>
 	<!-- 0=group. Shown if more than one item in group has CheckedByDefault -->
+    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Alternate DLCs, использующие функцию OptionGroup должны иметь в свое группе хотя бы одну структуру AlternateDLC с включенной опцией CheckedByDefault, так как хотя бы одна опция должна быть всегда выбрана.  Имя проблемной группы - '{0}'</system:String>
+    <!-- 0=group. Shown if no items in group have CheckedByDefault. ALT DLC OPTION -->
+    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate DLCs, использующие функцию OptionGroup могут иметь своей группе только одну структуру AlternateDLC с выбранной опцией CheckedByDefault. Имя проблемной группы - '{0}'</system:String>
+    <!-- 0=group. Shown if more than one item in group has CheckedByDefault. ALT DLC OPTION-->
 
-	<!-- ReadOnlyOption (Mod Installer) -->
+    <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Определяет конфигурационные файлы, устанавливаемые данным модом с атрибутом "только для чтения" для предотвращения их сброса Mass Effect. Внутриигровые настройки, изменяющие данные файлы, не будут применяться во время игры.</system:String>
     <system:String x:Key="string_makeConfigFilesReadonly">Сделать конфигурационные файлы доступными только для чтения</system:String>
 
