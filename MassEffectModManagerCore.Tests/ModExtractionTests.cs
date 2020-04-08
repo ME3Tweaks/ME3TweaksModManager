@@ -126,6 +126,10 @@ namespace MassEffectModManagerCore.Tests
                             Assert.IsNotNull(inArchiveFile.FileName, "Relative referenced file was not found in archive: " + fileREf);
                         }
 
+                        //size test
+                        var sizeReq = mod.GetRequiredSpaceForExtraction(archive);
+                        Assert.AreNotEqual(0, sizeReq, "Archive extraction size is zero! For file " + archive);
+
                         var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                         foreach (var target in targetsForMod)
                         {

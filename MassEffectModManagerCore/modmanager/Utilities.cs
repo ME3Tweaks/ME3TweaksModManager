@@ -1013,7 +1013,7 @@ namespace MassEffectModManagerCore
                     }
                     catch (Exception ex)
                     {
-                        Log.Error("Could not save cached targets on retry: " + ex.Message);
+                        Log.Error("Could not save cached targets on retry: " + e.Message);
                     }
                 }
             }

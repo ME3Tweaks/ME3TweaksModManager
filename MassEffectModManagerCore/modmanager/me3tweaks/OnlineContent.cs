@@ -19,7 +19,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     {
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
-        private const string StaticFilesBaseURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
+        private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
+        private const string StaticFilesBaseURL_ME3Tweaks = "https://me3tweaks.com/modmanager/tools/staticfiles/";
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
@@ -28,6 +29,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ModMakerTopModsEndpoint = "https://me3tweaks.com/modmaker/api/topmods";
 
         public static readonly string ModmakerModsEndpoint = "https://me3tweaks.com/modmaker/download.php?id=";
+
+        /// <summary>
+        /// List of static files endpoints in order of preference
+        /// </summary>
+        public static string[] StaticFilesBaseEndpoints =
+        {
+            StaticFilesBaseURL_Github,
+            StaticFilesBaseURL_ME3Tweaks
+        };
 
         public static Dictionary<string, string> FetchOnlineStartupManifest(bool betamode)
         {
@@ -317,11 +327,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 string sevenZDLL = Utilities.Get7zDllPath();
                 if (!File.Exists(sevenZDLL) || Utilities.CalculateMD5(sevenZDLL) != "72491c7b87a7c2dd350b727444f13bb4")
                 {
-                    using (var wc = new ShortTimeoutWebClient())
+                    foreach (var staticurl in StaticFilesBaseEndpoints)
                     {
-                        var fullURL = StaticFilesBaseURL + "7z.dll";
-                        Log.Information("Downloading 7z.dll: " + fullURL);
-                        wc.DownloadFile(fullURL, sevenZDLL);
+                        try
+                        {
+                            using var wc = new ShortTimeoutWebClient();
+                            {
+                                var fullURL = staticurl + "7z.dll";
+                                Log.Information("Downloading 7z.dll: " + fullURL);
+                                wc.DownloadFile(fullURL, sevenZDLL);
+                                break; //No more loops
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($"Could not download 7z.dll from endpoint {staticurl} {e.Message}");
+                        }
                     }
                 }
 
@@ -357,11 +378,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var localPath = Path.Combine(localBaseDir, info);
                     if (!File.Exists(localPath))
                     {
-                        using (var wc = new ShortTimeoutWebClient())
+                        foreach (var staticurl in StaticFilesBaseEndpoints)
                         {
-                            var fullURL = StaticFilesBaseURL + "objectinfos/" + info;
-                            Log.Information("Downloading static asset: " + fullURL);
-                            wc.DownloadFile(fullURL, localPath);
+                            var fullURL = staticurl + "objectinfos/" + info;
+
+                            try
+                            {
+                                using var wc = new ShortTimeoutWebClient();
+                                Log.Information("Downloading static asset: " + fullURL);
+                                wc.DownloadFile(fullURL, localPath);
+                                break;
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error($"Could not download {info} from endpoint {fullURL} {e.Message}");
+                            }
                         }
                     }
                 }
