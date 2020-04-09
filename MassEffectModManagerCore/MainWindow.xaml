@@ -374,7 +374,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <TextBlock Text="{DynamicResource string_AvailableMods}" FontWeight="Bold" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource string_AvailableMods}" ToolTip="Mods that have been imported into the Mod Manager library.&#10;These mods do not represent mods that are installed; to see installed mods, click Target Info" FontWeight="Bold" VerticalAlignment="Center" />
                     </DockPanel>
                     <StackPanel Name="FailedModsPopupPanel" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
                         <TextBlock ToolTip="{DynamicResource string_tooltip_someModsFailed}">
