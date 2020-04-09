@@ -4,6 +4,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Renci.SshNet;
 using Serilog;
 using System;
@@ -104,7 +105,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Check Auth
             OperationInProgress = true;
             SettingsSubtext = M3L.GetString(M3L.string_validatingSettings);
-
+            Analytics.TrackEvent("Saving/authenticating to updater service", new Dictionary<string, string>()
+            {
+                {"Username", Username },
+                {"LZMAPath", LZMAStoragePath },
+                {"ManifestPath", ManifestStoragePath }
+            });
             CheckAuth(authCompletedCallback: (result) =>
             {
                 if (result is bool?)
@@ -120,7 +126,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         MemoryStream encryptedStream = new MemoryStream();
                         var entropy = NexusModsUtilities.EncryptStringToStream(Password_TextBox.Password, encryptedStream);
                         Settings.SaveUpdaterServiceEncryptedValues(Convert.ToBase64String(entropy), Convert.ToBase64String(encryptedStream.ToArray()));
-
                         SettingsExpanded = false;
                         SettingsSubtext = null;
                         if (mod != null)
@@ -245,10 +250,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             nbw.DoWork += (a, b) =>
             {
                 OperationInProgress = true;
-                StartPreparingMod();
+                b.Result = UploadMod();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                Analytics.TrackEvent("Uploaded mod to updater service", new Dictionary<string, string>()
+                {
+                    {@"Result", b.Result?.ToString() },
+                    {@"Mod", mod.ModName +@" "+mod.ModVersionString }
+                });
                 OperationInProgress = false;
             };
             nbw.RunWorkerAsync();
@@ -296,7 +306,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         }
 
-        private void StartPreparingMod()
+        private enum UploadModResult
+        {
+            NO_RESULT,
+            NOT_BEING_SERVED,
+            ERROR_VALIDATING_MOD_IS_CONFIGURED,
+            ABORTED_BY_USER_SAME_VERSION_UPLOADED,
+            ABORTED_BY_USER,
+            BAD_SERVER_HASHES_AFTER_VALIDATION,
+            UPLOAD_OK
+        }
+        private UploadModResult UploadMod()
         {
             #region online fetch
             //Fetch current production manifest for mod (it may not exist)
@@ -313,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error(@"This mod is not configured for serving on the Updater Service. Please contact Mgamerz.");
                     CurrentActionText = M3L.GetString(M3L.string_serverNotConfiguredForModContactMgamerz);
                     HideChangelogArea();
-                    return;
+                    return UploadModResult.NOT_BEING_SERVED;
                 }
             }
             catch (Exception ex)
@@ -321,7 +341,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Error(@"Error validating mod is configured on updater service: " + ex.Message);
                 CurrentActionText = M3L.GetString(M3L.string_interp_errorCheckingUpdaterServiceConfiguration, ex.Message);
                 HideChangelogArea();
-                return;
+                return UploadModResult.ERROR_VALIDATING_MOD_IS_CONFIGURED;
             }
 
             #endregion
@@ -347,7 +367,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     });
                     if (cancel)
                     {
-                        return;
+                        return UploadModResult.ABORTED_BY_USER_SAME_VERSION_UPLOADED;
                     }
                 }
             }
@@ -370,7 +390,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentActionText = M3L.GetString(M3L.string_compressingModForUpdaterService);
             var lzmaStagingPath = OnlineContent.StageModForUploadToUpdaterService(mod, files, totalModSizeUncompressed, canceledCheckCallback, updateCurrentTextCallback);
             #endregion
-            if (CancelOperations) { AbortUpload(); return; }
+            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
             #region hash mod and build server manifest
             CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest);
 
@@ -393,7 +413,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var done = Interlocked.Add(ref amountHashed, sf.size);
                 CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@"{Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
             });
-            if (CancelOperations) { AbortUpload(); return; }
+            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
 
             //Build document
             XmlDocument xmlDoc = new XmlDocument();
@@ -402,7 +422,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var mf in manifestFiles)
             {
-                if (CancelOperations) { AbortUpload(); return; }
+                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
 
                 XmlNode sourceNode = xmlDoc.CreateElement(@"sourcefile");
 
@@ -430,18 +450,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 rootNode.AppendChild(sourceNode);
             }
-            if (CancelOperations) { AbortUpload(); return; }
+            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
 
             foreach (var bf in mod.UpdaterServiceBlacklistedFiles)
             {
-                if (CancelOperations) { AbortUpload(); return; }
+                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
 
                 var bfn = xmlDoc.CreateElement(@"blacklistedfile");
                 bfn.InnerText = bf;
                 rootNode.AppendChild(bfn);
             }
 
-            if (CancelOperations) { AbortUpload(); return; }
+            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
             var updatecode = xmlDoc.CreateAttribute(@"updatecode");
             updatecode.InnerText = mod.ModClassicUpdateCode.ToString();
             rootNode.Attributes.Append(updatecode);
@@ -461,7 +481,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             while (ChangelogNotYetSet)
             {
-                if (CancelOperations) { AbortUpload(); return; }
+                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
 
                 CurrentActionText = M3L.GetString(M3L.string_waitingForChangelogToBeSet);
                 Thread.Sleep(250);  //wait for changelog to be set.
@@ -525,6 +545,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (!justMadeFolder && dirContents.Any(x => x.Name != @"." && x.Name != @".."))
             {
                 CurrentActionText = M3L.GetString(M3L.string_hashingFilesOnServerForDelta);
+                Log.Information("Hashing existing files on server to compare for delta");
                 serverHashes = getServerHashes(sshClient, serverFolderName, serverModPath);
             }
             //Calculate what needs to be updated or removed from server
@@ -641,7 +662,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             long amountToUpload = filesToUploadToServer.Sum(x => new FileInfo(Path.Combine(lzmaStagingPath, x + @".lzma")).Length);
             foreach (var file in filesToUploadToServer)
             {
-                if (CancelOperations) { AbortUpload(); return; }
+                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
                 var fullPath = Path.Combine(lzmaStagingPath, file + @".lzma");
                 var serverFilePath = serverModPath + @"/" + file.Replace(@"\", @"/") + @".lzma";
                 Log.Information(@"Uploading file " + fullPath + @" to " + serverFilePath);
@@ -658,7 +679,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     });
                 }
             }
-            if (CancelOperations) { AbortUpload(); return; }
+            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
             //delete extra files
             int numdone = 0;
             foreach (var file in filesToDeleteOffServer)
@@ -683,15 +704,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
 
             CurrentActionText = M3L.GetString(M3L.string_validatingModOnServer);
+            Log.Information("Verifying hashes on server for new files");
             var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
-            var badHashes = verifyHashes(manifestFiles, serverHashes);
+            var badHashes = verifyHashes(manifestFiles, newServerhashes);
             if (badHashes.Any())
             {
                 CurrentActionText = M3L.GetString(M3L.string_someHashesOnServerAreIncorrectContactMgamerz);
+                return UploadModResult.BAD_SERVER_HASHES_AFTER_VALIDATION;
             }
             else
             {
                 CurrentActionText = M3L.GetString(M3L.string_modUploadedToUpdaterService);
+                return UploadModResult.UPLOAD_OK;
             }
         }
 
@@ -709,6 +733,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             command.CommandTimeout = TimeSpan.FromMinutes(1);
             command.Execute();
             var answer = command.Result;
+            //Log.Information(@"Command result ================\n"+answer);
+            //Log.Information(@"=====================");
             if (CancelOperations) { AbortUpload(); return serverHashes; }
 
             foreach (var hashpair in answer.Split("\n")) //do not localize
@@ -719,7 +745,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
                 serverHashes[path] = md5;
-                Debug.WriteLine(md5 + @" for file " + path);
+                Log.Information(md5 + @" MD5 for server file " + path);
             }
 
             return serverHashes;
@@ -736,17 +762,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (manifestMD5 != serverMD5)
                     {
-                        Debug.WriteLine(@"ERROR ON SERVER HASH FOR FILE " + file);
+                        Log.Error(@"ERROR ON SERVER HASH FOR FILE " + file);
                         badHashes.Add(file);
                     }
                     else
                     {
-                        Debug.WriteLine(@"Server hash OK for " + file);
+                        Log.Information(@"Server hash OK for " + file);
                     }
                 }
                 else
                 {
-                    Debug.WriteLine(@"Extra file on server that is not present in manifest " + file);
+                    Log.Information(@"Extra file on server that is not present in manifest " + file);
                 }
             }
             return badHashes;
@@ -755,7 +781,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)
         {
-            Debug.WriteLine($@"Uploading directory {localPath} to {remotePath}");
+            Log.Information($@"Uploading directory {localPath} to {remotePath}");
 
             IEnumerable<FileSystemInfo> infos =
                 new DirectoryInfo(localPath).EnumerateFileSystemInfos();
