@@ -51,6 +51,10 @@ namespace MassEffectModManagerCore.modmanager
                         //Log.Information(@"Adding file to extraction list: " + info.FileName);
                         itemsToExtract.Add(info);
                     }
+                    else
+                    {
+                        Log.Information(@"File being skipped, not referenced by mod: " + relativedName);
+                    }
                 }
             }
 
