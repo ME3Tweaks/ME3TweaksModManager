@@ -1111,6 +1111,20 @@ namespace MassEffectModManagerCore
         }
 
         /// <summary>
+        /// Looks up the user's ALOT Installer texture library directory. If the user has not set one or run ALOT Installer, this will not be populated.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetALOTInstallerTextureLibraryDirectory()
+        {
+            var path = Utilities.GetRegistrySettingString(@"HKEY_CURRENT_USER\SOFTWARE\ALOTAddon", "LibraryDir");
+            if (path == null || !Directory.Exists(path))
+            {
+                return null;
+            }
+            return path;
+        }
+
+        /// <summary>
         /// Checks if the specified DLC folder name is protected (official DLC names and __metadata)
         /// </summary>
         /// <param name="dlcFolderName">DLC folder name (DLC_CON_MP2)</param>
