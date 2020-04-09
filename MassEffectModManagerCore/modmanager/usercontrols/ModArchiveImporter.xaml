@@ -16,11 +16,12 @@
             <DockPanel Margin="0,5,0,0">
                 <Button DockPanel.Dock="Right" Content="{Binding InstallModText}" Padding="8,3" Command="{Binding InstallModCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{Binding InstallModToolTip}" />
                 <Button DockPanel.Dock="Right" Content="{DynamicResource string_importMods}" Padding="8,3" Margin="5,0" Command="{Binding ImportModsCommand}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" />
-                <Button DockPanel.Dock="Right" Content="{DynamicResource string_cancel}" Padding="7,5" Command="{Binding CancelCommand}" />
+                <Button DockPanel.Dock="Right" Content="Launch ALOT Installer" Padding="8,3" Margin="5,0" Command="{Binding LaunchALOTInstallerCommand}" Visibility="{Binding TextureFilesImported, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <Button DockPanel.Dock="Right" Content="{Binding CancelButtonText}" Padding="7,5" Command="{Binding CancelCommand}" />
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Visibility="{Binding CanCompressPackages, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
                     <CheckBox Content="{DynamicResource string_compressPackages}" VerticalContentAlignment="Center" Padding="8,3" IsChecked="{Binding CompressPackages}" Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{Binding TaskRunning, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
                 </StackPanel>
-                <TextBlock DockPanel.Dock="Left" Text="{Binding ActionText, FallbackValue=Scanning archive...}" VerticalAlignment="Center" />
+                <TextBlock DockPanel.Dock="Left" Text="{Binding ActionText, FallbackValue=Scanning archive...}" VerticalAlignment="Center" TextWrapping="Wrap" />
             </DockPanel>
         </DockPanel>
         <Grid>
