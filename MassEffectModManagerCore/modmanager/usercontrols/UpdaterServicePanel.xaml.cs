@@ -525,6 +525,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (!justMadeFolder && dirContents.Any(x => x.Name != @"." && x.Name != @".."))
             {
                 CurrentActionText = M3L.GetString(M3L.string_hashingFilesOnServerForDelta);
+                Log.Information("Hashing existing files on server to compare for delta");
                 serverHashes = getServerHashes(sshClient, serverFolderName, serverModPath);
             }
             //Calculate what needs to be updated or removed from server
@@ -683,8 +684,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
 
             CurrentActionText = M3L.GetString(M3L.string_validatingModOnServer);
+            Log.Information("Verifying hashes on server for new files");
             var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
-            var badHashes = verifyHashes(manifestFiles, serverHashes);
+            var badHashes = verifyHashes(manifestFiles, newServerhashes);
             if (badHashes.Any())
             {
                 CurrentActionText = M3L.GetString(M3L.string_someHashesOnServerAreIncorrectContactMgamerz);
@@ -709,6 +711,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             command.CommandTimeout = TimeSpan.FromMinutes(1);
             command.Execute();
             var answer = command.Result;
+            //Log.Information(@"Command result ================\n"+answer);
+            //Log.Information(@"=====================");
             if (CancelOperations) { AbortUpload(); return serverHashes; }
 
             foreach (var hashpair in answer.Split("\n")) //do not localize
@@ -719,7 +723,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
                 serverHashes[path] = md5;
-                Debug.WriteLine(md5 + @" for file " + path);
+                Log.Information(md5 + @" MD5 for server file " + path);
             }
 
             return serverHashes;
@@ -736,17 +740,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (manifestMD5 != serverMD5)
                     {
-                        Debug.WriteLine(@"ERROR ON SERVER HASH FOR FILE " + file);
+                        Log.Error(@"ERROR ON SERVER HASH FOR FILE " + file);
                         badHashes.Add(file);
                     }
                     else
                     {
-                        Debug.WriteLine(@"Server hash OK for " + file);
+                        Log.Information(@"Server hash OK for " + file);
                     }
                 }
                 else
                 {
-                    Debug.WriteLine(@"Extra file on server that is not present in manifest " + file);
+                    Log.Information(@"Extra file on server that is not present in manifest " + file);
                 }
             }
             return badHashes;
@@ -755,7 +759,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)
         {
-            Debug.WriteLine($@"Uploading directory {localPath} to {remotePath}");
+            Log.Information($@"Uploading directory {localPath} to {remotePath}");
 
             IEnumerable<FileSystemInfo> infos =
                 new DirectoryInfo(localPath).EnumerateFileSystemInfos();
