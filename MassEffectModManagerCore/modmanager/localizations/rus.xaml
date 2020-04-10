@@ -936,7 +936,7 @@
 	<!-- 0=ModName -->
     <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">Данный мод содержит запрещенный файл: {0}. Файл должен быть удален из папки мода или черного списка в moddesc.ini, чтобы мод мог быть загружен.</system:String>
 	<!-- 0=fullpath -->
-    <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Ошибка в использовании опции gameredirectorystructure: для задания job {0} по указанному пути доступа path {1} файлы доя установки не найдены.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Ошибка использования опции gameredirectorystructure: Не найдены файлы для установки по указанному пути для задания: {0}, путь: {1}</system:String>
 	<!-- 0 = job/header name, 1 = filepath -->
 
 	<!-- About Panel -->
@@ -1244,8 +1244,8 @@
 	<!-- 0=amount uploaded 1=total to upload -->
     <system:String x:Key="string_username">Имя пользователя</system:String>
     <system:String x:Key="string_password">Пароль</system:String>
-    <system:String x:Key="string_lZMAStoragePath">Путь хранения LZMA</system:String>
-    <system:String x:Key="string_manifestsStoragePath">Путь хранения манифестов</system:String>
+    <system:String x:Key="string_lZMAStoragePath">Путь хранилища LZMA</system:String>
+    <system:String x:Key="string_manifestsStoragePath">Путь хранилища манифестов</system:String>
 
 	<!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Выбор Mixins для компиляции</system:String>

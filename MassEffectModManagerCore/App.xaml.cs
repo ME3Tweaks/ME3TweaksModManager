@@ -496,6 +496,19 @@ namespace MassEffectModManagerCore
         }
 
         /// <summary>
+        /// Performs the upgrade migration from Mass Effect 3 Mod MAnager to ME3Tweaks Mod Manager, transitioning settings and mods.
+        /// </summary>
+        public static void UpgradeFromME3CMM()
+        {
+            /*
+             * Process:
+             *  1. Migrate settings
+             *  2. Migrate the mods folder into a subdirectory named ME3
+             *  3. 
+             */
+        }
+
+        /// <summary>
         /// Flattens an exception into a printable string
         /// </summary>
         /// <param name="exception">Exception to flatten</param>
