@@ -23,6 +23,7 @@ using System.Linq;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using AuthenticodeExaminer;
+using MassEffectModManagerCore.modmanager.windows;
 using SevenZip;
 
 namespace MassEffectModManagerCore
@@ -50,7 +51,7 @@ namespace MassEffectModManagerCore
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
-
+        public bool UpgradingFromME3CMM;
         public static Visibility IsDebugVisibility => IsDebug ? Visibility.Visible : Visibility.Collapsed;
 
         public static Visibility DebugOnlyVisibility
@@ -388,6 +389,13 @@ namespace MassEffectModManagerCore
                 Log.Information("Ensuring default ASI assets are present");
                 ASIManagerPanel.ExtractDefaultASIResources();
 
+                if (UpgradingFromME3CMM /*|| true*/)
+                {
+                    //Show migration window before we load the main UI
+                    Log.Information(@"Migrating from ME3CMM - showing migration dialog");
+                    new ME3CMMMigrationWindow().ShowDialog();
+                }
+
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
                 Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
                 POST_STARTUP = true; //this could be earlier but i'm not sure when crash handler actually is used, doesn't seem to be after setting it...
@@ -491,6 +499,19 @@ namespace MassEffectModManagerCore
         }
 
         /// <summary>
+        /// Performs the upgrade migration from Mass Effect 3 Mod MAnager to ME3Tweaks Mod Manager, transitioning settings and mods.
+        /// </summary>
+        public static void UpgradeFromME3CMM()
+        {
+            /*
+             * Process:
+             *  1. Migrate settings
+             *  2. Migrate the mods folder into a subdirectory named ME3
+             *  3. 
+             */
+        }
+
+        /// <summary>
         /// Flattens an exception into a printable string
         /// </summary>
         /// <param name="exception">Exception to flatten</param>
@@ -535,5 +556,9 @@ namespace MassEffectModManagerCore
         [Option("update-boot",
             HelpText = "Indicates that the process should run in update mode for a single file .net core executable. The process will exit upon starting because the platform extraction process will have completed.")]
         public bool UpdateBoot { get; set; }
+
+        [Option("upgrade-from-me3cmm",
+            HelpText = "Indicates that this is an upgrade from ME3CMM, and that a migration should take place.")]
+        public bool UpgradingFromME3CMM { get; set; }
     }
 }

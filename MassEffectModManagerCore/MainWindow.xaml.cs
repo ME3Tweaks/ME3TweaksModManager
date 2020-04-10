@@ -1512,6 +1512,18 @@ namespace MassEffectModManagerCore
                 if (modpathToHighlight != null)
                 {
                     args.Result = VisibleFilteredMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
+
+                    //telemetry for importing issues
+                    var targetMod = AllLoadedMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
+                    if (File.Exists(modpathToHighlight) && targetMod == null)
+                    {
+                        //moddesc.ini exists but it did not load
+                        Log.Error(@"Mod to highlight failed to load! Path: "+modpathToHighlight);
+                        Crashes.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"), new Dictionary<string, string>()
+                        {
+                            { @"Moddesc path", modpathToHighlight }
+                        });
+                    }
                 }
 
 

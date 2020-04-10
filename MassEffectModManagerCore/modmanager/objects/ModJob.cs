@@ -425,9 +425,9 @@ namespace MassEffectModManagerCore.modmanager
             return null;
         }
 
-        public bool ValidateAltFiles(out string failureReason)
+        public bool ValidateAlternates(out string failureReason)
         {
-            var optionGroups = AlternateFiles.Select(x => x.GroupName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct();
+            var optionGroups = AlternateFiles.Select(x => x.GroupName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
 
             foreach (var group in optionGroups)
             {
@@ -443,6 +443,31 @@ namespace MassEffectModManagerCore.modmanager
                     Log.Error($@"Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
                     failureReason = M3L.GetString(M3L.string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault, group);
                     return false;
+                }
+            }
+
+            if (Header == JobHeader.CUSTOMDLC)
+            {
+                optionGroups = AlternateDLCs.Select(x => x.GroupName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+
+                foreach (var group in optionGroups)
+                {
+                    var checkedByDefaultForGroups = AlternateDLCs.Count(x => x.CheckedByDefault && x.GroupName == group);
+                    if (checkedByDefaultForGroups == 0)
+                    {
+                        //needs localized
+                        Log.Error($@"Alternate DLC that use the OptionGroup feature must have at least one AlternateDLC struct set in their group with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'");
+                        failureReason = M3L.GetString(M3L.string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault, group);
+                        return false;
+                    }
+
+                    if (checkedByDefaultForGroups > 1)
+                    {
+                        //needs localized
+                        Log.Error($@"Alternate DLC that use the OptionGroup feature may only have one AlternateDLC struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
+                        failureReason = M3L.GetString(M3L.string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault, group);
+                        return false;
+                    }
                 }
             }
 

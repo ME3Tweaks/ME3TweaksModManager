@@ -805,8 +805,12 @@
 	<!-- 0=group. Shown if no items in group have CheckedByDefault -->
     <system:String x:Key="string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate Files, die die OptionGroup-Funktion benutzen, dürfen nur ein Set von AlternateFile Structs mit CheckedByDefault haben. Der Name der fehlerhaften OptionGroup lautet '{0}'.</system:String>
 	<!-- 0=group. Shown if more than one item in group has CheckedByDefault -->
+    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault">Eine Alternate DLC, die die OptionGroup-Funktion benutzt, muss mindestens ein AlternateDLC Struct mit CheckedByDefault-Option in ihrem Set haben, da mindestens eine Option immer gewählt sein muss. Der Name der fehlerhaften OptionGroup lautet '{0}'.</system:String>
+    <!-- 0=group. Shown if no items in group have CheckedByDefault. ALT DLC OPTION -->
+    <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate DLCs, die die OptionGroup-Funktion benutzen, dürfen nur ein Set von AlternateDLC Structs mit CheckedByDefault haben. Der Name der fehlerhaften OptionGroup lautet '{0}'.</system:String>
+    <!-- 0=group. Shown if more than one item in group has CheckedByDefault. ALT DLC OPTION-->
 
-	<!-- ReadOnlyOption (Mod Installer) -->
+    <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Diese Option installiert einen Schreibschutz für die in diesem Mod enthaltenen Konfigurationsdateien, damit das Spiel sie nicht verändern kann. Im Spiel getätigte Einstellungen, die auf diese Dateien zurückgreifen, werden daher nicht über Neustarts hinweg gespeichert.</system:String>
     <system:String x:Key="string_makeConfigFilesReadonly">Schreibschutz für Konfigurationsdateien einrichten</system:String>
 

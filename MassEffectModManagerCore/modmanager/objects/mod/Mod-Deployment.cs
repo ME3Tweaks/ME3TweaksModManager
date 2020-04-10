@@ -74,20 +74,22 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         if (file.AltFile != null)
                         {
-                            if (IsInArchive)
-                            {
-                                references.Add(FilesystemInterposer.PathCombine(true, ModPath, file.AltFile));
-                            }
-                            else
-                            {
+                            //Commented out: AltFile should be direct path to file from mod root, we should only put in relative path
+                            //if (IsInArchive)
+                            //{
+                            //    references.Add(FilesystemInterposer.PathCombine(true, ModPath, file.AltFile));
+                            //}
+                            //else
+                            //{
                                 references.Add(file.AltFile);
-                            }
+                            //}
                         }
                         else if (file.MultiListSourceFiles != null)
                         {
                             foreach (var mf in file.MultiListSourceFiles)
                             {
                                 var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, file.MultiListRootPath, mf);
+                                //Should this be different from above AltFile?
                                 if (IsInArchive)
                                 {
                                     references.Add(relPath);

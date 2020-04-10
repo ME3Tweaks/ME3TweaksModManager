@@ -1013,7 +1013,7 @@ namespace MassEffectModManagerCore
                     }
                     catch (Exception ex)
                     {
-                        Log.Error("Could not save cached targets on retry: " + ex.Message);
+                        Log.Error("Could not save cached targets on retry: " + e.Message);
                     }
                 }
             }
@@ -1106,6 +1106,20 @@ namespace MassEffectModManagerCore
             if (forceCmmVanilla && !File.Exists(Path.Combine(path, @"cmm_vanilla")))
             {
                 return null; //do not accept alot installer backups that are missing cmm_vanilla as they are not vanilla.
+            }
+            return path;
+        }
+
+        /// <summary>
+        /// Looks up the user's ALOT Installer texture library directory. If the user has not set one or run ALOT Installer, this will not be populated.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetALOTInstallerTextureLibraryDirectory()
+        {
+            var path = Utilities.GetRegistrySettingString(@"HKEY_CURRENT_USER\SOFTWARE\ALOTAddon", "LibraryDir");
+            if (path == null || !Directory.Exists(path))
+            {
+                return null;
             }
             return path;
         }

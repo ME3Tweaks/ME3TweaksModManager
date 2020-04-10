@@ -820,10 +820,10 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    if (!headerJob.ValidateAltFiles(out string failureReason))
+                    if (!headerJob.ValidateAlternates(out string failureReason))
                     {
                         LoadFailedReason = failureReason;
-                        return; //Error will be 
+                        return; 
                     }
 
                     CLog.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
@@ -970,6 +970,12 @@ namespace MassEffectModManagerCore.modmanager
 
                     //Custom DLC names: Mod Manager 6 (but can be part of any spec as it's only cosmetic)
                     HumanReadableCustomDLCNames = iniData[@"CUSTOMDLC"].Where(x => x.KeyName.StartsWith(@"DLC_")).ToDictionary(mc => mc.KeyName, mc => mc.Value);
+
+                    if (!customDLCjob.ValidateAlternates(out string failureReason))
+                    {
+                        LoadFailedReason = failureReason;
+                        return;
+                    }
 
                     CLog.Information($@"Successfully made mod job for CUSTOMDLC", Settings.LogModStartup);
                     InstallationJobs.Add(customDLCjob);
