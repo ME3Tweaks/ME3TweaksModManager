@@ -39,7 +39,7 @@
                                 <DockPanel DockPanel.Dock="Top">
                                     <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="380" FontSize="11" Padding="0,0,20,0"/>
                                 <DockPanel.Style>
                                     <Style TargetType="{x:Type DockPanel}">
                                         <Style.Triggers>
@@ -61,7 +61,7 @@
                                     <TextBlock Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     <TextBlock Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="380" FontSize="11" Padding="0,0,20,0"/>
                                 <DockPanel.Style>
                                     <Style TargetType="{x:Type DockPanel}">
                                         <Style.Triggers>
@@ -83,7 +83,7 @@
                                     <TextBlock Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     <TextBlock Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledAccentForegroundBrush}}" MaxWidth="350" FontSize="10" Padding="0,0,20,0"/>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="380" FontSize="11" Padding="0,0,20,0"/>
                                 <DockPanel.Style>
                                     <Style TargetType="{x:Type DockPanel}">
                                         <Style.Triggers>

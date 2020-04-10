@@ -650,6 +650,24 @@ namespace MassEffectModManagerCore
             }
         }
 
+        /// <summary>
+        /// Reads all lines from a file, attempting to do so even if the file is in use by another process
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string[] WriteSafeReadAllLines(String path)
+        {
+            using var csv = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var sr = new StreamReader(csv);
+            List<string> file = new List<string>();
+            while (!sr.EndOfStream)
+            {
+                file.Add(sr.ReadLine());
+            }
+
+            return file.ToArray();
+        }
+
         internal static string GetTipsServiceFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
@@ -948,7 +966,7 @@ namespace MassEffectModManagerCore
             if (File.Exists(cacheFile))
             {
                 OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
-                foreach (var file in File.ReadAllLines(cacheFile))
+                foreach (var file in Utilities.WriteSafeReadAllLines(cacheFile))
                 {
                     //Validate game directory
                     if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(file, StringComparison.InvariantCultureIgnoreCase)))
@@ -993,10 +1011,8 @@ namespace MassEffectModManagerCore
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) File.Create(cachefile).Close();
-            try
-            {
-                var savedTargets = File.ReadAllLines(cachefile).ToList();
-                var path = Path.GetFullPath(target.TargetPath); //standardize
+            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
+            var path = Path.GetFullPath(target.TargetPath); //standardize
 
                 if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
                 {
@@ -1031,7 +1047,7 @@ namespace MassEffectModManagerCore
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) return; //can't do anything.
-            var savedTargets = File.ReadAllLines(cachefile).ToList();
+            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
 
             int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
