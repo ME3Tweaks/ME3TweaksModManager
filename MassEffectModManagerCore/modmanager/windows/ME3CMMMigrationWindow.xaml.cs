@@ -100,10 +100,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 }
                                 else
                                 {
-                                    Log.Information("Copying existing mod directory");
+                                    Log.Information(@"Copying existing mod directory");
                                     Directory.CreateDirectory(targetDir);
                                     CopyDir.CopyAll_ProgressBar(new DirectoryInfo(modDirToMove), new DirectoryInfo(targetDir));
-                                    Log.Information("Deleting existing directory");
+                                    Log.Information(@"Deleting existing directory");
                                     Utilities.DeleteFilesAndFoldersRecursively(modDirToMove);
                                 }
 
@@ -112,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             }
                             else
                             {
-                                Log.Warning("Target directory already exists! Not migrating this directory.");
+                                Log.Warning(@"Target directory already exists! Not migrating this directory.");
                             }
                         }
                     }
@@ -124,26 +124,26 @@ namespace MassEffectModManagerCore.modmanager.windows
                     // 2. MIGRATE SETTINGS
                     MigratingSettings.SetInProgress();
                     Log.Information(@"Step 2: Begin settings migration");
-                    var me3cmminif = Path.Combine(exeDir, "me3cmm.ini");
+                    var me3cmminif = Path.Combine(exeDir, @"me3cmm.ini");
                     if (File.Exists(me3cmminif))
                     {
-                        Log.Information("Migrating me3cmm.ini settings");
+                        Log.Information(@"Migrating me3cmm.ini settings");
                         IniData me3cmmini = new FileIniDataParser().ReadFile(me3cmminif);
-                        var updaterServiceUsername = me3cmmini["UpdaterService"]["username"];
+                        var updaterServiceUsername = me3cmmini[@"UpdaterService"][@"username"];
                         if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceUsername) && !string.IsNullOrWhiteSpace(updaterServiceUsername))
                         {
                             Settings.UpdaterServiceUsername = updaterServiceUsername;
                             Log.Information(@"Migrated Updater Service Username: " + updaterServiceUsername);
                         }
 
-                        var manifestsPath = me3cmmini["UpdaterService"]["manifestspath"];
+                        var manifestsPath = me3cmmini[@"UpdaterService"][@"manifestspath"];
                         if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceManifestStoragePath) && !string.IsNullOrWhiteSpace(manifestsPath))
                         {
                             Settings.UpdaterServiceManifestStoragePath = manifestsPath;
                             Log.Information(@"Migrated Updater Service Manifests Path: " + manifestsPath);
                         }
 
-                        var lzmaStoragePath = me3cmmini["UpdaterService"]["lzmastoragepath"];
+                        var lzmaStoragePath = me3cmmini[@"UpdaterService"][@"lzmastoragepath"];
                         if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceLZMAStoragePath) && !string.IsNullOrWhiteSpace(lzmaStoragePath))
                         {
                             Settings.UpdaterServiceLZMAStoragePath = updaterServiceUsername;
@@ -156,14 +156,14 @@ namespace MassEffectModManagerCore.modmanager.windows
                     }
 
                     //Migrate BIOGAME_DIRECTORIES
-                    var biogameDirsF = Path.Combine(dataDir, "BIOGAME_DIRECTORIES");
+                    var biogameDirsF = Path.Combine(dataDir, @"BIOGAME_DIRECTORIES");
                     if (File.Exists(biogameDirsF))
                     {
                         var biodirs = File.ReadAllLines(biogameDirsF);
                         foreach (var line in biodirs)
                         {
                             var gamepath = Directory.GetParent(line).FullName;
-                            Log.Information("Validating ME3CMM target: " + gamepath);
+                            Log.Information(@"Validating ME3CMM target: " + gamepath);
                             GameTarget t = new GameTarget(Mod.MEGame.ME3, gamepath, false);
                             var failureReason = t.ValidateTarget();
                             if (failureReason == null)
@@ -172,7 +172,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             }
                             else
                             {
-                                Log.Error($"Not migrating invalid target {gamepath}: {failureReason}");
+                                Log.Error($@"Not migrating invalid target {gamepath}: {failureReason}");
                             }
                         }
                     }
@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         Log.Information(@"Migrating ALOTInstaller tool");
                         var externalToolsALOTInstaller = Path.Combine(dataDir, @"ExternalTools", @"ALOTInstaller");
                         Directory.CreateDirectory(Path.Combine(dataDir, @"ExternalTools"));
-                        Directory.Move(alotInstallerDir,externalToolsALOTInstaller);
+                        Directory.Move(alotInstallerDir, externalToolsALOTInstaller);
                         Log.Information(@"Migrated ALOTInstaller to ExternalTools");
                     }
 
@@ -197,6 +197,32 @@ namespace MassEffectModManagerCore.modmanager.windows
                         Directory.CreateDirectory(Path.Combine(dataDir, @"ExternalTools"));
                         Directory.Move(me3explorerDir, externalToolsME3ExplorerDir);
                         Log.Information(@"Migrated ME3Explorer to ExternalTools");
+                    }
+
+                    //MIGRATE 7z.dll - this will only perform an interim fix as we use 19.0 and ME3MM used 18.05
+                    var me3mm7z = Path.Combine(dataDir, @"tools\ModManagerCommandLine\x64\7z.dll");
+                    var target7z = Utilities.Get7zDllPath();
+                    if (File.Exists(me3mm7z) && !File.Exists(target7z))
+                    {
+                        Log.Information($@"Copying ME3CMM 7z.dll to ME3Tweaks Mod Manager dll location: {me3mm7z} -> {target7z}");
+                        File.Copy(me3mm7z, target7z, true);
+                        Log.Information(@"Copied ME3MM 7z dll");
+                    }
+
+                    //MIGRATE MOD GROUPS (batch install queues)/
+                    //Migrate ME3Explorer, if found
+                    var modGroupsDir = Path.Combine(dataDir, @"modgroups");
+                    if (Directory.Exists(modGroupsDir))
+                    {
+                        Log.Information(@"Migrating batch mod groups");
+                        var queues = Directory.EnumerateFiles(modGroupsDir, @"*.txt").ToList();
+                        foreach (var queue in queues)
+                        {
+                            var biqDest = Path.Combine(Utilities.GetBatchInstallGroupsFolder(), Path.GetFileName(queue));
+                            Log.Information($@"Migrating mod install group: {queue} -> {biqDest}");
+                            File.Move(queue, biqDest, true);
+                            Log.Information(@"Migrated " + Path.GetFileName(queue));
+                        }
                     }
 
                     MigratingSettings.SetDone();

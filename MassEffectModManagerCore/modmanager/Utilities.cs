@@ -736,6 +736,10 @@ namespace MassEffectModManagerCore
         public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
         public static string GetME2ModsDirectory() => Path.Combine(GetModsDirectory(), "ME2");
 
+        /// <summary>
+        /// Returns location where we will store the 7z.dll. Does not check for existence
+        /// </summary>
+        /// <returns></returns>
         internal static string Get7zDllPath()
         {
             return Path.Combine(GetDllDirectory(), "7z.dll");
@@ -1013,7 +1017,7 @@ namespace MassEffectModManagerCore
             if (!File.Exists(cachefile)) File.Create(cachefile).Close();
             var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
-
+            try { 
                 if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
                 {
                     savedTargets.Add(path);

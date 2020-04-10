@@ -167,9 +167,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             sb.AppendLine(SelectedGame.ToString());
             sb.AppendLine(GroupName);
             sb.AppendLine(Utilities.ConvertNewlineToBr(GroupDescription));
+            var libraryRoot = Utilities.GetModDirectoryForGame(SelectedGame);
             foreach (var m in ModsInGroup)
             {
-                sb.AppendLine(m.ModDescPath); //should this be relative?
+                sb.AppendLine(m.ModDescPath.Substring(libraryRoot.Length + 1)); //STORE RELATIVE!
             }
 
             var batchfolder = Utilities.GetBatchInstallGroupsFolder();
