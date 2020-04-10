@@ -6,9 +6,6 @@
              Exit="Application_Exit"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <!--<Style x:Key="WindowStyle" TargetType="{x:Type Window}">
-            <Setter Property="Background" Value="#f0f0f0" />
-        </Style>-->
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml"/>

@@ -21,5 +21,19 @@ namespace MassEffectModManagerCore.modmanager.windows
         public bool Spin { get; set; } = false;
         public Brush Foreground { get; set; } = Brushes.Gray;
         public FontAwesomeIcon Icon { get; set; } = FontAwesomeIcon.Hourglass;
+
+        public void SetDone()
+        {
+            Spin = false;
+            Icon = FontAwesomeIcon.CheckCircleOutline;
+            Foreground = Brushes.Green;
+        }
+
+        public void SetInProgress()
+        {
+            Spin = true;
+            Icon = FontAwesomeIcon.Spinner;
+            Foreground = Brushes.SaddleBrown;
+        }
     }
 }

@@ -993,29 +993,36 @@ namespace MassEffectModManagerCore
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) File.Create(cachefile).Close();
-            var savedTargets = File.ReadAllLines(cachefile).ToList();
-            var path = Path.GetFullPath(target.TargetPath); //standardize
-
-            if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
+            try
             {
-                savedTargets.Add(path);
-                Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
-                try
+                var savedTargets = File.ReadAllLines(cachefile).ToList();
+                var path = Path.GetFullPath(target.TargetPath); //standardize
+
+                if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
                 {
-                    File.WriteAllLines(cachefile, savedTargets);
-                }
-                catch (Exception e)
-                {
-                    Thread.Sleep(300);
+                    savedTargets.Add(path);
+                    Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
                     try
                     {
                         File.WriteAllLines(cachefile, savedTargets);
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
-                        Log.Error("Could not save cached targets on retry: " + e.Message);
+                        Thread.Sleep(300);
+                        try
+                        {
+                            File.WriteAllLines(cachefile, savedTargets);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Could not save cached targets on retry: " + e.Message);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to read/add cached target: " + e.Message);
             }
         }
 

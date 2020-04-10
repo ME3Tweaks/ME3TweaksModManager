@@ -127,6 +127,17 @@ namespace MassEffectModManagerCore
         public MainWindow()
         {
             DataContext = this;
+
+            if (App.UpgradingFromME3CMM || true)
+            {
+                App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                //Show migration window before we load the main UI
+                Log.Information(@"Migrating from ME3CMM - showing migration dialog");
+                new ME3CMMMigrationWindow().ShowDialog();
+                App.Current.MainWindow = this;
+                App.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            }
+
             LoadCommands();
             RefreshNexusStatus();
             InitializeComponent();
@@ -1518,7 +1529,7 @@ namespace MassEffectModManagerCore
                     if (File.Exists(modpathToHighlight) && targetMod == null)
                     {
                         //moddesc.ini exists but it did not load
-                        Log.Error(@"Mod to highlight failed to load! Path: "+modpathToHighlight);
+                        Log.Error(@"Mod to highlight failed to load! Path: " + modpathToHighlight);
                         Crashes.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"), new Dictionary<string, string>()
                         {
                             { @"Moddesc path", modpathToHighlight }

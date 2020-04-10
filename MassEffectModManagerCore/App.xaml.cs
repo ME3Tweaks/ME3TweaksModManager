@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
-        public bool UpgradingFromME3CMM;
+        public static bool UpgradingFromME3CMM;
         public static Visibility IsDebugVisibility => IsDebug ? Visibility.Visible : Visibility.Collapsed;
 
         public static Visibility DebugOnlyVisibility
@@ -208,6 +208,8 @@ namespace MassEffectModManagerCore
                         {
                             App.BootingUpdate = true;
                         }
+
+                        UpgradingFromME3CMM = parsedCommandLineArgs.Value.UpgradingFromME3CMM;
                     }
                     else
                     {
@@ -227,7 +229,7 @@ namespace MassEffectModManagerCore
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;
                 Log.Information("ME3Tweaks Mod Manager " + version);
-                Log.Information("Application boot: " + DateTime.UtcNow.ToString());
+                Log.Information("Application boot: " + DateTime.UtcNow);
                 Log.Information("Executable location: " + ExecutableLocation);
                 Log.Information("Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
@@ -389,12 +391,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Ensuring default ASI assets are present");
                 ASIManagerPanel.ExtractDefaultASIResources();
 
-                if (UpgradingFromME3CMM /*|| true*/)
-                {
-                    //Show migration window before we load the main UI
-                    Log.Information(@"Migrating from ME3CMM - showing migration dialog");
-                    new ME3CMMMigrationWindow().ShowDialog();
-                }
+                
 
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
                 Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
@@ -499,19 +496,6 @@ namespace MassEffectModManagerCore
         }
 
         /// <summary>
-        /// Performs the upgrade migration from Mass Effect 3 Mod MAnager to ME3Tweaks Mod Manager, transitioning settings and mods.
-        /// </summary>
-        public static void UpgradeFromME3CMM()
-        {
-            /*
-             * Process:
-             *  1. Migrate settings
-             *  2. Migrate the mods folder into a subdirectory named ME3
-             *  3. 
-             */
-        }
-
-        /// <summary>
         /// Flattens an exception into a printable string
         /// </summary>
         /// <param name="exception">Exception to flatten</param>
@@ -538,6 +522,11 @@ namespace MassEffectModManagerCore
                 Log.Information("Application exiting normally");
                 Log.CloseAndFlush();
             }
+        }
+
+        private void App_OnStartup(object sender, StartupEventArgs e)
+        {
+            new MainWindow().Show();
         }
     }
 

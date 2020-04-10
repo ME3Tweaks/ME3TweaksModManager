@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,7 +14,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FontAwesome.WPF;
+using IniParser;
+using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using Serilog;
 
@@ -23,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class ME3CMMMigrationWindow : Window, INotifyPropertyChanged
     {
-        public ObservableCollectionExtended<BasicUITask> Tasks { get; }= new ObservableCollectionExtended<BasicUITask>();
+        public ObservableCollectionExtended<BasicUITask> Tasks { get; } = new ObservableCollectionExtended<BasicUITask>();
         BasicUITask MigratingModsTask = new BasicUITask("Migrating mods");
         BasicUITask MigratingSettings = new BasicUITask("Migrating settings");
         BasicUITask CleaningUpTask = new BasicUITask("Cleaning up");
@@ -56,40 +62,152 @@ namespace MassEffectModManagerCore.modmanager.windows
                     Log.Information(@"mods and data dir exist.");
                     // 1. MIGRATE MODS
                     Log.Information(@"Step 1: Migrate mods");
+                    MigratingModsTask.SetInProgress();
 
                     var targetModLibrary = Utilities.GetModsDirectory();
-                    MigratingModsTask.Icon = FontAwesomeIcon.Spinner;
-                    MigratingModsTask.Spin = true;
-                    MigratingModsTask.Foreground = Brushes.CadetBlue;
+                    //DEBUG ONLY
+                    targetModLibrary = @"E:\ME3CMM\mods";
+
+                    targetModLibrary = Path.Combine(targetModLibrary, @"ME3");
+                    if (!Directory.Exists(targetModLibrary))
+                    {
+                        Log.Information(@"Creating target mod library directory: " + targetModLibrary);
+                        Directory.CreateDirectory(targetModLibrary);
+                    }
+
+                    var sameRoot = Path.GetPathRoot(targetModLibrary) == Path.GetPathRoot(modsDir);
+
                     var directoriesInModsDir = Directory.GetDirectories(modsDir);
-                    foreach(var modDirToMove in directoriesInModsDir)
+
+                    var numToMigrate = directoriesInModsDir.Count(x => File.Exists(Path.Combine(x, @"moddesc.ini")));
+                    var numMigrated = 0;
+
+                    foreach (var modDirToMove in directoriesInModsDir)
                     {
                         var moddesc = Path.Combine(modDirToMove, @"moddesc.ini");
                         if (File.Exists(moddesc))
                         {
+                            numMigrated++;
+                            MigratingModsTask.TaskText = $"Migrating mods [{numMigrated}/{numToMigrate}]";
                             //Migrate this folder
-                            var targetDir = Path.Combine(modsDir, @"ME3", Path.GetDirectoryName(modDirToMove));
+                            var targetDir = Path.Combine(modsDir, @"ME3", Path.GetFileName(modDirToMove));
                             Log.Information($@"Migrating mod into ME3 directory: {modDirToMove} -> {targetDir}");
-                            Directory.Move(modDirToMove, targetDir);
-                            Log.Information($@"Migrated {modDirToMove}");
+                            if (!Directory.Exists(targetDir))
+                            {
+                                if (sameRoot)
+                                {
+                                    Directory.Move(modDirToMove, targetDir);
+                                }
+                                else
+                                {
+                                    Log.Information("Copying existing mod directory");
+                                    Directory.CreateDirectory(targetDir);
+                                    CopyDir.CopyAll_ProgressBar(new DirectoryInfo(modDirToMove), new DirectoryInfo(targetDir));
+                                    Log.Information("Deleting existing directory");
+                                    Utilities.DeleteFilesAndFoldersRecursively(modDirToMove);
+                                }
 
+                                Log.Information($@"Migrated {modDirToMove}");
+                                //Thread.Sleep(200);
+                            }
+                            else
+                            {
+                                Log.Warning("Target directory already exists! Not migrating this directory.");
+                            }
                         }
                     }
-                    MigratingModsTask.Icon = FontAwesomeIcon.CheckCircle;
-                    MigratingModsTask.Spin = false;
-                    MigratingModsTask.Foreground = Brushes.ForestGreen;
+
+                    MigratingModsTask.SetDone();
                     Log.Information(@"Step 1: Finished mod migration");
 
 
                     // 2. MIGRATE SETTINGS
+                    MigratingSettings.SetInProgress();
                     Log.Information(@"Step 2: Begin settings migration");
+                    var me3cmminif = Path.Combine(exeDir, "me3cmm.ini");
+                    if (File.Exists(me3cmminif))
+                    {
+                        Log.Information("Migrating me3cmm.ini settings");
+                        IniData me3cmmini = new FileIniDataParser().ReadFile(me3cmminif);
+                        var updaterServiceUsername = me3cmmini["UpdaterService"]["username"];
+                        if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceUsername) && !string.IsNullOrWhiteSpace(updaterServiceUsername))
+                        {
+                            Settings.UpdaterServiceUsername = updaterServiceUsername;
+                            Log.Information(@"Migrated Updater Service Username: " + updaterServiceUsername);
+                        }
+
+                        var manifestsPath = me3cmmini["UpdaterService"]["manifestspath"];
+                        if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceManifestStoragePath) && !string.IsNullOrWhiteSpace(manifestsPath))
+                        {
+                            Settings.UpdaterServiceManifestStoragePath = manifestsPath;
+                            Log.Information(@"Migrated Updater Service Manifests Path: " + manifestsPath);
+                        }
+
+                        var lzmaStoragePath = me3cmmini["UpdaterService"]["lzmastoragepath"];
+                        if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceLZMAStoragePath) && !string.IsNullOrWhiteSpace(lzmaStoragePath))
+                        {
+                            Settings.UpdaterServiceLZMAStoragePath = updaterServiceUsername;
+                            Log.Information(@"Migrated Updater Service LZMA Storage Path: " + lzmaStoragePath);
+                        }
+
+                        //TODO: MODMAKER CONTROLLER AUTO-ADDINS
+
+                        Settings.Save();
+                    }
+
+                    //Migrate BIOGAME_DIRECTORIES
+                    var biogameDirsF = Path.Combine(dataDir, "BIOGAME_DIRECTORIES");
+                    if (File.Exists(biogameDirsF))
+                    {
+                        var biodirs = File.ReadAllLines(biogameDirsF);
+                        foreach (var line in biodirs)
+                        {
+                            var gamepath = Directory.GetParent(line).FullName;
+                            Log.Information("Validating ME3CMM target: " + gamepath);
+                            GameTarget t = new GameTarget(Mod.MEGame.ME3, gamepath, false);
+                            var failureReason = t.ValidateTarget();
+                            if (failureReason == null)
+                            {
+                                Utilities.AddCachedTarget(t);
+                            }
+                            else
+                            {
+                                Log.Error($"Not migrating invalid target {gamepath}: {failureReason}");
+                            }
+                        }
+                    }
+
+                    //Migrate ALOT Installer, if found
+                    var alotInstallerDir = Path.Combine(dataDir, @"ALOTInstaller");
+                    if (Directory.Exists(alotInstallerDir))
+                    {
+                        Log.Information(@"Migrating ALOTInstaller tool");
+                        var externalToolsALOTInstaller = Path.Combine(dataDir, @"ExternalTools", @"ALOTInstaller");
+                        Directory.CreateDirectory(Path.Combine(dataDir, @"ExternalTools"));
+                        Directory.Move(alotInstallerDir,externalToolsALOTInstaller);
+                        Log.Information(@"Migrated ALOTInstaller to ExternalTools");
+                    }
+
+                    //Migrate ME3Explorer, if found
+                    var me3explorerDir = Path.Combine(dataDir, @"ME3Explorer");
+                    if (Directory.Exists(me3explorerDir))
+                    {
+                        Log.Information(@"Migrating ME3Explorer tool");
+                        var externalToolsME3ExplorerDir = Path.Combine(dataDir, @"ExternalTools", @"ME3Explorer");
+                        Directory.CreateDirectory(Path.Combine(dataDir, @"ExternalTools"));
+                        Directory.Move(me3explorerDir, externalToolsME3ExplorerDir);
+                        Log.Information(@"Migrated ME3Explorer to ExternalTools");
+                    }
+
+                    MigratingSettings.SetDone();
+
                     Log.Information(@"Step 2: Finished settings migration");
                     // 3. CLEANUP
                     Log.Information(@"Step 3: Cleaning up");
+                    CleaningUpTask.SetInProgress();
+                    CleaningUpTask.SetDone();
                     Log.Information(@"Step 3: Cleaned up");
-
-
-
+                    Thread.Sleep(3000);
                 }
                 else
                 {
@@ -99,10 +217,11 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Log.Information(@"<<<< Exiting ME3CMMMigration Thread");
             };
             nbw.RunWorkerCompleted += (a, b) =>
-            {
-                Log.Information(@"Migration has completed.");
-                //Close();
-            };
+                    {
+                        Log.Information(@"Migration has completed.");
+                        Close();
+                    };
+            nbw.RunWorkerAsync();
         }
     }
 }
