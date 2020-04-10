@@ -228,7 +228,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             List<string> mappedReadOnlyTargets = new List<string>();
 
             //THREE WAY MERGE
-            var threeWayMergeFiles = VanillaDatabaseService.GetThreeWayMergeFiles(gameTarget, installationQueues);
+            //var threeWayMergeFiles = VanillaDatabaseService.GetThreeWayMergeFiles(gameTarget, installationQueues);
 
 
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)

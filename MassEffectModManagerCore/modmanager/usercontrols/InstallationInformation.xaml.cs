@@ -451,7 +451,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     InstalledByManagedSolution = true;
                     InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
                     //Parse MetaCMM
-                    var lines = File.ReadAllLines(metaFile).ToList();
+                    var lines = Utilities.WriteSafeReadAllLines(metaFile).ToList();
                     int i = 0;
                     //This is a weird way of doing it but it helps ensure backwards compatiblity and forwards compatibility.
                     foreach (var line in lines)

@@ -389,13 +389,6 @@ namespace MassEffectModManagerCore
                 Log.Information("Ensuring default ASI assets are present");
                 ASIManagerPanel.ExtractDefaultASIResources();
 
-                if (UpgradingFromME3CMM /*|| true*/)
-                {
-                    //Show migration window before we load the main UI
-                    Log.Information(@"Migrating from ME3CMM - showing migration dialog");
-                    new ME3CMMMigrationWindow().ShowDialog();
-                }
-
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
                 Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
                 POST_STARTUP = true; //this could be earlier but i'm not sure when crash handler actually is used, doesn't seem to be after setting it...
