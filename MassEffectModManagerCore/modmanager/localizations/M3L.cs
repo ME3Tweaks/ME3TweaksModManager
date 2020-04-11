@@ -1047,7 +1047,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_generatesNewMod = "string_tooltip_generatesNewMod";
 		public static readonly string string_compileAsANewMod = "string_compileAsANewMod";
 		public static readonly string string_or = "string_or";
-		public static readonly string string_compileIntoAnExistingMod = "string_compileIntoAnExistingMod";
+		public static readonly string string_directlyInstallIntoGame = "string_directlyInstallIntoGame";
 		public static readonly string string_thisFeatureIsNotYetAvailable = "string_thisFeatureIsNotYetAvailable";
 		public static readonly string string_tooltip_appliesMixinsToAMod = "string_tooltip_appliesMixinsToAMod";
 		public static readonly string string_compileIntoExistingMod = "string_compileIntoExistingMod";

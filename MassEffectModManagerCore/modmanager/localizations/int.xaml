@@ -1271,10 +1271,10 @@
     <system:String x:Key="string_compileAsANewMod">Compile as a new mod</system:String>
     <system:String x:Key="string_or">Or</system:String>
     <!-- as in X or Y -->
-    <system:String x:Key="string_compileIntoAnExistingMod">Compile into an existing mod</system:String>
+    <system:String x:Key="string_directlyInstallIntoGame">Directly install into game</system:String>
     <system:String x:Key="string_thisFeatureIsNotYetAvailable">This feature is not yet available.</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_appliesMixinsToAMod">Applies the Mixins to a mod you specify.\nFiles in the mod are patched if the mod already uses them.\nFiles not used by the mod are pulled from vanilla backup</system:String>
-    <system:String x:Key="string_compileIntoExistingMod">Compile into existing mod</system:String>
+    <system:String x:Key="string_compileIntoExistingMod">Install into game</system:String>
     <system:String x:Key="string_mixinLibrary">Mixin Library</system:String>
     <system:String x:Key="string_header_mixinsArePremadePatches">Mixins are premade patch files that can be stacked onto each other as long as the (decompressed) filesize does not change. Additional customizable Mixins are available on ME3Tweaks ModMaker. Mixins are currently only available for Mass Effect 3.</system:String>
     <system:String x:Key="string_availableMixins">Available Mixins</system:String>

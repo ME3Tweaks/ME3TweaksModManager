@@ -26,7 +26,7 @@ namespace ME3Explorer.Packages
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static IMEPackage OpenMEPackage(Stream stream)
+        public static IMEPackage OpenMEPackage(Stream stream, string debugSourcePath = null)
         {
             if (!initialized)
             {
@@ -47,7 +47,9 @@ namespace ME3Explorer.Packages
                 version == 512 && licenseVersion == 130 ||
                 version == 491 && licenseVersion == 1008)
             {
-                return MEConstructorStreamDelegate(stream, Mod.MEGame.Unknown);
+                var package = MEConstructorStreamDelegate(stream, Mod.MEGame.Unknown);
+                package.FileSourceForDebugging = debugSourcePath;
+                return package;
             }
             else
             {

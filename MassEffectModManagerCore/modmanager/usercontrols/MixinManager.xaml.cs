@@ -34,7 +34,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class MixinManager : MMBusyPanelBase
     {
         public ObservableCollectionExtended<Mixin> AvailableOfficialMixins { get; set; } = new ObservableCollectionExtended<Mixin>();
-        public ObservableCollectionExtended<Mod> ME3Mods { get; set; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<GameTarget> AvailableInstallTargets { get; set; } = new ObservableCollectionExtended<GameTarget>();
+        public GameTarget SelectedInstallTarget { get; set; }
         public Mixin SelectedMixin { get; set; }
         public bool OperationInProgress { get; set; }
         public long ProgressBarValue { get; set; }
@@ -109,12 +110,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand CloseCommand { get; set; }
         public ICommand ToggleSelectedMixinCommand { get; set; }
         public ICommand CompileAsNewModCommand { get; set; }
+        public ICommand InstallIntoGameCommand { get; set; }
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(ClosePanel, CanClosePanel);
             ToggleSelectedMixinCommand = new GenericCommand(ToggleSelectedMixin, MixinIsSelected);
             CompileAsNewModCommand = new GenericCommand(CompileAsNewMod, CanCompileAsNewMod);
+            InstallIntoGameCommand = new GenericCommand(CompileIntoGame, CanInstallIntoGame);
         }
+
+        private bool CanInstallIntoGame() => SelectedInstallTarget != null && !SelectedInstallTarget.ALOTInstalled;
 
         private bool CanCompileAsNewMod()
         {
@@ -161,7 +166,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Error building list
                     modpath = null;
-                    Log.Information(@"Aborting mixin install due to incompatible selection of mixins");
+                    Log.Information(@"Aborting mixin compiling due to incompatible selection of mixins");
                     return;
                 }
 
@@ -292,6 +297,183 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             nbw.RunWorkerAsync();
         }
 
+        private void CompileIntoGame()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MixinManager CompileIntoGameThread");
+            List<string> failedApplications = new List<string>();
+
+            nbw.DoWork += (a, b) =>
+            {
+                BottomLeftMessage = M3L.GetString(M3L.string_compilingMixins);
+                OperationInProgress = true;
+                //DEBUG STUFF
+#if DEBUG
+                int numCoresToApplyWith = 1;
+#else
+                var numCoresToApplyWith = Environment.ProcessorCount;
+                if (numCoresToApplyWith > 4) numCoresToApplyWith = 4; //no more than 4 as this uses a lot of memory
+#endif
+
+                var mixins = AvailableOfficialMixins.Where(x => x.UISelectedForUse).ToList();
+                MixinHandler.LoadPatchDataForMixins(mixins); //before dynamic
+                void failedApplicationCallback(string str)
+                {
+                    failedApplications.Add(str);
+                }
+                var compilingListsPerModule = MixinHandler.GetMixinApplicationList(mixins, failedApplicationCallback);
+                if (failedApplications.Any())
+                {
+                    //Error building list
+                    Log.Information(@"Aborting mixin install due to incompatible selection of mixins");
+                    return;
+                }
+
+                ProgressBarMax = mixins.Count();
+                ProgressBarValue = 0;
+                int numdone = 0;
+
+                void completedSingleApplicationCallback()
+                {
+                    var val = Interlocked.Increment(ref numdone);
+                    ProgressBarValue = val;
+                }
+
+
+                //Mixins are ready to be applied
+                Parallel.ForEach(compilingListsPerModule,
+            new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount > numCoresToApplyWith
+                    ? numCoresToApplyWith
+                    : Environment.ProcessorCount
+            }, mapping =>
+            {
+                var dlcFolderName = ModMakerCompiler.ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
+                //var outdir = Path.Combine(modpath, ModMakerCompiler.HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
+                //Directory.CreateDirectory(outdir);
+                if (mapping.Key == ModJob.JobHeader.BASEGAME)
+                {
+                    //basegame
+                    foreach (var file in mapping.Value)
+                    {
+                        try
+                        {
+                            using var vanillaPackageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
+                            //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
+                            using var decompressedStream = MEPackage.GetDecompressedPackageStream(vanillaPackageAsStream, true);
+                            decompressedStream.Position = 0;
+                            var vanillaPackage = MEPackageHandler.OpenMEPackage(decompressedStream, $@"Vanilla - {Path.GetFileName(file.Key)}");
+                            //decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");
+
+                            using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
+                                completedSingleApplicationCallback, failedApplicationCallback);
+                            Log.Information(@"Performing three way merge into game for file: " + file.Key);
+                            mixinModifiedStream.Position = 0;
+                            var modifiedPackage = MEPackageHandler.OpenMEPackage(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
+
+                            // three way merge: get target stream
+                            var targetFile = Path.Combine(MEDirectories.CookedPath(SelectedInstallTarget), Path.GetFileName(file.Key));
+                            var targetPackage = MEPackageHandler.OpenMEPackage(targetFile);
+
+                            var merged = ThreeWayPackageMerge.AttemptMerge(vanillaPackage, modifiedPackage, targetPackage);
+                            if (merged)
+                            {
+                                targetPackage.save();
+                                Log.Information("Three way merge succeeded for " + targetFile);
+                            }
+                            else
+                            {
+                                Log.Error("Could not merge three way merge into " + targetFile);
+                            }
+                            //var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                            //package.save(outfile, false); // don't compress
+                            //finalStream.WriteToFile(outfile);
+                            //File.WriteAllBytes(outfile, finalStream.ToArray());
+                        }
+                        catch (Exception e)
+                        {
+                            var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
+                            Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                            failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
+                        }
+                    }
+                }
+                else
+                {
+                    //dlc
+                    /* var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                     foreach (var file in mapping.Value)
+                     {
+                         try
+                         {
+                             using var packageAsStream =
+                                 VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
+                             using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
+                             using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
+                             CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                             finalStream.Position = 0;
+                             var package = MEPackageHandler.OpenMEPackage(finalStream);
+                             var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                             package.save(outfile, true);
+                         }
+                         catch (Exception e)
+                         {
+                             var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
+                             Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                             failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
+                         }
+
+                         //finalStream.WriteToFile(outfile);
+                     }*/
+                }
+            });
+
+                MixinHandler.FreeME3TweaksPatchData();
+                var percent = 0; //this is used to save a localization
+                BottomLeftMessage = $"Running AutoTOC on game {percent}%";
+
+                //Run autotoc
+                void tocingUpdate(int percent)
+                {
+                    BottomLeftMessage = $"Running AutoTOC on game {percent}%";
+                }
+                AutoTOC.RunTOCOnGameTarget(SelectedInstallTarget, tocingUpdate);
+
+                //Generate moddesc
+                //IniData ini = new IniData();
+                //ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                //ini[@"ModInfo"][@"game"] = @"ME3";
+                //ini[@"ModInfo"][@"modname"] = modname;
+                //ini[@"ModInfo"][@"moddev"] = App.AppVersionHR;
+                //ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_compiledFromTheFollowingMixins);
+                //ini[@"ModInfo"][@"modver"] = @"1.0";
+
+                //generateRepaceFilesMapping(ini, modpath);
+                //File.WriteAllText(Path.Combine(modpath, @"moddesc.ini"), ini.ToString());
+
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                OperationInProgress = false;
+                ClearMixinHandler();
+                if (failedApplications.Count > 0)
+                {
+                    var ld = new ListDialog(failedApplications, M3L.GetString(M3L.string_failedToApplyAllMixins), M3L.GetString(M3L.string_theFollowingMixinsFailedToApply), mainwindow);
+                    ld.ShowDialog();
+                }
+
+                /*if (modpath != null)
+                {
+                    OnClosing(new DataEventArgs(modpath));
+                }
+                else
+                {*/
+                BottomLeftMessage = "Mixins installed, maybe. Check logs";
+                //}
+            };
+            nbw.RunWorkerAsync();
+        }
+
         private void generateRepaceFilesMapping(IniData ini, string modpath)
         {
             var dirs = Directory.GetDirectories(modpath);
@@ -358,7 +540,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            ME3Mods.ReplaceAll(mainwindow.AllLoadedMods.Where(x => x.Game == Mod.MEGame.ME3));
+            AvailableInstallTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3));
+            SelectedInstallTarget = AvailableInstallTargets.FirstOrDefault();
         }
 
         public void OnSelectedMixinChanged()

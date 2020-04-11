@@ -854,7 +854,10 @@ namespace ME3Explorer.Packages
 
         public List<TalkFileME1> LocalTalkFiles { get; } = new List<TalkFileME1>();
         public object StorageTypes { get; private set; }
-
+        /// <summary>
+        /// Used to help debug packages that are loaded from streams that don't have a FilePath
+        /// </summary>
+        public string FileSourceForDebugging { get; set; }
         private void ReadLocalTLKs()
         {
             LocalTalkFiles.Clear();

@@ -16,7 +16,6 @@ using Microsoft.IO;
 using ByteSizeLib;
 using System.Runtime;
 using MassEffectModManagerCore.modmanager.localizations;
-using SQLite;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
