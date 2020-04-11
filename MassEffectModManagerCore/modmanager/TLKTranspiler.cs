@@ -44,5 +44,33 @@ namespace MassEffectModManagerCore.modmanager
             new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
             Log.Information(@"Saved TLK file: " + tlk);
         }
+
+        /// <summary>
+        /// Compiles a ME3Explorer style TLK xml
+        /// </summary>
+        /// <param name="xmlfile"></param>
+        /// <param name="rootElement"></param>
+
+        public static void CompileTLKME3Explorer(string xmlfile, XElement rootElement)
+        {
+            var rootDir = Directory.GetParent(xmlfile);
+            List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
+
+            var substrings = rootElement.Descendants(@"String");
+            var position = 0;
+            foreach (var substr in substrings)
+            {
+                var id = int.Parse(substr.Attribute(@"id").Value);
+                var data = substr.Value;
+                if (id > 0) data += '\0';
+                strings.Add(new HuffmanCompressionME2ME3.TLKEntry(id, position, data));
+                position++;
+            }
+
+            var tlk = Path.Combine(rootDir.FullName, Path.GetFileNameWithoutExtension(xmlfile) + @".tlk");
+            Log.Information(@"Saving TLK file: " + tlk);
+            new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
+            Log.Information(@"Saved TLK file: " + tlk);
+        }
     }
 }

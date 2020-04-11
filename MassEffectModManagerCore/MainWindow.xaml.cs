@@ -20,6 +20,7 @@ using AdonisUI;
 using MassEffect3.Coalesce;
 using MassEffect3.Coalesce.Xml;
 using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -2498,10 +2499,7 @@ namespace MassEffectModManagerCore
                                         Converter.ConvertToBin(files[0], dest);
                                         Log.Information(@"Compiled coalesced file");
                                     };
-                                    nbw.RunWorkerCompleted += (a, b) =>
-                                    {
-                                        backgroundTaskEngine.SubmitJobCompletion(task);
-                                    };
+                                    nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
                                     nbw.RunWorkerAsync();
                                     break;
                                 }
@@ -2519,18 +2517,20 @@ namespace MassEffectModManagerCore
                                          * Folder with same name
                                          * |-> TLK.xml files
                                          */
-                                        NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - Compile");
+                                        NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
                                         var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", "Compiling TLK file", "Compiled TLK file");
-                                        nbw.DoWork += (a, b) =>
-                                        {
-                                            TLKTranspiler.CompileTLKManifest(files[0], rootElement);
-                                        };
-                                        nbw.RunWorkerCompleted += (a, b) =>
-                                        {
-                                            backgroundTaskEngine.SubmitJobCompletion(task);
-                                        };
+                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement); };
+                                        nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
                                         nbw.RunWorkerAsync();
                                     }
+                                }
+                                else if (rootElement.Name == @"tlkFile") //ME3Explorer style
+                                {
+                                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileME3Exp");
+                                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", "Compiling TLK file", "Compiled TLK file");
+                                    nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement); };
+                                    nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                    nbw.RunWorkerAsync();
                                 }
                             }
                             catch (Exception ex)
@@ -2540,7 +2540,23 @@ namespace MassEffectModManagerCore
                         }
                         break;
                     case @".tlk":
-                        //Break down into 
+                        {
+                            //Break down into xml file
+                            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLK decompiler");
+                            var task = backgroundTaskEngine.SubmitBackgroundJob(@"TLKDecompile", "Decompiling TLK file", "Decompiled TLK file");
+                            nbw.DoWork += (a, b) =>
+                            {
+                                var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]) + @".xml");
+                                Log.Information($@"Decompiling TLK file: {files[0]} -> {dest}");
+                                var tf = new TalkFileME2ME3();
+                                tf.LoadTlkData(files[0]);
+                                tf.DumpToFile(dest);
+                                Log.Information(@"Decompiled TLK file");
+                            };
+                            nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                            nbw.RunWorkerAsync();
+
+                        }
                         break;
                 }
             }
