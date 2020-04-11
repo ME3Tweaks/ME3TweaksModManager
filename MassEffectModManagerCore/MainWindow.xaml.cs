@@ -1505,7 +1505,6 @@ namespace MassEffectModManagerCore
                             if (ME1ModsVisible && mod.Game == Mod.MEGame.ME1 || ME2ModsVisible && mod.Game == Mod.MEGame.ME2 || ME3ModsVisible && mod.Game == Mod.MEGame.ME3)
                             {
                                 VisibleFilteredMods.Add(mod);
-                                VisibleFilteredMods.Sort(x => x.ModName);
                             }
                         });
                     }
@@ -1522,6 +1521,8 @@ namespace MassEffectModManagerCore
                         //});
                     }
                 }
+
+                Application.Current.Dispatcher.Invoke(delegate { VisibleFilteredMods.Sort(x => x.ModName); });
 
                 if (modpathToHighlight != null)
                 {
