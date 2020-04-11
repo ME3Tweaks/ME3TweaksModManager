@@ -15,7 +15,10 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using System.Xml;
+using System.Xml.Linq;
 using AdonisUI;
+using MassEffect3.Coalesce;
+using MassEffect3.Coalesce.Xml;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -55,7 +58,7 @@ namespace MassEffectModManagerCore
 
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
-        private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod" };
+        private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk" };
         private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string AddTargetButtonText { get; set; } = M3L.GetString(M3L.string_addTarget);
@@ -128,7 +131,7 @@ namespace MassEffectModManagerCore
         {
             DataContext = this;
 
-            if (App.UpgradingFromME3CMM || true)
+            if (App.UpgradingFromME3CMM/* || true*/)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 //Show migration window before we load the main UI
@@ -2411,6 +2414,7 @@ namespace MassEffectModManagerCore
                 // Note that you can have more than one file.
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 string ext = Path.GetExtension(files[0]).ToLower();
+                Log.Information(@"File dropped onto interface: " + files[0]);
                 switch (ext)
                 {
                     case @".rar":
@@ -2440,6 +2444,102 @@ namespace MassEffectModManagerCore
                         {
                             LoadExternalLocalizationDictionary(files[0]);
                         }
+                        break;
+                    case @".bin":
+                        //Check for Coalesced
+                        {
+                            using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
+                            var magic = fs.ReadInt32();
+                            if (magic == 0x666D726D) //fmrm (backwards)
+                            {
+
+                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");
+                                var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedDecompile", "Decompiling Coalesced file", "Decompiled Coalesced file");
+                                nbw.DoWork += (a, b) =>
+                                {
+                                    var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]));
+                                    Log.Information($@"Deompiling coalesced file: {files[0]} -> {dest}");
+                                    Converter.ConvertToXML(files[0], dest);
+                                    Log.Information(@"Decompiled coalesced file");
+                                };
+                                nbw.RunWorkerCompleted += (a, b) =>
+                                {
+                                    backgroundTaskEngine.SubmitJobCompletion(task);
+                                };
+                                nbw.RunWorkerAsync();
+                            }
+                        }
+
+                        break;
+                    case @".xml":
+                        //Check if it's ModMaker sideload, coalesced manifest, or TLK
+                        {
+                            try
+                            {
+                                var xmldocument = XDocument.Load(files[0]);
+                                var rootElement = xmldocument.Root;
+                                if (rootElement.Name == @"ModMaker")
+                                {
+                                    //Modmaker Mod, sideload
+
+                                    break;
+                                }
+
+                                if (rootElement.Name == @"CoalesceFile")
+                                {
+                                    //Coalesced manifest
+                                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Compiler");
+                                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompile", "Compiling Coalesced file", "Compiled Coalesced file");
+                                    nbw.DoWork += (a, b) =>
+                                    {
+                                        var dest = Path.Combine(Directory.GetParent(files[0]).FullName, rootElement.Attribute(@"name").Value);
+                                        Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
+                                        Converter.ConvertToBin(files[0], dest);
+                                        Log.Information(@"Compiled coalesced file");
+                                    };
+                                    nbw.RunWorkerCompleted += (a, b) =>
+                                    {
+                                        backgroundTaskEngine.SubmitJobCompletion(task);
+                                    };
+                                    nbw.RunWorkerAsync();
+                                    break;
+                                }
+
+                                // Tankmaster's uses a capital T where ME3Explorer used lowercase t
+                                if (rootElement.Name == @"TlkFile")
+                                {
+                                    //TLK file - ensure it's the manifest one
+                                    var sourceName = rootElement.Attribute(@"source");
+                                    if (sourceName != null)
+                                    {
+                                        //This is a manifest file
+                                        /*
+                                         * Manifest File
+                                         * Folder with same name
+                                         * |-> TLK.xml files
+                                         */
+                                        NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - Compile");
+                                        var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", "Compiling TLK file", "Compiled TLK file");
+                                        nbw.DoWork += (a, b) =>
+                                        {
+                                            TLKTranspiler.CompileTLKManifest(files[0], rootElement);
+                                        };
+                                        nbw.RunWorkerCompleted += (a, b) =>
+                                        {
+                                            backgroundTaskEngine.SubmitJobCompletion(task);
+                                        };
+                                        nbw.RunWorkerAsync();
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
+                            }
+                        }
+                        break;
+                    case @".tlk":
+                        //Break down into 
                         break;
                 }
             }

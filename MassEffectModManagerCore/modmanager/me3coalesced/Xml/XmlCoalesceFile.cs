@@ -9,202 +9,212 @@ namespace MassEffect3.Coalesce.Xml
 {
     [Localizable(false)]
     public class XmlCoalesceFile : CoalesceFile
-	{
-		public XmlCoalesceFile(string source = "", string name = "", string id = "", IList<CoalesceAsset> assets = null,
-			CoalesceSettings settings = null, IList<CoalesceInclude> includes = null)
-			: base(source, name, id, assets, settings)
-		{
-			Includes = includes ?? new List<CoalesceInclude>();
-		}
+    {
+        public XmlCoalesceFile(string source = "", string name = "", string id = "", IList<CoalesceAsset> assets = null,
+            CoalesceSettings settings = null, IList<CoalesceInclude> includes = null)
+            : base(source, name, id, assets, settings)
+        {
+            Includes = includes ?? new List<CoalesceInclude>();
+        }
 
-		public string BaseUri { get; protected set; }
+        public string BaseUri { get; protected set; }
 
-		public string LogicalSourcePath { get; protected set; }
+        public string LogicalSourcePath { get; protected set; }
 
-		public string SourceDirectory { get; protected set; }
+        public string SourceDirectory { get; protected set; }
 
-		public string SourcePath { get; protected set; }
+        public string SourcePath { get; protected set; }
 
-		public IList<CoalesceInclude> Includes { get; set; }
+        public IList<CoalesceInclude> Includes { get; set; }
 
-		public static XmlCoalesceFile Load(string path)
-		{
-			if (string.IsNullOrEmpty(path))
-			{
-				throw new ArgumentNullException(nameof(path));
-			}
+        public static XmlCoalesceFile Load(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
 
-			var sourcePath = Path.GetFullPath(path);
+            var sourcePath = Path.GetFullPath(path);
 
-			if (!File.Exists(sourcePath))
-			{
-				return null;
-			}
+            if (!File.Exists(sourcePath))
+            {
+                return null;
+            }
 
-			var doc = XDocument.Load(path);
-			
-			var result = new XmlCoalesceFile
-			{
-				BaseUri = doc.BaseUri != "" ? doc.BaseUri : new Uri(sourcePath).AbsoluteUri,
-				SourcePath = sourcePath,
-				SourceDirectory = Path.GetDirectoryName(sourcePath)
-			};
+            var doc = XDocument.Load(path);
 
-			// Read settings before assets
-			result.ReadSettings(doc);
-			result.ReadAssets(doc);
+            return LoadXmlDocument(sourcePath, doc);
+        }
 
-			return result;
-		}
+        /// <summary>
+        /// Loads a coalesced file from XML that has already been parsed into an XDocument. Use to avoid double parsing the file
+        /// </summary>
+        /// <param name="sourcePath"></param>
+        /// <param name="doc"></param>
+        public static XmlCoalesceFile LoadXmlDocument(string sourcePath, XDocument doc)
+        {
+            var result = new XmlCoalesceFile
+            {
+                BaseUri = doc.BaseUri != "" ? doc.BaseUri : new Uri(sourcePath).AbsoluteUri,
+                SourcePath = sourcePath,
+                SourceDirectory = Path.GetDirectoryName(sourcePath)
+            };
 
-		public void ReadAssets(XElement element)
-		{
-			if (element == null)
-			{
-				throw new ArgumentNullException(nameof(element));
-			}
+            // Read settings before assets
+            result.ReadSettings(doc);
+            result.ReadAssets(doc);
 
-			var assetsElement = element.Element("Assets");
+            return result;
+        }
 
-			if (assetsElement == null)
-			{
-				return;
-			}
+        public void ReadAssets(XElement element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
 
-			var assets = from el in assetsElement.Elements("Asset") select el;
-			var includes = new List<CoalesceInclude>();
+            var assetsElement = element.Element("Assets");
 
-			foreach (var asset in assets)
-			{
-				var source = (string) asset.Attribute("source");
+            if (assetsElement == null)
+            {
+                return;
+            }
 
-				if (string.IsNullOrEmpty(source))
-				{
-					continue;
-				}
+            var assets = from el in assetsElement.Elements("Asset") select el;
+            var includes = new List<CoalesceInclude>();
 
-				var sourcePath = Path.Combine(SourceDirectory, source);
-				sourcePath = Path.GetFullPath(sourcePath);
+            foreach (var asset in assets)
+            {
+                var source = (string)asset.Attribute("source");
 
-				includes.Add(new CoalesceInclude(sourcePath));
-			}
+                if (string.IsNullOrEmpty(source))
+                {
+                    continue;
+                }
 
-			foreach (var include in includes)
-			{
-				var asset = XmlCoalesceAsset.Load(include.Source);
+                var sourcePath = Path.Combine(SourceDirectory, source);
+                sourcePath = Path.GetFullPath(sourcePath);
 
-				if (asset != null && !string.IsNullOrEmpty(asset.Source))
-				{
-					Assets.Add(asset);
-				}
-			}
-		}
+                includes.Add(new CoalesceInclude(sourcePath));
+            }
 
-		public void ReadAssets(XDocument doc)
-		{
-			if (doc == null)
-			{
-				throw new ArgumentNullException(nameof(doc));
-			}
+            foreach (var include in includes)
+            {
+                var asset = XmlCoalesceAsset.Load(include.Source);
 
-			ReadAssets(doc.Root);
-		}
+                if (asset != null && !string.IsNullOrEmpty(asset.Source))
+                {
+                    Assets.Add(asset);
+                }
+            }
+        }
 
-		public void ReadIncludes(XElement element)
-		{
-			if (element == null)
-			{
-				throw new ArgumentNullException(nameof(element));
-			}
+        public void ReadAssets(XDocument doc)
+        {
+            if (doc == null)
+            {
+                throw new ArgumentNullException(nameof(doc));
+            }
 
-			var includesElement = element.Element("Includes");
+            ReadAssets(doc.Root);
+        }
 
-			if (includesElement == null)
-			{
-				return;
-			}
+        public void ReadIncludes(XElement element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
 
-			var includes = from el in includesElement.Elements("Include") select el;
-			
-			foreach (var include in includes)
-			{
-				var source = (string)include.Attribute("source");
+            var includesElement = element.Element("Includes");
 
-				if (string.IsNullOrEmpty(source))
-				{
-					continue;
-				}
+            if (includesElement == null)
+            {
+                return;
+            }
 
-				var sourcePath = Path.Combine(SourceDirectory, source);
-				sourcePath = Path.GetFullPath(sourcePath);
+            var includes = from el in includesElement.Elements("Include") select el;
 
-				Includes.Add(new CoalesceInclude(sourcePath));
-			}
+            foreach (var include in includes)
+            {
+                var source = (string)include.Attribute("source");
 
-			foreach (var include in Includes)
-			{
-				var asset = XmlCoalesceAsset.Load(include.Source);
+                if (string.IsNullOrEmpty(source))
+                {
+                    continue;
+                }
 
-				if (!string.IsNullOrEmpty(asset.Source))
-				{
-					Assets.Add(asset);
-				}
-			}
-		}
+                var sourcePath = Path.Combine(SourceDirectory, source);
+                sourcePath = Path.GetFullPath(sourcePath);
 
-		public void ReadIncludes(XDocument doc)
-		{
-			if (doc == null)
-			{
-				throw new ArgumentNullException(nameof(doc));
-			}
+                Includes.Add(new CoalesceInclude(sourcePath));
+            }
 
-			ReadIncludes(doc.Root);
-		}
+            foreach (var include in Includes)
+            {
+                var asset = XmlCoalesceAsset.Load(include.Source);
 
-		public void ReadSettings(XElement element)
-		{
-			if (element == null)
-			{
-				throw new ArgumentNullException(nameof(element));
-			}
+                if (!string.IsNullOrEmpty(asset.Source))
+                {
+                    Assets.Add(asset);
+                }
+            }
+        }
 
-			var settingsElement = element.Element("Settings");
+        public void ReadIncludes(XDocument doc)
+        {
+            if (doc == null)
+            {
+                throw new ArgumentNullException(nameof(doc));
+            }
 
-			if (settingsElement == null)
-			{
-				return;
-			}
+            ReadIncludes(doc.Root);
+        }
 
-			var settings = from el in settingsElement.Elements("Setting") select el;
+        public void ReadSettings(XElement element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
 
-			foreach (var setting in settings)
-			{
-				var name = (string)setting.Attribute("name");
-				var value = (string)setting.Attribute("value");
+            var settingsElement = element.Element("Settings");
 
-				if (string.IsNullOrEmpty(name))
-				{
-					continue;
-				}
+            if (settingsElement == null)
+            {
+                return;
+            }
 
-				if (string.IsNullOrEmpty(value))
-				{
-					value = setting.Value;
-				}
+            var settings = from el in settingsElement.Elements("Setting") select el;
 
-				Settings.SetValue(name, value);
-			}
-		}
+            foreach (var setting in settings)
+            {
+                var name = (string)setting.Attribute("name");
+                var value = (string)setting.Attribute("value");
 
-		public void ReadSettings(XDocument doc)
-		{
-			if (doc == null)
-			{
-				throw new ArgumentNullException(nameof(doc));
-			}
+                if (string.IsNullOrEmpty(name))
+                {
+                    continue;
+                }
 
-			ReadSettings(doc.Root);
-		}
-	}
+                if (string.IsNullOrEmpty(value))
+                {
+                    value = setting.Value;
+                }
+
+                Settings.SetValue(name, value);
+            }
+        }
+
+        public void ReadSettings(XDocument doc)
+        {
+            if (doc == null)
+            {
+                throw new ArgumentNullException(nameof(doc));
+            }
+
+            ReadSettings(doc.Root);
+        }
+    }
 }
