@@ -207,6 +207,7 @@ namespace MassEffectModManagerCore.modmanager
         public bool IsInArchive { get; }
         public bool IsVirtualized { get; private set; }
         public string OriginalArchiveHash { get; private set; }
+        public string PostInstallToolLaunch { get; private set; }
 
         private readonly string VirtualizedIniText;
         private readonly string ArchivePath;
@@ -1333,6 +1334,10 @@ namespace MassEffectModManagerCore.modmanager
             //    UpdaterServiceBlacklistedFiles = blacklistedFiles;
             //}
             #endregion
+
+            //What tool to launch post-install
+            PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
+
 
             //Thread.Sleep(500);
             if (InstallationJobs.Count > 0)

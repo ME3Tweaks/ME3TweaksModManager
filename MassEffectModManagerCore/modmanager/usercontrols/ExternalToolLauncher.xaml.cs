@@ -321,5 +321,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.RunWorkerAsync();
         }
 
+        private static string[] SupportedToolIDs =
+        {
+            ME3Explorer,
+            EGMSettings,
+            MEM,
+            MER,
+            ALOTInstaller
+        };
+        internal static bool IsSupportedToolID(string toolId) => SupportedToolIDs.Contains(toolId);
     }
 }

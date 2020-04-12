@@ -1259,6 +1259,11 @@ namespace MassEffectModManagerCore
                     if (modInstaller.InstallationSucceeded)
                     {
                         installCompletedCallback?.Invoke(true);
+                        if (ExternalToolLauncher.IsSupportedToolID(mod.PostInstallToolLaunch))
+                        {
+                            Log.Information(@"Launching post-install tool as specified by mod: " + mod.PostInstallToolLaunch);
+                            LaunchExternalTool(mod.PostInstallToolLaunch);
+                        }
                     }
                 };
                 ShowBusyControl(modInstaller);
@@ -2498,7 +2503,7 @@ namespace MassEffectModManagerCore
                                             LoadMods(m);
                                         }
                                     };
-                                    ShowBusyControl(modmakerPanel); 
+                                    ShowBusyControl(modmakerPanel);
                                     break;
                                 }
 
