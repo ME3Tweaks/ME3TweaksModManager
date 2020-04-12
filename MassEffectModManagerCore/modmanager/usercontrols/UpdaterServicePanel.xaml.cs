@@ -411,7 +411,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 sf.lzmasize = new FileInfo(lFile).Length;
                 manifestFiles.TryAdd(x, sf);
                 var done = Interlocked.Add(ref amountHashed, sf.size);
-                CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@"{Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
+                CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@" {Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
             });
             if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
 
