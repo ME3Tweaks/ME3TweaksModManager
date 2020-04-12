@@ -464,7 +464,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
                     if (App.Current != null)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"An error occured extracting the archive file for installation:\n\n{ex.Message}\n\nThe mod may be partially installed.", "Error extracting mod", MessageBoxButton.OK, MessageBoxImage.Error); })
+                        Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"An error occured extracting the archive file for installation:\n\n{ex.Message}\n\nThe mod may be partially installed.", "Error extracting mod", MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
 
                     return;
