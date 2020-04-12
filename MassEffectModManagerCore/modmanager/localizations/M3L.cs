@@ -550,7 +550,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_logWasUnableToUpload = "string_interp_logWasUnableToUpload";
 		public static readonly string string_interp_requestTimedOutUploading = "string_interp_requestTimedOutUploading";
 		public static readonly string string_logUploadFailed = "string_logUploadFailed";
-		public static readonly string string_loguploader = "string_loguploader";
+		public static readonly string string_logsAndDiagnostics = "string_logsAndDiagnostics";
 		public static readonly string string_uploadToLogViewer = "string_uploadToLogViewer";
 		public static readonly string string_importModsFromArchiveFile = "string_importModsFromArchiveFile";
 		public static readonly string string_importMods = "string_importMods";

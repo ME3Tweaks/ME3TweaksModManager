@@ -556,7 +556,7 @@
 	<!-- 0 = error message -->
     <system:String x:Key="string_interp_requestTimedOutUploading">Anfragezeitüberschreitung beim Hochladen des Ereignisprotokolls.</system:String>
     <system:String x:Key="string_logUploadFailed">Hochladen des Ereignisprotokolls fehlgeschlagen</system:String>
-    <system:String x:Key="string_loguploader">Hochladen des Ereignisprotokolls</system:String>
+    <system:String x:Key="string_logsAndDiagnostics">Hochladen des Ereignisprotokolls</system:String>
     <system:String x:Key="string_uploadToLogViewer">Hochladen zum Ereignisprotokollanzeigedienst</system:String>
 
     <!-- Mod Archive Importer-->

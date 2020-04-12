@@ -556,7 +556,7 @@
 	<!-- 0 = error message -->
     <system:String x:Key="string_interp_requestTimedOutUploading">Превышение времени запроса при отправке лога.</system:String>
     <system:String x:Key="string_logUploadFailed">Ошибка отправки лога</system:String>
-    <system:String x:Key="string_loguploader">Загрузчик логов</system:String>
+    <system:String x:Key="string_logsAndDiagnostics">Загрузчик логов</system:String>
     <system:String x:Key="string_uploadToLogViewer">Отправить в Просмотр логов</system:String>
 
 	<!-- Mod Archive Importer -->

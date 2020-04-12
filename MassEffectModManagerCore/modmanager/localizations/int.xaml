@@ -557,7 +557,7 @@
     <!-- 0 = error message-->
     <system:String x:Key="string_interp_requestTimedOutUploading">Request timed out while uploading log.</system:String>
     <system:String x:Key="string_logUploadFailed">Log upload failed</system:String>
-    <system:String x:Key="string_loguploader">Log uploader</system:String>
+    <system:String x:Key="string_logsAndDiagnostics">Logs and Diagnostics</system:String>
     <system:String x:Key="string_uploadToLogViewer">Upload to log viewer</system:String>
 
     <!-- Mod Archive Importer-->
