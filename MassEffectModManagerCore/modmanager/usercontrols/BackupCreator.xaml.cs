@@ -297,7 +297,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         if (file.EndsWith(@".bik"))
                                         {
                                             BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                M3L.string_movies);
+                                                M3L.GetString(M3L.string_movies));
                                         }
                                         else if (new FileInfo(file).Length > 52428800)
                                         {
@@ -307,7 +307,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         else
                                         {
                                             BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                M3L.string_basegame);
+                                                M3L.GetString(M3L.string_basegame));
                                         }
                                     }
                                 }
