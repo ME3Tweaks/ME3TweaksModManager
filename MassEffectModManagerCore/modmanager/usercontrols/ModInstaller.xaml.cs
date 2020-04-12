@@ -67,7 +67,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NO_RESULT_CODE,
             INSTALL_FAILED_MALFORMED_RCW_FILE,
             INSTALL_ABORTED_NOT_ENOUGH_SPACE,
-            INSTALL_FAILED_BAD_ME2_COALESCED
+            INSTALL_FAILED_BAD_ME2_COALESCED,
+            INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION
         }
 
         public string Action { get; set; }
@@ -414,7 +415,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Direct copy
                 Log.Information($@"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
 
-                
+
 
                 CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
             }
@@ -448,7 +449,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
                 };
-                ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
+                try
+                {
+                    ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Error extracting files: " + ex.Message);
+                    Crashes.TrackError(ex, new Dictionary<string, string>()
+                    {
+                        {"Mod name", ModBeingInstalled.ModName },
+                        {"Filename", ModBeingInstalled.Archive.FileName },
+                    });
+                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
+                    if (App.Current != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"An error occured extracting the archive file for installation:\n\n{ex.Message}\n\nThe mod may be partially installed.", "Error extracting mod", MessageBoxButton.OK, MessageBoxImage.Error); })
+                    }
+
+                    return;
+                }
             }
 
             //Write MetaCMM
