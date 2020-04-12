@@ -25,6 +25,8 @@ using System.Threading;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.windows;
+using MassEffectModManagerCore.gamefileformats.sfar;
+using System.Diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -38,6 +40,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public GameTarget SelectedInstallTarget { get; set; }
         public Mixin SelectedMixin { get; set; }
         public bool OperationInProgress { get; set; }
+
         public long ProgressBarValue { get; set; }
         public long ProgressBarMax { get; set; } = 100; //default
         public string BottomLeftMessage { get; set; } = M3L.GetString(M3L.string_selectMixinsToCompile);
@@ -294,6 +297,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     BottomLeftMessage = M3L.GetString(M3L.string_selectMixinsToCompile);
                 }
             };
+            CompilePanelButton.IsOpen = false;
             nbw.RunWorkerAsync();
         }
 
@@ -367,7 +371,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                             using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                 completedSingleApplicationCallback, failedApplicationCallback);
-                            Log.Information(@"Performing three way merge into game for file: " + file.Key);
                             mixinModifiedStream.Position = 0;
                             var modifiedPackage = MEPackageHandler.OpenMEPackage(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
 
@@ -401,30 +404,71 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     //dlc
-                    /* var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
-                     foreach (var file in mapping.Value)
-                     {
-                         try
-                         {
-                             using var packageAsStream =
-                                 VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                             using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
-                             using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
-                             CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
-                             finalStream.Position = 0;
-                             var package = MEPackageHandler.OpenMEPackage(finalStream);
-                             var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                             package.save(outfile, true);
-                         }
-                         catch (Exception e)
-                         {
-                             var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                             Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
-                             failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
-                         }
+                    var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                    var targetCookedPCDir = Path.Combine(MEDirectories.DLCPath(SelectedInstallTarget), dlcFolderName, @"CookedPCConsole");
+                    var sfar = mapping.Key == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(SelectedInstallTarget) : Path.Combine(targetCookedPCDir, @"Default.sfar");
+                    bool unpacked = new FileInfo(sfar).Length == 32;
+                    DLCPackage targetDLCPackage = unpacked ? null : new DLCPackage(sfar); //cache SFAR target
 
-                         //finalStream.WriteToFile(outfile);
-                     }*/
+                    foreach (var file in mapping.Value)
+                    {
+                        try
+                        {
+                            using var vanillaPackageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
+                            using var decompressedStream = MEPackage.GetDecompressedPackageStream(vanillaPackageAsStream);
+                            decompressedStream.Position = 0;
+                            var vanillaPackage = MEPackageHandler.OpenMEPackage(decompressedStream, $@"VanillaDLC - {Path.GetFileName(file.Key)}");
+                            using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
+                            mixinModifiedStream.Position = 0;
+                            var modifiedPackage = MEPackageHandler.OpenMEPackage(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
+
+                            // three way merge: get target stream
+                            // must see if DLC is unpacked first
+
+                            MemoryStream targetFileStream = null;
+
+                            //Packed
+                            if (unpacked)
+                            {
+                                targetFileStream = new MemoryStream(File.ReadAllBytes(Path.Combine(targetCookedPCDir, file.Key)));
+                            }
+                            else
+                            {
+                                targetFileStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, Path.GetFileName(file.Key), forcedDLC: targetDLCPackage);
+                            }
+
+                            var targetPackage = MEPackageHandler.OpenMEPackage(targetFileStream, $@"Target package {dlcFolderName} - {file.Key}, from SFAR: {unpacked}");
+
+                            var merged = ThreeWayPackageMerge.AttemptMerge(vanillaPackage, modifiedPackage, targetPackage);
+                            if (merged)
+                            {
+                                if (unpacked)
+                                {
+                                    targetPackage.save();
+                                    Log.Information("Three way merge succeeded for " + targetPackage.FilePath);
+                                }
+                                else
+                                {
+                                    var finalSTream = targetPackage.saveToStream();
+                                    targetDLCPackage.ReplaceEntry(finalSTream.ToArray(), targetDLCPackage.FindFileEntry(Path.GetFileName(file.Key)));
+                                    Log.Information("Three way merge succeeded for " + targetPackage.FileSourceForDebugging);
+
+                                }
+                            }
+                            else
+                            {
+                                Log.Error("Could not merge three way merge into " + targetFileStream);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
+                            Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                            failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
+                        }
+
+                        //finalStream.WriteToFile(outfile);
+                    }
                 }
             });
 
@@ -453,24 +497,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             };
             nbw.RunWorkerCompleted += (a, b) =>
-            {
-                OperationInProgress = false;
-                ClearMixinHandler();
-                if (failedApplications.Count > 0)
                 {
-                    var ld = new ListDialog(failedApplications, M3L.GetString(M3L.string_failedToApplyAllMixins), M3L.GetString(M3L.string_theFollowingMixinsFailedToApply), mainwindow);
-                    ld.ShowDialog();
-                }
+                    OperationInProgress = false;
+                    ClearMixinHandler();
+                    if (failedApplications.Count > 0)
+                    {
+                        var ld = new ListDialog(failedApplications, M3L.GetString(M3L.string_failedToApplyAllMixins), M3L.GetString(M3L.string_theFollowingMixinsFailedToApply), mainwindow);
+                        ld.ShowDialog();
+                    }
 
-                /*if (modpath != null)
-                {
-                    OnClosing(new DataEventArgs(modpath));
-                }
-                else
-                {*/
-                BottomLeftMessage = "Mixins installed, maybe. Check logs";
-                //}
-            };
+                    /*if (modpath != null)
+                    {
+                        OnClosing(new DataEventArgs(modpath));
+                    }
+                    else
+                    {*/
+                    BottomLeftMessage = "Mixins installed, maybe. Check logs";
+                    //}
+                };
+            CompilePanelButton.IsOpen = false;
             nbw.RunWorkerAsync();
         }
 

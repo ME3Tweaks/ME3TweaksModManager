@@ -26,7 +26,7 @@ namespace ME3Explorer.Packages
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static IMEPackage OpenMEPackage(Stream stream, string debugSourcePath = null)
+        public static MEPackage OpenMEPackage(Stream stream, string debugSourcePath = null)
         {
             if (!initialized)
             {
@@ -57,7 +57,7 @@ namespace ME3Explorer.Packages
             }
         }
 
-        public static IMEPackage OpenMEPackage(string pathToFile)
+        public static MEPackage OpenMEPackage(string pathToFile)
         {
             if (!initialized)
             {

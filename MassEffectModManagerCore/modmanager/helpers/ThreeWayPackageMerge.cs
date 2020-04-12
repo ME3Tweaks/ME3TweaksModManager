@@ -10,11 +10,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
 {
     public static class ThreeWayPackageMerge
     {
-        public static bool AttemptMerge(IMEPackage vanillaPackage, IMEPackage modifiedVanillaPackage, IMEPackage targetPackage)
+        public static bool AttemptMerge(MEPackage vanillaPackage, MEPackage modifiedVanillaPackage, MEPackage targetPackage)
         {
             PackageDelta vanillaToModifiedDelta = PackageDelta.CalculateDelta(vanillaPackage, modifiedVanillaPackage);
             PackageDelta vanillaToTargetDelta = PackageDelta.CalculateDelta(vanillaPackage, targetPackage);
-            string loggingPrefix = Path.GetFileName(targetPackage.FilePath);
+            string loggingPrefix = targetPackage.FilePath == null ? targetPackage.FileSourceForDebugging : Path.GetFileName(targetPackage.FilePath);
             //Check merge conditions
             var nameConflicts = vanillaToModifiedDelta.NameDeltas.Keys.Intersect(vanillaToTargetDelta.NameDeltas.Keys).ToList();
             var importConflicts = vanillaToModifiedDelta.ImportDeltas.Keys.Intersect(vanillaToTargetDelta.ImportDeltas.Keys).ToList();

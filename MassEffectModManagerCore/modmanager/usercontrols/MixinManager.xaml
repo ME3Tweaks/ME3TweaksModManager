@@ -5,7 +5,7 @@
     <DockPanel MaxWidth="700">
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
             <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Command="{Binding CloseCommand}" Padding="7,4" DockPanel.Dock="Right" />
-            <xctk:DropDownButton MinWidth="70" Margin="5,0,0,0" Content="{DynamicResource string_compile}" IsEnabled="{Binding AtLeastOneMixinSelected}" Padding="7,4" DockPanel.Dock="Right">
+            <xctk:DropDownButton Name="CompilePanelButton" MinWidth="70" Margin="5,0,0,0" Content="{DynamicResource string_compile}" IsEnabled="{Binding AtLeastOneMixinSelected}" Padding="7,4" DockPanel.Dock="Right">
                 <xctk:DropDownButton.DropDownContent>
                     <StackPanel Width="400">
                         <!-- New mod -->
@@ -20,7 +20,7 @@
                             <!-- Install into game -->
                             <TextBlock Text="{DynamicResource string_directlyInstallIntoGame}" FontWeight="Bold"/>
                             <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" 
-                                      IsEnabled="{Binding CompileInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
+                                      IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
                                       ItemsSource="{Binding AvailableInstallTargets}" SelectedItem="{Binding SelectedInstallTarget}" 
                                       HorizontalContentAlignment="Stretch"  ItemTemplate="{StaticResource TargetSelectorTemplate}" 
                                       ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
