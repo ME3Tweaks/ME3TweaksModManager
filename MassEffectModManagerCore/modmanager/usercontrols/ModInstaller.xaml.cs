@@ -31,7 +31,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ModInstaller : MMBusyPanelBase
     {
-        public ObservableCollectionExtended<object> AlternateOptions { get; } = new ObservableCollectionExtended<object>();
+        public ObservableCollectionExtended<AlternateOption> AlternateOptions { get; } = new ObservableCollectionExtended<AlternateOption>();
 
         public bool InstallationSucceeded { get; private set; }
         public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
@@ -1031,6 +1031,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 AlternateOptions.AddRange(job.AlternateFiles);
             }
 
+            SortOptions();
+
             foreach (object o in AlternateOptions)
             {
                 if (o is AlternateDLC altdlc)
@@ -1050,6 +1052,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Just start installing mod
                 BeginInstallingMod();
             }
+        }
+
+        private void SortOptions()
+        {
+            List<AlternateOption> newOptions = new List<AlternateOption>();
+            newOptions.AddRange(AlternateOptions.Where(x => x.IsAlways));
+            newOptions.AddRange(AlternateOptions.Where(x => x is ReadOnlyOption));
+            newOptions.AddRange(AlternateOptions.Where(x => !x.IsAlways && !(x is ReadOnlyOption)));
+            AlternateOptions.ReplaceAll(newOptions);
         }
 
         protected override void OnClosing(DataEventArgs e)

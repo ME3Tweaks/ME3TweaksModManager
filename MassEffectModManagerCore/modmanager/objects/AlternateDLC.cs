@@ -12,7 +12,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
-    public class AlternateDLC : INotifyPropertyChanged
+    public class AlternateDLC : AlternateOption, INotifyPropertyChanged
     {
         public enum AltDLCOperation
         {
@@ -37,21 +37,16 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public AltDLCCondition Condition;
         public AltDLCOperation Operation;
-        public bool CheckedByDefault { get; }
-        public bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
-        public double UIOpacity => (!UIIsSelectable) ? .5 : 1;
-        public bool UIRequired => !IsManual && IsSelected;
-        public bool UINotApplicable => (!IsManual && !IsSelected) || !UIIsSelectable;
-        public bool UIIsSelectable { get; set; }
+       
+
+
         /// <summary>
         /// Requirements for this manual option to be able to be picked
         /// </summary>
         public string[] DLCRequirementsForManual { get; }
         public string ApplicableAutoText { get; }
-        public string GroupName { get; }
         public string NotApplicableAutoText { get; }
-        public string FriendlyName { get; private set; }
-        public string Description { get; private set; }
+        public override bool IsAlways => false; //AlternateDLC doesn't support this
         public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
@@ -288,6 +283,8 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool IsSelected { get; set; }
         public string[] MultiListSourceFiles { get; }
         public string MultiListRootPath { get; }
+
+        public override bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
 
         internal bool HasRelativeFiles()
         {

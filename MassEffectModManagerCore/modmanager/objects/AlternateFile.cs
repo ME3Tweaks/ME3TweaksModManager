@@ -11,7 +11,7 @@ using Serilog;
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
-    public class AlternateFile : INotifyPropertyChanged
+    public class AlternateFile : AlternateOption, INotifyPropertyChanged
     {
         public enum AltFileOperation
         {
@@ -27,6 +27,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             INVALID_CONDITION,
             COND_MANUAL,
+            COND_ALWAYS,
             COND_DLC_PRESENT,
             COND_DLC_NOT_PRESENT
         }
@@ -34,15 +35,10 @@ namespace MassEffectModManagerCore.modmanager.objects
         public AltFileCondition Condition;
         public AltFileOperation Operation;
 
-        public bool CheckedByDefault { get; }
-        public bool IsManual => Condition == AltFileCondition.COND_MANUAL;
-        public double UIOpacity => (!IsManual && !IsSelected) ? .5 : 1;
-        public bool UIRequired => !IsManual && IsSelected;
-        public bool UINotApplicable => !IsManual && !IsSelected;
-
-        public string GroupName { get; }
-        public string FriendlyName { get; private set; }
-        public string Description { get; private set; }
+        public override bool IsManual => Condition == AltFileCondition.COND_MANUAL;
+        public override bool IsAlways => Condition == AltFileCondition.COND_ALWAYS;
+        public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
+        public override bool UINotApplicable => (!IsManual && !IsSelected) && !IsAlways;
         public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
@@ -334,16 +330,19 @@ namespace MassEffectModManagerCore.modmanager.objects
             ValidAlternate = true;
         }
 
-        public bool IsSelected { get; set; }
         public void SetupInitialSelection(GameTarget target)
         {
             IsSelected = CheckedByDefault; //Reset
-            if (Condition == AltFileCondition.COND_MANUAL)
+            if (IsAlways)
+            {
+                IsSelected = true;
+                return;
+            }
+            if (IsManual)
             {
                 IsSelected = CheckedByDefault;
                 return;
             }
-            if (Condition == AltFileCondition.COND_MANUAL) return;
             var installedDLC = MEDirectories.GetInstalledDLC(target);
             switch (Condition)
             {
