@@ -1038,7 +1038,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ini[@"ModInfo"][@"game"] = @"ME3";
             ini[@"ModInfo"][@"modname"] = modName;
             ini[@"ModInfo"][@"moddev"] = modDev;
-            ini[@"ModInfo"][@"moddesc"] = modDescription;
+            ini[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(modDescription);
             ini[@"ModInfo"][@"modver"] = modVersion;
             ini[@"ModInfo"][@"modid"] = code.ToString();
             ini[@"ModInfo"][@"compiledagainst"] = modmakerServerVer;
