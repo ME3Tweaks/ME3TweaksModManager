@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             get
             {
-                if (GameSource == null) return null;
+                if (GameSource == null) return @"/images/unknown.png";
                 if (GameSource.Contains(@"Steam")) return @"/images/steam.png";
                 if (GameSource.Contains(@"Origin")) return @"/images/origin.png";
                 if (GameSource.Contains(@"DVD")) return @"/images/dvd.png";
@@ -67,6 +67,9 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
+        /// <summary>
+        /// Determines if this gametarget can be chosen in dropdowns
+        /// </summary>
         public bool Selectable { get; internal set; } = true;
         public string ALOTVersion { get; private set; }
         public bool IsCustomOption { get; set; } = false;

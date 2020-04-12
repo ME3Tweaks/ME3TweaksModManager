@@ -24,6 +24,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class LogUploader : MMBusyPanelBase
     {
         public bool UploadingLog { get; private set; }
+        public string CollectionStatusMessage { get; set; }
         public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
         public ObservableCollectionExtended<GameTarget> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTarget>();
@@ -40,10 +41,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AvailableLogs.ClearEx();
             var directory = new DirectoryInfo(App.LogDir);
             var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
+            AvailableLogs.Add(new LogItem("Select an application log") { Selectable = false });
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
             SelectedLog = AvailableLogs.FirstOrDefault();
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
-            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, "Select a game target to generate diagnostics for (optional)", false) { Selectable = false });
+            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, "Select a game target to generate diagnostics for", false));
             DiagnosticTargets.AddRange(targets);
             SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
             //if (LogSelector_ComboBox.Items.Count > 0)
@@ -85,8 +87,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"LogUpload");
             bw.DoWork += (a, b) =>
             {
-                Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
-                string logUploadText = LogCollector.CollectLogs(SelectedLog.filepath);
+                void updateStatusCallback(string status)
+                {
+                    CollectionStatusMessage = status;
+                }
+                string logUploadText = "";
+                if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown)
+                {
+                    Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
+                    logUploadText += LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, updateStatusCallback);
+                }
+
+                if (SelectedLog != null && SelectedLog.Selectable)
+                {
+                    Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
+                    logUploadText += LogCollector.CollectLogs(SelectedLog.filepath);
+                }
+
                 if (logUploadText != null)
                 {
                     var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logUploadText));
@@ -166,10 +183,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.RunWorkerAsync();
         }
 
-        private bool CanUploadLog()
-        {
-            return true;
-        }
+        private bool CanUploadLog() => !UploadingLog && ((SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown) || (SelectedLog != null && SelectedLog.Selectable));
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -187,6 +201,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public class LogItem
         {
+            public bool Selectable { get; set; } = true;
             public string filepath;
             public LogItem(string filepath)
             {
@@ -195,6 +210,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public override string ToString()
             {
+                if (!Selectable) return filepath;
                 return Path.GetFileName(filepath) + @" - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
             }
         }

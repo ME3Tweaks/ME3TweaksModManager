@@ -14,7 +14,7 @@
         <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
-        <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
+        <converters:BootTargetSourceVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
     </UserControl.Resources>
     <StackPanel>
         <TextBlock Text="{DynamicResource string_Backup}" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
