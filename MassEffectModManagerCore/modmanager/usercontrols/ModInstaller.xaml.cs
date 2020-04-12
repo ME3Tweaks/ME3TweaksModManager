@@ -613,14 +613,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Remove items
                     foreach (var itemToDelete in rcwS.KeysToDelete)
                     {
-                        for (int i = section.Entries.Count - 1; i > 0; i--)
+                        bool deletedSomething = false;
+                        for (int i = section.Entries.Count - 1; i >= 0; i--)
                         {
                             var entry = section.Entries[i];
                             if (entry.Key == itemToDelete.Key && entry.Value == itemToDelete.Value) //case sensitive
                             {
                                 CLog.Information($@"Removing ini entry {entry.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                                 section.Entries.RemoveAt(i);
+                                deletedSomething = true;
                             }
+                        }
+                        if (!deletedSomething)
+                        {
+                            Log.Warning($@"Did not find anything to remove for key {itemToDelete.Key} with value {itemToDelete.Value}");
                         }
                     }
 
