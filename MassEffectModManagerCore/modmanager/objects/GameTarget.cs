@@ -33,6 +33,18 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string TargetPath { get; }
         public bool RegistryActive { get; set; }
         public string GameSource { get; private set; }
+
+        public string TargetBootIcon
+        {
+            get
+            {
+                if (GameSource == null) return null;
+                if (GameSource.Contains(@"Steam")) return @"/images/steam.png";
+                if (GameSource.Contains(@"Origin")) return @"/images/origin.png";
+                if (GameSource.Contains(@"DVD")) return @"/images/dvd.png";
+                return @"/images/unknown.png";
+            }
+        }
         public bool Supported => GameSource != null;
         public bool IsPolishME1 { get; private set; }
         public Brush BackgroundColor

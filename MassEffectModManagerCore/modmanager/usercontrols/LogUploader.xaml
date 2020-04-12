@@ -24,19 +24,25 @@
             <Button Content="{DynamicResource string_uploadToLogViewer}" Command="{Binding UploadLogCommand}" Width="170" HorizontalAlignment="Right" />
         </StackPanel>
         <StackPanel>
-
+            <TextBlock Text="Mod Manager application log" FontSize="14" FontWeight="Bold"/>
+            <TextBlock Text="The application log details a Mod Manager session and can be used by ME3Tweaks to debug the application." TextWrapping="Wrap"/>
             <ComboBox Grid.Column="0" Grid.ColumnSpan="2" 
                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
                       SelectedItem="{Binding SelectedLog}" 
                       ItemsSource="{Binding AvailableLogs}"/>
 
 
+            <TextBlock Text="Game diagnostic" FontSize="14" FontWeight="Bold" Margin="0,10,0,0"/>
+            <TextBlock Text="A game diagnostic collects game information including data on ALOT status, installed DLC, game version, crash logs (if any), and more. If you are having an issue in-game, please select the game you are having an issue with." TextWrapping="Wrap"/>
             <ComboBox ItemsSource="{Binding DiagnosticTargets}" 
                           SelectedItem="{Binding SelectedDiagnosticTarget}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" 
                           HorizontalContentAlignment="Stretch" IsEditable="False" 
                           Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
                           ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
                           ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+
+            <TextBlock Text="Share the resulting link to your log/diagnostic with your recipient." TextWrapping="Wrap" Margin="0,5"/>
+
         </StackPanel>
     </DockPanel>
 </local:MMBusyPanelBase>

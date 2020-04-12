@@ -44,6 +44,7 @@
     <None Remove="bundleddlls\sevenzipwrapper.dll" />
     <None Remove="bundleddlls\zlibwrapper.dll" />
     <None Remove="images\darktheme.png" />
+    <None Remove="images\dvd.png" />
     <None Remove="images\gameicons\ME1_48.ico" />
     <None Remove="images\gameicons\ME2_48.ico" />
     <None Remove="images\gameicons\ME3_48.ico" />
@@ -54,7 +55,9 @@
     <None Remove="images\modmaker.png" />
     <None Remove="images\nexusmods_scenethemed.png" />
     <None Remove="images\origin.png" />
+    <None Remove="images\steam.png" />
     <None Remove="images\terminal.png" />
+    <None Remove="images\unknown.png" />
     <None Remove="images\windowicon.png" />
     <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
     <None Remove="modmanager\asi\manifest.xml" />
@@ -106,6 +109,8 @@
     <None Remove="updater\ME3TweaksUpdater.exe" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\dvd.png" />
+    <Resource Include="images\steam.png" />
     <Resource Include="images\terminal.png" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +120,7 @@
     <Resource Include="images\me3tweaks.png" />
     <Resource Include="images\modmaker.png" />
     <Resource Include="images\nexusmods_scenethemed.png" />
+    <Resource Include="images\unknown.png" />
     <Resource Include="images\windowicon.png" />
   </ItemGroup>
 

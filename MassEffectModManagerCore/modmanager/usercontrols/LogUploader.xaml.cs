@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
             SelectedLog = AvailableLogs.FirstOrDefault();
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
-            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, "Select a game target to generate diagnostics for", false) { Selectable = false });
+            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, "Select a game target to generate diagnostics for (optional)", false) { Selectable = false });
             DiagnosticTargets.AddRange(targets);
             SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
             //if (LogSelector_ComboBox.Items.Count > 0)

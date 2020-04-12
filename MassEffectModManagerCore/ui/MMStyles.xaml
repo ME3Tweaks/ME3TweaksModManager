@@ -14,8 +14,8 @@
     <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
-            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
-            <Image DockPanel.Dock="Left" Source="/images/origin.png" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
+            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Selectable, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
             <StackPanel ToolTip="This target has ALOT texture mod installed."  DockPanel.Dock="Right" Orientation="Horizontal"  Margin="3,0,0,0" Visibility="{Binding ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
                 <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
                 <TextBlock Text="{Binding ALOTVersion}"/>
