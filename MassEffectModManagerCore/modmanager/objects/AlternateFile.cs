@@ -11,7 +11,7 @@ using Serilog;
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
-    public class AlternateFile : AlternateOption, INotifyPropertyChanged
+    public class AlternateFile : AlternateOption
     {
         public enum AltFileOperation
         {
@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public override bool IsManual => Condition == AltFileCondition.COND_MANUAL;
         public override bool IsAlways => Condition == AltFileCondition.COND_ALWAYS;
         public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
-        public override bool UINotApplicable => (!IsManual && !IsSelected) && !IsAlways;
+        public override bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
         public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
@@ -78,11 +78,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool ValidAlternate;
         public string LoadFailedReason;
         public string MultiMappingFile;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public string ApplicableAutoText { get; }
         public string NotApplicableAutoText { get; }
+        public override bool UIIsSelectable
+        {
+            get => (!IsAlways && !UIRequired && !UINotApplicable) || IsManual;
+            set { } //you can't set these for altfiles
+        }
+
 
         public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
         {
@@ -340,7 +343,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             if (IsManual)
             {
-                IsSelected = CheckedByDefault;
+                IsSelected = CheckedByDefault;         
                 return;
             }
             var installedDLC = MEDirectories.GetInstalledDLC(target);

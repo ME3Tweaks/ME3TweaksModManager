@@ -12,7 +12,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
-    public class AlternateDLC : AlternateOption, INotifyPropertyChanged
+    public class AlternateDLC : AlternateOption
     {
         public enum AltDLCOperation
         {
@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public AltDLCCondition Condition;
         public AltDLCOperation Operation;
-       
+
 
 
         /// <summary>
@@ -60,8 +60,6 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool ValidAlternate;
         public string LoadFailedReason;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
         {
@@ -280,11 +278,27 @@ namespace MassEffectModManagerCore.modmanager.objects
             ValidAlternate = true;
         }
 
-        public bool IsSelected { get; set; }
+        //public bool IsSelected { get; set; }
         public string[] MultiListSourceFiles { get; }
         public string MultiListRootPath { get; }
 
         public override bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
+
+        public override bool UIIsSelectable { get; set; }
+
+        public override bool UINotApplicable
+        {
+            get
+            {
+                if (IsManual)
+                {
+                    return !UIIsSelectable; //SetupInitialSelection() will set this. If it's false, it means this is not applicable, so set UI to reflect that
+                } else
+                {
+                    return !IsSelected;
+                }
+            }
+        }
 
         internal bool HasRelativeFiles()
         {
@@ -305,7 +319,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var dlc = MEDirectories.GetInstalledDLC(target);
                     UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
                 }
-                else
+                else //TODO: FILE LEVEL CHECKS FOR ALOV
                 {
                     UIIsSelectable = true;
                 }
@@ -329,7 +343,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                     IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
             }
-            UIIsSelectable = IsSelected; //autos
+            UIIsSelectable = false; //autos
+            //IsSelected; //autos
         }
     }
 }

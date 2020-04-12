@@ -16,6 +16,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         public override double UIOpacity => 1;
         public override bool UIRequired => false;
         public override bool UINotApplicable => false;
+
+        public override bool UIIsSelectable { get => true; set { } }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

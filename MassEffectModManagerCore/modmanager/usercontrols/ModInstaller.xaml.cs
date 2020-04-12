@@ -926,6 +926,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (af.GroupName != null && af.IsSelected) return; //Cannot deselect group
                     af.IsSelected = !af.IsSelected;
+                    Debug.WriteLine("Is selected: " + af.IsSelected);
                 }
                 else if (dp.DataContext is ReadOnlyOption ro)
                 {

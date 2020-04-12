@@ -26,6 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool UploadingLog { get; private set; }
         public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
+        public ObservableCollectionExtended<GameTarget> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public LogUploader()
         {
             DataContext = this;
@@ -40,15 +41,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var directory = new DirectoryInfo(App.LogDir);
             var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
-            if (LogSelector_ComboBox.Items.Count > 0)
-            {
-                LogSelector_ComboBox.SelectedIndex = 0;
-            }
+            SelectedLog = AvailableLogs.FirstOrDefault();
+            var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
+            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, "Select a game target to generate diagnostics for", false) { Selectable = false });
+            DiagnosticTargets.AddRange(targets);
+            SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
+            //if (LogSelector_ComboBox.Items.Count > 0)
+            //{
+            //    LogSelector_ComboBox.SelectedIndex = 0;
+            //}
         }
 
         public ICommand UploadLogCommand { get; set; }
         public ICommand CancelUploadCommand { get; set; }
         public LogItem SelectedLog { get; set; }
+        public GameTarget SelectedDiagnosticTarget { get; set; }
 
         private void LoadCommands()
         {
@@ -161,7 +168,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanUploadLog()
         {
-            return LogSelector_ComboBox.SelectedItem != null && !UploadingLog;
+            return true;
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)

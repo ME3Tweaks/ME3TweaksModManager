@@ -5,32 +5,38 @@
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+                       xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:fa5="http://schemas.fontawesome.com/icons/" 
-                       xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" mc:Ignorable="d" Width="300">
+                       xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" mc:Ignorable="d" Width="500">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
-    <Grid Margin="5,5,5,5">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" TextAlignment="Center" Text="{DynamicResource string_logsAndDiagnostics}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="2"></TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding TopText, FallbackValue=Select a log to view on log viewing service}" TextAlignment="Center"></TextBlock>
-        <ComboBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Name="LogSelector_ComboBox" SelectedItem="{Binding SelectedLog}" ItemsSource="{Binding AvailableLogs}" Margin="0,5"/>
+    <DockPanel Margin="5,5,5,5">
+        <TextBlock DockPanel.Dock="Top" TextAlignment="Center" Text="{DynamicResource string_logsAndDiagnostics}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="2"></TextBlock>
+        <TextBlock DockPanel.Dock="Top" Text="Select what data to collect" TextAlignment="Center"/>
 
 
 
-        <Button Grid.Row="3" Grid.Column="1" Content="{DynamicResource string_uploadToLogViewer}" Command="{Binding UploadLogCommand}" Width="170" HorizontalAlignment="Right" />
-        <Button Grid.Row="3" Grid.Column="0" Content="{DynamicResource string_cancel}" Command="{Binding CancelUploadCommand}" Width="100" HorizontalAlignment="Left" />
-        <ProgressBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Height="14" Margin="0,8,0,0" IsIndeterminate="True" Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}}" />
-    </Grid>
+        <ProgressBar DockPanel.Dock="Bottom" Height="12" Margin="0,3,0,0" IsIndeterminate="True" Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{DynamicResource string_cancel}" Command="{Binding CancelUploadCommand}" Width="100" HorizontalAlignment="Left" Margin="5,0"/>
+            <Button Content="{DynamicResource string_uploadToLogViewer}" Command="{Binding UploadLogCommand}" Width="170" HorizontalAlignment="Right" />
+        </StackPanel>
+        <StackPanel>
+
+            <ComboBox Grid.Column="0" Grid.ColumnSpan="2" 
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
+                      SelectedItem="{Binding SelectedLog}" 
+                      ItemsSource="{Binding AvailableLogs}"/>
+
+
+            <ComboBox ItemsSource="{Binding DiagnosticTargets}" 
+                          SelectedItem="{Binding SelectedDiagnosticTarget}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" 
+                          HorizontalContentAlignment="Stretch" IsEditable="False" 
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
+                          ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
+                          ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+        </StackPanel>
+    </DockPanel>
 </local:MMBusyPanelBase>
