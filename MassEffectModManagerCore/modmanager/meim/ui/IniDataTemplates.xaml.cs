@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectIniModder.ui
 {
@@ -34,19 +35,24 @@ namespace MassEffectIniModder.ui
 
         public void Button_ResetToDefault_Click(object sender, EventArgs e)
         {
-            ListViewItem lvi = GetParent((Button)sender);
-            IniPropertyMaster property = (IniPropertyMaster)lvi.DataContext;
-            if (property is IniPropertyBool)
+            if ((sender as Button)?.DataContext is IniPropertyMaster property)
             {
-                var prop = property as IniPropertyBool;
-                prop.CurrentSelectedBoolIndex = bool.Parse(prop.OriginalValue) ? 0 : 1;
-            } else if (property is IniPropertyEnum)
+                if (property is IniPropertyBool bprop)
+                {
+                    bprop.CurrentSelectedBoolIndex = bool.Parse(bprop.OriginalValue) ? 0 : 1;
+                }
+                else if (property is IniPropertyEnum eprop)
+                {
+                    eprop.CurrentSelectedIndex = 0;
+                }
+                else if (property is IniPropertyInt || property is IniPropertyFloat)
+                {
+                    property.CurrentValue = property.OriginalValue;
+                }
+            }
+            else
             {
-                var prop = property as IniPropertyEnum;
-                prop.CurrentSelectedIndex = 0;
-            } else if (property is IniPropertyInt || property is IniPropertyFloat)
-            {
-                property.CurrentValue = property.OriginalValue;
+                Crashes.TrackError(new Exception(@"MEIM: LVI was null on ResetToDefault. Sender name: " + (sender as Button)?.Name));
             }
         }
 
