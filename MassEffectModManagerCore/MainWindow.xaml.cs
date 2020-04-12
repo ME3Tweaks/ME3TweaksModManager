@@ -2281,6 +2281,7 @@ namespace MassEffectModManagerCore
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
+            if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings;
             LaunchExternalTool(tool);
         }
 
@@ -2483,7 +2484,21 @@ namespace MassEffectModManagerCore
                                 if (rootElement.Name == @"ModMaker")
                                 {
                                     //Modmaker Mod, sideload
+                                    var modmakerPanel = new ModMakerPanel()
+                                    {
+                                        LocalFileOption = true,
+                                        LocalFilePath = files[0]
+                                    };
 
+                                    modmakerPanel.Close += (a, b) =>
+                                    {
+                                        ReleaseBusyControl();
+                                        if (b.Data is Mod m)
+                                        {
+                                            LoadMods(m);
+                                        }
+                                    };
+                                    ShowBusyControl(modmakerPanel); 
                                     break;
                                 }
 

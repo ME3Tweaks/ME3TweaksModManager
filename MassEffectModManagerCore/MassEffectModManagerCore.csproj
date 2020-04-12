@@ -90,6 +90,8 @@
     <None Remove="modmanager\starterkit\StarterKitTLK.xml" />
     <None Remove="modmanager\toolicons\alot_32.png" />
     <None Remove="modmanager\toolicons\alot_big.png" />
+    <None Remove="modmanager\toolicons\egmsettings_32.png" />
+    <None Remove="modmanager\toolicons\egmsettings_big.png" />
     <None Remove="modmanager\toolicons\masseffectinimodder_32.png" />
     <None Remove="modmanager\toolicons\masseffectinimodder_big.png" />
     <None Remove="modmanager\toolicons\masseffectmodder_32.png" />
@@ -210,6 +212,8 @@
     <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
     <Resource Include="modmanager\toolicons\alot_32.png" />
     <Resource Include="modmanager\toolicons\alot_big.png" />
+    <Resource Include="modmanager\toolicons\egmsettings_32.png" />
+    <Resource Include="modmanager\toolicons\egmsettings_big.png" />
     <Resource Include="modmanager\toolicons\masseffectinimodder_32.png" />
     <Resource Include="modmanager\toolicons\masseffectmodder_32.png" />
     <Resource Include="modmanager\toolicons\masseffectmodder_big.png" />

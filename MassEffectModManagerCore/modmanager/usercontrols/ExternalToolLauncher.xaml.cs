@@ -27,6 +27,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class ExternalToolLauncher : MMBusyPanelBase
     {
         //have to be const apparently
+        public const string EGMSettings = @"EGMSettings";
         public const string ME3Explorer = @"ME3Explorer";
         public const string ALOTInstaller = @"ALOT Installer";
         public const string MEIM = @"Mass Effect INI Modder";
@@ -61,6 +62,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return @"/modmanager/toolicons/masseffectmodder_big.png";
                     case MEIM:
                         return @"/modmanager/toolicons/masseffectinimodder_big.png";
+                    case EGMSettings:
+                        return @"/modmanager/toolicons/egmsettings_big.png";
                     default:
                         return null;
                 }
@@ -198,7 +201,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     toolGithubOwner = @"ME3Tweaks";
                     toolGithubRepoName = @"MassEffectIniModder";
                     break;
-
+                case EGMSettings:
+                    toolGithubOwner = @"Kinkojiro";
+                    toolGithubRepoName = @"EGM-Settings";
+                    break;
             }
 
 
