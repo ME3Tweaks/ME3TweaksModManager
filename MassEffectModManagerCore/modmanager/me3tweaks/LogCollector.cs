@@ -29,6 +29,7 @@ using SevenZip;
 using ProgressEventArgs = System.Management.ProgressEventArgs;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.GameDirectories;
+using NickStrupat;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -120,6 +121,62 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     Log.Error($"Error reading partition type on {partitionLetter}: {e.Message}");
                     return -1;
                 }
+            }
+        }
+
+        public static string GetProcessorInformationForDiag()
+        {
+            string str = "";
+            try
+            {
+                ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+
+                foreach (ManagementObject moProcessor in mosProcessor.Get())
+                {
+                    if (str != "")
+                    {
+                        str += "\n";
+                    }
+
+                    if (moProcessor["name"] != null)
+                    {
+                        str += moProcessor["name"].ToString();
+                        str += "\n";
+                    }
+                    if (moProcessor["maxclockspeed"] != null)
+                    {
+                        str += "Maximum reported clock speed: ";
+                        str += moProcessor["maxclockspeed"].ToString();
+                        str += " Mhz\n";
+                    }
+                    if (moProcessor["numberofcores"] != null)
+                    {
+                        str += "Cores: ";
+
+                        str += moProcessor["numberofcores"].ToString();
+                        str += "\n";
+                    }
+                    if (moProcessor["numberoflogicalprocessors"] != null)
+                    {
+                        str += "Logical processors: ";
+                        str += moProcessor["numberoflogicalprocessors"].ToString();
+                        str += "\n";
+                    }
+
+                }
+                return str
+                   .Replace("(TM)", "™")
+                   .Replace("(tm)", "™")
+                   .Replace("(R)", "®")
+                   .Replace("(r)", "®")
+                   .Replace("(C)", "©")
+                   .Replace("(c)", "©")
+                   .Replace("    ", " ")
+                   .Replace("  ", " ").Trim();
+            }
+            catch (Exception e)
+            {
+                return $"Error getting processor information: {e.Message}\n";
             }
         }
 
@@ -219,7 +276,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             //todo: massage this alot code to work with M3
             string gamePath = selectedDiagnosticTarget.TargetPath;
-            bool pairLog = false;
             addDiagLine($"ME3Tweaks Mod Manager {App.AppVersionHR} Game Diagnostic");
             addDiagLine($"Diagnostic for {Utilities.GetGameName(selectedDiagnosticTarget.Game)}");
             addDiagLine($"Diagnostic generated on {DateTime.Now.ToShortDateString()}");
@@ -340,7 +396,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         addDiagLine("dinput8.dll exists - a dll is hooking the process, may cause stability issues", Severity.WARN);
                     }
                 }
-                
+
 
                 addDiagLine("===System information");
                 OperatingSystem os = Environment.OSVersion;
@@ -354,7 +410,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     verLine += " " + releaseId;
                 }
-                /*
+
                 if (os.Version < App.MIN_SUPPORTED_OS)
                 {
                     addDiagLine("[FATAL]This operating system is not supported");
@@ -370,14 +426,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     addDiagLine("Version " + osBuildVersion);
                 }
-                addDiagLine("");
+
+                addDiagLine();
                 addDiagLine("Processors");
-                addDiagLine(Utilities.GetCPUString());
-                long ramInBytes = Utilities.GetInstalledRamAmount(); // use https://github.com/NickStrupat/ComputerInfo
+                var computerInfo = new ComputerInfo();
+                addDiagLine(GetProcessorInformationForDiag());
+                long ramInBytes = (long)computerInfo.TotalPhysicalMemory; // use https://github.com/NickStrupat/ComputerInfo
                 addDiagLine("System Memory: " + ByteSize.FromKiloBytes(ramInBytes));
                 if (ramInBytes == 0)
                 {
-                    addDiagLine("~~~Unable to get the read amount of physically installed ram. This may be a sign of impending hardware failure in the SMBIOS");
+                    addDiagLine("Unable to get the read amount of physically installed ram. This may be a sign of impending hardware failure in the SMBIOS", Severity.WARN);
                 }
                 ManagementObjectSearcher objvide = new ManagementObjectSearcher("select * from Win32_VideoController");
                 int vidCardIndex = 1;
@@ -426,30 +484,24 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     vidCardIndex++;
                 }
 
-
-                /*
-                addDiagLine("===Latest MEMI Marker Information");
+                addDiagLine("Texture mod information", Severity.SECTION);
                 if (avi == null)
                 {
-                    if (DIAGNOSTICS_GAME != 1)
-                    {
-                        addDiagLine("The ALOT installation marker was not detected. ALOT is not installed.");
-                    }
-                    else
-                    {
-                        addDiagLine("The ALOT installation marker was not detected. ALOT and MEUITM are not installed.");
-                    }
+                    addDiagLine("The texture mod installation marker was not detected. No texture mods appear to be installed");
                 }
                 else
                 {
-                    addDiagLine("ALOT Version: " + avi.ALOTVER + "." + avi.ALOTUPDATEVER + "." + avi.ALOTHOTFIXVER);
-                    if (DIAGNOSTICS_GAME == 1)
+                    if (avi.ALOTVER > 0 || avi.MEUITMVER > 0)
                     {
-                        addDiagLine("MEUITM: " + avi.MEUITMVER);
+                        addDiagLine("ALOT Version Marker: " + avi.ALOTVER + "." + avi.ALOTUPDATEVER + "." + avi.ALOTHOTFIXVER);
+                        if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
+                        {
+                            addDiagLine("MEUITM: " + avi.MEUITMVER);
+                        }
                     }
-                    addDiagLine("Latest installation used MEM v" + avi.MEM_VERSION_USED);
+                    //addDiagLine("Latest installation used MEM v" + avi.MEM_VERSION_USED);
                 }
-
+                /*
 
                 //Start diagnostics
                 string exe = BINARY_DIRECTORY + MEM_EXE_NAME;
@@ -1057,7 +1109,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
                 }
-                
+
                 if (DIAGNOSTICS_GAME == 3)
                 {
                     string me3logfilepath = Path.Combine(Directory.GetParent(Utilities.GetGameEXEPath(3)).ToString(), "me3log.txt");

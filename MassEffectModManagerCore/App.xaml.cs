@@ -73,6 +73,9 @@ namespace MassEffectModManagerCore
         /// </summary>
         public const double HighestSupportedModDesc = 6.0;
 
+        //Windows 8.1 Update 1
+        public static readonly Version MIN_SUPPORTED_OS = new Version("6.3.9600");
+
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern bool SetDllDirectory(string lpPathName);
 
