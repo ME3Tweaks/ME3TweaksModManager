@@ -110,7 +110,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
+                        //DEBUG ONLY!!!
+#if DEBUG
+                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload2.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+#else
                         string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+#endif
                         Uri uriResult;
                         bool result = Uri.TryCreate(responseString, UriKind.Absolute, out uriResult)
                                       && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);

@@ -3,12 +3,32 @@
 using Serilog;
 using Serilog.Sinks.RollingFile.Extension;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Management;
+using System.Net;
+using System.Net.Mime;
+using System.Text;
 using System.Threading;
+using System.Windows;
+using AuthenticodeExaminer;
+using ByteSizeLib;
+using MassEffectModManagerCore.gamefileformats;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.usercontrols;
+using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.Win32;
+using Octokit;
+using SevenZip;
+using ProgressEventArgs = System.Management.ProgressEventArgs;
+using System.Threading.Tasks;
+using MassEffectModManagerCore.GameDirectories;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -65,10 +85,51 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return logText;
         }
 
+        private enum Severity
+        {
+            INFO,
+            WARN,
+            ERROR,
+            FATAL,
+            GOOD,
+            SECTION
+        }
+        private static int GetPartitionDiskBackingType(string partitionLetter)
+        {
+            using (var partitionSearcher = new ManagementObjectSearcher(
+                @"\\localhost\ROOT\Microsoft\Windows\Storage",
+                $"SELECT DiskNumber FROM MSFT_Partition WHERE DriveLetter='{partitionLetter}'"))
+            {
+                try
+                {
+                    var partition = partitionSearcher.Get().Cast<ManagementBaseObject>().Single();
+                    using (var physicalDiskSearcher = new ManagementObjectSearcher(
+                        @"\\localhost\ROOT\Microsoft\Windows\Storage",
+                        $"SELECT Size, Model, MediaType FROM MSFT_PhysicalDisk WHERE DeviceID='{ partition["DiskNumber"] }'"))
+                    {
+                        var physicalDisk = physicalDiskSearcher.Get().Cast<ManagementBaseObject>().Single();
+                        return
+                            (UInt16)physicalDisk["MediaType"];/*||
+                        SSDModelSubstrings.Any(substring => result.Model.ToLower().Contains(substring)); ;*/
+
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Error reading partition type on {partitionLetter}: {e.Message}");
+                    return -1;
+                }
+            }
+        }
+
         public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, Action<string> updateStatusCallback = null)
         {
             updateStatusCallback?.Invoke("Preparing to collect diagnostic info");
-            //_It is here we say a little prayer
+
+            #region MEM No Gui Fetch
+            object memEnsuredSignaler = new object();
+            // It is here we say a little prayer
             // to keep the bugs away from this monsterous code
             //    /_/\/\
             //    \_\  /
@@ -76,32 +137,120 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             //    \_\/\ \
             //      \_\/
 
+            bool hasMEM = false;
+            string mempath = null;
+            #region MEM Fetch Callbacks
+            void failedToDownload()
+            {
+                Thread.Sleep(100); //try to stop deadlock
+                hasMEM = false;
+                lock (memEnsuredSignaler)
+                {
+                    Monitor.Pulse(memEnsuredSignaler);
+                }
+            }
+            void readyToLaunch(string exe)
+            {
+                Thread.Sleep(100); //try to stop deadlock
+                hasMEM = true;
+                mempath = exe;
+                lock (memEnsuredSignaler)
+                {
+                    Monitor.Pulse(memEnsuredSignaler);
+                }
+            };
+            void failedToExtractMEM(Exception e, string message, string caption)
+            {
+                Thread.Sleep(100); //try to stop deadlock
+                hasMEM = false;
+                lock (memEnsuredSignaler)
+                {
+                    Monitor.Pulse(memEnsuredSignaler);
+                }
+            }
+            void currentTaskCallback(string s) => updateStatusCallback?.Invoke(s);
+            void setPercentDone(int pd) => updateStatusCallback?.Invoke($"Preparing MEM No GUI {pd}%");
 
-            Thread.Sleep(2000);
+            #endregion
+            // Ensure MEM NOGUI
+            ExternalToolLauncher.FetchAndLaunchTool(ExternalToolLauncher.MEM_CMD, currentTaskCallback, null, setPercentDone, readyToLaunch, failedToDownload, failedToExtractMEM);
+
+            //wait for tool fetch
+            lock (memEnsuredSignaler)
+            {
+                Monitor.Wait(memEnsuredSignaler);
+            }
+            #endregion
+
+            updateStatusCallback?.Invoke("Collecting game information");
+            var diagStringBuilder = new StringBuilder();
+
+            void addDiagLine(string message = "", Severity sev = Severity.INFO)
+            {
+                if (diagStringBuilder == null)
+                {
+                    diagStringBuilder = new StringBuilder();
+                }
+
+                switch (sev)
+                {
+                    case Severity.INFO:
+                        diagStringBuilder.Append(message);
+                        break;
+                    case Severity.WARN:
+                        diagStringBuilder.Append($@"~~~{message}");
+                        break;
+                    case Severity.ERROR:
+                        diagStringBuilder.Append($@"[ERROR]{message}");
+                        break;
+                    case Severity.FATAL:
+                        diagStringBuilder.Append($@"[FATAL]{message}");
+                        break;
+                    case Severity.SECTION:
+                        diagStringBuilder.Append($@"==={message}");
+                        break;
+                    case Severity.GOOD:
+                        diagStringBuilder.Append($@"$$${message}");
+                        break;
+                }
+                diagStringBuilder.Append("\n");
+            }
+
 
             //todo: massage this alot code to work with M3
-            /*diagStringBuilder = new StringBuilder();
-            string gamePath = Utilities.GetGamePath(DIAGNOSTICS_GAME);
+            string gamePath = selectedDiagnosticTarget.TargetPath;
             bool pairLog = false;
-            addDiagLine("ALOT Installer " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version + " Game Diagnostic");
-            addDiagLine("Diagnostic for Mass Effect " + DIAGNOSTICS_GAME);
-            addDiagLine("Diagnostic generated on " + DateTime.Now.ToShortDateString());
-            var versInfo = FileVersionInfo.GetVersionInfo(BINARY_DIRECTORY + MEM_EXE_NAME);
-            int fileVersion = versInfo.FileMajorPart;
-            addDiagLine("Using MassEffectModderNoGui v" + fileVersion);
-            addDiagLine("System culture: " + Thread.CurrentThread.CurrentCulture.Name);
-            addDiagLine("Game is installed at " + gamePath);
+            addDiagLine($"ME3Tweaks Mod Manager {App.AppVersionHR} Game Diagnostic");
+            addDiagLine($"Diagnostic for {Utilities.GetGameName(selectedDiagnosticTarget.Game)}");
+            addDiagLine($"Diagnostic generated on {DateTime.Now.ToShortDateString()}");
+            if (hasMEM)
+            {
+                var versInfo = FileVersionInfo.GetVersionInfo(mempath);
+                int fileVersion = versInfo.FileMajorPart;
+                addDiagLine($"Diagnostic MassEffectModderNoGui version: {fileVersion}");
+            }
+            else
+            {
+                addDiagLine("Mass Effect Modder No Gui was not available for use when this diagnostic was generated.", Severity.ERROR);
+            }
+
+            addDiagLine($"System culture: {CultureInfo.InstalledUICulture.Name}");
+
+            addDiagLine("Basic game information", Severity.SECTION);
+            addDiagLine($"Game is installed at {gamePath}");
+
+
             string pathroot = Path.GetPathRoot(gamePath);
             pathroot = pathroot.Substring(0, 1);
             if (pathroot == @"\")
             {
-                addDiagLine("Installation appears to be on a network drive (first character in path is \\)");
+                addDiagLine("Installation appears to be on a network drive (first character in path is \\)", Severity.WARN);
             }
             else
             {
                 if (Utilities.IsWindows10OrNewer())
                 {
-                    int backingType = DiskTypeDetector.GetPartitionDiskBackingType(pathroot);
+                    int backingType = GetPartitionDiskBackingType(pathroot);
                     string type = "Unknown type";
                     switch (backingType)
                     {
@@ -115,93 +264,83 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             try
             {
-                ALOTVersionInfo avi = Utilities.GetInstalledALOTInfo(DIAGNOSTICS_GAME);
-                MEMI_FOUND = avi != null;
+                ALOTVersionInfo avi = selectedDiagnosticTarget.GetInstalledALOTInfo();
+                var texturesInstalled = avi != null;
 
-                string exePath = Utilities.GetGameEXEPath(DIAGNOSTICS_GAME);
+                string exePath = MEDirectories.ExecutablePath(selectedDiagnosticTarget);
                 if (File.Exists(exePath))
                 {
-                    versInfo = FileVersionInfo.GetVersionInfo(exePath);
-                    addDiagLine("===Executable information");
+                    var versInfo = FileVersionInfo.GetVersionInfo(exePath);
                     addDiagLine("Version: " + versInfo.FileMajorPart + "." + versInfo.FileMinorPart + "." + versInfo.FileBuildPart + "." + versInfo.FilePrivatePart);
-                    if (DIAGNOSTICS_GAME == 1)
+                    if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
                     {
-                        bool me1LAAEnabled = Utilities.GetME1LAAEnabled();
-                        if (MEMI_FOUND && !me1LAAEnabled)
-                        {
-                            addDiagLine("[ERROR] -  Large Address Aware: " + me1LAAEnabled + " - ALOT/MEUITM is installed - this being false will almost certainly cause crashes");
-                        }
-                        else
-                        {
-                            addDiagLine("Large Address Aware: " + me1LAAEnabled);
-                        }
+                        //bool me1LAAEnabled = Utilities.GetME1LAAEnabled();
+                        //if (texturesInstalled && !me1LAAEnabled)
+                        //{
+                        //    addDiagLine("[ERROR] -  Large Address Aware: " + me1LAAEnabled + " - ALOT/MEUITM is installed - this being false will almost certainly cause crashes");
+                        //}
+                        //else
+                        //{
+                        //    addDiagLine("Large Address Aware: " + me1LAAEnabled);
+                        //}
                     }
 
-                    using (var md5 = MD5.Create())
+                    if (selectedDiagnosticTarget.Supported)
                     {
-                        using (var stream = File.OpenRead(exePath))
-                        {
-                            string hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-                            addDiagLine("[EXEHASH-" + DIAGNOSTICS_GAME + "]" + hash);
-                            HASH_SUPPORTED = Utilities.CheckIfHashIsSupported(DIAGNOSTICS_GAME, hash);
-                            Tuple<bool, string> exeInfo = Utilities.GetRawGameSourceByHash(DIAGNOSTICS_GAME, hash);
-                            if (exeInfo.Item1)
-                            {
-                                addDiagLine("$$$" + exeInfo.Item2);
-                            }
-                            else
-                            {
-                                addDiagLine("[ERROR]" + exeInfo.Item2);
-                            }
-                        }
-                    }
-                    //Authenticode
-                    var info = new FileInspector(exePath);
-                    var certOK = info.Validate();
-                    if (certOK == SignatureCheckResult.NoSignature)
-                    {
-                        addDiagLine("[ERROR]This executable is not signed");
+                        addDiagLine($"Game source: {selectedDiagnosticTarget.GameSource} - {selectedDiagnosticTarget.ExecutableHash}", Severity.GOOD);
                     }
                     else
                     {
-                        if (certOK == SignatureCheckResult.BadDigest)
-                        {
-                            if (DIAGNOSTICS_GAME == 1 && versInfo.ProductName == "Mass_Effect")
-                            {
-                                //Check if this Mass_Effect
-                                addDiagLine("Signature check for this executable skipped as MEM has modified this exe");
-                            }
-                            else
-                            {
-                                addDiagLine("[ERROR]The signature for this executable is not valid. The executable has been modified");
-                                diagPrintSignatures(info);
-                            }
-                        }
-                        else
-                        {
-                            addDiagLine("Signature check for this executable: " + certOK.ToString());
-                            diagPrintSignatures(info);
-                        }
+                        addDiagLine($"Game source: Unknown/Unsupported - {selectedDiagnosticTarget.ExecutableHash}", Severity.FATAL);
+
+                        //Authenticode
+                        //var info = new FileInspector(exePath);
+                        //var certOK = info.Validate();
+                        //if (certOK == SignatureCheckResult.NoSignature)
+                        //{
+                        //    addDiagLine("[ERROR]This executable is not signed");
+                        //}
+                        //else
+                        //{
+                        //    if (certOK == SignatureCheckResult.BadDigest)
+                        //    {
+                        //        if (DIAGNOSTICS_GAME == 1 && versInfo.ProductName == "Mass_Effect")
+                        //        {
+                        //            //Check if this Mass_Effect
+                        //            addDiagLine("Signature check for this executable skipped as MEM has modified this exe");
+                        //        }
+                        //        else
+                        //        {
+                        //            addDiagLine("[ERROR]The signature for this executable is not valid. The executable has been modified");
+                        //            diagPrintSignatures(info);
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        addDiagLine("Signature check for this executable: " + certOK.ToString());
+                        //        diagPrintSignatures(info);
+                        //    }
+                        //}
                     }
 
-
-                    string d3d9file = Path.GetDirectoryName(exePath) + "\\d3d9.dll";
+                    var exeDir = Path.GetDirectoryName(exePath);
+                    var d3d9file = Path.Combine(exeDir, "d3d9.dll");
                     if (File.Exists(d3d9file))
                     {
-                        addDiagLine("~~~d3d9.dll exists - External dll is hooking via DirectX into game process");
+                        addDiagLine("d3d9.dll exists - a dll is hooking the process (reshade?), may cause stability issues", Severity.WARN);
                     }
-                    string fpscounter = Path.GetDirectoryName(exePath) + @"\fpscounter\fpscounter.dll";
+                    var fpscounter = Path.Combine(exeDir, @"fpscounter\fpscounter.dll");
                     if (File.Exists(fpscounter))
                     {
-                        addDiagLine("~~~fpscounter.dll exists - FPS Counter plugin detected");
+                        addDiagLine("~~~fpscounter.dll exists - FPS Counter plugin detected, may cause stability issues", Severity.WARN);
                     }
-                    string dinput8 = Path.GetDirectoryName(exePath) + "\\dinput8.dll";
+                    var dinput8 = Path.Combine(exeDir, "dinput8.dll");
                     if (File.Exists(dinput8))
                     {
-                        addDiagLine("~~~dinput8.dll exists - External dll is hooking via input dll into game process");
+                        addDiagLine("dinput8.dll exists - a dll is hooking the process, may cause stability issues", Severity.WARN);
                     }
                 }
-
+                
 
                 addDiagLine("===System information");
                 OperatingSystem os = Environment.OSVersion;
@@ -215,7 +354,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     verLine += " " + releaseId;
                 }
-
+                /*
                 if (os.Version < App.MIN_SUPPORTED_OS)
                 {
                     addDiagLine("[FATAL]This operating system is not supported");
@@ -234,7 +373,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine("");
                 addDiagLine("Processors");
                 addDiagLine(Utilities.GetCPUString());
-                long ramInBytes = Utilities.GetInstalledRamAmount();
+                long ramInBytes = Utilities.GetInstalledRamAmount(); // use https://github.com/NickStrupat/ComputerInfo
                 addDiagLine("System Memory: " + ByteSize.FromKiloBytes(ramInBytes));
                 if (ramInBytes == 0)
                 {
@@ -288,7 +427,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
 
 
-
+                /*
                 addDiagLine("===Latest MEMI Marker Information");
                 if (avi == null)
                 {
@@ -846,7 +985,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
 
-
                 //Get LODs
                 args = "--print-lods --gameid " + DIAGNOSTICS_GAME + " --ipc";
                 LODS_INFO.Clear();
@@ -919,6 +1057,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
                 }
+                
                 if (DIAGNOSTICS_GAME == 3)
                 {
                     string me3logfilepath = Path.Combine(Directory.GetParent(Utilities.GetGameEXEPath(3)).ToString(), "me3log.txt");
@@ -951,18 +1090,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         addDiagLine("[LINKEDLOG]" + LINKEDLOGURL);
                     }
                 }
+                */
 
-                e.Result = saveAndUploadDiag();
             }
             catch (Exception ex)
             {
                 addDiagLine("[ERROR]Exception occured while running diagnostic.");
                 addDiagLine(App.FlattenException(ex));
-                e.Result = saveAndUploadDiag();
+                return diagStringBuilder.ToString();
 
-            }*/
+            }
 
-            return "DIAG DONE";
+            return diagStringBuilder.ToString();
         }
     }
 }

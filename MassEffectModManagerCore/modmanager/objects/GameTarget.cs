@@ -33,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string TargetPath { get; }
         public bool RegistryActive { get; set; }
         public string GameSource { get; private set; }
+        public string ExecutableHash { get; private set; }
 
         public string TargetBootIcon
         {
@@ -108,6 +109,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
 
                 GameSource = hashCheckResult.result;
+                ExecutableHash = hashCheckResult.hash;
                 if (GameSource == null)
                 {
                     Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash);

@@ -42,6 +42,13 @@ namespace MassEffectModManagerCore
             }
         }
 
+        public static bool IsWindows10OrNewer()
+        {
+            var os = Environment.OSVersion;
+            return os.Platform == PlatformID.Win32NT &&
+                   (os.Version.Major >= 10);
+        }
+
         public static bool IsAdministrator()
         {
             var identity = WindowsIdentity.GetCurrent();
