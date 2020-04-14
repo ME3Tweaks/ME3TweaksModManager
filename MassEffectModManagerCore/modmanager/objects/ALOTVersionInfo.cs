@@ -9,13 +9,17 @@ namespace MassEffectModManagerCore.modmanager.objects
         public byte ALOTUPDATEVER;
         public byte ALOTHOTFIXVER;
         public int MEUITMVER;
+        public int ALOT_INSTALLER_VERSION_USED;
+        public int MEM_VERSION_USED;
 
-        public ALOTVersionInfo(short ALOTVersion, byte ALOTUpdaterVersion, byte ALOTHotfixVersion, int MEUITMVersion)
+        public ALOTVersionInfo(short ALOTVersion, byte ALOTUpdaterVersion, byte ALOTHotfixVersion, int MEUITMVersion, short memVersionUsed, short alotInstallerVersionUsed)
         {
             this.ALOTVER = ALOTVersion;
             this.ALOTUPDATEVER = ALOTUpdaterVersion;
             this.ALOTHOTFIXVER = ALOTHotfixVersion;
             this.MEUITMVER = MEUITMVersion;
+            this.MEM_VERSION_USED = memVersionUsed;
+            this.ALOT_INSTALLER_VERSION_USED = alotInstallerVersionUsed;
         }
 
         //Todo: Maybe support MEUITM. 

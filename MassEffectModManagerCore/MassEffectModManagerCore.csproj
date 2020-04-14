@@ -22,6 +22,7 @@
     <ApplicationIcon>appicon.ico</ApplicationIcon>
     <AssemblyName>ME3TweaksModManager</AssemblyName>
     <Version>6.0.0.105</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -167,6 +168,7 @@
     <PackageReference Include="ByteSize" Version="2.0.0" />
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="ComputerInfo" Version="0.1.0-prerelease" />
+    <PackageReference Include="ConsoleAppLauncher" Version="1.0.6354.408" />
     <PackageReference Include="Flurl" Version="2.8.2" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
     <PackageReference Include="Fody" Version="6.1.1">

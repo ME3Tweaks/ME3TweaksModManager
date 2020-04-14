@@ -277,7 +277,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
-        private readonly static string[] BasegameTFCs = { "CharTextures", "Movies", "Textures", "Lighting" };
+        private static readonly string[] BasegameTFCs = { "CharTextures", "Movies", "Textures", "Lighting" };
         internal static bool IsBasegameTFCName(string tfcName, Mod.MEGame game)
         {
             if (BasegameTFCs.Contains(tfcName)) return true;
@@ -297,7 +297,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback)
         {
-            bool isValid = true;
+            bool isVanilla = true;
             CaseInsensitiveDictionary<List<(int size, string md5)>> vanillaDB = null;
             switch (target.Game)
             {
@@ -334,7 +334,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             if (!GameTarget.SFARObject.HasUnpackedFiles(file)) continue; //Consistent
                         }
                         failedValidationCallback?.Invoke(file);
-                        isValid = false;
+                        isVanilla = false;
                     }
                     else
                     {
@@ -347,7 +347,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Log.Error(@"Directory to validate doesn't exist: " + target.TargetPath);
             }
 
-            return isValid;
+            return isVanilla;
         }
 
         /// <summary>

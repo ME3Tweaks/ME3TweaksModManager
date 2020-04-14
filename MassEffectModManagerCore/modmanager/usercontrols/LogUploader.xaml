@@ -16,11 +16,11 @@
         <TextBlock DockPanel.Dock="Top" Text="Select what data to collect" TextAlignment="Center"/>
 
         <DockPanel DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch">
-            <Button DockPanel.Dock="Right" Content="{DynamicResource string_uploadToLogViewer}" Command="{Binding UploadLogCommand}" Width="170" HorizontalAlignment="Right" />
+            <Button DockPanel.Dock="Right" Content="{DynamicResource string_uploadToLogViewer}" Command="{Binding UploadLogCommand}" Width="170" HorizontalAlignment="Right" Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
             <Button DockPanel.Dock="Right" Content="{DynamicResource string_cancel}" Command="{Binding CancelUploadCommand}" Width="100" HorizontalAlignment="Left" Margin="5,0"/>
             <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}}">
                 <ContentControl DockPanel.Dock="Left" Name="LoadingBarAnimation" Focusable="False" ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Width="16" Height="16" Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}" />
-                <TextBlock Text="{Binding CollectionStatusMessage}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding CollectionStatusMessage}" VerticalAlignment="Center" TextWrapping="Wrap"/>
             </DockPanel>
         </DockPanel>
         <StackPanel>
