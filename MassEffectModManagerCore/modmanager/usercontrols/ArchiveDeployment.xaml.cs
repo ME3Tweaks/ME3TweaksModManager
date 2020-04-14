@@ -17,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ByteSizeLib;
-using Flurl.Util;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.unreal;

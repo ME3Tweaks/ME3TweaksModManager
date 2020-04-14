@@ -2074,7 +2074,7 @@ namespace MassEffectModManagerCore
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
                 App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!firstStartupCheck);
-
+                App.BasegameFileIdentificationService = OnlineContent.FetchBasegameFileIdentificationServiceManifest(!firstStartupCheck);
                 App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 

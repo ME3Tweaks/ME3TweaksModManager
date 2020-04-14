@@ -366,9 +366,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ExternalToolLauncher.FetchAndLaunchTool(ExternalToolLauncher.MEM_CMD, currentTaskCallback, null, setPercentDone, readyToLaunch, failedToDownload, failedToExtractMEM);
 
             //wait for tool fetch
-            lock (memEnsuredSignaler)
+            if (!hasMEM)
             {
-                Monitor.Wait(memEnsuredSignaler, new TimeSpan(0, 0, 25));
+                lock (memEnsuredSignaler)
+                {
+                    Monitor.Wait(memEnsuredSignaler, new TimeSpan(0, 0, 25));
+                }
             }
             #endregion
 
@@ -913,7 +916,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             if (mf.StartsWith(cookedPath, StringComparison.InvariantCultureIgnoreCase))
                             {
-                                addDiagLine($" - {mf.Substring(cookedPath.Length + 1)}");
+                                var info = BasegameFileIdentificationService.GetBasegameFileSource(selectedDiagnosticTarget, mf);
+                                if (info != null)
+                                {
+                                    addDiagLine($" - {mf.Substring(cookedPath.Length + 1)} - {info.source}");
+                                }
+                                else
+                                {
+                                    addDiagLine($" - {mf.Substring(cookedPath.Length + 1)}");
+                                }
                             }
                         }
                     }
@@ -1344,7 +1355,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 EventLog ev = new EventLog("Application");
                 List<EventLogEntry> entries = ev.Entries
                     .Cast<EventLogEntry>()
-                    .Where(z => z.InstanceId == 1001 && z.TimeGenerated > sevenDaysAgo && (GenerateEventLogString(z).ContainsAny(MEDirectories.ExecutableNames(selectedDiagnosticTarget.Game),StringComparison.InvariantCultureIgnoreCase)))
+                    .Where(z => z.InstanceId == 1001 && z.TimeGenerated > sevenDaysAgo && (GenerateEventLogString(z).ContainsAny(MEDirectories.ExecutableNames(selectedDiagnosticTarget.Game), StringComparison.InvariantCultureIgnoreCase)))
                     .ToList();
 
                 addDiagLine($"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} crash logs found in Event Viewer", Severity.SECTION);
@@ -1367,7 +1378,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 //}
 
-                
+
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
                 {
                     string me3logfilepath = Path.Combine(Directory.GetParent(MEDirectories.ExecutablePath(selectedDiagnosticTarget)).FullName, "me3log.txt");

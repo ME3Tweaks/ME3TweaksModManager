@@ -716,6 +716,11 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyimportingservice.json");
         }
 
+        internal static string GetBasegameIdentificationCacheFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "basegamefileidentificationservice.json");
+        }
+
         internal static bool CanFetchContentThrottleCheck()
         {
             var lastContentCheck = Settings.LastContentCheck;

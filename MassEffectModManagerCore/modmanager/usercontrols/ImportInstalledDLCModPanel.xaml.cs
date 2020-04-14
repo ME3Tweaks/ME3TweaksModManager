@@ -15,8 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using ByteSizeLib;
-using Flurl;
-using Flurl.Http;
 using IniParser.Model;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;

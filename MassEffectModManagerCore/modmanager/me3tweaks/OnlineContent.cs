@@ -22,6 +22,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
         private const string StaticFilesBaseURL_ME3Tweaks = "https://me3tweaks.com/modmanager/tools/staticfiles/";
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
+        private const string BasegameFileIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
@@ -47,6 +48,82 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             string json = wc.DownloadString(fetchUrl);
             App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             return App.ServerManifest;
+        }
+
+        public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> FetchBasegameFileIdentificationServiceManifest(bool overrideThrottling = false)
+        {
+            string cached = null;
+            if (File.Exists(Utilities.GetBasegameIdentificationCacheFile()))
+            {
+                try
+                {
+                    cached = File.ReadAllText(Utilities.GetBasegameIdentificationCacheFile());
+                }
+                catch (Exception e)
+                {
+                    var attachments = new List<ErrorAttachmentLog>();
+                    string log = LogCollector.CollectLatestLog(true);
+                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    {
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                    }
+                    Crashes.TrackError(e, new Dictionary<string, string>()
+                    {
+                        {"Error type", "Error reading cached online content" },
+                        {"Service", "Basegame File Identification Service" },
+                        {"Message", e.Message }
+                    }, attachments.ToArray());
+                }
+            }
+
+
+            if (!File.Exists(Utilities.GetBasegameIdentificationCacheFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            {
+                try
+                {
+                    using var wc = new ShortTimeoutWebClient();
+
+                    string json = wc.DownloadStringAwareOfEncoding(BasegameFileIdentificationServiceURL);
+                    File.WriteAllText(Utilities.GetBasegameIdentificationCacheFile(), json);
+                    return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(json);
+                }
+                catch (Exception e)
+                {
+                    //Unable to fetch latest help.
+                    Log.Error("Error fetching online basegame file identification service: " + e.Message);
+
+                    if (cached != null)
+                    {
+                        Log.Warning("Using cached basegame file identification service  file instead");
+                    }
+                    else
+                    {
+                        Log.Error("Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
+                        Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> d = new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
+                        {
+                            ["ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                            ["ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                            ["ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
+                        };
+                        return d;
+                    }
+                }
+            }
+
+            try
+            {
+                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(cached);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Could not parse cached basegame file identification service file. Returning blank BFIS data instead. Reason: " + e.Message);
+                return new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
+                {
+                    ["ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                    ["ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                    ["ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
+                };
+            }
         }
 
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
