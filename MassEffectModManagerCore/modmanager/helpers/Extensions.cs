@@ -772,6 +772,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 && (Math.Abs(a - b) < double.Epsilon);
         }
 
+        public static bool ContainsAny(this string input, IEnumerable<string> containsKeywords, StringComparison comparisonType)
+        {
+            return containsKeywords.Any(keyword => input.IndexOf(keyword, comparisonType) >= 0);
+        }
+
         // Step 2: https://stackoverflow.com/questions/2435894/net-how-do-i-check-for-illegal-characters-in-a-path
         public static bool ContainsAnyInvalidCharacters(this string path)
         {

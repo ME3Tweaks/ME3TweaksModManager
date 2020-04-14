@@ -159,7 +159,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             var readOnlyTargets = ModBeingInstalled.GetAllRelativeReadonlyTargets(me1ConfigReadOnlyOption.IsSelected);
 
-            if (gameTarget.ALOTInstalled)
+            if (gameTarget.TextureModded)
             {
                 //Check if any packages are being installed. If there are, we will block this installation.
                 bool installsPackageFile = false;

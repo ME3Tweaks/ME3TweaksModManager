@@ -425,6 +425,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             addDiagLine($"System culture: {CultureInfo.InstalledUICulture.Name}");
 
+            updateStatusCallback?.Invoke("Collecting game information");
             addDiagLine("Basic game information", Severity.SECTION);
             addDiagLine($"Game is installed at {gamePath}");
 
@@ -459,6 +460,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 string exePath = MEDirectories.ExecutablePath(selectedDiagnosticTarget);
                 if (File.Exists(exePath))
                 {
+
                     var versInfo = FileVersionInfo.GetVersionInfo(exePath);
                     addDiagLine("Version: " + versInfo.FileMajorPart + "." + versInfo.FileMinorPart + "." + versInfo.FileBuildPart + "." + versInfo.FilePrivatePart);
                     if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
@@ -476,7 +478,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     if (selectedDiagnosticTarget.Supported)
                     {
-                        addDiagLine($"Game source: {selectedDiagnosticTarget.GameSource} - {selectedDiagnosticTarget.ExecutableHash}", Severity.GOOD);
+                        addDiagLine($"Game source: {selectedDiagnosticTarget.GameSource}", Severity.GOOD);
                     }
                     else
                     {
@@ -530,6 +532,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
 
+                updateStatusCallback?.Invoke("Collecting system information");
 
                 addDiagLine("System information", Severity.SECTION);
                 OperatingSystem os = Environment.OSVersion;
@@ -640,11 +643,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
 
                 //Start diagnostics
+                var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
+
                 if (hasMEM)
                 {
-                    var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
                     string args = $"--check-game-data-mismatch --gameid {gameID} --ipc";
-                    if (selectedDiagnosticTarget.ALOTInstalled)
+                    if (selectedDiagnosticTarget.TextureModded)
                     {
                         bool textureMapFileExists = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + $@"\MassEffectModder\me{gameID}map.bin");
                         if (textureMapFileExists)
@@ -653,14 +657,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             updateStatusCallback?.Invoke("Checking texture map <-> game consistency");
                             int? exitcode = null;
                             object memFinishedLock = new object();
-                            List<string> diagErrors = new List<string>();
+                            List<string> removedFiles = new List<string>();
+                            List<string> addedFiles = new List<string>();
+                            List<string> replacedFiles = new List<string>();
                             void setExitCode(int? value) => exitcode = value;
                             void handleIPC(string command, string param)
                             {
                                 switch (command)
                                 {
                                     case "ERROR_REMOVED_FILE":
-                                        diagErrors.Add($" - File removed after textures were installed: {param}");
+                                        removedFiles.Add($" - File removed after textures were installed: {param}");
                                         break;
                                     default:
                                         Debug.WriteLine("oof?");
@@ -673,16 +679,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 Monitor.Wait(memFinishedLock);
                             }
 
-                            if (diagErrors.Any())
+                            if (removedFiles.Any())
                             {
                                 addDiagLine("The following problems were detected checking game consistency with the texture map file:", Severity.ERROR);
-                                foreach (var error in diagErrors)
+                                foreach (var error in removedFiles)
                                 {
                                     addDiagLine(error, Severity.ERROR);
                                 }
                             }
 
-                            //addDiagLine("===Files added (or removed) after ALOT" + (DIAGNOSTICS_GAME == 1 ? "/MEUITM" : "") + " install");
+                            addDiagLine("Files added or removed after texture mods were installed", Severity.SECTION);
 
                             //if (BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count > 0)
                             //{
@@ -885,7 +891,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 addDiagLine("Basegame changes", Severity.SECTION);
 
-                updateStatusCallback?.Invoke("Getting list of basegame modified files");
+                updateStatusCallback?.Invoke("Collecting basegame file modifications");
                 List<string> modifiedFiles = new List<string>();
                 void failedCallback(string file)
                 {
@@ -899,7 +905,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 else
                 {
-                    if (!selectedDiagnosticTarget.ALOTInstalled)
+                    if (!selectedDiagnosticTarget.TextureModded)
                     {
                         addDiagLine("The following basegame files have been modified:");
                         var cookedPath = MEDirectories.CookedPath(selectedDiagnosticTarget);
@@ -907,7 +913,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             if (mf.StartsWith(cookedPath, StringComparison.InvariantCultureIgnoreCase))
                             {
-                                addDiagLine($" - {mf}");
+                                addDiagLine($" - {mf.Substring(cookedPath.Length + 1)}");
                             }
                         }
                     }
@@ -974,6 +980,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 */
                 //Get DLCs
+                updateStatusCallback?.Invoke("Collecting DLC information");
+
                 var installedDLCs = MEDirectories.GetInstalledDLC(selectedDiagnosticTarget);
 
                 addDiagLine("Installed DLC", Severity.SECTION);
@@ -1155,209 +1163,352 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     addDiagLine("DLC directory is missing: " + dlcPath + ". If no DLC is installed, this folder will be missing.");
                 }
-            }
+            }*/
 
-            if (DIAGNOSTICS_GAME == 2 || DIAGNOSTICS_GAME == 3)
-            {
-                addDiagLine("===Texture File Cache (TFC) files");
-                addDiagLine("The following unpacked TFC files are present in the game directory.");
-                string[] tfcFiles = Directory.GetFiles(gamePath + "\\BIOGame", "*.tfc", SearchOption.AllDirectories);
-                if (tfcFiles.Count() > 0)
+                if (selectedDiagnosticTarget.Game > Mod.MEGame.ME1)
                 {
-                    int strOffset = (gamePath + "\\BIOGame").Length;
-                    foreach (string tfc in tfcFiles)
-                    {
-                        FileInfo fi = new FileInfo(tfc);
-                        long tfcSize = fi.Length;
-                        string tfcPath = tfc.Substring(strOffset);
-                        addDiagLine(" - " + tfcPath + ", " + ByteSize.FromBytes(tfcSize));
-                    }
-                }
-                else
-                {
-                    addDiagLine("[ERROR]      No TFC files were found - is this installation broken?");
-                }
-            }
+                    updateStatusCallback?.Invoke("Collecting TFC file information");
 
-            string asidir = Path.Combine(Directory.GetParent(Utilities.GetGameEXEPath(DIAGNOSTICS_GAME)).ToString(), "asi");
-            addDiagLine("===Installed ASI mods");
-            if (Directory.Exists(asidir))
-            {
-                addDiagLine("The follow files are located in the ASI directory:");
-                string[] files = Directory.GetFiles(asidir, "*.asi");
-                if (files.Count() == 0)
-                {
-                    addDiagLine("ASI directory is empty. No ASI mods are installed.");
-                }
-                else
-                {
-                    foreach (string f in files)
+                    addDiagLine("Texture File Cache (TFC) files", Severity.SECTION);
+                    addDiagLine("The following TFC files are present in the game directory.");
+                    var bgPath = MEDirectories.BioGamePath(selectedDiagnosticTarget);
+                    string[] tfcFiles = Directory.GetFiles(bgPath, "*.tfc", SearchOption.AllDirectories);
+                    if (tfcFiles.Any())
                     {
-                        addDiagLine(" - " + Path.GetFileName(f));
-                    }
-                }
-            }
-            else
-            {
-                addDiagLine("ASI directory does not exist. No ASI mods are installed.");
-            }
-            //TOC SIZE CHECK
-            if (DIAGNOSTICS_GAME == 3)
-            {
-                addDiagLine("===File Table of Contents (TOC) size check");
-                addDiagLine("PCConsoleTOC.bin files list the size of each file the game can load.");
-                addDiagLine("If the size is smaller than the actual file, the game will not allocate enough memory to load the file and will hang or crash, typically at loading screens.");
-                bool hadTocError = false;
-                string[] tocs = Directory.GetFiles(Path.Combine(gamePath, "BIOGame"), "PCConsoleTOC.bin", SearchOption.AllDirectories);
-                string markerfile = Utilities.GetALOTMarkerFilePath(3);
-                foreach (string toc in tocs)
-                {
-                    TOCBinFile tbf = new TOCBinFile(toc);
-                    foreach (TOCBinFile.Entry ent in tbf.Entries)
-                    {
-                        //Console.WriteLine(index + "\t0x" + ent.offset.ToString("X6") + "\t" + ent.size + "\t" + ent.name);
-                        string filepath = Path.Combine(gamePath, ent.name);
-                        if (File.Exists(filepath) && !filepath.Equals(markerfile, StringComparison.InvariantCultureIgnoreCase) && !filepath.ToLower().EndsWith("pcconsoletoc.bin"))
+                        foreach (string tfc in tfcFiles)
                         {
-                            FileInfo fi = new FileInfo(filepath);
-                            long size = fi.Length;
-                            if (ent.size < size)
-                            {
-                                addDiagLine("[ERROR] -  " + filepath + " size is " + size + ", but TOC lists " + ent.size + " (" + (ent.size - size) + " bytes)");
-                                hadTocError = true;
-                            }
+                            FileInfo fi = new FileInfo(tfc);
+                            long tfcSize = fi.Length;
+                            string tfcPath = tfc.Substring(bgPath.Length + 1);
+                            addDiagLine($" - {tfcPath}, {ByteSize.FromBytes(tfcSize)}");
+                        }
+                    }
+                    else
+                    {
+                        addDiagLine("No TFC files were found - is this installation broken?", Severity.ERROR);
+                    }
+                }
+
+                updateStatusCallback?.Invoke("Collecting ASI file information");
+
+                string asidir = MEDirectories.ASIPath(selectedDiagnosticTarget);
+                addDiagLine("Installed ASI mods", Severity.SECTION);
+                if (Directory.Exists(asidir))
+                {
+                    addDiagLine("The follow files are located in the ASI directory:");
+                    string[] files = Directory.GetFiles(asidir, "*.asi");
+                    if (!files.Any())
+                    {
+                        addDiagLine("ASI directory is empty. No ASI mods are installed.");
+                    }
+                    else
+                    {
+                        foreach (string f in files)
+                        {
+                            addDiagLine(" - " + Path.GetFileName(f));
                         }
                     }
                 }
-                if (!hadTocError)
-                {
-                    addDiagLine("All TOC files passed check. No files have a size larger than the TOC size.");
-                }
                 else
                 {
-                    addDiagLine("[ERROR]Some files are larger than the listed TOC size. This typically won't happen unless you manually installed some files or an ALOT installation failed.");
-                    addDiagLine("[ERROR]The game will always hang while loading these files." + (HASH_SUPPORTED ? " You can regenerate the TOC files by using AutoTOC. If installation failed due a crash, this won't fix it." : ""));
-                    if (HASH_SUPPORTED) { addDiagLine("[ERROR]You can run AutoTOC in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC."); }
+                    addDiagLine("ASI directory does not exist. No ASI mods are installed.");
                 }
-            }
-
-            //Get LODs
-            args = "--print-lods --gameid " + DIAGNOSTICS_GAME + " --ipc";
-            LODS_INFO.Clear();
-            runMEM_Diagnostics(exe, args, diagnosticsWorker);
-            WaitForMEM();
-
-            String lodStr = GetLODStr(DIAGNOSTICS_GAME, avi);
-            addDiagLine("===LOD Information");
-            addDiagLine(lodStr);
-
-            diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_DataBasegamemods));
-            diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_WORKING, Image_Upload));
-
-            //ME1: LOGS
-            if (HASH_SUPPORTED && DIAGNOSTICS_GAME == 1)
-            {
-                string dsound = gamePath += "\\Binaries\\dsound.dll";
-                bool dSoundExists = File.Exists(dsound);
-
-                //GET LOGS
-                string logsdir = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\BioWare\Mass Effect\Logs";
-                if (Directory.Exists(logsdir))
+                //TOC SIZE CHECK
+                if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
                 {
-                    DirectoryInfo info = new DirectoryInfo(logsdir);
-                    FileInfo[] files = info.GetFiles().Where(f => f.LastWriteTime > DateTime.Now.AddDays(-7)).OrderByDescending(p => p.LastWriteTime).ToArray();
-                    DateTime threeDaysAgo = DateTime.Now.AddDays(-3);
-                    Console.WriteLine("---");
-                    foreach (FileInfo file in files)
-                    {
-                        Console.WriteLine(file.Name + " " + file.LastWriteTime);
-                        var logLines = File.ReadAllLines(file.FullName);
-                        int crashIndex = -1;
-                        int index = 0;
-                        string reason = "";
-                        foreach (string line in logLines)
-                        {
+                    updateStatusCallback?.Invoke("Collecting TOC file information");
 
-                            if (line.Contains("Critical: appError called"))
+                    addDiagLine("File Table of Contents (TOC) size check", Severity.SECTION);
+                    addDiagLine("PCConsoleTOC.bin files list the size of each file the game can load.");
+                    addDiagLine("If the size is smaller than the actual file, the game will not allocate enough memory to load the file.");
+                    addDiagLine("These hangs typically occur at loading screens and are the result of manually modifying files without running AutoTOC afterwards.");
+                    bool hadTocError = false;
+                    string[] tocs = Directory.GetFiles(Path.Combine(gamePath, "BIOGame"), "PCConsoleTOC.bin", SearchOption.AllDirectories);
+                    string markerfile = MEDirectories.ALOTMarkerPath(selectedDiagnosticTarget);
+                    foreach (string toc in tocs)
+                    {
+                        TOCBinFile tbf = new TOCBinFile(toc);
+                        foreach (TOCBinFile.Entry ent in tbf.Entries)
+                        {
+                            //Console.WriteLine(index + "\t0x" + ent.offset.ToString("X6") + "\t" + ent.size + "\t" + ent.name);
+                            string filepath = Path.Combine(gamePath, ent.name);
+                            if (File.Exists(filepath) && !filepath.Equals(markerfile, StringComparison.InvariantCultureIgnoreCase) && !filepath.ToLower().EndsWith("pcconsoletoc.bin"))
                             {
-                                crashIndex = index;
-                                reason = "Log file indicates crash occured";
-                                Log.Information("Found crash in ME1 log " + file.Name + " on line " + index);
+                                FileInfo fi = new FileInfo(filepath);
+                                long size = fi.Length;
+                                if (ent.size < size)
+                                {
+                                    addDiagLine("-  " + filepath + " size is " + size + ", but TOC lists " + ent.size + " (" + (ent.size - size) + " bytes)", Severity.ERROR);
+                                    hadTocError = true;
+                                }
+                            }
+                        }
+                    }
+                    if (!hadTocError)
+                    {
+                        addDiagLine("All TOC files passed check. No files have a size larger than the TOC size.");
+                    }
+                    else
+                    {
+                        addDiagLine("Some files are larger than the listed TOC size. This typically won't happen unless you manually installed some files or an ALOT installation failed.", Severity.ERROR);
+                        addDiagLine("The game will always hang while loading these files." + (selectedDiagnosticTarget.Supported ? " You can regenerate the TOC files by using AutoTOC from the tools menu. If installation failed due a crash, this won't fix it." : ""));
+                    }
+                }
+
+                //Get LODs
+                if (hasMEM)
+                {
+                    updateStatusCallback?.Invoke("Collecting LOD settings");
+                    string args = $"--print-lods --gameid {gameID} --ipc";
+                    int? exitCode = null;
+                    object memFinishedLock = new object();
+                    var lods = new Dictionary<string, string>();
+                    void handleIPC(string command, string param)
+                    {
+                        switch (command)
+                        {
+                            case "LODLINE":
+                                var lodSplit = param.Split("=");
+                                lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
                                 break;
-                            }
-                            if (line.Contains("Uninitialized: Log file closed"))
-                            {
-                                crashIndex = index;
-                                reason = "~~~Additional log to provide context for log analysis";
-                                Log.Information("Found possibly relevant item in ME1 log " + file.Name + " on line " + index);
+                            default:
+                                Debug.WriteLine("oof?");
                                 break;
-                            }
-                            index++;
-                        }
-
-                        if (crashIndex >= 0)
-                        {
-                            crashIndex = Math.Max(0, crashIndex - 10);
-                            //this log has a crash
-                            addDiagLine("===Mass Effect game log " + file.Name);
-                            if (reason != "") addDiagLine(reason);
-                            if (crashIndex > 0)
-                            {
-                                addDiagLine("[CRASHLOG]...");
-                            }
-                            for (int i = crashIndex; i < logLines.Length; i++)
-                            {
-                                addDiagLine("[CRASHLOG]" + logLines[i]);
-                            }
                         }
                     }
-                }
-            }
-
-            if (DIAGNOSTICS_GAME == 3)
-            {
-                string me3logfilepath = Path.Combine(Directory.GetParent(Utilities.GetGameEXEPath(3)).ToString(), "me3log.txt");
-                if (File.Exists(me3logfilepath))
-                {
-
-                    FileInfo fi = new FileInfo(me3logfilepath);
-                    if (fi.Length < 10000)
+                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitCode = i, handleIPC);
+                    lock (memFinishedLock)
                     {
-                        addDiagLine("===Mass Effect 3 last session log");
-                        addDiagLine("Last session log has modification date of " + fi.LastWriteTimeUtc.ToShortDateString());
-                        addDiagLine();
-                        var log = File.ReadAllLines(me3logfilepath);
-                        foreach (string line in log)
+                        Monitor.Wait(memFinishedLock);
+                    }
+
+                    addLODStatusToDiag(selectedDiagnosticTarget, lods, addDiagLine);
+                }
+
+                //ME1: LOGS
+                if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
+                {
+                    updateStatusCallback?.Invoke("Collecting ME1 application logs");
+
+                    //GET LOGS
+                    string logsdir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect\Logs");
+                    if (Directory.Exists(logsdir))
+                    {
+                        DirectoryInfo info = new DirectoryInfo(logsdir);
+                        FileInfo[] files = info.GetFiles().Where(f => f.LastWriteTime > DateTime.Now.AddDays(-3)).OrderByDescending(p => p.LastWriteTime).ToArray();
+                        DateTime threeDaysAgo = DateTime.Now.AddDays(-3);
+                        foreach (FileInfo file in files)
                         {
-                            addDiagLine(line);
+                            //Console.WriteLine(file.Name + " " + file.LastWriteTime);
+                            var logLines = File.ReadAllLines(file.FullName);
+                            int crashLineNumber = -1;
+                            int currentLineNumber = -1;
+                            string reason = "";
+                            foreach (string line in logLines)
+                            {
+                                if (line.Contains("Critical: appError called"))
+                                {
+                                    crashLineNumber = currentLineNumber;
+                                    reason = "Log file indicates crash occured";
+                                    Log.Information("Found crash in ME1 log " + file.Name + " on line " + currentLineNumber);
+                                    break;
+                                }
+                                currentLineNumber++;
+                            }
+
+                            if (crashLineNumber >= 0)
+                            {
+                                crashLineNumber = Math.Max(0, crashLineNumber - 10); //show last 10 lines of log leading up to the crash
+                                //this log has a crash
+                                addDiagLine("Mass Effect game log " + file.Name, Severity.SECTION);
+                                if (reason != "") addDiagLine(reason);
+                                if (crashLineNumber > 0)
+                                {
+                                    addDiagLine("[CRASHLOG]...");
+                                }
+                                for (int i = crashLineNumber; i < logLines.Length; i++)
+                                {
+                                    addDiagLine("[CRASHLOG]" + logLines[i]);
+                                }
+                            }
                         }
                     }
                 }
-            }
-            if (pairLog)
-            {
-                //program has had issue and log should be linked
-                EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-                diagnosticsWorker.ReportProgress(0, new ThreadCommand(UPLOAD_LINKED_LOG, waitHandle));
-                waitHandle.WaitOne();
-                if (LINKEDLOGURL != null)
-                {
-                    Log.Information("Linked log for this diagnostic: " + LINKEDLOGURL);
-                    addDiagLine("[LINKEDLOG]" + LINKEDLOGURL);
-                }
-            }
-            */
 
+                //EVENT LOGS
+                updateStatusCallback?.Invoke("Collecting event logs");
+                StringBuilder crashLogs = new StringBuilder();
+                var sevenDaysAgo = DateTime.Now.AddDays(-3);
+
+                //Get event logs
+                EventLog ev = new EventLog("Application");
+                List<EventLogEntry> entries = ev.Entries
+                    .Cast<EventLogEntry>()
+                    .Where(z => z.InstanceId == 1001 && z.TimeGenerated > sevenDaysAgo && (GenerateEventLogString(z).ContainsAny(MEDirectories.ExecutableNames(selectedDiagnosticTarget.Game),StringComparison.InvariantCultureIgnoreCase)))
+                    .ToList();
+
+                addDiagLine($"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} crash logs found in Event Viewer", Severity.SECTION);
+                if (entries.Any())
+                {
+                    foreach (var entry in entries)
+                    {
+                        string str = string.Join("\n", GenerateEventLogString(entry).Split('\n').ToList().Take(17).ToList());
+                        addDiagLine($"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} Event {entry.TimeGenerated}\n{str}"); // !!! ?
+                    }
+
+                }
+                else
+                {
+                    addDiagLine("No crash events found in Event Viewer");
+                }
+
+                //    return crashLogs.ToString();
+
+
+                //}
+
+                
+                if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
+                {
+                    string me3logfilepath = Path.Combine(Directory.GetParent(MEDirectories.ExecutablePath(selectedDiagnosticTarget)).FullName, "me3log.txt");
+                    if (File.Exists(me3logfilepath))
+                    {
+
+                        FileInfo fi = new FileInfo(me3logfilepath);
+                        if (fi.Length < 10000)
+                        {
+                            addDiagLine("Mass Effect 3 last session log", Severity.SECTION);
+                            addDiagLine("Last session log has modification date of " + fi.LastWriteTimeUtc.ToShortDateString());
+                            addDiagLine();
+                            var log = Utilities.WriteSafeReadAllLines(me3logfilepath); //try catch needed?
+                            foreach (string line in log)
+                            {
+                                addDiagLine(line);
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                addDiagLine("[ERROR]Exception occured while running diagnostic.");
+                addDiagLine("Exception occured while running diagnostic.", Severity.ERROR);
                 addDiagLine(App.FlattenException(ex));
                 return diagStringBuilder.ToString();
 
             }
 
             return diagStringBuilder.ToString();
+        }
+
+        private static string GenerateEventLogString(EventLogEntry entry) => $"Event type: {entry.EntryType}\nEvent Message: {entry.Message + entry}\nEvent Time: {entry.TimeGenerated.ToShortTimeString()}\nEvent {entry.UserName}\n";
+
+        private static void addLODStatusToDiag(GameTarget selectedDiagnosticTarget, Dictionary<string, string> lods, Action<string, Severity> addDiagLine)
+        {
+            addDiagLine("Texture Level of Detail (LOD) settings", Severity.SECTION);
+            string iniPath = MEDirectories.LODConfigFile(selectedDiagnosticTarget.Game);
+            if (!File.Exists(iniPath))
+            {
+                addDiagLine($"Game config file is missing: {iniPath}", Severity.ERROR);
+                return;
+            }
+
+            foreach (KeyValuePair<string, string> kvp in lods)
+            {
+                addDiagLine($@"{kvp.Key}={kvp.Value}", Severity.INFO);
+            }
+            var textureChar1024 = lods.FirstOrDefault(x => x.Key == "TEXTUREGROUP_Character_1024");
+            if (string.IsNullOrWhiteSpace(textureChar1024.Key)) //does this work for ME2/ME3??
+            {
+                //not found
+                addDiagLine("Could not find TEXTUREGROUP_Character_1024 in config file for checking LOD settings", Severity.ERROR);
+                return;
+            }
+
+            try
+            {
+                int maxLodSize = 0;
+                if (!string.IsNullOrWhiteSpace(textureChar1024.Value))
+                {
+                    //ME2,3 default to blank
+                    maxLodSize = int.Parse(StringStructParser.GetCommaSplitValues(textureChar1024.Value)[selectedDiagnosticTarget.Game == Mod.MEGame.ME1 ? "MinLODSize" : "MaxLODSize"]);
+                }
+
+                var HQLine = "High quality texture LOD settings appear to be set";
+                var HQSettingsMissingLine = "High quality texture LOD settings appear to be missing, but a high resolution texture mod appears to be installed. The game will not use these new high quality assets - config file was probably deleted or texture quality settings were changed in game";
+                var HQVanillaLine = "High quality LOD settings are not set and no high quality texture mod is installed";
+                switch (selectedDiagnosticTarget.Game)
+                {
+                    case Mod.MEGame.ME1:
+                        if (maxLodSize != 1024) //ME1 Default
+                        {
+                            //Not Default
+                            if (selectedDiagnosticTarget.TextureModded)
+                            {
+                                addDiagLine(HQVanillaLine, Severity.INFO);
+                            }
+                            else if (maxLodSize > 1024)
+                            {
+                                addDiagLine("Texture LOD settings appear to have been raised, but this installation has not been texture modded - game will likely have unused mip crashes.", Severity.FATAL);
+                                //log = ShowBadLODDialog(log);
+                            }
+                        }
+                        else
+                        {
+                            if (selectedDiagnosticTarget.TextureModded && selectedDiagnosticTarget.HasALOTOrMEUITM())
+                            {
+                                addDiagLine(HQSettingsMissingLine, Severity.ERROR);
+                            }
+                            else
+                            {
+                                addDiagLine(HQVanillaLine, Severity.INFO);
+                            }
+                        }
+
+                        break;
+                    case Mod.MEGame.ME2:
+                    case Mod.MEGame.ME3:
+                        if (maxLodSize != 0)
+                        {
+                            //Not vanilla, alot/meuitm
+                            if (selectedDiagnosticTarget.TextureModded && selectedDiagnosticTarget.HasALOTOrMEUITM())
+                            {
+                                addDiagLine(HQVanillaLine, Severity.INFO);
+                                if (maxLodSize == 4096)
+                                {
+                                    addDiagLine("LOD quality settings: 4K textures", Severity.INFO);
+                                }
+                                else if (maxLodSize == 2048)
+                                {
+                                    addDiagLine("LOD quality settings: 2K textures", Severity.INFO);
+                                }
+                            }
+                            else //not vanilla, but no MEM/MEUITM
+                            {
+                                addDiagLine(HQSettingsMissingLine, Severity.ERROR);
+
+                            }
+                        }
+                        else //default
+                        {
+                            //alot/meuitm, but vanilla settings.
+                            if (selectedDiagnosticTarget.TextureModded && selectedDiagnosticTarget.HasALOTOrMEUITM())
+                            {
+                                addDiagLine(HQSettingsMissingLine, Severity.ERROR);
+                            }
+                            else //no alot/meuitm, vanilla setting.
+                            {
+                                addDiagLine(HQVanillaLine, Severity.INFO);
+                            }
+                        }
+
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error checking LOD settings: " + e.Message);
+                addDiagLine($"Error checking LOD settings: {e.Message}", Severity.INFO);
+            }
         }
     }
 }

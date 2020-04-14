@@ -2340,7 +2340,7 @@ namespace MassEffectModManagerCore
                         Analytics.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
                         {
                             {@"New target", SelectedGameTarget.Game.ToString()},
-                            {@"ALOT Installed", SelectedGameTarget.ALOTInstalled.ToString()}
+                            {@"ALOT Installed", SelectedGameTarget.TextureModded.ToString()}
                         });
                     }
                     catch (Win32Exception ex)
@@ -2353,7 +2353,7 @@ namespace MassEffectModManagerCore
 
         private void UpdateLODsForTarget(GameTarget selectedGameTarget, bool me12k = false)
         {
-            if (!selectedGameTarget.ALOTInstalled)
+            if (!selectedGameTarget.TextureModded)
             {
                 Utilities.SetLODs(selectedGameTarget, false, false, false);
             }

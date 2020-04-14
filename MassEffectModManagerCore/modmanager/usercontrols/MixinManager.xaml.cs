@@ -122,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InstallIntoGameCommand = new GenericCommand(CompileIntoGame, CanInstallIntoGame);
         }
 
-        private bool CanInstallIntoGame() => SelectedInstallTarget != null && !SelectedInstallTarget.ALOTInstalled;
+        private bool CanInstallIntoGame() => SelectedInstallTarget != null && !SelectedInstallTarget.TextureModded;
 
         private bool CanCompileAsNewMod()
         {

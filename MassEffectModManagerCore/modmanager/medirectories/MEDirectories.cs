@@ -17,7 +17,7 @@ namespace MassEffectModManagerCore.GameDirectories
             switch (game)
             {
                 case Mod.MEGame.ME1:
-                    return forcedPath != null? ME1Directory.CookedPath(forcedPath) : ME1Directory.cookedPath;
+                    return forcedPath != null ? ME1Directory.CookedPath(forcedPath) : ME1Directory.cookedPath;
                 case Mod.MEGame.ME2:
                     return forcedPath != null ? ME2Directory.CookedPath(forcedPath) : ME2Directory.cookedPath;
                 case Mod.MEGame.ME3:
@@ -277,6 +277,56 @@ namespace MassEffectModManagerCore.GameDirectories
             if (game == Mod.MEGame.ME1) return Path.Combine(gameRoot, @"DLC");
             if (game == Mod.MEGame.ME2 || game == Mod.MEGame.ME3) return Path.Combine(gameRoot, "BioGame", @"DLC");
             return null;
+        }
+
+        public static string ALOTMarkerPath(GameTarget selectedDiagnosticTarget)
+        {
+            switch (selectedDiagnosticTarget.Game)
+            {
+                case Mod.MEGame.ME1:
+                    return Path.Combine(selectedDiagnosticTarget.TargetPath, @"BioGame\CookedPC\testVolumeLight_VFX.upk");
+                case Mod.MEGame.ME2:
+                    return Path.Combine(selectedDiagnosticTarget.TargetPath, @"BioGame\CookedPC\BIOC_Materials.pcc");
+                case Mod.MEGame.ME3:
+                    return Path.Combine(selectedDiagnosticTarget.TargetPath, @"BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc");
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// ME1: BioEngine.ini, ME2/3: GameSettings.ini
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal static string LODConfigFile(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect\Config\BIOEngine.ini");
+                case Mod.MEGame.ME2:
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect 2\BIOGame\Config\GamerSettings.ini");
+                case Mod.MEGame.ME3:
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect 3\BIOGame\Config\GamerSettings.ini");
+                default:
+                    return null;
+            }
+        }
+
+        public static string[] ExecutableNames(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return new[] { "MassEffect.exe" };
+                case Mod.MEGame.ME2:
+                    return new[] { "MassEffect2.exe", "ME2Game.exe" };
+                case Mod.MEGame.ME3:
+                    return new[] { "MassEffect3.exe" };
+                default:
+                    return null;
+            }
         }
     }
 }

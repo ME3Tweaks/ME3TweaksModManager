@@ -110,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RestoreAllBasegame()
         {
             bool restore = false;
-            if (SelectedTarget.ALOTInstalled)
+            if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
                 {
@@ -162,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RestoreAllSFARs()
         {
             bool restore = false;
-            if (SelectedTarget.ALOTInstalled)
+            if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
                 {
@@ -204,7 +204,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
-                if (SelectedTarget.ALOTInstalled)
+                if (SelectedTarget.TextureModded)
                 {
                     var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_deletingXwhileAlotInstalledUnsupported, mod.ModName), M3L.GetString(M3L.string_deletingWillPutAlotInUnsupportedConfig), MessageBoxButton.YesNo, MessageBoxImage.Error);
                     return res == MessageBoxResult.Yes;
@@ -224,7 +224,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
-                if (SelectedTarget.ALOTInstalled && filepath.RepresentsPackageFilePath())
+                if (SelectedTarget.TextureModded && filepath.RepresentsPackageFilePath())
                 {
                     if (!Settings.DeveloperMode)
                     {
@@ -249,7 +249,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return false;
                 }
 
-                if (SelectedTarget.ALOTInstalled)
+                if (SelectedTarget.TextureModded)
                 {
                     if (!Settings.DeveloperMode)
                     {

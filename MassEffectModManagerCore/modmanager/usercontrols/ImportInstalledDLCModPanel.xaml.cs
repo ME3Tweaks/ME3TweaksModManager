@@ -57,7 +57,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ImportSelectedDLCFolderCommand = new GenericCommand(ImportSelectedFolder, CanImportSelectedFolder);
         }
 
-        private bool CanImportSelectedFolder() => SelectedDLCFolder != null && !string.IsNullOrWhiteSpace(ModNameText) && !SelectedTarget.ALOTInstalled;
+        private bool CanImportSelectedFolder() => SelectedDLCFolder != null && !string.IsNullOrWhiteSpace(ModNameText) && !SelectedTarget.TextureModded;
 
         private void ImportSelectedFolder()
         {
@@ -203,7 +203,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public void OnSelectedDLCFolderChanged()
         {
             ModSiteText = "";
-            if (SelectedDLCFolder != null && SelectedTarget != null && !SelectedTarget.ALOTInstalled)
+            if (SelectedDLCFolder != null && SelectedTarget != null && !SelectedTarget.TextureModded)
             {
                 App.ThirdPartyIdentificationService[SelectedTarget.Game.ToString()].TryGetValue(SelectedDLCFolder.DLCFolderName, out var tpmi);
                 CurrentModInTPMI = tpmi != null;

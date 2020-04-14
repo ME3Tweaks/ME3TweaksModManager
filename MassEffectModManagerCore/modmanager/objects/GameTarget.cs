@@ -90,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var alotInfo = GetInstalledALOTInfo();
                 if (alotInfo != null)
                 {
-                    ALOTInstalled = true;
+                    TextureModded = true;
                     ALOTVersion = alotInfo.ToString();
                     if (alotInfo.MEUITMVER > 0)
                     {
@@ -100,7 +100,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 else
                 {
-                    ALOTInstalled = false;
+                    TextureModded = false;
                     ALOTVersion = null;
                     MEUITMInstalled = false;
                     MEUITMVersion = 0;
@@ -136,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             return obj.TargetPath.GetHashCode();
         }
 
-        public bool ALOTInstalled { get; private set; }
+        public bool TextureModded { get; private set; }
 
         public ALOTVersionInfo GetInstalledALOTInfo()
         {
@@ -275,7 +275,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             get
             {
-                if (ALOTInstalled)
+                if (TextureModded)
                 {
                     return M3L.GetString(M3L.string_interp_ui_alotInstalledVersion, ALOTVersion);
                 }
@@ -623,11 +623,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         internal void StripALOTInfo()
         {
 #if DEBUG
-            var markerPAth = getALOTMarkerFilePath();
+            var markerPath = getALOTMarkerFilePath();
 
             try
             {
-                using (FileStream fs = new FileStream(markerPAth, System.IO.FileMode.Open, FileAccess.ReadWrite))
+                using (FileStream fs = new FileStream(markerPath, System.IO.FileMode.Open, FileAccess.ReadWrite))
                 {
                     fs.SeekEnd();
                     fs.Position -= 4;
@@ -640,6 +640,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 Log.Error($@"Error stripping debug ALOT marker file for {Game}. {e.Message}");
             }
 #endif
+        }
+
+        public bool HasALOTOrMEUITM()
+        {
+            var alotInfo = GetInstalledALOTInfo();
+            return alotInfo != null && (alotInfo.ALOTVER > 0 || alotInfo.MEUITMVER > 0);
         }
     }
 }
