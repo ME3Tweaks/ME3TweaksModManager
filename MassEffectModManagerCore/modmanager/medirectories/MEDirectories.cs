@@ -328,5 +328,25 @@ namespace MassEffectModManagerCore.GameDirectories
                     return null;
             }
         }
+
+        public static Dictionary<string, MetaCMM> GetMetaMappedInstalledDLC(GameTarget target)
+        {
+            var installedDLC = GetInstalledDLC(target);
+            var metamap = new Dictionary<string, MetaCMM>();
+            var dlcpath = DLCPath(target);
+            foreach (var v in installedDLC)
+            {
+                var meta = Path.Combine(dlcpath, v, "_metacmm.txt");
+                MetaCMM mf = null;
+                if (File.Exists(meta))
+                {
+                    mf = new MetaCMM(meta);
+                }
+
+                metamap[v] = mf;
+            }
+
+            return metamap;
+        }
     }
 }

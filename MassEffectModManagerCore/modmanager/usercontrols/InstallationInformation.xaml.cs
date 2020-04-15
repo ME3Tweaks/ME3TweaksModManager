@@ -450,46 +450,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     InstalledByManagedSolution = true;
                     InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
-                    //Parse MetaCMM
-                    var lines = Utilities.WriteSafeReadAllLines(metaFile).ToList();
-                    int i = 0;
-                    //This is a weird way of doing it but it helps ensure backwards compatiblity and forwards compatibility.
-                    foreach (var line in lines)
+                    MetaCMM mcmm = new MetaCMM(metaFile);
+                    if (mcmm.ModName != ModName)
                     {
-                        switch (i)
+                        DLCFolderNameString += $@" ({ModName})";
+                        if (!modNamePrefersTPMI || ModName == null)
                         {
-                            case 0:
-                                if (line != ModName)
-                                {
-                                    DLCFolderNameString += $@" ({ModName})";
-                                    if (!modNamePrefersTPMI || ModName == null)
-                                    {
-                                        ModName = line;
-                                    }
-                                }
-                                break;
-                            case 1:
-                                Version = line;
-                                break;
-                            case 2:
-                                InstallerInstanceBuild = line;
-                                if (int.TryParse(InstallerInstanceBuild, out var mmver))
-                                {
-                                    InstalledBy = M3L.GetString(M3L.string_installedByModManager);
-                                }
-                                else
-                                {
-                                    InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
-                                }
-                                break;
-                            case 3:
-                                InstallerInstanceGUID = line;
-                                break;
-                            default:
-                                Log.Error($@"Unsupported line number in _metacmm.txt: {i}");
-                                break;
+                            ModName = mcmm.ModName;
                         }
-                        i++;
+                    }
+
+                    Version = mcmm.Version;
+                    InstallerInstanceBuild = mcmm.InstalledBy;
+                    if (int.TryParse(InstallerInstanceBuild, out var _))
+                    {
+                        InstalledBy = M3L.GetString(M3L.string_installedByModManager);
+                    }
+                    else
+                    {
+                        InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
                     }
                 }
                 else

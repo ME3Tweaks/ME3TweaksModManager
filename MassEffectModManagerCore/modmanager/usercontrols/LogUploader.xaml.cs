@@ -95,7 +95,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown)
                 {
                     Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
-                    logUploadText += LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, updateStatusCallback);
+                    logUploadText += LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck /*&& SelectedDiagnosticTarget.TextureModded*/, updateStatusCallback);
                 }
 
                 if (SelectedLog != null && SelectedLog.Selectable)
@@ -190,6 +190,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 };
             bw.RunWorkerAsync();
         }
+
+        public bool TextureCheck { get; set; } = true;
 
         private bool CanUploadLog() => !UploadingLog && ((SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown) || (SelectedLog != null && SelectedLog.Selectable));
 

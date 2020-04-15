@@ -28,6 +28,8 @@ using Octokit;
 using SevenZip;
 using ProgressEventArgs = System.Management.ProgressEventArgs;
 using System.Threading.Tasks;
+using IniParser;
+using IniParser.Model;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using NickStrupat;
@@ -97,7 +99,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             FATAL,
             GOOD,
             DIAGSECTION,
-            BOLD
+            BOLD,
+            DLC,
+            GAMEID,
+            OFFICIALDLC
         }
         private static int GetPartitionDiskBackingType(string partitionLetter)
         {
@@ -203,6 +208,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string param = str.Substring(endOfCommand + 5).Trim();
                     ipcCallback?.Invoke(command, param);
                 }
+                //Debug.WriteLine(args2.Line);
             };
             memProcess.Exited += (a, b) =>
             {
@@ -314,7 +320,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }*/
         }
 
-        public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, Action<string> updateStatusCallback = null)
+        public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, bool textureCheck, Action<string> updateStatusCallback = null)
         {
             updateStatusCallback?.Invoke("Preparing to collect diagnostic info");
 
@@ -376,6 +382,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             #endregion
 
+            #region Diagnostic setup and diag header
             updateStatusCallback?.Invoke("Collecting game information");
             var diagStringBuilder = new StringBuilder();
 
@@ -409,18 +416,58 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     case Severity.BOLD:
                         diagStringBuilder.Append($@"[BOLD]{message}");
                         break;
+                    case Severity.DLC:
+                        diagStringBuilder.Append($@"[DLC]{message}");
+                        break;
+                    case Severity.OFFICIALDLC:
+                        diagStringBuilder.Append($@"[OFFICIALDLC]{message}");
+                        break;
+                    case Severity.GAMEID:
+                        diagStringBuilder.Append($@"[GAMEID]{message}");
+                        break;
                 }
                 diagStringBuilder.Append("\n");
             }
 
 
-            //todo: massage this alot code to work with M3
             string gamePath = selectedDiagnosticTarget.TargetPath;
+            var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
+
+            addDiagLine(gameID, Severity.GAMEID);
             addDiagLine($"ME3Tweaks Mod Manager {App.AppVersionHR} Game Diagnostic");
             addDiagLine($"Diagnostic for {Utilities.GetGameName(selectedDiagnosticTarget.Game)}");
             addDiagLine($"Diagnostic generated on {DateTime.Now.ToShortDateString()}");
+            #endregion
+
+            #region MEM Setup
+            //vars
+            string args = null;
+            object memFinishedLock = new object();
+            int? exitcode = null;
+
+            //paths
+            string oldMemGamePath = null;
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModder");
+            string _iniPath = Path.Combine(path, "MassEffectModder.ini");
             if (hasMEM)
             {
+                // Set INI path to target
+
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                if (!File.Exists(_iniPath))
+                {
+                    File.Create(_iniPath).Close();
+                }
+
+                IniData ini = new FileIniDataParser().ReadFile(_iniPath);
+                oldMemGamePath = ini["GameDataPath"][selectedDiagnosticTarget.Game.ToString()];
+                ini["GameDataPath"][selectedDiagnosticTarget.Game.ToString()] = gamePath;
+                File.WriteAllText(_iniPath, ini.ToString());
+
                 var versInfo = FileVersionInfo.GetVersionInfo(mempath);
                 int fileVersion = versInfo.FileMajorPart;
                 addDiagLine($"Diagnostic MassEffectModderNoGui version: {fileVersion}");
@@ -429,38 +476,48 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 addDiagLine("Mass Effect Modder No Gui was not available for use when this diagnostic was generated.", Severity.ERROR);
             }
+            #endregion
 
             addDiagLine($"System culture: {CultureInfo.InstalledUICulture.Name}");
-
-            updateStatusCallback?.Invoke("Collecting game information");
-            addDiagLine("Basic game information", Severity.DIAGSECTION);
-            addDiagLine($"Game is installed at {gamePath}");
-
-
-            string pathroot = Path.GetPathRoot(gamePath);
-            pathroot = pathroot.Substring(0, 1);
-            if (pathroot == @"\")
-            {
-                addDiagLine("Installation appears to be on a network drive (first character in path is \\)", Severity.WARN);
-            }
-            else
-            {
-                if (Utilities.IsWindows10OrNewer())
-                {
-                    int backingType = GetPartitionDiskBackingType(pathroot);
-                    string type = "Unknown type";
-                    switch (backingType)
-                    {
-                        case 3: type = "Hard disk drive"; break;
-                        case 4: type = "Solid state drive"; break;
-                        default: type += ": " + backingType; break;
-                    }
-                    addDiagLine("Installed on disk type: " + type);
-                }
-            }
-
             try
             {
+                #region Game Information
+
+                updateStatusCallback?.Invoke("Collecting game information");
+                addDiagLine("Basic game information", Severity.DIAGSECTION);
+                addDiagLine($"Game is installed at {gamePath}");
+
+
+                string pathroot = Path.GetPathRoot(gamePath);
+                pathroot = pathroot.Substring(0, 1);
+                if (pathroot == @"\")
+                {
+                    addDiagLine("Installation appears to be on a network drive (first character in path is \\)", Severity.WARN);
+                }
+                else
+                {
+                    if (Utilities.IsWindows10OrNewer())
+                    {
+                        int backingType = GetPartitionDiskBackingType(pathroot);
+                        string type = "Unknown type";
+                        switch (backingType)
+                        {
+                            case 3:
+                                type = "Hard disk drive";
+                                break;
+                            case 4:
+                                type = "Solid state drive";
+                                break;
+                            default:
+                                type += ": " + backingType;
+                                break;
+                        }
+
+                        addDiagLine("Installed on disk type: " + type);
+                    }
+                }
+
+
                 ALOTVersionInfo avi = selectedDiagnosticTarget.GetInstalledALOTInfo();
                 var texturesInstalled = avi != null;
 
@@ -491,6 +548,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         addDiagLine($"Game source: Unknown/Unsupported - {selectedDiagnosticTarget.ExecutableHash}", Severity.FATAL);
                     }
+
                     //Executable signatures
                     var info = new FileInspector(exePath);
                     var certOK = info.Validate();
@@ -527,7 +585,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        addDiagLine("binkw32 ASI bypass is not installed. DLC mods and modified DLC will not load", Severity.WARN);
+                        addDiagLine("binkw32 ASI bypass is not installed. DLC mods, ASI mods, and modified DLC will not load", Severity.WARN);
                     }
 
                     var exeDir = Path.GetDirectoryName(exePath);
@@ -536,17 +594,23 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         addDiagLine("d3d9.dll exists - a dll is hooking the process (reshade?), may cause stability issues", Severity.WARN);
                     }
+
                     var fpscounter = Path.Combine(exeDir, @"fpscounter\fpscounter.dll");
                     if (File.Exists(fpscounter))
                     {
                         addDiagLine("fpscounter.dll exists - FPS Counter plugin detected, may cause stability issues", Severity.WARN);
                     }
+
                     var dinput8 = Path.Combine(exeDir, "dinput8.dll");
                     if (File.Exists(dinput8))
                     {
                         addDiagLine("dinput8.dll exists - a dll is hooking the process, may cause stability issues", Severity.WARN);
                     }
                 }
+
+                #endregion
+
+                #region System Information
 
                 updateStatusCallback?.Invoke("Collecting system information");
 
@@ -576,13 +640,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine("System Memory", Severity.BOLD);
                 var computerInfo = new ComputerInfo();
                 long ramInBytes = (long)computerInfo.TotalPhysicalMemory;
-                addDiagLine("Total memory available: " + ByteSize.FromBytes(ramInBytes).GibiBytes.ToString("#.#") +"GB");
+                addDiagLine("Total memory available: " + ByteSize.FromBytes(ramInBytes).GibiBytes.ToString("#.#") + "GB");
                 addDiagLine("Processors", Severity.BOLD);
                 addDiagLine(GetProcessorInformationForDiag());
                 if (ramInBytes == 0)
                 {
                     addDiagLine("Unable to get the read amount of physically installed ram. This may be a sign of impending hardware failure in the SMBIOS", Severity.WARN);
                 }
+
                 ManagementObjectSearcher objvide = new ManagementObjectSearcher("select * from Win32_VideoController");
                 int vidCardIndex = 1;
                 foreach (ManagementObject obj in objvide.Get())
@@ -626,10 +691,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                         }
                     }
+
                     addDiagLine("Memory: " + displayVal);
                     addDiagLine("DriverVersion: " + obj["DriverVersion"]);
                     vidCardIndex++;
                 }
+
+                #endregion
+
+                #region Texture mod information
+                updateStatusCallback?.Invoke("Getting texture mod installation info");
 
                 addDiagLine("Texture mod information", Severity.DIAGSECTION);
                 if (avi == null)
@@ -655,16 +726,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         addDiagLine("Latest installation was from ALOT Installer v" + avi.ALOT_INSTALLER_VERSION_USED);
                     }
+
                     addDiagLine("Latest installation used MEM v" + avi.MEM_VERSION_USED);
                 }
 
-
-                //Start diagnostics
-                var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
+                #endregion
 
                 if (hasMEM)
                 {
-                    string args = $"--check-game-data-mismatch --gameid {gameID} --ipc";
+                    #region Files added or removed after texture install
+
+                    args = $"--check-game-data-mismatch --gameid {gameID} --ipc";
                     if (selectedDiagnosticTarget.TextureModded)
                     {
                         bool textureMapFileExists = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + $@"\MassEffectModder\me{gameID}map.bin");
@@ -674,13 +746,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             // check for replaced files (file size changes)
                             updateStatusCallback?.Invoke("Checking texture map <-> game consistency");
-                            int? exitcode = null;
-                            object memFinishedLock = new object();
                             List<string> removedFiles = new List<string>();
                             List<string> addedFiles = new List<string>();
                             List<string> replacedFiles = new List<string>();
-                            void setExitCode(int? value) => exitcode = value;
-                            void handleIPC(string command, string param)
+                            runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
                             {
                                 switch (command)
                                 {
@@ -697,13 +766,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         {
                                             replacedFiles.Add(param);
                                         }
+
                                         break;
                                     default:
                                         Debug.WriteLine("oof?");
                                         break;
                                 }
-                            }
-                            runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, setExitCode, handleIPC);
+                            });
                             lock (memFinishedLock)
                             {
                                 Monitor.Wait(memFinishedLock);
@@ -754,164 +823,289 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
 
-                    /*if (!TextureCheck || MEMI_FOUND)
+                    #endregion
+
+                    #region Textures check... unknown?
+
+                    //what the hell is this?
+                    //if (textureCheck)
+                    //{
+                    //    //if (MEMI_FOUND)
+                    //    //{
+                    //    args = $"--check-game-data-after --gameid {gameID} --ipc";
+                    //    //}
+                    //    //else // full texture check without mods installed. might allow this
+                    //    //{
+                    //    //    args = "--check-for-markers --gameid " + DIAGNOSTICS_GAME + " --ipc";
+                    //    //}
+                    //    exitcode = null;
+                    //    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
+                    //    {
+
+                    //    });
+                    //    lock (memFinishedLock)
+                    //    {
+                    //        Monitor.Wait(memFinishedLock);
+                    //    }
+                    //    if (MEMI_FOUND)
+                    //    {
+                    //        addDiagLine("===Replaced files scan (after textures were installed)");
+                    //        addDiagLine("This check will detect if files were replaced after textures were installed in an unsupported manner.");
+                    //        addDiagLine("");
+                    //    }
+                    //    else
+                    //    {
+                    //        addDiagLine("===Preinstallation file scan");
+                    //        addDiagLine("This check will make sure all files can be opened for reading and that files that were previously modified by ALOT are not installed.");
+                    //        addDiagLine("");
+                    //    }
+
+                    //    if (BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count > 0)
+                    //    {
+
+                    //        if (MEMI_FOUND)
+                    //        {
+                    //            addDiagLine("[ERROR]Diagnostic reports some files appear to have been added or replaced after ALOT was installed, or could not be read:");
+                    //        }
+                    //        else
+                    //        {
+                    //            addDiagLine("[ERROR]The following files did not pass the modification marker check, or could not be read:");
+                    //        }
+
+                    //        int numSoFar = 0;
+                    //        foreach (String str in BACKGROUND_MEM_PROCESS_PARSED_ERRORS)
+                    //        {
+                    //            addDiagLine("[ERROR] - " + str);
+                    //            numSoFar++;
+                    //            if (numSoFar == 10 && BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count() > 10)
+                    //            {
+                    //                addDiagLine("[SUB]");
+                    //            }
+                    //        }
+
+                    //        if (numSoFar > 10)
+                    //        {
+                    //            addDiagLine("[/SUB]");
+                    //        }
+
+                    //        if (MEMI_FOUND)
+                    //        {
+                    //            addDiagLine("[ERROR]Files added or replaced after ALOT has been installed is not supported due to the way the Unreal Engine 3 works.");
+                    //        }
+                    //        else
+                    //        {
+                    //            addDiagLine("[ERROR]Files that were previously modified by ALOT are most times broken or leftover from a previous ALOT failed installation that did not complete and set the ALOT installation marker.");
+                    //            addDiagLine("[ERROR]Delete your game installation and reinstall the game, or restore from your backup in the ALOT settings.");
+                    //        }
+
+                    //        if (BACKGROUND_MEM_PROCESS.ExitCode == null || BACKGROUND_MEM_PROCESS.ExitCode != 0)
+                    //        {
+                    //            pairLog = true;
+                    //            addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-after. Some data was returned. The return code was: " + BACKGROUND_MEM_PROCESS.ExitCode);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        if (BACKGROUND_MEM_PROCESS.ExitCode != null && BACKGROUND_MEM_PROCESS.ExitCode == 0)
+                    //        {
+                    //            if (MEMI_FOUND)
+                    //            {
+                    //                addDiagLine("Diagnostic did not find any files that were added or replaced after ALOT installation or have issues reading files.");
+                    //            }
+                    //            else
+                    //            {
+                    //                addDiagLine("Diagnostic did not find any files from previous installations of ALOT or have issues reading files.");
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            pairLog = true;
+                    //            addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-after: " + BACKGROUND_MEM_PROCESS.ExitCode);
+                    //        }
+                    //    }
+
+                    //    diagnosticsWorker.ReportProgress(0, new ThreadCommand(RESET_REPLACEFILE_TEXT));
+                    //    diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_DataAfter));
+                    //}
+
+                    //Context = CONTEXT_NORMAL;
+                    #endregion
+
+                    #region Textures - full check
+                    //FULL CHECK
+                    if (textureCheck)
                     {
-                        if (MEMI_FOUND)
+                        updateStatusCallback?.Invoke("Performing full textures check 0%");
+                        addDiagLine("Full Textures Check", Severity.DIAGSECTION);
+                        args = $"--check-game-data-textures --gameid {gameID} --ipc";
+                        exitcode = null;
+                        var emptyMipsNotRemoved = new List<string>();
+                        var badTFCReferences = new List<string>();
+                        var scanErrors = new List<string>();
+                        string lastMissingTFC = null;
+                        runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
                         {
-                            args = "--check-game-data-after --gameid " + DIAGNOSTICS_GAME + " --ipc";
-                        }
-                        else
-                        {
-                            args = "--check-for-markers --gameid " + DIAGNOSTICS_GAME + " --ipc";
-                        }
-
-                        diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_WORKING, Image_DataAfter));
-                        Context = MEMI_FOUND ? CONTEXT_REPLACEDFILE_SCAN : CONTEXT_FILEMARKER_SCAN;
-                        runMEM_Diagnostics(exe, args, diagnosticsWorker);
-                        WaitForMEM();
-                        if (MEMI_FOUND)
-                        {
-                            addDiagLine("===Replaced files scan (after textures were installed)");
-                            addDiagLine("This check will detect if files were replaced after textures were installed in an unsupported manner.");
-                            addDiagLine("");
-                        }
-                        else
-                        {
-                            addDiagLine("===Preinstallation file scan");
-                            addDiagLine("This check will make sure all files can be opened for reading and that files that were previously modified by ALOT are not installed.");
-                            addDiagLine("");
-                        }
-
-                        if (BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count > 0)
-                        {
-
-                            if (MEMI_FOUND)
+                            switch (command)
                             {
-                                addDiagLine("[ERROR]Diagnostic reports some files appear to have been added or replaced after ALOT was installed, or could not be read:");
+                                case "ERROR_MIPMAPS_NOT_REMOVED":
+                                    if (selectedDiagnosticTarget.TextureModded)
+                                    {
+                                        //only matters when game is texture modded
+                                        emptyMipsNotRemoved.Add(param);
+                                    }
+                                    break;
+                                case "TASK_PROGRESS":
+                                    updateStatusCallback?.Invoke($"Performing full textures check {param}%");
+                                    break;
+                                case "PROCESSING_FILE":
+                                    //Don't think there's anything to do with this right now
+                                    break;
+                                case "ERROR_REFERENCED_TFC_NOT_FOUND":
+                                    //badTFCReferences.Add(param);
+                                    lastMissingTFC = param;
+                                    break;
+                                case "ERROR_TEXTURE_SCAN_DIAGNOSTIC":
+                                    if (lastMissingTFC != null)
+                                    {
+                                        badTFCReferences.Add(lastMissingTFC + ", " + param);
+                                    }
+                                    else
+                                    {
+                                        scanErrors.Add(param);
+                                    }
+                                    lastMissingTFC = null; //reset
+                                    break;
+                                default:
+                                    Debug.WriteLine($"{command} {param}");
+                                    break;
                             }
-                            else
-                            {
-                                addDiagLine("[ERROR]The following files did not pass the modification marker check, or could not be read:");
-                            }
+                        });
+                        lock (memFinishedLock)
+                        {
+                            Monitor.Wait(memFinishedLock);
+                        }
 
-                            int numSoFar = 0;
-                            foreach (String str in BACKGROUND_MEM_PROCESS_PARSED_ERRORS)
+
+                        if (emptyMipsNotRemoved.Any() || badTFCReferences.Any() || scanErrors.Any())
+                        {
+                            addDiagLine("Texture check reported errors", Severity.ERROR);
+                            if (emptyMipsNotRemoved.Any())
                             {
-                                addDiagLine("[ERROR] - " + str);
-                                numSoFar++;
-                                if (numSoFar == 10 && BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count() > 10)
+                                addDiagLine();
+                                addDiagLine("The following textures contain empty mips, which typically means files were installed after texture mods were installed.:", Severity.ERROR);
+                                foreach (var em in emptyMipsNotRemoved)
                                 {
-                                    addDiagLine("[SUB]");
+                                    addDiagLine(" - " + em, Severity.ERROR);
                                 }
                             }
 
-                            if (numSoFar > 10)
+                            if (badTFCReferences.Any())
                             {
-                                addDiagLine("[/SUB]");
+                                addDiagLine();
+                                addDiagLine("The following textures have bad TFC references, which means the mods were built wrong, dependent DLC is missing, or the mod was installed wrong:", Severity.ERROR);
+                                foreach (var br in badTFCReferences)
+                                {
+                                    addDiagLine(" - " + br, Severity.ERROR);
+                                }
                             }
 
-                            if (MEMI_FOUND)
+                            if (scanErrors.Any())
                             {
-                                addDiagLine("[ERROR]Files added or replaced after ALOT has been installed is not supported due to the way the Unreal Engine 3 works.");
-                            }
-                            else
-                            {
-                                addDiagLine("[ERROR]Files that were previously modified by ALOT are most times broken or leftover from a previous ALOT failed installation that did not complete and set the ALOT installation marker.");
-                                addDiagLine("[ERROR]Delete your game installation and reinstall the game, or restore from your backup in the ALOT settings.");
-                            }
-
-                            if (BACKGROUND_MEM_PROCESS.ExitCode == null || BACKGROUND_MEM_PROCESS.ExitCode != 0)
-                            {
-                                pairLog = true;
-                                addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-after. Some data was returned. The return code was: " + BACKGROUND_MEM_PROCESS.ExitCode);
+                                addDiagLine();
+                                addDiagLine("The following textures failed to scan:", Severity.ERROR);
+                                foreach (var fts in scanErrors)
+                                {
+                                    addDiagLine(" - " + fts, Severity.ERROR);
+                                }
                             }
                         }
                         else
                         {
-                            if (BACKGROUND_MEM_PROCESS.ExitCode != null && BACKGROUND_MEM_PROCESS.ExitCode == 0)
-                            {
-                                if (MEMI_FOUND)
-                                {
-                                    addDiagLine("Diagnostic did not find any files that were added or replaced after ALOT installation or have issues reading files.");
-                                }
-                                else
-                                {
-                                    addDiagLine("Diagnostic did not find any files from previous installations of ALOT or have issues reading files.");
-                                }
-                            }
-                            else
-                            {
-                                pairLog = true;
-                                addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-after: " + BACKGROUND_MEM_PROCESS.ExitCode);
-                            }
+                            addDiagLine("Texture check did not find any texture issues in this installation");
                         }
 
-                        diagnosticsWorker.ReportProgress(0, new ThreadCommand(RESET_REPLACEFILE_TEXT));
-                        diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_DataAfter));
+
+                        //int numSoFar = 0;
+                        //foreach (string str in BACKGROUND_MEM_PROCESS_PARSED_ERRORS)
+                        //{
+                        //    addDiagLine("[ERROR] -  " + str);
+                        //    numSoFar++;
+                        //    if (numSoFar == 10 && BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count() > 10)
+                        //    {
+                        //        addDiagLine("[SUB]");
+                        //    }
+                        //}
+
+                        //if (numSoFar > 10)
+                        //{
+                        //    addDiagLine("[/SUB]");
+                        //}
+
+                        //if (BACKGROUND_MEM_PROCESS.ExitCode == null || BACKGROUND_MEM_PROCESS.ExitCode != 0)
+                        //{
+                        //    pairLog = true;
+                        //    addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-textures. Some data was returned. The return code was: " + BACKGROUND_MEM_PROCESS.ExitCode);
+                        //}
+                    }
+                    else
+                    {
+                        //if (BACKGROUND_MEM_PROCESS.ExitCode != null && BACKGROUND_MEM_PROCESS.ExitCode == 0)
+                        //{
+                        //    addDiagLine("Diagnostics textures check (full) did not find any issues.");
+                        //}
+                        //else
+                        //{
+                        //    pairLog = true;
+                        //    addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-textures: " + BACKGROUND_MEM_PROCESS.ExitCode);
+                        //}
+                    }
+                    #endregion
+
+
+                    #region Texture LODs
+
+                    updateStatusCallback?.Invoke("Collecting LOD settings");
+                    args = $"--print-lods --gameid {gameID} --ipc";
+                    var lods = new Dictionary<string, string>();
+                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
+                    {
+                        switch (command)
+                        {
+                            case "LODLINE":
+                                var lodSplit = param.Split("=");
+                                lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
+                                break;
+                            default:
+                                Debug.WriteLine("oof?");
+                                break;
+                        }
+                    });
+                    lock (memFinishedLock)
+                    {
+                        Monitor.Wait(memFinishedLock);
                     }
 
-                    Context = CONTEXT_NORMAL;
+                    addLODStatusToDiag(selectedDiagnosticTarget, lods, addDiagLine);
 
-                    //FULL CHECK
-                    if (TextureCheck)
-                    {
-                        addDiagLine("===Full Textures Check");
-                        diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_WORKING, Image_FullCheck));
-                        diagnosticsWorker.ReportProgress(0, new ThreadCommand(TURN_ON_TASKBAR_PROGRESS));
-                        args = "--check-game-data-textures --gameid " + DIAGNOSTICS_GAME + " --ipc";
-                        Context = CONTEXT_FULLMIPMAP_SCAN;
-                        runMEM_Diagnostics(exe, args, diagnosticsWorker);
-                        WaitForMEM();
-                        Context = CONTEXT_NORMAL;
-
-                        if (BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count > 0)
-                        {
-                            addDiagLine("Full texture check reported errors:");
-
-                            int numSoFar = 0;
-                            foreach (string str in BACKGROUND_MEM_PROCESS_PARSED_ERRORS)
-                            {
-                                addDiagLine("[ERROR] -  " + str);
-                                numSoFar++;
-                                if (numSoFar == 10 && BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count() > 10)
-                                {
-                                    addDiagLine("[SUB]");
-                                }
-                            }
-
-                            if (numSoFar > 10)
-                            {
-                                addDiagLine("[/SUB]");
-                            }
-
-                            if (BACKGROUND_MEM_PROCESS.ExitCode == null || BACKGROUND_MEM_PROCESS.ExitCode != 0)
-                            {
-                                pairLog = true;
-                                addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-textures. Some data was returned. The return code was: " + BACKGROUND_MEM_PROCESS.ExitCode);
-                            }
-                        }
-                        else
-                        {
-                            if (BACKGROUND_MEM_PROCESS.ExitCode != null && BACKGROUND_MEM_PROCESS.ExitCode == 0)
-                            {
-                                addDiagLine("Diagnostics textures check (full) did not find any issues.");
-                            }
-                            else
-                            {
-                                pairLog = true;
-                                addDiagLine("[ERROR]MEMNoGui returned non zero exit code, or null (crash) during --check-game-data-textures: " + BACKGROUND_MEM_PROCESS.ExitCode);
-                            }
-                        }
-
-                        diagnosticsWorker.ReportProgress(0, new ThreadCommand(TURN_OFF_TASKBAR_PROGRESS));
-                        diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_FullCheck));
-                    }*/
+                    #endregion
                 }
+                else
+                {
+                    addDiagLine("Texture checks skipped", Severity.DIAGSECTION);
+                    addDiagLine("Mass Effect Modder No Gui was not available for use when this diagnostic was run.", Severity.WARN);
+                    addDiagLine("The following checks were skipped:", Severity.WARN);
+                    addDiagLine(" - Files added or removed after texture install", Severity.WARN);
+                    addDiagLine(" - Textures check", Severity.WARN);
+                    addDiagLine(" - Texture LODs check", Severity.WARN);
+                }
+
+                #region Basegame file changes
 
                 addDiagLine("Basegame changes", Severity.DIAGSECTION);
 
                 updateStatusCallback?.Invoke("Collecting basegame file modifications");
                 List<string> modifiedFiles = new List<string>();
+
                 void failedCallback(string file)
                 {
                     modifiedFiles.Add(file);
@@ -928,10 +1122,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         addDiagLine("The following basegame files have been modified:");
                         var cookedPath = MEDirectories.CookedPath(selectedDiagnosticTarget);
+                        var markerPath = MEDirectories.ALOTMarkerPath(selectedDiagnosticTarget);
                         foreach (var mf in modifiedFiles)
                         {
                             if (mf.StartsWith(cookedPath, StringComparison.InvariantCultureIgnoreCase))
                             {
+                                if (mf.Equals(markerPath, StringComparison.InvariantCultureIgnoreCase)) continue; //don't report this file
                                 var info = BasegameFileIdentificationService.GetBasegameFileSource(selectedDiagnosticTarget, mf);
                                 if (info != null)
                                 {
@@ -951,65 +1147,62 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
 
-                //Thread.Sleep(1000000);
-                /*
-                //addDiagLine("If ALOT was installed, detection of mods in this block means you installed items after ALOT was installed, which will break the game.");
+                #endregion
 
-                args = "--detect-mods --gameid " + DIAGNOSTICS_GAME + " --ipc";
-                diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_WORKING, Image_DataBasegamemods));
-                runMEM_Diagnostics(exe, args, diagnosticsWorker);
-                WaitForMEM();
-                addDiagLine("");
+                #region Blacklisted mods check
 
-                string prefix = "";
-                if (MEMI_FOUND)
+                if (hasMEM)
                 {
-                    prefix = "[ERROR] -  ";
-                }
-                if (BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count > 0)
-                {
-                    if (MEMI_FOUND)
+                    updateStatusCallback?.Invoke("Checking for blacklisted mods");
+                    args = $"--detect-bad-mods --gameid {gameID} --ipc";
+                    exitcode = null;
+                    var blacklistedMods = new List<string>();
+                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
                     {
-                        addDiagLine("[ERROR]The following basegame mods were detected:");
+                        switch (command)
+                        {
+                            case "ERROR":
+                                blacklistedMods.Add(param);
+                                break;
+                            default:
+                                Debug.WriteLine("oof?");
+                                break;
+                        }
+                    });
+                    lock (memFinishedLock)
+                    {
+                        Monitor.Wait(memFinishedLock);
+                    }
+
+                    if (blacklistedMods.Any())
+                    {
+                        addDiagLine("The following blacklisted mods were found:", Severity.ERROR);
+                        foreach (var str in blacklistedMods)
+                        {
+                            addDiagLine(" - " + str);
+                        }
+
+                        addDiagLine("These mods have been blacklisted by modding tools because of known issues they cause. Do not use these mods", Severity.ERROR);
                     }
                     else
                     {
-                        addDiagLine("The following basegame mods were detected:");
-                    }
-                    foreach (String str in BACKGROUND_MEM_PROCESS_PARSED_ERRORS)
-                    {
-                        addDiagLine(prefix + " - " + str);
-                    }
-                    if (MEMI_FOUND)
-                    {
-                        addDiagLine("[ERROR]These mods appear to be installed after ALOT. This will break the game. Follow the directions for ALOT to avoid this issue.");
+                        addDiagLine("No blacklisted mods were found installed");
                     }
                 }
                 else
                 {
-                    addDiagLine("Diagnostics did not detect any known basegame mods (--detect-mods).");
+                    addDiagLine("MEM not available, skipped blacklisted mods check", Severity.WARN);
+
                 }
 
-                args = "--detect-bad-mods --gameid " + DIAGNOSTICS_GAME + " --ipc";
-                runMEM_Diagnostics(exe, args, diagnosticsWorker);
-                WaitForMEM();
-                if (BACKGROUND_MEM_PROCESS_PARSED_ERRORS.Count > 0)
-                {
-                    addDiagLine("Diagnostic reports the following incompatible mods are installed:");
-                    foreach (String str in BACKGROUND_MEM_PROCESS_PARSED_ERRORS)
-                    {
-                        addDiagLine("[ERROR] -  " + str);
-                    }
-                }
-                else
-                {
-                    addDiagLine("Diagnostic did not detect any known incompatible mods.");
-                }
-                */
+                #endregion
+
+                #region Installed DLCs
+
                 //Get DLCs
                 updateStatusCallback?.Invoke("Collecting DLC information");
 
-                var installedDLCs = MEDirectories.GetInstalledDLC(selectedDiagnosticTarget);
+                var installedDLCs = MEDirectories.GetMetaMappedInstalledDLC(selectedDiagnosticTarget);
 
                 addDiagLine("Installed DLC", Severity.DIAGSECTION);
                 addDiagLine("The following DLC is installed:");
@@ -1019,10 +1212,30 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 bool compatPatchInstalled = false;
                 bool hasNonUIDLCMod = false;
                 Dictionary<int, string> priorities = new Dictionary<int, string>();
-                foreach (string dlc in installedDLCs)
+                var officialDLC = MEDirectories.OfficialDLC(selectedDiagnosticTarget.Game);
+                foreach (var dlc in installedDLCs)
                 {
-                    addDiagLine(" - " + dlc);
+                    string dlctext = dlc.Key;
+                    if (!officialDLC.Contains(dlc.Key))
+                    {
+                        dlctext += ";;";
+                        if (dlc.Value != null)
+                        {
+                            dlctext += "Installed by " + dlc.Value.InstalledBy;
+                            if (dlc.Value.Version != null)
+                            {
+                                dlctext += ";;" + dlc.Value.Version;
+                            }
+                        }
+                        else
+                        {
+                            dlctext += "Not installed by managed installer";
+                        }
+                    }
+
+                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key) ? Severity.OFFICIALDLC : Severity.DLC);
                 }
+
                 /*
 
 
@@ -1192,6 +1405,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }*/
 
+                #endregion
+
+                #region Get list of TFCs
+
                 if (selectedDiagnosticTarget.Game > Mod.MEGame.ME1)
                 {
                     updateStatusCallback?.Invoke("Collecting TFC file information");
@@ -1215,6 +1432,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         addDiagLine("No TFC files were found - is this installation broken?", Severity.ERROR);
                     }
                 }
+
+                #endregion
+
+                #region ASI mods
 
                 updateStatusCallback?.Invoke("Collecting ASI file information");
 
@@ -1240,6 +1461,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     addDiagLine("ASI directory does not exist. No ASI mods are installed.");
                 }
+
+                #endregion
+
+                #region ME3: TOC check
+
                 //TOC SIZE CHECK
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
                 {
@@ -1271,6 +1497,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                         }
                     }
+
                     if (!hadTocError)
                     {
                         addDiagLine("All TOC files passed check. No files have a size larger than the TOC size.");
@@ -1282,35 +1509,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
 
-                //Get LODs
-                if (hasMEM)
-                {
-                    updateStatusCallback?.Invoke("Collecting LOD settings");
-                    string args = $"--print-lods --gameid {gameID} --ipc";
-                    int? exitCode = null;
-                    object memFinishedLock = new object();
-                    var lods = new Dictionary<string, string>();
-                    void handleIPC(string command, string param)
-                    {
-                        switch (command)
-                        {
-                            case "LODLINE":
-                                var lodSplit = param.Split("=");
-                                lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
-                                break;
-                            default:
-                                Debug.WriteLine("oof?");
-                                break;
-                        }
-                    }
-                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitCode = i, handleIPC);
-                    lock (memFinishedLock)
-                    {
-                        Monitor.Wait(memFinishedLock);
-                    }
+                #endregion
 
-                    addLODStatusToDiag(selectedDiagnosticTarget, lods, addDiagLine);
-                }
+                #region Mass Effect (1) log files
 
                 //ME1: LOGS
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
@@ -1340,19 +1541,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     Log.Information("Found crash in ME1 log " + file.Name + " on line " + currentLineNumber);
                                     break;
                                 }
+
                                 currentLineNumber++;
                             }
 
                             if (crashLineNumber >= 0)
                             {
                                 crashLineNumber = Math.Max(0, crashLineNumber - 10); //show last 10 lines of log leading up to the crash
-                                //this log has a crash
+                                                                                     //this log has a crash
                                 addDiagLine("Mass Effect game log " + file.Name, Severity.DIAGSECTION);
                                 if (reason != "") addDiagLine(reason);
                                 if (crashLineNumber > 0)
                                 {
                                     addDiagLine("[CRASHLOG]...");
                                 }
+
                                 for (int i = crashLineNumber; i < logLines.Length; i++)
                                 {
                                     addDiagLine("[CRASHLOG]" + logLines[i]);
@@ -1361,6 +1564,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
                 }
+
+                #endregion
+
+                #region Event logs for crashes
 
                 //EVENT LOGS
                 updateStatusCallback?.Invoke("Collecting event logs");
@@ -1389,14 +1596,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     addDiagLine("No crash events found in Event Viewer");
                 }
 
-                //    return crashLogs.ToString();
+                #endregion
 
-
-                //}
-
+                #region Mass Effect 3 me3logger log
 
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
                 {
+                    updateStatusCallback?.Invoke("Collecting ME3 session log");
                     string me3logfilepath = Path.Combine(Directory.GetParent(MEDirectories.ExecutablePath(selectedDiagnosticTarget)).FullName, "me3log.txt");
                     if (File.Exists(me3logfilepath))
                     {
@@ -1415,13 +1621,27 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
                 }
+
+                #endregion
             }
             catch (Exception ex)
             {
                 addDiagLine("Exception occured while running diagnostic.", Severity.ERROR);
                 addDiagLine(App.FlattenException(ex));
                 return diagStringBuilder.ToString();
-
+            }
+            finally
+            {
+                //restore MEM setting
+                if (hasMEM)
+                {
+                    if (File.Exists(_iniPath))
+                    {
+                        IniData ini = new FileIniDataParser().ReadFile(_iniPath);
+                        ini["GameDataPath"][selectedDiagnosticTarget.Game.ToString()] = oldMemGamePath;
+                        File.WriteAllText(_iniPath, ini.ToString());
+                    }
+                }
             }
 
             return diagStringBuilder.ToString();
@@ -1484,7 +1704,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
 
                 var HQLine = "High quality texture LOD settings appear to be set";
-                var HQSettingsMissingLine = "High quality texture LOD settings appear to be missing, but a high resolution texture mod appears to be installed. The game will not use these new high quality assets - config file was probably deleted or texture quality settings were changed in game";
+                var HQSettingsMissingLine = "High quality texture LOD settings appear to be missing, but a high resolution texture mod appears to be installed.\n[ERROR]The game will not use these new high quality assets - config file was probably deleted or texture quality settings were changed in game";
                 var HQVanillaLine = "High quality LOD settings are not set and no high quality texture mod is installed";
                 switch (selectedDiagnosticTarget.Game)
                 {

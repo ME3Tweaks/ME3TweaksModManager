@@ -43,6 +43,8 @@
                       IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                       />
 
+            <!--  Visibility="{Binding SelectedDiagnosticTarget.TextureModded, Converter={StaticResource BoolToVisibilityConverter}}" -->
+            <CheckBox Content="Full textures check" ToolTip="Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes" IsChecked="{Binding TextureCheck}" IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
             <TextBlock Text="Share the resulting link of your log/diagnostic with your recipient." TextWrapping="Wrap" Margin="0,5"/>
 
         </StackPanel>
