@@ -732,6 +732,351 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #endregion
 
+  
+
+                #region Basegame file changes
+
+                addDiagLine("Basegame changes", Severity.DIAGSECTION);
+
+                updateStatusCallback?.Invoke("Collecting basegame file modifications");
+                List<string> modifiedFiles = new List<string>();
+
+                void failedCallback(string file)
+                {
+                    modifiedFiles.Add(file);
+                }
+
+                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback);
+                if (isVanilla)
+                {
+                    addDiagLine("No modified basegame files were found.");
+                }
+                else
+                {
+                    if (!selectedDiagnosticTarget.TextureModded)
+                    {
+                        addDiagLine("The following basegame files have been modified:");
+                        var cookedPath = MEDirectories.CookedPath(selectedDiagnosticTarget);
+                        var markerPath = MEDirectories.ALOTMarkerPath(selectedDiagnosticTarget);
+                        foreach (var mf in modifiedFiles)
+                        {
+                            if (mf.StartsWith(cookedPath, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                if (mf.Equals(markerPath, StringComparison.InvariantCultureIgnoreCase)) continue; //don't report this file
+                                var info = BasegameFileIdentificationService.GetBasegameFileSource(selectedDiagnosticTarget, mf);
+                                if (info != null)
+                                {
+                                    addDiagLine($" - {mf.Substring(cookedPath.Length + 1)} - {info.source}");
+                                }
+                                else
+                                {
+                                    addDiagLine($" - {mf.Substring(cookedPath.Length + 1)}");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Check MEMI markers?
+                        addDiagLine("Basegame changes check skipped as this installation has been texture modded");
+                    }
+                }
+
+                #endregion
+
+                #region Blacklisted mods check
+
+                if (hasMEM)
+                {
+                    updateStatusCallback?.Invoke("Checking for blacklisted mods");
+                    args = $"--detect-bad-mods --gameid {gameID} --ipc";
+                    exitcode = null;
+                    var blacklistedMods = new List<string>();
+                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
+                    {
+                        switch (command)
+                        {
+                            case "ERROR":
+                                blacklistedMods.Add(param);
+                                break;
+                            default:
+                                Debug.WriteLine("oof?");
+                                break;
+                        }
+                    });
+                    lock (memFinishedLock)
+                    {
+                        Monitor.Wait(memFinishedLock);
+                    }
+
+                    if (blacklistedMods.Any())
+                    {
+                        addDiagLine("The following blacklisted mods were found:", Severity.ERROR);
+                        foreach (var str in blacklistedMods)
+                        {
+                            addDiagLine(" - " + str);
+                        }
+
+                        addDiagLine("These mods have been blacklisted by modding tools because of known issues they cause. Do not use these mods", Severity.ERROR);
+                    }
+                    else
+                    {
+                        addDiagLine("No blacklisted mods were found installed");
+                    }
+                }
+                else
+                {
+                    addDiagLine("MEM not available, skipped blacklisted mods check", Severity.WARN);
+
+                }
+
+                #endregion
+
+                #region Installed DLCs
+
+                //Get DLCs
+                updateStatusCallback?.Invoke("Collecting DLC information");
+
+                var installedDLCs = MEDirectories.GetMetaMappedInstalledDLC(selectedDiagnosticTarget);
+
+                addDiagLine("Installed DLC", Severity.DIAGSECTION);
+                addDiagLine("The following DLC is installed:");
+
+                bool metadataPresent = false;
+                bool hasUIMod = false;
+                bool compatPatchInstalled = false;
+                bool hasNonUIDLCMod = false;
+                Dictionary<int, string> priorities = new Dictionary<int, string>();
+                var officialDLC = MEDirectories.OfficialDLC(selectedDiagnosticTarget.Game);
+                foreach (var dlc in installedDLCs)
+                {
+                    string dlctext = dlc.Key;
+                    if (!officialDLC.Contains(dlc.Key))
+                    {
+                        dlctext += ";;";
+                        if (dlc.Value != null)
+                        {
+                            if (int.TryParse(dlc.Value.InstalledBy, out var _))
+                            {
+                                dlctext += "Installed by Mod Manager Build " + dlc.Value.InstalledBy;
+                            }
+                            else
+                            {
+                                dlctext += "Installed by " + dlc.Value.InstalledBy;
+                            }
+                            if (dlc.Value.Version != null)
+                            {
+                                dlctext += ";;" + dlc.Value.Version;
+                            }
+                        }
+                        else
+                        {
+                            dlctext += "Not installed by managed installer";
+                        }
+                    }
+
+                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key) ? Severity.OFFICIALDLC : Severity.DLC);
+                }
+
+                /*
+
+
+                bool isCompatPatch = false;
+                    string value = Path.GetFileName(dir);
+                    if (value == "__metadata")
+                    {
+                        metadataPresent = true;
+                        continue;
+                    }
+                    long sfarsize = 0;
+                    long propersize = 32L;
+                    long me3expUnpackedSize = GetME3ExplorerUnpackedSFARSize(value);
+                    bool hasSfarSizeErrorMemiFound = false;
+                    string duplicatePriorityStr = "";
+                    if (DIAGNOSTICS_GAME == 3)
+                    {
+                        //check for ISM/Controller patch
+                        int mountpriority = GetDLCPriority(dir);
+                        if (mountpriority != -1)
+                        {
+                            if (priorities.ContainsKey(mountpriority))
+                            {
+                                duplicatePriorityStr = priorities[mountpriority];
+                            }
+                            else
+                            {
+                                priorities[mountpriority] = value;
+                            }
+                        }
+                        if (mountpriority == 31050)
+                        {
+                            compatPatchInstalled = isCompatPatch = true;
+                        }
+                        if (value != "DLC_CON_XBX" && value != "DLC_CON_UIScaling" && value != "DLC_CON_UIScaling_Shared" && InteralGetDLCName(value) == null)
+                        {
+                            hasNonUIDLCMod = true;
+                        }
+                        if (value == "DLC_CON_XBX" || value == "DLC_CON_UIScaling" || value == "DLC_CON_UIScaling_Shared")
+                        {
+                            hasUIMod = true;
+                        }
+
+                        //Check for SFAR size not being 32 bytes
+                        string sfar = Path.Combine(dir, "CookedPCConsole", "Default.sfar");
+                        string unpackedDir = Path.Combine(dir, "CookedPCConsole");
+                        if (File.Exists(sfar))
+                        {
+                            FileInfo fi = new FileInfo(sfar);
+                            sfarsize = fi.Length;
+                            hasSfarSizeErrorMemiFound = sfarsize != propersize;
+
+                            var filesInSfarDir = Directory.EnumerateFiles(unpackedDir).ToList();
+                            var hasUnpackedFiles = filesInSfarDir.Any(d => unpackedFileExtensions.Contains(Path.GetExtension(d.ToLower())));
+                            var officialPackedSize = GetPackedSFARSize(value);
+                            if (hasSfarSizeErrorMemiFound && MEMI_FOUND)
+                            {
+                                if (me3expUnpackedSize == sfarsize)
+                                {
+                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
+                                    addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
+                                    if (HASH_SUPPORTED)
+                                    {
+                                        addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
+                                    }
+                                }
+                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
+                                {
+                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
+                                    addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
+                                    addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
+                                }
+                                else if (officialPackedSize == sfarsize)
+                                {
+                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed");
+                                    addDiagLine("[ERROR]      SFAR is not unpacked. This DLC was either installed after ALOT was installed or was attempted to be repaired by Origin.");
+                                    addDiagLine("[ERROR]      The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
+                                }
+                                else
+                                {
+                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Unknown SFAR size");
+                                    addDiagLine("[ERROR]      SFAR is not the MEM unpacked size, ME3Explorer unpacked size, or packed size. This SFAR is " + ByteSize.FromBytes(sfarsize) + " bytes.");
+                                }
+                            }
+                            else
+                            {
+                                //ALOT not detected
+                                if (me3expUnpackedSize == sfarsize)
+                                {
+                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
+                                    addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
+                                    if (HASH_SUPPORTED)
+                                    {
+                                        addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
+                                    }
+                                }
+                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
+                                {
+                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
+                                    addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
+                                    addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
+                                }
+                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0)
+                                {
+                                    addDiagLine(GetDLCDisplayString(value) + " - Packed");
+                                }
+                                else
+                                {
+                                    addDiagLine(GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibility Pack" : null));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //SFAR MISSING
+                            addDiagLine("~~~" + GetDLCDisplayString(value) + " - SFAR missing");
+                        }
+                    }
+                    else
+                    {
+                        addDiagLine(GetDLCDisplayString(value));
+                    }
+
+                    if (duplicatePriorityStr != "")
+                    {
+                        addDiagLine("[ERROR] - This DLC has the same mount priority as another DLC: " + duplicatePriorityStr);
+                        addDiagLine("[ERROR]   These conflicting DLCs will likely encounter issues as the game will not know which files should be used");
+                    }
+                }
+
+                /*
+                if (DIAGNOSTICS_GAME == 3)
+                {
+                    if (hasUIMod && hasNonUIDLCMod && compatPatchInstalled)
+                    {
+                        addDiagLine("This installation requires a UI compatibility patch. This patch appears to be installed.");
+                    }
+                    else if (hasUIMod && hasNonUIDLCMod && !compatPatchInstalled)
+                    {
+                        addDiagLine("~~~This installation may require a UI compatibility patch from Mass Effect 3 Mod Manager due to installation of a UI mod with other mods.");
+                        addDiagLine("~~~In Mass Effect 3 Mod Manager use Mod Management > Check for Custom DLC conflicts to see if you need one.");
+                    }
+                    else if (!hasUIMod && compatPatchInstalled)
+                    {
+                        addDiagLine("[ERROR] -  This installation does not require a UI compatibilty patch but one is installed. This may lead to game crashing.");
+                    }
+
+                    if (metadataPresent)
+                    {
+                        addDiagLine("__metadata folder is present");
+                    }
+                    else
+                    {
+                        addDiagLine("~~~__metadata folder is missing");
+                    }
+                }
+            }
+            else
+            {
+                if (DIAGNOSTICS_GAME == 3)
+                {
+                    addDiagLine("[ERROR]DLC directory is missing: " + dlcPath + ". Mass Effect 3 always has a DLC folder so this should not be missing.");
+                }
+                else
+                {
+                    addDiagLine("DLC directory is missing: " + dlcPath + ". If no DLC is installed, this folder will be missing.");
+                }
+            }*/
+
+                #endregion
+
+                #region Get list of TFCs
+
+                if (selectedDiagnosticTarget.Game > Mod.MEGame.ME1)
+                {
+                    updateStatusCallback?.Invoke("Collecting TFC file information");
+
+                    addDiagLine("Texture File Cache (TFC) files", Severity.DIAGSECTION);
+                    addDiagLine("The following TFC files are present in the game directory.");
+                    var bgPath = MEDirectories.BioGamePath(selectedDiagnosticTarget);
+                    string[] tfcFiles = Directory.GetFiles(bgPath, "*.tfc", SearchOption.AllDirectories);
+                    if (tfcFiles.Any())
+                    {
+                        foreach (string tfc in tfcFiles)
+                        {
+                            FileInfo fi = new FileInfo(tfc);
+                            long tfcSize = fi.Length;
+                            string tfcPath = tfc.Substring(bgPath.Length + 1);
+                            addDiagLine($" - {tfcPath}, {ByteSize.FromBytes(tfcSize)}");
+                        }
+                    }
+                    else
+                    {
+                        addDiagLine("No TFC files were found - is this installation broken?", Severity.ERROR);
+                    }
+                }
+
+                #endregion
+
                 if (hasMEM)
                 {
                     #region Files added or removed after texture install
@@ -1099,349 +1444,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     addDiagLine(" - Texture LODs check", Severity.WARN);
                 }
 
-                #region Basegame file changes
-
-                addDiagLine("Basegame changes", Severity.DIAGSECTION);
-
-                updateStatusCallback?.Invoke("Collecting basegame file modifications");
-                List<string> modifiedFiles = new List<string>();
-
-                void failedCallback(string file)
-                {
-                    modifiedFiles.Add(file);
-                }
-
-                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback);
-                if (isVanilla)
-                {
-                    addDiagLine("No modified basegame files were found.");
-                }
-                else
-                {
-                    if (!selectedDiagnosticTarget.TextureModded)
-                    {
-                        addDiagLine("The following basegame files have been modified:");
-                        var cookedPath = MEDirectories.CookedPath(selectedDiagnosticTarget);
-                        var markerPath = MEDirectories.ALOTMarkerPath(selectedDiagnosticTarget);
-                        foreach (var mf in modifiedFiles)
-                        {
-                            if (mf.StartsWith(cookedPath, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                if (mf.Equals(markerPath, StringComparison.InvariantCultureIgnoreCase)) continue; //don't report this file
-                                var info = BasegameFileIdentificationService.GetBasegameFileSource(selectedDiagnosticTarget, mf);
-                                if (info != null)
-                                {
-                                    addDiagLine($" - {mf.Substring(cookedPath.Length + 1)} - {info.source}");
-                                }
-                                else
-                                {
-                                    addDiagLine($" - {mf.Substring(cookedPath.Length + 1)}");
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //Check MEMI markers?
-                        addDiagLine("Basegame changes check skipped as this installation has been texture modded");
-                    }
-                }
-
-                #endregion
-
-                #region Blacklisted mods check
-
-                if (hasMEM)
-                {
-                    updateStatusCallback?.Invoke("Checking for blacklisted mods");
-                    args = $"--detect-bad-mods --gameid {gameID} --ipc";
-                    exitcode = null;
-                    var blacklistedMods = new List<string>();
-                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
-                    {
-                        switch (command)
-                        {
-                            case "ERROR":
-                                blacklistedMods.Add(param);
-                                break;
-                            default:
-                                Debug.WriteLine("oof?");
-                                break;
-                        }
-                    });
-                    lock (memFinishedLock)
-                    {
-                        Monitor.Wait(memFinishedLock);
-                    }
-
-                    if (blacklistedMods.Any())
-                    {
-                        addDiagLine("The following blacklisted mods were found:", Severity.ERROR);
-                        foreach (var str in blacklistedMods)
-                        {
-                            addDiagLine(" - " + str);
-                        }
-
-                        addDiagLine("These mods have been blacklisted by modding tools because of known issues they cause. Do not use these mods", Severity.ERROR);
-                    }
-                    else
-                    {
-                        addDiagLine("No blacklisted mods were found installed");
-                    }
-                }
-                else
-                {
-                    addDiagLine("MEM not available, skipped blacklisted mods check", Severity.WARN);
-
-                }
-
-                #endregion
-
-                #region Installed DLCs
-
-                //Get DLCs
-                updateStatusCallback?.Invoke("Collecting DLC information");
-
-                var installedDLCs = MEDirectories.GetMetaMappedInstalledDLC(selectedDiagnosticTarget);
-
-                addDiagLine("Installed DLC", Severity.DIAGSECTION);
-                addDiagLine("The following DLC is installed:");
-
-                bool metadataPresent = false;
-                bool hasUIMod = false;
-                bool compatPatchInstalled = false;
-                bool hasNonUIDLCMod = false;
-                Dictionary<int, string> priorities = new Dictionary<int, string>();
-                var officialDLC = MEDirectories.OfficialDLC(selectedDiagnosticTarget.Game);
-                foreach (var dlc in installedDLCs)
-                {
-                    string dlctext = dlc.Key;
-                    if (!officialDLC.Contains(dlc.Key))
-                    {
-                        dlctext += ";;";
-                        if (dlc.Value != null)
-                        {
-                            if (int.TryParse(dlc.Value.InstalledBy, out var _))
-                            {
-                                dlctext += "Installed by Mod Manager Build " + dlc.Value.InstalledBy;
-                            }
-                            else
-                            {
-                                dlctext += "Installed by " + dlc.Value.InstalledBy;
-                            }
-                            if (dlc.Value.Version != null)
-                            {
-                                dlctext += ";;" + dlc.Value.Version;
-                            }
-                        }
-                        else
-                        {
-                            dlctext += "Not installed by managed installer";
-                        }
-                    }
-
-                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key) ? Severity.OFFICIALDLC : Severity.DLC);
-                }
-
-                /*
-
-
-                bool isCompatPatch = false;
-                    string value = Path.GetFileName(dir);
-                    if (value == "__metadata")
-                    {
-                        metadataPresent = true;
-                        continue;
-                    }
-                    long sfarsize = 0;
-                    long propersize = 32L;
-                    long me3expUnpackedSize = GetME3ExplorerUnpackedSFARSize(value);
-                    bool hasSfarSizeErrorMemiFound = false;
-                    string duplicatePriorityStr = "";
-                    if (DIAGNOSTICS_GAME == 3)
-                    {
-                        //check for ISM/Controller patch
-                        int mountpriority = GetDLCPriority(dir);
-                        if (mountpriority != -1)
-                        {
-                            if (priorities.ContainsKey(mountpriority))
-                            {
-                                duplicatePriorityStr = priorities[mountpriority];
-                            }
-                            else
-                            {
-                                priorities[mountpriority] = value;
-                            }
-                        }
-                        if (mountpriority == 31050)
-                        {
-                            compatPatchInstalled = isCompatPatch = true;
-                        }
-                        if (value != "DLC_CON_XBX" && value != "DLC_CON_UIScaling" && value != "DLC_CON_UIScaling_Shared" && InteralGetDLCName(value) == null)
-                        {
-                            hasNonUIDLCMod = true;
-                        }
-                        if (value == "DLC_CON_XBX" || value == "DLC_CON_UIScaling" || value == "DLC_CON_UIScaling_Shared")
-                        {
-                            hasUIMod = true;
-                        }
-
-                        //Check for SFAR size not being 32 bytes
-                        string sfar = Path.Combine(dir, "CookedPCConsole", "Default.sfar");
-                        string unpackedDir = Path.Combine(dir, "CookedPCConsole");
-                        if (File.Exists(sfar))
-                        {
-                            FileInfo fi = new FileInfo(sfar);
-                            sfarsize = fi.Length;
-                            hasSfarSizeErrorMemiFound = sfarsize != propersize;
-
-                            var filesInSfarDir = Directory.EnumerateFiles(unpackedDir).ToList();
-                            var hasUnpackedFiles = filesInSfarDir.Any(d => unpackedFileExtensions.Contains(Path.GetExtension(d.ToLower())));
-                            var officialPackedSize = GetPackedSFARSize(value);
-                            if (hasSfarSizeErrorMemiFound && MEMI_FOUND)
-                            {
-                                if (me3expUnpackedSize == sfarsize)
-                                {
-                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
-                                    addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
-                                    if (HASH_SUPPORTED)
-                                    {
-                                        addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
-                                    }
-                                }
-                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
-                                {
-                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
-                                    addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
-                                    addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                                }
-                                else if (officialPackedSize == sfarsize)
-                                {
-                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed");
-                                    addDiagLine("[ERROR]      SFAR is not unpacked. This DLC was either installed after ALOT was installed or was attempted to be repaired by Origin.");
-                                    addDiagLine("[ERROR]      The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                                }
-                                else
-                                {
-                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Unknown SFAR size");
-                                    addDiagLine("[ERROR]      SFAR is not the MEM unpacked size, ME3Explorer unpacked size, or packed size. This SFAR is " + ByteSize.FromBytes(sfarsize) + " bytes.");
-                                }
-                            }
-                            else
-                            {
-                                //ALOT not detected
-                                if (me3expUnpackedSize == sfarsize)
-                                {
-                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
-                                    addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
-                                    if (HASH_SUPPORTED)
-                                    {
-                                        addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
-                                    }
-                                }
-                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
-                                {
-                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
-                                    addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
-                                    addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                                }
-                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0)
-                                {
-                                    addDiagLine(GetDLCDisplayString(value) + " - Packed");
-                                }
-                                else
-                                {
-                                    addDiagLine(GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibility Pack" : null));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            //SFAR MISSING
-                            addDiagLine("~~~" + GetDLCDisplayString(value) + " - SFAR missing");
-                        }
-                    }
-                    else
-                    {
-                        addDiagLine(GetDLCDisplayString(value));
-                    }
-
-                    if (duplicatePriorityStr != "")
-                    {
-                        addDiagLine("[ERROR] - This DLC has the same mount priority as another DLC: " + duplicatePriorityStr);
-                        addDiagLine("[ERROR]   These conflicting DLCs will likely encounter issues as the game will not know which files should be used");
-                    }
-                }
-
-                /*
-                if (DIAGNOSTICS_GAME == 3)
-                {
-                    if (hasUIMod && hasNonUIDLCMod && compatPatchInstalled)
-                    {
-                        addDiagLine("This installation requires a UI compatibility patch. This patch appears to be installed.");
-                    }
-                    else if (hasUIMod && hasNonUIDLCMod && !compatPatchInstalled)
-                    {
-                        addDiagLine("~~~This installation may require a UI compatibility patch from Mass Effect 3 Mod Manager due to installation of a UI mod with other mods.");
-                        addDiagLine("~~~In Mass Effect 3 Mod Manager use Mod Management > Check for Custom DLC conflicts to see if you need one.");
-                    }
-                    else if (!hasUIMod && compatPatchInstalled)
-                    {
-                        addDiagLine("[ERROR] -  This installation does not require a UI compatibilty patch but one is installed. This may lead to game crashing.");
-                    }
-
-                    if (metadataPresent)
-                    {
-                        addDiagLine("__metadata folder is present");
-                    }
-                    else
-                    {
-                        addDiagLine("~~~__metadata folder is missing");
-                    }
-                }
-            }
-            else
-            {
-                if (DIAGNOSTICS_GAME == 3)
-                {
-                    addDiagLine("[ERROR]DLC directory is missing: " + dlcPath + ". Mass Effect 3 always has a DLC folder so this should not be missing.");
-                }
-                else
-                {
-                    addDiagLine("DLC directory is missing: " + dlcPath + ". If no DLC is installed, this folder will be missing.");
-                }
-            }*/
-
-                #endregion
-
-                #region Get list of TFCs
-
-                if (selectedDiagnosticTarget.Game > Mod.MEGame.ME1)
-                {
-                    updateStatusCallback?.Invoke("Collecting TFC file information");
-
-                    addDiagLine("Texture File Cache (TFC) files", Severity.DIAGSECTION);
-                    addDiagLine("The following TFC files are present in the game directory.");
-                    var bgPath = MEDirectories.BioGamePath(selectedDiagnosticTarget);
-                    string[] tfcFiles = Directory.GetFiles(bgPath, "*.tfc", SearchOption.AllDirectories);
-                    if (tfcFiles.Any())
-                    {
-                        foreach (string tfc in tfcFiles)
-                        {
-                            FileInfo fi = new FileInfo(tfc);
-                            long tfcSize = fi.Length;
-                            string tfcPath = tfc.Substring(bgPath.Length + 1);
-                            addDiagLine($" - {tfcPath}, {ByteSize.FromBytes(tfcSize)}");
-                        }
-                    }
-                    else
-                    {
-                        addDiagLine("No TFC files were found - is this installation broken?", Severity.ERROR);
-                    }
-                }
-
-                #endregion
-
                 #region ASI mods
 
                 updateStatusCallback?.Invoke("Collecting ASI file information");
@@ -1718,15 +1720,23 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     case Mod.MEGame.ME1:
                         if (maxLodSize != 1024) //ME1 Default
                         {
+                            if (maxLodSize == 4096)
+                            {
+                                addDiagLine("LOD quality settings: 4K textures", Severity.INFO);
+                            }
+                            else if (maxLodSize == 2048)
+                            {
+                                addDiagLine("LOD quality settings: 2K textures", Severity.INFO);
+                            }
+
                             //Not Default
                             if (selectedDiagnosticTarget.TextureModded)
                             {
-                                addDiagLine(HQVanillaLine, Severity.INFO);
+                                addDiagLine("This installation appears to have a texture mod installed, so unused/empty mips are already removed", Severity.INFO);
                             }
                             else if (maxLodSize > 1024)
                             {
                                 addDiagLine("Texture LOD settings appear to have been raised, but this installation has not been texture modded - game will likely have unused mip crashes.", Severity.FATAL);
-                                //log = ShowBadLODDialog(log);
                             }
                         }
                         else
@@ -1759,10 +1769,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     addDiagLine("LOD quality settings: 2K textures", Severity.INFO);
                                 }
                             }
-                            else //not vanilla, but no MEM/MEUITM
+                            //else if (selectedDiagnosticTarget.TextureModded) //not vanilla, but no MEM/MEUITM
+                            //{
+                            if (maxLodSize == 4096)
                             {
-                                addDiagLine(HQSettingsMissingLine, Severity.ERROR);
-
+                                addDiagLine("LOD quality settings: 4K textures (no high res mod installed)", Severity.WARN);
+                            }
+                            else if (maxLodSize == 2048)
+                            {
+                                addDiagLine("LOD quality settings: 2K textures (no high res mod installed)", Severity.INFO);
+                            }
+                            //}
+                            if (!selectedDiagnosticTarget.TextureModded)
+                            {
+                                //no texture mod, but has set LODs
+                                addDiagLine("LODs have been explicitly set, but a texture mod is not installed - game may have black textures as empty mips may not be removed", Severity.WARN);
                             }
                         }
                         else //default
