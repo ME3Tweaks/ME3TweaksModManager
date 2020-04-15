@@ -1221,7 +1221,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         dlctext += ";;";
                         if (dlc.Value != null)
                         {
-                            dlctext += "Installed by " + dlc.Value.InstalledBy;
+                            if (int.TryParse(dlc.Value.InstalledBy, out var _))
+                            {
+                                dlctext += "Installed by Mod Manager Build " + dlc.Value.InstalledBy;
+                            }
+                            else
+                            {
+                                dlctext += "Installed by " + dlc.Value.InstalledBy;
+                            }
                             if (dlc.Value.Version != null)
                             {
                                 dlctext += ";;" + dlc.Value.Version;

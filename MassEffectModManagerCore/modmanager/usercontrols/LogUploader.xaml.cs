@@ -91,23 +91,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     CollectionStatusMessage = status;
                 }
-                string logUploadText = "";
+                StringBuilder logUploadText = new StringBuilder();
                 if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown)
                 {
                     Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
-                    logUploadText += LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck /*&& SelectedDiagnosticTarget.TextureModded*/, updateStatusCallback);
+                    logUploadText.Append("[MODE]diagnostics\n");
+                    logUploadText.Append(LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck /*&& SelectedDiagnosticTarget.TextureModded*/, updateStatusCallback));
+                    logUploadText.Append("\n");
                 }
 
                 if (SelectedLog != null && SelectedLog.Selectable)
                 {
                     Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
-                    logUploadText += LogCollector.CollectLogs(SelectedLog.filepath);
+                    logUploadText.Append("[MODE]logs\n");
+                    logUploadText.AppendLine(LogCollector.CollectLogs(SelectedLog.filepath));
+                    logUploadText.Append("\n");
                 }
 
-                if (logUploadText != null)
+                var logtext = logUploadText.ToString();
+                if (logtext != null)
                 {
                     CollectionStatusMessage = "Compressing for upload";
-                    var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logUploadText));
+                    var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logtext));
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
