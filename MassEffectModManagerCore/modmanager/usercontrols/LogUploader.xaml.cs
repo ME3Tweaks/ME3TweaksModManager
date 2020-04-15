@@ -106,11 +106,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (logUploadText != null)
                 {
+                    CollectionStatusMessage = "Compressing for upload";
                     var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logUploadText));
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
                         //DEBUG ONLY!!!
+                        CollectionStatusMessage = "Uploading to ME3Tweaks";
+
 #if DEBUG
                         string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload2.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
 #else
