@@ -434,7 +434,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
 
             addDiagLine(gameID, Severity.GAMEID);
-            addDiagLine($"ME3Tweaks Mod Manager {App.AppVersionHR} Game Diagnostic");
+            addDiagLine($"{App.AppVersionHR} Game Diagnostic");
             addDiagLine($"Diagnostic for {Utilities.GetGameName(selectedDiagnosticTarget.Game)}");
             addDiagLine($"Diagnostic generated on {DateTime.Now.ToShortDateString()}");
             #endregion
