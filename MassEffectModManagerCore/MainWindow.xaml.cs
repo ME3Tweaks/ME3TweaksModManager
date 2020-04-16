@@ -279,6 +279,7 @@ namespace MassEffectModManagerCore
 
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
+        public ICommand ConflictDetectorCommand { get; set; }
         public ICommand ApplyModCommand { get; set; }
         public ICommand RestoreCommand { get; set; }
         public ICommand CheckForContentUpdatesCommand { get; set; }
@@ -344,6 +345,14 @@ namespace MassEffectModManagerCore
             BatchModInstallerCommand = new GenericCommand(OpenBatchModPanel, CanOpenBatchModPanel);
             ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
             BackupFileFetcherCommand = new GenericCommand(OpenBackupFileFetcher);
+            ConflictDetectorCommand = new GenericCommand(OpenConflictDetector);
+        }
+
+        private void OpenConflictDetector()
+        {
+            var conflictDetectorPanel = new ConflictDetectorPanel();
+            conflictDetectorPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(conflictDetectorPanel);
         }
 
         private void OpenBackupFileFetcher()

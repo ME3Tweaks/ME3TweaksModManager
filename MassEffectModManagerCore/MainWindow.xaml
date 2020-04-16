@@ -106,7 +106,7 @@
                     <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}" />
 
                     <MenuItem Header="{DynamicResource string_developerTools}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" IsEnabled="False" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" Command="{Binding ConflictDetectorCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     <MenuItem Header="{DynamicResource string_controllerISMCompatibility}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
