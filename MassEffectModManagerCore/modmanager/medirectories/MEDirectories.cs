@@ -6,6 +6,7 @@ using System.Linq;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using Serilog;
 
 namespace MassEffectModManagerCore.GameDirectories
 
@@ -382,6 +383,27 @@ namespace MassEffectModManagerCore.GameDirectories
             }
 
             return fileListMapping;
+        }
+
+        public static Dictionary<string, int> GetMountPriorities(GameTarget selectedTarget)
+        {
+            //make dictionary from basegame files
+            var dlcmods = VanillaDatabaseService.GetInstalledDLCMods(selectedTarget);
+            var mountMapping = new Dictionary<string, int>();
+            foreach (var dlc in dlcmods)
+            {
+                var mountpath = Path.Combine(MEDirectories.DLCPath(selectedTarget), dlc);
+                try
+                {
+                    mountMapping[dlc] = MELoadedFiles.GetMountPriority(mountpath, selectedTarget.Game);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception getting mount priority from file: {mountpath}: {e.Message}");
+                }
+            }
+
+            return mountMapping;
         }
     }
 }
