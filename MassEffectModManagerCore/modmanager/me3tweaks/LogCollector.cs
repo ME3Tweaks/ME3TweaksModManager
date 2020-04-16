@@ -102,7 +102,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             BOLD,
             DLC,
             GAMEID,
-            OFFICIALDLC
+            OFFICIALDLC,
+            TPMI,
+            SUB
         }
         private static int GetPartitionDiskBackingType(string partitionLetter)
         {
@@ -424,6 +426,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         break;
                     case Severity.GAMEID:
                         diagStringBuilder.Append($@"[GAMEID]{message}");
+                        break;
+                    case Severity.TPMI:
+                        diagStringBuilder.Append($@"[TPMI]{message}");
+                        break;
+                    case Severity.SUB:
+                        diagStringBuilder.Append($@"[SUB]{message}");
+                        break;
+                    default:
+                        Debugger.Break();
                         break;
                 }
                 diagStringBuilder.Append("\n");
@@ -878,10 +889,29 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     addDiagLine(dlctext, officialDLC.Contains(dlc.Key) ? Severity.OFFICIALDLC : Severity.DLC);
                 }
 
-                var supercedanceList = MEDirectories.GetFileSupercedances(selectedDiagnosticTarget);
+                var supercedanceList = MEDirectories.GetFileSupercedances(selectedDiagnosticTarget).Where(x => x.Value.Count > 1).ToList();
                 if (supercedanceList.Any())
                 {
+                    addDiagLine();
+                    addDiagLine("Superceding files", Severity.BOLD);
+                    addDiagLine("The following mod files supercede others due to same-named files. This may mean the mods are incompatible, or that these files are compatilibity patches. This information is for developer use only - DO NOT MODIFY YOUR GAME DIRECTORY MANUALLY.");
 
+                    bool isFirst = true;
+                    addDiagLine("Click to view list", Severity.SUB);
+                    foreach (var sl in supercedanceList)
+                    {
+                        if (isFirst)
+                            isFirst = false;
+                        else
+                            addDiagLine();
+                        
+                        addDiagLine(sl.Key);
+                        foreach (var dlc in sl.Value)
+                        {
+                            addDiagLine(dlc, Severity.TPMI);
+                        }
+                    }
+                    addDiagLine("[/SUB]");
                 }
                 /*
                 bool isCompatPatch = false;
@@ -1102,12 +1132,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 switch (command)
                                 {
                                     case "ERROR_REMOVED_FILE":
-                                    //.Add($" - File removed after textures were installed: {param}");
-                                    removedFiles.Add(param);
+                                        //.Add($" - File removed after textures were installed: {param}");
+                                        removedFiles.Add(param);
                                         break;
                                     case "ERROR_ADDED_FILE":
-                                    //addedFiles.Add($"File was added after textures were installed" + param + " " + File.GetCreationTimeUtc(Path.Combine(gamePath, param));
-                                    addedFiles.Add(param);
+                                        //addedFiles.Add($"File was added after textures were installed" + param + " " + File.GetCreationTimeUtc(Path.Combine(gamePath, param));
+                                        addedFiles.Add(param);
                                         break;
                                     case "ERROR_VANILLA_MOD_FILE":
                                         if (!addedFiles.Contains(param))
@@ -1298,19 +1328,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 case "ERROR_MIPMAPS_NOT_REMOVED":
                                     if (selectedDiagnosticTarget.TextureModded)
                                     {
-                                    //only matters when game is texture modded
-                                    emptyMipsNotRemoved.Add(param);
+                                        //only matters when game is texture modded
+                                        emptyMipsNotRemoved.Add(param);
                                     }
                                     break;
                                 case "TASK_PROGRESS":
                                     updateStatusCallback?.Invoke($"Performing full textures check {param}%");
                                     break;
                                 case "PROCESSING_FILE":
-                                //Don't think there's anything to do with this right now
-                                break;
+                                    //Don't think there's anything to do with this right now
+                                    break;
                                 case "ERROR_REFERENCED_TFC_NOT_FOUND":
-                                //badTFCReferences.Add(param);
-                                lastMissingTFC = param;
+                                    //badTFCReferences.Add(param);
+                                    lastMissingTFC = param;
                                     break;
                                 case "ERROR_TEXTURE_SCAN_DIAGNOSTIC":
                                     if (lastMissingTFC != null)
@@ -1322,7 +1352,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         scanErrors.Add(param);
                                     }
                                     lastMissingTFC = null; //reset
-                                break;
+                                    break;
                                 default:
                                     Debug.WriteLine($"{command} {param}");
                                     break;
