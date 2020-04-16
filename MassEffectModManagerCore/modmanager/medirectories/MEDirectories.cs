@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
@@ -347,6 +348,40 @@ namespace MassEffectModManagerCore.GameDirectories
             }
 
             return metamap;
+        }
+
+        /// <summary>
+        /// Gets a list of superceding package files from the DLC of the game. Only files in DLC mods are returned
+        /// </summary>
+        /// <param name="target">Target to get supercedances for</param>
+        /// <returns>Dictionary mapping filename to list of DLCs that contain that file, in order of highest priority to lowest</returns>
+        public static Dictionary<string, List<string>> GetFileSupercedances(GameTarget target)
+        {
+            //make dictionary from basegame files
+            var fileListMapping = new CaseInsensitiveDictionary<List<string>>();
+            var directories = MELoadedFiles.GetEnabledDLC(target).OrderBy(dir => MELoadedFiles.GetMountPriority(dir, target.Game));
+            foreach (string directory in directories)
+            {
+                var dlc = Path.GetFileName(directory);
+                if (MEDirectories.OfficialDLC(target.Game).Contains(dlc)) continue; //skip
+                foreach (string filePath in MELoadedFiles.GetCookedFiles(target.Game, directory, false))
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    if (fileName != null && fileName.RepresentsPackageFilePath())
+                    {
+                        if (fileListMapping.TryGetValue(fileName, out var supercedingList))
+                        {
+                            supercedingList.Insert(0, dlc);
+                        }
+                        else
+                        {
+                            fileListMapping[fileName] = new List<string>(new[] { dlc });
+                        }
+                    }
+                }
+            }
+
+            return fileListMapping;
         }
     }
 }

@@ -732,7 +732,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #endregion
 
-  
+
 
                 #region Basegame file changes
 
@@ -878,135 +878,138 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     addDiagLine(dlctext, officialDLC.Contains(dlc.Key) ? Severity.OFFICIALDLC : Severity.DLC);
                 }
 
+                var supercedanceList = MEDirectories.GetFileSupercedances(selectedDiagnosticTarget);
+                if (supercedanceList.Any())
+                {
+
+                }
                 /*
-
-
                 bool isCompatPatch = false;
-                    string value = Path.GetFileName(dir);
-                    if (value == "__metadata")
+                string value = Path.GetFileName(dir);
+                if (value == "__metadata")
+                {
+                    metadataPresent = true;
+                    continue;
+                }
+                long sfarsize = 0;
+                long propersize = 32L;
+                long me3expUnpackedSize = GetME3ExplorerUnpackedSFARSize(value);
+                bool hasSfarSizeErrorMemiFound = false;
+                string duplicatePriorityStr = "";
+                if (DIAGNOSTICS_GAME == 3)
+                {
+                    //check for ISM/Controller patch
+                    int mountpriority = GetDLCPriority(dir);
+                    if (mountpriority != -1)
                     {
-                        metadataPresent = true;
-                        continue;
+                        if (priorities.ContainsKey(mountpriority))
+                        {
+                            duplicatePriorityStr = priorities[mountpriority];
+                        }
+                        else
+                        {
+                            priorities[mountpriority] = value;
+                        }
                     }
-                    long sfarsize = 0;
-                    long propersize = 32L;
-                    long me3expUnpackedSize = GetME3ExplorerUnpackedSFARSize(value);
-                    bool hasSfarSizeErrorMemiFound = false;
-                    string duplicatePriorityStr = "";
-                    if (DIAGNOSTICS_GAME == 3)
+                    if (mountpriority == 31050)
                     {
-                        //check for ISM/Controller patch
-                        int mountpriority = GetDLCPriority(dir);
-                        if (mountpriority != -1)
+                        compatPatchInstalled = isCompatPatch = true;
+                    }
+                    if (value != "DLC_CON_XBX" && value != "DLC_CON_UIScaling" && value != "DLC_CON_UIScaling_Shared" && InteralGetDLCName(value) == null)
+                    {
+                        hasNonUIDLCMod = true;
+                    }
+                    if (value == "DLC_CON_XBX" || value == "DLC_CON_UIScaling" || value == "DLC_CON_UIScaling_Shared")
+                    {
+                        hasUIMod = true;
+                    }
+
+                    //Check for SFAR size not being 32 bytes
+                    string sfar = Path.Combine(dir, "CookedPCConsole", "Default.sfar");
+                    string unpackedDir = Path.Combine(dir, "CookedPCConsole");
+                    if (File.Exists(sfar))
+                    {
+                        FileInfo fi = new FileInfo(sfar);
+                        sfarsize = fi.Length;
+                        hasSfarSizeErrorMemiFound = sfarsize != propersize;
+
+                        var filesInSfarDir = Directory.EnumerateFiles(unpackedDir).ToList();
+                        var hasUnpackedFiles = filesInSfarDir.Any(d => unpackedFileExtensions.Contains(Path.GetExtension(d.ToLower())));
+                        var officialPackedSize = GetPackedSFARSize(value);
+                        if (hasSfarSizeErrorMemiFound && MEMI_FOUND)
                         {
-                            if (priorities.ContainsKey(mountpriority))
+                            if (me3expUnpackedSize == sfarsize)
                             {
-                                duplicatePriorityStr = priorities[mountpriority];
+                                addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
+                                addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
+                                if (HASH_SUPPORTED)
+                                {
+                                    addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
+                                }
+                            }
+                            else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
+                            {
+                                addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
+                                addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
+                                addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
+                            }
+                            else if (officialPackedSize == sfarsize)
+                            {
+                                addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed");
+                                addDiagLine("[ERROR]      SFAR is not unpacked. This DLC was either installed after ALOT was installed or was attempted to be repaired by Origin.");
+                                addDiagLine("[ERROR]      The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
                             }
                             else
                             {
-                                priorities[mountpriority] = value;
-                            }
-                        }
-                        if (mountpriority == 31050)
-                        {
-                            compatPatchInstalled = isCompatPatch = true;
-                        }
-                        if (value != "DLC_CON_XBX" && value != "DLC_CON_UIScaling" && value != "DLC_CON_UIScaling_Shared" && InteralGetDLCName(value) == null)
-                        {
-                            hasNonUIDLCMod = true;
-                        }
-                        if (value == "DLC_CON_XBX" || value == "DLC_CON_UIScaling" || value == "DLC_CON_UIScaling_Shared")
-                        {
-                            hasUIMod = true;
-                        }
-
-                        //Check for SFAR size not being 32 bytes
-                        string sfar = Path.Combine(dir, "CookedPCConsole", "Default.sfar");
-                        string unpackedDir = Path.Combine(dir, "CookedPCConsole");
-                        if (File.Exists(sfar))
-                        {
-                            FileInfo fi = new FileInfo(sfar);
-                            sfarsize = fi.Length;
-                            hasSfarSizeErrorMemiFound = sfarsize != propersize;
-
-                            var filesInSfarDir = Directory.EnumerateFiles(unpackedDir).ToList();
-                            var hasUnpackedFiles = filesInSfarDir.Any(d => unpackedFileExtensions.Contains(Path.GetExtension(d.ToLower())));
-                            var officialPackedSize = GetPackedSFARSize(value);
-                            if (hasSfarSizeErrorMemiFound && MEMI_FOUND)
-                            {
-                                if (me3expUnpackedSize == sfarsize)
-                                {
-                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
-                                    addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
-                                    if (HASH_SUPPORTED)
-                                    {
-                                        addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
-                                    }
-                                }
-                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
-                                {
-                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
-                                    addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
-                                    addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                                }
-                                else if (officialPackedSize == sfarsize)
-                                {
-                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed");
-                                    addDiagLine("[ERROR]      SFAR is not unpacked. This DLC was either installed after ALOT was installed or was attempted to be repaired by Origin.");
-                                    addDiagLine("[ERROR]      The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                                }
-                                else
-                                {
-                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Unknown SFAR size");
-                                    addDiagLine("[ERROR]      SFAR is not the MEM unpacked size, ME3Explorer unpacked size, or packed size. This SFAR is " + ByteSize.FromBytes(sfarsize) + " bytes.");
-                                }
-                            }
-                            else
-                            {
-                                //ALOT not detected
-                                if (me3expUnpackedSize == sfarsize)
-                                {
-                                    addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
-                                    addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
-                                    if (HASH_SUPPORTED)
-                                    {
-                                        addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
-                                    }
-                                }
-                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
-                                {
-                                    addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
-                                    addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
-                                    addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                                }
-                                else if (sfarsize >= officialPackedSize && officialPackedSize != 0)
-                                {
-                                    addDiagLine(GetDLCDisplayString(value) + " - Packed");
-                                }
-                                else
-                                {
-                                    addDiagLine(GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibility Pack" : null));
-                                }
+                                addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Unknown SFAR size");
+                                addDiagLine("[ERROR]      SFAR is not the MEM unpacked size, ME3Explorer unpacked size, or packed size. This SFAR is " + ByteSize.FromBytes(sfarsize) + " bytes.");
                             }
                         }
                         else
                         {
-                            //SFAR MISSING
-                            addDiagLine("~~~" + GetDLCDisplayString(value) + " - SFAR missing");
+                            //ALOT not detected
+                            if (me3expUnpackedSize == sfarsize)
+                            {
+                                addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
+                                addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
+                                if (HASH_SUPPORTED)
+                                {
+                                    addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
+                                }
+                            }
+                            else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
+                            {
+                                addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
+                                addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
+                                addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
+                            }
+                            else if (sfarsize >= officialPackedSize && officialPackedSize != 0)
+                            {
+                                addDiagLine(GetDLCDisplayString(value) + " - Packed");
+                            }
+                            else
+                            {
+                                addDiagLine(GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibility Pack" : null));
+                            }
                         }
                     }
                     else
                     {
-                        addDiagLine(GetDLCDisplayString(value));
-                    }
-
-                    if (duplicatePriorityStr != "")
-                    {
-                        addDiagLine("[ERROR] - This DLC has the same mount priority as another DLC: " + duplicatePriorityStr);
-                        addDiagLine("[ERROR]   These conflicting DLCs will likely encounter issues as the game will not know which files should be used");
+                        //SFAR MISSING
+                        addDiagLine("~~~" + GetDLCDisplayString(value) + " - SFAR missing");
                     }
                 }
+                else
+                {
+                    addDiagLine(GetDLCDisplayString(value));
+                }
+
+                if (duplicatePriorityStr != "")
+                {
+                    addDiagLine("[ERROR] - This DLC has the same mount priority as another DLC: " + duplicatePriorityStr);
+                    addDiagLine("[ERROR]   These conflicting DLCs will likely encounter issues as the game will not know which files should be used");
+                }
+            }
 
                 /*
                 if (DIAGNOSTICS_GAME == 3)
@@ -1099,12 +1102,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 switch (command)
                                 {
                                     case "ERROR_REMOVED_FILE":
-                                        //.Add($" - File removed after textures were installed: {param}");
-                                        removedFiles.Add(param);
+                                    //.Add($" - File removed after textures were installed: {param}");
+                                    removedFiles.Add(param);
                                         break;
                                     case "ERROR_ADDED_FILE":
-                                        //addedFiles.Add($"File was added after textures were installed" + param + " " + File.GetCreationTimeUtc(Path.Combine(gamePath, param));
-                                        addedFiles.Add(param);
+                                    //addedFiles.Add($"File was added after textures were installed" + param + " " + File.GetCreationTimeUtc(Path.Combine(gamePath, param));
+                                    addedFiles.Add(param);
                                         break;
                                     case "ERROR_VANILLA_MOD_FILE":
                                         if (!addedFiles.Contains(param))
@@ -1295,19 +1298,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 case "ERROR_MIPMAPS_NOT_REMOVED":
                                     if (selectedDiagnosticTarget.TextureModded)
                                     {
-                                        //only matters when game is texture modded
-                                        emptyMipsNotRemoved.Add(param);
+                                    //only matters when game is texture modded
+                                    emptyMipsNotRemoved.Add(param);
                                     }
                                     break;
                                 case "TASK_PROGRESS":
                                     updateStatusCallback?.Invoke($"Performing full textures check {param}%");
                                     break;
                                 case "PROCESSING_FILE":
-                                    //Don't think there's anything to do with this right now
-                                    break;
+                                //Don't think there's anything to do with this right now
+                                break;
                                 case "ERROR_REFERENCED_TFC_NOT_FOUND":
-                                    //badTFCReferences.Add(param);
-                                    lastMissingTFC = param;
+                                //badTFCReferences.Add(param);
+                                lastMissingTFC = param;
                                     break;
                                 case "ERROR_TEXTURE_SCAN_DIAGNOSTIC":
                                     if (lastMissingTFC != null)
@@ -1319,7 +1322,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         scanErrors.Add(param);
                                     }
                                     lastMissingTFC = null; //reset
-                                    break;
+                                break;
                                 default:
                                     Debug.WriteLine($"{command} {param}");
                                     break;
@@ -1636,7 +1639,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             catch (Exception ex)
             {
                 addDiagLine("Exception occured while running diagnostic.", Severity.ERROR);
-                addDiagLine(App.FlattenException(ex));
+                addDiagLine(App.FlattenException(ex), Severity.ERROR);
                 return diagStringBuilder.ToString();
             }
             finally
