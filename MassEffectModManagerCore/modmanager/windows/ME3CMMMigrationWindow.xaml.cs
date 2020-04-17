@@ -53,7 +53,8 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Log.Information(@"Validate ME3CMM folders and files");
                 var exeDir = Utilities.GetMMExecutableDirectory();
                 //DEBUG ONLY
-                exeDir = @"E:\ME3CMM";
+                
+                //exeDir = @"E:\ME3CMM";
 
                 var modsDir = Path.Combine(exeDir, @"mods");
                 var dataDir = Path.Combine(exeDir, @"data");
@@ -66,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                     var targetModLibrary = Utilities.GetModsDirectory();
                     //DEBUG ONLY
-                    targetModLibrary = @"E:\ME3CMM\mods";
+                    //targetModLibrary = @"E:\ME3CMM\mods";
 
                     targetModLibrary = Path.Combine(targetModLibrary, @"ME3");
                     if (!Directory.Exists(targetModLibrary))
