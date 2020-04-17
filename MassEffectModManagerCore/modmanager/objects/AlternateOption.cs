@@ -10,7 +10,17 @@ namespace MassEffectModManagerCore.modmanager.objects
         public event PropertyChangedEventHandler PropertyChanged;
         public virtual bool CheckedByDefault { get; internal set; }
         public abstract bool IsManual { get; }
-        public virtual double UIOpacity => (!UIIsSelectable) ? .5 : 1;
+        public virtual double CheckboxOpacity => (!UIIsSelectable) ? .5 : 1;
+        public virtual double TextOpacity
+        {
+            get
+            {
+                if (!UIIsSelectable && IsSelected) return 1;
+                if (!UIIsSelectable && !IsSelected) return .5;
+                return 1;
+            }
+        }
+
         public bool IsSelected { get; set; }
         public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
         public abstract bool UINotApplicable { get; }

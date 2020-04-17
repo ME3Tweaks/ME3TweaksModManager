@@ -34,7 +34,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             COND_ANY_DLC_PRESENT, //Auto - Apply if any conditional dlc is present
             COND_ALL_DLC_PRESENT, //Auto - Apply if all conditional dlc are present
             COND_ALL_DLC_NOT_PRESENT, //Auto - Apply if none of the conditional dlc are present
-            COND_SPECIFIC_SIZED_FILES //Auto - Apply if a specific file with a listed size is present
+            COND_SPECIFIC_SIZED_FILES, //Auto - Apply if a specific file with a listed size is present
+            COND_SPECIFIC_DLC_SETUP //Auto - Apply only if the specified DLC exists OR not exists, using +/-
         }
 
         public AltDLCCondition Condition;
@@ -193,22 +194,60 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         //if (modForValidating.Game == Mod.MEGame.ME3)
                         //{
-                        if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
-                        {
-                            ConditionalDLC.Add(foldername);
-                            continue;
-                        }
+
 
                         //}
-                        if (!dlc.StartsWith(@"DLC_"))
+                        if (Condition == AltDLCCondition.COND_SPECIFIC_DLC_SETUP)
                         {
-                            Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header");
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_conditionalDLCInvalidValue, FriendlyName);
-                            return;
+                            
+                            //check +/-
+                            if (!dlc.StartsWith(@"-") && !dlc.StartsWith(@"+"))
+                            {
+                                Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}");
+                                LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}";
+                                return;
+                            }
+
+                            var prefix = dlc.Substring(0, 1);
+                            var realname = dlc.Substring(1);
+
+                            //official headers
+                            if (Enum.TryParse(realname, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                            {
+                                ConditionalDLC.Add(prefix + foldername);
+                                continue;
+                            }
+
+                            //dlc mods
+                            if (!realname.StartsWith(@"DLC_"))
+                            {
+                                Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}");
+                                LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}";
+                                return;
+                            }
+                            else
+                            {
+                                ConditionalDLC.Add(prefix + realname);
+                            }
                         }
                         else
                         {
-                            ConditionalDLC.Add(dlc);
+                            if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                            {
+                                ConditionalDLC.Add(foldername);
+                                continue;
+                            }
+
+                            if (!dlc.StartsWith(@"DLC_"))
+                            {
+                                Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header");
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_conditionalDLCInvalidValue, FriendlyName);
+                                return;
+                            }
+                            else
+                            {
+                                ConditionalDLC.Add(dlc);
+                            }
                         }
                     }
                 }
@@ -401,16 +440,42 @@ namespace MassEffectModManagerCore.modmanager.objects
                     IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltDLCCondition.COND_SPECIFIC_SIZED_FILES:
-                    var selected = true;
-                    foreach (var reqPair in RequiredSpecificFiles)
                     {
-                        if (selected)
+                        var selected = true;
+                        foreach (var reqPair in RequiredSpecificFiles)
                         {
-                            var targetFile = Path.Combine(target.TargetPath, reqPair.Key);
-                            selected &= File.Exists(targetFile) && new FileInfo(targetFile).Length == reqPair.Value;
+                            if (selected)
+                            {
+                                var targetFile = Path.Combine(target.TargetPath, reqPair.Key);
+                                selected &= File.Exists(targetFile) && new FileInfo(targetFile).Length == reqPair.Value;
+                            }
                         }
+
+                        IsSelected = selected;
                     }
-                    IsSelected = selected;
+                    break;
+                case AltDLCCondition.COND_SPECIFIC_DLC_SETUP:
+                    {
+                        var selected = true;
+                        foreach (var condDlc in ConditionalDLC)
+                        {
+                            if (selected)
+                            {
+                                bool existenceRule = condDlc.Substring(0, 1) == "+";
+                                var dlcfoldername = condDlc.Substring(1);
+
+                                if (existenceRule)
+                                {
+                                    selected &= installedDLC.Contains(dlcfoldername, StringComparer.CurrentCultureIgnoreCase);
+                                }
+                                else
+                                {
+                                    selected &= !installedDLC.Contains(dlcfoldername, StringComparer.CurrentCultureIgnoreCase);
+                                }
+                            }
+                        }
+                        IsSelected = selected;
+                    }
                     break;
             }
             UIIsSelectable = false; //autos

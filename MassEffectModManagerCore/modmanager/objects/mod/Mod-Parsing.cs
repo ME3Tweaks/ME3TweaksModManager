@@ -145,14 +145,14 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         foreach (var conditionaldlc in altdlc.ConditionalDLC)
                         {
-                            autoConfigs.Add(conditionaldlc);
+                            autoConfigs.Add(conditionaldlc.TrimStart('-','+'));
                         }
                     }
                     foreach (var altfile in InstallationJob.AlternateFiles)
                     {
                         foreach (var conditionaldlc in altfile.ConditionalDLC)
                         {
-                            autoConfigs.Add(conditionaldlc);
+                            autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
                         }
                     }
                 }
@@ -727,7 +727,7 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
 
-                        
+
                     }
 
                     //Build additions (vars will be null if these aren't supported by target version)
@@ -824,7 +824,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (!headerJob.ValidateAlternates(out string failureReason))
                     {
                         LoadFailedReason = failureReason;
-                        return; 
+                        return;
                     }
 
                     CLog.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
