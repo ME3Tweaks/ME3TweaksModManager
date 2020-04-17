@@ -34,6 +34,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
         public ICommand CloseCommand { get; set; }
 
+
+
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(ClosePanel);

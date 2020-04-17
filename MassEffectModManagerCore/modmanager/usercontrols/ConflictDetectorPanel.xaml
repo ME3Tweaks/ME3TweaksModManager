@@ -39,9 +39,7 @@
                 </DataTemplate>
             </ui:StretchingTreeView.Resources>
             <ui:StretchingTreeView.ItemContainerStyle>
-                <Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeViewItemStyle}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
+                <Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeViewItemStyle}"/>
             </ui:StretchingTreeView.ItemContainerStyle>
         </ui:StretchingTreeView>
     </DockPanel>

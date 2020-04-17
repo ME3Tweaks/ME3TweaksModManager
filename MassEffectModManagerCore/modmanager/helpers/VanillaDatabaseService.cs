@@ -365,9 +365,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="target">Target to get dlc from</param>
         /// <returns>List of DLC foldernames</returns>
-        internal static List<string> GetInstalledOfficialDLC(GameTarget target)
+        internal static List<string> GetInstalledOfficialDLC(GameTarget target, bool includeDisabled = false)
         {
-            return MEDirectories.GetInstalledDLC(target).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).ToList();
+            return MEDirectories.GetInstalledDLC(target, includeDisabled).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase)).ToList();
         }
 
         internal static bool ValidateTargetDLCConsistency(GameTarget target, Action<string> inconsistentDLCCallback = null)

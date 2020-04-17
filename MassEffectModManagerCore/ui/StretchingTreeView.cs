@@ -17,6 +17,11 @@ namespace MassEffectModManagerCore.ui
         {
             return item is StretchingTreeViewItem;
         }
+
+        public StretchingTreeView()
+        {
+            this.SetResourceReference(StyleProperty, typeof(TreeView));
+        }
     }
 
     public class StretchingTreeViewItem : TreeViewItem

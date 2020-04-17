@@ -170,7 +170,14 @@ namespace MassEffectModManagerCore
             //    SelectedGameTarget = InstallationTargets[0];
             //}
 
-            backgroundTaskEngine = new BackgroundTaskEngine((updateText) => { Application.Current.Dispatcher.Invoke(() => { CurrentOperationText = updateText; }); },
+            backgroundTaskEngine = new BackgroundTaskEngine(updateText =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+{
+    Log.Information("Setting BLText: " + updateText);
+    CurrentOperationText = updateText;
+});
+            },
                 () =>
                 {
                     Application.Current.Dispatcher.Invoke(delegate
@@ -277,6 +284,7 @@ namespace MassEffectModManagerCore
             };
         }
 
+        public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
         public ICommand ConflictDetectorCommand { get; set; }
@@ -346,6 +354,14 @@ namespace MassEffectModManagerCore
             ImportDLCModFromGameCommand = new GenericCommand(OpenImportFromGameUI, CanOpenImportFromUI);
             BackupFileFetcherCommand = new GenericCommand(OpenBackupFileFetcher);
             ConflictDetectorCommand = new GenericCommand(OpenConflictDetector);
+            OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
+        }
+
+        private void OpenOfficialDLCToggler()
+        {
+            var dlcToggler = new OfficialDLCToggler();
+            dlcToggler.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(dlcToggler);
         }
 
         private void OpenConflictDetector()

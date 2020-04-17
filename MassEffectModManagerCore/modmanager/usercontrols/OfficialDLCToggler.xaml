@@ -1,0 +1,55 @@
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.OfficialDLCToggler"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             mc:Ignorable="d" 
+             Height="500" Width="550">
+    <DockPanel MaxHeight="520">
+        <TextBlock DockPanel.Dock="Top" Text="Official DLC Toggler" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
+        <TextBlock DockPanel.Dock="Top" Text="Developers can use this tool to toggle installed offical DLC on or off. This is useful to see how a mod behaves when installed into a different environment. You can toggle DLC mods in the Installation Information panel." TextAlignment="Center" TextWrapping="Wrap"/>
+        <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding AvailableTargets}" SelectedItem="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
+            <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}"/>
+        </StackPanel>
+        <ScrollViewer Padding="0" BorderThickness="1" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}">
+            <ItemsControl ItemsSource="{Binding InstalledDLCs}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" Padding="0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:OfficialDLCToggler+InstalledDLC}">
+                        <Border Name="BG_Border" Background="#4444AA44">
+                            <DockPanel>
+                                <DockPanel.Resources>
+                                    <Style TargetType="{x:Type DockPanel}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="TextBlock.Foreground" Value="Pink" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+
+                                </DockPanel.Resources>
+                                <DockPanel Margin="3">
+                                    <Button DockPanel.Dock="Right" Content="{Binding ToggleText}" Command="{Binding ToggleCommand}"/>
+                                    <TextBlock Text="{Binding DLCFolderName}" DockPanel.Dock="Bottom" FontSize="10"/>
+                                    <TextBlock Text="{Binding HumanName}" />
+                                </DockPanel>
+                            </DockPanel>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger 
+                                Binding="{Binding Path=Enabled}" Value="False">
+                                <Setter Property="Background" TargetName="BG_Border" Value="#44AA4444">
+                                </Setter>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</local:MMBusyPanelBase>

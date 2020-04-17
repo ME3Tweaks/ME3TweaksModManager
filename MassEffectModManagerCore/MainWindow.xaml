@@ -107,6 +107,7 @@
 
                     <MenuItem Header="{DynamicResource string_developerTools}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
                     <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" Command="{Binding ConflictDetectorCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <MenuItem Header="Official DLC Toggler" Command="{Binding OfficialDLCTogglerCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     <MenuItem Header="{DynamicResource string_controllerISMCompatibility}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" />
