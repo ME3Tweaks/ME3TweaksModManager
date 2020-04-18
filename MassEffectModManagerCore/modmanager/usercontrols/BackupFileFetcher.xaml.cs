@@ -229,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var target = new GameTarget(Mod.MEGame.ME2, bup, false);
                 var cookedPath = MEDirectories.CookedPath(target);
-                foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin", SearchOption.AllDirectories))
+                foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin|\.tlk", SearchOption.AllDirectories))
                 {
                     me2files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
@@ -316,7 +316,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var target = new GameTarget(Mod.MEGame.ME3, bup, false);
                 var cookedPath = MEDirectories.CookedPath(target);
-                foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin", SearchOption.AllDirectories))
+                foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin|\.tlk", SearchOption.AllDirectories))
                 {
                     me3files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
