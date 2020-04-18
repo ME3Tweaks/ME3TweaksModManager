@@ -2591,6 +2591,15 @@ namespace MassEffectModManagerCore
                                         nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
                                         nbw.RunWorkerAsync();
                                     }
+                                    else
+                                    {
+                                        //Is this a straight up TLK?
+                                        NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
+                                        var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", "Compiling TLK file", "Compiled TLK file");
+                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement); };
+                                        nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                        nbw.RunWorkerAsync();
+                                    }
                                 }
                                 else if (rootElement.Name == @"tlkFile") //ME3Explorer style
                                 {
