@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -847,6 +849,14 @@ namespace MassEffectModManagerCore
             {
                 BusyContent = null;
                 IsBusy = false;
+                System.Threading.Tasks.Task.Factory.StartNew(() =>
+                {
+                    // this is to force some items that are no longer relevant to be cleaned up.
+                    // for some reason commands fire even though they are no longer attached to the interface
+                    Thread.Sleep(3000);
+                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                    GC.Collect();
+                });
             }
             else
             {
@@ -1180,7 +1190,7 @@ namespace MassEffectModManagerCore
 
                     if (gameSelected == Mod.MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32 directory.
-                    //Test for cmmvanilla
+                                                                //Test for cmmvanilla
                     if (File.Exists(Path.Combine(result, @"cmmvanilla")))
                     {
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCannotAddTargetCmmVanilla), M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
