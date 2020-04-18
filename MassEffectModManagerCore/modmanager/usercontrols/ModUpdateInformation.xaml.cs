@@ -60,7 +60,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else if (obj is OnlineContent.ModUpdateInfo ui)
             {
-                UpdateClassicMod(ui);
+                if (ui.updatecode > 0)
+                {
+                    UpdateClassicMod(ui);
+                }
+                else
+                {
+                    Utilities.OpenWebpage(ui.mod.ModWebsite);
+                }
             }
         }
 
