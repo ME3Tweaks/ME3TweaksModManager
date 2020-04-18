@@ -284,6 +284,7 @@ namespace MassEffectModManagerCore
             };
         }
 
+        public ICommand LaunchEGMSettingsCommand { get; set; }
         public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
@@ -355,6 +356,17 @@ namespace MassEffectModManagerCore
             BackupFileFetcherCommand = new GenericCommand(OpenBackupFileFetcher);
             ConflictDetectorCommand = new GenericCommand(OpenConflictDetector);
             OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
+            LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
+        }
+
+        private bool CanLaunchEGMSettings()
+        {
+            var target = GetCurrentTarget(Mod.MEGame.ME3);
+            if (target != null)
+            {
+                return VanillaDatabaseService.GetInstalledDLCMods(target).Contains(@"DLC_MOD_EGM");
+            }
+            return false;
         }
 
         private void OpenOfficialDLCToggler()
@@ -1471,16 +1483,16 @@ namespace MassEffectModManagerCore
             return InstallationTargets.FirstOrDefault(x => x.Game == game);
         }
 
-        public void LoadMods(Mod modToHighlight = null)
+        public void LoadMods(Mod modToHighlight = null, bool forceUpdateCheckOnCompletion = false)
         {
-            LoadMods(modToHighlight?.ModPath);
+            LoadMods(modToHighlight?.ModPath, forceUpdateCheckOnCompletion);
         }
 
         /// <summary>
         /// Reload mods. Highlight the specified mod that matches the path if any
         /// </summary>
         /// <param name="modpathToHighlight"></param>
-        public void LoadMods(string modpathToHighlight)
+        public void LoadMods(string modpathToHighlight, bool forceUpdateCheckOnCompletion = false)
         {
             try
             {
@@ -1572,16 +1584,11 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-
-                //should this be here?
-                UpdateBinkStatus(Mod.MEGame.ME1);
-                UpdateBinkStatus(Mod.MEGame.ME2);
-                UpdateBinkStatus(Mod.MEGame.ME3);
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
                 //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
-                if (canCheckForModUpdates)
+                if (canCheckForModUpdates || forceUpdateCheckOnCompletion)
                 {
                     CheckAllModsForUpdates();
                 }
@@ -1964,6 +1971,10 @@ namespace MassEffectModManagerCore
 
                 if (firstStartupCheck)
                 {
+
+                    UpdateBinkStatus(Mod.MEGame.ME1);
+                    UpdateBinkStatus(Mod.MEGame.ME2);
+                    UpdateBinkStatus(Mod.MEGame.ME3);
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
                     if (!OnlineContent.EnsureCriticalFiles())
                     {
@@ -2350,6 +2361,7 @@ namespace MassEffectModManagerCore
             {
                 if (!SelectedGameTarget.RegistryActive)
                 {
+                    UpdateBinkStatus(SelectedGameTarget.Game);
                     try
                     {
                         var hresult = UpdateBootTarget(SelectedGameTarget);
@@ -2617,7 +2629,7 @@ namespace MassEffectModManagerCore
                 if (b.Data is List<Mod> modsImported)
                 {
                     ReleaseBusyControl();
-                    LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null);
+                    LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null, true);
                 }
                 else if (b.Data is Mod compressedModToInstall)
                 {

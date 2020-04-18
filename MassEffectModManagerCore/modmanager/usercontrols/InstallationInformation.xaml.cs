@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -66,22 +67,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RemoveTarget()
         {
             Utilities.RemoveCachedTarget(SelectedTarget);
-            foreach (var installationTarget in InstallationTargets)
-            {
-                SelectedTarget.ModifiedBasegameFilesView.Filter = null;
-                installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
-            }
-            OnClosing(new DataEventArgs(@"ReloadTargets"));
+            ClosePanel(new DataEventArgs(@"ReloadTargets"));
         }
 
-        private void ClosePanel()
+        private void ClosePanel() { ClosePanel(DataEventArgs.Empty); }
+
+        private void ClosePanel(DataEventArgs args)
         {
             foreach (var installationTarget in InstallationTargets)
             {
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
                 installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
             }
-            OnClosing(DataEventArgs.Empty);
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect();
+            OnClosing(args);
         }
 
         private bool RestoreAllBasegameInProgress;
@@ -399,6 +399,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private Mod.MEGame game;
             private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
             private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
+
+            private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
+            private Action notifyDeleted;
             public SolidColorBrush TextColor
             {
                 get
@@ -505,8 +508,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             private bool CanToggleDLC() => !Utilities.IsGameRunning(game);
 
-            private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
-            private Action notifyDeleted;
 
             public ICommand DeleteCommand { get; set; }
             public GenericCommand EnableDisableCommand { get; set; }
@@ -525,6 +526,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
             }
+
+            public void ClearHandlers()
+            {
+                deleteConfirmationCallback = null;
+                notifyDeleted = null;
+            }
         }
 
 
@@ -535,7 +542,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
                 installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
             }
-            OnClosing(new DataEventArgs(@"ALOTInstaller"));
+            ClosePanel(new DataEventArgs(@"ALOTInstaller"));
         }
 
         private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
@@ -547,12 +554,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (e.Key == Key.Escape && CanClose())
             {
-                foreach (var installationTarget in InstallationTargets)
-                {
-                    SelectedTarget.ModifiedBasegameFilesView.Filter = null;
-                    installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
-                }
-                OnClosing(DataEventArgs.Empty);
+                ClosePanel(DataEventArgs.Empty);
             }
         }
 

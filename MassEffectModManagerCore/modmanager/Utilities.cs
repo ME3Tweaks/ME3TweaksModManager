@@ -776,28 +776,56 @@ namespace MassEffectModManagerCore
             }
         }
 
+
+        private static (bool isRunning, DateTime lastChecked) me1RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static (bool isRunning, DateTime lastChecked) me2RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static (bool isRunning, DateTime lastChecked) me3RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static int TIME_BETWEEN_PROCESS_CHECKS = 5;
         /// <summary>
-        /// Determines if a specific game is running. 
+        /// Determines if a specific game is running. This method only updates every 3 seconds due to the huge overhead it has
         /// </summary>
         /// <returns>True if running, false otherwise</returns>
         public static bool IsGameRunning(Mod.MEGame gameID)
         {
-            if (gameID == Mod.MEGame.ME1)
+            (bool isRunning, DateTime lastChecked) runningInfo = (false, DateTime.MinValue.AddSeconds(5));
+            switch (gameID)
             {
-                Process[] pname = Process.GetProcessesByName("MassEffect");
-                return pname.Length > 0;
+                case Mod.MEGame.ME1:
+                    runningInfo = me1RunningInfo;
+                    break;
+                case Mod.MEGame.ME2:
+                    runningInfo = me2RunningInfo;
+                    break;
+                case Mod.MEGame.ME3:
+                    runningInfo = me3RunningInfo;
+                    break;
             }
-            if (gameID == Mod.MEGame.ME2)
+
+            var time = runningInfo.lastChecked.AddSeconds(TIME_BETWEEN_PROCESS_CHECKS);
+            //Debug.WriteLine(time + " vs " + DateTime.Now);
+            if (time > DateTime.Now)
             {
-                Process[] pname = Process.GetProcessesByName("MassEffect2");
-                Process[] pname2 = Process.GetProcessesByName("ME2Game");
-                return pname.Length > 0 || pname2.Length > 0;
+                //Debug.WriteLine("CACHED");
+                return runningInfo.isRunning; //cached
             }
-            else
+            //Debug.WriteLine("IsRunning: " + gameID);
+
+            var processNames = MEDirectories.ExecutableNames(gameID).Select(x => Path.GetFileNameWithoutExtension(x));
+            runningInfo.isRunning = Process.GetProcesses().Any(x => processNames.Contains(x.ProcessName));
+            runningInfo.lastChecked = DateTime.Now;
+            switch (gameID)
             {
-                Process[] pname = Process.GetProcessesByName("MassEffect3");
-                return pname.Length > 0;
+                case Mod.MEGame.ME1:
+                    me1RunningInfo = runningInfo;
+                    break;
+                case Mod.MEGame.ME2:
+                    me2RunningInfo = runningInfo;
+                    break;
+                case Mod.MEGame.ME3:
+                    me3RunningInfo = runningInfo;
+                    break;
             }
+            return runningInfo.isRunning;
         }
 
         internal static string GetAppDataFolder(bool createIfMissing = true)
@@ -1029,7 +1057,8 @@ namespace MassEffectModManagerCore
             if (!File.Exists(cachefile)) File.Create(cachefile).Close();
             var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
-            try { 
+            try
+            {
                 if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
                 {
                     savedTargets.Add(path);

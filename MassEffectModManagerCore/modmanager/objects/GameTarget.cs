@@ -254,6 +254,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             ModifiedBasegameFiles.ClearEx();
             ModifiedSFARFiles.ClearEx();
+            foreach (var uiInstalledDlcMod in UIInstalledDLCMods)
+            {
+                uiInstalledDlcMod.ClearHandlers();
+            }
+            UIInstalledDLCMods.ClearEx();
         }
 
         public ObservableCollectionExtended<InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();

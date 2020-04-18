@@ -193,7 +193,7 @@
                             <Image Source="/modmanager/toolicons/alot_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="EGM Settings" Name="EGMSettings_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Allows you to configure settings for Expanded Galaxy Mod">
+                    <MenuItem Header="EGM Settings" Name="EGMSettings_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="Allows you to configure settings for Expanded Galaxy Mod" Command="{Binding LaunchEGMSettingsCommand}">
                         <MenuItem.Icon>
                             <Image Source="/modmanager/toolicons/egmsettings_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
