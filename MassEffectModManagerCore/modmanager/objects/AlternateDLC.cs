@@ -119,6 +119,71 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
+            //OP_NOTHING can have conditions
+            if (properties.TryGetValue(@"ConditionalDLC", out string conditionalDlc))
+            {
+                var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
+                foreach (var dlc in conditionalList)
+                {
+                    //if (modForValidating.Game == Mod.MEGame.ME3)
+                    //{
+
+
+                    //}
+                    if (Condition == AltDLCCondition.COND_SPECIFIC_DLC_SETUP)
+                    {
+
+                        //check +/-
+                        if (!dlc.StartsWith(@"-") && !dlc.StartsWith(@"+"))
+                        {
+                            Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}");
+                            LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}";
+                            return;
+                        }
+
+                        var prefix = dlc.Substring(0, 1);
+                        var realname = dlc.Substring(1);
+
+                        //official headers
+                        if (Enum.TryParse(realname, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                        {
+                            ConditionalDLC.Add(prefix + foldername);
+                            continue;
+                        }
+
+                        //dlc mods
+                        if (!realname.StartsWith(@"DLC_"))
+                        {
+                            Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}");
+                            LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}";
+                            return;
+                        }
+                        else
+                        {
+                            ConditionalDLC.Add(prefix + realname);
+                        }
+                    }
+                    else
+                    {
+                        if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                        {
+                            ConditionalDLC.Add(foldername);
+                            continue;
+                        }
+
+                        if (!dlc.StartsWith(@"DLC_"))
+                        {
+                            Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header");
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_conditionalDLCInvalidValue, FriendlyName);
+                            return;
+                        }
+                        else
+                        {
+                            ConditionalDLC.Add(dlc);
+                        }
+                    }
+                }
+            }
 
             if (Operation != AltDLCOperation.OP_NOTHING)
             {
@@ -187,70 +252,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 //todo: Validate target in mod folder
 
-                if (properties.TryGetValue(@"ConditionalDLC", out string conditionalDlc))
-                {
-                    var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
-                    foreach (var dlc in conditionalList)
-                    {
-                        //if (modForValidating.Game == Mod.MEGame.ME3)
-                        //{
-
-
-                        //}
-                        if (Condition == AltDLCCondition.COND_SPECIFIC_DLC_SETUP)
-                        {
-                            
-                            //check +/-
-                            if (!dlc.StartsWith(@"-") && !dlc.StartsWith(@"+"))
-                            {
-                                Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}");
-                                LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}";
-                                return;
-                            }
-
-                            var prefix = dlc.Substring(0, 1);
-                            var realname = dlc.Substring(1);
-
-                            //official headers
-                            if (Enum.TryParse(realname, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
-                            {
-                                ConditionalDLC.Add(prefix + foldername);
-                                continue;
-                            }
-
-                            //dlc mods
-                            if (!realname.StartsWith(@"DLC_"))
-                            {
-                                Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}");
-                                LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}";
-                                return;
-                            }
-                            else
-                            {
-                                ConditionalDLC.Add(prefix + realname);
-                            }
-                        }
-                        else
-                        {
-                            if (Enum.TryParse(dlc, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
-                            {
-                                ConditionalDLC.Add(foldername);
-                                continue;
-                            }
-
-                            if (!dlc.StartsWith(@"DLC_"))
-                            {
-                                Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header");
-                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_conditionalDLCInvalidValue, FriendlyName);
-                                return;
-                            }
-                            else
-                            {
-                                ConditionalDLC.Add(dlc);
-                            }
-                        }
-                    }
-                }
+                
 
                 //Validation
                 if (string.IsNullOrWhiteSpace(AlternateDLCFolder) && MultiListRootPath == null)
