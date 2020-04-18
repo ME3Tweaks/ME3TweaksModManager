@@ -87,6 +87,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
+                var oldTMOption = TextureModded;
                 var alotInfo = GetInstalledALOTInfo();
                 if (alotInfo != null)
                 {
@@ -122,6 +123,44 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (IsPolishME1)
                 {
                     Log.Information(@"ME1 Polish Edition detected");
+                }
+
+                if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded)
+                {
+                    UpdateLODs();
+                }
+            }
+        }
+
+        public void UpdateLODs(bool me12k = false)
+        {
+            if (!TextureModded)
+            {
+                Utilities.SetLODs(this, false, false, false);
+            }
+            else
+            {
+                if (Game == Mod.MEGame.ME1)
+                {
+                    if (MEUITMInstalled)
+                    {
+                        //detect soft shadows/meuitm
+                        var branchingPCFCommon = Path.Combine(TargetPath, @"Engine", @"Shaders", @"BranchingPCFCommon.usf");
+                        if (File.Exists(branchingPCFCommon))
+                        {
+                            var md5 = Utilities.CalculateMD5(branchingPCFCommon);
+                            Utilities.SetLODs(this, true, me12k, md5 == @"10db76cb98c21d3e90d4f0ffed55d424");
+                            return;
+                        }
+                    }
+
+                    //set default HQ lod
+                    Utilities.SetLODs(this, true, me12k, false);
+                }
+                else
+                {
+                    //me2/3
+                    Utilities.SetLODs(this, true, false, false);
                 }
             }
         }

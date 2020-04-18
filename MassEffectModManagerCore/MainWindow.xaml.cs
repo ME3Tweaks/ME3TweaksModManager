@@ -940,6 +940,10 @@ namespace MassEffectModManagerCore
                 .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
             try
             {
+                if (Settings.AutoUpdateLODs)
+                {
+                    SelectedGameTarget.UpdateLODs();
+                }
                 Utilities.RunProcess(MEDirectories.ExecutablePath(SelectedGameTarget), (string)null, false, true);
             }
             catch (Exception e)
@@ -2382,7 +2386,7 @@ namespace MassEffectModManagerCore
 
                             //rescan
                             PopulateTargets(SelectedGameTarget);
-                            UpdateLODsForTarget(SelectedGameTarget);
+                            SelectedGameTarget.UpdateLODs();
                         }
 
                         Analytics.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
@@ -2395,39 +2399,6 @@ namespace MassEffectModManagerCore
                     {
                         Log.Warning(@"Win32 exception occured updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
                     }
-                }
-            }
-        }
-
-        private void UpdateLODsForTarget(GameTarget selectedGameTarget, bool me12k = false)
-        {
-            if (!selectedGameTarget.TextureModded)
-            {
-                Utilities.SetLODs(selectedGameTarget, false, false, false);
-            }
-            else
-            {
-                if (selectedGameTarget.Game == Mod.MEGame.ME1)
-                {
-                    if (selectedGameTarget.MEUITMInstalled)
-                    {
-                        //detect soft shadows/meuitm
-                        var branchingPCFCommon = Path.Combine(selectedGameTarget.TargetPath, @"Engine", @"Shaders", @"BranchingPCFCommon.usf");
-                        if (File.Exists(branchingPCFCommon))
-                        {
-                            var md5 = Utilities.CalculateMD5(branchingPCFCommon);
-                            Utilities.SetLODs(selectedGameTarget, true, me12k, md5 == @"10db76cb98c21d3e90d4f0ffed55d424");
-                            return;
-                        }
-                    }
-
-                    //set default HQ lod
-                    Utilities.SetLODs(selectedGameTarget, true, me12k, false);
-                }
-                else
-                {
-                    //me2/3
-                    Utilities.SetLODs(selectedGameTarget, true, false, false);
                 }
             }
         }

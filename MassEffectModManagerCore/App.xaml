@@ -10,7 +10,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
-                <!--<ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>-->
+                <!-- Don't comment this duplicate out! It makes the app work for some reason. -->
+                <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
                 <ResourceDictionary Source="/ui/MMStyles.xaml"/>
                 <ResourceDictionary Source="/modmanager/localizations/int.xaml"/>
             </ResourceDictionary.MergedDictionaries>

@@ -1477,7 +1477,6 @@ namespace MassEffectModManagerCore
                 }
                 File.WriteAllText(settingspath, ini.ToString());
                 Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
-
             }
 
             return true;

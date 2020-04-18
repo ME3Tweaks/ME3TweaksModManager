@@ -33,6 +33,7 @@
                         <MenuItem Name="SetModLibraryPath_MenuItem" Header="{DynamicResource string_Setmodlibrarypath}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}" />
                         <MenuItem Name="BetaMode_MenuItem" Header="{DynamicResource string_optIntoBetaUpdates}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}" ToolTip="{DynamicResource string_tooltip_optIntoBetaUpdates}" IsCheckable="True" />
                         <MenuItem Name="DeveloperMode_MenuItem" Header="{DynamicResource string_Developermode}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="{DynamicResource string_EnableDeveloperOrientedFeatures}" IsCheckable="True" />
+                        <MenuItem Name="AutoLods_MenuItem" Visibility="Visible" Header="Auto update LODs" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs)}" ToolTip="Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager" IsCheckable="True" />
                         <MenuItem Name="DarkMode_MenuItem" Visibility="Visible" Header="{DynamicResource string_Darktheme}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}" ToolTip="{DynamicResource string_SwitchUItodarktheme}" IsCheckable="True" />
                         <MenuItem Header="{DynamicResource string_Language}">
                             <MenuItem.Icon>
@@ -389,10 +390,7 @@
                           </Hyperlink>
                         </TextBlock>
                     </StackPanel>
-                    <!--<ListBox/>-->
-                    <!--<ListBox/>-->
-                    <!-- Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" -->
-                    <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"  BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
+                    <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" SelectionChanged="ModsList_ListBox_OnSelectionChanged" IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"  BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

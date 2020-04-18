@@ -1015,7 +1015,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Detect incompatible DLC
             var dlcMods = VanillaDatabaseService.GetInstalledDLCMods(gameTarget);
-            if (ModBeingInstalled.IncompatibleDLC.Count > 0)
+            if (ModBeingInstalled.IncompatibleDLC.Any())
             {
                 //Check for incompatible DLC.
                 List<string> incompatibleDLC = new List<string>();
@@ -1031,7 +1031,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             incompatibleDLC.Add(@" - " + incompat);
-
                         }
                     }
                 }
