@@ -38,6 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         protected virtual void OnClosing(DataEventArgs e)
         {
             Close?.Invoke(this, e);
+            DataContext = null;
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)

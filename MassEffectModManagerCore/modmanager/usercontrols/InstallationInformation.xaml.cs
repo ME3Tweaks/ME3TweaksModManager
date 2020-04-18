@@ -79,8 +79,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
                 installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
             }
-            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-            GC.Collect();
+            
             OnClosing(args);
         }
 
