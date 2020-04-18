@@ -2332,7 +2332,8 @@ namespace MassEffectModManagerCore
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
-            if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings;
+            //if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings;
+            if (tool == null) throw new Exception("LaunchExternalTool handler set but no relevant tool was specified! This is a bug.");
             LaunchExternalTool(tool);
         }
 
