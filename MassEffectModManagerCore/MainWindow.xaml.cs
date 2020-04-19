@@ -321,6 +321,7 @@ namespace MassEffectModManagerCore
         public ICommand BatchModInstallerCommand { get; set; }
         public ICommand ImportDLCModFromGameCommand { get; set; }
         public ICommand BackupFileFetcherCommand { get; set; }
+        public ICommand OpenModDescCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -359,6 +360,15 @@ namespace MassEffectModManagerCore
             ConflictDetectorCommand = new GenericCommand(OpenConflictDetector);
             OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
             LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
+            OpenModDescCommand = new GenericCommand(OpenModDesc);
+        }
+
+        private void OpenModDesc()
+        {
+            if (File.Exists(SelectedMod.ModDescPath))
+            {
+                Process.Start("notepad.exe",SelectedMod.ModDescPath);
+            }
         }
 
         private bool CanLaunchEGMSettings()
