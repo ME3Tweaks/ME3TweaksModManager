@@ -303,7 +303,7 @@
     <system:String x:Key="string_requiredContentMissing">Required content mismsing</system:String>
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
-    <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.</system:String>
+    <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manager, please report this to Mgamerz on Discord.</system:String>
     <system:String x:Key="string_dialogInstallationBlockedByALOT">Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.</system:String>
     <system:String x:Key="string_installationBlocked">Installation blocked</system:String>
     <system:String x:Key="string_installationSucceededMaybe">Installation succeeded, maybe</system:String>
