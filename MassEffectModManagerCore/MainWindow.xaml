@@ -329,14 +329,27 @@
                 <!-- Header Panel -->
                 <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold" />
                 <TextBlock Text="{DynamicResource string_installationTarget}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0" />
-                <ComboBox ItemsSource="{Binding InstallationTargets}" 
-                          SelectedItem="{Binding SelectedGameTarget}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" 
+                <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="7">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="7" />
+                        <ColumnDefinition Width="275" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="275" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="7" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ComboBox ItemsSource="{Binding InstallationTargets}" 
+                          SelectedItem="{Binding SelectedGameTarget}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" 
                           Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False" 
                           Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
                           ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
                           ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
-                <Button Content="{DynamicResource string_addTarget}" Command="{Binding AddTargetCommand}" Grid.Row="3" Grid.Column="5" Padding="5,0" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}" />
-                <Button Content="{DynamicResource string_targetInfo}" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="3" Grid.Column="4" Padding="5,0" Margin="3,0" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_targetInfo}" />
+                    <Button Content="{DynamicResource string_addTarget}" Command="{Binding AddTargetCommand}" Grid.Row="0" Grid.Column="4" Padding="5,0" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}" />
+                    <Button Content="{DynamicResource string_targetInfo}" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="0" Grid.Column="3" Padding="5,0" Margin="3,0" FontWeight="Bold" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_targetInfo}" />
+                </Grid>
                 <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5" />
                 <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
                     <DockPanel DockPanel.Dock="Top">

@@ -200,7 +200,7 @@
     <system:String x:Key="string_tooltip_someModsFailed">Some mods failed to load, click to see why</system:String>
     <system:String x:Key="string_tooltip_addAdditionalTarget">Add an additional installation target</system:String>
     <system:String x:Key="string_tooltip_targetInfo">View and manage installed mods and files for this target</system:String>
-    <system:String x:Key="string_targetInfo">Target info</system:String>
+    <system:String x:Key="string_targetInfo">Manage Installation</system:String>
     <system:String x:Key="string_modDescription">Mod Description</system:String>
     <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Endorse ME3Tweaks Mod Manager on NexusMods</system:String>
     <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Endorsed ME3Tweaks Mod Manager on NexusMods :)</system:String>
