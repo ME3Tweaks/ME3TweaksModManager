@@ -234,8 +234,7 @@
     <system:String x:Key="string_tooltip_checksForUpdatesToThisMod" xml:space="preserve">Vérification des mises à jour de ce mod.&#10;Les mods hébergés sur NexusMods doivent être sur la liste blanche de ME3Tweaks pour la vérification des mises à jour </system:String>
     <system:String x:Key="string_tooltip_forcesUpdateCheck">Oblige un mod à effectuer une mise à jour même s'il s'agit de la dernière version du mod </system:String>
     <system:String x:Key="string_packageModForRelease">Package mod pour la sortie </system:String>
-    <system:String x:Key="string_tooltip_deployTo7z" xml:space="preserve">Prépare un mod pour la distribution en effectuant des tests contre le mod,&#10;puis le compresse de manière à le rendre rapide à charger dans le Mod Manager 
-</system:String>
+    <system:String x:Key="string_tooltip_deployTo7z" xml:space="preserve">Prépare un mod pour la distribution en effectuant des tests contre le mod,&#10;puis le compresse de manière à le rendre rapide à charger dans le Mod Manager</system:String>
     <system:String x:Key="string_mE3TweaksUpdaterService">Service de mise à jour ME3Tweaks </system:String>
     <system:String x:Key="string_tooltip_uploadToUpdaterService">Exporter ce mod sur le service de mise à jour ME3Tweaks </system:String>
     <system:String x:Key="string_editUpdaterServiceSettings">Modifier les paramètres du service de mise à jour </system:String>
