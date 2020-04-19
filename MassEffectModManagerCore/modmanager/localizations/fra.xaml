@@ -1,6 +1,6 @@
 <ResourceDictionary	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-					xmlns:system="clr-namespace:System;assembly=System.Runtime"
+					xmlns:system="clr-namespace:System;assembly=System.Runtime">
 	<!-- Main Window -->
     <system:String x:Key="string_AvailableMods">Mods Disponibles</system:String>
     <system:String x:Key="string_Language">Langue</system:String>
@@ -1313,3 +1313,4 @@
     <system:String x:Key="string_importedFromGame"></system:String>
     <system:String x:Key="string_defaultDescriptionForImportedMod"></system:String>
 	<!-- 0=game name 1=time -->
+</ResourceDictionary>
