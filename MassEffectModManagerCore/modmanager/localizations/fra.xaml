@@ -80,7 +80,7 @@
     <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Randomiseur pour le premier jeu Mass Effect</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip">Ensemble d'outils pour le développement des mods de la trilogie Mass Effect</system:String>
-    <system:String x:Key="string_BackupRestore">Sauvegarde &amp ; Restauration</system:String>
+    <system:String x:Key="string_BackupRestore">Sauvegarde &amp; Restauration</system:String>
     <system:String x:Key="string_Backup">Sauvegarde</system:String>
     <system:String x:Key="string_Createentiregamebackups">Créer des sauvegardes complètes du jeu</system:String>
     <system:String x:Key="string_Restore">Restaurer</system:String>
