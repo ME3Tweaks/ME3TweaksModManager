@@ -88,7 +88,7 @@
     <system:String x:Key="string_Help">Aide</system:String>
     <system:String x:Key="string_DynamicHelp">Aide dynamique</system:String>
     <system:String x:Key="string_Diagnostics">Diagnostiques</system:String>
-    <system:String x:Key="string_ModManagerLogsDiagnostics">Logs &amp du gestionnaire de mod; Diagnostiques</system:String>
+    <system:String x:Key="string_ModManagerLogsDiagnostics">Logs &amp; du gestionnaire de mod Diagnostiques</system:String>
     <system:String x:Key="string_TroubleshootingtoolsforME3Tweaks">Outils de dépannage pour ME3Tweaks</system:String>
     <system:String x:Key="string_About">À propos</system:String>
     <system:String x:Key="string_moddescfileformatspecification">spécification du format de fichier moddesc.ini</system:String>
