@@ -11,6 +11,8 @@
         <TextBlock DockPanel.Dock="Top" Text="Official DLC Toggler" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock DockPanel.Dock="Top" Text="Developers can use this tool to toggle installed offical DLC on or off. This is useful to see how a mod behaves when installed into a different environment. You can toggle DLC mods in the Installation Information panel." TextAlignment="Center" TextWrapping="Wrap"/>
         <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding AvailableTargets}" SelectedItem="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+        <TextBlock Visibility="{Binding SelectedTarget.Game, ConverterParameter='Not_ME3', Converter={StaticResource GameToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap"
+                   Text="Toggled DLC for this game will only change how Mod Manager behaves when detecting installed DLC. Both Mass Effect and Mass Effect 2 will attempt to load DLC from all folders in their respective DLC directories." />
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
             <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}"/>
         </StackPanel>

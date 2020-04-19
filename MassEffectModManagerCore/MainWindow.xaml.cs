@@ -3006,5 +3006,10 @@ namespace MassEffectModManagerCore
         {
             Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
         }
+
+        private void Donations_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.OpenWebpage(@"https://me3tweaks.com/donations");
+        }
     }
 }

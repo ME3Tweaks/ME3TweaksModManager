@@ -12,7 +12,9 @@
     <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     <converters:NullHiddenConverter x:Key="NullHiddenConverter"/>
     <converters:EqualIntVisibilityConverter x:Key="EqualIntVisibilityConverter"/>
-    <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
+    <converters:NullEnabledConverter x:Key="NullEnabledConverter" />
+    <converters:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
+    <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
