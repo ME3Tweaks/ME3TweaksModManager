@@ -122,6 +122,7 @@
                     <!-- Will implement later, maybe. Not sure -->
                     <MenuItem Header="{DynamicResource string_Developeroptions}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                         <MenuItem Header="{DynamicResource string_Metadataeditor}" IsEnabled="False" />
+                        <MenuItem Header="Open ModDesc file" Command="{Binding OpenModDescCommand}" />
                         <MenuItem Header="{DynamicResource string_packageModForRelease}" Style="{StaticResource MenuItemHeaderStyle}" />
                         <MenuItem Header="{DynamicResource string_Deploymodto7zfilefordistribution}" ToolTip="{DynamicResource string_tooltip_deployTo7z}" Command="{Binding DeployModCommand}" />
                         <MenuItem Header="{DynamicResource string_mE3TweaksUpdaterService}" Style="{StaticResource MenuItemHeaderStyle}" />
