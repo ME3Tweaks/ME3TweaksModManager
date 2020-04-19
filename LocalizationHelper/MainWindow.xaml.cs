@@ -744,5 +744,10 @@ namespace LocalizationHelper
                 }
             }
         }
+
+        private void OpenLoalizationUI_Clicked(object sender, RoutedEventArgs e)
+        {
+            new LocalizationTablesUI().Show();
+        }
     }
 }
