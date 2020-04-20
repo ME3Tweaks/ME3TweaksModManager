@@ -319,8 +319,7 @@
     <system:String x:Key="string_interp_dialogNotEnoughSpaceToInstall" xml:space="preserve">Il n'y a pas assez d'espace sur {0} pour installer {1}.\nEspace requis : {2}\nEspace disponible : {3}</system:String>
 	<!-- 0=driveletter, 1=ModBeingInstalled.ModName 2, 3=number of bytes (in MB/KB/GB etc) -->
     <system:String x:Key="string_dialogInvalidME2Coalesced">Le fichier Coalesced.ini pour cette installation de Mass Effect 2 semble être malformé (les octets d'en-tête sont erronés). L'installation a été interrompue.</system:String>
-    <system:String x:Key="string_interp_dialog_noBackupForXInstallingY" xml:space="preserve">Il n'y a pas de sauvegarde pour {0} - l'installation de {1} vous obligera à réparer le jeu afin de le supprimer, ce qui pourrait invalider les autres mods utilisés.\n\nInstaller ce mod sans sauvegarde ? 
-</system:String>
+    <system:String x:Key="string_interp_dialog_noBackupForXInstallingY" xml:space="preserve">Il n'y a pas de sauvegarde pour {0} - l'installation de {1} vous obligera à réparer le jeu afin de le supprimer, ce qui pourrait invalider les autres mods utilisés.\n\nInstaller ce mod sans sauvegarde ?</system:String>
 	<!-- 0=Game name (Mass Effect, Mass Effect 2/3) 1=Mod name -->
 
 	<!-- Welcome panel -->
