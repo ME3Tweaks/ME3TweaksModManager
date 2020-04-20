@@ -200,7 +200,7 @@
     <system:String x:Key="string_tooltip_someModsFailed">Some mods failed to load, click to see why</system:String>
     <system:String x:Key="string_tooltip_addAdditionalTarget">Add an additional installation target</system:String>
     <system:String x:Key="string_tooltip_targetInfo">View and manage installed mods and files for this target</system:String>
-    <system:String x:Key="string_targetInfo">Target info</system:String>
+    <system:String x:Key="string_targetInfo">Manage Installation</system:String>
     <system:String x:Key="string_modDescription">Mod Description</system:String>
     <system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Endorse ME3Tweaks Mod Manager on NexusMods</system:String>
     <system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Endorsed ME3Tweaks Mod Manager on NexusMods :)</system:String>
@@ -303,7 +303,7 @@
     <system:String x:Key="string_requiredContentMissing">Required content mismsing</system:String>
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
-    <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manger, please report this to Mgamerz on Discord.</system:String>
+    <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manager, please report this to Mgamerz on Discord.</system:String>
     <system:String x:Key="string_dialogInstallationBlockedByALOT">Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.</system:String>
     <system:String x:Key="string_installationBlocked">Installation blocked</system:String>
     <system:String x:Key="string_installationSucceededMaybe">Installation succeeded, maybe</system:String>
