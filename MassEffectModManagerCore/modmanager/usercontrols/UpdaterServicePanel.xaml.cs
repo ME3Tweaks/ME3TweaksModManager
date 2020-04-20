@@ -316,9 +316,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BAD_SERVER_HASHES_AFTER_VALIDATION,
             UPLOAD_OK
         }
+
         private UploadModResult UploadMod()
         {
             #region online fetch
+
             //Fetch current production manifest for mod (it may not exist)
             using var wc = new System.Net.WebClient();
             try
@@ -347,6 +349,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             #endregion
 
             #region get current production version to see if we should prompt user
+
             var latestVersionOnServer = OnlineContent.GetLatestVersionOfModOnUpdaterService(mod.ModClassicUpdateCode);
             if (latestVersionOnServer != null)
             {
@@ -371,16 +374,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
             }
+
             #endregion
 
             #region mod variables
+
             //get refs
             var files = mod.GetAllRelativeReferences(true);
             files = files.OrderByDescending(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length).ToList();
             long totalModSizeUncompressed = files.Sum(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length);
+
             #endregion
 
             #region compress and stage mod
+
             void updateCurrentTextCallback(string newText)
             {
                 CurrentActionText = newText;
@@ -389,31 +396,43 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bool? canceledCheckCallback() => CancelOperations;
             CurrentActionText = M3L.GetString(M3L.string_compressingModForUpdaterService);
             var lzmaStagingPath = OnlineContent.StageModForUploadToUpdaterService(mod, files, totalModSizeUncompressed, canceledCheckCallback, updateCurrentTextCallback);
+
             #endregion
-            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
+
+            if (CancelOperations)
+            {
+                AbortUpload();
+                return UploadModResult.ABORTED_BY_USER;
+            }
+
             #region hash mod and build server manifest
+
             CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest);
 
             long amountHashed = 0;
             ConcurrentDictionary<string, SourceFile> manifestFiles = new ConcurrentDictionary<string, SourceFile>();
             Parallel.ForEach(files, new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1) }, x =>
+              {
+                  if (CancelOperations) return;
+                  SourceFile sf = new SourceFile();
+                  var sFile = Path.Combine(mod.ModPath, x);
+                  var lFile = Path.Combine(lzmaStagingPath, x + @".lzma");
+                  sf.hash = Utilities.CalculateMD5(sFile);
+                  sf.lzmahash = Utilities.CalculateMD5(lFile);
+                  var fileInfo = new FileInfo(sFile);
+                  sf.size = fileInfo.Length;
+                  sf.timestamp = fileInfo.LastWriteTimeUtc.Ticks;
+                  sf.relativefilepath = x;
+                  sf.lzmasize = new FileInfo(lFile).Length;
+                  manifestFiles.TryAdd(x, sf);
+                  var done = Interlocked.Add(ref amountHashed, sf.size);
+                  CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@" {Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
+              });
+            if (CancelOperations)
             {
-                if (CancelOperations) return;
-                SourceFile sf = new SourceFile();
-                var sFile = Path.Combine(mod.ModPath, x);
-                var lFile = Path.Combine(lzmaStagingPath, x + @".lzma");
-                sf.hash = Utilities.CalculateMD5(sFile);
-                sf.lzmahash = Utilities.CalculateMD5(lFile);
-                var fileInfo = new FileInfo(sFile);
-                sf.size = fileInfo.Length;
-                sf.timestamp = fileInfo.LastWriteTimeUtc.Ticks;
-                sf.relativefilepath = x;
-                sf.lzmasize = new FileInfo(lFile).Length;
-                manifestFiles.TryAdd(x, sf);
-                var done = Interlocked.Add(ref amountHashed, sf.size);
-                CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@" {Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
-            });
-            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
+                AbortUpload();
+                return UploadModResult.ABORTED_BY_USER;
+            }
 
             //Build document
             XmlDocument xmlDoc = new XmlDocument();
@@ -422,7 +441,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var mf in manifestFiles)
             {
-                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
+                if (CancelOperations)
+                {
+                    AbortUpload();
+                    return UploadModResult.ABORTED_BY_USER;
+                }
 
                 XmlNode sourceNode = xmlDoc.CreateElement(@"sourcefile");
 
@@ -450,18 +473,32 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 rootNode.AppendChild(sourceNode);
             }
-            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
+
+            if (CancelOperations)
+            {
+                AbortUpload();
+                return UploadModResult.ABORTED_BY_USER;
+            }
 
             foreach (var bf in mod.UpdaterServiceBlacklistedFiles)
             {
-                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
+                if (CancelOperations)
+                {
+                    AbortUpload();
+                    return UploadModResult.ABORTED_BY_USER;
+                }
 
                 var bfn = xmlDoc.CreateElement(@"blacklistedfile");
                 bfn.InnerText = bf;
                 rootNode.AppendChild(bfn);
             }
 
-            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
+            if (CancelOperations)
+            {
+                AbortUpload();
+                return UploadModResult.ABORTED_BY_USER;
+            }
+
             var updatecode = xmlDoc.CreateAttribute(@"updatecode");
             updatecode.InnerText = mod.ModClassicUpdateCode.ToString();
             rootNode.Attributes.Append(updatecode);
@@ -481,20 +518,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             while (ChangelogNotYetSet)
             {
-                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
+                if (CancelOperations)
+                {
+                    AbortUpload();
+                    return UploadModResult.ABORTED_BY_USER;
+                }
 
                 CurrentActionText = M3L.GetString(M3L.string_waitingForChangelogToBeSet);
-                Thread.Sleep(250);  //wait for changelog to be set.
+                Thread.Sleep(250); //wait for changelog to be set.
             }
 
             #region Finish building manifest
+
             var changelog = xmlDoc.CreateAttribute(@"changelog");
             changelog.InnerText = ChangelogText;
             rootNode.Attributes.Append(changelog);
 
             using var stringWriter = new StringWriterWithEncoding(Encoding.UTF8);
             XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true; settings.IndentChars = @" ";
+            settings.Indent = true;
+            settings.IndentChars = @" ";
             settings.Encoding = Encoding.UTF8;
             using var xmlTextWriter = XmlWriter.Create(stringWriter, settings);
             xmlDoc.WriteTo(xmlTextWriter);
@@ -506,6 +549,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var finalManifestText = stringWriter.GetStringBuilder().ToString();
 
             #region Connect to ME3Tweaks
+
             CurrentActionText = M3L.GetString(M3L.string_connectingToME3TweaksUpdaterService);
             Log.Information(@"Connecting to ME3Tweaks as " + Username);
             string host = @"ftp.me3tweaks.com";
@@ -533,6 +577,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 sftp.CreateDirectory(serverModPath);
                 justMadeFolder = true;
             }
+
             var dirContents = sftp.ListDirectory(serverModPath).ToList();
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
 
@@ -545,9 +590,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (!justMadeFolder && dirContents.Any(x => x.Name != @"." && x.Name != @".."))
             {
                 CurrentActionText = M3L.GetString(M3L.string_hashingFilesOnServerForDelta);
-                Log.Information("Hashing existing files on server to compare for delta");
+                Log.Information(@"Hashing existing files on server to compare for delta");
                 serverHashes = getServerHashes(sshClient, serverFolderName, serverModPath);
             }
+
             //Calculate what needs to be updated or removed from server
             List<string> filesToUploadToServer = new List<string>();
             List<string> filesToDeleteOffServer = new List<string>();
@@ -589,134 +635,153 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             #endregion
 
-            #region upload files
-            //Create directories
-            SortedSet<string> directoriesToCreate = new SortedSet<string>();
-            foreach (var f in filesToUploadToServer)
+
+            long amountUploaded = 0, amountToUpload = 1;
+            //Confirm changes
+            if (filesToDeleteOffServer.Any() || filesToUploadToServer.Any())
             {
-                string foldername = f;
-                var lastIndex = foldername.LastIndexOf(@"\");
+                var text = $"The following delta will be applied to the updater service for {mod.ModName}:";
+                if (filesToUploadToServer.Any()) text += "\n\nFiles to upload to server:\n - " + string.Join("\n - ", filesToUploadToServer);
+                if (filesToDeleteOffServer.Any()) text += "\n\nFiles to delete off server:\n - " + string.Join("\n - ", filesToDeleteOffServer);
+                text += "\n\nConfirm these are the changes you wish to upload to the ME3Tweaks Updater Service.";
+                bool performUpload = false;
+                Log.Information(@"Prompting user to accept server delta");
+                Application.Current.Dispatcher.Invoke(delegate { performUpload = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, text, "Confirm changes", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
 
-                while (lastIndex > 0)
+                if (performUpload)
                 {
-                    foldername = foldername.Substring(0, lastIndex);
-                    directoriesToCreate.Add(foldername.Replace('\\', '/'));
-                    lastIndex = foldername.LastIndexOf(@"\");
-                }
-            }
+                    Log.Information(@"User has accepted the delta, applying delta to server");
 
+                    #region upload files
 
-            //foreach (FileSystemInfo info in infos)
-            //{
-            //    if (info.Attributes.HasFlag(FileAttributes.Directory))
-            //    {
-            //        string subPath = remotePath + @"/" + info.Name;
-            //        if (!client.Exists(subPath))
-            //        {
-            //            client.CreateDirectory(subPath);
-            //        }
-            //        UploadDirectory(client, info.FullName, remotePath + @"/" + info.Name, uploadCallback);
-            //    }
-            //    else
-            //    {
-            //        using (Stream fileStream = new FileStream(info.FullName, FileMode.Open))
-            //        {
-            //            Debug.WriteLine(
-            //                "Uploading {0} ({1:N0} bytes)",
-            //                info.FullName, ((FileInfo)info).Length);
-
-            //            client.UploadFile(fileStream, remotePath + @"/" + info.Name, uploadCallback);
-            //        }
-            //    }
-            //}
-
-            #endregion
-            //UploadDirectory(sftp, lzmaStagingPath, serverModPath, (ucb) => Debug.WriteLine("UCB: " + ucb));
-            var dirsToCreateOnServerSorted = directoriesToCreate.ToList();
-            dirsToCreateOnServerSorted.Sort((a, b) => a.Length.CompareTo(b.Length)); //short to longest so we create top levels first!
-            int numFoldersToCreate = dirsToCreateOnServerSorted.Count();
-            int numDone = 0;
-            if (dirsToCreateOnServerSorted.Count > 0)
-            {
-                CurrentActionText = M3L.GetString(M3L.string_creatingModDirectoriesOnServer);
-                foreach (var f in dirsToCreateOnServerSorted)
-                {
-                    var serverFolderStr = serverModPath + @"/" + f;
-                    if (!sftp.Exists(serverFolderStr))
+                    //Create directories
+                    SortedSet<string> directoriesToCreate = new SortedSet<string>();
+                    foreach (var f in filesToUploadToServer)
                     {
-                        Log.Information(@"Creating directory on server: " + serverFolderStr);
-                        sftp.CreateDirectory(serverFolderStr);
+                        string foldername = f;
+                        var lastIndex = foldername.LastIndexOf(@"\");
+
+                        while (lastIndex > 0)
+                        {
+                            foldername = foldername.Substring(0, lastIndex);
+                            directoriesToCreate.Add(foldername.Replace('\\', '/'));
+                            lastIndex = foldername.LastIndexOf(@"\");
+                        }
                     }
-                    else
+
+                    #endregion
+
+                    //UploadDirectory(sftp, lzmaStagingPath, serverModPath, (ucb) => Debug.WriteLine("UCB: " + ucb));
+                    var dirsToCreateOnServerSorted = directoriesToCreate.ToList();
+                    dirsToCreateOnServerSorted.Sort((a, b) => a.Length.CompareTo(b.Length)); //short to longest so we create top levels first!
+                    int numFoldersToCreate = dirsToCreateOnServerSorted.Count();
+                    int numDone = 0;
+                    if (dirsToCreateOnServerSorted.Count > 0)
                     {
-                        Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
+                        CurrentActionText = M3L.GetString(M3L.string_creatingModDirectoriesOnServer);
+                        foreach (var f in dirsToCreateOnServerSorted)
+                        {
+                            var serverFolderStr = serverModPath + @"/" + f;
+                            if (!sftp.Exists(serverFolderStr))
+                            {
+                                Log.Information(@"Creating directory on server: " + serverFolderStr);
+                                sftp.CreateDirectory(serverFolderStr);
+                            }
+                            else
+                            {
+                                Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
+                            }
+
+                            numDone++;
+                            CurrentActionText = M3L.GetString(M3L.string_creatingModDirectoriesOnServer) + @" " + Math.Round(numDone * 100.0 / numFoldersToCreate) + @"%";
+
+                        }
                     }
-                    numDone++;
-                    CurrentActionText = M3L.GetString(M3L.string_creatingModDirectoriesOnServer) + @" " + Math.Round(numDone * 100.0 / numFoldersToCreate) + @"%";
 
-                }
-            }
-
-            //Upload files
-            long amountUploaded = 0;
-            long amountToUpload = filesToUploadToServer.Sum(x => new FileInfo(Path.Combine(lzmaStagingPath, x + @".lzma")).Length);
-            foreach (var file in filesToUploadToServer)
-            {
-                if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
-                var fullPath = Path.Combine(lzmaStagingPath, file + @".lzma");
-                var serverFilePath = serverModPath + @"/" + file.Replace(@"\", @"/") + @".lzma";
-                Log.Information(@"Uploading file " + fullPath + @" to " + serverFilePath);
-                long amountUploadedBeforeChunk = amountUploaded;
-                using (Stream fileStream = new FileStream(fullPath, FileMode.Open))
-                {
-                    sftp.UploadFile(fileStream, serverFilePath, true, (x) =>
+                    //Upload files
+                    amountToUpload = filesToUploadToServer.Sum(x => new FileInfo(Path.Combine(lzmaStagingPath, x + @".lzma")).Length);
+                    foreach (var file in filesToUploadToServer)
                     {
-                        if (CancelOperations) { CurrentActionText = M3L.GetString(M3L.string_abortingUpload); return; }
-                        amountUploaded = amountUploadedBeforeChunk + (long)x;
-                        var uploadedHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
-                        var totalUploadHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
-                        CurrentActionText = M3L.GetString(M3L.string_interp_uploadingFilesToServerXY, uploadedHR, totalUploadHR);
+                        if (CancelOperations)
+                        {
+                            AbortUpload();
+                            return UploadModResult.ABORTED_BY_USER;
+                        }
+
+                        var fullPath = Path.Combine(lzmaStagingPath, file + @".lzma");
+                        var serverFilePath = serverModPath + @"/" + file.Replace(@"\", @"/") + @".lzma";
+                        Log.Information(@"Uploading file " + fullPath + @" to " + serverFilePath);
+                        long amountUploadedBeforeChunk = amountUploaded;
+                        using Stream fileStream = new FileStream(fullPath, FileMode.Open);
+                        sftp.UploadFile(fileStream, serverFilePath, true, (x) =>
+                        {
+                            if (CancelOperations)
+                            {
+                                CurrentActionText = M3L.GetString(M3L.string_abortingUpload);
+                                return;
+                            }
+
+                            amountUploaded = amountUploadedBeforeChunk + (long)x;
+                            var uploadedHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
+                            var totalUploadHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
+                            CurrentActionText = M3L.GetString(M3L.string_interp_uploadingFilesToServerXY, uploadedHR, totalUploadHR);
+                        });
+                    }
+
+                    if (CancelOperations)
+                    {
+                        AbortUpload();
+                        return UploadModResult.ABORTED_BY_USER;
+                    }
+
+                    //delete extra files
+                    int numdone = 0;
+                    foreach (var file in filesToDeleteOffServer)
+                    {
+                        CurrentActionText = M3L.GetString(M3L.string_interp_deletingObsoleteFiles, numdone, filesToDeleteOffServer.Count);
+                        var fullPath = $@"{LZMAStoragePath}/{serverFolderName}/{file}";
+                        Log.Information(@"Deleting unused file off server: " + fullPath);
+                        sftp.DeleteFile(fullPath);
+                        numdone++;
+                    }
+
+
+
+                    //Upload manifest
+                    using var manifestStream = finalManifestText.ToStream();
+                    var serverManifestPath = $@"{ManifestStoragePath}/{serverFolderName}.xml";
+                    Log.Information(@"Uploading manifest to server: " + serverManifestPath);
+                    sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
+                    {
+                        var uploadedAmountHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
+                        var uploadAmountTotalHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
+                        CurrentActionText = M3L.GetString(M3L.string_uploadingUpdateManifestToServer) + $@"{uploadedAmountHR}/{uploadAmountTotalHR}";
                     });
                 }
-            }
-            if (CancelOperations) { AbortUpload(); return UploadModResult.ABORTED_BY_USER; }
-            //delete extra files
-            int numdone = 0;
-            foreach (var file in filesToDeleteOffServer)
-            {
-                CurrentActionText = M3L.GetString(M3L.string_interp_deletingObsoleteFiles, numdone, filesToDeleteOffServer.Count);
-                var fullPath = $@"{LZMAStoragePath}/{ serverFolderName}/{ file}";
-                Log.Information(@"Deleting unused file off server: " + fullPath);
-                sftp.DeleteFile(fullPath);
-                numdone++;
+                else
+                {
+                    Log.Warning(@"User has declined uploading the delta. We will not change anything on the server.");
+                    CancelOperations = true;
+
+                }
+
+                CurrentActionText = M3L.GetString(M3L.string_validatingModOnServer);
+                Log.Information(@"Verifying hashes on server for new files");
+                var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
+                var badHashes = verifyHashes(manifestFiles, newServerhashes);
+                if (badHashes.Any())
+                {
+                    CurrentActionText = M3L.GetString(M3L.string_someHashesOnServerAreIncorrectContactMgamerz);
+                    return UploadModResult.BAD_SERVER_HASHES_AFTER_VALIDATION;
+                }
+                else
+                {
+                    CurrentActionText = M3L.GetString(M3L.string_modUploadedToUpdaterService);
+                    return UploadModResult.UPLOAD_OK;
+                }
             }
 
-
-            //Upload manifest
-            using var manifestStream = finalManifestText.ToStream();
-            var serverManifestPath = $@"{ManifestStoragePath}/{serverFolderName}.xml";
-            Log.Information(@"Uploading manifest to server: " + serverManifestPath);
-            sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
-            {
-                var uploadedAmountHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
-                var uploadAmountTotalHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
-                CurrentActionText = M3L.GetString(M3L.string_uploadingUpdateManifestToServer) + $@"{uploadedAmountHR}/{uploadAmountTotalHR}";
-            });
-
-            CurrentActionText = M3L.GetString(M3L.string_validatingModOnServer);
-            Log.Information("Verifying hashes on server for new files");
-            var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
-            var badHashes = verifyHashes(manifestFiles, newServerhashes);
-            if (badHashes.Any())
-            {
-                CurrentActionText = M3L.GetString(M3L.string_someHashesOnServerAreIncorrectContactMgamerz);
-                return UploadModResult.BAD_SERVER_HASHES_AFTER_VALIDATION;
-            }
-            else
-            {
-                CurrentActionText = M3L.GetString(M3L.string_modUploadedToUpdaterService);
-                return UploadModResult.UPLOAD_OK;
-            }
+            return UploadModResult.ABORTED_BY_USER;
         }
 
         private void AbortUpload()
