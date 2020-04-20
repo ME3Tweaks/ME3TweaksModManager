@@ -367,7 +367,10 @@ namespace MassEffectModManagerCore
         {
             if (File.Exists(SelectedMod.ModDescPath))
             {
-                Process.Start("notepad.exe", SelectedMod.ModDescPath);
+                using Process shellOpener = new Process();
+                shellOpener.StartInfo.FileName = SelectedMod.ModDescPath;
+                shellOpener.StartInfo.UseShellExecute = true;
+                shellOpener.Start();
             }
         }
 
@@ -444,13 +447,13 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
-                    //Install queue
+                        //Install queue
 
-                    bool continueInstalling = true;
+                        bool continueInstalling = true;
                     int modIndex = 0;
 
-                    //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
-                    void modInstalled(bool successful)
+                        //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
+                        void modInstalled(bool successful)
                     {
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
@@ -460,8 +463,8 @@ namespace MassEffectModManagerCore
                         }
                         else if (SelectedGameTarget.Game == Mod.MEGame.ME3)
                         {
-                            //End
-                            var autoTocUI = new AutoTOC(SelectedGameTarget);
+                                //End
+                                var autoTocUI = new AutoTOC(SelectedGameTarget);
                             autoTocUI.Close += (a1, b1) => { ReleaseBusyControl(); };
                             ShowBusyControl(autoTocUI);
                         }
@@ -867,9 +870,9 @@ namespace MassEffectModManagerCore
                 IsBusy = false;
                 System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
-                    // this is to force some items that are no longer relevant to be cleaned up.
-                    // for some reason commands fire even though they are no longer attached to the interface
-                    Thread.Sleep(3000);
+                        // this is to force some items that are no longer relevant to be cleaned up.
+                        // for some reason commands fire even though they are no longer attached to the interface
+                        Thread.Sleep(3000);
                     GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                     GC.Collect();
                 });
