@@ -367,7 +367,7 @@ namespace MassEffectModManagerCore
         {
             if (File.Exists(SelectedMod.ModDescPath))
             {
-                Process.Start("notepad.exe",SelectedMod.ModDescPath);
+                Process.Start("notepad.exe", SelectedMod.ModDescPath);
             }
         }
 
@@ -809,6 +809,12 @@ namespace MassEffectModManagerCore
 
         private void ShowDeploymentPane()
         {
+            if (SelectedMod.InstallationJobs.Count == 1 && SelectedMod.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null)
+            {
+                Log.Error("Cannot deploy .me2mod files with Mod Manager");
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, "RCW mods (.me2mod) cannot be deployed with Mod Manager. RCW .me2mod files can be directly distributed, and Mod Manager can natively import them.", "Cannot deploy .me2mod files", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             var archiveDeploymentPane = new ArchiveDeployment(SelectedMod, this);
             archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(archiveDeploymentPane);
