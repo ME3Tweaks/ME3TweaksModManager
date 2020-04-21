@@ -223,9 +223,11 @@ namespace MassEffectModManagerCore
 
         private async void AuthToNexusMods()
         {
+            Log.Information("Authenticating to NexusMods...");
             var userInfo = await NexusModsUtilities.AuthToNexusMods();
             if (userInfo != null)
             {
+                Log.Information("Authenticated to NexusMods");
                 NexusUsername = userInfo.Name;
                 NexusUserID = userInfo.UserID;
 
@@ -245,6 +247,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
+                Log.Information("Did not authenticate to NexusMods. May not be logged in or there was network issue");
                 EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
         }

@@ -53,7 +53,15 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         {
             try
             {
-                if (apiKey == null) return null;
+                if (apiKey == null)
+                {
+                    if (NexusModsUtilities.HasAPIKey)
+                    {
+                        apiKey = NexusModsUtilities.DecryptNexusmodsAPIKeyFromDisk();
+                    }
+
+                    if (apiKey == null) return null;
+                }
                 var nexus = GetClient(apiKey);
                 Log.Information("Getting user information from NexusMods");
                 var userinfo = await nexus.Users.ValidateAsync();
@@ -304,16 +312,22 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             //await Task.Delay(1000, cancel);
             lock (serverConnectedLockObj)
             {
-                Monitor.Wait(serverConnectedLockObj, new TimeSpan(0, 0, 1, 0));
+                Monitor.Wait(serverConnectedLockObj, new TimeSpan(0, 0, 0, 15));
             }
-            await client.SendAsync(Encoding.UTF8.GetBytes("{\"id\": \"" + guid + "\", \"appid\": \"me3tweaks\"}")); //do not localize
-            Thread.Sleep(1000); //??
-            Utilities.OpenWebpage($"https://www.nexusmods.com/sso?id={guid}&application=me3tweaks");
-            lock (lockobj)
+
+            if (client.Connected)
             {
-                Monitor.Wait(lockobj, new TimeSpan(0, 0, 1, 0));
+                await client.SendAsync(
+                    Encoding.UTF8.GetBytes("{\"id\": \"" + guid + "\", \"appid\": \"me3tweaks\"}")); //do not localize
+                Thread.Sleep(1000); //??
+                Utilities.OpenWebpage($"https://www.nexusmods.com/sso?id={guid}&application=me3tweaks");
+                lock (lockobj)
+                {
+                    Monitor.Wait(lockobj, new TimeSpan(0, 0, 1, 0));
+                }
+                client.Dispose();
             }
-            client.Dispose();
+
             return api_key;
         }
     }

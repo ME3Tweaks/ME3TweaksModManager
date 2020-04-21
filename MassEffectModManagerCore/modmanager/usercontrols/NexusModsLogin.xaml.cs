@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -46,21 +47,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
-        private void SetAuthorized(bool v)
+        private void SetAuthorized(bool authorized)
         {
-            IsAuthorized = v;
+            IsAuthorized = authorized;
             string authenticatedString = M3L.GetString(M3L.string_authenticateToNexusMods);
-            if (v && mainwindow.NexusUsername != null)
+            if (authorized && mainwindow.NexusUsername != null)
             {
                 authenticatedString = M3L.GetString(M3L.string_interp_authenticatedAsX, mainwindow.NexusUsername);
             }
-            VisibleIcon = v;
+            VisibleIcon = authorized;
+            if (authorized)
+            {
+                ActiveIcon = FontAwesomeIcon.CheckCircle;
+            }
             AuthorizeToNexusText = authenticatedString;
         }
 
-        public ICommand AuthorizeCommand { get; set; }
-        public ICommand UnlinkCommand { get; set; }
-        public ICommand CloseCommand { get; set; }
+        public GenericCommand AuthorizeCommand { get; set; }
+        public GenericCommand UnlinkCommand { get; set; }
+        public GenericCommand CloseCommand { get; set; }
         public bool IsAuthorizing { get; private set; }
 
         private void LoadCommands()
@@ -100,7 +105,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 VisibleIcon = true;
                 SpinIcon = true;
                 ActiveIcon = FontAwesomeIcon.Spinner;
-                CommandManager.InvalidateRequerySuggested();
+                AuthorizeCommand.RaiseCanExecuteChanged();
+                CloseCommand.RaiseCanExecuteChanged();
                 AuthorizeToNexusText = M3L.GetString(M3L.string_pleaseWait);
                 if (!ManualMode)
                 {
@@ -162,7 +168,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ActiveIcon = FontAwesomeIcon.CheckCircle;
                 }
                 SpinIcon = false;
-                CommandManager.InvalidateRequerySuggested();
+                AuthorizeCommand.RaiseCanExecuteChanged();
+                CloseCommand.RaiseCanExecuteChanged();
             };
             bw.RunWorkerAsync();
         }
