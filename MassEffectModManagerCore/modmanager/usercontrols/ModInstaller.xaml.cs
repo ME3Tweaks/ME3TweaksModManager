@@ -399,7 +399,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 numdone++;
                 var fileMapping = fullPathMappingDisk.FirstOrDefault(x => x.Value == targetPath);
-                CLog.Information($@"Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
+                CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 Action = M3L.GetString(M3L.string_installing);
                 var now = DateTime.Now;
@@ -437,7 +437,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     var inArchivePath = info.FileName;
                     var redirectedPath = fullPathMappingDisk[inArchivePath];
-                    Debug.WriteLine($@"Redirecting {inArchivePath} to {redirectedPath}");
+                    //Debug.WriteLine($@"Redirecting {inArchivePath} to {redirectedPath}");
                     return redirectedPath;
                 }
 
@@ -446,21 +446,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
                 };
                 List<string> filesInstalled = new List<string>();
-                List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
+                //List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
                 ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
                 {
                     if (args.FileInfo.IsDirectory) return; //ignore
-                    if (!fullPathMappingArchive.ContainsKey(args.FileInfo.Index)) return; //archive extracted this file (in memory) but did not do anything with this file (7z)
-                    FileInstalledCallback(args.FileInfo.FileName);
+                    if (!fullPathMappingArchive.ContainsKey(args.FileInfo.Index))
+                    {
+                        CLog.Information(@"Skipping extraction of archive file: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                        return; //archive extracted this file (in memory) but did not do anything with this file (7z)
+                    }
+                    FileInstalledCallback(fullPathMappingArchive[args.FileInfo.Index]); //put dest filename here as this func logs the mapping based on the destination
                     filesInstalled.Add(args.FileInfo.FileName);
                     FileInfo dest = new FileInfo(fullPathMappingArchive[args.FileInfo.Index]);
                     if (dest.IsReadOnly)
                         dest.IsReadOnly = false;
                     if (Settings.EnableTelemetry)
                     {
-                        if (!fullPathMappingArchive[args.FileInfo.Index].Contains("DLC", StringComparison.InvariantCultureIgnoreCase)
+                        if (!fullPathMappingArchive[args.FileInfo.Index].Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)
                          && fullPathMappingArchive[args.FileInfo.Index].Contains(gameTarget.TargetPath) &&
-                           !Path.GetFileName(fullPathMappingArchive[args.FileInfo.Index]).Equals("PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
+                           !Path.GetFileName(fullPathMappingArchive[args.FileInfo.Index]).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
                         {
                             //not installing to DLC
                             basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
@@ -475,14 +479,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Error extracting files: " + ex.Message);
+                    Log.Error(@"Error extracting files: " + ex.Message);
                     Crashes.TrackError(ex, new Dictionary<string, string>()
                     {
-                        {"Mod name", ModBeingInstalled.ModName },
-                        {"Filename", ModBeingInstalled.Archive.FileName },
+                        {@"Mod name", ModBeingInstalled.ModName },
+                        {@"Filename", ModBeingInstalled.Archive.FileName },
                     });
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
-                    if (App.Current != null)
+                    if (Application.Current != null)
                     {
                         Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"An error occured extracting the archive file for installation:\n\n{ex.Message}\n\nThe mod may be partially installed.", "Error extracting mod", MessageBoxButton.OK, MessageBoxImage.Error); });
                     }

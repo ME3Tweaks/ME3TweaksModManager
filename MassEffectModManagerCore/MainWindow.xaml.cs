@@ -1620,7 +1620,6 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
-                //DEBUG ONLY - MOVE THIS SOMEWHERE ELSE IN FUTURE (or gate behind time check... or something... move to separate method)
                 if (canCheckForModUpdates || forceUpdateCheckOnCompletion)
                 {
                     CheckAllModsForUpdates();

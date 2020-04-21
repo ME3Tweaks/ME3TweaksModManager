@@ -640,10 +640,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Confirm changes
             if (filesToDeleteOffServer.Any() || filesToUploadToServer.Any())
             {
-                var text = $"The following delta will be applied to the updater service for {mod.ModName}:";
+                var text = $"The following delta will be applied to the ME3Tweaks Updater Service for {mod.ModName}:";
                 if (filesToUploadToServer.Any()) text += "\n\nFiles to upload to server:\n - " + string.Join("\n - ", filesToUploadToServer);
                 if (filesToDeleteOffServer.Any()) text += "\n\nFiles to delete off server:\n - " + string.Join("\n - ", filesToDeleteOffServer);
-                text += "\n\nConfirm these are the changes you wish to upload to the ME3Tweaks Updater Service.";
+                text += "\n\nConfirm these are the changes you wish to apply to the ME3Tweaks Updater Service for this mod.";
                 bool performUpload = false;
                 Log.Information(@"Prompting user to accept server delta");
                 Application.Current.Dispatcher.Invoke(delegate { performUpload = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, text, "Confirm changes", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });

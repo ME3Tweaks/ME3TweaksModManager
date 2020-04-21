@@ -102,7 +102,11 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (entry.IsDirectory) continue; //not a file
                 string fname = entry.FileName;
-                if (!fname.StartsWith(directoryPath)) continue; //not in this directory.
+                if (!fname.StartsWith(internalSearchPattern)) continue; // use internal search pattern to avoid another same-level dir that has same path base
+                                                                        // //not in this directory.
+                                                                        // this bug was found with ME1 Same Gender Romances due to folders named:
+                                                                        // Options\NPCs Flirt Regardless of Gender
+                                                                        // Options\NPCs Flirt Regardless of Gender - ME1 Recalibrated
                 if (directorySearchOption == SearchOption.TopDirectoryOnly && fname.Count(x => x == '\\') != numSlashesInBasepath) continue; //Skip if we are in a different subdirectory
                 string nameOnly = Path.GetFileName(fname);
                 if (compiledPattern.IsMatch(nameOnly))
