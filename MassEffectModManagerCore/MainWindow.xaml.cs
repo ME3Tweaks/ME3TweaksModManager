@@ -40,8 +40,10 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Pathoschild.FluentNexus.Models;
 using Serilog;
 using SevenZip;
+using Mod = MassEffectModManagerCore.modmanager.Mod;
 
 namespace MassEffectModManagerCore
 {
@@ -201,27 +203,38 @@ namespace MassEffectModManagerCore
             );
         }
 
-        public void RefreshNexusStatus(bool languageUpdateOnly = false)
+        public async void RefreshNexusStatus(bool languageUpdateOnly = false)
         {
             if (NexusModsUtilities.HasAPIKey)
             {
                 NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabled);
                 if (!languageUpdateOnly)
                 {
-                    AuthToNexusMods();
+                    var loggedIn = await AuthToNexusMods();
+                    if (loggedIn == null)
+                    {
+                        Log.Error("Error authorizing to NexusMods, did not get response from server or issue occured while checking credentials. Setting not authorized");
+                        SetNexusNotAuthorizedUI();
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
             }
-            else
-            {
-                NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
-                NexusUsername = null;
-                NexusUserID = 0;
-                ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = false;
-                EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
-            }
+            SetNexusNotAuthorizedUI();
         }
 
-        private async void AuthToNexusMods()
+        private void SetNexusNotAuthorizedUI()
+        {
+            NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
+            NexusUsername = null;
+            NexusUserID = 0;
+            ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = false;
+            EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+        }
+
+        private async Task<User> AuthToNexusMods()
         {
             Log.Information("Authenticating to NexusMods...");
             var userInfo = await NexusModsUtilities.AuthToNexusMods();
@@ -250,6 +263,8 @@ namespace MassEffectModManagerCore
                 Log.Information("Did not authenticate to NexusMods. May not be logged in or there was network issue");
                 EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
+
+            return userInfo;
         }
 
         private void AttachListeners()
@@ -450,13 +465,13 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
-                        //Install queue
+                    //Install queue
 
-                        bool continueInstalling = true;
+                    bool continueInstalling = true;
                     int modIndex = 0;
 
-                        //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
-                        void modInstalled(bool successful)
+                    //recursive. If someone is installing enough mods to cause a stack overflow exception, well, congrats, you broke my code.
+                    void modInstalled(bool successful)
                     {
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
@@ -466,8 +481,8 @@ namespace MassEffectModManagerCore
                         }
                         else if (SelectedGameTarget.Game == Mod.MEGame.ME3)
                         {
-                                //End
-                                var autoTocUI = new AutoTOC(SelectedGameTarget);
+                            //End
+                            var autoTocUI = new AutoTOC(SelectedGameTarget);
                             autoTocUI.Close += (a1, b1) => { ReleaseBusyControl(); };
                             ShowBusyControl(autoTocUI);
                         }
@@ -873,9 +888,9 @@ namespace MassEffectModManagerCore
                 IsBusy = false;
                 System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
-                        // this is to force some items that are no longer relevant to be cleaned up.
-                        // for some reason commands fire even though they are no longer attached to the interface
-                        Thread.Sleep(3000);
+                    // this is to force some items that are no longer relevant to be cleaned up.
+                    // for some reason commands fire even though they are no longer attached to the interface
+                    Thread.Sleep(3000);
                     GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                     GC.Collect();
                 });

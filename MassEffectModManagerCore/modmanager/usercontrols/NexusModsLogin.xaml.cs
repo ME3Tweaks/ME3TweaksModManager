@@ -127,6 +127,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             using FileStream fs = new FileStream(Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
                             File.WriteAllBytes(Path.Combine(Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(APIKeyText, fs));
+                            fs.Close();
                             mainwindow.NexusUsername = authInfo.Name;
                             mainwindow.NexusUserID = authInfo.UserID;
                             SetAuthorized(true);
@@ -197,14 +198,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            string currentKey = NexusModsUtilities.DecryptNexusmodsAPIKeyFromDisk();
-            if (currentKey != null)
+            try
             {
-                APIKeyText = currentKey;
-                SetAuthorized(true);
+                string currentKey = NexusModsUtilities.DecryptNexusmodsAPIKeyFromDisk();
+                if (currentKey != null)
+                {
+                    APIKeyText = currentKey;
+                    SetAuthorized(true);
+                }
+                else
+                {
+                    SetAuthorized(false);
+                }
             }
-            else
+            catch (Exception e)
             {
+                Log.Error("Error getting current API Key: " + e.Message);
                 SetAuthorized(false);
             }
         }
