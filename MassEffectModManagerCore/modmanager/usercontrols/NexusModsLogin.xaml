@@ -21,7 +21,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <xctk:WatermarkTextBox Watermark="{DynamicResource string_pasteYourAPIKeyHere}" Text="{Binding APIKeyText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0" />
+                <xctk:WatermarkTextBox Watermark="Your API key will appear here" IsEnabled="False"  Text="{Binding APIKeyText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0" />
                 <Button Content="{Binding AuthorizeToNexusText}" Command="{Binding AuthorizeCommand}" Grid.Column="1" Margin="0,5,0,0" />
                 <Button Content="{DynamicResource string_unlinkModManagerFromNexusMods}" Command="{Binding UnlinkCommand}" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
                 <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin="0,5,0,0" Grid.Row="2" Grid.Column="2" />

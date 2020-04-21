@@ -76,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        private bool CanAuthorizeWithNexus() => !IsAuthorized && !IsAuthorizing && !string.IsNullOrWhiteSpace(APIKeyText);
+        private bool CanAuthorizeWithNexus() => !IsAuthorized && !IsAuthorizing && true; //!string.IsNullOrWhiteSpace(APIKeyText);
 
 
         private void AuthorizeWithNexus()
@@ -84,35 +84,42 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"NexusAPICredentialsCheck");
             bw.DoWork += async (a, b) =>
             {
-                //Check api key
-                AuthorizeToNexusText = M3L.GetString(M3L.string_checkingKey);
-                IsAuthorizing = true;
-                try
+                var apiKeyReceived = await NexusModsUtilities.SetupNexusLogin(x => Debug.WriteLine(x));
+                if (apiKeyReceived != null)
                 {
-                    var authInfo = NexusModsUtilities.AuthToNexusMods(APIKeyText).Result;
-                    if (authInfo != null)
+                    APIKeyText = apiKeyReceived;
+                    ////Check api key
+                    AuthorizeToNexusText = M3L.GetString(M3L.string_checkingKey);
+                    IsAuthorizing = true;
+                    try
                     {
-                        using FileStream fs = new FileStream(Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
-                        File.WriteAllBytes(Path.Combine(Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(APIKeyText, fs));
-                        mainwindow.NexusUsername = authInfo.Name;
-                        mainwindow.NexusUserID = authInfo.UserID;
-                        SetAuthorized(true);
-                        mainwindow.RefreshNexusStatus();
-                        Analytics.TrackEvent(@"Authenticated to NexusMods");
-                    } else
+                        var authInfo = NexusModsUtilities.AuthToNexusMods(APIKeyText).Result;
+                        if (authInfo != null)
+                        {
+                            using FileStream fs = new FileStream(Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
+                            File.WriteAllBytes(Path.Combine(Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(APIKeyText, fs));
+                            mainwindow.NexusUsername = authInfo.Name;
+                            mainwindow.NexusUserID = authInfo.UserID;
+                            SetAuthorized(true);
+                            mainwindow.RefreshNexusStatus();
+                            Analytics.TrackEvent(@"Authenticated to NexusMods");
+                        }
+                        else
+                        {
+                            Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
+                            mainwindow.NexusUsername = null;
+                            mainwindow.NexusUserID = 0;
+                            SetAuthorized(false);
+                            mainwindow.RefreshNexusStatus();
+                        }
+                    }
+                    catch (ApiException apiException)
                     {
-                        Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
-                        mainwindow.NexusUsername = null;
-                        mainwindow.NexusUserID = 0;
-                        SetAuthorized(false);
-                        mainwindow.RefreshNexusStatus();
+                        Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
                 }
-                catch (ApiException apiException)
-                {
-                    Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
-                    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
-                }
+
                 IsAuthorizing = false;
             };
             bw.RunWorkerCompleted += (a, b) =>
