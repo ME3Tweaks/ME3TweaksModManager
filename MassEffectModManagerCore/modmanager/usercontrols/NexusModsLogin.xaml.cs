@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using FontAwesome.WPF;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
@@ -53,7 +54,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 authenticatedString = M3L.GetString(M3L.string_interp_authenticatedAsX, mainwindow.NexusUsername);
             }
-
+            VisibleIcon = v;
             AuthorizeToNexusText = authenticatedString;
         }
 
@@ -76,21 +77,43 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        private bool CanAuthorizeWithNexus() => !IsAuthorized && !IsAuthorizing && true; //!string.IsNullOrWhiteSpace(APIKeyText);
+        private bool CanAuthorizeWithNexus() => !IsAuthorized && !IsAuthorizing && (!ManualMode || !string.IsNullOrWhiteSpace(APIKeyText));
 
+        public bool ManualMode { get; set; }
+        public string WatermarkText { get; set; } = "Your API key will appear here";
+        public FontAwesomeIcon ActiveIcon { get; set; }
+        public bool SpinIcon { get; set; }
+        public bool VisibleIcon { get; set; }
+        public void OnIsAuthorizedChanged() => VisibleIcon = IsAuthorized;
+
+        public void OnManualModeChanged()
+        {
+            WatermarkText = ManualMode ? "Paste your API key here" : "Your API key will appear here";
+        }
 
         private void AuthorizeWithNexus()
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"NexusAPICredentialsCheck");
             bw.DoWork += async (a, b) =>
             {
-                var apiKeyReceived = await NexusModsUtilities.SetupNexusLogin(x => Debug.WriteLine(x));
-                if (apiKeyReceived != null)
+                IsAuthorizing = true;
+                VisibleIcon = true;
+                SpinIcon = true;
+                ActiveIcon = FontAwesomeIcon.Spinner;
+                CommandManager.InvalidateRequerySuggested();
+                AuthorizeToNexusText = M3L.GetString(M3L.string_pleaseWait);
+                if (!ManualMode)
                 {
+
+                    var apiKeyReceived = await NexusModsUtilities.SetupNexusLogin(x => Debug.WriteLine(x));
                     APIKeyText = apiKeyReceived;
-                    ////Check api key
+                    Application.Current.Dispatcher.Invoke(delegate { mainwindow.Activate(); });
+                }
+
+                if (!string.IsNullOrWhiteSpace(APIKeyText))
+                {
+                    //Check api key
                     AuthorizeToNexusText = M3L.GetString(M3L.string_checkingKey);
-                    IsAuthorizing = true;
                     try
                     {
                         var authInfo = NexusModsUtilities.AuthToNexusMods(APIKeyText).Result;
@@ -118,12 +141,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
                         Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
+                    catch (Exception e)
+                    {
+                        Log.Error("Other error authenticating to NexusMods: " + e.Message);
+                    }
+                }
+                else
+                {
+                    Log.Error("No API key - setting authorized to false for NM");
+                    SetAuthorized(false);
                 }
 
                 IsAuthorizing = false;
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                VisibleIcon = IsAuthorized;
+                if (IsAuthorized)
+                {
+                    ActiveIcon = FontAwesomeIcon.CheckCircle;
+                }
+                SpinIcon = false;
                 CommandManager.InvalidateRequerySuggested();
             };
             bw.RunWorkerAsync();
