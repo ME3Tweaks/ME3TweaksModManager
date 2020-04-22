@@ -60,16 +60,16 @@
                 <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" />
             </DockPanel>
             <DockPanel Margin="0,5" DockPanel.Dock="Bottom" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Button Content="Browse" Command="{Binding BrowseForModmakerFileCommand}" Padding="20,0" DockPanel.Dock="Right" />
-                <xctk:WatermarkTextBox Watermark="Select a ModMaker xml file"  IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding LocalFilePath, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Content="{DynamicResource string_browse}" Command="{Binding BrowseForModmakerFileCommand}" Padding="20,0" DockPanel.Dock="Right" />
+                <xctk:WatermarkTextBox Watermark="{DynamicResource string_selectAModMakerXmlFile}"  IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding LocalFilePath, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
             <DockPanel HorizontalAlignment="Stretch" Margin="0,5,0,0" >
                 <Button Content="{DynamicResource string_download}" Command="{Binding DownloadCompileCommand}" Padding="20,0" DockPanel.Dock="Right" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
-                <Button Content="Compile" Command="{Binding DownloadCompileCommand}" Padding="20,0" DockPanel.Dock="Right" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <Button Content="{DynamicResource string_compile}" Command="{Binding DownloadCompileCommand}" Padding="20,0" DockPanel.Dock="Right" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 <xctk:WatermarkTextBox Watermark="{DynamicResource string_modMakerCode}" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
                                        Text="{Binding ModMakerCode, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Right" Width="120" DockPanel.Dock="Right"/>
 
-                <CheckBox Content="Use local file instead" HorizontalAlignment="Left" IsChecked="{Binding LocalFileOption}"/>
+                <CheckBox Content="{DynamicResource string_useLocalFileInstead}" HorizontalAlignment="Left" IsChecked="{Binding LocalFileOption}"/>
 
             </DockPanel>
         </DockPanel>

@@ -701,6 +701,7 @@ namespace LocalizationHelper
                             string tooltip = (string)item.Attribute("ToolTip");
                             string content = (string)item.Attribute("Content");
                             string text = (string)item.Attribute("Text");
+                            string watermark = (string)item.Attribute("Watermark");
 
                             if (header != null && !header.StartsWith("{")
                                                && header != "+"
@@ -728,6 +729,14 @@ namespace LocalizationHelper
                             {
                                 localizations[content] = $"string_{toCamelCase(content)}";
                                 item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
+                            }
+
+                            if (watermark != null && !watermark.StartsWith("{")
+                                                && watermark.Length > 1
+                            )
+                            {
+                                localizations[watermark] = $"string_{toCamelCase(watermark)}";
+                                item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
                             }
 
                             if (text != null && !text.StartsWith("{")

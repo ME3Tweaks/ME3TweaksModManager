@@ -116,9 +116,9 @@
         <DockPanel Margin="0,10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top">
                 <Image Source="/modmanager/nexusmodsintegration/nexusmods_icon.png" Width="32" Margin="0,0,5,0"/>
-                <TextBlock DockPanel.Dock="Top" Text="NexusMods Integration" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
+                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_nexusModsIntegration}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
             </StackPanel>
-            <TextBlock DockPanel.Dock="Top" Text="ME3Tweaks Mod Manager can endorse and unendorse mods on your behalf when you authorize with NexusMods. This way you can show developers your appreciation for their work. Integration with NexusMods is optional and can be managed at the top right of the window." TextWrapping="Wrap"/>
+            <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_nexusModsIntegrationDescription}" TextWrapping="Wrap"/>
             <Button Command="{Binding AuthorizeCommand}" Margin="0,5,0,0" HorizontalAlignment="Center" Padding="30,5">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">

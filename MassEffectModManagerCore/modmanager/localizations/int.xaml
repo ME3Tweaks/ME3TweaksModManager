@@ -272,6 +272,16 @@
     <system:String x:Key="string_tooltip_manageNexusModsIntegration">Manage NexusMods integration</system:String>
     <system:String x:Key="string_interp_visitSelectedModWebSite">Visit {0}'s web site</system:String>
     <!-- 0=SelectedMod.ModName -->
+    <system:String  x:Key="string_openModdesciniFile">Open moddesc.ini file</system:String>
+    <system:String  x:Key="string_autoUpdateLODs">Auto update LODs</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager</system:String>
+    <system:String  x:Key="string_egmSettings">EGM Settings</system:String>
+    <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
+    <system:String  x:Key="string_tooltip_egmSettings">Allows you to configure settings for Expanded Galaxy Mod</system:String>
+    <system:String  x:Key="string_donations">Donations</system:String>
+    <system:String  x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Opens the ME3Tweaks Donations information page</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_modLibrary">Mods that have been imported into the Mod Manager library.&#10;These mods do not represent mods that are installed; to see installed mods, click Target Info</system:String>
+
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
@@ -321,7 +331,9 @@
     <system:String x:Key="string_dialogInvalidME2Coalesced">The Coalesced.ini file for this installation of Mass Effect 2 appears to be malformed (header bytes are wrong). The installation has been aborted.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialog_noBackupForXInstallingY">There is no backup for {0} - installing {1} will require you to repair the game in order to remove it, which may invalidate other mods that are in use.\n\nInstall this mod without a backup?</system:String>
     <!-- 0=Game name (Mass Effect, Mass Effect 2/3) 1=Mod name -->
-
+    <system:String x:Key="string_debugPrintQueue">Debug Print Queue</system:String>
+    <!-- This is debug mode only. "Print Queue" in this case is for printing the installation queue [list of files to install] of a mod. -->
+   
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
@@ -340,6 +352,8 @@
     <system:String x:Key="string_libraryLocation">Library location</system:String>
     <system:String x:Key="string_browse">Browse</system:String>
     <system:String x:Key="string_changeSettingsInActionsMenu">You can change your settings at any time through the Actions menu.</system:String>
+    <system:String x:Key="string_nexusModsIntegration">NexusMods Integration</system:String>
+    <system:String x:Key="string_nexusModsIntegrationDescription">ME3Tweaks Mod Manager can endorse and unendorse mods on your behalf when you authorize with NexusMods. This way you can show developers your appreciation for their work. Integration with NexusMods is optional and can be managed at the top right of the window.</system:String>
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
@@ -730,7 +744,6 @@
     <system:String xml:space="preserve" x:Key="string_interp_nexusModsReturnedAnErrorX">NexusMods returned an error:\n{0}</system:String>
     <!-- 0 = error message-->
     <system:String x:Key="string_errorAuthenticatingToNexusMods">Error authenticating to NexusMods</system:String>
-
     <system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager can integrate with NexusMods to allow you to endorse mods, letting the developer know you appreciate their work.</system:String>
     <system:String x:Key="string_directions">Directions</system:String>
     <system:String x:Key="string_nexusModsDirections">You can have Mod Manager automatically fetch an API key by logging into your NexusMods account. Click "Authenticate with NexusMods" below and authorize ME3Tweaks Mod Manager. You can manually authorize by pasting your NexusMods API key in after checking "Manual enter API key".</system:String>
@@ -738,6 +751,7 @@
     <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
+    <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
 
     <!-- Alternate DLC -->
     <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
@@ -1095,6 +1109,9 @@
     <!-- 0 = bulleted list of DLC names -->
     <system:String x:Key="string_dlcMissing">DLC missing</system:String>
     <system:String x:Key="string_downloadAborted">Download aborted</system:String>
+    <system:String x:Key="string_compile">Compile</system:String>
+    <system:String x:Key="string_selectAModMakerXmlFile">Select a ModMaker xml file</system:String>
+    <system:String x:Key="string_useLocalFileInstead">Use local file instead</system:String>
 
     <!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
@@ -1280,7 +1297,7 @@
     <system:String x:Key="string_failedToApplyAllMixins">Failed to apply all Mixins</system:String>
     <system:String x:Key="string_theFollowingMixinsFailedToApply">The following Mixins failed to apply.</system:String>
 
-    <system:String x:Key="string_compile">Compile...</system:String>
+    <system:String x:Key="string_compileEllipses">Compile...</system:String>
     <system:String x:Key="string_compileIntoANewMod">Compile into a new mod</system:String>
     <system:String x:Key="string_modNameColon">Mod name:</system:String>
     <!-- This is here cause of how xaml works. It's not duplicate -->
@@ -1339,7 +1356,8 @@
     <system:String x:Key="string_importedFromGame">Imported from game</system:String>
     <system:String x:Key="string_defaultDescriptionForImportedMod">This mod was imported from an installation of {0} at {1}.</system:String>
     <!-- 0=game name 1=time-->
-
+    <system:String x:Key="string_dlcImportingNexusModsWatermark">https://nexusmods.com/masseffect... (recommended)</system:String>
+    <!-- only localize the (recommended) text. Leave the URL -->
     <!-- Conflict Detector -->
     <system:String x:Key="string_conflictDetector">Conflict Detector</system:String>
     <system:String x:Key="string_conflictDetectorDescription">When same-named files are located in multiple DLC, the game will use the file from the DLC with highest mount priority. Conflict Detector will show you conflicts of files between your DLC mods. This is a tool FOR DEVELOPERS ONLY, do not try to interpret these results if you don't understand how game files work!</system:String>
@@ -1354,4 +1372,9 @@
     <system:String x:Key="string_interp_migratingModsXoFY">Migrating mods [{0}/{1}]</system:String>
     <!-- 0=numMigrated 1=numToMigrate -->
 
+    <!-- Official DLC Toggler -->
+    <system:String x:Key="string_officialDLCToggler">Official DLC Toggler</system:String>
+    <system:String x:Key="string_officialDLCTogglerDescription">Developers can use this tool to toggle installed offical DLC on or off. This is useful to see how a mod behaves when installed into a different environment. You can toggle DLC mods in the Installation Information panel.</system:String>
+    <system:String x:Key="string_officialDLCTogglerME1ME2Warning">Toggled DLC for this game will only change how Mod Manager behaves when detecting installed DLC. Both Mass Effect and Mass Effect 2 will attempt to load DLC from all folders in their respective DLC directories.</system:String>
+    -
 </ResourceDictionary>

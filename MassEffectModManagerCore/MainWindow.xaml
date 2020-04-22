@@ -1,139 +1,345 @@
-﻿<Window x:Class="MassEffectModManagerCore.MainWindow" 
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-        xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" 
-        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/" 
-        xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager" mc:Ignorable="d" Closing="ModManagerWindow_Closing" 
-        ContentRendered="ModManager_ContentRendered" AllowDrop="True" Icon="appicon.ico" Drop="Window_Drop" DragOver="Window_DragOver"
-        Title="ME3Tweaks Mod Manager" Height="630" Width="850" MinHeight="630" MinWidth="700"
-        Name="MainWindow_Ref">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="MassEffectModManagerCore.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
+    mc:Ignorable="d"
+    Closing="ModManagerWindow_Closing"
+    ContentRendered="ModManager_ContentRendered"
+    AllowDrop="True"
+    Icon="appicon.ico"
+    Drop="Window_Drop"
+    DragOver="Window_DragOver"
+    Title="ME3Tweaks Mod Manager"
+    Height="630"
+    Width="850"
+    MinHeight="630"
+    MinWidth="700"
+    Name="MainWindow_Ref">
     <Window.Style>
-        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
     <Window.Resources>
-        <Style x:Key="MenuItemHeaderStyle" TargetType="{x:Type MenuItem}">
-            <Setter Property="FontSize" Value="10" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Height" Value="14" />
-            <Setter Property="StaysOpenOnClick" Value="True" />
-            <Setter Property="BorderThickness" Value="0" />
+        <Style
+            x:Key="MenuItemHeaderStyle"
+            TargetType="{x:Type MenuItem}">
+            <Setter
+                Property="FontSize"
+                Value="10" />
+            <Setter
+                Property="FontWeight"
+                Value="Bold" />
+            <Setter
+                Property="Height"
+                Value="14" />
+            <Setter
+                Property="StaysOpenOnClick"
+                Value="True" />
+            <Setter
+                Property="BorderThickness"
+                Value="0" />
         </Style>
-        <Storyboard x:Key="OpenLoadingSpinner" Storyboard.TargetProperty="(FrameworkElement.Width)">
-            <DoubleAnimation To="32" Duration="0:0:0.25" />
+        <Storyboard
+            x:Key="OpenLoadingSpinner"
+            Storyboard.TargetProperty="(FrameworkElement.Width)">
+            <DoubleAnimation
+                To="32"
+                Duration="0:0:0.25" />
         </Storyboard>
-        <Storyboard x:Key="CloseLoadingSpinner">
-            <DoubleAnimation To="0" Duration="0:0:0.25" Storyboard.TargetProperty="(FrameworkElement.Width)" />
+        <Storyboard
+            x:Key="CloseLoadingSpinner">
+            <DoubleAnimation
+                To="0"
+                Duration="0:0:0.25"
+                Storyboard.TargetProperty="(FrameworkElement.Width)" />
         </Storyboard>
-        <Style x:Key="EnableDisableImageStyle" TargetType="{x:Type fa:ImageAwesome}">
+        <Style
+            x:Key="EnableDisableImageStyle"
+            TargetType="{x:Type fa:ImageAwesome}">
             <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.75"/>
-                    <Setter Property="BitmapEffect">
+                <Trigger
+                    Property="IsEnabled"
+                    Value="False">
+                    <Setter
+                        Property="Opacity"
+                        Value="0.75" />
+                    <Setter
+                        Property="BitmapEffect">
                         <Setter.Value>
-                            <BlurBitmapEffect Radius="2.0" KernelType="Gaussian"/>
+                            <BlurBitmapEffect
+                                Radius="2.0"
+                                KernelType="Gaussian" />
                         </Setter.Value>
                     </Setter>
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <x:Array x:Key="ModUtilsMenuArray" 
-                 Type="MenuItem" 
-                 x:Shared="False">
-            <MenuItem Header="{Binding SelectedMod.ModName}" IsEnabled="False" FontWeight="Bold" />
-            <MenuItem Header="{DynamicResource string_Checkforupdates}" Command="{Binding SelectedModCheckForUpdatesCommand}" ToolTip="{DynamicResource string_tooltip_checksForUpdatesToThisMod}" >
+        <x:Array
+            x:Key="ModUtilsMenuArray"
+            Type="MenuItem"
+            x:Shared="False">
+            <MenuItem
+                Header="{Binding SelectedMod.ModName}"
+                IsEnabled="False"
+                FontWeight="Bold" />
+            <MenuItem
+                Header="{DynamicResource string_Checkforupdates}"
+                Command="{Binding SelectedModCheckForUpdatesCommand}"
+                ToolTip="{DynamicResource string_tooltip_checksForUpdatesToThisMod}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Cloud" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
+                    <fa:ImageAwesome
+                        Style="{StaticResource EnableDisableImageStyle}"
+                        Icon="Cloud"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Height="16"
+                        Width="16" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="{DynamicResource string_RestoremodfromME3Tweaks}" Command="{Binding RestoreModFromME3TweaksCommand}" ToolTip="{DynamicResource string_tooltip_forcesUpdateCheck}" >
+            <MenuItem
+                Header="{DynamicResource string_RestoremodfromME3Tweaks}"
+                Command="{Binding RestoreModFromME3TweaksCommand}"
+                ToolTip="{DynamicResource string_tooltip_forcesUpdateCheck}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="CloudDownload" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <fa:ImageAwesome
+                        Style="{StaticResource EnableDisableImageStyle}"
+                        Icon="CloudDownload"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Height="16"
+                        Width="16"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
                 </MenuItem.Icon>
             </MenuItem>
             <!--<Separator />-->
             <!--<MenuItem Header="{DynamicResource string_Installcustomkeybindsintothismod}" IsEnabled="False" />-->
             <!-- Will implement later, maybe. Not sure -->
-            <MenuItem Header="{DynamicResource string_Developeroptions}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
+            <MenuItem
+                Header="{DynamicResource string_Developeroptions}"
+                Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="FileCodeOutline" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <fa:ImageAwesome
+                        Style="{StaticResource EnableDisableImageStyle}"
+                        Icon="FileCodeOutline"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Height="16"
+                        Width="16"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
                 </MenuItem.Icon>
-                <MenuItem Header="{DynamicResource string_Metadataeditor}" IsEnabled="False" />
-                <MenuItem Header="Open moddesc.ini file" Command="{Binding OpenModDescCommand}" >
+                <MenuItem
+                    Header="{DynamicResource string_Metadataeditor}"
+                    IsEnabled="False" />
+                <MenuItem
+                    Header="{DynamicResource string_openModdesciniFile}"
+                    Command="{Binding OpenModDescCommand}">
                     <MenuItem.Icon>
-                        <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Pencil" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <fa:ImageAwesome
+                            Style="{StaticResource EnableDisableImageStyle}"
+                            Icon="Pencil"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                            Height="16"
+                            Width="16"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource string_packageModForRelease}" Style="{StaticResource MenuItemHeaderStyle}" />
-                <MenuItem Header="{DynamicResource string_Deploymodto7zfilefordistribution}" ToolTip="{DynamicResource string_tooltip_deployTo7z}" Command="{Binding DeployModCommand}" >
+                <MenuItem
+                    Header="{DynamicResource string_packageModForRelease}"
+                    Style="{StaticResource MenuItemHeaderStyle}" />
+                <MenuItem
+                    Header="{DynamicResource string_Deploymodto7zfilefordistribution}"
+                    ToolTip="{DynamicResource string_tooltip_deployTo7z}"
+                    Command="{Binding DeployModCommand}">
                     <MenuItem.Icon>
-                        <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="FileZipOutline" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <fa:ImageAwesome
+                            Style="{StaticResource EnableDisableImageStyle}"
+                            Icon="FileZipOutline"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                            Height="16"
+                            Width="16"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource string_mE3TweaksUpdaterService}" Style="{StaticResource MenuItemHeaderStyle}" />
-                <MenuItem Header="{DynamicResource string_Prepareforupdaterservice}" Command="{Binding UpdaterServiceCommand}" ToolTip="{DynamicResource string_tooltip_uploadToUpdaterService}" >
+                <MenuItem
+                    Header="{DynamicResource string_mE3TweaksUpdaterService}"
+                    Style="{StaticResource MenuItemHeaderStyle}" />
+                <MenuItem
+                    Header="{DynamicResource string_Prepareforupdaterservice}"
+                    Command="{Binding UpdaterServiceCommand}"
+                    ToolTip="{DynamicResource string_tooltip_uploadToUpdaterService}">
                     <MenuItem.Icon>
-                        <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="CloudUpload" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <fa:ImageAwesome
+                            Style="{StaticResource EnableDisableImageStyle}"
+                            Icon="CloudUpload"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                            Height="16"
+                            Width="16"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource string_editUpdaterServiceSettings}" Command="{Binding UpdaterServiceSettingsCommand}" ToolTip="{DynamicResource string_tooltip_updaterServiceSettings}" />
-                <MenuItem Header="{DynamicResource string_thirdPartyIdentificationService}" Style="{StaticResource MenuItemHeaderStyle}" />
-                <MenuItem Header="{DynamicResource string_SubmitmodinformationtoME3Tweaks}" Command="{Binding SubmitTelemetryForModCommand}" ToolTip="{DynamicResource string_tooltip_submitTPMI}" >
+                <MenuItem
+                    Header="{DynamicResource string_editUpdaterServiceSettings}"
+                    Command="{Binding UpdaterServiceSettingsCommand}"
+                    ToolTip="{DynamicResource string_tooltip_updaterServiceSettings}" />
+                <MenuItem
+                    Header="{DynamicResource string_thirdPartyIdentificationService}"
+                    Style="{StaticResource MenuItemHeaderStyle}" />
+                <MenuItem
+                    Header="{DynamicResource string_SubmitmodinformationtoME3Tweaks}"
+                    Command="{Binding SubmitTelemetryForModCommand}"
+                    ToolTip="{DynamicResource string_tooltip_submitTPMI}">
                     <MenuItem.Icon>
-                        <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Info" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <fa:ImageAwesome
+                            Style="{StaticResource EnableDisableImageStyle}"
+                            Icon="Info"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                            Height="16"
+                            Width="16"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource string_debugging}" Style="{StaticResource MenuItemHeaderStyle}" />
-                <MenuItem Header="{DynamicResource string_CreateTestingArchive}" ToolTip="{DynamicResource string_CreateTestingArchiveTooltip}" Command="{Binding CreateTestArchiveCommand}" >
+                <MenuItem
+                    Header="{DynamicResource string_debugging}"
+                    Style="{StaticResource MenuItemHeaderStyle}" />
+                <MenuItem
+                    Header="{DynamicResource string_CreateTestingArchive}"
+                    ToolTip="{DynamicResource string_CreateTestingArchiveTooltip}"
+                    Command="{Binding CreateTestArchiveCommand}">
                     <MenuItem.Icon>
-                        <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Bug" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <fa:ImageAwesome
+                            Style="{StaticResource EnableDisableImageStyle}"
+                            Icon="Bug"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                            Height="16"
+                            Width="16"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <!--<Separator/>-->
-            <MenuItem Header="{DynamicResource string_Openmodfolder}" Click="OpenModFolder_Click" ToolTip="{Binding SelectedMod.ModPath}" >
+            <MenuItem
+                Header="{DynamicResource string_Openmodfolder}"
+                Click="OpenModFolder_Click"
+                ToolTip="{Binding SelectedMod.ModPath}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="FolderOpen" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <fa:ImageAwesome
+                        Style="{StaticResource EnableDisableImageStyle}"
+                        Icon="FolderOpen"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Height="16"
+                        Width="16"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="{DynamicResource string_Deletemodfromlibrary}" Command="{Binding DeleteModFromLibraryCommand}" ToolTip="{DynamicResource string_tooltip_removesThisModFromYourLibrary}" >
+            <MenuItem
+                Header="{DynamicResource string_Deletemodfromlibrary}"
+                Command="{Binding DeleteModFromLibraryCommand}"
+                ToolTip="{DynamicResource string_tooltip_removesThisModFromYourLibrary}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Close" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <fa:ImageAwesome
+                        Style="{StaticResource EnableDisableImageStyle}"
+                        Icon="Close"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Height="16"
+                        Width="16"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
                 </MenuItem.Icon>
             </MenuItem>
         </x:Array>
     </Window.Resources>
-    <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyContent}">
+    <xctk:BusyIndicator
+        IsBusy="{Binding IsBusy}"
+        BusyContent="{Binding BusyContent}">
         <DockPanel>
-            <Menu DockPanel.Dock="Top">
+            <Menu
+                DockPanel.Dock="Top">
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <DockPanel HorizontalAlignment="Stretch" />
+                        <DockPanel
+                            HorizontalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-                <Menu.Resources>
-
-                </Menu.Resources>
-                <MenuItem Header="{DynamicResource string_Actions}" Padding="4">
-                    <MenuItem Header="{DynamicResource string_OpenME3Tweaks}" IsEnabled="True" Click="OpenME3Tweaks_Click" ToolTip="{DynamicResource string_OpensME3Tweaks}" >
+                <Menu.Resources></Menu.Resources>
+                <MenuItem
+                    Header="{DynamicResource string_Actions}"
+                    Padding="4">
+                    <MenuItem
+                        Header="{DynamicResource string_OpenME3Tweaks}"
+                        IsEnabled="True"
+                        Click="OpenME3Tweaks_Click"
+                        ToolTip="{DynamicResource string_OpensME3Tweaks}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Globe" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Globe"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_OpenMemoryAnalyzer}" IsEnabled="True" Click="OpenMemoryAnalyzer_Click" Visibility="{x:Static local:App.IsDebugVisibility}" />
-                    <MenuItem Header="{DynamicResource string_Options}">
+                    <MenuItem
+                        Header="{DynamicResource string_OpenMemoryAnalyzer}"
+                        IsEnabled="True"
+                        Click="OpenMemoryAnalyzer_Click"
+                        Visibility="{x:Static local:App.IsDebugVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_Options}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="List" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="List"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
-                        <MenuItem Header="{DynamicResource string_ModManager}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Name="SetModLibraryPath_MenuItem" Header="{DynamicResource string_Setmodlibrarypath}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}" />
-                        <MenuItem Name="BetaMode_MenuItem" Header="{DynamicResource string_optIntoBetaUpdates}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}" ToolTip="{DynamicResource string_tooltip_optIntoBetaUpdates}" IsCheckable="True" />
-                        <MenuItem Name="DeveloperMode_MenuItem" Header="{DynamicResource string_Developermode}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" ToolTip="{DynamicResource string_EnableDeveloperOrientedFeatures}" IsCheckable="True" />
-                        <MenuItem Name="AutoLods_MenuItem" Visibility="Visible" Header="Auto update LODs" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs)}" ToolTip="Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager" IsCheckable="True" />
-                        <MenuItem Name="DarkMode_MenuItem" Visibility="Visible" Header="{DynamicResource string_Darktheme}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}" ToolTip="{DynamicResource string_SwitchUItodarktheme}" IsCheckable="True" />
-                        <MenuItem Header="{DynamicResource string_Language}">
+                        <MenuItem
+                            Header="{DynamicResource string_ModManager}"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Name="SetModLibraryPath_MenuItem"
+                            Header="{DynamicResource string_Setmodlibrarypath}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}" />
+                        <MenuItem
+                            Name="BetaMode_MenuItem"
+                            Header="{DynamicResource string_optIntoBetaUpdates}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}"
+                            ToolTip="{DynamicResource string_tooltip_optIntoBetaUpdates}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="DeveloperMode_MenuItem"
+                            Header="{DynamicResource string_Developermode}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}"
+                            ToolTip="{DynamicResource string_EnableDeveloperOrientedFeatures}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="AutoLods_MenuItem"
+                            Visibility="Visible"
+                            Header="{DynamicResource string_autoUpdateLODs}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs)}"
+                            ToolTip="{DynamicResource string_tooltip_autoLods}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="DarkMode_MenuItem"
+                            Visibility="Visible"
+                            Header="{DynamicResource string_Darktheme}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}"
+                            ToolTip="{DynamicResource string_SwitchUItodarktheme}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Header="{DynamicResource string_Language}">
                             <MenuItem.Icon>
-                                <Image Source="/modmanager/localizations/icons/languageselector.png" RenderOptions.BitmapScalingMode="HighQuality" />
+                                <Image
+                                    Source="/modmanager/localizations/icons/languageselector.png"
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
                             <!--
                             <MenuItem Name="LanguageCZE_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
@@ -142,14 +348,24 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             -->
-                            <MenuItem Name="LanguageDEU_MenuItem" Header="Deutsch" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem
+                                Name="LanguageDEU_MenuItem"
+                                Header="Deutsch"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
                                 <MenuItem.Icon>
-                                    <Image Source="/modmanager/localizations/icons/german.png" />
+                                    <Image
+                                        Source="/modmanager/localizations/icons/german.png" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Name="LanguageINT_MenuItem" Header="English" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem
+                                Name="LanguageINT_MenuItem"
+                                Header="English"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
                                 <MenuItem.Icon>
-                                    <Image Source="/modmanager/localizations/icons/english.png" />
+                                    <Image
+                                        Source="/modmanager/localizations/icons/english.png" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <!--
@@ -169,259 +385,693 @@
                                     <Image Source="/modmanager/localizations/icons/polish.png" />
                                 </MenuItem.Icon>
                             </MenuItem>-->
-                            <MenuItem Name="LanguageRUS_MenuItem" Header="Pусский" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem
+                                Name="LanguageRUS_MenuItem"
+                                Header="Pусский"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
                                 <MenuItem.Icon>
-                                    <Image Source="/modmanager/localizations/icons/russian.png" />
+                                    <Image
+                                        Source="/modmanager/localizations/icons/russian.png" />
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuItem>
-                        <MenuItem Header="{DynamicResource string_Logging}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Name="EnableTelemetry_MenuItem" Header="{DynamicResource string_Enabletelemetry}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" ToolTip="{DynamicResource string_tooltip_toggleTelemetry}" IsCheckable="True" />
-                        <MenuItem Name="LogModStartup_MenuItem" Header="{DynamicResource string_LogModStartup}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" ToolTip="{DynamicResource string_tooltip_logModLoading}" IsCheckable="True" />
-                        <MenuItem Name="LogModMakerCompiler_MenuItem" Header="{DynamicResource string_LogModMakerCompiler}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" ToolTip="{DynamicResource string_tooltip_logModMakerCompiler}" IsCheckable="True" />
-                        <MenuItem Name="LogModInstall_MenuItem" Header="{DynamicResource string_LogModInstallation}" StaysOpenOnClick="True" Click="ChangeSetting_Clicked" IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" ToolTip="{DynamicResource string_tooltip_logModInstaller}" IsCheckable="True" />
+                        <MenuItem
+                            Header="{DynamicResource string_Logging}"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Name="EnableTelemetry_MenuItem"
+                            Header="{DynamicResource string_Enabletelemetry}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}"
+                            ToolTip="{DynamicResource string_tooltip_toggleTelemetry}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="LogModStartup_MenuItem"
+                            Header="{DynamicResource string_LogModStartup}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}"
+                            ToolTip="{DynamicResource string_tooltip_logModLoading}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="LogModMakerCompiler_MenuItem"
+                            Header="{DynamicResource string_LogModMakerCompiler}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}"
+                            ToolTip="{DynamicResource string_tooltip_logModMakerCompiler}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="LogModInstall_MenuItem"
+                            Header="{DynamicResource string_LogModInstallation}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}"
+                            ToolTip="{DynamicResource string_tooltip_logModInstaller}"
+                            IsCheckable="True" />
                     </MenuItem>
                     <Separator />
-                    <MenuItem Header="{DynamicResource string_Checkforcontentupdates}" Command="{Binding CheckForContentUpdatesCommand}" ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}">
+                    <MenuItem
+                        Header="{DynamicResource string_Checkforcontentupdates}"
+                        Command="{Binding CheckForContentUpdatesCommand}"
+                        ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Cloud" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Cloud"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_Reloadsmodsfromthemodlibrary}" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}" >
+                    <MenuItem
+                        Header="{DynamicResource string_Reloadsmodsfromthemodlibrary}"
+                        Command="{Binding ReloadModsCommand}"
+                        ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Refresh" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Refresh"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_Exit}" Click="ExitApplication_Click" />
+                    <MenuItem
+                        Header="{DynamicResource string_Exit}"
+                        Click="ExitApplication_Click" />
                 </MenuItem>
-                <MenuItem Header="{DynamicResource string_ModManagement}" Padding="4">
-                    <MenuItem Header="{DynamicResource string_importAndManageMods}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{DynamicResource string_ImportMod}">
+                <MenuItem
+                    Header="{DynamicResource string_ModManagement}"
+                    Padding="4">
+                    <MenuItem
+                        Header="{DynamicResource string_importAndManageMods}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_ImportMod}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="FilesOutline" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="FilesOutline"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
                         </MenuItem.Icon>
-                        <MenuItem Header="{DynamicResource string_HeaderDragDropFaster}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Header="{DynamicResource string_ImportmodfromArchive}" Command="{Binding ImportArchiveCommand}" ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
-                        <MenuItem Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}" Command="{Binding ImportDLCModFromGameCommand}" ToolTip="{DynamicResource string_tooltip_importAnAlreadyinstalledDLCMod}" />
-                        <MenuItem Header="{DynamicResource string_DownloadModMakermod}" Command="{Binding DownloadModMakerModCommand}" ToolTip="{DynamicResource string_tooltip_downloadME3TweaksMod}" />
+                        <MenuItem
+                            Header="{DynamicResource string_HeaderDragDropFaster}"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Header="{DynamicResource string_ImportmodfromArchive}"
+                            Command="{Binding ImportArchiveCommand}"
+                            ToolTip="{DynamicResource string_ImportModFromArchiveTooltip}" />
+                        <MenuItem
+                            Header="{DynamicResource string_ImportalreadyinstalledCustomDLCmod}"
+                            Command="{Binding ImportDLCModFromGameCommand}"
+                            ToolTip="{DynamicResource string_tooltip_importAnAlreadyinstalledDLCMod}" />
+                        <MenuItem
+                            Header="{DynamicResource string_DownloadModMakermod}"
+                            Command="{Binding DownloadModMakerModCommand}"
+                            ToolTip="{DynamicResource string_tooltip_downloadME3TweaksMod}" />
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_CreateaME3modonModMaker}" Click="OpenME3TweaksModMaker_Click" ToolTip="{DynamicResource string_tooltip_createME3TweaksModMakerMod}" >
+                    <MenuItem
+                        Header="{DynamicResource string_CreateaME3modonModMaker}"
+                        Click="OpenME3TweaksModMaker_Click"
+                        ToolTip="{DynamicResource string_tooltip_createME3TweaksModMakerMod}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Edit" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="{DynamicResource string_ASIModManager}" Click="ASIModManager_Click" ToolTip="{DynamicResource string_ASIManagerTooltip}" >
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="FolderOpen" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="{DynamicResource string_MixInLibrary}" Command="{Binding MixinLibraryCommand}" ToolTip="{DynamicResource string_tooltip_mixinLibrary}" >
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Book" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="{DynamicResource string_BatchModInstaller}" Command="{Binding BatchModInstallerCommand}" ToolTip="{DynamicResource string_tooltip_batchModInstaller}" >
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Cubes" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-
-                    <MenuItem Header="{DynamicResource string_libraryManagement}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{DynamicResource string_Openmodslibrarydirectory}" Click="OpenModsDirectory_Click" ToolTip="{DynamicResource string_Opensthemodlibraryfolder}">
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="FolderOpen" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-
-                    <MenuItem Header="{DynamicResource string_developerTools}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <MenuItem Header="{DynamicResource string_CustomDLCConflictDetector}" Command="{Binding ConflictDetectorCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" >
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Search" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Official DLC Toggler" Command="{Binding OfficialDLCTogglerCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="ToggleOn" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Edit"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
                         </MenuItem.Icon>
                     </MenuItem>
-
-                    <MenuItem Header="{DynamicResource string_controllerISMCompatibility}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{DynamicResource string_GUICompact}" Command="{Binding ME3UICompatibilityPackGeneratorCommand}" ToolTip="{DynamicResource string_GUICompactTooltip}" >
+                    <MenuItem
+                        Header="{DynamicResource string_ASIModManager}"
+                        Click="ASIModManager_Click"
+                        ToolTip="{DynamicResource string_ASIManagerTooltip}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Gamepad" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="FolderOpen"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_MixInLibrary}"
+                        Command="{Binding MixinLibraryCommand}"
+                        ToolTip="{DynamicResource string_tooltip_mixinLibrary}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Book"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_BatchModInstaller}"
+                        Command="{Binding BatchModInstallerCommand}"
+                        ToolTip="{DynamicResource string_tooltip_batchModInstaller}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Cubes"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_libraryManagement}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_Openmodslibrarydirectory}"
+                        Click="OpenModsDirectory_Click"
+                        ToolTip="{DynamicResource string_Opensthemodlibraryfolder}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="FolderOpen"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_developerTools}"
+                        Style="{StaticResource MenuItemHeaderStyle}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <MenuItem
+                        Header="{DynamicResource string_CustomDLCConflictDetector}"
+                        Command="{Binding ConflictDetectorCommand}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Search"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_officialDLCToggler}"
+                        Command="{Binding OfficialDLCTogglerCommand}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="ToggleOn"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_controllerISMCompatibility}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_GUICompact}"
+                        Command="{Binding ME3UICompatibilityPackGeneratorCommand}"
+                        ToolTip="{DynamicResource string_GUICompactTooltip}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Gamepad"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource string_ModUtils}" Padding="4" IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}" ItemsSource="{StaticResource ModUtilsMenuArray}"/>
-                <MenuItem Header="{DynamicResource string_Tools}" Padding="4">
-                    <MenuItem Header="{DynamicResource string_Runofficialgameconfigurationtool}">
+                <MenuItem
+                    Header="{DynamicResource string_ModUtils}"
+                    Padding="4"
+                    IsEnabled="{Binding SelectedMod,  Converter={StaticResource NullEnabledConverter}}"
+                    ItemsSource="{StaticResource ModUtilsMenuArray}" />
+                <MenuItem
+                    Header="{DynamicResource string_Tools}"
+                    Padding="4">
+                    <MenuItem
+                        Header="{DynamicResource string_Runofficialgameconfigurationtool}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Gears" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Gears"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
-                        <MenuItem Header="{DynamicResource string_MassEffect}" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME1">
+                        <MenuItem
+                            Header="{DynamicResource string_MassEffect}"
+                            Command="{Binding RunGameConfigToolCommand}"
+                            CommandParameter="ME1">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME1_48.ico" Width="16" RenderOptions.BitmapScalingMode="HighQuality" />
+                                <Image
+                                    Source="/images/gameicons/ME1_48.ico"
+                                    Width="16"
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="{DynamicResource string_MassEffect2}" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME2">
+                        <MenuItem
+                            Header="{DynamicResource string_MassEffect2}"
+                            Command="{Binding RunGameConfigToolCommand}"
+                            CommandParameter="ME2">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME2_48.ico" Width="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality" />
+                                <Image
+                                    Source="/images/gameicons/ME2_48.ico"
+                                    Width="16"
+                                    HorizontalAlignment="Center"
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="{DynamicResource string_MassEffect3}" Command="{Binding RunGameConfigToolCommand}" CommandParameter="ME3">
+                        <MenuItem
+                            Header="{DynamicResource string_MassEffect3}"
+                            Command="{Binding RunGameConfigToolCommand}"
+                            CommandParameter="ME3">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME3_48.ico" Width="16" />
+                                <Image
+                                    Source="/images/gameicons/ME3_48.ico"
+                                    Width="16" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_GenerateStarterKit}">
+                    <MenuItem
+                        Header="{DynamicResource string_GenerateStarterKit}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="PlayCircle" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="PlayCircle"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
-                        <MenuItem Name="GenerateStarterKitME1_MenuItem" Header="{DynamicResource string_MassEffect}" Click="GenerateStarterKit_Clicked">
+                        <MenuItem
+                            Name="GenerateStarterKitME1_MenuItem"
+                            Header="{DynamicResource string_MassEffect}"
+                            Click="GenerateStarterKit_Clicked">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME1_48.ico" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" />
+                                <Image
+                                    Source="/images/gameicons/ME1_48.ico"
+                                    Width="16"
+                                    Height="16"
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Name="GenerateStarterKitME2_MenuItem" Header="{DynamicResource string_MassEffect2}" Click="GenerateStarterKit_Clicked">
+                        <MenuItem
+                            Name="GenerateStarterKitME2_MenuItem"
+                            Header="{DynamicResource string_MassEffect2}"
+                            Click="GenerateStarterKit_Clicked">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME2_48.ico" Width="16" Height="16" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality" />
+                                <Image
+                                    Source="/images/gameicons/ME2_48.ico"
+                                    Width="16"
+                                    Height="16"
+                                    HorizontalAlignment="Center"
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Name="GenerateStarterKitME3_MenuItem" Header="{DynamicResource string_MassEffect3}" Click="GenerateStarterKit_Clicked">
+                        <MenuItem
+                            Name="GenerateStarterKitME3_MenuItem"
+                            Header="{DynamicResource string_MassEffect3}"
+                            Click="GenerateStarterKit_Clicked">
                             <MenuItem.Icon>
-                                <Image Source="/images/gameicons/ME3_48.ico" Width="16" Height="16" />
+                                <Image
+                                    Source="/images/gameicons/ME3_48.ico"
+                                    Width="16"
+                                    Height="16" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_Binkw32Bypasses}">
+                    <MenuItem
+                        Header="{DynamicResource string_Binkw32Bypasses}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Link" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Link"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
                         </MenuItem.Icon>
-                        <MenuItem Header="{DynamicResource string_MassEffect}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME1" Header="{Binding ME1ASILoaderText}" IsChecked="{Binding ME1ASILoaderInstalled}" StaysOpenOnClick="True" />
+                        <MenuItem
+                            Header="{DynamicResource string_MassEffect}"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Command="{Binding Binkw32Command}"
+                            CommandParameter="ME1"
+                            Header="{Binding ME1ASILoaderText}"
+                            IsChecked="{Binding ME1ASILoaderInstalled}"
+                            StaysOpenOnClick="True" />
                         <Separator />
-                        <MenuItem Header="{DynamicResource string_MassEffect2}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME2" Header="{Binding ME2ASILoaderText}" IsChecked="{Binding ME2ASILoaderInstalled}" StaysOpenOnClick="True" />
+                        <MenuItem
+                            Header="{DynamicResource string_MassEffect2}"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Command="{Binding Binkw32Command}"
+                            CommandParameter="ME2"
+                            Header="{Binding ME2ASILoaderText}"
+                            IsChecked="{Binding ME2ASILoaderInstalled}"
+                            StaysOpenOnClick="True" />
                         <Separator />
-                        <MenuItem Header="{DynamicResource string_MassEffect3}" Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem Command="{Binding Binkw32Command}" CommandParameter="ME3" Header="{Binding ME3ASILoaderText}" IsChecked="{Binding ME3ASILoaderInstalled}" StaysOpenOnClick="True" />
+                        <MenuItem
+                            Header="{DynamicResource string_MassEffect3}"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Command="{Binding Binkw32Command}"
+                            CommandParameter="ME3"
+                            Header="{Binding ME3ASILoaderText}"
+                            IsChecked="{Binding ME3ASILoaderInstalled}"
+                            StaysOpenOnClick="True" />
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_Grantwriteaccesstogamedirectories}" Command="{Binding GrantWriteAccessCommand}" ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}" >
+                    <MenuItem
+                        Header="{DynamicResource string_Grantwriteaccesstogamedirectories}"
+                        Command="{Binding GrantWriteAccessCommand}"
+                        ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="HddOutline" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="HddOutline"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_RunAutoTOC}" Command="{Binding AutoTOCCommand}" ToolTip="{DynamicResource string_RunsAutoTOCToolTip}" >
+                    <MenuItem
+                        Header="{DynamicResource string_RunAutoTOC}"
+                        Command="{Binding AutoTOCCommand}"
+                        ToolTip="{DynamicResource string_RunsAutoTOCToolTip}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Indent" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Indent"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_consoleCommandKeybinder}" Command="{Binding ConsoleKeyKeybinderCommand}" ToolTip="{DynamicResource string_tooltip_consoleCommandKeybinder}">
+                    <MenuItem
+                        Header="{DynamicResource string_consoleCommandKeybinder}"
+                        Command="{Binding ConsoleKeyKeybinderCommand}"
+                        ToolTip="{DynamicResource string_tooltip_consoleCommandKeybinder}">
                         <MenuItem.Icon>
-                            <Image Source="/images/terminal.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                            <Image
+                                Source="/images/terminal.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_Additionalmoddingtools}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{DynamicResource string_ALOTInstaller}" Name="ALOTInstaller_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_ALOTInstallerTooltip}">
+                    <MenuItem
+                        Header="{DynamicResource string_Additionalmoddingtools}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_ALOTInstaller}"
+                        Name="ALOTInstaller_MenuItem"
+                        Click="LaunchExternalTool_Clicked"
+                        ToolTip="{DynamicResource string_ALOTInstallerTooltip}">
                         <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/alot_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                            <Image
+                                Source="/modmanager/toolicons/alot_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="EGM Settings" ToolTip="Allows you to configure settings for Expanded Galaxy Mod" Command="{Binding LaunchEGMSettingsCommand}">
+                    <MenuItem
+                        Header="{DynamicResource string_egmSettings}"
+                        ToolTip="{DynamicResource string_tooltip_egmSettings}"
+                        Command="{Binding LaunchEGMSettingsCommand}">
                         <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/egmsettings_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                            <Image
+                                Source="/modmanager/toolicons/egmsettings_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_MassEffectINIModder}" Command="{Binding LaunchIniModderCommand}" ToolTip="{DynamicResource string_MEIMTooltip}">
+                    <MenuItem
+                        Header="{DynamicResource string_MassEffectINIModder}"
+                        Command="{Binding LaunchIniModderCommand}"
+                        ToolTip="{DynamicResource string_MEIMTooltip}">
                         <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/masseffectinimodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                            <Image
+                                Source="/modmanager/toolicons/masseffectinimodder_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_MassEffectModder}" Name="MassEffectModder_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_Texturebrowserandinstaller}">
+                    <MenuItem
+                        Header="{DynamicResource string_MassEffectModder}"
+                        Name="MassEffectModder_MenuItem"
+                        Click="LaunchExternalTool_Clicked"
+                        ToolTip="{DynamicResource string_Texturebrowserandinstaller}">
                         <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/masseffectmodder_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                            <Image
+                                Source="/modmanager/toolicons/masseffectmodder_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_MassEffectRandomizer}" Name="MassEffectRandomizer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_RandomizerforthefirstMassEffectgame}">
+                    <MenuItem
+                        Header="{DynamicResource string_MassEffectRandomizer}"
+                        Name="MassEffectRandomizer_MenuItem"
+                        Click="LaunchExternalTool_Clicked"
+                        ToolTip="{DynamicResource string_RandomizerforthefirstMassEffectgame}">
                         <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/masseffectrandomizer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                            <Image
+                                Source="/modmanager/toolicons/masseffectrandomizer_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_ME3ExplorerME3TweaksFork}" Name="ME3Explorer_MenuItem" Click="LaunchExternalTool_Clicked" ToolTip="{DynamicResource string_ME3ExplorerME3TweaksForkTooltip}">
+                    <MenuItem
+                        Header="{DynamicResource string_ME3ExplorerME3TweaksFork}"
+                        Name="ME3Explorer_MenuItem"
+                        Click="LaunchExternalTool_Clicked"
+                        ToolTip="{DynamicResource string_ME3ExplorerME3TweaksForkTooltip}">
                         <MenuItem.Icon>
-                            <Image Source="/modmanager/toolicons/me3explorer_32.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                            <Image
+                                Source="/modmanager/toolicons/me3explorer_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_developerTools}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <MenuItem Header="{DynamicResource string_backupFileFetcher}" Command="{Binding BackupFileFetcherCommand}" Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{DynamicResource string_tooltip_backupFileFetcher}">
+                    <MenuItem
+                        Header="{DynamicResource string_developerTools}"
+                        Style="{StaticResource MenuItemHeaderStyle}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <MenuItem
+                        Header="{DynamicResource string_backupFileFetcher}"
+                        Command="{Binding BackupFileFetcherCommand}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                        ToolTip="{DynamicResource string_tooltip_backupFileFetcher}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Download" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Download"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource string_BackupRestore}" Padding="4">
-                    <MenuItem Header="{DynamicResource string_Backup}" Command="{Binding BackupCommand}" ToolTip="{DynamicResource string_Createentiregamebackups}" >
+                <MenuItem
+                    Header="{DynamicResource string_BackupRestore}"
+                    Padding="4">
+                    <MenuItem
+                        Header="{DynamicResource string_Backup}"
+                        Command="{Binding BackupCommand}"
+                        ToolTip="{DynamicResource string_Createentiregamebackups}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Database" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Database"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource string_Restore}" Command="{Binding RestoreCommand}" ToolTip="{DynamicResource string_Restoreagamefrombackup}" >
+                    <MenuItem
+                        Header="{DynamicResource string_Restore}"
+                        Command="{Binding RestoreCommand}"
+                        ToolTip="{DynamicResource string_Restoreagamefrombackup}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Repeat" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </MenuItem>
-                <MenuItem Header="{DynamicResource string_debug}" Visibility="{x:Static local:App.DebugOnlyVisibility}">
-                    <MenuItem Header="{DynamicResource string_requiresSelectedMod}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_reloadSelectedMod}" Click="ReloadSelectedMod_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_debugPrintAllReferencedFiles}" Click="DebugPrintReferencedFiles_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_debugPrintInstallationQueue}" Click="DebugPrintInstallationQueue_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_requiresSelectedTarget}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}" Click="StampCurrentTargetWithALOT_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_stripCurrentTargetALOTMarker}" Click="StripCurrentTargetALOTMarker_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_requiresNothing}" Style="{StaticResource MenuItemHeaderStyle}" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_showWelcomePanel}" Click="ShowWelcomePanel_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem Header="{DynamicResource string_showBackupNag}" Click="ShowBackupNag_Click" Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                </MenuItem>
-                <MenuItem Name="HelpMenuItem" Header="{DynamicResource string_Help}" Padding="4">
-                    <MenuItem Name="DynamicHelp_MenuItem" Header="{DynamicResource string_DynamicHelp}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{DynamicResource string_Diagnostics}" Style="{StaticResource MenuItemHeaderStyle}"/>
-                    <MenuItem Header="{DynamicResource string_ModManagerLogsDiagnostics}" Click="UploadLog_Click" ToolTip="{DynamicResource string_TroubleshootingtoolsforME3Tweaks}" >
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Stethoscope" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="{DynamicResource string_About}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{Binding EndorseM3String}" Command="{Binding EndorseM3OnNexusCommand}" ToolTip="{DynamicResource string_tooltip_endorseM3OnNexus}" >
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Heart" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Donations" Click="Donations_Click" ToolTip="Opens the ME3Tweaks Donations information page">
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="HandshakeOutline" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="{DynamicResource string_moddescfileformatspecification}" Click="Documentation_Click" ToolTip="{DynamicResource string_ReferenceinformationModdesc}">
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="Book" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="{DynamicResource string_AboutME3TweaksModManager}" Click="About_Click" ToolTip="{DynamicResource string_Aboutthisprogram}">
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome Style="{StaticResource EnableDisableImageStyle}" Icon="InfoCircle" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Height="16" Width="16"/>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Repeat"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Style="{StaticResource MenuBarButton}" Header="{Binding NexusLoginInfoString}" Command="{Binding LoginToNexusCommand}" HorizontalAlignment="Right" Padding="0" HorizontalContentAlignment="Right" ToolTip="{DynamicResource string_tooltip_manageNexusModsIntegration}">
+                <MenuItem
+                    Header="{DynamicResource string_debug}"
+                    Visibility="{x:Static local:App.DebugOnlyVisibility}">
+                    <MenuItem
+                        Header="{DynamicResource string_requiresSelectedMod}"
+                        Style="{StaticResource MenuItemHeaderStyle}"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_reloadSelectedMod}"
+                        Click="ReloadSelectedMod_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_debugPrintAllReferencedFiles}"
+                        Click="DebugPrintReferencedFiles_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_debugPrintInstallationQueue}"
+                        Click="DebugPrintInstallationQueue_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_requiresSelectedTarget}"
+                        Style="{StaticResource MenuItemHeaderStyle}"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}"
+                        Click="StampCurrentTargetWithALOT_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_stripCurrentTargetALOTMarker}"
+                        Click="StripCurrentTargetALOTMarker_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_requiresNothing}"
+                        Style="{StaticResource MenuItemHeaderStyle}"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_showWelcomePanel}"
+                        Click="ShowWelcomePanel_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="{DynamicResource string_showBackupNag}"
+                        Click="ShowBackupNag_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                </MenuItem>
+                <MenuItem
+                    Name="HelpMenuItem"
+                    Header="{DynamicResource string_Help}"
+                    Padding="4">
+                    <MenuItem
+                        Name="DynamicHelp_MenuItem"
+                        Header="{DynamicResource string_DynamicHelp}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_Diagnostics}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_ModManagerLogsDiagnostics}"
+                        Click="UploadLog_Click"
+                        ToolTip="{DynamicResource string_TroubleshootingtoolsforME3Tweaks}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Stethoscope"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_About}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{Binding EndorseM3String}"
+                        Command="{Binding EndorseM3OnNexusCommand}"
+                        ToolTip="{DynamicResource string_tooltip_endorseM3OnNexus}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Heart"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_donations}"
+                        Click="Donations_Click"
+                        ToolTip="{DynamicResource string_tooltip_opensTheME3TweaksDonationsInformationPage}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="HandshakeOutline"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_moddescfileformatspecification}"
+                        Click="Documentation_Click"
+                        ToolTip="{DynamicResource string_ReferenceinformationModdesc}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Book"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
+                        Header="{DynamicResource string_AboutME3TweaksModManager}"
+                        Click="About_Click"
+                        ToolTip="{DynamicResource string_Aboutthisprogram}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="InfoCircle"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem
+                    Style="{StaticResource MenuBarButton}"
+                    Header="{Binding NexusLoginInfoString}"
+                    Command="{Binding LoginToNexusCommand}"
+                    HorizontalAlignment="Right"
+                    Padding="0"
+                    HorizontalContentAlignment="Right"
+                    ToolTip="{DynamicResource string_tooltip_manageNexusModsIntegration}">
                     <MenuItem.Icon>
-                        <Image Source="/modmanager/nexusmodsintegration/nexusmods_icon.png" Width="16" RenderOptions.BitmapScalingMode="Linear" />
+                        <Image
+                            Source="/modmanager/nexusmodsintegration/nexusmods_icon.png"
+                            Width="16"
+                            RenderOptions.BitmapScalingMode="Linear" />
                     </MenuItem.Icon>
                 </MenuItem>
             </Menu>
-            <StatusBar DockPanel.Dock="Bottom" Padding="5,0">
-                <StatusBarItem HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Name="LoadingSpinnerContainer" Width="Auto" Height="36" Padding="0">
+            <StatusBar
+                DockPanel.Dock="Bottom"
+                Padding="5,0">
+                <StatusBarItem
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Name="LoadingSpinnerContainer"
+                    Width="Auto"
+                    Height="36"
+                    Padding="0">
                     <!--<StatusBarItem.Resources>
                         <Storyboard x:Key="imageRotationStoryboard" Storyboard.TargetName="LoadingSpinner_Image" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)">
                             <DoubleAnimation From="0" To="360" BeginTime="0:0:0" Duration="0:0:0.75" RepeatBehavior="Forever" />
@@ -439,180 +1089,435 @@
                             <RotateTransform Angle="0" />
                         </Image.RenderTransform>
                     </Image>-->
-                    <ContentControl x:Name="LoadingSpinner_Image" Focusable="False" ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Width="32" Height="32" />
+                    <ContentControl
+                        x:Name="LoadingSpinner_Image"
+                        Focusable="False"
+                        ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                        Width="32"
+                        Height="32" />
                 </StatusBarItem>
                 <StatusBarItem>
-                    <TextBlock Text="{Binding CurrentOperationText, Mode=OneWay}" />
+                    <TextBlock
+                        Text="{Binding CurrentOperationText, Mode=OneWay}" />
                 </StatusBarItem>
-                <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Name="BottomBarGameID_Image" Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25" Margin="5,0" />
-                        <Button MinWidth="70" Padding="10,7" Content="{DynamicResource string_applyMod}" Command="{Binding ApplyModCommand}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}" />
-                        <Button MinWidth="70" Padding="10,7" Content="{DynamicResource string_startGame}" Command="{Binding StartGameCommand}" Margin="5,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}" />
+                <StatusBarItem
+                    DockPanel.Dock="Right"
+                    HorizontalContentAlignment="Right">
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <Image
+                            Name="BottomBarGameID_Image"
+                            Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}}"
+                            Width="25"
+                            Height="25"
+                            Margin="5,0" />
+                        <Button
+                            MinWidth="70"
+                            Padding="10,7"
+                            Content="{DynamicResource string_applyMod}"
+                            Command="{Binding ApplyModCommand}"
+                            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
+                            ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}" />
+                        <Button
+                            MinWidth="70"
+                            Padding="10,7"
+                            Content="{DynamicResource string_startGame}"
+                            Command="{Binding StartGameCommand}"
+                            Margin="5,0,0,0"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                            ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}" />
                     </StackPanel>
                 </StatusBarItem>
             </StatusBar>
-            <Grid Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+            <Grid
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="7" />
-                    <ColumnDefinition Width="275" />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="7" />
+                    <ColumnDefinition
+                        Width="7" />
+                    <ColumnDefinition
+                        Width="275" />
+                    <ColumnDefinition
+                        Width="5" />
+                    <ColumnDefinition
+                        Width="*" />
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition
+                        Width="7" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="3" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="3" />
+                    <RowDefinition
+                        Height="3" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="3" />
                 </Grid.RowDefinitions>
                 <!-- Header Panel -->
-                <TextBlock Text="{Binding Source={x:Static local:App.AppVersionHR}}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold" />
-                <TextBlock Text="{DynamicResource string_installationTarget}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,0" />
-                <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="7">
+                <TextBlock
+                    Text="{Binding Source={x:Static local:App.AppVersionHR}}"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"
+                    FontWeight="Bold" />
+                <TextBlock
+                    Text="{DynamicResource string_installationTarget}"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"
+                    Margin="10,0" />
+                <Grid
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="7">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="7" />
-                        <ColumnDefinition Width="275" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="7" />
+                        <ColumnDefinition
+                            Width="7" />
+                        <ColumnDefinition
+                            Width="275" />
+                        <ColumnDefinition
+                            Width="*" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="7" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition
+                            Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ComboBox ItemsSource="{Binding InstallationTargets}" 
-                          SelectedItem="{Binding SelectedGameTarget}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" 
-                          Margin="10,0,0,0" HorizontalContentAlignment="Stretch" IsEditable="False" 
-                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
-                          ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
-                          ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
-                    <Button Content="{DynamicResource string_addTarget}" Command="{Binding AddTargetCommand}" Grid.Row="0" Grid.Column="4" Padding="5,0" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}" />
-                    <Button Content="{DynamicResource string_targetInfo}" Command="{Binding ShowinstallationInformationCommand}" Grid.Row="0" Grid.Column="3" Padding="5,0" Margin="3,0" FontWeight="Bold" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}" ToolTip="{DynamicResource string_tooltip_targetInfo}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                    <ComboBox
+                        ItemsSource="{Binding InstallationTargets}"
+                        SelectedItem="{Binding SelectedGameTarget}"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Margin="10,0,0,0"
+                        HorizontalContentAlignment="Stretch"
+                        IsEditable="False"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        ToolTip="{DynamicResource string_tooltip_currentTarget}"
+                        ItemTemplate="{StaticResource TargetSelectorTemplate}"
+                        ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+                    <Button
+                        Content="{DynamicResource string_addTarget}"
+                        Command="{Binding AddTargetCommand}"
+                        Grid.Row="0"
+                        Grid.Column="4"
+                        Padding="5,0"
+                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
+                        ToolTip="{DynamicResource string_tooltip_addAdditionalTarget}" />
+                    <Button
+                        Content="{DynamicResource string_targetInfo}"
+                        Command="{Binding ShowinstallationInformationCommand}"
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        Padding="5,0"
+                        Margin="3,0"
+                        FontWeight="Bold"
+                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
+                        ToolTip="{DynamicResource string_tooltip_targetInfo}"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
                 </Grid>
-                <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5" />
-                <DockPanel Grid.Row="5" Grid.Column="1" Background="Transparent">
-                    <DockPanel DockPanel.Dock="Top">
-                        <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="2" Command="{Binding ReloadModsCommand}" ToolTip="{DynamicResource string_Reloadsmodsfromthemodlibrary}">
-                            <fa:ImageAwesome Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                <Separator
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="6"
+                    Margin="0,5" />
+                <DockPanel
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Background="Transparent">
+                    <DockPanel
+                        DockPanel.Dock="Top">
+                        <Button
+                            DockPanel.Dock="Right"
+                            Background="Transparent"
+                            BorderThickness="2"
+                            Command="{Binding ReloadModsCommand}"
+                            ToolTip="{DynamicResource string_Reloadsmodsfromthemodlibrary}">
+                            <fa:ImageAwesome
+                                Icon="Refresh"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Width="10"
+                                Height="10"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
                         </Button>
-                        <Button Content="ME3" DockPanel.Dock="Right" Click="ToggleME3Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME3}">
+                        <Button
+                            Content="ME3"
+                            DockPanel.Dock="Right"
+                            Click="ToggleME3Visibility_Click"
+                            ToolTip="{DynamicResource string_tooltip_filterME3}">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ME3ModsVisible}" Value="False">
-                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                            <Setter Property="BorderThickness" Value="1" />
+                                        <DataTrigger
+                                            Binding="{Binding ME3ModsVisible}"
+                                            Value="False">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="1" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ME3ModsVisible}" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
-                                            <Setter Property="Foreground" Value="White" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
-                                            <Setter Property="BorderThickness" Value="2,2,2,1" />
+                                        <DataTrigger
+                                            Binding="{Binding ME3ModsVisible}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="White" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="2,2,2,1" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content="ME2" DockPanel.Dock="Right" Click="ToggleME2Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME2}">
+                        <Button
+                            Content="ME2"
+                            DockPanel.Dock="Right"
+                            Click="ToggleME2Visibility_Click"
+                            ToolTip="{DynamicResource string_tooltip_filterME2}">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ME2ModsVisible}" Value="False">
-                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                            <Setter Property="BorderThickness" Value="1" />
+                                        <DataTrigger
+                                            Binding="{Binding ME2ModsVisible}"
+                                            Value="False">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="1" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ME2ModsVisible}" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
-                                            <Setter Property="Foreground" Value="White" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
-                                            <Setter Property="BorderThickness" Value="2,2,2,1" />
+                                        <DataTrigger
+                                            Binding="{Binding ME2ModsVisible}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="White" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="2,2,2,1" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content="ME1" DockPanel.Dock="Right" Click="ToggleME1Visibility_Click" ToolTip="{DynamicResource string_tooltip_filterME1}">
+                        <Button
+                            Content="ME1"
+                            DockPanel.Dock="Right"
+                            Click="ToggleME1Visibility_Click"
+                            ToolTip="{DynamicResource string_tooltip_filterME1}">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ME1ModsVisible}" Value="False">
-                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                            <Setter Property="BorderThickness" Value="1" />
+                                        <DataTrigger
+                                            Binding="{Binding ME1ModsVisible}"
+                                            Value="False">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="1" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ME1ModsVisible}" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
-                                            <Setter Property="Foreground" Value="White" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
-                                            <Setter Property="BorderThickness" Value="2,2,2,1" />
+                                        <DataTrigger
+                                            Binding="{Binding ME1ModsVisible}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="White" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="2,2,2,1" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <TextBlock Text="{DynamicResource string_AvailableMods}" ToolTip="Mods that have been imported into the Mod Manager library.&#10;These mods do not represent mods that are installed; to see installed mods, click Target Info" FontWeight="Bold" VerticalAlignment="Center" />
+                        <TextBlock
+                            Text="{DynamicResource string_AvailableMods}"
+                            ToolTip="{DynamicResource string_tooltip_modLibrary}"
+                            FontWeight="Bold"
+                            VerticalAlignment="Center" />
                     </DockPanel>
-                    <StackPanel Name="FailedModsPopupPanel" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
-                        <TextBlock ToolTip="{DynamicResource string_tooltip_someModsFailed}">
-                          <Hyperlink RequestNavigate="FailedMods_LinkClick" NavigateUri="internal://trigger" Foreground="Red">
-                            <TextBlock Text="{Binding FailedModsString}" />
-                          </Hyperlink>
-                        </TextBlock>
+                    <StackPanel
+                        Name="FailedModsPopupPanel"
+                        DockPanel.Dock="Bottom"
+                        HorizontalAlignment="Center"
+                        Height="0">
+                        <TextBlock
+                            ToolTip="{DynamicResource string_tooltip_someModsFailed}">
+              <Hyperlink
+                                RequestNavigate="FailedMods_LinkClick"
+                                NavigateUri="internal://trigger"
+                                Foreground="Red">
+                <TextBlock
+                                    Text="{Binding FailedModsString}" />
+              </Hyperlink>
+            </TextBlock>
                     </StackPanel>
-                    <ListBox Name="ModsList_ListBox" ItemsSource="{Binding VisibleFilteredMods}" 
-                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
-                             SelectionChanged="ModsList_ListBox_OnSelectionChanged" 
-                             IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"  
-                             BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName"
-                             Tag="{Binding DataContext}">
+                    <ListBox
+                        Name="ModsList_ListBox"
+                        ItemsSource="{Binding VisibleFilteredMods}"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        SelectionChanged="ModsList_ListBox_OnSelectionChanged"
+                        IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
+                        BorderThickness="1"
+                        IsTextSearchEnabled="True"
+                        TextSearch.TextPath="ModName"
+                        Tag="{Binding DataContext}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}">
-                                    <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
-                                    <TextBlock Text="{Binding ModName}" />
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}">
+                                    <Image
+                                        Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}"
+                                        Width="16"
+                                        Height="16"
+                                        Margin="0,0,5,0" />
+                                    <TextBlock
+                                        Text="{Binding ModName}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                         <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
-                                <Setter Property="ContextMenu">
+                            <Style
+                                TargetType="ListBoxItem"
+                                BasedOn="{StaticResource ListBoxItemStyle}">
+                                <Setter
+                                    Property="ContextMenu">
                                     <Setter.Value>
-                                        <ContextMenu ItemsSource="{StaticResource ModUtilsMenuArray}" DataContext="{x:Reference MainWindow_Ref}"/>
+                                        <ContextMenu
+                                            ItemsSource="{StaticResource ModUtilsMenuArray}"
+                                            DataContext="{x:Reference MainWindow_Ref}" />
                                     </Setter.Value>
                                 </Setter>
                             </Style>
                         </ListBox.ItemContainerStyle>
                     </ListBox>
                 </DockPanel>
-                <GridSplitter Grid.Row="5" Grid.Column="2" HorizontalAlignment="Stretch" />
-                <DockPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="3">
-                    <DockPanel DockPanel.Dock="Top">
-                        <Button Content="{Binding CurrentModEndorsementStatus, FallbackValue=Endorse mod}" DockPanel.Dock="Right" Visibility="{Binding SelectedMod, Converter={StaticResource NullHiddenConverter}}" Command="{Binding EndorseSelectedModCommand}" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
-                        <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_modDescription}" FontWeight="Bold" Height="18" />
+                <GridSplitter
+                    Grid.Row="5"
+                    Grid.Column="2"
+                    HorizontalAlignment="Stretch" />
+                <DockPanel
+                    Grid.Row="5"
+                    Grid.Column="3"
+                    Grid.ColumnSpan="3">
+                    <DockPanel
+                        DockPanel.Dock="Top">
+                        <Button
+                            Content="{Binding CurrentModEndorsementStatus, FallbackValue=Endorse mod}"
+                            DockPanel.Dock="Right"
+                            Visibility="{Binding SelectedMod, Converter={StaticResource NullHiddenConverter}}"
+                            Command="{Binding EndorseSelectedModCommand}"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
+                        <TextBlock
+                            DockPanel.Dock="Top"
+                            Text="{DynamicResource string_modDescription}"
+                            FontWeight="Bold"
+                            Height="18" />
                     </DockPanel>
-                    <StackPanel Name="VisitWebsitePanel" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
-                        <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
-              <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
-                <TextBlock Text="{Binding VisitWebsiteText}" />
+                    <StackPanel
+                        Name="VisitWebsitePanel"
+                        DockPanel.Dock="Bottom"
+                        HorizontalAlignment="Center"
+                        Height="0">
+                        <TextBlock
+                            ToolTip="{Binding SelectedMod.ModWebsite}">
+              <Hyperlink
+                                RequestNavigate="RequestNavigate"
+                                NavigateUri="{Binding SelectedMod.ModWebsite}">
+                <TextBlock
+                                    Text="{Binding VisitWebsiteText}" />
               </Hyperlink>
             </TextBlock>
                     </StackPanel>
-                    <TextBox Name="ModDescription_TextBox" IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AllowDrop="True" PreviewDragOver="Window_DragOver" VerticalContentAlignment="Top" adonisExtensions:CursorSpotlightExtension.BackgroundBrush="Transparent" adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0" adonisExtensions:CursorSpotlightExtension.MaxBlurRadius="0">
+                    <TextBox
+                        Name="ModDescription_TextBox"
+                        IsReadOnly="True"
+                        IsReadOnlyCaretVisible="False"
+                        HorizontalContentAlignment="Left"
+                        HorizontalAlignment="Stretch"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto"
+                        AllowDrop="True"
+                        PreviewDragOver="Window_DragOver"
+                        VerticalContentAlignment="Top"
+                        adonisExtensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
+                        adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+                        adonisExtensions:CursorSpotlightExtension.MaxBlurRadius="0">
                         <TextBox.Text>
                             <PriorityBinding>
-                                <Binding Path="SelectedMod.DisplayedModDescription" Mode="OneWay" />
-                                <Binding Path="NoModSelectedText" Mode="OneWay" />
+                                <Binding
+                                    Path="SelectedMod.DisplayedModDescription"
+                                    Mode="OneWay" />
+                                <Binding
+                                    Path="NoModSelectedText"
+                                    Mode="OneWay" />
                             </PriorityBinding>
                         </TextBox.Text>
                     </TextBox>
@@ -620,8 +1525,11 @@
             </Grid>
         </DockPanel>
         <xctk:BusyIndicator.ProgressBarStyle>
-            <Style TargetType="ProgressBar">
-                <Setter Property="Visibility" Value="Collapsed" />
+            <Style
+                TargetType="ProgressBar">
+                <Setter
+                    Property="Visibility"
+                    Value="Collapsed" />
                 <!--<Setter Property="Maximum" Value="{Binding BusyProgressBarMaximum}"/>
                 <Setter Property="Value" Value="{Binding BusyProgressBarValue}"/>
                 <Setter Property="IsIndeterminate" Value="{Binding BusyProgressBarIndeterminate}"/>
@@ -630,8 +1538,11 @@
             </Style>
         </xctk:BusyIndicator.ProgressBarStyle>
         <xctk:BusyIndicator.OverlayStyle>
-            <Style TargetType="Rectangle">
-                <Setter Property="Fill" Value="#88333333" />
+            <Style
+                TargetType="Rectangle">
+                <Setter
+                    Property="Fill"
+                    Value="#88333333" />
             </Style>
         </xctk:BusyIndicator.OverlayStyle>
     </xctk:BusyIndicator>

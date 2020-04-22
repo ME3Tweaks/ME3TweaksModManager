@@ -327,6 +327,15 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_endorseM3OnNexus = "string_tooltip_endorseM3OnNexus";
 		public static readonly string string_tooltip_manageNexusModsIntegration = "string_tooltip_manageNexusModsIntegration";
 		public static readonly string string_interp_visitSelectedModWebSite = "string_interp_visitSelectedModWebSite";
+		public static readonly string string_openModdesciniFile = "string_openModdesciniFile";
+		public static readonly string string_autoUpdateLODs = "string_autoUpdateLODs";
+		public static readonly string string_tooltip_autoLods = "string_tooltip_autoLods";
+		public static readonly string string_officialDLCToggler = "string_officialDLCToggler";
+		public static readonly string string_egmSettings = "string_egmSettings";
+		public static readonly string string_tooltip_egmSettings = "string_tooltip_egmSettings";
+		public static readonly string string_donations = "string_donations";
+		public static readonly string string_tooltip_opensTheME3TweaksDonationsInformationPage = "string_tooltip_opensTheME3TweaksDonationsInformationPage";
+		public static readonly string string_tooltip_modLibrary = "string_tooltip_modLibrary";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
@@ -364,6 +373,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_dialogNotEnoughSpaceToInstall = "string_interp_dialogNotEnoughSpaceToInstall";
 		public static readonly string string_dialogInvalidME2Coalesced = "string_dialogInvalidME2Coalesced";
 		public static readonly string string_interp_dialog_noBackupForXInstallingY = "string_interp_dialog_noBackupForXInstallingY";
+		public static readonly string string_debugPrintQueue = "string_debugPrintQueue";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -380,6 +390,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_libraryLocation = "string_libraryLocation";
 		public static readonly string string_browse = "string_browse";
 		public static readonly string string_changeSettingsInActionsMenu = "string_changeSettingsInActionsMenu";
+		public static readonly string string_nexusModsIntegration = "string_nexusModsIntegration";
+		public static readonly string string_nexusModsIntegrationDescription = "string_nexusModsIntegrationDescription";
 		public static readonly string string_tooltip_multithreadDeployment = "string_tooltip_multithreadDeployment";
 		public static readonly string string_multiThreadedCompression = "string_multiThreadedCompression";
 		public static readonly string string_deploy = "string_deploy";
@@ -693,6 +705,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_doNotShareAPIKeyWarning = "string_doNotShareAPIKeyWarning";
 		public static readonly string string_unlinkModManagerFromNexusMods = "string_unlinkModManagerFromNexusMods";
 		public static readonly string string_pasteYourAPIKeyHere = "string_pasteYourAPIKeyHere";
+		public static readonly string string_manuallyEnterAPIKey = "string_manuallyEnterAPIKey";
 		public static readonly string string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6";
 		public static readonly string string_validation_altdlc_unknownCondition = "string_validation_altdlc_unknownCondition";
 		public static readonly string string_validation_altdlc_unknownOperation = "string_validation_altdlc_unknownOperation";
@@ -923,6 +936,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_modmakerDlcMissing = "string_interp_modmakerDlcMissing";
 		public static readonly string string_dlcMissing = "string_dlcMissing";
 		public static readonly string string_downloadAborted = "string_downloadAborted";
+		public static readonly string string_compile = "string_compile";
+		public static readonly string string_selectAModMakerXmlFile = "string_selectAModMakerXmlFile";
+		public static readonly string string_useLocalFileInstead = "string_useLocalFileInstead";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
 		public static readonly string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";
@@ -1057,7 +1073,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_compiledFromTheFollowingMixins = "string_compiledFromTheFollowingMixins";
 		public static readonly string string_failedToApplyAllMixins = "string_failedToApplyAllMixins";
 		public static readonly string string_theFollowingMixinsFailedToApply = "string_theFollowingMixinsFailedToApply";
-		public static readonly string string_compile = "string_compile";
+		public static readonly string string_compileEllipses = "string_compileEllipses";
 		public static readonly string string_compileIntoANewMod = "string_compileIntoANewMod";
 		public static readonly string string_modNameColon = "string_modNameColon";
 		public static readonly string string_tooltip_generatesNewMod = "string_tooltip_generatesNewMod";
@@ -1104,6 +1120,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_errorDeletingModFolder = "string_errorDeletingModFolder";
 		public static readonly string string_importedFromGame = "string_importedFromGame";
 		public static readonly string string_defaultDescriptionForImportedMod = "string_defaultDescriptionForImportedMod";
+		public static readonly string string_dlcImportingNexusModsWatermark = "string_dlcImportingNexusModsWatermark";
 		public static readonly string string_conflictDetector = "string_conflictDetector";
 		public static readonly string string_conflictDetectorDescription = "string_conflictDetectorDescription";
 		public static readonly string string_interp_mountPriorityX = "string_interp_mountPriorityX";
@@ -1111,5 +1128,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_migratingMods = "string_migratingMods";
 		public static readonly string string_migratingSettings = "string_migratingSettings";
 		public static readonly string string_interp_migratingModsXoFY = "string_interp_migratingModsXoFY";
+		public static readonly string string_officialDLCToggler = "string_officialDLCToggler";
+		public static readonly string string_officialDLCTogglerDescription = "string_officialDLCTogglerDescription";
+		public static readonly string string_officialDLCTogglerME1ME2Warning = "string_officialDLCTogglerME1ME2Warning";
 	}
 }
