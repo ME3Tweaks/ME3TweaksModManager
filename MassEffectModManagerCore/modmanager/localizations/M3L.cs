@@ -479,6 +479,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public static readonly string string_failedMods = "string_failedMods";
 		public static readonly string string_failureInformation = "string_failureInformation";
+		public static readonly string string_debugReload = "string_debugReload";
 		public static readonly string string_preparingToScanGame = "string_preparingToScanGame";
 		public static readonly string string_pleaseWait = "string_pleaseWait";
 		public static readonly string string_dialogWhatGuiCompatPackIsFor = "string_dialogWhatGuiCompatPackIsFor";
@@ -552,6 +553,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_logUploadFailed = "string_logUploadFailed";
 		public static readonly string string_logsAndDiagnostics = "string_logsAndDiagnostics";
 		public static readonly string string_uploadToLogViewer = "string_uploadToLogViewer";
+		public static readonly string string_selectWhatDataToCollect = "string_selectWhatDataToCollect";
+		public static readonly string string_modManagerApplicationLog = "string_modManagerApplicationLog";
+		public static readonly string string_applicationLogDescription = "string_applicationLogDescription";
+		public static readonly string string_gameDiagnostic = "string_gameDiagnostic";
+		public static readonly string string_gameDiagnosticDescription = "string_gameDiagnosticDescription";
+		public static readonly string string_tooltip_checkAllTexturesInGameDescription = "string_tooltip_checkAllTexturesInGameDescription";
+		public static readonly string string_fullTexturesCheck = "string_fullTexturesCheck";
+		public static readonly string string_diagShareTheLink = "string_diagShareTheLink";
 		public static readonly string string_importModsFromArchiveFile = "string_importModsFromArchiveFile";
 		public static readonly string string_importMods = "string_importMods";
 		public static readonly string string_compressPackages = "string_compressPackages";
@@ -1084,5 +1093,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_errorDeletingModFolder = "string_errorDeletingModFolder";
 		public static readonly string string_importedFromGame = "string_importedFromGame";
 		public static readonly string string_defaultDescriptionForImportedMod = "string_defaultDescriptionForImportedMod";
+		public static readonly string string_conflictDetector = "string_conflictDetector";
+		public static readonly string string_conflictDetectorDescription = "string_conflictDetectorDescription";
 	}
 }

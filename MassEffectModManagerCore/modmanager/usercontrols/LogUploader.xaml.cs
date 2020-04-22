@@ -25,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public bool UploadingLog { get; private set; }
         public string CollectionStatusMessage { get; set; }
-        public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
+        //public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
         public ObservableCollectionExtended<GameTarget> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public LogUploader()
@@ -83,7 +83,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void StartLogUpload(bool isPreviousCrashLog = false)
         {
             UploadingLog = true;
-            TopText = M3L.GetString(M3L.string_collectingLogInformation);
+            //TopText = M3L.GetString(M3L.string_collectingLogInformation);
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"LogUpload");
             bw.DoWork += (a, b) =>
             {

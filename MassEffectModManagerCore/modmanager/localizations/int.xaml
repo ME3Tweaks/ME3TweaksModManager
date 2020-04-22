@@ -464,6 +464,8 @@
     <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load. Select each mod to see why.</system:String>
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
+    <system:String x:Key="string_debugReload">Debug reload</system:String>
+    <!-- This is only seen in debug builds, but localize it anyways. -->
 
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
@@ -559,6 +561,14 @@
     <system:String x:Key="string_logUploadFailed">Log upload failed</system:String>
     <system:String x:Key="string_logsAndDiagnostics">Logs and Diagnostics</system:String>
     <system:String x:Key="string_uploadToLogViewer">Upload to log viewer</system:String>
+    <system:String x:Key="string_selectWhatDataToCollect">Select what data to collect</system:String>
+    <system:String x:Key="string_modManagerApplicationLog">Mod Manager application log</system:String>
+    <system:String x:Key="string_applicationLogDescription">The application log details a Mod Manager session and can be used by ME3Tweaks to debug the application.</system:String>
+    <system:String x:Key="string_gameDiagnostic">Game diagnostic</system:String>
+    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects game information including data on ALOT status, installed DLC, game version, crash logs (if any), and more. If you are having an issue in-game, please select the game you are having an issue with.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_checkAllTexturesInGameDescription">Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes</system:String>
+    <system:String x:Key="string_fullTexturesCheck">Full textures check</system:String>
+    <system:String x:Key="string_diagShareTheLink">Share the resulting link of your log/diagnostic with your recipient.</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>
@@ -1316,4 +1326,9 @@
     <system:String x:Key="string_importedFromGame">Imported from game</system:String>
     <system:String x:Key="string_defaultDescriptionForImportedMod">This mod was imported from an installation of {0} at {1}.</system:String>
     <!-- 0=game name 1=time-->
+
+    <!-- Conflict Detector -->
+    <system:String x:Key="string_conflictDetector">Conflict Detector</system:String>
+    <system:String x:Key="string_conflictDetectorDescription">When same-named files are located in multiple DLC, the game will use the file from the DLC with highest mount priority. Conflict Detector will show you conflicts of files between your DLC mods. This is a tool FOR DEVELOPERS ONLY, do not try to interpret these results if you don't understand how game files work!</system:String>
+
 </ResourceDictionary>

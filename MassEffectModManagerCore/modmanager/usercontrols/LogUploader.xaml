@@ -1,52 +1,101 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.LogUploader" 
-                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                       xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
-                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
-                       xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-                       xmlns:fa5="http://schemas.fontawesome.com/icons/" 
-                       xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" mc:Ignorable="d" Width="500">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:MMBusyPanelBase
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.LogUploader" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+    mc:Ignorable="d"
+    Width="500">
     <UserControl.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:BoolToVisibilityConverter
+            x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
-    <DockPanel Margin="5,5,5,5">
-        <TextBlock DockPanel.Dock="Top" TextAlignment="Center" Text="{DynamicResource string_logsAndDiagnostics}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="2"></TextBlock>
-        <TextBlock DockPanel.Dock="Top" Text="Select what data to collect" TextAlignment="Center"/>
-
-        <DockPanel DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch">
-            <Button DockPanel.Dock="Right" Content="{DynamicResource string_uploadToLogViewer}" Command="{Binding UploadLogCommand}" Width="170" HorizontalAlignment="Right" Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
-            <Button DockPanel.Dock="Right" Content="{DynamicResource string_cancel}" Command="{Binding CancelUploadCommand}" Width="100" HorizontalAlignment="Left" Margin="5,0"/>
-            <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}}">
-                <ContentControl DockPanel.Dock="Left" Name="LoadingBarAnimation" Focusable="False" ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Width="16" Height="16" Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}" />
-                <TextBlock Text="{Binding CollectionStatusMessage}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+    <DockPanel
+        Margin="5,5,5,5">
+        <TextBlock
+            DockPanel.Dock="Top"
+            TextAlignment="Center"
+            Text="{DynamicResource string_logsAndDiagnostics}"
+            FontSize="20"
+            FontWeight="Bold"
+            HorizontalAlignment="Center"
+            Grid.ColumnSpan="2"></TextBlock>
+        <TextBlock
+            DockPanel.Dock="Top"
+            Text="{DynamicResource string_selectWhatDataToCollect}"
+            TextAlignment="Center" />
+        <DockPanel
+            DockPanel.Dock="Bottom"
+            HorizontalAlignment="Stretch">
+            <Button
+                DockPanel.Dock="Right"
+                Content="{DynamicResource string_uploadToLogViewer}"
+                Command="{Binding UploadLogCommand}"
+                Width="170"
+                HorizontalAlignment="Right"
+                Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
+            <Button
+                DockPanel.Dock="Right"
+                Content="{DynamicResource string_cancel}"
+                Command="{Binding CancelUploadCommand}"
+                Width="100"
+                HorizontalAlignment="Left"
+                Margin="5,0" />
+            <DockPanel
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ContentControl
+                    DockPanel.Dock="Left"
+                    Name="LoadingBarAnimation"
+                    Focusable="False"
+                    ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingBars}}"
+                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                    Width="16"
+                    Height="16"
+                    Visibility="{Binding OperationInProgress, Converter={StaticResource BoolToHiddenVisibleConverter}}" />
+                <TextBlock
+                    Text="{Binding CollectionStatusMessage}"
+                    VerticalAlignment="Center"
+                    TextWrapping="Wrap" />
             </DockPanel>
         </DockPanel>
         <StackPanel>
-            <TextBlock Text="Mod Manager application log" FontSize="14" FontWeight="Bold"/>
-            <TextBlock Text="The application log details a Mod Manager session and can be used by ME3Tweaks to debug the application." TextWrapping="Wrap"/>
-            <ComboBox Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
-                      SelectedItem="{Binding SelectedLog}" 
-                      ItemsSource="{Binding AvailableLogs}"
-                      IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-                      />
-
-
-            <TextBlock Text="Game diagnostic" FontSize="14" FontWeight="Bold" Margin="0,10,0,0"/>
-            <TextBlock Text="A game diagnostic collects game information including data on ALOT status, installed DLC, game version, crash logs (if any), and more. If you are having an issue in-game, please select the game you are having an issue with." TextWrapping="Wrap"/>
-            <ComboBox ItemsSource="{Binding DiagnosticTargets}"
-                      SelectedItem="{Binding SelectedDiagnosticTarget}"
-                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" 
-                      ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
-                      ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" 
-                      IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-                      />
-
+            <TextBlock
+                Text="{DynamicResource string_modManagerApplicationLog}"
+                FontSize="14"
+                FontWeight="Bold" />
+            <TextBlock
+                Text="{DynamicResource string_applicationLogDescription}"
+                TextWrapping="Wrap" />
+            <ComboBox
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                SelectedItem="{Binding SelectedLog}"
+                ItemsSource="{Binding AvailableLogs}"
+                IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+            <TextBlock
+                Text="{DynamicResource string_gameDiagnostic}"
+                FontSize="14"
+                FontWeight="Bold"
+                Margin="0,10,0,0" />
+            <TextBlock
+                Text="{DynamicResource string_gameDiagnosticDescription}"
+                TextWrapping="Wrap" />
+            <ComboBox
+                ItemsSource="{Binding DiagnosticTargets}"
+                SelectedItem="{Binding SelectedDiagnosticTarget}"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                ToolTip="{DynamicResource string_tooltip_currentTarget}"
+                ItemTemplate="{StaticResource TargetSelectorTemplate}"
+                ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
+                IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
             <!--  Visibility="{Binding SelectedDiagnosticTarget.TextureModded, Converter={StaticResource BoolToVisibilityConverter}}" -->
-            <CheckBox Content="Full textures check" ToolTip="Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes" IsChecked="{Binding TextureCheck}" IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
-            <TextBlock Text="Share the resulting link of your log/diagnostic with your recipient." TextWrapping="Wrap" Margin="0,5"/>
-
+            <CheckBox
+                Content="{DynamicResource string_fullTexturesCheck}"
+                ToolTip="{DynamicResource string_tooltip_checkAllTexturesInGameDescription}"
+                IsChecked="{Binding TextureCheck}"
+                IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+            <TextBlock
+                Text="{DynamicResource string_diagShareTheLink}"
+                TextWrapping="Wrap"
+                Margin="0,5" />
         </StackPanel>
     </DockPanel>
 </local:MMBusyPanelBase>
