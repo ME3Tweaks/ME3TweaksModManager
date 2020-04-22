@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -191,7 +189,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             catch (Exception e)
             {
                 Log.Error($@"Error launching tool {localExecutable}: {e.Message}");
-                Action = $"Error launching tool:\n{e.Message}";
+                Action = M3L.GetString(M3L.string_interp_errorLaunchingToolX, e.Message);
                 Thread.Sleep(6000);
             }
 
@@ -340,7 +338,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     vis => setPercentVisibilityCallback?.Invoke(vis),
                     percent => setPercentTaskDone?.Invoke(percent),
                     exe => resultingExecutableStringCallback?.Invoke(exe),
-                    (exception, message, caption) => errorExtractingCallback?.Invoke(exception ,message, caption)
+                    (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
                     );
             }
             else

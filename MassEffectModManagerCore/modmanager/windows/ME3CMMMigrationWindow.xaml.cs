@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using FontAwesome.WPF;
 using IniParser;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using Serilog;
 
@@ -30,9 +20,9 @@ namespace MassEffectModManagerCore.modmanager.windows
     public partial class ME3CMMMigrationWindow : Window, INotifyPropertyChanged
     {
         public ObservableCollectionExtended<BasicUITask> Tasks { get; } = new ObservableCollectionExtended<BasicUITask>();
-        BasicUITask MigratingModsTask = new BasicUITask("Migrating mods");
-        BasicUITask MigratingSettings = new BasicUITask("Migrating settings");
-        BasicUITask CleaningUpTask = new BasicUITask("Cleaning up");
+        BasicUITask MigratingModsTask = new BasicUITask(M3L.GetString(M3L.string_migratingMods));
+        BasicUITask MigratingSettings = new BasicUITask(M3L.GetString(M3L.string_migratingSettings));
+        BasicUITask CleaningUpTask = new BasicUITask(M3L.GetString(M3L.string_cleaningUp));
         public ME3CMMMigrationWindow()
         {
             DataContext = this;
@@ -53,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Log.Information(@"Validate ME3CMM folders and files");
                 var exeDir = Utilities.GetMMExecutableDirectory();
                 //DEBUG ONLY
-                
+
                 //exeDir = @"E:\ME3CMM";
 
                 var modsDir = Path.Combine(exeDir, @"mods");
@@ -89,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         if (File.Exists(moddesc))
                         {
                             numMigrated++;
-                            MigratingModsTask.TaskText = $"Migrating mods [{numMigrated}/{numToMigrate}]";
+                            MigratingModsTask.TaskText = M3L.GetString(M3L.string_interp_migratingModsXoFY, numMigrated, numToMigrate);
                             //Migrate this folder
                             var targetDir = Path.Combine(modsDir, @"ME3", Path.GetFileName(modDirToMove));
                             Log.Information($@"Migrating mod into ME3 directory: {modDirToMove} -> {targetDir}");
@@ -244,10 +234,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Log.Information(@"<<<< Exiting ME3CMMMigration Thread");
             };
             nbw.RunWorkerCompleted += (a, b) =>
-                    {
-                        Log.Information(@"Migration has completed.");
-                        Close();
-                    };
+            {
+                Log.Information(@"Migration has completed.");
+                Close();
+            };
             nbw.RunWorkerAsync();
         }
     }

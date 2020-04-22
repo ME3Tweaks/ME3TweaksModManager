@@ -382,11 +382,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (merged)
                             {
                                 targetPackage.save();
-                                Log.Information("Three way merge succeeded for " + targetFile);
+                                Log.Information(@"Three way merge succeeded for " + targetFile);
                             }
                             else
                             {
-                                Log.Error("Could not merge three way merge into " + targetFile);
+                                Log.Error(@"Could not merge three way merge into " + targetFile);
                             }
                             //var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                             //package.save(outfile, false); // don't compress
@@ -445,19 +445,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (unpacked)
                                 {
                                     targetPackage.save();
-                                    Log.Information("Three way merge succeeded for " + targetPackage.FilePath);
+                                    Log.Information(M3L.GetString(M3L.string_threeWayMergeSucceededFor) + targetPackage.FilePath);
                                 }
                                 else
                                 {
                                     var finalSTream = targetPackage.saveToStream();
                                     targetDLCPackage.ReplaceEntry(finalSTream.ToArray(), targetDLCPackage.FindFileEntry(Path.GetFileName(file.Key)));
-                                    Log.Information("Three way merge succeeded for " + targetPackage.FileSourceForDebugging);
+                                    Log.Information(M3L.GetString(M3L.string_threeWayMergeSucceededFor) + targetPackage.FileSourceForDebugging);
 
                                 }
                             }
                             else
                             {
-                                Log.Error("Could not merge three way merge into " + targetFileStream);
+                                Log.Error(M3L.GetString(M3L.string_couldNotMergeThreeWayMergeInto) + targetFileStream);
                             }
                         }
                         catch (Exception e)
@@ -474,12 +474,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 MixinHandler.FreeME3TweaksPatchData();
                 var percent = 0; //this is used to save a localization
-                BottomLeftMessage = $"Running AutoTOC on game {percent}%";
+                BottomLeftMessage = M3L.GetString(M3L.string_interp_runningAutoTOCOnGamePercentX, percent);
 
                 //Run autotoc
                 void tocingUpdate(int percent)
                 {
-                    BottomLeftMessage = $"Running AutoTOC on game {percent}%";
+                    BottomLeftMessage = M3L.GetString(M3L.string_interp_runningAutoTOCOnGamePercentX, percent);
                 }
                 AutoTOC.RunTOCOnGameTarget(SelectedInstallTarget, tocingUpdate);
 
@@ -497,24 +497,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             };
             nbw.RunWorkerCompleted += (a, b) =>
+            {
+                OperationInProgress = false;
+                ClearMixinHandler();
+                if (failedApplications.Count > 0)
                 {
-                    OperationInProgress = false;
-                    ClearMixinHandler();
-                    if (failedApplications.Count > 0)
-                    {
-                        var ld = new ListDialog(failedApplications, M3L.GetString(M3L.string_failedToApplyAllMixins), M3L.GetString(M3L.string_theFollowingMixinsFailedToApply), mainwindow);
-                        ld.ShowDialog();
-                    }
+                    var ld = new ListDialog(failedApplications, M3L.GetString(M3L.string_failedToApplyAllMixins), M3L.GetString(M3L.string_theFollowingMixinsFailedToApply), mainwindow);
+                    ld.ShowDialog();
+                }
 
-                    /*if (modpath != null)
-                    {
-                        OnClosing(new DataEventArgs(modpath));
-                    }
-                    else
-                    {*/
-                    BottomLeftMessage = "Mixins installed, maybe. Check logs";
-                    //}
-                };
+                /*if (modpath != null)
+                {
+                    OnClosing(new DataEventArgs(modpath));
+                }
+                else
+                {*/
+                BottomLeftMessage = M3L.GetString(M3L.string_mixinsInstalledMaybe);
+                //}
+            };
             CompilePanelButton.IsOpen = false;
             nbw.RunWorkerAsync();
         }

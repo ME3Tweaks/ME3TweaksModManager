@@ -41,11 +41,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AvailableLogs.ClearEx();
             var directory = new DirectoryInfo(App.LogDir);
             var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
-            AvailableLogs.Add(new LogItem("Select an application log") { Selectable = false });
+            AvailableLogs.Add(new LogItem(M3L.GetString(M3L.string_selectAnApplicationLog)) { Selectable = false });
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
             SelectedLog = AvailableLogs.FirstOrDefault();
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
-            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, "Select a game target to generate diagnostics for", false));
+            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false));
             DiagnosticTargets.AddRange(targets);
             SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
             //if (LogSelector_ComboBox.Items.Count > 0)
@@ -95,29 +95,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown)
                 {
                     Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
-                    logUploadText.Append("[MODE]diagnostics\n");
-                    logUploadText.Append(LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck /*&& SelectedDiagnosticTarget.TextureModded*/, updateStatusCallback));
-                    logUploadText.Append("\n");
+                    logUploadText.Append("[MODE]diagnostics\n"); //do not localize
+                    logUploadText.Append(LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck, updateStatusCallback));
+                    logUploadText.Append("\n"); //do not localize
                 }
 
                 if (SelectedLog != null && SelectedLog.Selectable)
                 {
                     Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
-                    logUploadText.Append("[MODE]logs\n");
+                    logUploadText.Append("[MODE]logs\n"); //do not localize
                     logUploadText.AppendLine(LogCollector.CollectLogs(SelectedLog.filepath));
-                    logUploadText.Append("\n");
+                    logUploadText.Append("\n"); //do not localize
                 }
 
                 var logtext = logUploadText.ToString();
                 if (logtext != null)
                 {
-                    CollectionStatusMessage = "Compressing for upload";
+                    CollectionStatusMessage = M3L.GetString(M3L.string_compressingForUpload);
                     var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logtext));
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
                         //DEBUG ONLY!!!
-                        CollectionStatusMessage = "Uploading to ME3Tweaks";
+                        CollectionStatusMessage = M3L.GetString(M3L.string_uploadingToME3Tweaks);
 
 #if DEBUG
                         string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload2.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
@@ -177,22 +177,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Result is string response)
                 {
-                    if (b.Result is string response)
+                    if (response.StartsWith(@"http"))
                     {
-                        if (response.StartsWith(@"http"))
-                        {
-                            Utilities.OpenWebpage(response);
-                        }
-                        else
-                        {
-                            OnClosing(DataEventArgs.Empty);
-                            var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
+                        Utilities.OpenWebpage(response);
                     }
-                    OnClosing(DataEventArgs.Empty);
-                };
+                    else
+                    {
+                        OnClosing(DataEventArgs.Empty);
+                        var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                }
+                OnClosing(DataEventArgs.Empty);
+            };
             bw.RunWorkerAsync();
         }
 

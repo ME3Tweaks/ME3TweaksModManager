@@ -476,6 +476,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_failedToDownloadX = "string_interp_failedToDownloadX";
 		public static readonly string string_interp_errorDownloadingAndLaunchingTool = "string_interp_errorDownloadingAndLaunchingTool";
 		public static readonly string string_errorLaunchingTool = "string_errorLaunchingTool";
+		public static readonly string string_interp_errorLaunchingToolX = "string_interp_errorLaunchingToolX";
 		public static readonly string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public static readonly string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public static readonly string string_failedMods = "string_failedMods";
@@ -562,6 +563,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_checkAllTexturesInGameDescription = "string_tooltip_checkAllTexturesInGameDescription";
 		public static readonly string string_fullTexturesCheck = "string_fullTexturesCheck";
 		public static readonly string string_diagShareTheLink = "string_diagShareTheLink";
+		public static readonly string string_selectAnApplicationLog = "string_selectAnApplicationLog";
+		public static readonly string string_selectAGameTargetToGenerateDiagnosticsFor = "string_selectAGameTargetToGenerateDiagnosticsFor";
+		public static readonly string string_compressingForUpload = "string_compressingForUpload";
+		public static readonly string string_uploadingToME3Tweaks = "string_uploadingToME3Tweaks";
 		public static readonly string string_importModsFromArchiveFile = "string_importModsFromArchiveFile";
 		public static readonly string string_importMods = "string_importMods";
 		public static readonly string string_compressPackages = "string_compressPackages";
@@ -594,6 +599,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_archiveError = "string_archiveError";
 		public static readonly string string_couldNotInspectArchive7zException = "string_couldNotInspectArchive7zException";
 		public static readonly string string_unknown = "string_unknown";
+		public static readonly string string_launchALOTInstaller = "string_launchALOTInstaller";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";
@@ -1066,6 +1072,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_availableMixins = "string_availableMixins";
 		public static readonly string string_tooltip_thisMixinIsAFinalizer = "string_tooltip_thisMixinIsAFinalizer";
 		public static readonly string string_patchDescription = "string_patchDescription";
+		public static readonly string string_threeWayMergeSucceededFor = "string_threeWayMergeSucceededFor";
+		public static readonly string string_couldNotMergeThreeWayMergeInto = "string_couldNotMergeThreeWayMergeInto";
+		public static readonly string string_interp_runningAutoTOCOnGamePercentX = "string_interp_runningAutoTOCOnGamePercentX";
+		public static readonly string string_mixinsInstalledMaybe = "string_mixinsInstalledMaybe";
 		public static readonly string string_batchModInstaller = "string_batchModInstaller";
 		public static readonly string string_description_batchModInstallerAllowsSerialInstall = "string_description_batchModInstallerAllowsSerialInstall";
 		public static readonly string string_createANewInstallGroup = "string_createANewInstallGroup";
@@ -1098,5 +1108,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_conflictDetectorDescription = "string_conflictDetectorDescription";
 		public static readonly string string_interp_mountPriorityX = "string_interp_mountPriorityX";
 		public static readonly string string_interp_XModsSuperceded = "string_interp_XModsSuperceded";
+		public static readonly string string_migratingMods = "string_migratingMods";
+		public static readonly string string_migratingSettings = "string_migratingSettings";
+		public static readonly string string_interp_migratingModsXoFY = "string_interp_migratingModsXoFY";
 	}
 }

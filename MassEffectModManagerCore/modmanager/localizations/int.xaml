@@ -458,6 +458,8 @@
     <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Error downloading and launching tool: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_errorLaunchingTool">Error launching tool</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorLaunchingToolX">Error launching tool:\n{0}</system:String>
+    <!-- 0=exception message -->
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
@@ -569,6 +571,10 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_checkAllTexturesInGameDescription">Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes</system:String>
     <system:String x:Key="string_fullTexturesCheck">Full textures check</system:String>
     <system:String x:Key="string_diagShareTheLink">Share the resulting link of your log/diagnostic with your recipient.</system:String>
+    <system:String x:Key="string_selectAnApplicationLog">Select an application log</system:String>
+    <system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Select a game target to generate diagnostics for</system:String>
+    <system:String x:Key="string_compressingForUpload">Compressing for upload</system:String>
+    <system:String x:Key="string_uploadingToME3Tweaks">Uploading to ME3Tweaks</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>
@@ -612,6 +618,7 @@
     <system:String x:Key="string_couldNotInspectArchive7zException">Could not inspect archive due to an exception thrown by 7z. The archive may be corrupt.</system:String>
     <system:String x:Key="string_unknown">Unknown</system:String>
     <!-- This is the version number string that is set when a mod is imported (third party) but the version number is not able to be determined -->
+    <system:String  x:Key="string_launchALOTInstaller">Launch ALOT Installer</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -1290,8 +1297,14 @@
     <system:String x:Key="string_availableMixins">Available Mixins</system:String>
     <system:String x:Key="string_tooltip_thisMixinIsAFinalizer">This Mixin is a finalizer</system:String>
     <system:String x:Key="string_patchDescription">Patch Description</system:String>
+    <system:String x:Key="string_threeWayMergeSucceededFor">Three way merge succeeded for</system:String>
+    <system:String x:Key="string_couldNotMergeThreeWayMergeInto">Could not merge three way merge into</system:String>
+    <system:String x:Key="string_interp_runningAutoTOCOnGamePercentX">Running AutoTOC on game {0}%</system:String>
+    <!-- 0=percent -->
+    <system:String x:Key="string_mixinsInstalledMaybe">Mixins installed, maybe!</system:String>
+    <!-- This feature is experimental so I would not trust it works 100% of the time. But it's in build 105 anyways -->
 
-    <!-- Batch Mod Library (Install Group List) -->
+<!-- Batch Mod Library (Install Group List) -->
     <system:String x:Key="string_batchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Batch Mod Installer allows you to install a group of mods all in a row, allowing you to quickly recreate a specific installation of the game.</system:String>
     <system:String x:Key="string_createANewInstallGroup">Create a new install group</system:String>
@@ -1334,4 +1347,11 @@
     <!-- 0=mount priority number -->
     <system:String x:Key="string_interp_XModsSuperceded">{0} mod(s) superceded</system:String>
     <!-- 0=amount of mods that have been superceded -->
+
+    <!-- ME3CMM Migration -->
+    <system:String x:Key="string_migratingMods">Migrating mods</system:String>
+    <system:String x:Key="string_migratingSettings">Migrating settings</system:String>
+    <system:String x:Key="string_interp_migratingModsXoFY">Migrating mods [{0}/{1}]</system:String>
+    <!-- 0=numMigrated 1=numToMigrate -->
+
 </ResourceDictionary>
