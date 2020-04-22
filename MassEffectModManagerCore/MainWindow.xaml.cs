@@ -177,10 +177,10 @@ namespace MassEffectModManagerCore
             backgroundTaskEngine = new BackgroundTaskEngine(updateText =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
-{
-    Log.Information("Setting BLText: " + updateText);
-    CurrentOperationText = updateText;
-});
+                {
+                    Log.Information(@"Setting BLText: " + updateText);
+                    CurrentOperationText = updateText;
+                });
             },
                 () =>
                 {
@@ -213,7 +213,7 @@ namespace MassEffectModManagerCore
                     var loggedIn = await AuthToNexusMods();
                     if (loggedIn == null)
                     {
-                        Log.Error("Error authorizing to NexusMods, did not get response from server or issue occured while checking credentials. Setting not authorized");
+                        Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occured while checking credentials. Setting not authorized");
                         SetNexusNotAuthorizedUI();
                     }
                     else
@@ -236,11 +236,11 @@ namespace MassEffectModManagerCore
 
         private async Task<User> AuthToNexusMods()
         {
-            Log.Information("Authenticating to NexusMods...");
+            Log.Information(@"Authenticating to NexusMods...");
             var userInfo = await NexusModsUtilities.AuthToNexusMods();
             if (userInfo != null)
             {
-                Log.Information("Authenticated to NexusMods");
+                Log.Information(@"Authenticated to NexusMods");
                 NexusUsername = userInfo.Name;
                 NexusUserID = userInfo.UserID;
 
@@ -260,7 +260,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                Log.Information("Did not authenticate to NexusMods. May not be logged in or there was network issue");
+                Log.Information(@"Did not authenticate to NexusMods. May not be logged in or there was network issue");
                 EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
 
@@ -832,8 +832,8 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod.InstallationJobs.Count == 1 && SelectedMod.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null)
             {
-                Log.Error("Cannot deploy .me2mod files with Mod Manager");
-                Xceed.Wpf.Toolkit.MessageBox.Show(this, "RCW mods (.me2mod) cannot be deployed with Mod Manager. RCW .me2mod files can be directly distributed, and Mod Manager can natively import them.", "Cannot deploy .me2mod files", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error(M3L.GetString(M3L.string_rcwModsCannotBeDeployed));
+                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription), M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             var archiveDeploymentPane = new ArchiveDeployment(SelectedMod, this);
@@ -2373,7 +2373,7 @@ namespace MassEffectModManagerCore
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
             //if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings;
-            if (tool == null) throw new Exception("LaunchExternalTool handler set but no relevant tool was specified! This is a bug.");
+            if (tool == null) throw new Exception(@"LaunchExternalTool handler set but no relevant tool was specified! This is a bug. Please report it to Mgamerz on Discord");
             LaunchExternalTool(tool);
         }
 
@@ -2517,7 +2517,7 @@ namespace MassEffectModManagerCore
                             {
 
                                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");
-                                var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedDecompile", "Decompiling Coalesced file", "Decompiled Coalesced file");
+                                var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedDecompile", M3L.GetString(M3L.string_decompilingCoalescedFile), M3L.GetString(M3L.string_decompiledCoalescedFile));
                                 nbw.DoWork += (a, b) =>
                                 {
                                     var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]));
@@ -2566,7 +2566,7 @@ namespace MassEffectModManagerCore
                                 {
                                     //Coalesced manifest
                                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Compiler");
-                                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompile", "Compiling Coalesced file", "Compiled Coalesced file");
+                                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompile", M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
                                     nbw.DoWork += (a, b) =>
                                     {
                                         var dest = Path.Combine(Directory.GetParent(files[0]).FullName, rootElement.Attribute(@"name").Value);
@@ -2593,7 +2593,7 @@ namespace MassEffectModManagerCore
                                          * |-> TLK.xml files
                                          */
                                         NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
-                                        var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", "Compiling TLK file", "Compiled TLK file");
+                                        var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
                                         nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement); };
                                         nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
                                         nbw.RunWorkerAsync();
@@ -2602,7 +2602,7 @@ namespace MassEffectModManagerCore
                                     {
                                         //Is this a straight up TLK?
                                         NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
-                                        var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", "Compiling TLK file", "Compiled TLK file");
+                                        var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
                                         nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement); };
                                         nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
                                         nbw.RunWorkerAsync();
@@ -2611,7 +2611,7 @@ namespace MassEffectModManagerCore
                                 else if (rootElement.Name == @"tlkFile") //ME3Explorer style
                                 {
                                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileME3Exp");
-                                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", "Compiling TLK file", "Compiled TLK file");
+                                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
                                     nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement); };
                                     nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
                                     nbw.RunWorkerAsync();
@@ -2627,7 +2627,7 @@ namespace MassEffectModManagerCore
                         {
                             //Break down into xml file
                             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLK decompiler");
-                            var task = backgroundTaskEngine.SubmitBackgroundJob(@"TLKDecompile", "Decompiling TLK file", "Decompiled TLK file");
+                            var task = backgroundTaskEngine.SubmitBackgroundJob(@"TLKDecompile", M3L.GetString(M3L.string_decompilingTLKFile), M3L.GetString(M3L.string_decompiledTLKFile));
                             nbw.DoWork += (a, b) =>
                             {
                                 var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]) + @".xml");

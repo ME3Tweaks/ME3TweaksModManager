@@ -211,12 +211,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Other error authenticating to NexusMods: " + e.Message);
+                        Log.Error(@"Other error authenticating to NexusMods: " + e.Message);
                     }
                 }
                 else
                 {
-                    Log.Error("No API key - setting authorized to false for NM");
+                    Log.Error(@"No API key - setting authorized to false for NM");
                     SetAuthorized(false);
                 }
 

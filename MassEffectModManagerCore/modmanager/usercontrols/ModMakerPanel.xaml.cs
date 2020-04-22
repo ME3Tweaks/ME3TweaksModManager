@@ -7,14 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.Win32;
@@ -90,8 +84,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             OpenFileDialog m = new OpenFileDialog
             {
-                Title = "Select ModMaker mod xml file",
-                Filter = "ModMaker XML files" + @"|*.xml",
+                Title = M3L.GetString(M3L.string_selectModMakerModXmlFile),
+                Filter = M3L.GetString(M3L.string_modMakerXMLFiles) + @"|*.xml",
                 InitialDirectory = Utilities.GetModmakerDefinitionsCache()
             };
             var result = m.ShowDialog(window);
@@ -190,7 +184,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
                         }
                     }
-                } else if (File.Exists(LocalFilePath))
+                }
+                else if (File.Exists(LocalFilePath))
                 {
                     modDelta = File.ReadAllText(LocalFilePath);
                 }
@@ -220,20 +215,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
+            {
+                CompileInProgress = false;
+                if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)
                 {
-                    CompileInProgress = false;
-                    if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)
-                    {
-                        OnClosing(new DataEventArgs(m));
-                    }
-                    else
-                    {
-                        CloseProgressPanel();
-                        ShowCloseButton = true;
-                    }
-                    CommandManager.InvalidateRequerySuggested();
+                    OnClosing(new DataEventArgs(m));
+                }
+                else
+                {
+                    CloseProgressPanel();
+                    ShowCloseButton = true;
+                }
+                CommandManager.InvalidateRequerySuggested();
 
-                };
+            };
             bw.RunWorkerAsync();
         }
 
@@ -324,8 +319,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Storyboard.SetTarget(sb, DownloadInfoPanel);
                 sb.Begin();
 
-        //Open Progress Panel
-        sb = this.FindResource(@"OpenProgressPanel") as Storyboard;
+                //Open Progress Panel
+                sb = this.FindResource(@"OpenProgressPanel") as Storyboard;
                 if (sb.IsSealed)
                 {
                     sb = sb.Clone();
@@ -342,8 +337,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Application.Current.Dispatcher.Invoke(delegate
             {
 
-        //Open Progress Panel
-        var sb = this.FindResource(@"CloseProgressPanel") as Storyboard;
+                //Open Progress Panel
+                var sb = this.FindResource(@"CloseProgressPanel") as Storyboard;
                 if (sb.IsSealed)
                 {
                     sb = sb.Clone();

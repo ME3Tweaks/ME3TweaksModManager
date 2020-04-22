@@ -330,7 +330,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_openModdesciniFile = "string_openModdesciniFile";
 		public static readonly string string_autoUpdateLODs = "string_autoUpdateLODs";
 		public static readonly string string_tooltip_autoLods = "string_tooltip_autoLods";
-		public static readonly string string_officialDLCToggler = "string_officialDLCToggler";
 		public static readonly string string_egmSettings = "string_egmSettings";
 		public static readonly string string_tooltip_egmSettings = "string_tooltip_egmSettings";
 		public static readonly string string_donations = "string_donations";
@@ -374,6 +373,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_dialogInvalidME2Coalesced = "string_dialogInvalidME2Coalesced";
 		public static readonly string string_interp_dialog_noBackupForXInstallingY = "string_interp_dialog_noBackupForXInstallingY";
 		public static readonly string string_debugPrintQueue = "string_debugPrintQueue";
+		public static readonly string string_interp_errorWhileExtractingArchiveInstall = "string_interp_errorWhileExtractingArchiveInstall";
+		public static readonly string string_errorExtractingMod = "string_errorExtractingMod";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -612,6 +613,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_couldNotInspectArchive7zException = "string_couldNotInspectArchive7zException";
 		public static readonly string string_unknown = "string_unknown";
 		public static readonly string string_launchALOTInstaller = "string_launchALOTInstaller";
+		public static readonly string string_interp_dialogImportedALOTMainToTextureLibrary = "string_interp_dialogImportedALOTMainToTextureLibrary";
+		public static readonly string string_importCompleted = "string_importCompleted";
+		public static readonly string string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary = "string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary";
+		public static readonly string string_movingALOTFileToTextureLibraryPleaseWait = "string_movingALOTFileToTextureLibraryPleaseWait";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";
@@ -706,6 +711,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_unlinkModManagerFromNexusMods = "string_unlinkModManagerFromNexusMods";
 		public static readonly string string_pasteYourAPIKeyHere = "string_pasteYourAPIKeyHere";
 		public static readonly string string_manuallyEnterAPIKey = "string_manuallyEnterAPIKey";
+		public static readonly string string_yourAPIKeyWillAppearHere = "string_yourAPIKeyWillAppearHere";
 		public static readonly string string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6";
 		public static readonly string string_validation_altdlc_unknownCondition = "string_validation_altdlc_unknownCondition";
 		public static readonly string string_validation_altdlc_unknownOperation = "string_validation_altdlc_unknownOperation";
@@ -939,6 +945,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_compile = "string_compile";
 		public static readonly string string_selectAModMakerXmlFile = "string_selectAModMakerXmlFile";
 		public static readonly string string_useLocalFileInstead = "string_useLocalFileInstead";
+		public static readonly string string_selectModMakerModXmlFile = "string_selectModMakerModXmlFile";
+		public static readonly string string_modMakerXMLFiles = "string_modMakerXMLFiles";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
 		public static readonly string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";
@@ -1065,6 +1073,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_password = "string_password";
 		public static readonly string string_lZMAStoragePath = "string_lZMAStoragePath";
 		public static readonly string string_manifestsStoragePath = "string_manifestsStoragePath";
+		public static readonly string string_interp_updaterServiceDeltaMessageHeader = "string_interp_updaterServiceDeltaMessageHeader";
+		public static readonly string string_interp_updaterServiceDeltaConfirmationHeader = "string_interp_updaterServiceDeltaConfirmationHeader";
+		public static readonly string string_nnFilesToUploadToServern = "string_nnFilesToUploadToServern";
+		public static readonly string string_nnFilesToDeleteOffServern = "string_nnFilesToDeleteOffServern";
+		public static readonly string string_interp_updaterServiceDeltaConfirmationFooter = "string_interp_updaterServiceDeltaConfirmationFooter";
+		public static readonly string string_confirmChanges = "string_confirmChanges";
 		public static readonly string string_selectMixinsToCompile = "string_selectMixinsToCompile";
 		public static readonly string string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup = "string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup";
 		public static readonly string string_interp_dialogCreatingNewModWithExistingName = "string_interp_dialogCreatingNewModWithExistingName";
@@ -1131,5 +1145,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_officialDLCToggler = "string_officialDLCToggler";
 		public static readonly string string_officialDLCTogglerDescription = "string_officialDLCTogglerDescription";
 		public static readonly string string_officialDLCTogglerME1ME2Warning = "string_officialDLCTogglerME1ME2Warning";
+		public static readonly string string_toggleOff = "string_toggleOff";
+		public static readonly string string_toggleOn = "string_toggleOn";
+		public static readonly string string_interp_errorTogglingDLC = "string_interp_errorTogglingDLC";
+		public static readonly string string_textureModded = "string_textureModded";
 	}
 }

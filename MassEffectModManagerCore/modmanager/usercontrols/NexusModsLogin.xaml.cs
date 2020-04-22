@@ -1,27 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
-using Pathoschild.FluentNexus;
-using Pathoschild.FluentNexus.Models;
 using Pathoschild.Http.Client;
 using Serilog;
 
@@ -32,11 +19,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class NexusModsLogin : MMBusyPanelBase
     {
-        public string _hack_apikey
-        {
-            get => null;
-            set => value = APIKeyText;
-        }
         public string APIKeyText { get; set; }
         public bool IsAuthorized { get; set; }
         public string AuthorizeToNexusText { get; set; }
@@ -85,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanAuthorizeWithNexus() => !IsAuthorized && !IsAuthorizing && (!ManualMode || !string.IsNullOrWhiteSpace(APIKeyText));
 
         public bool ManualMode { get; set; }
-        public string WatermarkText { get; set; } = "Your API key will appear here";
+        public string WatermarkText { get; set; } = M3L.GetString(M3L.string_yourAPIKeyWillAppearHere);
         public FontAwesomeIcon ActiveIcon { get; set; }
         public bool SpinIcon { get; set; }
         public bool VisibleIcon { get; set; }
@@ -93,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public void OnManualModeChanged()
         {
-            WatermarkText = ManualMode ? "Paste your API key here" : "Your API key will appear here";
+            WatermarkText = ManualMode ? M3L.GetString(M3L.string_pasteYourAPIKeyHere) : M3L.GetString(M3L.string_yourAPIKeyWillAppearHere);
         }
 
         private void AuthorizeWithNexus()
@@ -150,12 +132,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Other error authenticating to NexusMods: " + e.Message);
+                        Log.Error(@"Other error authenticating to NexusMods: " + e.Message);
                     }
                 }
                 else
                 {
-                    Log.Error("No API key - setting authorized to false for NM");
+                    Log.Error(@"No API key - setting authorized to false for NM");
                     SetAuthorized(false);
                 }
 
@@ -213,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Log.Error("Error getting current API Key: " + e.Message);
+                Log.Error(@"Error getting current API Key: " + e.Message);
                 SetAuthorized(false);
             }
         }

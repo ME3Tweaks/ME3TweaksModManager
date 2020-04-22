@@ -105,11 +105,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Check Auth
             OperationInProgress = true;
             SettingsSubtext = M3L.GetString(M3L.string_validatingSettings);
-            Analytics.TrackEvent("Saving/authenticating to updater service", new Dictionary<string, string>()
+            Analytics.TrackEvent(@"Saving/authenticating to updater service", new Dictionary<string, string>()
             {
-                {"Username", Username },
-                {"LZMAPath", LZMAStoragePath },
-                {"ManifestPath", ManifestStoragePath }
+                {@"Username", Username },
+                {@"LZMAPath", LZMAStoragePath },
+                {@"ManifestPath", ManifestStoragePath }
             });
             CheckAuth(authCompletedCallback: (result) =>
             {
@@ -254,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                Analytics.TrackEvent("Uploaded mod to updater service", new Dictionary<string, string>()
+                Analytics.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
                 {
                     {@"Result", b.Result?.ToString() },
                     {@"Mod", mod.ModName +@" "+mod.ModVersionString }
@@ -412,22 +412,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             long amountHashed = 0;
             ConcurrentDictionary<string, SourceFile> manifestFiles = new ConcurrentDictionary<string, SourceFile>();
             Parallel.ForEach(files, new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1) }, x =>
-              {
-                  if (CancelOperations) return;
-                  SourceFile sf = new SourceFile();
-                  var sFile = Path.Combine(mod.ModPath, x);
-                  var lFile = Path.Combine(lzmaStagingPath, x + @".lzma");
-                  sf.hash = Utilities.CalculateMD5(sFile);
-                  sf.lzmahash = Utilities.CalculateMD5(lFile);
-                  var fileInfo = new FileInfo(sFile);
-                  sf.size = fileInfo.Length;
-                  sf.timestamp = fileInfo.LastWriteTimeUtc.Ticks;
-                  sf.relativefilepath = x;
-                  sf.lzmasize = new FileInfo(lFile).Length;
-                  manifestFiles.TryAdd(x, sf);
-                  var done = Interlocked.Add(ref amountHashed, sf.size);
-                  CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@" {Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
-              });
+            {
+                if (CancelOperations) return;
+                SourceFile sf = new SourceFile();
+                var sFile = Path.Combine(mod.ModPath, x);
+                var lFile = Path.Combine(lzmaStagingPath, x + @".lzma");
+                sf.hash = Utilities.CalculateMD5(sFile);
+                sf.lzmahash = Utilities.CalculateMD5(lFile);
+                var fileInfo = new FileInfo(sFile);
+                sf.size = fileInfo.Length;
+                sf.timestamp = fileInfo.LastWriteTimeUtc.Ticks;
+                sf.relativefilepath = x;
+                sf.lzmasize = new FileInfo(lFile).Length;
+                manifestFiles.TryAdd(x, sf);
+                var done = Interlocked.Add(ref amountHashed, sf.size);
+                CurrentActionText = M3L.GetString(M3L.string_buildingServerManifest) + $@" {Math.Round(done * 100.0 / totalModSizeUncompressed)}%";
+            });
             if (CancelOperations)
             {
                 AbortUpload();
@@ -640,13 +640,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Confirm changes
             if (filesToDeleteOffServer.Any() || filesToUploadToServer.Any())
             {
-                var text = $"The following delta will be applied to the ME3Tweaks Updater Service for {mod.ModName}:";
-                if (filesToUploadToServer.Any()) text += "\n\nFiles to upload to server:\n - " + string.Join("\n - ", filesToUploadToServer);
-                if (filesToDeleteOffServer.Any()) text += "\n\nFiles to delete off server:\n - " + string.Join("\n - ", filesToDeleteOffServer);
-                text += "\n\nConfirm these are the changes you wish to apply to the ME3Tweaks Updater Service for this mod.";
+                var text = M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationHeader, mod.ModName);
+                if (filesToUploadToServer.Any()) text += M3L.GetString(M3L.string_nnFilesToUploadToServern) + @" " + string.Join('\n' + @" - ", filesToUploadToServer); //weird stuff to deal with localizer
+                if (filesToDeleteOffServer.Any()) text += M3L.GetString(M3L.string_nnFilesToDeleteOffServern) + @" " + string.Join('\n' + @" - ", filesToDeleteOffServer); //weird stuff to deal with localizer
+                text += M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationFooter);
                 bool performUpload = false;
                 Log.Information(@"Prompting user to accept server delta");
-                Application.Current.Dispatcher.Invoke(delegate { performUpload = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, text, "Confirm changes", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
+                Application.Current.Dispatcher.Invoke(delegate { performUpload = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, text, M3L.GetString(M3L.string_confirmChanges), MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
 
                 if (performUpload)
                 {

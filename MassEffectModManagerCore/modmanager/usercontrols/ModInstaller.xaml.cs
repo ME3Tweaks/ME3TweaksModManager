@@ -414,7 +414,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //BASEGAME FILE TELEMETRY
                 if (Settings.EnableTelemetry)
                 {
-                    if (!targetPath.Contains("DLC", StringComparison.InvariantCultureIgnoreCase) && targetPath.Contains(gameTarget.TargetPath) && !Path.GetFileName(targetPath).Equals("PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
+                    if (!targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase) && targetPath.Contains(gameTarget.TargetPath) && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
                     {
                         //not installing to DLC
                         basegameFilesInstalled.Add(targetPath);
@@ -488,7 +488,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
                     if (Application.Current != null)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, $"An error occured extracting the archive file for installation:\n\n{ex.Message}\n\nThe mod may be partially installed.", "Error extracting mod", MessageBoxButton.OK, MessageBoxImage.Error); });
+                        Application.Current.Dispatcher.Invoke(delegate { Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
 
                     return;
@@ -600,7 +600,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Error uploading basegame telemetry: " + ex.Message);
+                    Log.Error(@"Error uploading basegame telemetry: " + ex.Message);
                 }
                 //};
                 //bw.RunWorkerAsync();
@@ -993,7 +993,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (af.GroupName != null && af.IsSelected) return; //Cannot deselect group
                     af.IsSelected = !af.IsSelected;
-                    Debug.WriteLine("Is selected: " + af.IsSelected);
+                    Debug.WriteLine(@"Is selected: " + af.IsSelected);
                 }
                 else if (dp.DataContext is ReadOnlyOption ro)
                 {

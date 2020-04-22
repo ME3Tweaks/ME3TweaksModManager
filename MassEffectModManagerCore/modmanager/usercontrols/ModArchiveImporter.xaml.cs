@@ -12,12 +12,9 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using SevenZip;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
-using System.Xml;
 using System.Xml.Linq;
 using SevenZip.EventArguments;
 using Threading;
@@ -106,8 +103,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else if (TextureFilesImported)
                 {
                     CancelButtonText = M3L.GetString(M3L.string_close);
-                    NoModSelectedText = $"{ScanningFile} has been imported to the ALOT Installer texture library, located at {Utilities.GetALOTInstallerTextureLibraryDirectory()}. Launch ALOT Installer to install the file. Once you install files with ALOT Installer, you will be unable to use Mod Manager to install further files into this installation without restoring the game. Ensure you install all non-texture mods BEFORE you use ALOT Installer.";
-                    ActionText = "Import completed";
+                    NoModSelectedText = M3L.GetString(M3L.string_interp_dialogImportedALOTMainToTextureLibrary, ScanningFile, Utilities.GetALOTInstallerTextureLibraryDirectory());
+                    ActionText = M3L.GetString(M3L.string_importCompleted);
                 }
                 else
                 {
@@ -373,8 +370,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var destPath = Path.Combine(textureLibraryPath, Path.GetFileName(filepath));
                             if (!File.Exists(destPath))
                             {
-                                Log.Information("This file is not in the texture library. Moving it to the texture library");
-                                currentOperationTextCallback?.Invoke("Moving ALOT file to texture library, please wait...");
+                                Log.Information(M3L.GetString(M3L.string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary));
+                                currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_movingALOTFileToTextureLibraryPleaseWait));
                                 archiveFile.Dispose();
                                 File.Move(filepath, destPath, true);
                                 showALOTLauncher?.Invoke();

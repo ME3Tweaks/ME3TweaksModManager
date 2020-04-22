@@ -1,6 +1,9 @@
 ﻿/*
  * Ported from ALOT Installer
  */
+
+using MassEffectModManagerCore.modmanager.localizations;
+
 namespace MassEffectModManagerCore.modmanager.objects
 {
     public class ALOTVersionInfo
@@ -27,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (ALOTVER == 0 && ALOTUPDATEVER == 0 && MEUITMVER == 0)
             {
-                return "Texture modded";
+                return M3L.GetString(M3L.string_textureModded);
             }
 
             return $@"{ALOTVER}.{ALOTUPDATEVER}";

@@ -13,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
@@ -96,7 +97,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string UIDLCFolderName { get; set; }
             public bool Enabled { get; set; }
             public string HumanName { get; set; }
-            public string ToggleText => Enabled ? "Toggle off" : "Toggle on";
+            public string ToggleText => Enabled ? M3L.GetString(M3L.string_toggleOff) : M3L.GetString(M3L.string_toggleOn);
             public event PropertyChangedEventHandler PropertyChanged;
 
             public ICommand ToggleCommand { get; }
@@ -118,8 +119,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Error toggling DLC {DLCFolderName}: {e.Message}");
-                    Xceed.Wpf.Toolkit.MessageBox.Show("Error toggling DLC: " + e.Message);
+                    Log.Error($@"Error toggling DLC {DLCFolderName}: {e.Message}");
+                    Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_errorTogglingDLC, e.Message)); //this needs updated to be better
                 }
             }
         }

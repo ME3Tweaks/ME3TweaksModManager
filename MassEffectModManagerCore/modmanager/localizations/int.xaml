@@ -281,6 +281,18 @@
     <system:String  x:Key="string_donations">Donations</system:String>
     <system:String  x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Opens the ME3Tweaks Donations information page</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_modLibrary">Mods that have been imported into the Mod Manager library.&#10;These mods do not represent mods that are installed; to see installed mods, click Target Info</system:String>
+    <system:String x:Key="string_rcwModsCannotBeDeployed">Cannot deploy .me2mod files with Mod Manager</system:String>
+    <system:String x:Key="string_rcwModsCannotBeDeployedDescription">RCW mods (.me2mod) cannot be deployed with Mod Manager. RCW .me2mod files can be directly distributed, and Mod Manager can natively import them.</system:String>
+    <system:String x:Key="string_cannotDeployMe2modFiles">Cannot deploy .me2mod files</system:String>
+    <system:String x:Key="string_decompilingCoalescedFile">Decompiling Coalesced file</system:String>
+    <system:String x:Key="string_decompiledCoalescedFile">Decompiled Coalesced file</system:String>
+    <system:String x:Key="string_compilingCoalescedFile">Compiling Coalesced file</system:String>
+    <system:String x:Key="string_compiledCoalescedFile">Compiled Coalesced file</system:String>
+    <system:String x:Key="string_compilingTLKFile">Compiling TLK file</system:String>
+    <system:String x:Key="string_compiledTLKFile">Compiled TLK file</system:String>
+    <system:String x:Key="string_decompilingTLKFile">Decompiling TLK file</system:String>
+    <system:String x:Key="string_decompiledTLKFile">Decompiled TLK file</system:String>
+
 
 
     <!-- Mod Installer Panel -->
@@ -333,7 +345,10 @@
     <!-- 0=Game name (Mass Effect, Mass Effect 2/3) 1=Mod name -->
     <system:String x:Key="string_debugPrintQueue">Debug Print Queue</system:String>
     <!-- This is debug mode only. "Print Queue" in this case is for printing the installation queue [list of files to install] of a mod. -->
-   
+    <system:String xml:space="preserve" x:Key="string_interp_errorWhileExtractingArchiveInstall">An error occured extracting the archive file for installation:\n\n{0}\n\nThe mod may be partially installed.</system:String>
+    <!-- 0=Exception message -->
+    <system:String x:Key="string_errorExtractingMod">Error extracting mod</system:String>
+
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
@@ -633,6 +648,11 @@
     <system:String x:Key="string_unknown">Unknown</system:String>
     <!-- This is the version number string that is set when a mod is imported (third party) but the version number is not able to be determined -->
     <system:String  x:Key="string_launchALOTInstaller">Launch ALOT Installer</system:String>
+    <system:String x:Key="string_interp_dialogImportedALOTMainToTextureLibrary">{0} has been imported to the ALOT Installer texture library, located at {1}. Launch ALOT Installer to install the file. Once you install files with ALOT Installer, you will be unable to use Mod Manager to install further files into this installation without restoring the game. Ensure you install all non-texture mods BEFORE you use ALOT Installer.</system:String>
+    <!-- 0=filepath 1=filepath -->
+    <system:String x:Key="string_importCompleted">Import completed</system:String>
+    <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">This file is not in the texture library. Moving it to the texture library</system:String>
+    <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">Moving ALOT file to texture library, please wait...</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -752,6 +772,7 @@
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
+    <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
 
     <!-- Alternate DLC -->
     <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
@@ -842,7 +863,6 @@
     <!-- 0=group. Shown if no items in group have CheckedByDefault. ALT DLC OPTION -->
     <system:String x:Key="string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault">Alternate DLCs that use the OptionGroup feature may only have one AlternateDLC struct set with the CheckedByDefault option within their set. The failing option group name is '{0}'.</system:String>
     <!-- 0=group. Shown if more than one item in group has CheckedByDefault. ALT DLC OPTION-->
-
 
     <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
@@ -1112,6 +1132,8 @@
     <system:String x:Key="string_compile">Compile</system:String>
     <system:String x:Key="string_selectAModMakerXmlFile">Select a ModMaker xml file</system:String>
     <system:String x:Key="string_useLocalFileInstead">Use local file instead</system:String>
+    <system:String x:Key="string_selectModMakerModXmlFile">Select ModMaker mod xml file</system:String>
+    <system:String x:Key="string_modMakerXMLFiles">ModMaker XML files</system:String>
 
     <!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
@@ -1283,6 +1305,16 @@
     <system:String x:Key="string_password">Password</system:String>
     <system:String x:Key="string_lZMAStoragePath">LZMA storage path</system:String>
     <system:String x:Key="string_manifestsStoragePath">Manifests storage path</system:String>
+    <system:String x:Key="string_interp_updaterServiceDeltaMessageHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String>
+    <!-- 0=mod.ModName -->
+    <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String> 
+    <!-- 0=Mod name -->
+    <system:String xml:space="preserve" x:Key="string_nnFilesToUploadToServern">\n\nFiles to upload to server:\n -</system:String>
+    <!-- ensure you do not change any positions of the \n or the -! -->
+    <system:String xml:space="preserve" x:Key="string_nnFilesToDeleteOffServern">\n\nFiles to delete off server:\n -</system:String>
+    <!-- ensure you do not change any positions of the \n or the -! -->
+    <system:String xml:space="preserve" x:Key="string_interp_updaterServiceDeltaConfirmationFooter">\n\nConfirm these are the changes you wish to apply to the ME3Tweaks Updater Service for this mod.</system:String>
+    <system:String x:Key="string_confirmChanges">Confirm changes</system:String>
 
     <!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>
@@ -1321,7 +1353,7 @@
     <system:String x:Key="string_mixinsInstalledMaybe">Mixins installed, maybe!</system:String>
     <!-- This feature is experimental so I would not trust it works 100% of the time. But it's in build 105 anyways -->
 
-<!-- Batch Mod Library (Install Group List) -->
+    <!-- Batch Mod Library (Install Group List) -->
     <system:String x:Key="string_batchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Batch Mod Installer allows you to install a group of mods all in a row, allowing you to quickly recreate a specific installation of the game.</system:String>
     <system:String x:Key="string_createANewInstallGroup">Create a new install group</system:String>
@@ -1376,5 +1408,11 @@
     <system:String x:Key="string_officialDLCToggler">Official DLC Toggler</system:String>
     <system:String x:Key="string_officialDLCTogglerDescription">Developers can use this tool to toggle installed offical DLC on or off. This is useful to see how a mod behaves when installed into a different environment. You can toggle DLC mods in the Installation Information panel.</system:String>
     <system:String x:Key="string_officialDLCTogglerME1ME2Warning">Toggled DLC for this game will only change how Mod Manager behaves when detecting installed DLC. Both Mass Effect and Mass Effect 2 will attempt to load DLC from all folders in their respective DLC directories.</system:String>
-    -
+    <system:String x:Key="string_toggleOff">Toggle off</system:String>
+    <system:String x:Key="string_toggleOn">Toggle on</system:String>
+    <system:String x:Key="string_interp_errorTogglingDLC">Error toggling DLC: {0}</system:String>
+    <!-- 0=error message -->
+
+    <!-- ALOT Version Info -->
+    <system:String x:Key="string_textureModded">Texture modded</system:String>
 </ResourceDictionary>
