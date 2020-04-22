@@ -357,7 +357,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             Log.Information($@"Writing cmm_vanilla");
 
-                            File.Create(Path.Combine(backupPath, "cmm_vanilla")).Close();
+                            File.Create(Path.Combine(backupPath, @"cmm_vanilla")).Close();
 
                             Log.Information($@"Backup completed.");
 

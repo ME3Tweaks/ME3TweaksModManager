@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Linq;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
@@ -101,19 +91,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public class SupercedanceList
         {
             public Mod.MEGame Game;
-            public string UIMountPriorityString => $"Mount Priority {WinningFile.MountPriority}";
-            public string UINumSupercededString => $"{LosingFiles.Count} mod(s) superceded";
+            public string UIMountPriorityString => M3L.GetString(M3L.string_interp_mountPriorityX, WinningFile.MountPriority);
+            public string UINumSupercededString => M3L.GetString(M3L.string_interp_XModsSuperceded, LosingFiles.Count);
             private string tpminame;
             public string UISourceString
             {
                 get
                 {
-                    if (tpminame != null) return $"{tpminame} ({WinningFile.DLCName})";
+                    if (tpminame != null) return $@"{tpminame} ({WinningFile.DLCName})";
                     var tpmi = ThirdPartyServices.GetThirdPartyModInfo(WinningFile.DLCName, Game);
                     if (tpmi != null)
                     {
                         tpminame = tpmi.modname;
-                        return $"{tpminame} ({WinningFile.DLCName})";
+                        return $@"{tpminame} ({WinningFile.DLCName})";
                     }
 
                     //no TPMI
@@ -129,18 +119,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public class SupercedanceFile
         {
             public Mod.MEGame Game;
-            public string UIMountPriorityString => $"Mount Priority {MountPriority}";
+            public string UIMountPriorityString => M3L.GetString(M3L.string_interp_mountPriorityX, MountPriority);
             private string tpminame;
             public string UISourceString
             {
                 get
                 {
-                    if (tpminame != null) return $"{tpminame} ({DLCName})";
+                    if (tpminame != null) return $@"{tpminame} ({DLCName})";
                     var tpmi = ThirdPartyServices.GetThirdPartyModInfo(DLCName, Game);
                     if (tpmi != null)
                     {
                         tpminame = tpmi.modname;
-                        return $"{tpminame} ({DLCName})";
+                        return $@"{tpminame} ({DLCName})";
                     }
 
                     //no TPMI

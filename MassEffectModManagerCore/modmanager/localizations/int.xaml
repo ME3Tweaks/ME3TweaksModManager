@@ -355,7 +355,6 @@
     <system:String x:Key="string_noModWebsiteSet">No mod website URL was set - typically the ModInfo modsite descriptor should point to NexusMods page. This also enables users to endorse your mod on NexusMods through Mod Manager.</system:String>
     <system:String x:Key="string_interp_invalidAudioPointerOutsideAFC">Invalid audio pointer found that points outside of target file stream: {0} Export {1} {2} points to offset {3} in AFC file {4} but the AFC is only {5} bytes long</system:String>
     <!-- 0=PCC Filepath 1=Export Index # 2=Export Name 3=Audio Offset in Hex 4=AFC Filepath 5=AFC Length -->
-
     <system:String x:Key="string_verifyURLIsCorrect">Verify URL is correct:</system:String>
     <system:String x:Key="string_validation_badUrl">Validation failed when attempting to validate the mod URL. A mod URL makes it easy for users to find your mod after importing it in the event they need assistance. A valid NexusMods URL to your mod is required if you want to have in-app endorsement support without using the [ModInfo] NexusCode descriptor.</system:String>
     <system:String x:Key="string_modUrlErrorsWereFound">Mod URL errors were found</system:String>
@@ -413,6 +412,7 @@
     <system:String x:Key="string_validationInProgress">Validation in progress...</system:String>
     <system:String x:Key="string_languageCheckDetectedIssues">Language check detected issues</system:String>
     <system:String x:Key="string_mod">Mod</system:String>
+    <system:String x:Key="string_checkingModBeforeDeployment">Checking mod before deployment...</system:String>
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
@@ -458,12 +458,16 @@
     <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Error downloading and launching tool: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_errorLaunchingTool">Error launching tool</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorLaunchingToolX">Error launching tool:\n{0}</system:String>
+    <!-- 0=exception message -->
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
     <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load. Select each mod to see why.</system:String>
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
+    <system:String x:Key="string_debugReload">Debug reload</system:String>
+    <!-- This is only seen in debug builds, but localize it anyways. -->
 
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
@@ -559,6 +563,18 @@
     <system:String x:Key="string_logUploadFailed">Log upload failed</system:String>
     <system:String x:Key="string_logsAndDiagnostics">Logs and Diagnostics</system:String>
     <system:String x:Key="string_uploadToLogViewer">Upload to log viewer</system:String>
+    <system:String x:Key="string_selectWhatDataToCollect">Select what data to collect</system:String>
+    <system:String x:Key="string_modManagerApplicationLog">Mod Manager application log</system:String>
+    <system:String x:Key="string_applicationLogDescription">The application log details a Mod Manager session and can be used by ME3Tweaks to debug the application.</system:String>
+    <system:String x:Key="string_gameDiagnostic">Game diagnostic</system:String>
+    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects game information including data on ALOT status, installed DLC, game version, crash logs (if any), and more. If you are having an issue in-game, please select the game you are having an issue with.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_checkAllTexturesInGameDescription">Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes</system:String>
+    <system:String x:Key="string_fullTexturesCheck">Full textures check</system:String>
+    <system:String x:Key="string_diagShareTheLink">Share the resulting link of your log/diagnostic with your recipient.</system:String>
+    <system:String x:Key="string_selectAnApplicationLog">Select an application log</system:String>
+    <system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Select a game target to generate diagnostics for</system:String>
+    <system:String x:Key="string_compressingForUpload">Compressing for upload</system:String>
+    <system:String x:Key="string_uploadingToME3Tweaks">Uploading to ME3Tweaks</system:String>
 
     <!-- Mod Archive Importer-->
     <system:String x:Key="string_importModsFromArchiveFile">Import mods from archive file</system:String>
@@ -602,6 +618,7 @@
     <system:String x:Key="string_couldNotInspectArchive7zException">Could not inspect archive due to an exception thrown by 7z. The archive may be corrupt.</system:String>
     <system:String x:Key="string_unknown">Unknown</system:String>
     <!-- This is the version number string that is set when a mod is imported (third party) but the version number is not able to be determined -->
+    <system:String  x:Key="string_launchALOTInstaller">Launch ALOT Installer</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -1280,8 +1297,14 @@
     <system:String x:Key="string_availableMixins">Available Mixins</system:String>
     <system:String x:Key="string_tooltip_thisMixinIsAFinalizer">This Mixin is a finalizer</system:String>
     <system:String x:Key="string_patchDescription">Patch Description</system:String>
+    <system:String x:Key="string_threeWayMergeSucceededFor">Three way merge succeeded for</system:String>
+    <system:String x:Key="string_couldNotMergeThreeWayMergeInto">Could not merge three way merge into</system:String>
+    <system:String x:Key="string_interp_runningAutoTOCOnGamePercentX">Running AutoTOC on game {0}%</system:String>
+    <!-- 0=percent -->
+    <system:String x:Key="string_mixinsInstalledMaybe">Mixins installed, maybe!</system:String>
+    <!-- This feature is experimental so I would not trust it works 100% of the time. But it's in build 105 anyways -->
 
-    <!-- Batch Mod Library (Install Group List) -->
+<!-- Batch Mod Library (Install Group List) -->
     <system:String x:Key="string_batchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Batch Mod Installer allows you to install a group of mods all in a row, allowing you to quickly recreate a specific installation of the game.</system:String>
     <system:String x:Key="string_createANewInstallGroup">Create a new install group</system:String>
@@ -1316,4 +1339,19 @@
     <system:String x:Key="string_importedFromGame">Imported from game</system:String>
     <system:String x:Key="string_defaultDescriptionForImportedMod">This mod was imported from an installation of {0} at {1}.</system:String>
     <!-- 0=game name 1=time-->
+
+    <!-- Conflict Detector -->
+    <system:String x:Key="string_conflictDetector">Conflict Detector</system:String>
+    <system:String x:Key="string_conflictDetectorDescription">When same-named files are located in multiple DLC, the game will use the file from the DLC with highest mount priority. Conflict Detector will show you conflicts of files between your DLC mods. This is a tool FOR DEVELOPERS ONLY, do not try to interpret these results if you don't understand how game files work!</system:String>
+    <system:String x:Key="string_interp_mountPriorityX">Mount Priority {0}</system:String>
+    <!-- 0=mount priority number -->
+    <system:String x:Key="string_interp_XModsSuperceded">{0} mod(s) superceded</system:String>
+    <!-- 0=amount of mods that have been superceded -->
+
+    <!-- ME3CMM Migration -->
+    <system:String x:Key="string_migratingMods">Migrating mods</system:String>
+    <system:String x:Key="string_migratingSettings">Migrating settings</system:String>
+    <system:String x:Key="string_interp_migratingModsXoFY">Migrating mods [{0}/{1}]</system:String>
+    <!-- 0=numMigrated 1=numToMigrate -->
+
 </ResourceDictionary>

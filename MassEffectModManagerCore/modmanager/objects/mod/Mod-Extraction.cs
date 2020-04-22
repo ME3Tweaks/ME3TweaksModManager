@@ -309,7 +309,7 @@ namespace MassEffectModManagerCore.modmanager
                     //test run mode
                     if (fileIndicesToExtract.Count != referencedFiles.Count)
                     {
-                        throw new Exception("The amount of referenced files does not match the amount of files that are going to be extracted!");
+                        throw new Exception(@"The amount of referenced files does not match the amount of files that are going to be extracted!");
                     }
                 }
                 Log.Information(@"File extraction completed.");

@@ -162,7 +162,9 @@ namespace LocalizationHelper
                 StringBuilder sb = new StringBuilder();
                 foreach (var v in localizations)
                 {
-                    sb.AppendLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:String>");
+                    var newlines = v.Key.Contains("\n");
+                    var text = v.Key.Replace("\r\n", "&#10;").Replace("\n", "&#10;");
+                    sb.AppendLine("\t<system:String " + (newlines ? "xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
                 }
                 StringsTextBox.Text = sb.ToString();
                 if (string.IsNullOrEmpty(sb.ToString()))
@@ -502,7 +504,7 @@ namespace LocalizationHelper
             XDocument xdoc = XDocument.Parse(sourceStringsXaml);
             XNamespace system = "clr-namespace:System;assembly=System.Runtime";
             XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
-            var lstrings = xdoc.Root.Descendants(system + "String");
+            var lstrings = xdoc.Root.Descendants(system + "String").ToList();
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
@@ -530,8 +532,14 @@ namespace LocalizationHelper
                         }
                     }
                 }
-                ResultTextBox.Text = doc.ToString();
 
+                var xml = doc.ToString();
+                XmlDocument xmldoc = new XmlDocument();
+                xmldoc.PreserveWhitespace = true;
+                xmldoc.XmlResolver = null;
+                xmldoc.LoadXml(doc.ToString());
+
+                ResultTextBox.Text = Beautify(xmldoc);
             }
             catch (Exception ex)
             {
@@ -539,6 +547,63 @@ namespace LocalizationHelper
             }
 
         }
+
+        public static string Beautify(System.Xml.XmlDocument doc)
+        {
+            string strRetValue = null;
+            System.Text.Encoding enc = System.Text.Encoding.UTF8;
+            // enc = new System.Text.UTF8Encoding(false);
+
+            System.Xml.XmlWriterSettings xmlWriterSettings = new System.Xml.XmlWriterSettings();
+            xmlWriterSettings.Encoding = enc;
+            xmlWriterSettings.Indent = true;
+            xmlWriterSettings.IndentChars = "    ";
+            xmlWriterSettings.NewLineChars = "\r\n";
+            xmlWriterSettings.NewLineOnAttributes = true;
+            xmlWriterSettings.NewLineHandling = System.Xml.NewLineHandling.Replace;
+            //xmlWriterSettings.OmitXmlDeclaration = true;
+            xmlWriterSettings.ConformanceLevel = System.Xml.ConformanceLevel.Document;
+
+
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            {
+                using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(ms, xmlWriterSettings))
+                {
+                    doc.Save(writer);
+                    writer.Flush();
+                    ms.Flush();
+
+                    writer.Close();
+                } // End Using writer
+
+                ms.Position = 0;
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(ms, enc))
+                {
+                    // Extract the text from the StreamReader.
+                    strRetValue = sr.ReadToEnd();
+
+                    sr.Close();
+                } // End Using sr
+
+                ms.Close();
+            } // End Using ms
+
+
+            /*
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(); // Always yields UTF-16, no matter the set encoding
+            using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(sb, settings))
+            {
+                doc.Save(writer);
+                writer.Close();
+            } // End Using writer
+            strRetValue = sb.ToString();
+            sb.Length = 0;
+            sb = null;
+            */
+
+            xmlWriterSettings = null;
+            return strRetValue;
+        } // End Function Beautify
 
         private void Check_Clicked(object sender, RoutedEventArgs e)
         {
