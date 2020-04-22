@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadCommands()
         {
             AuthorizeCommand = new GenericCommand(AuthorizeWithNexus, CanAuthorizeWithNexus);
-            CloseCommand = new GenericCommand(() => CloseInternal(), CanClose);
+            CloseCommand = new GenericCommand(CloseInternal, CanClose);
             ChangeLibraryDirCommand = new GenericCommand(ChangeLibraryDir);
         }
 
