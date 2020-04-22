@@ -25,7 +25,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <CheckBox Content="Manually enter API key" IsChecked="{Binding ManualMode}" Grid.Row="0" Grid.Column="0"/>
+                <CheckBox Content="Manually enter API key" IsChecked="{Binding ManualMode}" Grid.Row="0" Grid.Column="0" IsEnabled="{Binding IsAuthorized, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"/>
                 <xctk:WatermarkTextBox Watermark="{Binding WatermarkText}" Grid.Row="1" IsEnabled="{Binding ManualMode}"  Text="{Binding APIKeyText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0" />
                 <Button Command="{Binding AuthorizeCommand}"  Grid.Row="1" Grid.Column="1" Margin="0,5,0,0">
                     <Button.Content>

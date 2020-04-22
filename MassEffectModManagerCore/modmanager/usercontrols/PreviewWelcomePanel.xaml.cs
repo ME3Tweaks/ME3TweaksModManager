@@ -1,6 +1,8 @@
 ﻿using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +12,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using FontAwesome.WPF;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using Microsoft.AppCenter.Analytics;
+using Pathoschild.Http.Client;
+using Serilog;
+using Path = System.Windows.Shapes.Path;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -19,19 +28,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class PreviewWelcomePanel : MMBusyPanelBase
     {
+        public FontAwesomeIcon ActiveIcon { get; set; }
+        public bool SpinIcon { get; set; }
+        public bool VisibleIcon { get; set; }
+
+
         public PreviewWelcomePanel()
         {
             DataContext = this;
-            LibraryDir = Settings.ModLibraryPath;
+            LibraryDir = Utilities.GetModsDirectory();
             LoadCommands();
             InitializeComponent();
         }
 
+        public bool IsAuthorized { get; set; }
         public ICommand ChangeLibraryDirCommand { get; set; }
+        public GenericCommand AuthorizeCommand { get; set; }
+        public GenericCommand CloseCommand { get; set; }
+        public bool IsAuthorizing { get; private set; }
+
         private void LoadCommands()
         {
+            AuthorizeCommand = new GenericCommand(AuthorizeWithNexus, CanAuthorizeWithNexus);
+            CloseCommand = new GenericCommand(() => CloseInternal(), CanClose);
             ChangeLibraryDirCommand = new GenericCommand(ChangeLibraryDir);
         }
+
+        private bool CanClose() => !IsAuthorizing;
+        private bool CanAuthorizeWithNexus() => !IsAuthorized && !IsAuthorizing;
 
         private void ChangeLibraryDir()
         {
@@ -45,7 +69,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape && CanClose())
             {
                 e.Handled = true;
                 CloseInternal();
@@ -133,6 +157,98 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Settings.Save();
                 mainwindow.SetTheme();
             }
+        }
+
+        public string AuthorizeToNexusText { get; set; } = M3L.GetString(M3L.string_authenticateToNexusMods);
+
+        //this is copied from NexusModsLogin.xaml.cs cause I'm too lazy to make it shared code for what will likely never change
+        private void AuthorizeWithNexus()
+        {
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"NexusAPICredentialsCheck");
+            bw.DoWork += async (a, b) =>
+            {
+                IsAuthorizing = true;
+                VisibleIcon = true;
+                SpinIcon = true;
+                ActiveIcon = FontAwesomeIcon.Spinner;
+                AuthorizeCommand.RaiseCanExecuteChanged();
+                CloseCommand.RaiseCanExecuteChanged();
+                AuthorizeToNexusText = M3L.GetString(M3L.string_pleaseWait);
+
+                var apiKeyReceived = await NexusModsUtilities.SetupNexusLogin(x => Debug.WriteLine(x));
+                Application.Current.Dispatcher.Invoke(delegate { mainwindow.Activate(); });
+                if (!string.IsNullOrWhiteSpace(apiKeyReceived))
+                {
+                    //Check api key
+                    AuthorizeToNexusText = M3L.GetString(M3L.string_checkingKey);
+                    try
+                    {
+                        var authInfo = NexusModsUtilities.AuthToNexusMods(apiKeyReceived).Result;
+                        if (authInfo != null)
+                        {
+                            using FileStream fs = new FileStream(System.IO.Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
+                            File.WriteAllBytes(System.IO.Path.Combine(Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(apiKeyReceived, fs));
+                            fs.Close();
+                            mainwindow.NexusUsername = authInfo.Name;
+                            mainwindow.NexusUserID = authInfo.UserID;
+                            SetAuthorized(true);
+                            mainwindow.RefreshNexusStatus();
+                            Analytics.TrackEvent(@"Authenticated to NexusMods");
+                        }
+                        else
+                        {
+                            Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
+                            mainwindow.NexusUsername = null;
+                            mainwindow.NexusUserID = 0;
+                            SetAuthorized(false);
+                            mainwindow.RefreshNexusStatus();
+                        }
+                    }
+                    catch (ApiException apiException)
+                    {
+                        Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("Other error authenticating to NexusMods: " + e.Message);
+                    }
+                }
+                else
+                {
+                    Log.Error("No API key - setting authorized to false for NM");
+                    SetAuthorized(false);
+                }
+
+                IsAuthorizing = false;
+            };
+            bw.RunWorkerCompleted += (a, b) =>
+            {
+                VisibleIcon = IsAuthorized;
+                if (IsAuthorized)
+                {
+                    ActiveIcon = FontAwesomeIcon.CheckCircle;
+                }
+                SpinIcon = false;
+                AuthorizeCommand.RaiseCanExecuteChanged();
+                CloseCommand.RaiseCanExecuteChanged();
+            };
+            bw.RunWorkerAsync();
+        }
+        private void SetAuthorized(bool authorized)
+        {
+            IsAuthorized = authorized;
+            string authenticatedString = M3L.GetString(M3L.string_authenticateToNexusMods);
+            if (authorized && mainwindow.NexusUsername != null)
+            {
+                authenticatedString = M3L.GetString(M3L.string_interp_authenticatedAsX, mainwindow.NexusUsername);
+            }
+            VisibleIcon = authorized;
+            if (authorized)
+            {
+                ActiveIcon = FontAwesomeIcon.CheckCircle;
+            }
+            AuthorizeToNexusText = authenticatedString;
         }
     }
 }
