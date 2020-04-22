@@ -255,11 +255,20 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static bool IsFileVanilla(GameTarget target, string file, bool md5check = false)
         {
-            var database = LoadDatabaseFor(target.Game, target.IsPolishME1);
             var relativePath = file.Substring(target.TargetPath.Length + 1);
-            if (database.TryGetValue(relativePath, out var info))
+            return IsFileVanilla(target.Game, file, relativePath, target.IsPolishME1, md5check);
+        }
+
+        public static bool IsFileVanilla(Mod.MEGame game, string fullpath, string relativepath, bool isME1Polish, bool md5check = false)
+        {
+            var database = LoadDatabaseFor(game, isME1Polish);
+            if (database.TryGetValue(relativepath, out var info))
             {
-                FileInfo f = new FileInfo(file);
+                //foreach (var c in info)
+                //{
+                //    Debug.WriteLine("Sizes accepted: " + c.size);
+                //}
+                FileInfo f = new FileInfo(fullpath);
                 bool hasSameSize = info.Any(x => x.size == f.Length);
                 if (!hasSameSize)
                 {
@@ -268,7 +277,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
                 if (md5check)
                 {
-                    var md5 = Utilities.CalculateMD5(file);
+                    var md5 = Utilities.CalculateMD5(fullpath);
                     return info.Any(x => x.md5 == md5);
                 }
                 return true;
