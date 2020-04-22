@@ -440,6 +440,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_validationInProgress = "string_validationInProgress";
 		public static readonly string string_languageCheckDetectedIssues = "string_languageCheckDetectedIssues";
 		public static readonly string string_mod = "string_mod";
+		public static readonly string string_checkingModBeforeDeployment = "string_checkingModBeforeDeployment";
 		public static readonly string string_backupsAreShared = "string_backupsAreShared";
 		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public static readonly string string_backUp = "string_backUp";
@@ -1095,5 +1096,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_defaultDescriptionForImportedMod = "string_defaultDescriptionForImportedMod";
 		public static readonly string string_conflictDetector = "string_conflictDetector";
 		public static readonly string string_conflictDetectorDescription = "string_conflictDetectorDescription";
+		public static readonly string string_interp_mountPriorityX = "string_interp_mountPriorityX";
+		public static readonly string string_interp_XModsSuperceded = "string_interp_XModsSuperceded";
 	}
 }

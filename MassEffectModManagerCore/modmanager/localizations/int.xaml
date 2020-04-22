@@ -355,7 +355,6 @@
     <system:String x:Key="string_noModWebsiteSet">No mod website URL was set - typically the ModInfo modsite descriptor should point to NexusMods page. This also enables users to endorse your mod on NexusMods through Mod Manager.</system:String>
     <system:String x:Key="string_interp_invalidAudioPointerOutsideAFC">Invalid audio pointer found that points outside of target file stream: {0} Export {1} {2} points to offset {3} in AFC file {4} but the AFC is only {5} bytes long</system:String>
     <!-- 0=PCC Filepath 1=Export Index # 2=Export Name 3=Audio Offset in Hex 4=AFC Filepath 5=AFC Length -->
-
     <system:String x:Key="string_verifyURLIsCorrect">Verify URL is correct:</system:String>
     <system:String x:Key="string_validation_badUrl">Validation failed when attempting to validate the mod URL. A mod URL makes it easy for users to find your mod after importing it in the event they need assistance. A valid NexusMods URL to your mod is required if you want to have in-app endorsement support without using the [ModInfo] NexusCode descriptor.</system:String>
     <system:String x:Key="string_modUrlErrorsWereFound">Mod URL errors were found</system:String>
@@ -413,6 +412,7 @@
     <system:String x:Key="string_validationInProgress">Validation in progress...</system:String>
     <system:String x:Key="string_languageCheckDetectedIssues">Language check detected issues</system:String>
     <system:String x:Key="string_mod">Mod</system:String>
+    <system:String x:Key="string_checkingModBeforeDeployment">Checking mod before deployment...</system:String>
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
@@ -1330,5 +1330,8 @@
     <!-- Conflict Detector -->
     <system:String x:Key="string_conflictDetector">Conflict Detector</system:String>
     <system:String x:Key="string_conflictDetectorDescription">When same-named files are located in multiple DLC, the game will use the file from the DLC with highest mount priority. Conflict Detector will show you conflicts of files between your DLC mods. This is a tool FOR DEVELOPERS ONLY, do not try to interpret these results if you don't understand how game files work!</system:String>
-
+    <system:String x:Key="string_interp_mountPriorityX">Mount Priority {0}</system:String>
+    <!-- 0=mount priority number -->
+    <system:String x:Key="string_interp_XModsSuperceded">{0} mod(s) superceded</system:String>
+    <!-- 0=amount of mods that have been superceded -->
 </ResourceDictionary>

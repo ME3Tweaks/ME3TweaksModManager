@@ -717,8 +717,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool DeploymentInProgress { get; private set; }
         public ulong ProgressMax { get; set; } = 100;
         public ulong ProgressValue { get; set; } = 0;
-        public string OperationText { get; set; } = "Checking mod before deployment...";
-            //M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
+        public string OperationText { get; set; } = M3L.GetString(M3L.string_checkingModBeforeDeployment);
+        //M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
 
         private DateTime lastPercentUpdateTime;
         private bool _closed;
