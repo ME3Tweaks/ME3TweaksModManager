@@ -1,4 +1,4 @@
-﻿<Window x:Class="LocalizationHelper.MainWindow"
+<Window x:Class="LocalizationHelper.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -32,7 +32,8 @@
         <Button Grid.Row="2" Grid.Column="4" Content="Update M3L keys" Click="Synchronize_Clicked"/>
         <Button Grid.Row="0" Grid.Column="5" Content="Check .cs localizations" Click="Check_Clicked"/>
         <Button Grid.Row="1" Grid.Column="5" Content="Check .xaml localizations" Click="CheckXamls_Clicked"/>
-        <Button Grid.Row="2" Grid.Column="5" Content="Check newline/spaces" Click="CheckXmlSpacePreserve_Clicked"/>
+        <Button Grid.Row="2" Grid.Column="5" Content="Check newline/spaces " Click="CheckXmlSpacePreserve_Clicked"/>
+        <Button Margin="0,10,0,0" Grid.Row="3" Grid.Column="5" Content="Open Localization UI " Click="OpenLoalizationUI_Clicked"/>
         <Button Margin="0,10,0,0" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Content="Perform diff on two int.xamls" Click="PerformINTDiff_Clicked"/>
     </Grid>
 </Window>

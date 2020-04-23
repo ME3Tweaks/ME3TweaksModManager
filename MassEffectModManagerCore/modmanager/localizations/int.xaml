@@ -247,27 +247,16 @@
     <system:String x:Key="string_backupFileFetcher">Backup File Fetcher</system:String>
     <system:String x:Key="string_tooltip_backupFileFetcher">Search and fetch files from Basegame and DLC, including SFARs</system:String>
     <system:String x:Key="string_debug">Debug</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_requiresSelectedMod">Requires selected mod</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_reloadSelectedMod">Reload selected mod</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_debugPrintAllReferencedFiles">Debug Print All Referenced Files</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_debugPrintInstallationQueue">Debug Print Installation Queue</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_requiresSelectedTarget">Requires selected target</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_stampCurrentTargetWithALOTMarker">Stamp current target with ALOT marker</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_stripCurrentTargetALOTMarker">Strip current target ALOT marker</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_requiresNothing">Requires nothing</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_showWelcomePanel">Show welcome panel</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_showBackupNag">Show backup nag</system:String>
-    <!-- This is debug only and doesn't need to be translated -->
     <system:String x:Key="string_tooltip_endorseM3OnNexus">Endorse ME3Tweaks Mod Manager on the Nexus pages</system:String>
     <system:String x:Key="string_tooltip_manageNexusModsIntegration">Manage NexusMods integration</system:String>
     <system:String x:Key="string_interp_visitSelectedModWebSite">Visit {0}'s web site</system:String>
@@ -614,7 +603,7 @@
     <system:String x:Key="string_selectAModOnTheLeftToViewItsDescription">Select a mod on the left to view its description</system:String>
     <system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Select mods to import into Mod Manager library</system:String>
     <system:String x:Key="string_noCompatibleModsFoundInArchive">No compatible mods found in archive</system:String>
-    <system:String xml:space="preserve" x:Key="string_executableModsMustBeValidatedByME3Tweaks">Executable installer based mods must be validated by ME3Tweaks before they can be imported into Mod Manager This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.</system:String>
+    <system:String xml:space="preserve" x:Key="string_executableModsMustBeValidatedByME3Tweaks">Executable installer based mods must be validated by ME3Tweaks before they can be imported into Mod Manager. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.</system:String>
     <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
     <system:String x:Key="string_interp_scanningX">Scanning {0}</system:String>
     <!-- 0 = filename -->

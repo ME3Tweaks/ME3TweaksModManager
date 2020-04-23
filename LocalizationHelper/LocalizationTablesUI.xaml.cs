@@ -595,7 +595,7 @@ namespace LocalizationHelper
                     {
                         line += " xml:space=\"preserve\"";
                     }
-                    line += $">{str.GetString(lang)}</system:String>";
+                    line += $">{str.GetString(lang).Trim()}</system:String>";
                     sb.AppendLine(line);
                     if (!string.IsNullOrWhiteSpace(str.notes))
                     {

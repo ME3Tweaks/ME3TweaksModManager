@@ -832,6 +832,11 @@ namespace LocalizationHelper
             }
         }
 
+        private void OpenLoalizationUI_Clicked(object sender, RoutedEventArgs e)
+        {
+            new LocalizationTablesUI().Show();
+        }
+        
         private void PerformINTDiff_Clicked(object sender, RoutedEventArgs e)
         {
             string oldfile = null, newfile = null;
@@ -860,6 +865,7 @@ namespace LocalizationHelper
             var result = LocalizationFileDiff.generateDiff(oldfile, newfile);
 
             Debug.WriteLine(result);
+
         }
     }
 }
