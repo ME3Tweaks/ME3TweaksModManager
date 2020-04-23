@@ -1,0 +1,57 @@
+﻿<Window x:Class="MassEffectModManagerCore.modmanager.windows.IntroTutorial"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
+        mc:Ignorable="d"
+        Title="ME3Tweaks Mod Manager Quick Tutorial" Height="650" Width="800">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
+    <DockPanel Margin="5">
+        <DockPanel DockPanel.Dock="Bottom" Margin="5">
+            <Button Content="Next" DockPanel.Dock="Right" Margin="5,0,0,0"  Command="{Binding NextCommand}"/>
+            <Button Content="Previous" DockPanel.Dock="Right" Command="{Binding PreviousCommand}"/>
+            <Button Content="Skip tutorial" HorizontalAlignment="Left" Command="{Binding SkipTutorialCommand}"/>
+        </DockPanel>
+        <Grid>
+            <Grid.Background>
+                <ImageBrush ImageSource="{Binding CurrentStep.ImagePath}"/>
+            </Grid.Background>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="{Binding CurrentStep.RowIndex}"
+                       Grid.Column="{Binding CurrentStep.ColumnIndex}"
+                       Grid.RowSpan="{Binding CurrentStep.RowSpan}"
+                       Grid.ColumnSpan="{Binding CurrentStep.ColumnSpan}"
+                       Text="{Binding CurrentStep.UIString}"
+                       TextWrapping="Wrap"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       />
+        </Grid>
+    </DockPanel>
+</Window>

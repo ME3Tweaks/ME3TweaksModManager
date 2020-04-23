@@ -3047,5 +3047,10 @@ namespace MassEffectModManagerCore
         {
             Utilities.OpenWebpage(@"https://me3tweaks.com/donations");
         }
+
+        private void ShowIntroTutorial_Click(object sender, RoutedEventArgs e)
+        {
+            new IntroTutorial().Show();
+        }
     }
 }

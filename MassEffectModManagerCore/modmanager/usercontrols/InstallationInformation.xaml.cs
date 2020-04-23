@@ -23,6 +23,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using Pathoschild.FluentNexus.Models;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -79,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
                 installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
             }
-            
+
             OnClosing(args);
         }
 
@@ -505,9 +506,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
             }
-            private bool CanToggleDLC() => !Utilities.IsGameRunning(game);
+            private bool CanToggleDLC() => (game == Mod.MEGame.ME3 || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
 
-
+            public bool EnableDisableVisible => game == Mod.MEGame.ME3 || DLCFolderName.StartsWith('x');
             public ICommand DeleteCommand { get; set; }
             public GenericCommand EnableDisableCommand { get; set; }
             private bool CanDeleteDLCMod(object obj) => !Utilities.IsGameRunning(game);

@@ -304,7 +304,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             UIInstalledDLCMods.ClearEx();
             var dlcDir = MEDirectories.DLCPath(this);
-            var installedMods = MEDirectories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList();
+            var installedMods = MEDirectories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList();
             UIInstalledDLCMods.AddRange(installedMods);
         }
 

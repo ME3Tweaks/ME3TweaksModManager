@@ -969,6 +969,10 @@
                         Header="{DynamicResource string_showBackupNag}"
                         Click="ShowBackupNag_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="Show Intro Tutorial"
+                        Click="ShowIntroTutorial_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
