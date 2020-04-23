@@ -16,7 +16,7 @@
             <Button Grid.Row="0" Grid.Column="1" Content="{DynamicResource string_importMod}" Command="{Binding ImportSelectedDLCFolderCommand}" HorizontalAlignment="Right" />
             <Button Grid.Row="1" Grid.Column="1" Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Margin="0,3,0,0" />
         </Grid>
-        <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding SelectedTarget.ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}}">
+        <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding SelectedTarget.TextureModded, Converter={StaticResource BoolToVisibilityConverter}}">
             <TextBlock Text="{DynamicResource string_thisInstallationHasBeenTextureModded}" FontWeight="Bold" Foreground="Red" />
             <TextBlock Text="{DynamicResource string_cannotImportModsFromTextureModdedTarget}" TextWrapping="Wrap" DockPanel.Dock="Bottom" Foreground="Red" />
         </StackPanel>
