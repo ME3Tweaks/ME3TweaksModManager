@@ -2871,10 +2871,10 @@ namespace MassEffectModManagerCore
             //{
             //    lang = @"esn";
             //}
-            //else if (sender == LanguageFRA_MenuItem)
-            //{
-            //    lang = @"fra";
-            //}
+            else if (sender == LanguageFRA_MenuItem)
+            {
+                lang = @"fra";
+            }
             //else if (sender == LanguageCZE_MenuItem)
             //{
             //    lang = @"cze";
