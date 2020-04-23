@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,6 +31,7 @@ namespace LocalizationHelper
     {
         public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
         public string SelectedFile { get; set; }
+
         public MainWindow()
         {
             //var text = File.ReadAllLines(@"C:\users\mgame\desktop\unrealkeys");
@@ -149,9 +151,9 @@ namespace LocalizationHelper
                                      && text.Length > 1
                                      && isNotLangWord(text)
                                      && isNotGameName(text)
-                        && text != "BioGame"
-                        && text != "BioParty"
-                        && text != "BioEngine" && text != "DLC_MOD_")
+                                     && text != "BioGame"
+                                     && text != "BioParty"
+                                     && text != "BioEngine" && text != "DLC_MOD_")
                     {
                         localizations[text] = $"string_{toCamelCase(text)}";
                         //item.Attribute("Text").Value = $"{{DynamicResource {localizations[text]}}}";
@@ -166,6 +168,7 @@ namespace LocalizationHelper
                     var text = v.Key.Replace("\r\n", "&#10;").Replace("\n", "&#10;");
                     sb.AppendLine("\t<system:String " + (newlines ? "xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
                 }
+
                 StringsTextBox.Text = sb.ToString();
                 if (string.IsNullOrEmpty(sb.ToString()))
                 {
@@ -200,6 +203,7 @@ namespace LocalizationHelper
                 m3llines.Add($"\t\tpublic static readonly string {keyStr} = \"{keyStr}\";");
                 //Debug.WriteLine(keyStr);
             }
+
             //Write end of .cs file lines
             m3llines.Add("\t}");
             m3llines.Add("}");
@@ -365,11 +369,13 @@ namespace LocalizationHelper
             {
                 sb.AppendLine("<!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->");
             }
+
             foreach (var str in origStrForSubsOnly)
             {
                 //interps
                 sb.AppendLine(str);
             }
+
             StringsTextBox.Text = sb.ToString();
             if (string.IsNullOrEmpty(sb.ToString()))
             {
@@ -420,6 +426,7 @@ namespace LocalizationHelper
             {
                 return string.Empty;
             }
+
             // Return char and concat substring.
             return (upper ? char.ToUpper(s[0]) : char.ToLower(s[0])) + s.Substring(1);
         }
@@ -436,6 +443,7 @@ namespace LocalizationHelper
             {
                 Debug.WriteLine(str.Value);
             }
+
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
@@ -481,16 +489,20 @@ namespace LocalizationHelper
                                 substitutions.Add(str.Substring(openbracepos + 1, pos - (openbracepos + 1)));
                                 openbracepos = -1;
                             }
+
                             pos++;
                         }
+
                         foreach (var subst in substitutions)
                         {
                             m3lcodestr += ", " + subst;
                         }
+
                         m3lcodestr += ")";
                         newline = newline.Replace(str, m3lcodestr);
                     }
                 }
+
                 sb.AppendLine(newline);
             }
 
@@ -611,11 +623,11 @@ namespace LocalizationHelper
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             string[] dirs =
-                {
+            {
                 Path.Combine(M3folder, "modmanager", "usercontrols"),
                 Path.Combine(M3folder, "modmanager", "objects"),
                 Path.Combine(M3folder, "modmanager", "windows")
-                };
+            };
 
             int i = 0;
             foreach (var dir in dirs)
@@ -625,6 +637,7 @@ namespace LocalizationHelper
                 {
                     csFiles.Add(Path.Combine(M3folder, "MainWindow.xaml.cs"));
                 }
+
                 i++;
                 foreach (var csFile in csFiles)
                 {
@@ -706,9 +719,9 @@ namespace LocalizationHelper
                             if (header != null && !header.StartsWith("{")
                                                && header != "+"
                                                && isNotLangWord(header)
-                                                && isNotGameName(header)
+                                               && isNotGameName(header)
                                                && header != "Reload selected mod" //debug only
-                                )
+                            )
                             {
                                 localizations[header] = $"string_{toCamelCase(header)}";
                                 item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
@@ -732,7 +745,7 @@ namespace LocalizationHelper
                             }
 
                             if (watermark != null && !watermark.StartsWith("{")
-                                                && watermark.Length > 1
+                                                  && watermark.Length > 1
                             )
                             {
                                 localizations[watermark] = $"string_{toCamelCase(watermark)}";
@@ -817,6 +830,36 @@ namespace LocalizationHelper
                     }
                 }
             }
+        }
+
+        private void PerformINTDiff_Clicked(object sender, RoutedEventArgs e)
+        {
+            string oldfile = null, newfile = null;
+            OpenFileDialog oldFileDialog = new OpenFileDialog()
+            {
+                Title = "Select OLD localization file",
+                Filter = "Xaml files|*.xaml"
+            };
+            if (oldFileDialog.ShowDialog() == true)
+            {
+                oldfile = oldFileDialog.FileName;
+            }
+
+            if (oldfile == null) return;
+            OpenFileDialog newFileDialog = new OpenFileDialog()
+            {
+                Title = "Select NEW localization file",
+                Filter = "Xaml files|*.xaml"
+            };
+            if (newFileDialog.ShowDialog() == true)
+            {
+                newfile = newFileDialog.FileName;
+            }
+
+            if (newfile == null) return;
+            var result = LocalizationFileDiff.generateDiff(oldfile, newfile);
+
+            Debug.WriteLine(result);
         }
     }
 }
