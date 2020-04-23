@@ -335,6 +335,17 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_donations = "string_donations";
 		public static readonly string string_tooltip_opensTheME3TweaksDonationsInformationPage = "string_tooltip_opensTheME3TweaksDonationsInformationPage";
 		public static readonly string string_tooltip_modLibrary = "string_tooltip_modLibrary";
+		public static readonly string string_rcwModsCannotBeDeployed = "string_rcwModsCannotBeDeployed";
+		public static readonly string string_rcwModsCannotBeDeployedDescription = "string_rcwModsCannotBeDeployedDescription";
+		public static readonly string string_cannotDeployMe2modFiles = "string_cannotDeployMe2modFiles";
+		public static readonly string string_decompilingCoalescedFile = "string_decompilingCoalescedFile";
+		public static readonly string string_decompiledCoalescedFile = "string_decompiledCoalescedFile";
+		public static readonly string string_compilingCoalescedFile = "string_compilingCoalescedFile";
+		public static readonly string string_compiledCoalescedFile = "string_compiledCoalescedFile";
+		public static readonly string string_compilingTLKFile = "string_compilingTLKFile";
+		public static readonly string string_compiledTLKFile = "string_compiledTLKFile";
+		public static readonly string string_decompilingTLKFile = "string_decompilingTLKFile";
+		public static readonly string string_decompiledTLKFile = "string_decompiledTLKFile";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
