@@ -22,6 +22,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
 using ME3Explorer;
 using ME3Explorer.Packages;
+using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
 using Serilog;
 using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
@@ -114,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             get => _modMountPriority;
             set
             {
-                    SetProperty(ref _modMountPriority, value);
+                SetProperty(ref _modMountPriority, value);
                 var res = Validator.Validate(nameof(ModMountPriority));
                 if (res.IsValid)
                 {
@@ -383,8 +384,18 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
                 w.LoadMods(obj);
             }
-
             Close();
+            if (!Settings.DeveloperMode)
+            {
+                var turnOnDevMode = Xceed.Wpf.Toolkit.MessageBox.Show(Owner, "Developer Mode for ME3Tweaks Mod Manager is currently turned off. Turn it on to access developer tools in the menus, such as the Official DLC Toggler, Deploy to 7z feature, Custom DLC Conflict Detector, Backup File Fetcher and more.\n\nTurn on Developer Mode?", "Enable developer features?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (turnOnDevMode == MessageBoxResult.Yes)
+                {
+                    Settings.DeveloperMode = true;
+                    Analytics.TrackEvent("Turned on developer mode after starter kit");
+                    Settings.Save();
+                }
+            }
+
         }
 
         private bool ValidateInput()
@@ -419,21 +430,21 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (Game == Mod.MEGame.ME1)
             {
                 DisplayedMountFlags.ReplaceAll(ME1MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values);
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values.Where(x => !x.IsOutdated));
                 ME1_RadioButton.IsChecked = true;
             }
 
             if (Game == Mod.MEGame.ME2)
             {
                 DisplayedMountFlags.ReplaceAll(ME2MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values);
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values.Where(x => !x.IsOutdated));
                 ME2_RadioButton.IsChecked = true;
             }
 
             if (Game == Mod.MEGame.ME3)
             {
                 DisplayedMountFlags.ReplaceAll(ME3MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values);
+                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values.Where(x => !x.IsOutdated));
                 ME3_RadioButton.IsChecked = true;
             }
             CustomDLCMountsForGame.Insert(0, PreviewTPMI);
@@ -588,7 +599,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         }
 
                         var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
-                        Log.Information(@"Saving TLK file: "+tlk);
+                        Log.Information(@"Saving TLK file: " + tlk);
                         new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strs);
                     }
                 }
