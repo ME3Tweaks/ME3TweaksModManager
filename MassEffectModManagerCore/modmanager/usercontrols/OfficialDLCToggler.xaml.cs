@@ -120,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 catch (Exception e)
                 {
                     Log.Error($@"Error toggling DLC {DLCFolderName}: {e.Message}");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_errorTogglingDLC, e.Message)); //this needs updated to be better
+                    M3L.ShowDialog(Application.Current?.MainWindow, M3L.GetString(M3L.string_interp_errorTogglingDLC, e.Message), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error); //this needs updated to be better
                 }
             }
         }

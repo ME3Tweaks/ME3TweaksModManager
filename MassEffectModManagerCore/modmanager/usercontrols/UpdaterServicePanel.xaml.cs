@@ -646,7 +646,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 text += M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationFooter);
                 bool performUpload = false;
                 Log.Information(@"Prompting user to accept server delta");
-                Application.Current.Dispatcher.Invoke(delegate { performUpload = Xceed.Wpf.Toolkit.MessageBox.Show(mainwindow, text, M3L.GetString(M3L.string_confirmChanges), MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
+                Application.Current.Dispatcher.Invoke(delegate { performUpload = M3L.ShowDialog(mainwindow, text, M3L.GetString(M3L.string_confirmChanges), MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
 
                 if (performUpload)
                 {

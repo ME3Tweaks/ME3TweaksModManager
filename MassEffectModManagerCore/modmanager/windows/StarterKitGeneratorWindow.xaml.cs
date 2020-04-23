@@ -35,9 +35,7 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class StarterKitGeneratorWindow : ValidatableWindowBase
     {
-        [Localizable(false)]
         public static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
-        [Localizable(false)]
         public static (string filecode, string langcode)[] me2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"HUN", @"hu-hu"), (@"CZE", @"cs-cz") };
 
         public int MaxMountForGame
@@ -387,11 +385,11 @@ namespace MassEffectModManagerCore.modmanager.windows
             Close();
             if (!Settings.DeveloperMode)
             {
-                var turnOnDevMode = Xceed.Wpf.Toolkit.MessageBox.Show(Owner, "Developer Mode for ME3Tweaks Mod Manager is currently turned off. Turn it on to access developer tools in the menus, such as the Official DLC Toggler, Deploy to 7z feature, Custom DLC Conflict Detector, Backup File Fetcher and more.\n\nTurn on Developer Mode?", "Enable developer features?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var turnOnDevMode = M3L.ShowDialog(Owner, M3L.GetString(M3L.string_dialog_devModeAdvert), M3L.GetString(M3L.string_enableDeveloperFeaturesQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (turnOnDevMode == MessageBoxResult.Yes)
                 {
                     Settings.DeveloperMode = true;
-                    Analytics.TrackEvent("Turned on developer mode after starter kit");
+                    Analytics.TrackEvent(@"Turned on developer mode after starter kit");
                     Settings.Save();
                 }
             }

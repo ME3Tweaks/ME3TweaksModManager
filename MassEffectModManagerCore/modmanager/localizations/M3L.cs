@@ -920,6 +920,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_errorOccuredWhileDeletingExistingModDirectory = "string_interp_errorOccuredWhileDeletingExistingModDirectory";
 		public static readonly string string_generatingMod = "string_generatingMod";
 		public static readonly string string_interp_valueMustBeBetween0AndX = "string_interp_valueMustBeBetween0AndX";
+		public static readonly string string_dialog_devModeAdvert = "string_dialog_devModeAdvert";
+		public static readonly string string_enableDeveloperFeaturesQuestion = "string_enableDeveloperFeaturesQuestion";
 		public static readonly string string_dialogCouldNotSetDataToClipboard = "string_dialogCouldNotSetDataToClipboard";
 		public static readonly string string_errorCopyingDataToClipboard = "string_errorCopyingDataToClipboard";
 		public static readonly string string_copyItemsToClipboard = "string_copyItemsToClipboard";

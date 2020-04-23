@@ -1095,6 +1095,8 @@
     <system:String x:Key="string_generatingMod">Generating mod</system:String>
     <system:String x:Key="string_interp_valueMustBeBetween0AndX">Value must be between 0 and {0}</system:String>
     <!-- 0 = number -->
+    <system:String x:Key="string_dialog_devModeAdvert">Developer Mode for ME3Tweaks Mod Manager is currently turned off. Turn it on to access developer tools in the menus, such as the Official DLC Toggler, Deploy to 7z feature, Custom DLC Conflict Detector, Backup File Fetcher and more.\n\nTurn on Developer Mode?</system:String>
+    <system:String x:Key="string_enableDeveloperFeaturesQuestion">Enable developer features?</system:String>
 
     <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>

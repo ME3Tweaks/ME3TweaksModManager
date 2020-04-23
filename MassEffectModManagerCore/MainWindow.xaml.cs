@@ -833,7 +833,7 @@ namespace MassEffectModManagerCore
             if (SelectedMod.InstallationJobs.Count == 1 && SelectedMod.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null)
             {
                 Log.Error(M3L.GetString(M3L.string_rcwModsCannotBeDeployed));
-                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription), M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription), M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             var archiveDeploymentPane = new ArchiveDeployment(SelectedMod, this);
