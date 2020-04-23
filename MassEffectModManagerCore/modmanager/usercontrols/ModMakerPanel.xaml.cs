@@ -7,16 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using Microsoft.Win32;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -27,6 +22,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         private bool KeepOpenWhenThreadFinishes;
         public bool ShowCloseButton { get; set; }
+        public bool LocalFileOption { get; set; }
+        public string LocalFilePath { get; set; }
         public string ModMakerCode { get; set; }
         public OnlineContent.ServerModMakerModInfo SelectedTopMod { get; set; }
         public long CurrentTaskValue { get; private set; }
@@ -69,12 +66,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand DownloadCompileCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         public ICommand OpenModMakerCommand { get; private set; }
+        public ICommand BrowseForModmakerFileCommand { get; private set; }
+        public ICommand DownloadCompileLocalCommand { get; private set; }
+
 
         private void LoadCommands()
         {
             DownloadCompileCommand = new GenericCommand(StartCompiler, CanStartCompiler);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
             OpenModMakerCommand = new GenericCommand(OpenModMaker);
+            BrowseForModmakerFileCommand = new GenericCommand(BrowseForLocalFile, CanBrowseForLocalFile);
+        }
+
+        private bool CanBrowseForLocalFile() => !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
+
+        private void BrowseForLocalFile()
+        {
+            OpenFileDialog m = new OpenFileDialog
+            {
+                Title = M3L.GetString(M3L.string_selectModMakerModXmlFile),
+                Filter = M3L.GetString(M3L.string_modMakerXMLFiles) + @"|*.xml",
+                InitialDirectory = Utilities.GetModmakerDefinitionsCache()
+            };
+            var result = m.ShowDialog(window);
+            if (result.Value)
+            {
+                //Analytics.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
+                LocalFilePath = m.FileName;
+            }
         }
 
         private void OpenModMaker()
@@ -92,6 +111,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedTopMod != null)
             {
                 ModMakerCode = SelectedTopMod.mod_id;
+                LocalFileOption = false;
             }
         }
 
@@ -104,14 +124,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             bw.DoWork += (a, b) =>
             {
-                //Todo: Add checkbox to use local version instead
+                string modDelta = null;
+
                 if (int.TryParse(ModMakerCode, out var code))
                 {
                     DownloadAndModNameText = @"Downloading mod delta from ME3Tweaks";
                     var normalEndpoint = OnlineContent.ModmakerModsEndpoint + code;
                     var lzmaEndpoint = normalEndpoint + @"&method=lzma";
 
-                    string modDelta = null;
 
                     //Try LZMA first
                     try
@@ -164,26 +184,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
                         }
                     }
+                }
+                else if (File.Exists(LocalFilePath))
+                {
+                    modDelta = File.ReadAllText(LocalFilePath);
+                }
 
 
-                    if (modDelta != null)
+                if (modDelta != null)
+                {
+                    KeepOpenWhenThreadFinishes = false;
+                    var compiler = new ModMakerCompiler(code);
+                    compiler.SetCurrentMaxCallback = SetCurrentMax;
+                    compiler.SetCurrentValueCallback = SetCurrentProgressValue;
+                    compiler.SetOverallMaxCallback = SetOverallMax;
+                    compiler.SetOverallValueCallback = SetOverallValue;
+                    compiler.SetCurrentTaskIndeterminateCallback = SetCurrentTaskIndeterminate;
+                    compiler.SetCurrentTaskStringCallback = SetCurrentTaskString;
+                    compiler.SetModNameCallback = SetModNameOrDownloadText;
+                    compiler.SetCompileStarted = CompilationInProgress;
+                    compiler.SetModNotFoundCallback = ModNotFound;
+                    compiler.NotifySomeDLCIsMissing = NotifySomeDLCIsMissing;
+                    Mod m = compiler.DownloadAndCompileMod(modDelta);
+                    if (m != null && !LocalFileOption)
                     {
-                        KeepOpenWhenThreadFinishes = false;
-                        var compiler = new ModMakerCompiler(code);
-                        compiler.SetCurrentMaxCallback = SetCurrentMax;
-                        compiler.SetCurrentValueCallback = SetCurrentProgressValue;
-                        compiler.SetOverallMaxCallback = SetOverallMax;
-                        compiler.SetOverallValueCallback = SetOverallValue;
-                        compiler.SetCurrentTaskIndeterminateCallback = SetCurrentTaskIndeterminate;
-                        compiler.SetCurrentTaskStringCallback = SetCurrentTaskString;
-                        compiler.SetModNameCallback = SetModNameOrDownloadText;
-                        compiler.SetCompileStarted = CompilationInProgress;
-                        compiler.SetModNotFoundCallback = ModNotFound;
-                        compiler.NotifySomeDLCIsMissing = NotifySomeDLCIsMissing;
-                        Mod m = compiler.DownloadAndCompileMod(modDelta);
-                        File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + @".xml"), modDelta);
-                        b.Result = m;
+                        var sanitizedname = Utilities.SanitizePath(m.ModName);
+                        File.WriteAllText(Path.Combine(Utilities.GetModmakerDefinitionsCache(), $@"{code}-{sanitizedname}.xml"), modDelta);
                     }
+                    b.Result = m;
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
@@ -212,9 +240,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var missingDLC = string.Join("\n - ", listItems); //do not localize
                 missingDLC = @" - " + missingDLC; //add first -
                 result = M3L.ShowDialog(window,
-                             M3L.GetString(M3L.string_interp_modmakerDlcMissing, missingDLC),
-                             M3L.GetString(M3L.string_dlcMissing),
-                             MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+             M3L.GetString(M3L.string_interp_modmakerDlcMissing, missingDLC),
+             M3L.GetString(M3L.string_dlcMissing),
+             MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             });
             return result;
         }
@@ -259,7 +287,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentTaskMaximum = obj;
         }
 
-        private bool CanStartCompiler() => int.TryParse(ModMakerCode, out var _) && !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
+        private bool CanStartCompiler() => (LocalFileOption ? File.Exists(LocalFilePath) : int.TryParse(ModMakerCode, out var _)) && !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {

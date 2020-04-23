@@ -4,21 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Serilog;
+using System.IO;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
     public static class ThreeWayPackageMerge
     {
-        public static bool AttemptMerge(IMEPackage vanillaPackage, IMEPackage modifiedVanillaPackage, IMEPackage targetPackage)
+        public static bool AttemptMerge(MEPackage vanillaPackage, MEPackage modifiedVanillaPackage, MEPackage targetPackage)
         {
             PackageDelta vanillaToModifiedDelta = PackageDelta.CalculateDelta(vanillaPackage, modifiedVanillaPackage);
             PackageDelta vanillaToTargetDelta = PackageDelta.CalculateDelta(vanillaPackage, targetPackage);
-
+            string loggingPrefix = targetPackage.FilePath == null ? targetPackage.FileSourceForDebugging : Path.GetFileName(targetPackage.FilePath);
             //Check merge conditions
             var nameConflicts = vanillaToModifiedDelta.NameDeltas.Keys.Intersect(vanillaToTargetDelta.NameDeltas.Keys).ToList();
             var importConflicts = vanillaToModifiedDelta.ImportDeltas.Keys.Intersect(vanillaToTargetDelta.ImportDeltas.Keys).ToList();
             var exportConflicts = vanillaToModifiedDelta.ExportDeltas.Keys.Intersect(vanillaToTargetDelta.ExportDeltas.Keys).ToList();
-
+            Log.Information($"[{loggingPrefix}] Performing three way merge pre-check");
             //Name deltas
 
             if (nameConflicts.Count > 0)
@@ -31,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     if (modifiedName != targetName)
                     {
                         //Differing names in same spots.
-                        Log.Information($@"Cannot merge files: Name index {nameIndex} is different between modified and target.");
+                        Log.Information($@"[{loggingPrefix}] Cannot merge files: Name index {nameIndex} is different between modified and target.");
                         return false;
                     }
                 }
@@ -53,7 +54,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
                     if (!modifiedData.SequenceEqual(targetData))
                     {
-                        Log.Information($@"Cannot merge files: Export table index {exportTableIndex} data is different between modified and target.");
+                        Log.Information($@"[{loggingPrefix}] Cannot merge files: Export table index {exportTableIndex} data is different between modified and target.");
                         return false;
                     }
 
@@ -70,10 +71,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (nameDelta.Key >= targetPackage.NameCount)
                 {
                     //add it
+                    Log.Information($"[{loggingPrefix}] Adding name {nameDelta.Value}");
                     targetPackage.addName(nameDelta.Value);
                 }
                 else
                 {
+                    Log.Information($"[{loggingPrefix}] Updating name index {nameDelta.Key} to {nameDelta.Value}");
                     targetPackage.replaceName(nameDelta.Key, nameDelta.Value);
                 }
             }
@@ -83,11 +86,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (exportDelta.Key >= targetPackage.ExportCount)
                 {
                     //add it
+                    Log.Information($"[{loggingPrefix}] Adding export {exportDelta.Value.GetInstancedFullPath}");
+
                     targetPackage.addExport(exportDelta.Value); //not sure if this is possible
                 }
                 else
                 {
                     //gonna need this reviewed, not entirely sure this is OK to do
+                    Log.Information($"[{loggingPrefix}] Updating export {exportDelta.Value.GetInstancedFullPath}");
+
                     targetPackage.Exports[exportDelta.Key].Data = exportDelta.Value.Data;
                     targetPackage.Exports[exportDelta.Key].Header = exportDelta.Value.Header;
                 }
@@ -98,17 +105,21 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (importDelta.Key >= targetPackage.ImportCount)
                 {
                     //add it
+                    Log.Information($"[{loggingPrefix}] Adding import {importDelta.Value.GetInstancedFullPath}");
+
                     targetPackage.addImport(importDelta.Value); //not sure if this is possible
                 }
                 else
                 {
+                    Log.Information($"[{loggingPrefix}] Updating import {importDelta.Value.GetInstancedFullPath}");
+
                     //gonna need this reviewed, not entirely sure this is OK to do
                     //targetPackage.Imports[importDelta.Key].Data = importDelta.Value.Data;
                     targetPackage.Imports[importDelta.Key].Header = importDelta.Value.Header;
                 }
             }
 
-
+            Log.Information($"[{loggingPrefix}] Finished three way merge");
             return true;
         }
 
@@ -129,7 +140,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 PackageDelta delta = new PackageDelta();
                 #region Exports Comparison
                 {
-                    int numExportsToEnumerate = ancestorPackage.NameCount;
+                    int numExportsToEnumerate = ancestorPackage.ExportCount;
 
                     for (int i = 0; i < numExportsToEnumerate; i++)
                     {

@@ -5,28 +5,27 @@
     <DockPanel MaxWidth="700">
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
             <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Command="{Binding CloseCommand}" Padding="7,4" DockPanel.Dock="Right" />
-            <xctk:DropDownButton MinWidth="70" Margin="5,0,0,0" Content="{DynamicResource string_compile}" IsEnabled="{Binding AtLeastOneMixinSelected}" Padding="7,4" DockPanel.Dock="Right">
+            <xctk:DropDownButton Name="CompilePanelButton" MinWidth="70" Margin="5,0,0,0" Content="{DynamicResource string_compileEllipses}" IsEnabled="{Binding AtLeastOneMixinSelected}" Padding="7,4" DockPanel.Dock="Right">
                 <xctk:DropDownButton.DropDownContent>
-                    <StackPanel Width="200">
+                    <StackPanel Width="400">
+                        <!-- New mod -->
                         <TextBlock Text="{DynamicResource string_compileIntoANewMod}" FontWeight="Bold" />
                         <TextBlock Text="{DynamicResource string_modNameColon}" />
                         <xctk:WatermarkTextBox Watermark="{DynamicResource string_modName}" Text="{Binding NewModName, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" KeyDown="ModName_OnKeyDownHandler" />
                         <Button Content="{DynamicResource string_compileAsANewMod}" HorizontalAlignment="Right" ToolTip="{DynamicResource string_tooltip_generatesNewMod}" Command="{Binding CompileAsNewModCommand}" Margin="0,3,0,0" />
                         <StackPanel>
-                            <TextBlock Text="{DynamicResource string_or}" FontWeight="Bold" TextAlignment="Center" Margin="0,20" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                            <TextBlock Text="{DynamicResource string_compileIntoAnExistingMod}" FontWeight="Bold" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                            <TextBlock Text="{DynamicResource string_thisFeatureIsNotYetAvailable}" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                            <ComboBox ItemsSource="{Binding ME3Mods}" IsEnabled="False">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
-                                            <TextBlock Text="{Binding ModName}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                            <Button Content="{DynamicResource string_compileIntoExistingMod}" HorizontalAlignment="Right" IsEnabled="false" ToolTip="{DynamicResource string_tooltip_appliesMixinsToAMod}"/>
+                            <!-- OR -->
+                            <TextBlock Text="{DynamicResource string_or}" FontWeight="Bold" TextAlignment="Center" Margin="0,20" />
+                            
+                            <!-- Install into game -->
+                            <TextBlock Text="{DynamicResource string_directlyInstallIntoGame}" FontWeight="Bold"/>
+                            <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" 
+                                      IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
+                                      ItemsSource="{Binding AvailableInstallTargets}" SelectedItem="{Binding SelectedInstallTarget}" 
+                                      HorizontalContentAlignment="Stretch"  ItemTemplate="{StaticResource TargetSelectorTemplate}" 
+                                      ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
+
+                            <Button Content="{DynamicResource string_compileIntoExistingMod}" HorizontalAlignment="Right" ToolTip="{DynamicResource string_tooltip_appliesMixinsToAMod}" Command="{Binding InstallIntoGameCommand}"/>
                         </StackPanel>
                     </StackPanel>
                 </xctk:DropDownButton.DropDownContent>

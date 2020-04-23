@@ -556,7 +556,7 @@
 	<!-- 0 = error message -->
     <system:String x:Key="string_interp_requestTimedOutUploading">Anfragezeitüberschreitung beim Hochladen des Ereignisprotokolls.</system:String>
     <system:String x:Key="string_logUploadFailed">Hochladen des Ereignisprotokolls fehlgeschlagen</system:String>
-    <system:String x:Key="string_loguploader">Hochladen des Ereignisprotokolls</system:String>
+    <system:String x:Key="string_logsAndDiagnostics">Hochladen des Ereignisprotokolls</system:String>
     <system:String x:Key="string_uploadToLogViewer">Hochladen zum Ereignisprotokollanzeigedienst</system:String>
 
     <!-- Mod Archive Importer-->
@@ -1267,7 +1267,7 @@
     <system:String x:Key="string_compileAsANewMod">Als neuen Mod kompilieren</system:String>
     <system:String x:Key="string_or">Oder</system:String>
 	<!-- as in X or Y -->
-    <system:String x:Key="string_compileIntoAnExistingMod">In einen existierenden mod kompilieren</system:String>
+    <system:String x:Key="string_directlyInstallIntoGame">In einen existierenden mod kompilieren</system:String>
     <system:String x:Key="string_thisFeatureIsNotYetAvailable">Diese Funktion ist noch nicht verfügbar.</system:String>
     <system:String x:Key="string_tooltip_appliesMixinsToAMod" xml:space="preserve">Wendet diese Mixins auf einen von dir wählbaren Mod an.\nDateien in dem Mod werden gepatcht, falls der Mod sie bereits beinhaltet.\nDateien die der Mod nicht benutzt werden aus dem Vanilla Backup gezogen</system:String>
     <system:String x:Key="string_compileIntoExistingMod">In existierenden Mod kompilieren</system:String>

@@ -145,14 +145,14 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         foreach (var conditionaldlc in altdlc.ConditionalDLC)
                         {
-                            autoConfigs.Add(conditionaldlc);
+                            autoConfigs.Add(conditionaldlc.TrimStart('-','+'));
                         }
                     }
                     foreach (var altfile in InstallationJob.AlternateFiles)
                     {
                         foreach (var conditionaldlc in altfile.ConditionalDLC)
                         {
-                            autoConfigs.Add(conditionaldlc);
+                            autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
                         }
                     }
                 }
@@ -207,6 +207,7 @@ namespace MassEffectModManagerCore.modmanager
         public bool IsInArchive { get; }
         public bool IsVirtualized { get; private set; }
         public string OriginalArchiveHash { get; private set; }
+        public string PostInstallToolLaunch { get; private set; }
 
         private readonly string VirtualizedIniText;
         private readonly string ArchivePath;
@@ -726,7 +727,7 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
 
-                        
+
                     }
 
                     //Build additions (vars will be null if these aren't supported by target version)
@@ -823,7 +824,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (!headerJob.ValidateAlternates(out string failureReason))
                     {
                         LoadFailedReason = failureReason;
-                        return; 
+                        return;
                     }
 
                     CLog.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
@@ -1333,6 +1334,10 @@ namespace MassEffectModManagerCore.modmanager
             //    UpdaterServiceBlacklistedFiles = blacklistedFiles;
             //}
             #endregion
+
+            //What tool to launch post-install
+            PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
+
 
             //Thread.Sleep(500);
             if (InstallationJobs.Count > 0)

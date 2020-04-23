@@ -255,11 +255,20 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static bool IsFileVanilla(GameTarget target, string file, bool md5check = false)
         {
-            var database = LoadDatabaseFor(target.Game, target.IsPolishME1);
             var relativePath = file.Substring(target.TargetPath.Length + 1);
-            if (database.TryGetValue(relativePath, out var info))
+            return IsFileVanilla(target.Game, file, relativePath, target.IsPolishME1, md5check);
+        }
+
+        public static bool IsFileVanilla(Mod.MEGame game, string fullpath, string relativepath, bool isME1Polish, bool md5check = false)
+        {
+            var database = LoadDatabaseFor(game, isME1Polish);
+            if (database.TryGetValue(relativepath, out var info))
             {
-                FileInfo f = new FileInfo(file);
+                //foreach (var c in info)
+                //{
+                //    Debug.WriteLine("Sizes accepted: " + c.size);
+                //}
+                FileInfo f = new FileInfo(fullpath);
                 bool hasSameSize = info.Any(x => x.size == f.Length);
                 if (!hasSameSize)
                 {
@@ -268,7 +277,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
                 if (md5check)
                 {
-                    var md5 = Utilities.CalculateMD5(file);
+                    var md5 = Utilities.CalculateMD5(fullpath);
                     return info.Any(x => x.md5 == md5);
                 }
                 return true;
@@ -277,7 +286,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
-        private readonly static string[] BasegameTFCs = { "CharTextures", "Movies", "Textures", "Lighting" };
+        private static readonly string[] BasegameTFCs = { "CharTextures", "Movies", "Textures", "Lighting" };
         internal static bool IsBasegameTFCName(string tfcName, Mod.MEGame game)
         {
             if (BasegameTFCs.Contains(tfcName)) return true;
@@ -297,7 +306,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback)
         {
-            bool isValid = true;
+            bool isVanilla = true;
             CaseInsensitiveDictionary<List<(int size, string md5)>> vanillaDB = null;
             switch (target.Game)
             {
@@ -334,7 +343,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             if (!GameTarget.SFARObject.HasUnpackedFiles(file)) continue; //Consistent
                         }
                         failedValidationCallback?.Invoke(file);
-                        isValid = false;
+                        isVanilla = false;
                     }
                     else
                     {
@@ -347,7 +356,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Log.Error(@"Directory to validate doesn't exist: " + target.TargetPath);
             }
 
-            return isValid;
+            return isVanilla;
         }
 
         /// <summary>
@@ -365,9 +374,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="target">Target to get dlc from</param>
         /// <returns>List of DLC foldernames</returns>
-        internal static List<string> GetInstalledOfficialDLC(GameTarget target)
+        internal static List<string> GetInstalledOfficialDLC(GameTarget target, bool includeDisabled = false)
         {
-            return MEDirectories.GetInstalledDLC(target).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x, StringComparer.InvariantCultureIgnoreCase)).ToList();
+            return MEDirectories.GetInstalledDLC(target, includeDisabled).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase)).ToList();
         }
 
         internal static bool ValidateTargetDLCConsistency(GameTarget target, Action<string> inconsistentDLCCallback = null)

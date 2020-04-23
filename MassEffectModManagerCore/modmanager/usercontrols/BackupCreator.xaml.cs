@@ -143,7 +143,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ProgressVisible = true;
                     ProgressIndeterminate = true;
                     BackupStatus = M3L.GetString(M3L.string_validatingBackupSource);
-                    VanillaDatabaseService.LoadDatabaseFor(Game);
+                    VanillaDatabaseService.LoadDatabaseFor(Game, BackupSourceTarget.IsPolishME1);
                     bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(BackupSourceTarget, nonVanillaFileFoundCallback);
                     bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(BackupSourceTarget, inconsistentDLCCallback: inconsistentDLCFoundCallback);
                     List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(BackupSourceTarget);
@@ -297,7 +297,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         if (file.EndsWith(@".bik"))
                                         {
                                             BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                M3L.string_movies);
+                                                M3L.GetString(M3L.string_movies));
                                         }
                                         else if (new FileInfo(file).Length > 52428800)
                                         {
@@ -307,7 +307,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         else
                                         {
                                             BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                M3L.string_basegame);
+                                                M3L.GetString(M3L.string_basegame));
                                         }
                                     }
                                 }
@@ -357,7 +357,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             Log.Information($@"Writing cmm_vanilla");
 
-                            File.Create(Path.Combine(backupPath, "cmm_vanilla")).Close();
+                            File.Create(Path.Combine(backupPath, @"cmm_vanilla")).Close();
 
                             Log.Information($@"Backup completed.");
 

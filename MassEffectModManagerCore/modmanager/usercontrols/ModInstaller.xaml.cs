@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ByteSizeLib;
+using Flurl.Http;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -20,6 +21,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Newtonsoft.Json;
 using Serilog;
 using SevenZip;
 using static MassEffectModManagerCore.modmanager.Mod;
@@ -31,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ModInstaller : MMBusyPanelBase
     {
-        public ObservableCollectionExtended<object> AlternateOptions { get; } = new ObservableCollectionExtended<object>();
+        public ObservableCollectionExtended<AlternateOption> AlternateOptions { get; } = new ObservableCollectionExtended<AlternateOption>();
 
         public bool InstallationSucceeded { get; private set; }
         public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
@@ -67,7 +69,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NO_RESULT_CODE,
             INSTALL_FAILED_MALFORMED_RCW_FILE,
             INSTALL_ABORTED_NOT_ENOUGH_SPACE,
-            INSTALL_FAILED_BAD_ME2_COALESCED
+            INSTALL_FAILED_BAD_ME2_COALESCED,
+            INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION
         }
 
         public string Action { get; set; }
@@ -111,7 +114,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return true; //has backup
         }
 
-        private void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
+        private async void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
         {
             bool testrun = false; //change to true to test
             Log.Information(@"Mod Installer Background thread starting");
@@ -158,7 +161,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             var readOnlyTargets = ModBeingInstalled.GetAllRelativeReadonlyTargets(me1ConfigReadOnlyOption.IsSelected);
 
-            if (gameTarget.ALOTInstalled)
+            if (gameTarget.TextureModded)
             {
                 //Check if any packages are being installed. If there are, we will block this installation.
                 bool installsPackageFile = false;
@@ -228,7 +231,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             List<string> mappedReadOnlyTargets = new List<string>();
 
             //THREE WAY MERGE
-            var threeWayMergeFiles = VanillaDatabaseService.GetThreeWayMergeFiles(gameTarget, installationQueues);
+            //var threeWayMergeFiles = VanillaDatabaseService.GetThreeWayMergeFiles(gameTarget, installationQueues);
 
 
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
@@ -391,11 +394,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            void FileInstalledCallback(string target)
+            var basegameFilesInstalled = new List<string>();
+            void FileInstalledCallback(string targetPath)
             {
                 numdone++;
-                var fileMapping = fullPathMappingDisk.FirstOrDefault(x => x.Value == target);
-                CLog.Information($@"Installed: {fileMapping.Key} -> {target}", Settings.LogModInstallation);
+                var fileMapping = fullPathMappingDisk.FirstOrDefault(x => x.Value == targetPath);
+                CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 Action = M3L.GetString(M3L.string_installing);
                 var now = DateTime.Now;
@@ -406,6 +410,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Percent = (int)(numdone * 100.0 / numFilesToInstall);
                     lastPercentUpdateTime = now;
                 }
+
+                //BASEGAME FILE TELEMETRY
+                if (Settings.EnableTelemetry)
+                {
+                    if (!targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase) && targetPath.Contains(gameTarget.TargetPath) && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //not installing to DLC
+                        basegameFilesInstalled.Add(targetPath);
+                    }
+                }
             }
 
             //Stage: Unpacked files installation
@@ -413,9 +427,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Direct copy
                 Log.Information($@"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
-
-                
-
                 CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
             }
             else
@@ -426,7 +437,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     var inArchivePath = info.FileName;
                     var redirectedPath = fullPathMappingDisk[inArchivePath];
-                    Debug.WriteLine($@"Redirecting {inArchivePath} to {redirectedPath}");
+                    //Debug.WriteLine($@"Redirecting {inArchivePath} to {redirectedPath}");
                     return redirectedPath;
                 }
 
@@ -435,20 +446,53 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
                 };
                 List<string> filesInstalled = new List<string>();
-                List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
+                //List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
                 ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
                 {
                     if (args.FileInfo.IsDirectory) return; //ignore
-                    if (!fullPathMappingArchive.ContainsKey(args.FileInfo.Index)) return; //archive extracted this file (in memory) but did not do anything with this file (7z)
-                    FileInstalledCallback(args.FileInfo.FileName);
+                    if (!fullPathMappingArchive.ContainsKey(args.FileInfo.Index))
+                    {
+                        CLog.Information(@"Skipping extraction of archive file: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                        return; //archive extracted this file (in memory) but did not do anything with this file (7z)
+                    }
+                    FileInstalledCallback(fullPathMappingArchive[args.FileInfo.Index]); //put dest filename here as this func logs the mapping based on the destination
                     filesInstalled.Add(args.FileInfo.FileName);
                     FileInfo dest = new FileInfo(fullPathMappingArchive[args.FileInfo.Index]);
                     if (dest.IsReadOnly)
                         dest.IsReadOnly = false;
+                    if (Settings.EnableTelemetry)
+                    {
+                        if (!fullPathMappingArchive[args.FileInfo.Index].Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)
+                         && fullPathMappingArchive[args.FileInfo.Index].Contains(gameTarget.TargetPath) &&
+                           !Path.GetFileName(fullPathMappingArchive[args.FileInfo.Index]).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            //not installing to DLC
+                            basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
+                        }
+                    }
                     //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
                 };
-                ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
+                try
+                {
+                    ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(@"Error extracting files: " + ex.Message);
+                    Crashes.TrackError(ex, new Dictionary<string, string>()
+                    {
+                        {@"Mod name", ModBeingInstalled.ModName },
+                        {@"Filename", ModBeingInstalled.Archive.FileName },
+                    });
+                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
+                    if (Application.Current != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
+                    }
+
+                    return;
+                }
             }
 
             //Write MetaCMM
@@ -495,7 +539,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Install supporting ASI files if necessary
-            //Todo: Upgrade to version detection code from ME3EXP to prevent conflicts
 
             Action = M3L.GetString(M3L.string_installingSupportFiles);
             PercentVisibility = Visibility.Collapsed;
@@ -538,6 +581,30 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             Log.Information(@"<<<<<<< Finishing modinstaller");
 
+            //Submit basegame telemetry in async way
+            if (basegameFilesInstalled.Any() /*&& !Settings.DeveloperMode*/) //no dev mode as it could expose files user is working on.
+            {
+                //BackgroundWorker bw = new NamedBackgroundWorker("BASEGAMECLOUDDB_TELEMETRY");
+                //bw.DoWork += (a, b) =>
+                //{
+                try
+                {
+                    var files = new List<BasegameFileIdentificationService.BasegameCloudDBFile>();
+                    foreach (var file in basegameFilesInstalled)
+                    {
+                        files.Add(new BasegameFileIdentificationService.BasegameCloudDBFile(file, gameTarget, ModBeingInstalled));
+                    }
+                    string output = JsonConvert.SerializeObject(files);
+
+                    await @"https://me3tweaks.com/modmanager/services/basegamefileid".PostStringAsync(output);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(@"Error uploading basegame telemetry: " + ex.Message);
+                }
+                //};
+                //bw.RunWorkerAsync();
+            }
         }
 
         private ModInstallCompletedStatus InstallAttachedRCWMod()
@@ -613,14 +680,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Remove items
                     foreach (var itemToDelete in rcwS.KeysToDelete)
                     {
-                        for (int i = section.Entries.Count - 1; i > 0; i--)
+                        bool deletedSomething = false;
+                        for (int i = section.Entries.Count - 1; i >= 0; i--)
                         {
                             var entry = section.Entries[i];
                             if (entry.Key == itemToDelete.Key && entry.Value == itemToDelete.Value) //case sensitive
                             {
                                 CLog.Information($@"Removing ini entry {entry.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                                 section.Entries.RemoveAt(i);
+                                deletedSomething = true;
                             }
+                        }
+                        if (!deletedSomething)
+                        {
+                            Log.Warning($@"Did not find anything to remove for key {itemToDelete.Key} with value {itemToDelete.Value}");
                         }
                     }
 
@@ -920,6 +993,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (af.GroupName != null && af.IsSelected) return; //Cannot deselect group
                     af.IsSelected = !af.IsSelected;
+                    Debug.WriteLine(@"Is selected: " + af.IsSelected);
                 }
                 else if (dp.DataContext is ReadOnlyOption ro)
                 {
@@ -945,7 +1019,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Detect incompatible DLC
             var dlcMods = VanillaDatabaseService.GetInstalledDLCMods(gameTarget);
-            if (ModBeingInstalled.IncompatibleDLC.Count > 0)
+            if (ModBeingInstalled.IncompatibleDLC.Any())
             {
                 //Check for incompatible DLC.
                 List<string> incompatibleDLC = new List<string>();
@@ -961,7 +1035,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             incompatibleDLC.Add(@" - " + incompat);
-
                         }
                     }
                 }
@@ -1031,6 +1104,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 AlternateOptions.AddRange(job.AlternateFiles);
             }
 
+            SortOptions();
+
             foreach (object o in AlternateOptions)
             {
                 if (o is AlternateDLC altdlc)
@@ -1050,6 +1125,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Just start installing mod
                 BeginInstallingMod();
             }
+        }
+
+        private void SortOptions()
+        {
+            List<AlternateOption> newOptions = new List<AlternateOption>();
+            newOptions.AddRange(AlternateOptions.Where(x => x.IsAlways));
+            newOptions.AddRange(AlternateOptions.Where(x => x is ReadOnlyOption));
+            newOptions.AddRange(AlternateOptions.Where(x => !x.IsAlways && !(x is ReadOnlyOption)));
+            AlternateOptions.ReplaceAll(newOptions);
         }
 
         protected override void OnClosing(DataEventArgs e)

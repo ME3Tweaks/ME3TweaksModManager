@@ -12,12 +12,9 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using SevenZip;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
-using System.Xml;
 using System.Xml.Linq;
 using SevenZip.EventArguments;
 using Threading;
@@ -34,9 +31,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ModArchiveImporter : MMBusyPanelBase
     {
+        public string CancelButtonText { get; set; } = M3L.GetString(M3L.string_cancel);
+
         public bool TaskRunning { get; private set; }
         public string NoModSelectedText { get; set; } = M3L.GetString(M3L.string_selectAModOnTheLeftToViewItsDescription);
         public bool ArchiveScanned { get; set; }
+        public bool TextureFilesImported { get; set; }
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && CanCancel())
@@ -97,7 +97,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ArchiveScanned = true;
 
                     //Initial release disables this.
+                    //TODO: RE-ENABLE THIS
                     CanCompressPackages = false && CompressedMods.Any() && CompressedMods.Any(x => x.Game == Mod.MEGame.ME3); //Change to include ME2 when support for LZO is improved
+                }
+                else if (TextureFilesImported)
+                {
+                    CancelButtonText = M3L.GetString(M3L.string_close);
+                    NoModSelectedText = M3L.GetString(M3L.string_interp_dialogImportedALOTMainToTextureLibrary, ScanningFile, Utilities.GetALOTInstallerTextureLibraryDirectory());
+                    ActionText = M3L.GetString(M3L.string_importCompleted);
                 }
                 else
                 {
@@ -122,6 +129,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.RunWorkerAsync(filepath);
         }
 
+
         /// <summary>
         /// Notifies listeners when given property is updated.
         /// </summary>
@@ -131,6 +139,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             hack_PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
         private bool openedMultipanel = false;
+
+        /// <summary>
+        /// Inspects an 'archive' file. Archives may contain one or more mods (or none).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
             TaskRunning = true;
@@ -161,8 +175,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += M3L.GetString(M3L.string_interp_XfailedToLoadY, m.ModName, m.LoadFailedReason); });
             }
 
-
-
+            // We consider .me2mod an archive file since it can be segmented
             if (Path.GetExtension(archive) == @".me2mod")
             {
                 //RCW
@@ -173,6 +186,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 return;
             }
+
             //Embedded executables.
             var archiveSize = new FileInfo(archive).Length;
             var knownModsOfThisSize = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
@@ -213,9 +227,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
                     }
-
                 }
-
             }
 
 
@@ -223,7 +235,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ActionText = newText;
             }
-            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, ActionTextUpdateCallback);
+
+            void ShowALOTLauncher()
+            {
+                TextureFilesImported = true;
+            }
+            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, ActionTextUpdateCallback, ShowALOTLauncher);
         }
 
         //this should be private but no way to test it private for now...
@@ -235,7 +252,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <param name="addCompressedModCallback">Callback indicating that the mod should be added to the collection of found mods</param>
         /// <param name="currentOperationTextCallback">Callback to tell caller what's going on'</param>
         /// <param name="forcedOverrideData">Override data about archive. Used for testing only</param>
-        public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<Mod> failedToLoadModeCallback = null, Action<string> currentOperationTextCallback = null, string forcedMD5 = null, int forcedSize = -1)
+        public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<Mod> failedToLoadModeCallback = null, Action<string> currentOperationTextCallback = null,
+            Action showALOTLauncher = null, string forcedMD5 = null, int forcedSize = -1)
         {
             string relayVersionResponse = @"-1";
             List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
@@ -253,30 +271,42 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
                 var bioengineEntries = new List<ArchiveFileInfo>(); //ME2 DLC
                 var me2mods = new List<ArchiveFileInfo>(); //ME2 RCW Mods
-
+                var textureModEntries = new List<ArchiveFileInfo>(); //TPF MEM MOD files
+                bool isAlotFile = false;
                 try
                 {
                     foreach (var entry in archiveFile.ArchiveFileData)
                     {
-                        string fname = Path.GetFileName(entry.FileName);
-                        if (!entry.IsDirectory && fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
+                        if (!entry.IsDirectory)
                         {
-                            moddesciniEntries.Add(entry);
-                        }
-                        else if (!entry.IsDirectory && fname.Equals(@"Default.sfar", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //for unofficial lookups
-                            sfarEntries.Add(entry);
-                        }
-                        else if (!entry.IsDirectory && fname.Equals(@"BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //for unofficial lookups
-                            bioengineEntries.Add(entry);
-                        }
-                        else if (!entry.IsDirectory && Path.GetExtension(fname) == @".me2mod")
-                        {
-                            //for unofficial lookups
-                            me2mods.Add(entry);
+                            string fname = Path.GetFileName(entry.FileName);
+                            if (fname.Equals(@"ALOTInstaller.exe", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                isAlotFile = true;
+                            }
+                            else if (fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                moddesciniEntries.Add(entry);
+                            }
+                            else if (fname.Equals(@"Default.sfar", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                //for unofficial lookups
+                                sfarEntries.Add(entry);
+                            }
+                            else if (fname.Equals(@"BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                //for unofficial lookups
+                                bioengineEntries.Add(entry);
+                            }
+                            else if (Path.GetExtension(fname) == @".me2mod")
+                            {
+                                me2mods.Add(entry);
+                            }
+                            else if (Path.GetExtension(fname) == @".mem" || Path.GetExtension(fname) == @".tpf" || Path.GetExtension(fname) == @".mod")
+                            {
+                                //for forwarding to ALOT Installer
+                                textureModEntries.Add(entry);
+                            }
                         }
                     }
                 }
@@ -291,7 +321,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     addCompressedModCallback?.Invoke(failed);
                     return;
                 }
-
                 if (moddesciniEntries.Count > 0)
                 {
                     foreach (var entry in moddesciniEntries)
@@ -327,6 +356,49 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             internalModList.Add(m);
                         }
                     }
+                }
+                else if (textureModEntries.Any() && isAlotFile)
+                {
+                    if (isAlotFile)
+                    {
+                        //is alot installer
+                        Log.Information(@"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
+                        var textureLibraryPath = Utilities.GetALOTInstallerTextureLibraryDirectory();
+                        if (textureLibraryPath != null)
+                        {
+                            //we have destination
+                            var destPath = Path.Combine(textureLibraryPath, Path.GetFileName(filepath));
+                            if (!File.Exists(destPath))
+                            {
+                                Log.Information(M3L.GetString(M3L.string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary));
+                                currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_movingALOTFileToTextureLibraryPleaseWait));
+                                archiveFile.Dispose();
+                                File.Move(filepath, destPath, true);
+                                showALOTLauncher?.Invoke();
+                            }
+                        }
+                    }
+                    //todo: Parse 
+                    //else
+                    //{
+                    //    //found some texture-mod only files
+                    //    foreach (var entry in textureModEntries)
+                    //    {
+                    //        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
+                    //        MemoryStream ms = new MemoryStream();
+                    //        archiveFile.ExtractFile(entry.Index, ms);
+                    //        ms.Position = 0;
+                    //        StreamReader reader = new StreamReader(ms);
+                    //        string text = reader.ReadToEnd();
+                    //        var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
+                    //        foreach (var rcw in rcwModsForFile)
+                    //        {
+                    //            Mod m = new Mod(rcw);
+                    //            addCompressedModCallback?.Invoke(m);
+                    //            internalModList.Add(m);
+                    //        }
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -384,7 +456,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
 
-                    //TODO: ME2
+                    //TODO: ME2 ?
                     //foreach (var entry in bioengineEntries)
                     //{
                     //    var vMod = AttemptLoadVirtualMod(entry, archiveFile, Mod.MEGame.ME2, md5);
@@ -395,7 +467,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //    }
                     //}
 
-                    //TODO: ME1
+                    //TODO: ME1 ?
 
                     if (importingInfo?.version != null)
                     {

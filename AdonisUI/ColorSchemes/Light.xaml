@@ -81,6 +81,7 @@
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.AccentInteractionBorderBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.AccentInteractionBorderColor}}"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.AccentInteractionForegroundBrush}" Color="{StaticResource {x:Static adonisUi:Colors.AccentInteractionForegroundColor}}"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.HoverBackgroundBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.HoverBackgroundColor}}"/>
+    <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.DisabledForegroundColor}}"/>
 
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.Layer0BackgroundBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}"/>
     <helpers:ResourceAlias x:Key="{x:Static adonisUi:Brushes.Layer0BorderBrush}" ResourceKey="{x:Static SystemParameters.WindowGlassBrush}"/>

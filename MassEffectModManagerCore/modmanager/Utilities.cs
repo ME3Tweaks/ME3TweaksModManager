@@ -42,6 +42,13 @@ namespace MassEffectModManagerCore
             }
         }
 
+        public static bool IsWindows10OrNewer()
+        {
+            var os = Environment.OSVersion;
+            return os.Platform == PlatformID.Win32NT &&
+                   (os.Version.Major >= 10);
+        }
+
         public static bool IsAdministrator()
         {
             var identity = WindowsIdentity.GetCurrent();
@@ -650,6 +657,24 @@ namespace MassEffectModManagerCore
             }
         }
 
+        /// <summary>
+        /// Reads all lines from a file, attempting to do so even if the file is in use by another process
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string[] WriteSafeReadAllLines(String path)
+        {
+            using var csv = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var sr = new StreamReader(csv);
+            List<string> file = new List<string>();
+            while (!sr.EndOfStream)
+            {
+                file.Add(sr.ReadLine());
+            }
+
+            return file.ToArray();
+        }
+
         internal static string GetTipsServiceFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
@@ -691,6 +716,11 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyimportingservice.json");
         }
 
+        internal static string GetBasegameIdentificationCacheFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "basegamefileidentificationservice.json");
+        }
+
         internal static bool CanFetchContentThrottleCheck()
         {
             var lastContentCheck = Settings.LastContentCheck;
@@ -718,6 +748,10 @@ namespace MassEffectModManagerCore
         public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
         public static string GetME2ModsDirectory() => Path.Combine(GetModsDirectory(), "ME2");
 
+        /// <summary>
+        /// Returns location where we will store the 7z.dll. Does not check for existence
+        /// </summary>
+        /// <returns></returns>
         internal static string Get7zDllPath()
         {
             return Path.Combine(GetDllDirectory(), "7z.dll");
@@ -742,28 +776,56 @@ namespace MassEffectModManagerCore
             }
         }
 
+
+        private static (bool isRunning, DateTime lastChecked) me1RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static (bool isRunning, DateTime lastChecked) me2RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static (bool isRunning, DateTime lastChecked) me3RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static int TIME_BETWEEN_PROCESS_CHECKS = 5;
         /// <summary>
-        /// Determines if a specific game is running. 
+        /// Determines if a specific game is running. This method only updates every 3 seconds due to the huge overhead it has
         /// </summary>
         /// <returns>True if running, false otherwise</returns>
         public static bool IsGameRunning(Mod.MEGame gameID)
         {
-            if (gameID == Mod.MEGame.ME1)
+            (bool isRunning, DateTime lastChecked) runningInfo = (false, DateTime.MinValue.AddSeconds(5));
+            switch (gameID)
             {
-                Process[] pname = Process.GetProcessesByName("MassEffect");
-                return pname.Length > 0;
+                case Mod.MEGame.ME1:
+                    runningInfo = me1RunningInfo;
+                    break;
+                case Mod.MEGame.ME2:
+                    runningInfo = me2RunningInfo;
+                    break;
+                case Mod.MEGame.ME3:
+                    runningInfo = me3RunningInfo;
+                    break;
             }
-            if (gameID == Mod.MEGame.ME2)
+
+            var time = runningInfo.lastChecked.AddSeconds(TIME_BETWEEN_PROCESS_CHECKS);
+            //Debug.WriteLine(time + " vs " + DateTime.Now);
+            if (time > DateTime.Now)
             {
-                Process[] pname = Process.GetProcessesByName("MassEffect2");
-                Process[] pname2 = Process.GetProcessesByName("ME2Game");
-                return pname.Length > 0 || pname2.Length > 0;
+                //Debug.WriteLine("CACHED");
+                return runningInfo.isRunning; //cached
             }
-            else
+            //Debug.WriteLine("IsRunning: " + gameID);
+
+            var processNames = MEDirectories.ExecutableNames(gameID).Select(x => Path.GetFileNameWithoutExtension(x));
+            runningInfo.isRunning = Process.GetProcesses().Any(x => processNames.Contains(x.ProcessName));
+            runningInfo.lastChecked = DateTime.Now;
+            switch (gameID)
             {
-                Process[] pname = Process.GetProcessesByName("MassEffect3");
-                return pname.Length > 0;
+                case Mod.MEGame.ME1:
+                    me1RunningInfo = runningInfo;
+                    break;
+                case Mod.MEGame.ME2:
+                    me2RunningInfo = runningInfo;
+                    break;
+                case Mod.MEGame.ME3:
+                    me3RunningInfo = runningInfo;
+                    break;
             }
+            return runningInfo.isRunning;
         }
 
         internal static string GetAppDataFolder(bool createIfMissing = true)
@@ -948,7 +1010,7 @@ namespace MassEffectModManagerCore
             if (File.Exists(cacheFile))
             {
                 OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
-                foreach (var file in File.ReadAllLines(cacheFile))
+                foreach (var file in Utilities.WriteSafeReadAllLines(cacheFile))
                 {
                     //Validate game directory
                     if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(file, StringComparison.InvariantCultureIgnoreCase)))
@@ -993,29 +1055,35 @@ namespace MassEffectModManagerCore
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) File.Create(cachefile).Close();
-            var savedTargets = File.ReadAllLines(cachefile).ToList();
+            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
-
-            if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
+            try
             {
-                savedTargets.Add(path);
-                Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
-                try
+                if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
                 {
-                    File.WriteAllLines(cachefile, savedTargets);
-                }
-                catch (Exception e)
-                {
-                    Thread.Sleep(300);
+                    savedTargets.Add(path);
+                    Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
                     try
                     {
                         File.WriteAllLines(cachefile, savedTargets);
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
-                        Log.Error("Could not save cached targets on retry: " + e.Message);
+                        Thread.Sleep(300);
+                        try
+                        {
+                            File.WriteAllLines(cachefile, savedTargets);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Could not save cached targets on retry: " + e.Message);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to read/add cached target: " + e.Message);
             }
         }
 
@@ -1024,7 +1092,7 @@ namespace MassEffectModManagerCore
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) return; //can't do anything.
-            var savedTargets = File.ReadAllLines(cachefile).ToList();
+            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
 
             int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
@@ -1409,7 +1477,6 @@ namespace MassEffectModManagerCore
                 }
                 File.WriteAllText(settingspath, ini.ToString());
                 Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
-
             }
 
             return true;

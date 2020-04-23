@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using Serilog;
 
 namespace MassEffectModManagerCore.GameDirectories
 
@@ -17,7 +19,7 @@ namespace MassEffectModManagerCore.GameDirectories
             switch (game)
             {
                 case Mod.MEGame.ME1:
-                    return forcedPath != null? ME1Directory.CookedPath(forcedPath) : ME1Directory.cookedPath;
+                    return forcedPath != null ? ME1Directory.CookedPath(forcedPath) : ME1Directory.cookedPath;
                 case Mod.MEGame.ME2:
                     return forcedPath != null ? ME2Directory.CookedPath(forcedPath) : ME2Directory.cookedPath;
                 case Mod.MEGame.ME3:
@@ -277,6 +279,131 @@ namespace MassEffectModManagerCore.GameDirectories
             if (game == Mod.MEGame.ME1) return Path.Combine(gameRoot, @"DLC");
             if (game == Mod.MEGame.ME2 || game == Mod.MEGame.ME3) return Path.Combine(gameRoot, "BioGame", @"DLC");
             return null;
+        }
+
+        public static string ALOTMarkerPath(GameTarget selectedDiagnosticTarget)
+        {
+            switch (selectedDiagnosticTarget.Game)
+            {
+                case Mod.MEGame.ME1:
+                    return Path.Combine(selectedDiagnosticTarget.TargetPath, @"BioGame\CookedPC\testVolumeLight_VFX.upk");
+                case Mod.MEGame.ME2:
+                    return Path.Combine(selectedDiagnosticTarget.TargetPath, @"BioGame\CookedPC\BIOC_Materials.pcc");
+                case Mod.MEGame.ME3:
+                    return Path.Combine(selectedDiagnosticTarget.TargetPath, @"BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc");
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// ME1: BioEngine.ini, ME2/3: GameSettings.ini
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal static string LODConfigFile(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect\Config\BIOEngine.ini");
+                case Mod.MEGame.ME2:
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect 2\BIOGame\Config\GamerSettings.ini");
+                case Mod.MEGame.ME3:
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect 3\BIOGame\Config\GamerSettings.ini");
+                default:
+                    return null;
+            }
+        }
+
+        public static string[] ExecutableNames(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return new[] { "MassEffect.exe" };
+                case Mod.MEGame.ME2:
+                    return new[] { "MassEffect2.exe", "ME2Game.exe" };
+                case Mod.MEGame.ME3:
+                    return new[] { "MassEffect3.exe" };
+                default:
+                    return null;
+            }
+        }
+
+        public static Dictionary<string, MetaCMM> GetMetaMappedInstalledDLC(GameTarget target)
+        {
+            var installedDLC = GetInstalledDLC(target);
+            var metamap = new Dictionary<string, MetaCMM>();
+            var dlcpath = DLCPath(target);
+            foreach (var v in installedDLC)
+            {
+                var meta = Path.Combine(dlcpath, v, "_metacmm.txt");
+                MetaCMM mf = null;
+                if (File.Exists(meta))
+                {
+                    mf = new MetaCMM(meta);
+                }
+
+                metamap[v] = mf;
+            }
+
+            return metamap;
+        }
+
+        /// <summary>
+        /// Gets a list of superceding package files from the DLC of the game. Only files in DLC mods are returned
+        /// </summary>
+        /// <param name="target">Target to get supercedances for</param>
+        /// <returns>Dictionary mapping filename to list of DLCs that contain that file, in order of highest priority to lowest</returns>
+        public static Dictionary<string, List<string>> GetFileSupercedances(GameTarget target)
+        {
+            //make dictionary from basegame files
+            var fileListMapping = new CaseInsensitiveDictionary<List<string>>();
+            var directories = MELoadedFiles.GetEnabledDLC(target).OrderBy(dir => MELoadedFiles.GetMountPriority(dir, target.Game));
+            foreach (string directory in directories)
+            {
+                var dlc = Path.GetFileName(directory);
+                if (MEDirectories.OfficialDLC(target.Game).Contains(dlc)) continue; //skip
+                foreach (string filePath in MELoadedFiles.GetCookedFiles(target.Game, directory, false))
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    if (fileName != null && fileName.RepresentsPackageFilePath())
+                    {
+                        if (fileListMapping.TryGetValue(fileName, out var supercedingList))
+                        {
+                            supercedingList.Insert(0, dlc);
+                        }
+                        else
+                        {
+                            fileListMapping[fileName] = new List<string>(new[] { dlc });
+                        }
+                    }
+                }
+            }
+
+            return fileListMapping;
+        }
+
+        public static Dictionary<string, int> GetMountPriorities(GameTarget selectedTarget)
+        {
+            //make dictionary from basegame files
+            var dlcmods = VanillaDatabaseService.GetInstalledDLCMods(selectedTarget);
+            var mountMapping = new Dictionary<string, int>();
+            foreach (var dlc in dlcmods)
+            {
+                var mountpath = Path.Combine(MEDirectories.DLCPath(selectedTarget), dlc);
+                try
+                {
+                    mountMapping[dlc] = MELoadedFiles.GetMountPriority(mountpath, selectedTarget.Game);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception getting mount priority from file: {mountpath}: {e.Message}");
+                }
+            }
+
+            return mountMapping;
         }
     }
 }

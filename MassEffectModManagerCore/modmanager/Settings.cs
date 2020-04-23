@@ -114,6 +114,15 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _darkTheme, value);
         }
 
+        private static bool _autoUpdateLods = true;
+        public static bool AutoUpdateLODs
+        {
+            get => _autoUpdateLods;
+            set => SetProperty(ref _autoUpdateLods, value);
+        }
+
+        
+
 
         private static string _modLibraryPath;
         public static string ModLibraryPath
@@ -167,6 +176,7 @@ namespace MassEffectModManagerCore.modmanager
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
+            AutoUpdateLODs = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", true);
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
             UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
@@ -182,7 +192,6 @@ namespace MassEffectModManagerCore.modmanager
 
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
-
             Loaded = true;
         }
 
@@ -318,7 +327,7 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
                 SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
-
+                SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", AutoUpdateLODs);
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
             }
             catch (Exception e)

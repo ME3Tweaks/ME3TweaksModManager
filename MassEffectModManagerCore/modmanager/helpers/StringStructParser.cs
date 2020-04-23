@@ -24,6 +24,26 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return inputString.Split(';').ToList();
         }
 
+        public static string BuildCommaSeparatedSplitValueList(Dictionary<string, string> keys)
+        {
+            string str = "(";
+            bool first = true;
+            foreach (var kp in keys)
+            {
+                if (first)
+                {
+                    first = false;
+                } else
+                {
+                    str += ",";
+                }
+                str += kp.Key;
+                str += "=";
+                str += kp.Value;
+            }
+            return str + ")";
+        }
+
         /// <summary>
         /// Gets a dictionary of command split value keypairs. Can accept incoming string with 1 or 2 () outer parenthesis
         /// </summary>

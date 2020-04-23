@@ -91,6 +91,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string modulenumber { get; set; } //ME2 only
             public string preventimport { get; set; }
             public string updatecode { get; set; } //has to be string I guess
+            /// <summary>
+            /// Do not use this attribute, use IsOutdated instead.
+            /// </summary>
+            public string outdated { get; set; }
+
+            public bool IsOutdated => string.IsNullOrWhiteSpace(outdated) ? true : int.Parse(outdated) != 0;
 
             public int MountPriorityInt => string.IsNullOrWhiteSpace(mountpriority) ? 0 : int.Parse(mountpriority);
             public string StarterKitString => $"{MountPriorityInt} - {modname}{(modulenumber != null ? " - Module # " + modulenumber : "")}"; //not worth localizing

@@ -24,8 +24,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class LogUploader : MMBusyPanelBase
     {
         public bool UploadingLog { get; private set; }
-        public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
+        public string CollectionStatusMessage { get; set; }
+        //public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
+        public ObservableCollectionExtended<GameTarget> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public LogUploader()
         {
             DataContext = this;
@@ -39,16 +41,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AvailableLogs.ClearEx();
             var directory = new DirectoryInfo(App.LogDir);
             var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
+            AvailableLogs.Add(new LogItem(M3L.GetString(M3L.string_selectAnApplicationLog)) { Selectable = false });
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
-            if (LogSelector_ComboBox.Items.Count > 0)
-            {
-                LogSelector_ComboBox.SelectedIndex = 0;
-            }
+            SelectedLog = AvailableLogs.FirstOrDefault();
+            var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
+            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false));
+            DiagnosticTargets.AddRange(targets);
+            SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
+            //if (LogSelector_ComboBox.Items.Count > 0)
+            //{
+            //    LogSelector_ComboBox.SelectedIndex = 0;
+            //}
         }
 
         public ICommand UploadLogCommand { get; set; }
         public ICommand CancelUploadCommand { get; set; }
         public LogItem SelectedLog { get; set; }
+        public GameTarget SelectedDiagnosticTarget { get; set; }
 
         private void LoadCommands()
         {
@@ -74,19 +83,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void StartLogUpload(bool isPreviousCrashLog = false)
         {
             UploadingLog = true;
-            TopText = M3L.GetString(M3L.string_collectingLogInformation);
+            //TopText = M3L.GetString(M3L.string_collectingLogInformation);
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"LogUpload");
             bw.DoWork += (a, b) =>
             {
-                Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
-                string logUploadText = LogCollector.CollectLogs(SelectedLog.filepath);
-                if (logUploadText != null)
+                void updateStatusCallback(string status)
                 {
-                    var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logUploadText));
+                    CollectionStatusMessage = status;
+                }
+                StringBuilder logUploadText = new StringBuilder();
+                if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown)
+                {
+                    Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
+                    logUploadText.Append("[MODE]diagnostics\n"); //do not localize
+                    logUploadText.Append(LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck, updateStatusCallback));
+                    logUploadText.Append("\n"); //do not localize
+                }
+
+                if (SelectedLog != null && SelectedLog.Selectable)
+                {
+                    Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
+                    logUploadText.Append("[MODE]logs\n"); //do not localize
+                    logUploadText.AppendLine(LogCollector.CollectLogs(SelectedLog.filepath));
+                    logUploadText.Append("\n"); //do not localize
+                }
+
+                var logtext = logUploadText.ToString();
+                if (logtext != null)
+                {
+                    CollectionStatusMessage = M3L.GetString(M3L.string_compressingForUpload);
+                    var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logtext));
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
+                        //DEBUG ONLY!!!
+                        CollectionStatusMessage = M3L.GetString(M3L.string_uploadingToME3Tweaks);
+
+#if DEBUG
+                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload2.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+#else
                         string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+#endif
                         Uri uriResult;
                         bool result = Uri.TryCreate(responseString, UriKind.Absolute, out uriResult)
                                       && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
@@ -140,29 +177,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Result is string response)
                 {
-                    if (b.Result is string response)
+                    if (response.StartsWith(@"http"))
                     {
-                        if (response.StartsWith(@"http"))
-                        {
-                            Utilities.OpenWebpage(response);
-                        }
-                        else
-                        {
-                            OnClosing(DataEventArgs.Empty);
-                            var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
+                        Utilities.OpenWebpage(response);
                     }
-                    OnClosing(DataEventArgs.Empty);
-                };
+                    else
+                    {
+                        OnClosing(DataEventArgs.Empty);
+                        var res = M3L.ShowDialog(Window.GetWindow(this), response, M3L.GetString(M3L.string_logUploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                }
+                OnClosing(DataEventArgs.Empty);
+            };
             bw.RunWorkerAsync();
         }
 
-        private bool CanUploadLog()
-        {
-            return LogSelector_ComboBox.SelectedItem != null && !UploadingLog;
-        }
+        public bool TextureCheck { get; set; } = true;
+
+        private bool CanUploadLog() => !UploadingLog && ((SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown) || (SelectedLog != null && SelectedLog.Selectable));
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -180,6 +216,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public class LogItem
         {
+            public bool Selectable { get; set; } = true;
             public string filepath;
             public LogItem(string filepath)
             {
@@ -188,6 +225,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public override string ToString()
             {
+                if (!Selectable) return filepath;
                 return Path.GetFileName(filepath) + @" - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
             }
         }

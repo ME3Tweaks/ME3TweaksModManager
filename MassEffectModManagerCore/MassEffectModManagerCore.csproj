@@ -10,8 +10,8 @@
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
-    <AssemblyVersion>6.0.0.104</AssemblyVersion>
-    <FileVersion>6.0.0.104</FileVersion>
+    <AssemblyVersion>6.0.0.105</AssemblyVersion>
+    <FileVersion>6.0.0.105</FileVersion>
     <Copyright>ME3Tweaks 2012 - 2020</Copyright>
     <Authors>Mgamerz</Authors>
     <PackageId>MassEffectModManagerCore</PackageId>
@@ -21,7 +21,8 @@
     <StartupObject>MassEffectModManagerCore.App</StartupObject>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
     <AssemblyName>ME3TweaksModManager</AssemblyName>
-    <Version>6.0.0.104</Version>
+    <Version>6.0.0.105</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -44,6 +45,7 @@
     <None Remove="bundleddlls\sevenzipwrapper.dll" />
     <None Remove="bundleddlls\zlibwrapper.dll" />
     <None Remove="images\darktheme.png" />
+    <None Remove="images\dvd.png" />
     <None Remove="images\gameicons\ME1_48.ico" />
     <None Remove="images\gameicons\ME2_48.ico" />
     <None Remove="images\gameicons\ME3_48.ico" />
@@ -54,7 +56,9 @@
     <None Remove="images\modmaker.png" />
     <None Remove="images\nexusmods_scenethemed.png" />
     <None Remove="images\origin.png" />
+    <None Remove="images\steam.png" />
     <None Remove="images\terminal.png" />
+    <None Remove="images\unknown.png" />
     <None Remove="images\windowicon.png" />
     <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
     <None Remove="modmanager\asi\manifest.xml" />
@@ -90,6 +94,8 @@
     <None Remove="modmanager\starterkit\StarterKitTLK.xml" />
     <None Remove="modmanager\toolicons\alot_32.png" />
     <None Remove="modmanager\toolicons\alot_big.png" />
+    <None Remove="modmanager\toolicons\egmsettings_32.png" />
+    <None Remove="modmanager\toolicons\egmsettings_big.png" />
     <None Remove="modmanager\toolicons\masseffectinimodder_32.png" />
     <None Remove="modmanager\toolicons\masseffectinimodder_big.png" />
     <None Remove="modmanager\toolicons\masseffectmodder_32.png" />
@@ -104,6 +110,8 @@
     <None Remove="updater\ME3TweaksUpdater.exe" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\dvd.png" />
+    <Resource Include="images\steam.png" />
     <Resource Include="images\terminal.png" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +121,7 @@
     <Resource Include="images\me3tweaks.png" />
     <Resource Include="images\modmaker.png" />
     <Resource Include="images\nexusmods_scenethemed.png" />
+    <Resource Include="images\unknown.png" />
     <Resource Include="images\windowicon.png" />
   </ItemGroup>
 
@@ -156,28 +165,31 @@
 
   <ItemGroup>
     <PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
-    <PackageReference Include="ByteSize" Version="1.3.0" />
-    <PackageReference Include="CommandLineParser" Version="2.6.0" />
+    <PackageReference Include="ByteSize" Version="2.0.0" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="ComputerInfo" Version="0.1.0-prerelease" />
+    <PackageReference Include="ConsoleAppLauncher" Version="1.0.6354.408" />
     <PackageReference Include="Flurl" Version="2.8.2" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
-    <PackageReference Include="Fody" Version="6.0.5">
+    <PackageReference Include="Fody" Version="6.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
-    <PackageReference Include="Microsoft.AppCenter" Version="2.6.4" />
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="2.6.4" />
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="2.6.4" />
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.2" />
-    <PackageReference Include="MvvmValidation" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AppCenter" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="3.1.0" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.3" />
+    <PackageReference Include="MvvmValidation" Version="3.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Octokit" Version="0.36.0" />
-    <PackageReference Include="Pathoschild.FluentNexus" Version="0.8.0" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.2.1" />
+    <PackageReference Include="Octokit" Version="0.47.0" />
+    <PackageReference Include="Pathoschild.FluentNexus" Version="1.0.0" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.2.8" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile.Extension" Version="2.0.2" />
     <PackageReference Include="SSH.NET" Version="2016.1.0" />
+    <PackageReference Include="WatsonWebsocket" Version="2.1.5" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.0" />
@@ -210,6 +222,8 @@
     <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
     <Resource Include="modmanager\toolicons\alot_32.png" />
     <Resource Include="modmanager\toolicons\alot_big.png" />
+    <Resource Include="modmanager\toolicons\egmsettings_32.png" />
+    <Resource Include="modmanager\toolicons\egmsettings_big.png" />
     <Resource Include="modmanager\toolicons\masseffectinimodder_32.png" />
     <Resource Include="modmanager\toolicons\masseffectmodder_32.png" />
     <Resource Include="modmanager\toolicons\masseffectmodder_big.png" />

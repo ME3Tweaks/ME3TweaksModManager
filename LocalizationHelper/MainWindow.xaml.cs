@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,6 +31,7 @@ namespace LocalizationHelper
     {
         public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
         public string SelectedFile { get; set; }
+
         public MainWindow()
         {
             //var text = File.ReadAllLines(@"C:\users\mgame\desktop\unrealkeys");
@@ -149,9 +151,9 @@ namespace LocalizationHelper
                                      && text.Length > 1
                                      && isNotLangWord(text)
                                      && isNotGameName(text)
-                        && text != "BioGame"
-                        && text != "BioParty"
-                        && text != "BioEngine" && text != "DLC_MOD_")
+                                     && text != "BioGame"
+                                     && text != "BioParty"
+                                     && text != "BioEngine" && text != "DLC_MOD_")
                     {
                         localizations[text] = $"string_{toCamelCase(text)}";
                         //item.Attribute("Text").Value = $"{{DynamicResource {localizations[text]}}}";
@@ -162,8 +164,11 @@ namespace LocalizationHelper
                 StringBuilder sb = new StringBuilder();
                 foreach (var v in localizations)
                 {
-                    sb.AppendLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:String>");
+                    var newlines = v.Key.Contains("\n");
+                    var text = v.Key.Replace("\r\n", "&#10;").Replace("\n", "&#10;");
+                    sb.AppendLine("\t<system:String " + (newlines ? "xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
                 }
+
                 StringsTextBox.Text = sb.ToString();
                 if (string.IsNullOrEmpty(sb.ToString()))
                 {
@@ -198,6 +203,7 @@ namespace LocalizationHelper
                 m3llines.Add($"\t\tpublic static readonly string {keyStr} = \"{keyStr}\";");
                 //Debug.WriteLine(keyStr);
             }
+
             //Write end of .cs file lines
             m3llines.Add("\t}");
             m3llines.Add("}");
@@ -322,7 +328,7 @@ namespace LocalizationHelper
                             else if (newStr[pos] == '}')
                             {
                                 //closing!
-                                substitutions.Add(newStr.Substring(openbracepos + 1, pos - (openbracepos + 1)));
+                                substitutions.Add(newStr.Substring(openbracepos, pos - openbracepos + 1));
                                 openbracepos = -1;
                             }
 
@@ -336,7 +342,7 @@ namespace LocalizationHelper
                         string subbedStr = newStr;
                         foreach (var substitution in substitutions)
                         {
-                            subbedStr = subbedStr.Replace(substitution, num.ToString()); //already in { }
+                            subbedStr = subbedStr.Replace(substitution, "{" + num.ToString() + "}"); //replacing a {str} with {#}
                             comment += " " + num + "=" + substitution;
                             num++;
                         }
@@ -363,11 +369,13 @@ namespace LocalizationHelper
             {
                 sb.AppendLine("<!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->");
             }
+
             foreach (var str in origStrForSubsOnly)
             {
                 //interps
                 sb.AppendLine(str);
             }
+
             StringsTextBox.Text = sb.ToString();
             if (string.IsNullOrEmpty(sb.ToString()))
             {
@@ -418,6 +426,7 @@ namespace LocalizationHelper
             {
                 return string.Empty;
             }
+
             // Return char and concat substring.
             return (upper ? char.ToUpper(s[0]) : char.ToLower(s[0])) + s.Substring(1);
         }
@@ -434,6 +443,7 @@ namespace LocalizationHelper
             {
                 Debug.WriteLine(str.Value);
             }
+
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
@@ -479,16 +489,20 @@ namespace LocalizationHelper
                                 substitutions.Add(str.Substring(openbracepos + 1, pos - (openbracepos + 1)));
                                 openbracepos = -1;
                             }
+
                             pos++;
                         }
+
                         foreach (var subst in substitutions)
                         {
                             m3lcodestr += ", " + subst;
                         }
+
                         m3lcodestr += ")";
                         newline = newline.Replace(str, m3lcodestr);
                     }
                 }
+
                 sb.AppendLine(newline);
             }
 
@@ -502,7 +516,7 @@ namespace LocalizationHelper
             XDocument xdoc = XDocument.Parse(sourceStringsXaml);
             XNamespace system = "clr-namespace:System;assembly=System.Runtime";
             XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
-            var lstrings = xdoc.Root.Descendants(system + "String");
+            var lstrings = xdoc.Root.Descendants(system + "String").ToList();
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
@@ -530,8 +544,14 @@ namespace LocalizationHelper
                         }
                     }
                 }
-                ResultTextBox.Text = doc.ToString();
 
+                var xml = doc.ToString();
+                XmlDocument xmldoc = new XmlDocument();
+                xmldoc.PreserveWhitespace = true;
+                xmldoc.XmlResolver = null;
+                xmldoc.LoadXml(doc.ToString());
+
+                ResultTextBox.Text = Beautify(xmldoc);
             }
             catch (Exception ex)
             {
@@ -540,17 +560,74 @@ namespace LocalizationHelper
 
         }
 
+        public static string Beautify(System.Xml.XmlDocument doc)
+        {
+            string strRetValue = null;
+            System.Text.Encoding enc = System.Text.Encoding.UTF8;
+            // enc = new System.Text.UTF8Encoding(false);
+
+            System.Xml.XmlWriterSettings xmlWriterSettings = new System.Xml.XmlWriterSettings();
+            xmlWriterSettings.Encoding = enc;
+            xmlWriterSettings.Indent = true;
+            xmlWriterSettings.IndentChars = "    ";
+            xmlWriterSettings.NewLineChars = "\r\n";
+            xmlWriterSettings.NewLineOnAttributes = true;
+            xmlWriterSettings.NewLineHandling = System.Xml.NewLineHandling.Replace;
+            //xmlWriterSettings.OmitXmlDeclaration = true;
+            xmlWriterSettings.ConformanceLevel = System.Xml.ConformanceLevel.Document;
+
+
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            {
+                using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(ms, xmlWriterSettings))
+                {
+                    doc.Save(writer);
+                    writer.Flush();
+                    ms.Flush();
+
+                    writer.Close();
+                } // End Using writer
+
+                ms.Position = 0;
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(ms, enc))
+                {
+                    // Extract the text from the StreamReader.
+                    strRetValue = sr.ReadToEnd();
+
+                    sr.Close();
+                } // End Using sr
+
+                ms.Close();
+            } // End Using ms
+
+
+            /*
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(); // Always yields UTF-16, no matter the set encoding
+            using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(sb, settings))
+            {
+                doc.Save(writer);
+                writer.Close();
+            } // End Using writer
+            strRetValue = sb.ToString();
+            sb.Length = 0;
+            sb = null;
+            */
+
+            xmlWriterSettings = null;
+            return strRetValue;
+        } // End Function Beautify
+
         private void Check_Clicked(object sender, RoutedEventArgs e)
         {
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             string[] dirs =
-                {
+            {
                 Path.Combine(M3folder, "modmanager", "usercontrols"),
                 Path.Combine(M3folder, "modmanager", "objects"),
                 Path.Combine(M3folder, "modmanager", "windows")
-                };
+            };
 
             int i = 0;
             foreach (var dir in dirs)
@@ -560,6 +637,7 @@ namespace LocalizationHelper
                 {
                     csFiles.Add(Path.Combine(M3folder, "MainWindow.xaml.cs"));
                 }
+
                 i++;
                 foreach (var csFile in csFiles)
                 {
@@ -636,13 +714,14 @@ namespace LocalizationHelper
                             string tooltip = (string)item.Attribute("ToolTip");
                             string content = (string)item.Attribute("Content");
                             string text = (string)item.Attribute("Text");
+                            string watermark = (string)item.Attribute("Watermark");
 
                             if (header != null && !header.StartsWith("{")
                                                && header != "+"
                                                && isNotLangWord(header)
-                                                && isNotGameName(header)
+                                               && isNotGameName(header)
                                                && header != "Reload selected mod" //debug only
-                                )
+                            )
                             {
                                 localizations[header] = $"string_{toCamelCase(header)}";
                                 item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
@@ -663,6 +742,14 @@ namespace LocalizationHelper
                             {
                                 localizations[content] = $"string_{toCamelCase(content)}";
                                 item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
+                            }
+
+                            if (watermark != null && !watermark.StartsWith("{")
+                                                  && watermark.Length > 1
+                            )
+                            {
+                                localizations[watermark] = $"string_{toCamelCase(watermark)}";
+                                item.Attribute("Watermark").Value = $"{{DynamicResource {localizations[watermark]}}}";
                             }
 
                             if (text != null && !text.StartsWith("{")
@@ -748,6 +835,37 @@ namespace LocalizationHelper
         private void OpenLoalizationUI_Clicked(object sender, RoutedEventArgs e)
         {
             new LocalizationTablesUI().Show();
+        }
+        
+        private void PerformINTDiff_Clicked(object sender, RoutedEventArgs e)
+        {
+            string oldfile = null, newfile = null;
+            OpenFileDialog oldFileDialog = new OpenFileDialog()
+            {
+                Title = "Select OLD localization file",
+                Filter = "Xaml files|*.xaml"
+            };
+            if (oldFileDialog.ShowDialog() == true)
+            {
+                oldfile = oldFileDialog.FileName;
+            }
+
+            if (oldfile == null) return;
+            OpenFileDialog newFileDialog = new OpenFileDialog()
+            {
+                Title = "Select NEW localization file",
+                Filter = "Xaml files|*.xaml"
+            };
+            if (newFileDialog.ShowDialog() == true)
+            {
+                newfile = newFileDialog.FileName;
+            }
+
+            if (newfile == null) return;
+            var result = LocalizationFileDiff.generateDiff(oldfile, newfile);
+
+            Debug.WriteLine(result);
+
         }
     }
 }

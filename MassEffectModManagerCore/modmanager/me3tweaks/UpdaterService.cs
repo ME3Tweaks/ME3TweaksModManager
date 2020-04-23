@@ -265,6 +265,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             string serverRoot = UpdateStorageRoot + updateInfo.serverfolder + '/';
             bool cancelDownloading = false;
             var stagedFileMapping = new ConcurrentDictionary<string, string>();
+            foreach (var sf in updateInfo.applicableUpdates)
+            {
+                sf.AmountDownloaded = 0; //reset in the event this is a second attempt
+            }
             Parallel.ForEach(updateInfo.applicableUpdates, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (sourcefile) =>
             {
                 if (!cancelDownloading)

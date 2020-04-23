@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 foreach (var reqDlc in requiredDLC)
                 {
                     if (reqDlc == @"DLC_TestPatch") continue; //don't do this one
-                    var reqDlcSfar = Path.Combine(dlcFolderPath, reqDlc, "CookedPCConsole", "Default.sfar");
+                    var reqDlcSfar = Path.Combine(dlcFolderPath, reqDlc, @"CookedPCConsole", @"Default.sfar");
                     if (!File.Exists(reqDlcSfar))
                     {
                         missingDlc.Add($@"{reqDlc} ({ME3Directory.OfficialDLCNames[reqDlc]})");
@@ -162,30 +162,30 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
                     Debug.WriteLine(tm);
                     if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
-                    if (tm == null || tm == "DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
                     {
                         mixincount++;
                     }
                     else
                     {
-                        Debug.WriteLine("Not adding " + tm);
+                        Debug.WriteLine(@"Not adding " + tm);
                     }
                 }
 
                 var dmixins = mixinNode.Elements(@"DynamicMixIn");
                 foreach (var mixin in dmixins)
                 {
-                    var tmtext = mixin.Attribute("targetmodule");
+                    var tmtext = mixin.Attribute(@"targetmodule");
                     var tm = ModmakerChunkNameToDLCFoldername(tmtext.Value);
                     if (tm != null) requiredDLCFolders.Add(tm); //null is basegame or balance changes
                     Debug.WriteLine(tm);
-                    if (tm == null || tm == "DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
                     {
                         mixincount++;
                     }
                     else
                     {
-                        Debug.WriteLine("Not adding " + tm);
+                        Debug.WriteLine(@"Not adding " + tm);
                     }
                 }
                 numTasks += mixincount * MIXIN_OVERALL_WEIGHT; //Mixin is 1 unit.
@@ -199,13 +199,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var foldername = ModmakerChunkNameToDLCFoldername(job.Name.LocalName);
                     if (foldername != null) requiredDLCFolders.Add(foldername);
-                    if (job.Name.LocalName == "BASEGAME" || job.Name.LocalName == "BALANCE_CHANGES" || job.Name.LocalName == "TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
+                    if (job.Name.LocalName == @"BASEGAME" || job.Name.LocalName == @"BALANCE_CHANGES" || job.Name.LocalName == @"TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
                     {
                         numTasks += job.Elements().Count() * COALESCED_CHUNK_OVERALL_WEIGHT;
                     }
                     else
                     {
-                        Debug.WriteLine("Not adding " + foldername);
+                        Debug.WriteLine(@"Not adding " + foldername);
                     }
                 }
             }
@@ -407,7 +407,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         CLog.Information(@"Found coalesced modifier for DLC: " + node.Name,
                             Settings.LogModMakerCompiler);
                         var foldername = ModmakerChunkNameToDLCFoldername(job.Name.LocalName);
-                        if (job.Name.LocalName == "BASEGAME" || job.Name.LocalName == "BALANCE_CHANGES" || job.Name.LocalName == "TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
+                        if (job.Name.LocalName == @"BASEGAME" || job.Name.LocalName == @"BALANCE_CHANGES" || job.Name.LocalName == @"TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
                         {
                             jobCollection.Add(node);
                             totalNumCoalescedFileChunks += node.Elements().Count();
@@ -1038,7 +1038,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ini[@"ModInfo"][@"game"] = @"ME3";
             ini[@"ModInfo"][@"modname"] = modName;
             ini[@"ModInfo"][@"moddev"] = modDev;
-            ini[@"ModInfo"][@"moddesc"] = modDescription;
+            ini[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(modDescription);
             ini[@"ModInfo"][@"modver"] = modVersion;
             ini[@"ModInfo"][@"modid"] = code.ToString();
             ini[@"ModInfo"][@"compiledagainst"] = modmakerServerVer;

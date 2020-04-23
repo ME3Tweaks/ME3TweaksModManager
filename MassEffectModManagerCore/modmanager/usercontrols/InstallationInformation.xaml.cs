@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -66,22 +67,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RemoveTarget()
         {
             Utilities.RemoveCachedTarget(SelectedTarget);
-            foreach (var installationTarget in InstallationTargets)
-            {
-                SelectedTarget.ModifiedBasegameFilesView.Filter = null;
-                installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
-            }
-            OnClosing(new DataEventArgs(@"ReloadTargets"));
+            ClosePanel(new DataEventArgs(@"ReloadTargets"));
         }
 
-        private void ClosePanel()
+        private void ClosePanel() { ClosePanel(DataEventArgs.Empty); }
+
+        private void ClosePanel(DataEventArgs args)
         {
             foreach (var installationTarget in InstallationTargets)
             {
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
                 installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
             }
-            OnClosing(DataEventArgs.Empty);
+            
+            OnClosing(args);
         }
 
         private bool RestoreAllBasegameInProgress;
@@ -110,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RestoreAllBasegame()
         {
             bool restore = false;
-            if (SelectedTarget.ALOTInstalled)
+            if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
                 {
@@ -162,7 +161,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RestoreAllSFARs()
         {
             bool restore = false;
-            if (SelectedTarget.ALOTInstalled)
+            if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
                 {
@@ -204,7 +203,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
-                if (SelectedTarget.ALOTInstalled)
+                if (SelectedTarget.TextureModded)
                 {
                     var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_deletingXwhileAlotInstalledUnsupported, mod.ModName), M3L.GetString(M3L.string_deletingWillPutAlotInUnsupportedConfig), MessageBoxButton.YesNo, MessageBoxImage.Error);
                     return res == MessageBoxResult.Yes;
@@ -224,7 +223,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
-                if (SelectedTarget.ALOTInstalled && filepath.RepresentsPackageFilePath())
+                if (SelectedTarget.TextureModded && filepath.RepresentsPackageFilePath())
                 {
                     if (!Settings.DeveloperMode)
                     {
@@ -249,7 +248,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return false;
                 }
 
-                if (SelectedTarget.ALOTInstalled)
+                if (SelectedTarget.TextureModded)
                 {
                     if (!Settings.DeveloperMode)
                     {
@@ -399,6 +398,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private Mod.MEGame game;
             private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
             private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
+
+            private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
+            private Action notifyDeleted;
             public SolidColorBrush TextColor
             {
                 get
@@ -450,46 +452,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     InstalledByManagedSolution = true;
                     InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
-                    //Parse MetaCMM
-                    var lines = File.ReadAllLines(metaFile).ToList();
-                    int i = 0;
-                    //This is a weird way of doing it but it helps ensure backwards compatiblity and forwards compatibility.
-                    foreach (var line in lines)
+                    MetaCMM mcmm = new MetaCMM(metaFile);
+                    if (mcmm.ModName != ModName)
                     {
-                        switch (i)
+                        DLCFolderNameString += $@" ({ModName})";
+                        if (!modNamePrefersTPMI || ModName == null)
                         {
-                            case 0:
-                                if (line != ModName)
-                                {
-                                    DLCFolderNameString += $@" ({ModName})";
-                                    if (!modNamePrefersTPMI || ModName == null)
-                                    {
-                                        ModName = line;
-                                    }
-                                }
-                                break;
-                            case 1:
-                                Version = line;
-                                break;
-                            case 2:
-                                InstallerInstanceBuild = line;
-                                if (int.TryParse(InstallerInstanceBuild, out var mmver))
-                                {
-                                    InstalledBy = M3L.GetString(M3L.string_installedByModManager);
-                                }
-                                else
-                                {
-                                    InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
-                                }
-                                break;
-                            case 3:
-                                InstallerInstanceGUID = line;
-                                break;
-                            default:
-                                Log.Error($@"Unsupported line number in _metacmm.txt: {i}");
-                                break;
+                            ModName = mcmm.ModName;
                         }
-                        i++;
+                    }
+
+                    Version = mcmm.Version;
+                    InstallerInstanceBuild = mcmm.InstalledBy;
+                    if (int.TryParse(InstallerInstanceBuild, out var _))
+                    {
+                        InstalledBy = M3L.GetString(M3L.string_installedByModManager);
+                    }
+                    else
+                    {
+                        InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
                     }
                 }
                 else
@@ -526,8 +507,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             private bool CanToggleDLC() => !Utilities.IsGameRunning(game);
 
-            private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
-            private Action notifyDeleted;
 
             public ICommand DeleteCommand { get; set; }
             public GenericCommand EnableDisableCommand { get; set; }
@@ -546,6 +525,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
             }
+
+            public void ClearHandlers()
+            {
+                deleteConfirmationCallback = null;
+                notifyDeleted = null;
+            }
         }
 
 
@@ -556,7 +541,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SelectedTarget.ModifiedBasegameFilesView.Filter = null;
                 installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
             }
-            OnClosing(new DataEventArgs(@"ALOTInstaller"));
+            ClosePanel(new DataEventArgs(@"ALOTInstaller"));
         }
 
         private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
@@ -568,12 +553,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (e.Key == Key.Escape && CanClose())
             {
-                foreach (var installationTarget in InstallationTargets)
-                {
-                    SelectedTarget.ModifiedBasegameFilesView.Filter = null;
-                    installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
-                }
-                OnClosing(DataEventArgs.Empty);
+                ClosePanel(DataEventArgs.Empty);
             }
         }
 

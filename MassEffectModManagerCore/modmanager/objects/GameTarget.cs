@@ -33,6 +33,19 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string TargetPath { get; }
         public bool RegistryActive { get; set; }
         public string GameSource { get; private set; }
+        public string ExecutableHash { get; private set; }
+
+        public string TargetBootIcon
+        {
+            get
+            {
+                if (GameSource == null) return @"/images/unknown.png";
+                if (GameSource.Contains(@"Steam")) return @"/images/steam.png";
+                if (GameSource.Contains(@"Origin")) return @"/images/origin.png";
+                if (GameSource.Contains(@"DVD")) return @"/images/dvd.png";
+                return @"/images/unknown.png";
+            }
+        }
         public bool Supported => GameSource != null;
         public bool IsPolishME1 { get; private set; }
         public Brush BackgroundColor
@@ -55,6 +68,9 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
+        /// <summary>
+        /// Determines if this gametarget can be chosen in dropdowns
+        /// </summary>
         public bool Selectable { get; internal set; } = true;
         public string ALOTVersion { get; private set; }
         public bool IsCustomOption { get; set; } = false;
@@ -71,10 +87,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
+                var oldTMOption = TextureModded;
                 var alotInfo = GetInstalledALOTInfo();
                 if (alotInfo != null)
                 {
-                    ALOTInstalled = true;
+                    TextureModded = true;
                     ALOTVersion = alotInfo.ToString();
                     if (alotInfo.MEUITMVER > 0)
                     {
@@ -84,7 +101,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 else
                 {
-                    ALOTInstalled = false;
+                    TextureModded = false;
                     ALOTVersion = null;
                     MEUITMInstalled = false;
                     MEUITMVersion = 0;
@@ -93,6 +110,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
 
                 GameSource = hashCheckResult.result;
+                ExecutableHash = hashCheckResult.hash;
                 if (GameSource == null)
                 {
                     Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash);
@@ -105,6 +123,44 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (IsPolishME1)
                 {
                     Log.Information(@"ME1 Polish Edition detected");
+                }
+
+                if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded)
+                {
+                    UpdateLODs();
+                }
+            }
+        }
+
+        public void UpdateLODs(bool me12k = false)
+        {
+            if (!TextureModded)
+            {
+                Utilities.SetLODs(this, false, false, false);
+            }
+            else
+            {
+                if (Game == Mod.MEGame.ME1)
+                {
+                    if (MEUITMInstalled)
+                    {
+                        //detect soft shadows/meuitm
+                        var branchingPCFCommon = Path.Combine(TargetPath, @"Engine", @"Shaders", @"BranchingPCFCommon.usf");
+                        if (File.Exists(branchingPCFCommon))
+                        {
+                            var md5 = Utilities.CalculateMD5(branchingPCFCommon);
+                            Utilities.SetLODs(this, true, me12k, md5 == @"10db76cb98c21d3e90d4f0ffed55d424");
+                            return;
+                        }
+                    }
+
+                    //set default HQ lod
+                    Utilities.SetLODs(this, true, me12k, false);
+                }
+                else
+                {
+                    //me2/3
+                    Utilities.SetLODs(this, true, false, false);
                 }
             }
         }
@@ -119,7 +175,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             return obj.TargetPath.GetHashCode();
         }
 
-        public bool ALOTInstalled { get; private set; }
+        public bool TextureModded { get; private set; }
 
         public ALOTVersionInfo GetInstalledALOTInfo()
         {
@@ -128,49 +184,48 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 try
                 {
-                    using (FileStream fs = new FileStream(gamePath, System.IO.FileMode.Open, FileAccess.Read))
+                    using FileStream fs = new FileStream(gamePath, System.IO.FileMode.Open, FileAccess.Read);
+                    fs.SeekEnd();
+                    long endPos = fs.Position;
+                    fs.Position = endPos - 4;
+                    uint memi = fs.ReadUInt32();
+
+                    if (memi == MEMI_TAG)
                     {
-                        fs.SeekEnd();
-                        long endPos = fs.Position;
-                        fs.Position = endPos - 4;
-                        uint memi = fs.ReadUInt32();
-
-                        if (memi == MEMI_TAG)
+                        //ALOT has been installed
+                        fs.Position = endPos - 8;
+                        short memVersionUsed = fs.ReadInt16();
+                        short installerVersionUsed = fs.ReadInt16();
+                        int perGameFinal4Bytes = -20;
+                        switch (Game)
                         {
-                            //ALOT has been installed
-                            fs.Position = endPos - 8;
-                            int installerVersionUsed = fs.ReadInt32();
-                            int perGameFinal4Bytes = -20;
-                            switch (Game)
-                            {
-                                case Mod.MEGame.ME1:
-                                    perGameFinal4Bytes = 0;
-                                    break;
-                                case Mod.MEGame.ME2:
-                                    perGameFinal4Bytes = 4352;
-                                    break;
-                                case Mod.MEGame.ME3:
-                                    perGameFinal4Bytes = 16777472;
-                                    break;
-                            }
+                            case Mod.MEGame.ME1:
+                                perGameFinal4Bytes = 0;
+                                break;
+                            case Mod.MEGame.ME2:
+                                perGameFinal4Bytes = 4352;
+                                break;
+                            case Mod.MEGame.ME3:
+                                perGameFinal4Bytes = 16777472;
+                                break;
+                        }
 
-                            if (installerVersionUsed >= 10 && installerVersionUsed != perGameFinal4Bytes) //default bytes before 178 MEMI Format
-                            {
-                                fs.Position = endPos - 12;
-                                short ALOTVER = fs.ReadInt16();
-                                byte ALOTUPDATEVER = (byte)fs.ReadByte();
-                                byte ALOTHOTFIXVER = (byte)fs.ReadByte();
+                        if (installerVersionUsed >= 10 && installerVersionUsed != perGameFinal4Bytes) //default bytes before 178 MEMI Format
+                        {
+                            fs.Position = endPos - 12;
+                            short ALOTVER = fs.ReadInt16();
+                            byte ALOTUPDATEVER = (byte)fs.ReadByte();
+                            byte ALOTHOTFIXVER = (byte)fs.ReadByte();
 
-                                //unused for now
-                                fs.Position = endPos - 16;
-                                int MEUITMVER = fs.ReadInt32();
+                            //unused for now
+                            fs.Position = endPos - 16;
+                            int MEUITMVER = fs.ReadInt32();
 
-                                return new ALOTVersionInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER);
-                            }
-                            else
-                            {
-                                return new ALOTVersionInfo(0, 0, 0, 0); //MEMI tag but no info we know of
-                            }
+                            return new ALOTVersionInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, installerVersionUsed, memVersionUsed);
+                        }
+                        else
+                        {
+                            return new ALOTVersionInfo(0, 0, 0, 0, 0, 0); //MEMI tag but no info we know of
                         }
                     }
                 }
@@ -236,6 +291,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             ModifiedBasegameFiles.ClearEx();
             ModifiedSFARFiles.ClearEx();
+            foreach (var uiInstalledDlcMod in UIInstalledDLCMods)
+            {
+                uiInstalledDlcMod.ClearHandlers();
+            }
+            UIInstalledDLCMods.ClearEx();
         }
 
         public ObservableCollectionExtended<InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
@@ -257,7 +317,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             get
             {
-                if (ALOTInstalled)
+                if (TextureModded)
                 {
                     return M3L.GetString(M3L.string_interp_ui_alotInstalledVersion, ALOTVersion);
                 }
@@ -605,11 +665,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         internal void StripALOTInfo()
         {
 #if DEBUG
-            var markerPAth = getALOTMarkerFilePath();
+            var markerPath = getALOTMarkerFilePath();
 
             try
             {
-                using (FileStream fs = new FileStream(markerPAth, System.IO.FileMode.Open, FileAccess.ReadWrite))
+                using (FileStream fs = new FileStream(markerPath, System.IO.FileMode.Open, FileAccess.ReadWrite))
                 {
                     fs.SeekEnd();
                     fs.Position -= 4;
@@ -622,6 +682,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 Log.Error($@"Error stripping debug ALOT marker file for {Game}. {e.Message}");
             }
 #endif
+        }
+
+        public bool HasALOTOrMEUITM()
+        {
+            var alotInfo = GetInstalledALOTInfo();
+            return alotInfo != null && (alotInfo.ALOTVER > 0 || alotInfo.MEUITMVER > 0);
         }
     }
 }

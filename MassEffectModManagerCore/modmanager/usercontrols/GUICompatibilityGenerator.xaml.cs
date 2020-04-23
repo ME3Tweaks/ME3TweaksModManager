@@ -76,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private static readonly string[] DLCUIModFolderNames =
+        public static readonly string[] DLCUIModFolderNames =
         {
             @"DLC_CON_XBX",
             @"DLC_CON_UIScaling",
@@ -88,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             @"DLC_CON_XBX",
             @"DLC_CON_UIScaling",
             @"DLC_CON_UIScaling_Shared",
-            @"DLC_MOD_GUICompatibilityPack"
+            @"DLC_MOD_" + UI_MOD_NAME
         };
 
         public enum GUICompatibilityThreadResult
@@ -101,35 +101,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             GENERATED_PACK
         }
 
-        private Dictionary<string, List<string>> getFileSupercedances()
-        {
-            Mod.MEGame game = target.Game;
-            //make dictionary from basegame files
-            var fileListMapping = new CaseInsensitiveDictionary<List<string>>();
-            var directories = MELoadedFiles.GetEnabledDLC(target).OrderBy(dir => MELoadedFiles.GetMountPriority(dir, target.Game));
-            foreach (string directory in directories)
-            {
-                var dlc = Path.GetFileName(directory);
-                if (MEDirectories.OfficialDLC(target.Game).Contains(dlc)) continue; //skip
-                foreach (string filePath in MELoadedFiles.GetCookedFiles(target.Game, directory, false))
-                {
-                    string fileName = Path.GetFileName(filePath);
-                    if (fileName != null && fileName.RepresentsPackageFilePath())
-                    {
-                        if (fileListMapping.TryGetValue(fileName, out var supercedingList))
-                        {
-                            supercedingList.Insert(0, dlc);
-                        }
-                        else
-                        {
-                            fileListMapping[fileName] = new List<string>(new[] { dlc });
-                        }
-                    }
-                }
-            }
-
-            return fileListMapping;
-        }
+        
 
         private int getPercent(long done, long total)
         {
@@ -140,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
         private static readonly string M3_UILIBRARY_ROOT = @"https://me3tweaks.com/modmanager/tools/uilibrary/m3/";
-        private readonly string UI_MOD_NAME = @"GUICompatibilityPack";
+        public const string UI_MOD_NAME = @"GUICompatibilityPack";
 
         /// <summary>
         /// Gets the path to the GUI library specified by the DLC name. Returns null if the library is not found and could not be downloaded.
@@ -239,7 +211,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         List<string> libraryGUIs = libraryArchive.ArchiveFileData.Where(x => !x.IsDirectory).Select(x => x.FileName.Substring(Path.GetFileNameWithoutExtension(uiLibraryPath).Length + 1)).Select(x => x.Substring(0, x.Length - 4)).ToList(); //remove / on end too
 
                         //We have UI mod(s) installed and at least one other DLC mod.
-                        var supercedanceList = getFileSupercedances().Where(x => x.Value.Any(x => !DLCUIModFolderNamesIncludingPatch.Contains(x))).ToDictionary(p => p.Key, p => p.Value);
+                        var supercedanceList = MEDirectories.GetFileSupercedances(target).Where(x => x.Value.Any(x => !DLCUIModFolderNamesIncludingPatch.Contains(x))).ToDictionary(p => p.Key, p => p.Value);
 
                         //Find GUIs
 

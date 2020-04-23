@@ -213,11 +213,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             result.QueueName = lines[line];
             line++;
             result.QueueDescription = lines[line];
-
+            line++;
             while (line < lines.Length)
             {
                 string moddescPath = lines[line];
-                Mod m = allLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(moddescPath, StringComparison.InvariantCultureIgnoreCase));
+                var libraryRoot = Utilities.GetModDirectoryForGame(result.Game);
+                //workaround for 103/104 to 105: moddesc path's in biq were stored as full paths instead of relative. me3cmm is relative paths
+                var fullModdescPath = File.Exists(moddescPath) ? moddescPath : Path.Combine(libraryRoot, moddescPath);
+
+                Mod m = allLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(fullModdescPath, StringComparison.InvariantCultureIgnoreCase));
                 if (m != null)
                 {
                     result.ModsToInstall.Add(m);

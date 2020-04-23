@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using IniParser;
 using IniParser.Parser;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.objects;
@@ -136,7 +137,7 @@ namespace MassEffectModManagerCore.GameDirectories
                 }
                 //is mod
                 string autoLoadPath = Path.Combine(dlcDirectory, "AutoLoad.ini");
-                var dlcAutoload = new IniDataParser().Parse(autoLoadPath);
+                var dlcAutoload = new FileIniDataParser().ReadFile(autoLoadPath);
                 return Convert.ToInt32(dlcAutoload["ME1DLCMOUNT"]["ModMount"]); //TODO: Handle errors if this value is not valid.
             }
             return MountFile.GetMountPriority(GetMountDLCFromDLCDir(dlcDirectory, game));

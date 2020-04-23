@@ -16,7 +16,7 @@
             <Button Grid.Row="0" Grid.Column="1" Content="{DynamicResource string_importMod}" Command="{Binding ImportSelectedDLCFolderCommand}" HorizontalAlignment="Right" />
             <Button Grid.Row="1" Grid.Column="1" Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Margin="0,3,0,0" />
         </Grid>
-        <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding SelectedTarget.ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}}">
+        <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding SelectedTarget.TextureModded, Converter={StaticResource BoolToVisibilityConverter}}">
             <TextBlock Text="{DynamicResource string_thisInstallationHasBeenTextureModded}" FontWeight="Bold" Foreground="Red" />
             <TextBlock Text="{DynamicResource string_cannotImportModsFromTextureModdedTarget}" TextWrapping="Wrap" DockPanel.Dock="Bottom" Foreground="Red" />
         </StackPanel>
@@ -26,7 +26,7 @@
             <TextBlock Text="{DynamicResource string_modName}" FontWeight="Bold" />
             <xctk:WatermarkTextBox Watermark="{DynamicResource string_nameOfThisModRequired}" Text="{Binding ModNameText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
             <TextBlock Text="{DynamicResource string_modURL}" FontWeight="Bold" />
-            <xctk:WatermarkTextBox Watermark="https://nexusmods.com/masseffect... (recommended)" Text="{Binding ModSiteText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+            <xctk:WatermarkTextBox Watermark="{DynamicResource string_dlcImportingNexusModsWatermark}" Text="{Binding ModSiteText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
         </StackPanel>
         <ProgressBar Height="10" DockPanel.Dock="Bottom" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMax}" IsIndeterminate="False" />
         <ListBox ItemsSource="{Binding InstalledDLCModsForGame}" Height="150" BorderThickness="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedDLCFolder}">

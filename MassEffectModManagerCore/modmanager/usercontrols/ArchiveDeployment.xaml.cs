@@ -17,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ByteSizeLib;
-using Flurl.Util;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.unreal;
@@ -512,25 +511,53 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     foreach (var texture in textures)
                     {
                         if (_closed) return;
-                        var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
-                        if (cache != null)
+
+                        if (package.Game > Mod.MEGame.ME1)
                         {
-                            if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
+                            var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
+                            if (cache != null)
                             {
-                                var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
-                                Texture2D tex = new Texture2D(texture);
-                                try
+                                if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
                                 {
-                                    tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false, allTFCs); //use active target
+                                    //var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
+                                    Texture2D tex = new Texture2D(texture);
+                                    try
+                                    {
+                                        tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false, allTFCs); //use active target
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Log.Information(@"Found broken texture: " + texture.GetInstancedFullPath);
+                                        hasError = true;
+                                        item.Icon = FontAwesomeIcon.TimesCircle;
+                                        item.Foreground = Brushes.Red;
+                                        item.Spinning = false;
+                                        errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
+                                    }
                                 }
-                                catch (Exception e)
+                            }
+                        }
+                        else
+                        {
+                            Texture2D tex = new Texture2D(texture);
+                            var cachename = tex.GetTopMip().TextureCacheName;
+                            if (cachename != null)
+                            {
+                                foreach (var mip in tex.Mips)
                                 {
-                                    Log.Information(@"Found broken texture: " + texture.GetInstancedFullPath);
-                                    hasError = true;
-                                    item.Icon = FontAwesomeIcon.TimesCircle;
-                                    item.Foreground = Brushes.Red;
-                                    item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
+                                    try
+                                    {
+                                        tex.GetImageBytesForMip(mip, validationTarget, false);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Log.Information(@"Found broken texture: " + texture.GetInstancedFullPath);
+                                        hasError = true;
+                                        item.Icon = FontAwesomeIcon.TimesCircle;
+                                        item.Foreground = Brushes.Red;
+                                        item.Spinning = false;
+                                        errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
+                                    }
                                 }
                             }
                         }
@@ -690,7 +717,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool DeploymentInProgress { get; private set; }
         public ulong ProgressMax { get; set; } = 100;
         public ulong ProgressValue { get; set; } = 0;
-        public string OperationText { get; set; } = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
+        public string OperationText { get; set; } = M3L.GetString(M3L.string_checkingModBeforeDeployment);
+        //M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
 
         private DateTime lastPercentUpdateTime;
         private bool _closed;
@@ -764,6 +792,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"DeploymentValidation");
             bw.DoWork += (a, b) =>
             {
+                ProgressIndeterminate = true;
                 foreach (var checkItem in DeploymentChecklistItems)
                 {
                     checkItem.ExecuteValidationFunction();
@@ -772,9 +801,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bw.RunWorkerCompleted += (a, b) =>
             {
                 PrecheckCompleted = true;
+                ProgressIndeterminate = false;
+                OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
                 CommandManager.InvalidateRequerySuggested();
             };
             bw.RunWorkerAsync();
         }
+
+        public bool ProgressIndeterminate { get; set; }
     }
 }

@@ -26,8 +26,8 @@
         <Image Source="/images/modmaker.png" MaxWidth="300" />
         <TextBlock Text="{DynamicResource string_description_modmakerOnlineModCreationTool}" TextWrapping="Wrap" TextAlignment="Center" />
         <TextBlock Text="{Binding DownloadAndModNameText, FallbackValue=Zombie Mod}" TextAlignment="Center" FontSize="16" Margin="0,10" TextWrapping="Wrap" />
-        <DockPanel Name="DownloadInfoPanel">
-            <ListBox ItemsSource="{Binding TopMods}" Height="200" DockPanel.Dock="Top" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedTopMod}">
+        <DockPanel Name="DownloadInfoPanel" >
+            <ListBox ItemsSource="{Binding TopMods}" Height="200" DockPanel.Dock="Top" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedTopMod}" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -54,13 +54,23 @@
                     </Style>
                 </ListBox.ItemContainerStyle>
             </ListBox>
+            
             <DockPanel Margin="0,5" DockPanel.Dock="Bottom">
                 <Button Content="{DynamicResource string_openME3TweaksModMaker}" Command="{Binding OpenModMakerCommand}" HorizontalAlignment="Left" DockPanel.Dock="Left" />
                 <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" />
             </DockPanel>
-            <DockPanel HorizontalAlignment="Right" Margin="0,5,0,0">
-                <xctk:WatermarkTextBox Watermark="{DynamicResource string_modMakerCode}" Text="{Binding ModMakerCode, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Right" Width="120" />
-                <Button Content="{DynamicResource string_download}" Command="{Binding DownloadCompileCommand}" Padding="20,0" />
+            <DockPanel Margin="0,5" DockPanel.Dock="Bottom" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Button Content="{DynamicResource string_browse}" Command="{Binding BrowseForModmakerFileCommand}" Padding="20,0" DockPanel.Dock="Right" />
+                <xctk:WatermarkTextBox Watermark="{DynamicResource string_selectAModMakerXmlFile}"  IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding LocalFilePath, UpdateSourceTrigger=PropertyChanged}"/>
+            </DockPanel>
+            <DockPanel HorizontalAlignment="Stretch" Margin="0,5,0,0" >
+                <Button Content="{DynamicResource string_download}" Command="{Binding DownloadCompileCommand}" Padding="20,0" DockPanel.Dock="Right" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
+                <Button Content="{DynamicResource string_compile}" Command="{Binding DownloadCompileCommand}" Padding="20,0" DockPanel.Dock="Right" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <xctk:WatermarkTextBox Watermark="{DynamicResource string_modMakerCode}" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+                                       Text="{Binding ModMakerCode, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Right" Width="120" DockPanel.Dock="Right"/>
+
+                <CheckBox Content="{DynamicResource string_useLocalFileInstead}" HorizontalAlignment="Left" IsChecked="{Binding LocalFileOption}"/>
+
             </DockPanel>
         </DockPanel>
         

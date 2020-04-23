@@ -417,7 +417,7 @@ namespace MassEffect3.Coalesce
             return outputStream;
         }
 
-        public static void ConvertToBin(string source, string destination)
+        public static void ConvertToBin(string source, string destination, XDocument preloadedDoc = null)
         {
             var inputPath = Path.IsPathRooted(source) ? source : Path.Combine(GetExePath(), source);
             var outputPath = !string.IsNullOrEmpty(destination) ? destination : Path.ChangeExtension(inputPath, ".bin");
@@ -432,7 +432,8 @@ namespace MassEffect3.Coalesce
                 return;
             }
 
-            var file = XmlCoalesceFile.Load(inputPath);
+            if (preloadedDoc == null) preloadedDoc = XDocument.Load(source);
+            var file = XmlCoalesceFile.LoadXmlDocument(inputPath, preloadedDoc);
 
             var coal = new CoalescedFileXml
             {

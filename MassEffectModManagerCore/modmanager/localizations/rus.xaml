@@ -556,7 +556,7 @@
 	<!-- 0 = error message -->
     <system:String x:Key="string_interp_requestTimedOutUploading">Превышение времени запроса при отправке лога.</system:String>
     <system:String x:Key="string_logUploadFailed">Ошибка отправки лога</system:String>
-    <system:String x:Key="string_loguploader">Загрузчик логов</system:String>
+    <system:String x:Key="string_logsAndDiagnostics">Загрузчик логов</system:String>
     <system:String x:Key="string_uploadToLogViewer">Отправить в Просмотр логов</system:String>
 
 	<!-- Mod Archive Importer -->
@@ -1267,7 +1267,7 @@
     <system:String x:Key="string_compileAsANewMod">Компиляция в новый мод</system:String>
     <system:String x:Key="string_or">Или</system:String>
 	<!-- as in X or Y -->
-    <system:String x:Key="string_compileIntoAnExistingMod">Компиляция в существующий мод</system:String>
+    <system:String x:Key="string_directlyInstallIntoGame">Компиляция в существующий мод</system:String>
     <system:String x:Key="string_thisFeatureIsNotYetAvailable">Функция пока не доступна.</system:String>
     <system:String x:Key="string_tooltip_appliesMixinsToAMod" xml:space="preserve">Применияет Mixins к указанному моду.\nФайлы в моде пропатчены, если уже используются модом.\nФайлы, не используемые модом будут взяты из архива оригинала.</system:String>
     <system:String x:Key="string_compileIntoExistingMod">Компиляция в существующий мод</system:String>

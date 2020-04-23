@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Net.WebSockets;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.AppCenter.Analytics;
@@ -11,6 +15,7 @@ using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;
 using Pathoschild.Http.Client;
 using Serilog;
+using WatsonWebsocket;
 
 namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 {
@@ -48,7 +53,15 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         {
             try
             {
-                if (apiKey == null) return null;
+                if (apiKey == null)
+                {
+                    if (NexusModsUtilities.HasAPIKey)
+                    {
+                        apiKey = NexusModsUtilities.DecryptNexusmodsAPIKeyFromDisk();
+                    }
+
+                    if (apiKey == null) return null;
+                }
                 var nexus = GetClient(apiKey);
                 Log.Information("Getting user information from NexusMods");
                 var userinfo = await nexus.Users.ValidateAsync();
@@ -255,6 +268,67 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             // Return the length that was written to the stream. 
             return outBuffer;
 
+        }
+
+        public static async Task<string> SetupNexusLogin(Action<string> updateStatus)
+        {
+            // open a web socket to receive the api key
+            var guid = Guid.NewGuid();
+            WatsonWsClient client = new WatsonWsClient(new Uri("wss://sso.nexusmods.com"));
+            string api_key = null;
+            object lockobj = new object();
+            object serverConnectedLockObj = new object();
+
+            client.ServerConnected += ServerConnected;
+            client.ServerDisconnected += ServerDisconnected;
+            client.MessageReceived += MessageReceived;
+            client.Start();
+
+            void MessageReceived(object sender, MessageReceivedEventArgs args)
+            {
+                Debug.WriteLine("Message from server: " + Encoding.UTF8.GetString(args.Data));
+                api_key = Encoding.UTF8.GetString(args.Data);
+                lock (lockobj)
+                {
+                    Monitor.Pulse(lockobj);
+                }
+                //client.
+            }
+
+            void ServerConnected(object sender, EventArgs args)
+            {
+                Debug.WriteLine("Server connected");
+                lock (serverConnectedLockObj)
+                {
+                    Monitor.Pulse(serverConnectedLockObj);
+                }
+            }
+
+            void ServerDisconnected(object sender, EventArgs args)
+            {
+                Debug.WriteLine("Server disconnected");
+            }
+
+            //await Task.Delay(1000, cancel);
+            lock (serverConnectedLockObj)
+            {
+                Monitor.Wait(serverConnectedLockObj, new TimeSpan(0, 0, 0, 15));
+            }
+
+            if (client.Connected)
+            {
+                await client.SendAsync(
+                    Encoding.UTF8.GetBytes("{\"id\": \"" + guid + "\", \"appid\": \"me3tweaks\"}")); //do not localize
+                Thread.Sleep(1000); //??
+                Utilities.OpenWebpage($"https://www.nexusmods.com/sso?id={guid}&application=me3tweaks");
+                lock (lockobj)
+                {
+                    Monitor.Wait(lockobj, new TimeSpan(0, 0, 1, 0));
+                }
+                client.Dispose();
+            }
+
+            return api_key;
         }
     }
 }

@@ -4,19 +4,22 @@
                     xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager.objects"
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
-    <converters:OriginBootTargetVisibilityConverter x:Key="OriginBootTargetVisibilityConverter"/>
+    <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
+    <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <converters:BoolToHiddenVisibleConverter x:Key="BoolToHiddenVisibleConverter"/>
     <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
     <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     <converters:NullHiddenConverter x:Key="NullHiddenConverter"/>
     <converters:EqualIntVisibilityConverter x:Key="EqualIntVisibilityConverter"/>
-    <converters:NullEnabledConverter x:Key="NullEnabledConverter"/>
+    <converters:NullEnabledConverter x:Key="NullEnabledConverter" />
+    <converters:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
+    <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
-            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
-            <Image DockPanel.Dock="Left" Source="/images/origin.png" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource OriginBootTargetVisibilityConverter}}"/>
-            <StackPanel ToolTip="This target has ALOT texture mod installed."  DockPanel.Dock="Right" Orientation="Horizontal"  Margin="3,0,0,0" Visibility="{Binding ALOTInstalled, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
+            <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
+            <StackPanel ToolTip="This target has ALOT texture mod installed."  DockPanel.Dock="Right" Orientation="Horizontal"  Margin="3,0,0,0" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
                 <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
                 <TextBlock Text="{Binding ALOTVersion}"/>
             </StackPanel>
