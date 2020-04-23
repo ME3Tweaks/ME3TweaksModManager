@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (!dlc.StartsWith(@"-") && !dlc.StartsWith(@"+"))
                         {
                             Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}");
-                            LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificDlcSetupMissingPlusMinus, FriendlyName, Condition, dlc);
                             return;
                         }
 
@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (!realname.StartsWith(@"DLC_"))
                         {
                             Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}");
-                            LoadFailedReason = $"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificDlcSetupInvalidDlcName, FriendlyName, Condition, dlc);
                             return;
                         }
                         else
@@ -252,7 +252,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 //todo: Validate target in mod folder
 
-                
+
 
                 //Validation
                 if (string.IsNullOrWhiteSpace(AlternateDLCFolder) && MultiListRootPath == null)
@@ -308,7 +308,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     Log.Error($@"Alternate DLC {FriendlyName} uses COND_SPECIFIC_SIZED_FILES but the amount of items in the RequiredFileRelativePaths and RequiredFileSizes lists are not equal");
                     ValidAlternate = false;
-                    LoadFailedReason = $"Alternate DLC {FriendlyName} uses COND_SPECIFIC_SIZED_FILES but the amount of items in the RequiredFileRelativePaths and RequiredFileSizes lists are not equal";
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFilesMismatchedParams, FriendlyName);
                     return;
                 }
 
@@ -321,7 +321,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate DLC {FriendlyName} RequiredFileRelativePaths item {reqFile} is invalid: Values cannot contain '..' for security reasons");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate DLC {FriendlyName} RequiredFileRelativePaths item {reqFile} is invalid: Values cannot contain '..' for security reasons";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFilesContainsIllegalPattern, FriendlyName, reqFile);
                         return;
                     }
 
@@ -333,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate DLC {FriendlyName} RequiredFileSizes item {reqFile} is invalid: {reqSizeStr}. Values must be greater than or equal to zero.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate DLC {FriendlyName} RequiredFileSizes item {reqFile} is invalid: {reqSizeStr}. Values must be greater than or equal to zero.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFileMustBeLargerThanZero, FriendlyName, reqFile, reqSizeStr);
                         return;
                     }
                 }
@@ -342,7 +342,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     Log.Error($@"Alternate DLC {FriendlyName} is invalid: COND_SPECIFIC_SIZED_FILES is specified as the condition but there are no values in RequiredFileRelativePaths/RequiredFileSizes");
                     ValidAlternate = false;
-                    LoadFailedReason = $"Alternate DLC {FriendlyName} is invalid: COND_SPECIFIC_SIZED_FILES is specified as the condition but there are no values in RequiredFileRelativePaths/RequiredFileSizes";
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams, FriendlyName);
                     return;
                 }
             }

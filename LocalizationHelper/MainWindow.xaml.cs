@@ -324,7 +324,7 @@ namespace LocalizationHelper
                             else if (newStr[pos] == '}')
                             {
                                 //closing!
-                                substitutions.Add(newStr.Substring(openbracepos + 1, pos - (openbracepos + 1)));
+                                substitutions.Add(newStr.Substring(openbracepos, pos - openbracepos + 1));
                                 openbracepos = -1;
                             }
 
@@ -338,7 +338,7 @@ namespace LocalizationHelper
                         string subbedStr = newStr;
                         foreach (var substitution in substitutions)
                         {
-                            subbedStr = subbedStr.Replace(substitution, num.ToString()); //already in { }
+                            subbedStr = subbedStr.Replace(substitution, "{" + num.ToString() + "}"); //replacing a {str} with {#}
                             comment += " " + num + "=" + substitution;
                             num++;
                         }
