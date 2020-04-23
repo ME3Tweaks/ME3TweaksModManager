@@ -529,7 +529,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 Log.Information("Validating backup...");
 
-                VanillaDatabaseService.LoadDatabaseFor(game);
+                VanillaDatabaseService.LoadDatabaseFor(game, target.IsPolishME1);
                 bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback);
                 bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(target, inconsistentDLCCallback: inconsistentDLCFoundCallback);
                 List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(target);
