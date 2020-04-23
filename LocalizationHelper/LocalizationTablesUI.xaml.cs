@@ -1,29 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
 using System.Net;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Octokit;
-using Application = Octokit.Application;
 using Path = System.IO.Path;
 
 namespace LocalizationHelper
@@ -33,8 +25,11 @@ namespace LocalizationHelper
     /// </summary>
     public partial class LocalizationTablesUI : Window, INotifyPropertyChanged
     {
+        public Visibility LoadingVisibility { get; set; } = Visibility.Visible;
         public LocalizationTablesUI()
         {
+            this.Title = "ME3Tweaks Mod Manager Localizer " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
             DataContext = this;
             LoadCommands();
             InitializeComponent();
@@ -62,8 +57,8 @@ namespace LocalizationHelper
                     try
                     {
                         var branches = ghclient.Repository.Branch.GetAll("ME3Tweaks", "ME3TweaksModManager").Result;
-                        var locbranches = branches.Where(x => x.Name.Contains("master") || x.Name.Contains("-localization"));
-                        System.Windows.Application.Current.Dispatcher.Invoke(delegate { LocalizationBranches.ReplaceAll(locbranches.Select(x => x.Name)); });
+                        var locbranches = branches.Where(x => /*x.Name.Contains("master") ||*/ x.Name.Contains("-localization"));
+                        System.Windows.Application.Current.Dispatcher.Invoke(delegate { LocalizationBranches.ReplaceAll(locbranches.Select(x => x.Name).OrderByDescending(x => x)); });
                     }
                     catch (Exception e)
                     {
@@ -72,6 +67,7 @@ namespace LocalizationHelper
                     }
                 }
 
+                string oldBuildBranch = null;
                 if (LocalizationBranches.Any())
                 {
                     if (branch == null)
@@ -79,6 +75,10 @@ namespace LocalizationHelper
                         branch = LocalizationBranches.First();
                         SelectedBranch = branch;
                         oldBranch = branch;
+                        if (LocalizationBranches.Count() > 1)
+                        {
+                            oldBuildBranch = LocalizationBranches[1];
+                        }
                     }
                 }
                 else
@@ -96,6 +96,28 @@ namespace LocalizationHelper
                     var dict = client.DownloadStringAwareOfEncoding(url);
                     dictionaries[lang] = dict;
                 }
+
+                if (oldBuildBranch != null)
+                {
+                    endpoint = $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{oldBuildBranch}/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
+                    var url = endpoint + "int.xaml";
+                    var dict = client.DownloadStringAwareOfEncoding(url);
+                    dictionaries["int-prev"] = dict;
+                }
+
+                Dictionary<string, string> oldStuff = new Dictionary<string, string>();
+                if (dictionaries.TryGetValue("int-prev", out var oldStrXml))
+                {
+                    XDocument oldBuildDoc = XDocument.Parse(oldStrXml);
+                    XNamespace system = "clr-namespace:System;assembly=System.Runtime";
+                    XNamespace xk = "http://schemas.microsoft.com/winfx/2006/xaml";
+                    var lstrings = oldBuildDoc.Root.Descendants(system + "String").ToList();
+                    foreach (var lstring in lstrings)
+                    {
+                        oldStuff[lstring.Attribute(xk + "Key").Value] = lstring.Value;
+                    }
+                }
+
 
                 //Parse INT.
                 int currentLine = 3; //Skip header.
@@ -153,6 +175,27 @@ namespace LocalizationHelper
                         preservewhitespace = lineInfo.preserveWhitespace,
                         INT = lineInfo.text
                     };
+
+                    if (oldStuff.TryGetValue(lineInfo.key, out var oldString))
+                    {
+                        var oldValue = new XText(oldString).ToString();
+                        var newValue = new XText(lineInfo.text).ToString();
+                        XDocument newV = XDocument.Parse("<text>"+lineInfo.text+"</text>");
+                        if (oldString != newV.Root.Value)
+                        {
+                            if (ls.key == "string_modEndorsed") Debugger.Break();
+                            Debug.WriteLine("Changed: " + ls.key);
+                            Debug.WriteLine("  OLD: " + oldString);
+                            Debug.WriteLine("  NEW: " + lineInfo.text);
+                            ls.ChangedFromPrevious = true;
+                        }
+                    }
+                    else if (oldStuff.Any())
+                    {
+                        Debug.WriteLine("New: " + ls.key);
+                        ls.ChangedFromPrevious = true;
+                    }
+
                     if (lineInfo.key == null) Debugger.Break();
                     if (ls.INT == null) Debugger.Break();
                     cat.LocalizedStringsForSection.Add(ls);
@@ -216,7 +259,7 @@ namespace LocalizationHelper
                 var intxml = doc.XPathSelectElement("/localizations/helpmenu[@lang='int']");
                 dynamicHelpLocalizations["int"] = intxml.ToString();
 
-                Debug.WriteLine(doc.ToString());
+                //Debug.WriteLine(doc.ToString());
                 foreach (var lang in langs)
                 {
                     var langxml = doc.XPathSelectElement($"/localizations/helpmenu[@lang='{lang}']");
@@ -269,6 +312,7 @@ namespace LocalizationHelper
                 {
                     if (b.Error == null && b.Result is List<LocalizationCategory> categories)
                     {
+                        LoadingVisibility = Visibility.Collapsed;
                         LocalizationCategories.ReplaceAll(categories);
                     }
                 };
@@ -643,6 +687,7 @@ namespace LocalizationHelper
         {
             public string CategoryName { get; set; }
             public event PropertyChangedEventHandler PropertyChanged;
+            public bool HasChangedStrings => LocalizedStringsForSection.Any(x => x.ChangedFromPrevious);
             public ObservableCollectionExtended<LocalizedString> LocalizedStringsForSection { get; } = new ObservableCollectionExtended<LocalizedString>();
         }
 
@@ -659,6 +704,7 @@ namespace LocalizationHelper
             public string POL { get; set; }
             public string FRA { get; set; }
             public string ESN { get; set; }
+            public bool ChangedFromPrevious { get; set; }
 
             public string GetString(string lang)
             {
@@ -678,7 +724,7 @@ namespace LocalizationHelper
                     case "esn":
                         return ESN;
                     default:
-                        throw new NotImplementedException("Langauge not supported by this tool: " + lang);
+                        throw new NotImplementedException("Language not supported by this tool: " + lang);
                 }
             }
 

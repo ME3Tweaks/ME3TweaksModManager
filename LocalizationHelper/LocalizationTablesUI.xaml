@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
         mc:Ignorable="d"
-        Title="ME3Tweaks Mod Manager Localizer" 
         Height="450" 
         Width="800">
     <TabControl>
@@ -26,11 +25,26 @@
                 <GridSplitter Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch"/>
                 <!--<TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>-->
                 <ComboBox Grid.Column="0" Grid.Row="0" Margin="5,0,0,0" ItemsSource="{Binding LocalizationBranches}" SelectedItem="{Binding SelectedBranch}"/>
-                <TextBlock Text="Strings" Grid.Row="0" Grid.Column="2" FontWeight="Bold"/>
-                <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LocalizationCategories}" SelectedItem="{Binding SelectedCategory}" DisplayMemberPath="CategoryName" Margin="5,0,0,0"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
+                    <TextBlock Text="Strings" FontWeight="Bold"/>
+                    <TextBlock Text="Please wait, loading strings..." Visibility="{Binding LoadingVisibility}" Margin="5,0"/>
+                </StackPanel>
+                <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LocalizationCategories}" 
+                         SelectedItem="{Binding SelectedCategory}" 
+                         DisplayMemberPath="CategoryName" Margin="5,0,0,0">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasChangedStrings}" Value="True">
+                                    <Setter Property="Background" Value="Orange" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
                 <DataGrid Name="DataGridTable" Grid.Row="1" Grid.Column="2" 
                           ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}" 
-                          AutoGenerateColumns="False" AlternatingRowBackground="Beige" AlternationCount="2" CanUserAddRows="false"
+                          AutoGenerateColumns="False" CanUserAddRows="false"
                           SelectedItem="{Binding SelectedDataGridItem}">
                     <DataGrid.Resources>
                         <DataTemplate x:Key="LocTextEditorTemplate" >
@@ -42,6 +56,14 @@
                                     <Setter Property="Background" Value="Green"/>
                                     <Setter Property="Foreground" Value="White"/>
                                 </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        <Style TargetType="{x:Type DataGridRow}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ChangedFromPrevious}" Value="True">
+                                    <Setter Property="Background" Value="LightCoral"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGrid.Resources>
@@ -165,7 +187,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="English" Binding="{Binding INT}" MaxWidth="250" IsReadOnly="True">
                             <DataGridTextColumn.ElementStyle>
-                                <Style>
+                                <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
                                     <Setter Property="TextBlock.TextAlignment" Value="Left"/>
                                 </Style>

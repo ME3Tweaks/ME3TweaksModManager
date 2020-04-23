@@ -53,5 +53,14 @@ namespace LocalizationHelper
 
             return stringBuilder.ToString();
         }
+
+        private void App_OnStartup(object sender, StartupEventArgs e)
+        {
+#if DEBUG
+            new MainWindow().Show();
+#else
+            new LocalizationTablesUI().Show();
+#endif
+        }
     }
 }
