@@ -84,7 +84,7 @@
     <system:String x:Key="string_Backup">Backup</system:String>
     <system:String x:Key="string_Createentiregamebackups">Create entire game backups</system:String>
     <system:String x:Key="string_Restore">Restore</system:String>
-    <system:String xml:space="preserve" x:Key="string_Restoreagamefrombackup">Restore a game from backup.&#10;For granular options, use the restore options in the Installation Information panel, available by clicking Manage Game</system:String>
+    <system:String xml:space="preserve" x:Key="string_Restoreagamefrombackup">Restore a game from backup.&#10;For granular options, use the restore options in the Installation Information panel, available by clicking Manage Target</system:String>
     <system:String x:Key="string_Help">Help</system:String>
     <system:String x:Key="string_DynamicHelp">Dynamic Help</system:String>
     <system:String x:Key="string_Diagnostics">Diagnostics</system:String>
@@ -269,7 +269,7 @@
     <system:String  x:Key="string_tooltip_egmSettings">Allows you to configure settings for Expanded Galaxy Mod</system:String>
     <system:String  x:Key="string_donations">Donations</system:String>
     <system:String  x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Opens the ME3Tweaks Donations information page</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_modLibrary">Mods that have been imported into the Mod Manager library.&#10;These mods do not represent mods that are installed; to see installed mods, click Manage Game</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_modLibrary">Mods that have been imported into the Mod Manager library.&#10;These mods do not represent mods that are installed; to see installed mods, click Manage Target</system:String>
     <system:String x:Key="string_rcwModsCannotBeDeployed">Cannot deploy .me2mod files with Mod Manager</system:String>
     <system:String x:Key="string_rcwModsCannotBeDeployedDescription">RCW mods (.me2mod) cannot be deployed with Mod Manager. RCW .me2mod files can be directly distributed, and Mod Manager can natively import them.</system:String>
     <system:String x:Key="string_cannotDeployMe2modFiles">Cannot deploy .me2mod files</system:String>
@@ -305,7 +305,7 @@
     <system:String x:Key="string_outdatedDLCDetected">Outdated DLC detected</system:String>
     <system:String xml:space="preserve" x:Key="string_dialogIncompatibleDLCDetectedHeader">The following DLC mods are listed as incompatible with {0}:\n</system:String>
     <!-- 0 = Name of mod being installed -->
-    <system:String xml:space="preserve" x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nIn order to install {0}, the above listed Custom DLC mods must be removed first.\nYou can manage installed Custom DLC by clicking Manage Game button.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogIncompatibleDLCDetectedFooter">\n\nIn order to install {0}, the above listed Custom DLC mods must be removed first.\nYou can manage installed Custom DLC by clicking Manage Target button.</system:String>
     <!-- 0 = Name of mod being installed -->
     <system:String x:Key="string_incompatibleDLCDetected">Incompatible DLC detected</system:String>
     <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
@@ -436,7 +436,7 @@
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
     <system:String x:Key="string_backUp">Back up</system:String>
-    <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder. To restore from backup, use the Restore option in the Backup &amp; Restore menu, or click the Manage Game button from the main window.&#10;&#10;Backups are also used for as a file source for certain operations. Some advanced features require a backup as an unmodified file must be available.</system:String>
+    <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder. To restore from backup, use the Restore option in the Backup &amp; Restore menu, or click the Manage Target button from the main window.&#10;&#10;Backups are also used for as a file source for certain operations. Some advanced features require a backup as an unmodified file must be available.</system:String>
     <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Cannot backup {0} while it is running.</system:String>
     <!-- 0 = game name-->
     <system:String x:Key="string_validatingBackupSource">Validating backup source</system:String>
@@ -712,7 +712,7 @@
     <system:String x:Key="string_error">Error!</system:String>
     <system:String x:Key="string_fullGameRestore">Full game restore</system:String>
     <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Changing the active boot target to one with ALOT installed will prompt you enable high resolution texture settings again.</system:String>
-    <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods or restoring specific files/SFARs, use the restore options from the Manage Game button instead.</system:String>
+    <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods or restoring specific files/SFARs, use the restore options from the Manage Target button instead.</system:String>
     <system:String x:Key="string_youMaySeeElevationPromptOnRestore">You may see an elevation prompt when trying to restore your game. This is ME3Tweaks Mod Manager granting your user account permission to the new game directory after the old one has been deleted.</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_restoringXWillDeleteGameDir">Restoring {0} will completely delete the game directory and then copy the backup into the original location.\n\nDelete this installation and restore it from backup?</system:String>
     <!-- 0=Utilities.GetGameName(Game) -->
