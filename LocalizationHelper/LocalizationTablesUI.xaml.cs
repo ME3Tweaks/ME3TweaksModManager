@@ -634,6 +634,7 @@ namespace LocalizationHelper
                 sb.AppendLine($"\t<!-- {cat.CategoryName} -->");
                 foreach (var str in cat.LocalizedStringsForSection)
                 {
+                    if (str.GetString(lang) == null) continue; //don't even bother
                     string line = $"    <system:String x:Key=\"{str.key}\"";
                     if (str.preservewhitespace)
                     {
