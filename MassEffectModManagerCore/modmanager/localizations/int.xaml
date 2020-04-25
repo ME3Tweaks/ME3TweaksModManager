@@ -755,7 +755,7 @@
     <system:String x:Key="string_errorAuthenticatingToNexusMods">Error authenticating to NexusMods</system:String>
     <system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager can integrate with NexusMods to allow you to endorse mods, letting the developer know you appreciate their work.</system:String>
     <system:String x:Key="string_directions">Directions</system:String>
-    <system:String x:Key="string_nexusModsDirections">You can have Mod Manager automatically fetch an API key by logging into your NexusMods account. Click "Authenticate with NexusMods" below and authorize ME3Tweaks Mod Manager. You can manually authorize by pasting your NexusMods API key in after checking "Manual enter API key".</system:String>
+    <system:String x:Key="string_nexusModsDirections">You can have Mod Manager automatically fetch an API key by logging into your NexusMods account. Click "Authenticate with NexusMods" below and authorize ME3Tweaks Mod Manager. You can manually authorize by pasting your NexusMods API key in after checking "Manually enter API key".</system:String>
     <system:String x:Key="string_caution">Caution</system:String>
     <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>
