@@ -1379,7 +1379,7 @@
     <!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
     <system:String x:Key="string_description_importFromGameToModManager">You can import a mod from a game installation into Mod Manager using this importer, which will allow you to install the mod quickly and easily later. Mods imported this way don't support configuration options, updates, and other Mod Manager features. Import mods from archive for full feature support.</system:String>
-    <system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mods that were installed via Mod Manager or ALOT Installer cannot be imported through this importer.</system:String>
+    <system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mods that were installed via a managed installer (such as Mod Manager or ALOT Installer) cannot be imported through this importer.</system:String>
     <system:String x:Key="string_importMod">Import mod</system:String>
     <system:String x:Key="string_thisInstallationHasBeenTextureModded">This installation has been texture modded</system:String>
     <system:String x:Key="string_cannotImportModsFromTextureModdedTarget">You cannot import mods from a game installation that has had texture mods installed into it.</system:String>
