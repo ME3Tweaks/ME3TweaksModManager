@@ -269,7 +269,7 @@
     <system:String  x:Key="string_tooltip_egmSettings">Allows you to configure settings for Expanded Galaxy Mod</system:String>
     <system:String  x:Key="string_donations">Donations</system:String>
     <system:String  x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Opens the ME3Tweaks Donations information page</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_modLibrary">Mods that have been imported into the Mod Manager library.&#10;These mods do not represent mods that are installed; to see installed mods, click Manage Target</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_modLibrary">Mods that have been imported into the Mod Manager library.&#10;This list does not represent mods that are installed; to see installed mods, click Manage Target</system:String>
     <system:String x:Key="string_rcwModsCannotBeDeployed">Cannot deploy .me2mod files with Mod Manager</system:String>
     <system:String x:Key="string_rcwModsCannotBeDeployedDescription">RCW mods (.me2mod) cannot be deployed with Mod Manager. RCW .me2mod files can be directly distributed, and Mod Manager can natively import them.</system:String>
     <system:String x:Key="string_cannotDeployMe2modFiles">Cannot deploy .me2mod files</system:String>
