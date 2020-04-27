@@ -135,16 +135,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bw.DoWork += (a, b) =>
                 {
                     RestoreAllBasegameInProgress = true;
-                    foreach (var v in SelectedTarget.ModifiedBasegameFiles)
+                    var restorableFiles = SelectedTarget.ModifiedBasegameFiles.Where(x => x.CanRestoreFile()).ToList();
+                    //Set UI states
+                    foreach (var v in restorableFiles)
                     {
                         v.Restoring = true;
                     }
-                    foreach (var v in SelectedTarget.ModifiedBasegameFiles.ToList()) //to list will make sure this doesn't throw concurrent modification
+                    //Restore files
+                    foreach (var v in restorableFiles) //to list will make sure this doesn't throw concurrent modification
                     {
                         v.RestoreFile(true);
                     }
-
-
                 };
                 bw.RunWorkerCompleted += (a, b) =>
                 {

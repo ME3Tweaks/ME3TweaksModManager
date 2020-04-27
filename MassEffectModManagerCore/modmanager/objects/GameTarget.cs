@@ -595,7 +595,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 bool? restore = batchRestore;
                 if (!restore.Value) restore = restoreBasegamefileConfirmationCallback?.Invoke(FilePath);
-                if (restore.HasValue && restore.Value)
+                if (restore.HasValue && restore.Value && CanRestoreFile())
                 {
                     //Todo: Background thread this maybe?
                     var backupPath = Utilities.GetGameBackupPath(target.Game);
@@ -623,9 +623,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
+            //might need to make this more efficient...
             public string RestoreButtonText => Restoring ? M3L.GetString(M3L.string_restoring) : (CanRestoreFile() ? M3L.GetString(M3L.string_restore) : M3L.GetString(M3L.string_noBackup));
 
-            private bool CanRestoreFile()
+            public bool CanRestoreFile()
             {
                 if (Restoring) return false;
                 if (checkedForBackupFile) return canRestoreFile;

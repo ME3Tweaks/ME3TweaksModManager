@@ -445,19 +445,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (unpacked)
                                 {
                                     targetPackage.save();
-                                    Log.Information(M3L.GetString(M3L.string_threeWayMergeSucceededFor) + targetPackage.FilePath);
+                                    Log.Information(@"Three way merge succeeded for " + targetPackage.FilePath);
                                 }
                                 else
                                 {
                                     var finalSTream = targetPackage.saveToStream();
                                     targetDLCPackage.ReplaceEntry(finalSTream.ToArray(), targetDLCPackage.FindFileEntry(Path.GetFileName(file.Key)));
-                                    Log.Information(M3L.GetString(M3L.string_threeWayMergeSucceededFor) + targetPackage.FileSourceForDebugging);
+                                    Log.Information(@"Three way merge succeeded for " + targetPackage.FileSourceForDebugging);
 
                                 }
                             }
                             else
                             {
-                                Log.Error(M3L.GetString(M3L.string_couldNotMergeThreeWayMergeInto) + targetFileStream);
+                                Log.Error(@"Could not three way merge into: " + targetFileStream);
                             }
                         }
                         catch (Exception e)
