@@ -1359,8 +1359,6 @@
     <system:String x:Key="string_availableMixins">Available Mixins</system:String>
     <system:String x:Key="string_tooltip_thisMixinIsAFinalizer">This Mixin is a finalizer</system:String>
     <system:String x:Key="string_patchDescription">Patch Description</system:String>
-    <system:String x:Key="string_threeWayMergeSucceededFor">Three way merge succeeded for</system:String>
-    <system:String x:Key="string_couldNotMergeThreeWayMergeInto">Could not merge three way merge into</system:String>
     <system:String x:Key="string_interp_runningAutoTOCOnGamePercentX">Running AutoTOC on game {0}%</system:String>
     <!-- 0=percent -->
     <system:String x:Key="string_mixinsInstalledMaybe">Mixins installed, maybe!</system:String>
