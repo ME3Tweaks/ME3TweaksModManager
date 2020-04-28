@@ -1204,7 +1204,7 @@
     <system:String x:Key="string_gettingListOfFilesFromBackup">Получение списка файлов из архивов</system:String>
 
 	<!-- Backup Nag System -->
-    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} игр не заархивировано</system:String>
+    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} игры не заархивировано</system:String>
 	<!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
     <system:String x:Key="string_interp_XgameNotBackedUp">{0} игра не заархивирована</system:String>
 	<!-- 0 in this item will the value of 1. -->
@@ -1212,7 +1212,7 @@
     <system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Mananger требует наличия архивов оригинальных игр для выполнения некоторых действий.</system:String>
     <system:String x:Key="string_description_missingBackupWillLimitFeatures">Без наличия архива игры следующие функции Mod Manager будут отключены или ограничены для данной игры:</system:String>
     <system:String x:Key="string_openBackupManager">Открыть Backup Manager</system:String>
-    <system:String x:Key="string_restores">Восстанавливает</system:String>
+    <system:String x:Key="string_restores">Восстанавление</system:String>
     <system:String x:Key="string_restoringIndividualFiles">Восстановление отдельных файлов</system:String>
     <system:String x:Key="string_restoringDLC">Восстановление DLC</system:String>
     <system:String x:Key="string_uninstallingALOT">Удаление ALOT</system:String>
