@@ -226,6 +226,8 @@ namespace ME3Explorer.Packages
             }
 
             //skip compression type chunks. Decompressor will handle that
+            long compressionTypeOffset = stream.Position;
+
             stream.SkipInt32();
             //Todo: Move decompression of package code here maybe
             //Todo: Refactor decompression code to single unified style
@@ -258,7 +260,8 @@ namespace ME3Explorer.Packages
             Stream inStream = stream;
             if (IsCompressed && numChunks > 0)
             {
-                inStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
+                inStream = CompressionHelper.DecompressUDK(stream, compressionTypeOffset);
+                //inStream = Game == Mod.MEGame.ME3 ? CompressionHelper.DecompressME3(stream) : CompressionHelper.DecompressME1orME2(stream);
             }
 
             //read namelist
@@ -514,20 +517,19 @@ namespace ME3Explorer.Packages
 
                 CompressionHelper.Chunk chunk = new CompressionHelper.Chunk();
                 //Tables chunk
-                //fairly certain this is wrong
                 chunk.uncompressedSize = FullHeaderSize - NameOffset;
                 chunk.uncompressedOffset = NameOffset;
 
-                //Debug stuff
-                string firstElement = "Tables";
-                string lastElement = firstElement;
+                #region DEBUG STUFF
+                //string firstElement = "Tables";
+                //string lastElement = firstElement;
 
-                MemoryStream m2 = new MemoryStream();
-                long pos = uncompressedStream.Position;
-                uncompressedStream.Position = NameOffset;
-                m2.WriteFromStream(uncompressedStream, chunk.uncompressedSize);
-                uncompressedStream.Position = pos;
-                //end debug stuff
+                //MemoryStream m2 = new MemoryStream();
+                //long pos = uncompressedStream.Position;
+                //uncompressedStream.Position = NameOffset;
+                //m2.WriteFromStream(uncompressedStream, chunk.uncompressedSize);
+                //uncompressedStream.Position = pos;
+                #endregion
 
                 //Export data chunks
                 //chunk = new CompressionHelper.Chunk();
@@ -546,12 +548,10 @@ namespace ME3Explorer.Packages
                             uncompressedSize = e.DataSize,
                             uncompressedOffset = e.DataOffset
                         };
-                        firstElement = lastElement = e.UIndex + " " + e.GetFullPath;
                     }
                     else
                     {
                         chunk.uncompressedSize += e.DataSize; //This chunk can fit this export
-                        lastElement = e.UIndex + " " + e.GetFullPath;
                     }
                 }
                 //Debug.WriteLine($"Chunk {chunkNum} contains {firstElement} to {lastElement}");
@@ -612,23 +612,10 @@ namespace ME3Explorer.Packages
                     {
                         var block = chunk.blocks[b];
                         compressedStream.Write(block.compressedData, 0, (int)block.compressedsize);
-                        //DEBUG - HEAD ONLY
-                        if (c == 0)
-                        {
-                            m1.Write(block.compressedData, 0, (int)block.compressedsize);
-                        }
-                        //END DEBUG
                         chunk.compressedSize += block.compressedsize;
                     }
                     chunks[c] = chunk;
                 }
-                //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-comp.bin", m1.ToArray());
-                MemoryStream m3 = new MemoryStream();
-                WriteHeader(m3, writeAdditionalPackagesToCook: includeAdditionalPackagesToCook);
-                m2.Position = 0;
-                m2.CopyTo(m3);
-                //File.WriteAllBytes(@"C:\users\public\compresstest\firstblock-uncomp.bin", m3.ToArray());
-
 
                 //Update each chunk header with new information
                 for (int c = 0; c < chunks.Count; c++)
@@ -636,7 +623,7 @@ namespace ME3Explorer.Packages
                     chunk = chunks[c];
                     compressedStream.JumpTo(chunk.compressedOffset); // jump to blocks header
                     compressedStream.WriteUInt32(packageTag);
-                    compressedStream.WriteUInt32(CompressionHelper.MAX_BLOCK_SIZE);
+                    compressedStream.WriteUInt32(CompressionHelper.MAX_BLOCK_SIZE); //128 KB
                     compressedStream.WriteInt32(chunk.compressedSize);
                     compressedStream.WriteInt32(chunk.uncompressedSize);
 
@@ -803,6 +790,7 @@ namespace ME3Explorer.Packages
             //Chunks
             if (compressionType != CompressionType.None && chunks.Count == 0) throw new Exception("Can't save with compression type if there are no compressed chunks in header!'");
             ms.WriteInt32(chunks.Count);
+            int i = 0;
             foreach (var chunk in chunks)
             {
                 ms.WriteInt32(chunk.uncompressedOffset);
@@ -810,13 +798,17 @@ namespace ME3Explorer.Packages
                 ms.WriteInt32(chunk.compressedOffset);
                 if (chunk.blocks != null)
                 {
-                    ms.WriteInt32(chunk.compressedSize + CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.MAX_BLOCK_SIZE * chunk.blocks.Count); //Size of compressed data + chunk header + block header * number of blocks in the chunk
+                    var chunksize = chunk.compressedSize + CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.SIZE_OF_CHUNK_BLOCK_HEADER * chunk.blocks.Count;
+                    Debug.WriteLine($"Writing chunk table chunk {i} size: {chunksize}");
+                    ms.WriteInt32(chunksize); //Size of compressed data + chunk header + block header * number of blocks in the chunk
                 }
                 else
                 {
                     //list is null - might not be populated yet
                     ms.WriteInt32(0); //write zero for now, we will call this method later with the compressedSize populated.
                 }
+
+                i++;
             }
 
             ms.WriteUInt32(packageSource);
