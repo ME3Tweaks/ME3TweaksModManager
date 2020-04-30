@@ -165,6 +165,8 @@ namespace MassEffectModManagerCore
                 SetLanguage(App.InitialLanguage, true);
             }
 
+            CheckProgramDataWritable();
+
             PopulateTargets();
             AttachListeners();
             SetTheme();
@@ -201,6 +203,40 @@ namespace MassEffectModManagerCore
                     });
                 }
             );
+        }
+
+        private void CheckProgramDataWritable()
+        {
+            Log.Information(@"Checking settings.ini is writable (ProgramData check)...");
+            var settingsResult = Settings.Save();
+            if (settingsResult == Settings.SettingsSaveResult.FAILED_UNAUTHORIZED)
+            {
+                Log.Error(@"No permissions to appdata! Prompting for user to grant consent");
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(null, "Windows has restricted the permissions on the ME3Tweaks Mod Manager program data directory for this user account. Click OK to grant permissions to this folder to ensure proper application functionality.", "Granting write permissions", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+                if (result == MessageBoxResult.OK)
+                {
+                    bool done = Utilities.CreateDirectoryWithWritePermission(Utilities.GetAppDataFolder(), true);
+                    if (done)
+                    {
+                        Log.Information(@"Granted permissions to ProgramData");
+                    }
+                    else
+                    {
+                        Log.Error(@"User declined consenting permissions to ProgramData!");
+                        Xceed.Wpf.Toolkit.MessageBox.Show(null, "The application may not run correctly without permissions to the settings and cache directory.", "ProgramData access denied", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    }
+                }
+                else
+                {
+                    Log.Error(@"User denied granting permissions!");
+                    Xceed.Wpf.Toolkit.MessageBox.Show(null, "The application may not run correctly without permissions to it's settings cache.", "ProgramData access denied", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                Log.Information(@"settings.ini is writable");
+            }
         }
 
         public async void RefreshNexusStatus(bool languageUpdateOnly = false)
@@ -1407,7 +1443,7 @@ namespace MassEffectModManagerCore
                         Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList(), me1AGEIAKeyNotWritable);
                         }
                         catch (Exception e)
                         {
@@ -1423,7 +1459,7 @@ namespace MassEffectModManagerCore
                 else
                 {
                     Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
-                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList(), me1AGEIAKeyNotWritable);
                 }
             }
             else if (showDialogEvenIfNone)
