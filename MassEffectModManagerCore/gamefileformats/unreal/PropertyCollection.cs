@@ -360,7 +360,7 @@ namespace ME3Explorer.Unreal
                     getDefaultStructValueFunc = ME1UnrealObjectInfo.getDefaultStructValue;
                     break;
                 default:
-                    Debug.WriteLine("Unknown struct type: " + structType);
+                    //Debug.WriteLine("Unknown struct type: " + structType);
                     props.Add(new UnknownProperty(stream, size) { StartOffset = stream.Position });
                     return props;
             }

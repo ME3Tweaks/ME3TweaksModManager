@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore
                 {@"rus", LanguageRUS_MenuItem},
                 //{@"pol", LanguagePOL_MenuItem},
                 {@"deu", LanguageDEU_MenuItem},
-                //{@"fra", LanguageFRA_MenuItem}
+                {@"fra", LanguageFRA_MenuItem}
                 //{@"esn", LanguageESN_MenuItem}
             };
 

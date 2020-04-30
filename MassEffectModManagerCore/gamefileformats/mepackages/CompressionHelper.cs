@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.IO;
-//using AmaroK86.MassEffect3.ZlibBlock;
 using System.Threading.Tasks;
 using LZO2Helper;
 using static ME3Explorer.Packages.MEPackage;
 using MassEffectModManagerCore.modmanager.helpers;
+using SevenZipHelper;
 
 namespace ME3Explorer.Packages
 {
@@ -214,6 +215,151 @@ namespace ME3Explorer.Packages
             {
                 result.Seek(c.uncompressedOffset, SeekOrigin.Begin);
                 result.Write(c.Uncompressed);
+            }
+
+            return result;
+        }
+
+        public static MemoryStream DecompressUDK(Stream raw, long compressionInfoOffset, CompressionType compressionType = CompressionType.None, int NumChunks = 0)
+        {
+            //PrintCompressDebug(raw, compressionInfoOffset, compressionType, NumChunks);
+
+
+            raw.JumpTo(compressionInfoOffset);
+            if (compressionType == CompressionType.None)
+                compressionType = (CompressionType)raw.ReadUInt32();
+
+            if (NumChunks == 0)
+                NumChunks = raw.ReadInt32();
+            var Chunks = new List<Chunk>();
+            var chunkTableStart = raw.Position;
+
+            //DebugOutput.PrintLn("Reading chunk headers...");
+            for (int i = 0; i < NumChunks; i++)
+            {
+                Chunk c = new Chunk
+                {
+                    uncompressedOffset = raw.ReadInt32(),
+                    uncompressedSize = raw.ReadInt32(),
+                    compressedOffset = raw.ReadInt32(),
+                    compressedSize = raw.ReadInt32()
+                };
+                c.Compressed = new byte[c.compressedSize];
+                c.Uncompressed = new byte[c.uncompressedSize];
+                //DebugOutput.PrintLn("Chunk " + i + ", compressed size = " + c.compressedSize + ", uncompressed size = " + c.uncompressedSize);
+                //DebugOutput.PrintLn("Compressed offset = " + c.compressedOffset + ", uncompressed offset = " + c.uncompressedOffset);
+                Chunks.Add(c);
+            }
+
+
+            //DebugOutput.PrintLn("\tRead Chunks...");
+            int count = 0;
+            for (int i = 0; i < Chunks.Count; i++)
+            {
+                Chunk chunk = Chunks[i];
+                raw.Seek(chunk.compressedOffset, SeekOrigin.Begin);
+                raw.Read(chunk.Compressed, 0, chunk.compressedSize);
+
+                ChunkHeader chunkBlockHeader = new ChunkHeader
+                {
+                    magic = BitConverter.ToInt32(chunk.Compressed, 0),
+                    blocksize = BitConverter.ToInt32(chunk.Compressed, 4),
+                    compressedsize = BitConverter.ToInt32(chunk.Compressed, 8),
+                    uncompressedsize = BitConverter.ToInt32(chunk.Compressed, 12)
+                };
+
+
+
+
+                if (chunkBlockHeader.magic != -1641380927)
+                    throw new FormatException("Chunk magic number incorrect");
+                //DebugOutput.PrintLn("Chunkheader read: Magic = " + h.magic + ", Blocksize = " + h.blocksize + ", Compressed Size = " + h.compressedsize + ", Uncompressed size = " + h.uncompressedsize);
+                int pos = 16;
+                int blockCount = (chunkBlockHeader.uncompressedsize % chunkBlockHeader.blocksize == 0)
+                    ? chunkBlockHeader.uncompressedsize / chunkBlockHeader.blocksize : chunkBlockHeader.uncompressedsize / chunkBlockHeader.blocksize + 1;
+
+                #region Sanity checking from April 29 2020
+                //int sizeOfChunk = 16;
+                //int sizeOfChunkBlock = 8;
+                //int maxBlockSizeMEM = 0x20000; // 128KB
+                //int sanityCheckMEM = chunkBlockHeader.compressedsize + sizeOfChunk + sizeOfChunkBlock * blockCount;
+
+                //if (sanityCheckMEM != chunk.compressedSize)
+                //{
+                //    Debug.WriteLine($" >> SANITY CHECK {i} FAILED. CHUNKCOMPSIZE: {chunk.compressedSize}, MEM Expected Chunk Comp Size: {sanityCheckMEM}, Difference: {sanityCheckMEM - chunk.compressedSize}");
+                //}
+                //else
+                //{
+                //    Debug.WriteLine($" >> SANITY CHECK {i} OK. CHUNKCOMPSIZE: {chunk.compressedSize}, MEM Expected Chunk Comp Size: {sanityCheckMEM}, Difference: {sanityCheckMEM - chunk.compressedSize}");
+                //}
+                #endregion
+
+                var BlockList = new List<Block>();
+                //DebugOutput.PrintLn("\t\t" + count + " Read Blockheaders...");
+                for (int j = 0; j < blockCount; j++)
+                {
+                    Block b = new Block
+                    {
+                        compressedsize = BitConverter.ToInt32(chunk.Compressed, pos),
+                        uncompressedsize = BitConverter.ToInt32(chunk.Compressed, pos + 4)
+                    };
+                    //DebugOutput.PrintLn("Block " + j + ", compressed size = " + b.compressedsize + ", uncompressed size = " + b.uncompressedsize);
+                    pos += 8;
+                    BlockList.Add(b);
+                }
+                int outpos = 0;
+                int blocknum = 0;
+                //DebugOutput.PrintLn("\t\t" + count + " Read and decompress Blocks...");
+                foreach (Block b in BlockList)
+                {
+                    //Debug.WriteLine("Decompressing block " + blocknum);
+                    var datain = new byte[b.compressedsize];
+                    var dataout = new byte[b.uncompressedsize];
+                    for (int j = 0; j < b.compressedsize; j++)
+                        datain[j] = chunk.Compressed[pos + j];
+                    pos += b.compressedsize;
+
+                    switch (compressionType)
+                    {
+                        case CompressionType.LZO:
+                            {
+                                if (
+                                        LZO2.Decompress(datain, (uint)datain.Length, dataout) != b.uncompressedsize)
+                                    throw new Exception("LZO decompression failed!");
+                                break;
+                            }
+                        case CompressionType.Zlib:
+                            {
+                                if (ZlibHelper.Zlib.Decompress(datain, (uint)datain.Length, dataout) != b.uncompressedsize)
+                                    throw new Exception("Zlib decompression failed!");
+                                break;
+                            }
+                        /* WII U
+                        case CompressionType.LZMA:
+                            dataout = LZMA.Decompress(datain, (uint)b.uncompressedsize);
+                            if (dataout.Length != b.uncompressedsize)
+                                throw new Exception("LZMA decompression failed!");
+                            break;
+                            */
+                        default:
+                            throw new Exception("Unknown compression type for this package.");
+                    }
+                    for (int j = 0; j < b.uncompressedsize; j++)
+                        chunk.Uncompressed[outpos + j] = dataout[j];
+                    outpos += b.uncompressedsize;
+                    blocknum++;
+                }
+                chunk.header = chunkBlockHeader;
+                chunk.blocks = BlockList;
+                count++;
+                Chunks[i] = chunk;
+            }
+
+            MemoryStream result = new MemoryStream();
+            foreach (Chunk c in Chunks)
+            {
+                result.Seek(c.uncompressedOffset, SeekOrigin.Begin);
+                result.WriteFromBuffer(c.Uncompressed);
             }
 
             return result;

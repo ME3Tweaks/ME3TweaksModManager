@@ -5,6 +5,7 @@ using System.IO;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Unreal;
+using Newtonsoft.Json;
 using static ME3Explorer.Unreal.UnrealFlags;
 
 namespace ME3Explorer.Packages
@@ -81,6 +82,8 @@ namespace ME3Explorer.Packages
 
     public class ClassInfo
     {
+        [JsonIgnore]
+        public string ClassName { get; set; }
         public OrderedMultiValueDictionary<string, PropertyInfo> properties = new OrderedMultiValueDictionary<string, PropertyInfo>();
         public string baseClass;
         //Relative to BIOGame
