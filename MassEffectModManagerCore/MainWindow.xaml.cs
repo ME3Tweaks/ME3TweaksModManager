@@ -212,7 +212,7 @@ namespace MassEffectModManagerCore
             if (settingsResult == Settings.SettingsSaveResult.FAILED_UNAUTHORIZED)
             {
                 Log.Error(@"No permissions to appdata! Prompting for user to grant consent");
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(null, "Windows has restricted the permissions on the ME3Tweaks Mod Manager program data directory for this user account. Click OK to grant permissions to this folder to ensure proper application functionality.", "Granting write permissions", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_multiUserProgramDataWindowsRestrictions), M3L.GetString(M3L.string_grantingWritePermissions), MessageBoxButton.OKCancel, MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
                     bool done = Utilities.CreateDirectoryWithWritePermission(Utilities.GetAppDataFolder(), true);
@@ -223,14 +223,14 @@ namespace MassEffectModManagerCore
                     else
                     {
                         Log.Error(@"User declined consenting permissions to ProgramData!");
-                        Xceed.Wpf.Toolkit.MessageBox.Show(null, "The application may not run correctly without permissions to the settings and cache directory.", "ProgramData access denied", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
 
                     }
                 }
                 else
                 {
                     Log.Error(@"User denied granting permissions!");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(null, "The application may not run correctly without permissions to it's settings cache.", "ProgramData access denied", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else

@@ -375,9 +375,14 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             -->
-                            <MenuItem Name="LanguageFRA_MenuItem" Header="Français" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True">
+                            <MenuItem
+                                Name="LanguageFRA_MenuItem"
+                                Header="Français"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
                                 <MenuItem.Icon>
-                                    <Image Source="/modmanager/localizations/icons/french.png" />
+                                    <Image
+                                        Source="/modmanager/localizations/icons/french.png" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <!--
@@ -739,7 +744,7 @@
                             CommandParameter="ME1"
                             Header="{Binding ME1ASILoaderText}"
                             IsChecked="{Binding ME1ASILoaderInstalled}"
-                            ToolTip="Enables ASI mods to load, which in turns allows loading DLC mod overrides"
+                            ToolTip="{DynamicResource string_tooltip_me1ASILoader}"
                             StaysOpenOnClick="True" />
                         <Separator />
                         <MenuItem
@@ -750,7 +755,7 @@
                             CommandParameter="ME2"
                             Header="{Binding ME2ASILoaderText}"
                             IsChecked="{Binding ME2ASILoaderInstalled}"
-                            ToolTip="Allows modified DLC, enables the console, enables ASI mods to work"
+                            ToolTip="{DynamicResource string_tooltip_me23ASILoader}"
                             StaysOpenOnClick="True" />
                         <Separator />
                         <MenuItem
@@ -761,7 +766,7 @@
                             CommandParameter="ME3"
                             Header="{Binding ME3ASILoaderText}"
                             IsChecked="{Binding ME3ASILoaderInstalled}"
-                            ToolTip="Allows modified DLC, enables the console, enables ASI mods to work"
+                            ToolTip="{DynamicResource string_tooltip_me23ASILoader}"
                             StaysOpenOnClick="True" />
                     </MenuItem>
                     <MenuItem
@@ -970,7 +975,7 @@
                         Click="ShowBackupNag_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem
-                        Header="Show Intro Tutorial"
+                        Header="{DynamicResource string_debug_showIntroTutorial}"
                         Click="ShowIntroTutorial_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                 </MenuItem>

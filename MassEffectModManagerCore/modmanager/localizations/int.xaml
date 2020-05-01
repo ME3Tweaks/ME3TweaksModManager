@@ -281,8 +281,13 @@
     <system:String x:Key="string_compiledTLKFile">Compiled TLK file</system:String>
     <system:String x:Key="string_decompilingTLKFile">Decompiling TLK file</system:String>
     <system:String x:Key="string_decompiledTLKFile">Decompiled TLK file</system:String>
-
-
+    <system:String x:Key="string_tooltip_me1ASILoader">Enables ASI mods to load, which in turns allows loading DLC mod overrides</system:String>
+    <system:String x:Key="string_tooltip_me23ASILoader">Allows modified DLC, enables the console, enables ASI mods to work</system:String>
+    <system:String x:Key="string_debug_showIntroTutorial">Show Intro Tutorial</system:String>
+    <system:String x:Key="string_dialog_multiUserProgramDataWindowsRestrictions">Windows has restricted the permissions on the ME3Tweaks Mod Manager program data directory for this user account. Click OK to grant permissions to this folder to ensure proper application functionality.</system:String>
+    <system:String x:Key="string_grantingWritePermissions">Granting write permissions</system:String>
+    <system:String x:Key="string_dialog_programWillNotRunCorrectly">The application may not run correctly without permissions to the settings and cache directory.</system:String>
+    <system:String x:Key="string_programDataAccessDenied">ProgramData access denied</system:String>
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
@@ -1417,4 +1422,9 @@
 
     <!-- ALOT Version Info -->
     <system:String x:Key="string_textureModded">Texture modded</system:String>
+
+    <!-- Intro Tutorial -->
+    <system:String x:Key="string_next">Next</system:String>
+	<system:String x:Key="string_previous">Previous</system:String>
+	<system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
 </ResourceDictionary>
