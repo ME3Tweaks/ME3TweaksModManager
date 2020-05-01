@@ -109,9 +109,9 @@ namespace MassEffectModManagerCore
             return bytes;
         }
 
-        public static bool CreateDirectoryWithWritePermission(string directoryPath)
+        public static bool CreateDirectoryWithWritePermission(string directoryPath, bool forcePermissions = false)
         {
-            if (Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
+            if (!forcePermissions && Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
             {
                 Directory.CreateDirectory(directoryPath);
                 return true;
@@ -184,18 +184,18 @@ namespace MassEffectModManagerCore
             return res;
         }
 
-        public static bool EnableWritePermissionsToFolders(List<GameTarget> targets, bool me1ageia)
+        public static bool EnableWritePermissionsToFolders(List<string> folders, bool me1ageia)
         {
             string args = "";
-            if (targets.Any() || me1ageia)
+            if (folders.Any() || me1ageia)
             {
-                foreach (var target in targets)
+                foreach (var target in folders)
                 {
                     if (args != "")
                     {
                         args += " ";
                     }
-                    args += $"\"{target.TargetPath}\"";
+                    args += $"\"{target}\"";
                 }
 
                 if (me1ageia)
