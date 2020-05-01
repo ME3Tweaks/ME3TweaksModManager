@@ -191,13 +191,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        private static void runMassEffectModderNoGuiIPC(string exe, string args, object lockObject, Action<int?> setExitCodeCallback = null, Action<string, string> ipcCallback = null)
+        private static void runMassEffectModderNoGuiIPC(string operationName, string exe, string args, object lockObject, Action<string, string> exceptionOccuredCallback, Action<int?> setExitCodeCallback = null, Action<string, string> ipcCallback = null)
         {
             Log.Information($"Running Mass Effect Modder No GUI w/ IPC: {exe} {args}");
             var memProcess = new ConsoleApp(exe, args);
+            bool hasExceptionOccured = false;
             memProcess.ConsoleOutput += (o, args2) =>
             {
                 string str = args2.Line;
+                if (hasExceptionOccured)
+                {
+                    Log.Fatal("MassEffectModderNoGui.exe: " + str);
+                }
                 if (str.StartsWith("[IPC]", StringComparison.Ordinal))
                 {
                     string command = str.Substring(5);
@@ -208,6 +213,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
 
                     string param = str.Substring(endOfCommand + 5).Trim();
+                    if (command == "EXCEPTION_OCCURRED")
+                    {
+                        hasExceptionOccured = true;
+                        exceptionOccuredCallback?.Invoke(operationName, param);
+                        return; //don't process this command further, nothing handles it.
+                    }
+
                     ipcCallback?.Invoke(command, param);
                 }
                 //Debug.WriteLine(args2.Line);
@@ -651,7 +663,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine("System Memory", Severity.BOLD);
                 var computerInfo = new ComputerInfo();
                 long ramInBytes = (long)computerInfo.TotalPhysicalMemory;
-                addDiagLine("Total memory available: " + ByteSize.FromBytes(ramInBytes).GibiBytes.ToString("#.#") + "GB");
+                addDiagLine("Total memory available: " + ByteSize.FromBytes(ramInBytes).GibiBytes.ToString("#.##") + "GB");
                 addDiagLine("Processors", Severity.BOLD);
                 addDiagLine(GetProcessorInformationForDiag());
                 if (ramInBytes == 0)
@@ -683,15 +695,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string displayVal;
                     if (returnvalue != null && (long)returnvalue != 0)
                     {
-                        displayVal = ByteSize.FromBytes((long)returnvalue).ToString();
+                        displayVal = ByteSize.FromBytes((long)returnvalue).GibiBytes.ToString("#.##");
                     }
                     else
                     {
                         try
                         {
                             UInt32 wmiValue = (UInt32)obj["AdapterRam"];
-                            displayVal = ByteSize.FromBytes((long)wmiValue).ToString();
-                            if (displayVal == "4GB" || displayVal == "4 GB")
+                            var numBytes = ByteSize.FromBytes((long)wmiValue);
+                            displayVal = numBytes.MebiBytes.ToString("#.##") + " MB";
+                            if (numBytes.MebiBytes == 4095)
                             {
                                 displayVal += " (possibly more, variable is 32-bit unsigned)";
                             }
@@ -797,24 +810,31 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #region Blacklisted mods check
 
+                void memExceptionOccured(string operation, string line)
+                {
+                    addDiagLine($"An exception occured performing operation '{operation}': {line}", Severity.ERROR);
+                    addDiagLine("Check the Mod Manager application log for more information.", Severity.ERROR);
+                    addDiagLine("Report this to ALOT or ME3Tweaks Discord for further assistance.", Severity.ERROR);
+                }
+
                 if (hasMEM)
                 {
                     updateStatusCallback?.Invoke("Checking for blacklisted mods");
                     args = $"--detect-bad-mods --gameid {gameID} --ipc";
                     exitcode = null;
                     var blacklistedMods = new List<string>();
-                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
-                    {
-                        switch (command)
-                        {
-                            case "ERROR":
-                                blacklistedMods.Add(param);
-                                break;
-                            default:
-                                Debug.WriteLine("oof?");
-                                break;
-                        }
-                    });
+                    runMassEffectModderNoGuiIPC(@"Detect Blacklisted Mods", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                      {
+                          switch (command)
+                          {
+                              case "ERROR":
+                                  blacklistedMods.Add(param);
+                                  break;
+                              default:
+                                  Debug.WriteLine("oof?");
+                                  break;
+                          }
+                      });
                     lock (memFinishedLock)
                     {
                         Monitor.Wait(memFinishedLock);
@@ -904,7 +924,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             isFirst = false;
                         else
                             addDiagLine();
-                        
+
                         addDiagLine(sl.Key);
                         foreach (var dlc in sl.Value)
                         {
@@ -1099,7 +1119,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             FileInfo fi = new FileInfo(tfc);
                             long tfcSize = fi.Length;
                             string tfcPath = tfc.Substring(bgPath.Length + 1);
-                            addDiagLine($" - {tfcPath}, {ByteSize.FromBytes(tfcSize)}");
+                            addDiagLine($" - {tfcPath}, {ByteSize.FromBytes(tfcSize).MebiBytes.ToString("#.##")} MB");
                         }
                     }
                     else
@@ -1127,7 +1147,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             List<string> removedFiles = new List<string>();
                             List<string> addedFiles = new List<string>();
                             List<string> replacedFiles = new List<string>();
-                            runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
+                            runMassEffectModderNoGuiIPC(@"Texture map check", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
                             {
                                 switch (command)
                                 {
@@ -1144,7 +1164,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         {
                                             replacedFiles.Add(param);
                                         }
-
                                         break;
                                     default:
                                         Debug.WriteLine("oof?");
@@ -1321,43 +1340,43 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         var badTFCReferences = new List<string>();
                         var scanErrors = new List<string>();
                         string lastMissingTFC = null;
-                        runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
-                        {
-                            switch (command)
-                            {
-                                case "ERROR_MIPMAPS_NOT_REMOVED":
-                                    if (selectedDiagnosticTarget.TextureModded)
-                                    {
-                                        //only matters when game is texture modded
-                                        emptyMipsNotRemoved.Add(param);
-                                    }
-                                    break;
-                                case "TASK_PROGRESS":
-                                    updateStatusCallback?.Invoke($"Performing full textures check {param}%");
-                                    break;
-                                case "PROCESSING_FILE":
-                                    //Don't think there's anything to do with this right now
-                                    break;
-                                case "ERROR_REFERENCED_TFC_NOT_FOUND":
-                                    //badTFCReferences.Add(param);
-                                    lastMissingTFC = param;
-                                    break;
-                                case "ERROR_TEXTURE_SCAN_DIAGNOSTIC":
-                                    if (lastMissingTFC != null)
-                                    {
-                                        badTFCReferences.Add(lastMissingTFC + ", " + param);
-                                    }
-                                    else
-                                    {
-                                        scanErrors.Add(param);
-                                    }
-                                    lastMissingTFC = null; //reset
-                                    break;
-                                default:
-                                    Debug.WriteLine($"{command} {param}");
-                                    break;
-                            }
-                        });
+                        runMassEffectModderNoGuiIPC(@"Full textures check", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                         {
+                             switch (command)
+                             {
+                                 case "ERROR_MIPMAPS_NOT_REMOVED":
+                                     if (selectedDiagnosticTarget.TextureModded)
+                                     {
+                                         //only matters when game is texture modded
+                                         emptyMipsNotRemoved.Add(param);
+                                     }
+                                     break;
+                                 case "TASK_PROGRESS":
+                                     updateStatusCallback?.Invoke($"Performing full textures check {param}%");
+                                     break;
+                                 case "PROCESSING_FILE":
+                                     //Don't think there's anything to do with this right now
+                                     break;
+                                 case "ERROR_REFERENCED_TFC_NOT_FOUND":
+                                     //badTFCReferences.Add(param);
+                                     lastMissingTFC = param;
+                                     break;
+                                 case "ERROR_TEXTURE_SCAN_DIAGNOSTIC":
+                                     if (lastMissingTFC != null)
+                                     {
+                                         badTFCReferences.Add(lastMissingTFC + ", " + param);
+                                     }
+                                     else
+                                     {
+                                         scanErrors.Add(param);
+                                     }
+                                     lastMissingTFC = null; //reset
+                                     break;
+                                 default:
+                                     Debug.WriteLine($"{command} {param}");
+                                     break;
+                             }
+                         });
                         lock (memFinishedLock)
                         {
                             Monitor.Wait(memFinishedLock);
@@ -1445,19 +1464,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     updateStatusCallback?.Invoke("Collecting LOD settings");
                     args = $"--print-lods --gameid {gameID} --ipc";
                     var lods = new Dictionary<string, string>();
-                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
-                    {
-                        switch (command)
-                        {
-                            case "LODLINE":
-                                var lodSplit = param.Split("=");
-                                lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
-                                break;
-                            default:
-                                Debug.WriteLine("oof?");
-                                break;
-                        }
-                    });
+                    runMassEffectModderNoGuiIPC(@"MEM - Fetch LODS", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                     {
+                         switch (command)
+                         {
+                             case "LODLINE":
+                                 var lodSplit = param.Split("=");
+                                 lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
+                                 break;
+                             default:
+                                 Debug.WriteLine("oof?");
+                                 break;
+                         }
+                     });
                     lock (memFinishedLock)
                     {
                         Monitor.Wait(memFinishedLock);
@@ -1473,6 +1492,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     addDiagLine("Mass Effect Modder No Gui was not available for use when this diagnostic was run.", Severity.WARN);
                     addDiagLine("The following checks were skipped:", Severity.WARN);
                     addDiagLine(" - Files added or removed after texture install", Severity.WARN);
+                    addDiagLine(" - Blacklisted mods check", Severity.WARN);
                     addDiagLine(" - Textures check", Severity.WARN);
                     addDiagLine(" - Texture LODs check", Severity.WARN);
                 }
@@ -1485,7 +1505,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine("Installed ASI mods", Severity.DIAGSECTION);
                 if (Directory.Exists(asidir))
                 {
-                    addDiagLine("The follow files are located in the ASI directory:");
+                    addDiagLine("The following ASI files are located in the ASI directory:");
                     string[] files = Directory.GetFiles(asidir, "*.asi");
                     if (!files.Any())
                     {
@@ -1497,6 +1517,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             addDiagLine(" - " + Path.GetFileName(f));
                         }
+                        addDiagLine();
+                        addDiagLine("Ensure that only one version of an ASI is installed. If multiple copies of the same one are installed, the game may crash on startup.");
                     }
                 }
                 else

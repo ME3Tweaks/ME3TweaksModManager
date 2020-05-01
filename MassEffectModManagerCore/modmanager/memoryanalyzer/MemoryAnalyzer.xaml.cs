@@ -113,12 +113,12 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             LastRefreshText = "Last refreshed: " + DateTime.Now;
             CurrentMemoryUsageText = "Current process allocation: " + ByteSize.FromBytes(System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64);
 
-            LargeInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolInUseSize).ToString();
-            LargeFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolFreeSize).ToString();
-            SmallInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolInUseSize).ToString();
-            SmallFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolFreeSize).ToString();
-            MaxBufferSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.MaximumBufferSize).ToString();
-            MemoryBlockSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.BlockSize).ToString();
+            LargeInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolInUseSize).MebiBytes.ToString();
+            LargeFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolFreeSize).MebiBytes.ToString();
+            SmallInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolInUseSize).MebiBytes.ToString();
+            SmallFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolFreeSize).MebiBytes.ToString();
+            MaxBufferSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.MaximumBufferSize).MebiBytes.ToString();
+            MemoryBlockSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.BlockSize).MebiBytes.ToString();
             //foreach (var item in InstancedTrackedMemoryObjects)
             //{
             //    item.RefreshStatus();

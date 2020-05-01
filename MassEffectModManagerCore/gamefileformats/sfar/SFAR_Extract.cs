@@ -201,8 +201,8 @@ namespace ModManagerCommandLine
                         int newProgress = (100 * currentProgress) / totalNumber;
                         if (lastProgress != newProgress)
                         {
-                            Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
-                            Console.Out.Flush();
+                            //Console.WriteLine("[IPC]TASK_PROGRESS " + newProgress);
+                            //Console.Out.Flush();
                             lastProgress = newProgress;
                         }
                     }
