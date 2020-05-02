@@ -346,6 +346,13 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_compiledTLKFile = "string_compiledTLKFile";
 		public static readonly string string_decompilingTLKFile = "string_decompilingTLKFile";
 		public static readonly string string_decompiledTLKFile = "string_decompiledTLKFile";
+		public static readonly string string_tooltip_me1ASILoader = "string_tooltip_me1ASILoader";
+		public static readonly string string_tooltip_me23ASILoader = "string_tooltip_me23ASILoader";
+		public static readonly string string_debug_showIntroTutorial = "string_debug_showIntroTutorial";
+		public static readonly string string_dialog_multiUserProgramDataWindowsRestrictions = "string_dialog_multiUserProgramDataWindowsRestrictions";
+		public static readonly string string_grantingWritePermissions = "string_grantingWritePermissions";
+		public static readonly string string_dialog_programWillNotRunCorrectly = "string_dialog_programWillNotRunCorrectly";
+		public static readonly string string_programDataAccessDenied = "string_programDataAccessDenied";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
@@ -1121,8 +1128,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_availableMixins = "string_availableMixins";
 		public static readonly string string_tooltip_thisMixinIsAFinalizer = "string_tooltip_thisMixinIsAFinalizer";
 		public static readonly string string_patchDescription = "string_patchDescription";
-		public static readonly string string_threeWayMergeSucceededFor = "string_threeWayMergeSucceededFor";
-		public static readonly string string_couldNotMergeThreeWayMergeInto = "string_couldNotMergeThreeWayMergeInto";
 		public static readonly string string_interp_runningAutoTOCOnGamePercentX = "string_interp_runningAutoTOCOnGamePercentX";
 		public static readonly string string_mixinsInstalledMaybe = "string_mixinsInstalledMaybe";
 		public static readonly string string_batchModInstaller = "string_batchModInstaller";
@@ -1168,5 +1173,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_toggleOn = "string_toggleOn";
 		public static readonly string string_interp_errorTogglingDLC = "string_interp_errorTogglingDLC";
 		public static readonly string string_textureModded = "string_textureModded";
+		public static readonly string string_next = "string_next";
+		public static readonly string string_previous = "string_previous";
+		public static readonly string string_skipTutorial = "string_skipTutorial";
 	}
 }
