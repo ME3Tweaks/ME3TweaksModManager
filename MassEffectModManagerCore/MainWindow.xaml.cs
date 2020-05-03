@@ -153,7 +153,7 @@ namespace MassEffectModManagerCore
             {
                 {@"int", LanguageINT_MenuItem},
                 {@"rus", LanguageRUS_MenuItem},
-                //{@"pol", LanguagePOL_MenuItem},
+                {@"pol", LanguagePOL_MenuItem},
                 {@"deu", LanguageDEU_MenuItem},
                 {@"fra", LanguageFRA_MenuItem}
                 //{@"esn", LanguageESN_MenuItem}
@@ -872,7 +872,7 @@ namespace MassEffectModManagerCore
                 M3L.ShowDialog(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription), M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var archiveDeploymentPane = new ArchiveDeployment(SelectedMod, this);
+            var archiveDeploymentPane = new ArchiveDeployment(SelectedMod);
             archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(archiveDeploymentPane);
         }
@@ -2891,10 +2891,10 @@ namespace MassEffectModManagerCore
             {
                 lang = @"int";
             }
-            //else if (sender == LanguagePOL_MenuItem)
-            //{
-            //    lang = @"pol";
-            //}
+            else if (sender == LanguagePOL_MenuItem)
+            {
+                lang = @"pol";
+            }
             else if (sender == LanguageRUS_MenuItem)
             {
                 lang = @"rus";
