@@ -288,6 +288,8 @@
     <system:String x:Key="string_grantingWritePermissions">Granting write permissions</system:String>
     <system:String x:Key="string_dialog_programWillNotRunCorrectly">The application may not run correctly without permissions to the settings and cache directory.</system:String>
     <system:String x:Key="string_programDataAccessDenied">ProgramData access denied</system:String>
+    <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Auto-add controller Mixins to ModMaker mods</system:String>
+    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods.&#10;Do not select this if you play with a keyboard/mouse</system:String>
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
@@ -1143,6 +1145,9 @@
     <system:String x:Key="string_useLocalFileInstead">Use local file instead</system:String>
     <system:String x:Key="string_selectModMakerModXmlFile">Select ModMaker mod xml file</system:String>
     <system:String x:Key="string_modMakerXMLFiles">ModMaker xml files</system:String>
+    <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Adds Mixins to ensure proper Controller Mod functionality, such as proper camera turning, if the mod modifies the same files as one of the Controller mods.&#10;Do not select this if you do not use a Controller Support mod. When using this option, install this mod AFTER installing a Controller Support mod</system:String>
+    <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Add Controller Support Mixins, if necessary</system:String>
+    <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Use a local ModMaker xml file instead</system:String>
 
     <!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
@@ -1226,6 +1231,7 @@
     <system:String x:Key="string_uninstallingALOT">Uninstalling ALOT</system:String>
     <system:String x:Key="string_modding">Modding</system:String>
     <system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
+    <!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
     <system:String x:Key="string_mixins">Mixins</system:String>
     <system:String x:Key="string_mergingMods">Merging mods</system:String>
     <system:String x:Key="string_deployingModsTo7z">Deploying mods to .7z</system:String>

@@ -353,6 +353,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_grantingWritePermissions = "string_grantingWritePermissions";
 		public static readonly string string_dialog_programWillNotRunCorrectly = "string_dialog_programWillNotRunCorrectly";
 		public static readonly string string_programDataAccessDenied = "string_programDataAccessDenied";
+		public static readonly string string_autoAddControllerMixinsToModMakerMods = "string_autoAddControllerMixinsToModMakerMods";
+		public static readonly string string_tooltip_autoAddControllerMixinsToModMakerMods = "string_tooltip_autoAddControllerMixinsToModMakerMods";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
@@ -973,6 +975,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_useLocalFileInstead = "string_useLocalFileInstead";
 		public static readonly string string_selectModMakerModXmlFile = "string_selectModMakerModXmlFile";
 		public static readonly string string_modMakerXMLFiles = "string_modMakerXMLFiles";
+		public static readonly string string_tooltip_controllerMixins = "string_tooltip_controllerMixins";
+		public static readonly string string_addMPControllerSupportMixinsIfNecessary = "string_addMPControllerSupportMixinsIfNecessary";
+		public static readonly string string_tooltip_useALocalModMakerXmlFileInstead = "string_tooltip_useALocalModMakerXmlFileInstead";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
 		public static readonly string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";
