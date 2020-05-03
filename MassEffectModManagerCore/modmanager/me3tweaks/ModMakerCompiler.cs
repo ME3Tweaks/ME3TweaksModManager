@@ -293,6 +293,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
                 allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
 
+                //Controller addins
+                if (Settings.ModMakerControllerModOption)
+                {
+                    if (allmixins.Any(x => Path.GetFileName(x.TargetFile) == @"SFXGame.pcc"))
+                    {
+                        Log.Information(@"Added controller camera mixin as this mod modifies SFXGame and controller option is on");
+                        allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1533));
+                    }
+                    if (allmixins.Any(x => Path.GetFileName(x.TargetFile) == @"Patch_BioPlayerController.pcc"))
+                    {
+                        Log.Information(@"Added controller vibration mixin as this mod modifies Patch_BioPlayerController and controller option is on");
+                        allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1557));
+                    }
+                }
+
                 var backupDir = Utilities.GetGameBackupPath(MEGame.ME3, true);
                 if (backupDir != null)
                 {
