@@ -45,6 +45,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModStartup, value);
         }
 
+
         private static bool _logModUpdater = true;
         public static bool LogModUpdater
         {
@@ -63,6 +64,14 @@ namespace MassEffectModManagerCore.modmanager
         {
             get => _betaMode;
             set => SetProperty(ref _betaMode, value);
+        }
+
+        private static bool _modMakerControllerModOption = false;
+
+        public static bool ModMakerControllerModOption
+        {
+            get => _modMakerControllerModOption;
+            set => SetProperty(ref _modMakerControllerModOption, value);
         }
 
         private static string _updaterServiceUsername;
@@ -177,6 +186,9 @@ namespace MassEffectModManagerCore.modmanager
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
             AutoUpdateLODs = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", true);
+
+            ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
+
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
             UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
@@ -337,6 +349,7 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", AutoUpdateLODs);
+                SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
                 return SettingsSaveResult.SAVED;
             }

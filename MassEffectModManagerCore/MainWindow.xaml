@@ -402,6 +402,15 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuItem>
+                        <MenuItem Header="ME3Tweaks ModMaker" Style="{StaticResource MenuItemHeaderStyle}"/>
+                        <MenuItem
+                                Name="ModMakerControllerMixins_MenuItem"
+                                Header="Auto-add controller Mixins to ModMaker mods"
+                                StaysOpenOnClick="True"
+                                Click="ChangeSetting_Clicked"
+                                IsChecked="{Binding Path=(modmanager:Settings.ModMakerControllerModOption)}"
+                                ToolTip="Automatically add controller fixes to ModMaker mods.&#10;Do not select this if you play with a keyboard/mouse"
+                                IsCheckable="True" />
                         <MenuItem
                             Header="{DynamicResource string_Logging}"
                             Style="{StaticResource MenuItemHeaderStyle}" />

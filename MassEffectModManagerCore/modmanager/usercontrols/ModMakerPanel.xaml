@@ -64,12 +64,13 @@
                 <xctk:WatermarkTextBox Watermark="{DynamicResource string_selectAModMakerXmlFile}"  IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding LocalFilePath, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
             <DockPanel HorizontalAlignment="Stretch" Margin="0,5,0,0" >
+                <CheckBox Content="Add MP Controller Support Mixins, if necessary" ToolTip="Adds Mixins to ensure proper MP Controller Mod functionality, such as proper camera turning, if the mod modifies the same files as the MP Controller mod.&#10;Do not select this if you do not use the MP Controller Support mod. When using this option, install this mod AFTER installing MP Controller Support"  Margin="0,5"  HorizontalAlignment="Left" IsChecked="{Binding Settings.ModMakerControllerModOption}" DockPanel.Dock="Top"/>
                 <Button Content="{DynamicResource string_download}" Command="{Binding DownloadCompileCommand}" Padding="20,0" DockPanel.Dock="Right" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
                 <Button Content="{DynamicResource string_compile}" Command="{Binding DownloadCompileCommand}" Padding="20,0" DockPanel.Dock="Right" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 <xctk:WatermarkTextBox Watermark="{DynamicResource string_modMakerCode}" Visibility="{Binding LocalFileOption, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
                                        Text="{Binding ModMakerCode, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Right" Width="120" DockPanel.Dock="Right"/>
 
-                <CheckBox Content="{DynamicResource string_useLocalFileInstead}" HorizontalAlignment="Left" IsChecked="{Binding LocalFileOption}"/>
+                <CheckBox Content="{DynamicResource string_useLocalFileInstead}" ToolTip="Use a local ModMaker xml file instead" HorizontalAlignment="Left" IsChecked="{Binding LocalFileOption}"/>
 
             </DockPanel>
         </DockPanel>
