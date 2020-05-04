@@ -1079,7 +1079,7 @@
     <system:String x:Key="string_generatingMod">Generowanie moda</system:String>
     <system:String x:Key="string_interp_valueMustBeBetween0AndX">Wartość musi być pomiędzy 0 a {0}</system:String>
 	<!-- 0 = number -->
-    <system:String x:Key="string_dialog_devModeAdvert">Tryb developerski dla ME3Tweak Mod Manager jest obecnie wyłączony. Włącz go aby uzyskać dostęp do narzędzi developerskich w menu, takich jak Official DLC Toggler, funkcji Wdrażania do 7z, Custom DLC Conflict Detector, Backup File Fetcher i nie tylko. \n\nWłączyć tryb developerski?</system:String>
+    <system:String x:Key="string_dialog_devModeAdvert">Tryb developerski dla ME3Tweak Mod Manager jest obecnie wyłączony. Włącz go aby uzyskać dostęp do narzędzi developerskich w menu, takich jak Przełącznik Oficjalnych DLC, funkcji Wdrażania do 7z, Custom DLC Conflict Detector, Backup File Fetcher i nie tylko. \n\nWłączyć tryb developerski?</system:String>
     <system:String x:Key="string_enableDeveloperFeaturesQuestion">Włączyć funkcje developerskie?</system:String>
 
 	<!-- List Dialog -->
@@ -1410,7 +1410,7 @@
 	<!-- 0=numMigrated 1=numToMigrate -->
 
 	<!-- Official DLC Toggler -->
-    <system:String x:Key="string_officialDLCToggler">Official DLC Toggler</system:String>
+    <system:String x:Key="string_officialDLCToggler">Przełącznik Oficjalnych DLC</system:String>
     <system:String x:Key="string_officialDLCTogglerDescription">Developerzy mogą użyć tego narzędzia aby włączać i wyłączać oficjalne DLC. Jest to przydatne w celu sprawdzenia jak mod zachowuje się, kiedy zostanie zainstalowany w innym środowisku. Możesz przełączyć DLC w panelu Informacji Instalacyjnych.</system:String>
     <system:String x:Key="string_officialDLCTogglerME1ME2Warning">Przełączenie DLC dla tej gry zmieni tylko sposób, w jaki Mod Manager zachowuje się, kiedy wykrywa zainstalowane DLC. Mass Effect i Mass Effect 2 będą ładować DLC z ich poszczególnych ścieżek DLC.</system:String>
     <system:String x:Key="string_toggleOff">Wyłącz</system:String>
