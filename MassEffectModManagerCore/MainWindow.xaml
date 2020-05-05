@@ -372,7 +372,7 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             -->
-                            <MenuItem
+                            <!--<MenuItem
                                 Name="LanguageFRA_MenuItem"
                                 Header="Français"
                                 Click="ChangeLanguage_Clicked"
@@ -381,7 +381,7 @@
                                     <Image
                                         Source="/modmanager/localizations/icons/french.png" />
                                 </MenuItem.Icon>
-                            </MenuItem>
+                            </MenuItem>-->
                             <MenuItem
                                 Name="LanguagePOL_MenuItem"
                                 Header="Polski"

@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore
                 {@"rus", LanguageRUS_MenuItem},
                 {@"pol", LanguagePOL_MenuItem},
                 {@"deu", LanguageDEU_MenuItem},
-                {@"fra", LanguageFRA_MenuItem}
+                //{@"fra", LanguageFRA_MenuItem}
                 //{@"esn", LanguageESN_MenuItem}
             };
 
@@ -2598,8 +2598,20 @@ namespace MassEffectModManagerCore
                                     break;
                                 }
 
+
+
                                 if (rootElement.Name == @"CoalesceFile")
                                 {
+                                    bool failedToCompileCoalesced = false;
+                                    void errorCompilingCoalesced(string message)
+                                    {
+                                        Application.Current.Dispatcher.Invoke(delegate
+                                        {
+                                            failedToCompileCoalesced = true;
+                                            Xceed.Wpf.Toolkit.MessageBox.Show(this, message, "Error compiling Coalesced", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        });
+                                    }
+
                                     //Coalesced manifest
                                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Compiler");
                                     var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompile", M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
@@ -2607,12 +2619,35 @@ namespace MassEffectModManagerCore
                                     {
                                         var dest = Path.Combine(Directory.GetParent(files[0]).FullName, rootElement.Attribute(@"name").Value);
                                         Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
-                                        Converter.ConvertToBin(files[0], dest);
-                                        Log.Information(@"Compiled coalesced file");
+                                        try
+                                        {
+                                            Converter.ConvertToBin(files[0], dest);
+                                            Log.Information(@"Compiled coalesced file");
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Error($@"Error compiling Coalesced file: {e.Message}:");
+                                            Log.Error(App.FlattenException(e));
+                                            errorCompilingCoalesced($"Exception occured while compiling Coalseced file: {e.Message}");
+                                        }
                                     };
-                                    nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                    nbw.RunWorkerCompleted += (a, b) =>
+                                    {
+                                        if (failedToCompileCoalesced) task.finishedUiText = "Error compiling Coalesced";
+                                        backgroundTaskEngine.SubmitJobCompletion(task);
+                                    };
                                     nbw.RunWorkerAsync();
                                     break;
+                                }
+
+                                bool failedToCompileTLK = false;
+                                void errorCompilingTLK(string message)
+                                {
+                                    Application.Current.Dispatcher.Invoke(delegate
+                                    {
+                                        failedToCompileTLK = true;
+                                        Xceed.Wpf.Toolkit.MessageBox.Show(this, message, "Error compiling TLK", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    });
                                 }
 
                                 // Tankmaster's uses a capital T where ME3Explorer used lowercase t
@@ -2630,8 +2665,12 @@ namespace MassEffectModManagerCore
                                          */
                                         NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
                                         var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
-                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement); };
-                                        nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement, errorCompilingTLK); };
+                                        nbw.RunWorkerCompleted += (a, b) =>
+                                        {
+                                            if (failedToCompileTLK) task.finishedUiText = "Compiling failed";
+                                            backgroundTaskEngine.SubmitJobCompletion(task);
+                                        };
                                         nbw.RunWorkerAsync();
                                     }
                                     else
@@ -2639,8 +2678,12 @@ namespace MassEffectModManagerCore
                                         //Is this a straight up TLK?
                                         NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
                                         var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
-                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement); };
-                                        nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement, errorCompilingTLK); };
+                                        nbw.RunWorkerCompleted += (a, b) =>
+                                        {
+                                            if (failedToCompileTLK) task.finishedUiText = "Compiling failed";
+                                            backgroundTaskEngine.SubmitJobCompletion(task);
+                                        };
                                         nbw.RunWorkerAsync();
                                     }
                                 }
@@ -2648,14 +2691,19 @@ namespace MassEffectModManagerCore
                                 {
                                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileME3Exp");
                                     var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
-                                    nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement); };
-                                    nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                    nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement, errorCompilingTLK); };
+                                    nbw.RunWorkerCompleted += (a, b) =>
+                                    {
+                                        if (failedToCompileTLK) task.finishedUiText = "Compiling failed";
+                                        backgroundTaskEngine.SubmitJobCompletion(task);
+                                    };
                                     nbw.RunWorkerAsync();
                                 }
                             }
                             catch (Exception ex)
                             {
                                 Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Error reading xml file: {ex.Message}", "Error reading xml file", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                         break;
@@ -2907,10 +2955,10 @@ namespace MassEffectModManagerCore
             //{
             //    lang = @"esn";
             //}
-            else if (sender == LanguageFRA_MenuItem)
-            {
-                lang = @"fra";
-            }
+            //else if (sender == LanguageFRA_MenuItem)
+            //{
+            //    lang = @"fra";
+            //}
             //else if (sender == LanguageCZE_MenuItem)
             //{
             //    lang = @"cze";

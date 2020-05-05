@@ -6,7 +6,7 @@
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
                        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:fa="http://schemas.fontawesome.io/icons/"
-                       mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" MaxWidth="550">
+                       mc:Ignorable="d" d:DesignHeight="450"  MaxWidth="650">
     <StackPanel>
         <TextBlock Text="{DynamicResource string_previewPanelTitle}" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,10" />
         <TextBlock TextWrapping="Wrap" Text="{DynamicResource string_previewPanelIntro}" />
@@ -28,20 +28,21 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Column="0" Grid.ColumnSpan="4" Text="{DynamicResource string_selectYourLanguage}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
-                <TextBlock Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2" Text="{DynamicResource string_theme}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
-                <Button Grid.Column="0" Grid.Row="1" Margin="2" Click="ChangeLang_DEU_Clicked">
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Text="{DynamicResource string_selectYourLanguage}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
+                <TextBlock Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="2" Text="{DynamicResource string_theme}" TextAlignment="Center" FontSize="16" Margin="0,5,0,0" FontWeight="Bold" />
+                <Button Grid.Row="1" Grid.Column="0" Margin="2" Click="ChangeLang_DEU_Clicked">
                     <StackPanel>
                         <Image Source="/modmanager/localizations/icons/german.png" />
                         <TextBlock Text="Deutsch" TextAlignment="Center" />
                     </StackPanel>
                 </Button>
-                <Button Grid.Column="1" Grid.Row="1" Margin="2" Click="ChangeLang_INT_Clicked">
+                <Button Grid.Row="1" Grid.Column="1" Margin="2" Click="ChangeLang_INT_Clicked">
                     <StackPanel>
                         <Image Source="/modmanager/localizations/icons/english.png" />
                         <TextBlock Text="English" TextAlignment="Center" />
@@ -54,32 +55,32 @@
                         <TextBlock Text="Español" TextAlignment="Center" />
                     </StackPanel>
                 </Button>-->
-                <Button Grid.Row="1" Grid.Column="2" Margin="2" Click="ChangeLang_FRA_Clicked">
+                <!--<Button Grid.Row="1" Grid.Column="2" Margin="2" Click="ChangeLang_FRA_Clicked">
                     <StackPanel>
                         <Image Source="/modmanager/localizations/icons/french.png" />
                         <TextBlock Text="Français" TextAlignment="Center" />
                     </StackPanel>
-                </Button><!--
-                <Button Grid.Row="2" Grid.Column="1" Margin="2" Click="ChangeLang_POL_Clicked" IsEnabled="False" ToolTip="{DynamicResource string_tooltip_translationIsInProgressButIsNotYetAvailable}">
+                </Button>-->
+                <Button Grid.Row="1" Grid.Column="3" Margin="2" Click="ChangeLang_POL_Clicked">
                     <StackPanel>
                         <Image Source="/modmanager/localizations/icons/polish.png" />
                         <TextBlock Text="Polski" TextAlignment="Center" />
                     </StackPanel>
-                </Button> -->
-                <Button Grid.Row="1" Grid.Column="3" Margin="2" Click="ChangeLang_RUS_Clicked">
+                </Button> 
+                <Button Grid.Row="1" Grid.Column="4" Margin="2" Click="ChangeLang_RUS_Clicked">
                     <StackPanel>
                         <Image Source="/modmanager/localizations/icons/russian.png" Width="64" />
                         <TextBlock Text="Pусский" TextAlignment="Center" />
                     </StackPanel>
                 </Button>
                 <!-- Themes -->
-                <Button Grid.Column="4" Grid.Row="1" Margin="12,2,2,2" Click="ChangeTheme_Light_Clicked">
+                <Button Grid.Column="5" Grid.Row="1" Margin="12,2,2,2" Click="ChangeTheme_Light_Clicked">
                     <StackPanel>
                         <Image Source="/images/lighttheme.png" Width="64" />
                         <TextBlock Text="{DynamicResource string_light}" TextAlignment="Center" />
                     </StackPanel>
                 </Button>
-                <Button Grid.Column="5" Grid.Row="1" Margin="2" Click="ChangeTheme_Dark_Clicked">
+                <Button Grid.Column="6" Grid.Row="1" Margin="2" Click="ChangeTheme_Dark_Clicked">
                     <StackPanel>
                         <Image Source="/images/darktheme.png" Width="64" />
                         <TextBlock Text="{DynamicResource string_dark}" TextAlignment="Center" />

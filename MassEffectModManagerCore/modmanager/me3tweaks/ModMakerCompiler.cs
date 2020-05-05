@@ -290,8 +290,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 List<Mixin> allmixins = new List<Mixin>();
                 allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
-                MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
-                allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
 
                 //Controller addins
                 if (Settings.ModMakerControllerModOption)
@@ -307,6 +305,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1557));
                     }
                 }
+
+                MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
+                allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
 
                 var backupDir = Utilities.GetGameBackupPath(MEGame.ME3, true);
                 if (backupDir != null)

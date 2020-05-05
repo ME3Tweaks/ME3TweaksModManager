@@ -14,35 +14,54 @@ namespace MassEffectModManagerCore.modmanager
     /// </summary>
     public class TLKTranspiler
     {
-        public static void CompileTLKManifest(string manifestFile, XElement rootElement)
+        public static void CompileTLKManifest(string manifestFile, XElement rootElement, Action<string> exceptionCompilingCallback)
         {
             //Thread.Sleep(5000);
-            var includes = rootElement.Descendants(@"Include");
-            var tlkname = rootElement.Attribute(@"source").Value;
-            var rootDir = Directory.GetParent(manifestFile);
-            List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
-
-            foreach (var i in includes)
+            try
             {
-                var sourcefile = i.Attribute(@"source").Value;
-                var subxmlfile = Path.Combine(rootDir.FullName, sourcefile);
-                XDocument subdoc = XDocument.Load(subxmlfile);
-                var substrings = subdoc.Root.Descendants(@"String");
-                var position = 0;
-                foreach (var substr in substrings)
-                {
-                    var id = int.Parse(substr.Attribute(@"id").Value);
-                    var data = substr.Value;
-                    if (id > 0) data += '\0';
-                    strings.Add(new HuffmanCompressionME2ME3.TLKEntry(id, position, data));
-                    position++;
-                }
-            }
+                var includes = rootElement.Descendants(@"Include");
+                var tlkname = rootElement.Attribute(@"source").Value;
+                var rootDir = Directory.GetParent(manifestFile);
+                List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
 
-            var tlk = Path.Combine(rootDir.FullName, tlkname);
-            Log.Information(@"Saving TLK file: " + tlk);
-            new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
-            Log.Information(@"Saved TLK file: " + tlk);
+                foreach (var i in includes)
+                {
+
+                    var sourcefile = i.Attribute(@"source").Value;
+                    var subxmlfile = Path.Combine(rootDir.FullName, sourcefile);
+                    try
+                    {
+                        XDocument subdoc = XDocument.Load(subxmlfile);
+                        var substrings = subdoc.Root.Descendants(@"String");
+                        var position = 0;
+                        foreach (var substr in substrings)
+                        {
+                            var id = int.Parse(substr.Attribute(@"id").Value);
+                            var data = substr.Value;
+                            if (id > 0) data += '\0';
+                            strings.Add(new HuffmanCompressionME2ME3.TLKEntry(id, position, data));
+                            position++;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Error compiling TLK submodule {subxmlfile}:");
+                        Log.Error(App.FlattenException(e));
+                        exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file {sourcefile}: {e.Message}");
+                    }
+                }
+
+                var tlk = Path.Combine(rootDir.FullName, tlkname);
+                Log.Information(@"Saving TLK file: " + tlk);
+                new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
+                Log.Information(@"Saved TLK file: " + tlk);
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Error compiling TLK:");
+                Log.Error(App.FlattenException(e));
+                exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file: {e.Message}");
+            }
         }
 
         /// <summary>
@@ -51,7 +70,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="xmlfile"></param>
         /// <param name="rootElement"></param>
 
-        public static void CompileTLKME3Explorer(string xmlfile, XElement rootElement)
+        public static void CompileTLKME3Explorer(string xmlfile, XElement rootElement, Action<string> exceptionCompilingCallback)
         {
             var rootDir = Directory.GetParent(xmlfile);
             List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
@@ -69,14 +88,23 @@ namespace MassEffectModManagerCore.modmanager
 
             var tlk = Path.Combine(rootDir.FullName, Path.GetFileNameWithoutExtension(xmlfile) + @".tlk");
             Log.Information(@"Saving TLK file: " + tlk);
-            new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
-            Log.Information(@"Saved TLK file: " + tlk);
+            try
+            {
+                new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
+                Log.Information(@"Saved TLK file: " + tlk);
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Error compiling TLK:");
+                Log.Error(App.FlattenException(e));
+                exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file: {e.Message}");
+            }
         }
 
-        internal static void CompileTLKManifestStrings(string filename, XElement rootElement)
+        internal static void CompileTLKManifestStrings(string filename, XElement rootElement, Action<string> exceptionCompilingCallback)
         {
             //Thread.Sleep(5000);
-            var tlkname = Path.GetFileNameWithoutExtension(filename) + ".tlk";
+            var tlkname = Path.GetFileNameWithoutExtension(filename) + @".tlk";
             var rootDir = Directory.GetParent(filename);
             List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
 
@@ -93,8 +121,17 @@ namespace MassEffectModManagerCore.modmanager
 
             var tlk = Path.Combine(rootDir.FullName, tlkname);
             Log.Information(@"Saving TLK file: " + tlk);
-            new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
-            Log.Information(@"Saved TLK file: " + tlk);
+            try
+            {
+                new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
+                Log.Information(@"Saved TLK file: " + tlk);
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Error compiling TLK:");
+                Log.Error(App.FlattenException(e));
+                exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file: {e.Message}");
+            }
         }
     }
 }
