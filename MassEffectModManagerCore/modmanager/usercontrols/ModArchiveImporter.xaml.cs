@@ -448,12 +448,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     foreach (var sfarEntry in sfarEntries)
                     {
                         var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, Mod.MEGame.ME3, md5);
-                        if (vMod.ValidMod)
-                        {
-                            addCompressedModCallback?.Invoke(vMod);
-                            internalModList.Add(vMod);
-                            vMod.ExeExtractionTransform = transform;
-                        }
+                        //if (vMod.ValidMod)
+                        //{
+                        addCompressedModCallback?.Invoke(vMod);
+                        internalModList.Add(vMod);
+                        vMod.ExeExtractionTransform = transform;
+                        //}
                     }
 
                     //TODO: ME2 ?
@@ -542,48 +542,58 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var thirdPartyInfo = ThirdPartyServices.GetThirdPartyModInfo(dlcFolderName, game);
                     if (thirdPartyInfo != null)
                     {
-                        Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
-                        //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build and feed it a virtual one.
-                        IniData virtualModDesc = new IniData();
-                        virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
-                        virtualModDesc[@"ModManager"][@"importedby"] = App.BuildNumber.ToString();
-                        virtualModDesc[@"ModInfo"][@"game"] = @"ME3";
-                        virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
-                        virtualModDesc[@"ModInfo"][@"moddev"] = thirdPartyInfo.moddev;
-                        virtualModDesc[@"ModInfo"][@"modsite"] = thirdPartyInfo.modsite;
-                        virtualModDesc[@"ModInfo"][@"moddesc"] = thirdPartyInfo.moddesc;
-                        virtualModDesc[@"ModInfo"][@"unofficial"] = @"true";
-                        if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
+                        if (thirdPartyInfo.PreventImport == false)
                         {
-                            virtualModDesc[@"ModInfo"][@"updatecode"] = updatecode.ToString();
-                            virtualModDesc[@"ModInfo"][@"modver"] = 0.001.ToString(CultureInfo.InvariantCulture); //This will force mod to check for update after reload
-                        }
-                        else
-                        {
-                            virtualModDesc[@"ModInfo"][@"modver"] = 0.0.ToString(CultureInfo.InvariantCulture); //Will attempt to look up later after mods have parsed.
+                            Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
+                            //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build and feed it a virtual one.
+                            IniData virtualModDesc = new IniData();
+                            virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
+                            virtualModDesc[@"ModManager"][@"importedby"] = App.BuildNumber.ToString();
+                            virtualModDesc[@"ModInfo"][@"game"] = @"ME3";
+                            virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
+                            virtualModDesc[@"ModInfo"][@"moddev"] = thirdPartyInfo.moddev;
+                            virtualModDesc[@"ModInfo"][@"modsite"] = thirdPartyInfo.modsite;
+                            virtualModDesc[@"ModInfo"][@"moddesc"] = thirdPartyInfo.moddesc;
+                            virtualModDesc[@"ModInfo"][@"unofficial"] = @"true";
+                            if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
+                            {
+                                virtualModDesc[@"ModInfo"][@"updatecode"] = updatecode.ToString();
+                                virtualModDesc[@"ModInfo"][@"modver"] = 0.001.ToString(CultureInfo.InvariantCulture); //This will force mod to check for update after reload
+                            }
+                            else
+                            {
+                                virtualModDesc[@"ModInfo"][@"modver"] = 0.0.ToString(CultureInfo.InvariantCulture); //Will attempt to look up later after mods have parsed.
+                            }
+
+                            virtualModDesc[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
+                            virtualModDesc[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
+                            virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
+
+                            var archiveSize = new FileInfo(archive.FileName).Length;
+                            var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+                            if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
+                            {
+                                OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
+                                virtualModDesc[@"ModInfo"][@"requireddlc"] = importingInfos[0].requireddlc;
+                            }
+
+                            return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
                         }
 
-                        virtualModDesc[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
-                        virtualModDesc[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
-                        virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
-
-                        var archiveSize = new FileInfo(archive.FileName).Length;
-                        var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
-                        if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
+                        //Mod is marked for preventing import
+                        return new Mod(false)
                         {
-                            OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
-                            virtualModDesc[@"ModInfo"][@"requireddlc"] = importingInfos[0].requireddlc;
-                        }
-
-                        return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
+                            ModName = thirdPartyInfo.modname,
+                            ModDeveloper = thirdPartyInfo.moddev,
+                            LoadFailedReason = M3L.GetString(M3L.string_modCannotBeImportedDueToOneOfTheFollowingReasons)
+                        };
+                    }
+                    else
+                    {
+                        Log.Information($@"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
                     }
                 }
-                else
-                {
-                    Log.Information($@"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
-                }
             }
-
             return null;
         }
 

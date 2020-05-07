@@ -637,6 +637,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_importCompleted = "string_importCompleted";
 		public static readonly string string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary = "string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary";
 		public static readonly string string_movingALOTFileToTextureLibraryPleaseWait = "string_movingALOTFileToTextureLibraryPleaseWait";
+		public static readonly string string_modCannotBeImportedDueToOneOfTheFollowingReasons = "string_modCannotBeImportedDueToOneOfTheFollowingReasons";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";
@@ -975,8 +976,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_useLocalFileInstead = "string_useLocalFileInstead";
 		public static readonly string string_selectModMakerModXmlFile = "string_selectModMakerModXmlFile";
 		public static readonly string string_modMakerXMLFiles = "string_modMakerXMLFiles";
-		public static readonly string string_tooltip_controllerMixins = "string_tooltip_controllerMixins";
-		public static readonly string string_addMPControllerSupportMixinsIfNecessary = "string_addMPControllerSupportMixinsIfNecessary";
+		public static readonly string string_tooltip_addControllerSupportMixinsDetailed = "string_tooltip_addControllerSupportMixinsDetailed";
+		public static readonly string string_addControllerSupportMixinsIfNecessary = "string_addControllerSupportMixinsIfNecessary";
 		public static readonly string string_tooltip_useALocalModMakerXmlFileInstead = "string_tooltip_useALocalModMakerXmlFileInstead";
 		public static readonly string string_interp_revisionX = "string_interp_revisionX";
 		public static readonly string string_interp_codeX = "string_interp_codeX";
