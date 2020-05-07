@@ -1393,8 +1393,7 @@
     <system:String x:Key="string_importedFromGame">Zaimportowano z gry</system:String>
     <system:String x:Key="string_defaultDescriptionForImportedMod">Ten mod został zaimportowany z instalacji {0} o godzinie {1}.</system:String>
 	<!-- 0=game name 1=time -->
-    <system:String x:Key="string_dlcImportingNexusModsWatermark">https://nexusmods.com/masseffect... 
-(rekomendowane)</system:String>
+    <system:String x:Key="string_dlcImportingNexusModsWatermark">https://nexusmods.com/masseffect... (rekomendowane)</system:String>
 	<!-- Conflict Detector -->
     <system:String x:Key="string_conflictDetector">Wykrywacz Konfliktów</system:String>
     <system:String x:Key="string_conflictDetectorDescription">W przypadku tak samo nazwyjących się plików zlokalizowanych w różnych DLC, gra użyje pliku z najwyższym priorytetem montowania. Wykrywacz Konfliktów wskaże konflikty powstające pomiędzy plikami modów DLC. To narzędzie TYLKO DLA DEVELOPERÓW, nie interpretuj rezultatów jeśli nie rozumiesz w pełni jak działają pliki gry!</system:String>
