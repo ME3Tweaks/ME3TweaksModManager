@@ -288,6 +288,8 @@
     <system:String x:Key="string_grantingWritePermissions">Schreibzugriff wird gestattet</system:String>
     <system:String x:Key="string_dialog_programWillNotRunCorrectly">Diese Anwendung läuft möglicherweise ohne Zugriff auf Einstellungs- und Cache-Verzeichnis nicht korrekt.</system:String>
     <system:String x:Key="string_programDataAccessDenied">ProgramData Zugriff verweigert</system:String>
+    <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Controller Mixins automatisch zu ModMaker Mods hinzufügen</system:String>
+    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Controller Mixins werden automatisch allen ModMaker Mods hinzugefügt.&#10;Wähle diese Option nicht wenn du mit Maus und Tastatur spielst</system:String>
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Bereite Installation vor</system:String>
@@ -647,6 +649,7 @@
     <system:String x:Key="string_importCompleted">Import abgeschlossen</system:String>
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Diese Datei ist nicht in der Textur-Bibliothek. Wird in die Textur-Bibliothek verschoben</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">ALOT-Datei wird in die Textur-Bibliothek verschoben, bitte warten...</system:String>
+    <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Dieser Mod kann aus einem der folgenden Gründe nicht von Mod Manager importiert oder installiert werden:\n - Installation dieses Mods ist zu komplex\n - Installation dieses Mods benötigt zusätzliche Werkezeuge, die manuell vom Benutzer eingestellt werden müssen\n - Mod steht auf der schwarzen Liste, da er bekannt dafür ist, Spiele zu zerstören.\n\nDieser Mod muss manuell installiert werden.</system:String>
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Updates für Mods verfügbar</system:String>
@@ -1138,10 +1141,13 @@
     <system:String x:Key="string_dlcMissing">Fehlende DLCs</system:String>
     <system:String x:Key="string_downloadAborted">Herunterladen abgebrochen</system:String>
     <system:String x:Key="string_compile">Kompilieren</system:String>
-    <system:String x:Key="string_selectAModMakerXmlFile">Wähle eine ModMaker XML-Datei</system:String>
+    <system:String x:Key="string_selectAModMakerXmlFile">Wähle eine ModMaker xml-Datei</system:String>
     <system:String x:Key="string_useLocalFileInstead">Stattdessen eine lokale Datei benutzen</system:String>
-    <system:String x:Key="string_selectModMakerModXmlFile">Wähle eine ModMaker-Mod XML-Datei</system:String>
-    <system:String x:Key="string_modMakerXMLFiles">ModMaker XML-Datei</system:String>
+    <system:String x:Key="string_selectModMakerModXmlFile">Wähle eine ModMaker-Mod xml-Datei</system:String>
+    <system:String x:Key="string_modMakerXMLFiles">ModMaker xml-Datei</system:String>
+    <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Fügt Mixins hinzu, um die korrekte Funktionalität des Controller Mods zu gewährleisten, zum Beispiel richtige Drehung der Kamera, wenn der Mod die selben Dateien modifiziert wie ein Controller Mods.&#10;Wähle dies nicht aus, wenn du keinen Controller Support Mod verwendest. Wenn du diese Option benutzt, dann installiere diesen Mod NACHDEM du einen Controller Support Mod installiert hast.</system:String>
+    <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Controller Support Mixins hinzufügen, falls nötig</system:String>
+    <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Stattdessen eine lokale ModMaker xml-Datei verwenden</system:String>
 
 	<!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
@@ -1225,6 +1231,7 @@
     <system:String x:Key="string_uninstallingALOT">ALOT deinstallieren</system:String>
     <system:String x:Key="string_modding">Modden</system:String>
     <system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
+	<!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
     <system:String x:Key="string_mixins">Mixins</system:String>
     <system:String x:Key="string_mergingMods">Mods zusammenfügen</system:String>
     <system:String x:Key="string_deployingModsTo7z">Mods als .7z exportieren</system:String>
