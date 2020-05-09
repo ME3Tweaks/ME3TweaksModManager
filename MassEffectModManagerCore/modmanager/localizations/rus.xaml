@@ -42,7 +42,7 @@
     <system:String x:Key="string_BatchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_Openmodslibrarydirectory">Открыть директорию библиотеки модов</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Открывает папку библиотеки модов</system:String>
-    <system:String x:Key="string_MixinsForME3">Патчи Mixin (для ME3)</system:String>
+    <system:String x:Key="string_MixinsForME3">Mixins (для ME3)</system:String>
     <system:String x:Key="string_MixInLibrary">Библиотека Mixin</system:String>
     <system:String x:Key="string_ClearMixinCache">Очистить Кэш Mixin</system:String>
     <system:String x:Key="string_ModUtils">Утилиты Модов</system:String>
@@ -281,6 +281,15 @@
     <system:String x:Key="string_compiledTLKFile">Файл TLK скомпилирован</system:String>
     <system:String x:Key="string_decompilingTLKFile">Декомпиляция файла TLK</system:String>
     <system:String x:Key="string_decompiledTLKFile">Файл TLK декомпилирован</system:String>
+    <system:String x:Key="string_tooltip_me1ASILoader">Включает загрузку ASI-модов, что позволяет переопределить загрузку DLC-модов</system:String>
+    <system:String x:Key="string_tooltip_me23ASILoader">Позволяет использовать модифицированные DLC, включает консоль, включает поддержку ASI-модов</system:String>
+    <system:String x:Key="string_debug_showIntroTutorial">Показать Знакомство с Программой</system:String>
+    <system:String x:Key="string_dialog_multiUserProgramDataWindowsRestrictions">Windows ограничила доступ к директории данных программы ME3Tweaks Mod Manager для текущей учетной записи. Нажмите ОК для разрешения доступа к данной папке, чтобы гарантировать корректную работу функций программы.</system:String>
+    <system:String x:Key="string_grantingWritePermissions">Разрешение доступа на запись</system:String>
+    <system:String x:Key="string_dialog_programWillNotRunCorrectly">Приложение может работать некорректно без доступа к папкам настроек и кэша.</system:String>
+    <system:String x:Key="string_programDataAccessDenied">Запрещен доступ к ProgramData</system:String>
+    <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Автодобавление Mixins контроллера в моды ModMaker</system:String>
+    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Автоматически добавляет патчи контроллера в моды ModMaker.&#10;Не выбирайте этот пункт, если используете клавиатуру/мышь.</system:String>
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Подготовка к установке</system:String>
@@ -640,6 +649,7 @@
     <system:String x:Key="string_importCompleted">Импорт завершен</system:String>
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Этот файл не из библиотеки текстур. Перемещение файла в библиотеку текстур</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">Переремещенеи файла ALOT в библиотеку текстур, пожалуйста подождите...</system:String>
+    <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Данный мод не может быть импортирован или установлен посредтвом Mod Manager по одной из следующих причин:\n - Установка данного мода слишком сложная\n - Установка данного требует наличия дополнительных инструментов, настраиваемых пользователем вручную\n - Мод попал в черный список импорта/установки из-за нарушений в работе игр\n\Данный мод должен устанавливаться вручную.</system:String>
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Доступно обновление мода</system:String>
@@ -1111,7 +1121,7 @@
     <system:String x:Key="string_modNotFoundOnServer">Мод не найден на сервере</system:String>
     <system:String x:Key="string_compilingTLKFiles">Компиляция файлов TLK</system:String>
     <system:String x:Key="string_preparingMixinPatchData">Подготовка данных патчей Mixin</system:String>
-    <system:String x:Key="string_applyingMixins">Применение Mixin</system:String>
+    <system:String x:Key="string_applyingMixins">Применение Mixins</system:String>
     <system:String x:Key="string_compilingCoalescedFiles">Компиляция файлов Coalesced</system:String>
     <system:String x:Key="string_finalizingMod">Финализация мода</system:String>
 
@@ -1135,6 +1145,9 @@
     <system:String x:Key="string_useLocalFileInstead">Использовать локальный файл</system:String>
     <system:String x:Key="string_selectModMakerModXmlFile">Выберите файл .xml мода ModMaker</system:String>
     <system:String x:Key="string_modMakerXMLFiles">Файлы ModMaker XML</system:String>
+    <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Добавляет Mixins для гарантии надлежащей работы функционала Controller Mod, такого как корректная работа поворота камеры, если мод изменяет одинаковые файлы с другими модами контроллера.&#10;Не выбирайте этот пункт, если вы не используете мод Controller Support. При использовании данной опции, устанавливайте данный мод ПОСЛЕ установки мода Controller Support.</system:String>
+    <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Добавить Controller Support Mixins, если необходимо</system:String>
+    <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Использовать локальный файл ModMaker xml</system:String>
 
 	<!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Ревизия {0}</system:String>
@@ -1218,6 +1231,7 @@
     <system:String x:Key="string_uninstallingALOT">Удаление ALOT</system:String>
     <system:String x:Key="string_modding">Моддинг</system:String>
     <system:String x:Key="string_mE3TweaksModMaker">ME3Tweals Mod Maker</system:String>
+	<!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
     <system:String x:Key="string_mixins">Mixins</system:String>
     <system:String x:Key="string_mergingMods">Объединение модов</system:String>
     <system:String x:Key="string_deployingModsTo7z">Конвертация модов в .7z</system:String>
@@ -1341,14 +1355,14 @@
     <system:String x:Key="string_thisFeatureIsNotYetAvailable">Функция пока не доступна.</system:String>
     <system:String x:Key="string_tooltip_appliesMixinsToAMod" xml:space="preserve">Применияет Mixins к указанному моду.\nФайлы в моде пропатчены, если уже используются модом.\nФайлы, не используемые модом будут взяты из архива оригинала.</system:String>
     <system:String x:Key="string_compileIntoExistingMod">Установить в игру</system:String>
-    <system:String x:Key="string_mixinLibrary">Библиотека Mixins</system:String>
+    <system:String x:Key="string_mixinLibrary">Библиотека Mixin</system:String>
     <system:String x:Key="string_header_mixinsArePremadePatches">Mixins являются готовыми файлами патчей, которые могут накладываться друг на друга до тех пор пока (несжатый) размер файла остается неизменным. Дополнительные настраиваемые Mixins доступны через ME3Tweaks ModMaker. В настоящее время Mixins Доступны только для Mass Effect 3.</system:String>
-    <system:String x:Key="string_availableMixins">Доступные Mixins.</system:String>
+    <system:String x:Key="string_availableMixins">Доступные Mixins</system:String>
     <system:String x:Key="string_tooltip_thisMixinIsAFinalizer">Этот Mixin является заверщающим</system:String>
     <system:String x:Key="string_patchDescription">Описание Патча</system:String>
     <system:String x:Key="string_interp_runningAutoTOCOnGamePercentX">Применение AutoTOC к игре {0}%</system:String>
 	<!-- 0=percent -->
-    <system:String x:Key="string_mixinsInstalledMaybe">Mixin установлены, возможно!</system:String>
+    <system:String x:Key="string_mixinsInstalledMaybe">Mixins установлены, возможно!</system:String>
 	<!-- This feature is experimental so I would not trust it works 100% of the time. But it's in build 105 anyways -->
 
 	<!-- Batch Mod Library (Install Group List) -->
@@ -1412,4 +1426,9 @@
 
 	<!-- ALOT Version Info -->
     <system:String x:Key="string_textureModded">Текстура модифицирована</system:String>
+
+	<!-- Intro Tutorial -->
+    <system:String x:Key="string_next">Далее</system:String>
+    <system:String x:Key="string_previous">Назад</system:String>
+    <system:String x:Key="string_skipTutorial">Пропустить обучение</system:String>
 </ResourceDictionary>
