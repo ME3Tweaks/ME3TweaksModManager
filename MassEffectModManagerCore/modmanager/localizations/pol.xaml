@@ -288,6 +288,8 @@
     <system:String x:Key="string_grantingWritePermissions">Nadawanie uprawnień</system:String>
     <system:String x:Key="string_dialog_programWillNotRunCorrectly">Aplikacja może nie działać poprawnie bez uprawnień do ustawień i pamięci podręcznej</system:String>
     <system:String x:Key="string_programDataAccessDenied">Dostęp do ProgramData zabroniony</system:String>
+    <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Automatycznie dodaj Mixins kontrolera do modów ModMaker</system:String>
+    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatycznie dodaje poprawki kontrolera do modów ModMaker.&#10;Nie korzystaj z tej opcji, jeśli grasz za pomocą klawiatury i myszki</system:String>
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Przygotowanie do instalacji</system:String>
@@ -647,6 +649,7 @@
     <system:String x:Key="string_importCompleted">Import zakończony</system:String>
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Ten plik nie jest w bibliotece tekstur. Przenoszenie do biblioteki tekstur</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">Przenoszenie pliku ALOT do biblioteki tekstur, proszę czekać...</system:String>
+    <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Ten mod nie może zostać zaimportowany lub zainstalowany za pomocą Mod Manager z następujących powodów:\n - Instalacja tego moda jest zbyt rozbudowana\n - Instalacja moda wymaga dodatkowych narzędzi, które muszą być skonfigurowane manualnie przez użytkownika\n - Mod został dodany do czarnej listy importów/instalacji z powodu doniesień o wywoływaniu problemów z poprawnym działaniem gry\n\nTen mod musi zostać zainstalowany ręcznie.</system:String>
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Dostępne są aktualizacje modów</system:String>
@@ -1142,6 +1145,9 @@
     <system:String x:Key="string_useLocalFileInstead">Użyj pliku lokalnego</system:String>
     <system:String x:Key="string_selectModMakerModXmlFile">Wybierz plik xml do ModMaker moda</system:String>
     <system:String x:Key="string_modMakerXMLFiles">Pliki XML ModMakera</system:String>
+    <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Dodaj Mixins żeby upewnić się, że mody kontrolerów będą funkcjonować poprawnie, jeżeli mod zmienia te same pliki co mody kontrolerów.&#10;Nie wybieraj tej opcji, jeżeli nie używasz modów wspierających kontroler. Aby skorzystać z tej funkcji, zainstaluj ten mod PO zainstalowaniu modów wspierających kontrolery.</system:String>
+    <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Dodaj Mixins ze wsparciem kontrolera, jeżeli to konieczne</system:String>
+    <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Użyj lokalnego pliku xml ModMaker zamiast tego</system:String>
 
 	<!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Wersja {0}</system:String>
@@ -1225,6 +1231,7 @@
     <system:String x:Key="string_uninstallingALOT">Usuwanie ALOT</system:String>
     <system:String x:Key="string_modding">Modowanie</system:String>
     <system:String x:Key="string_mE3TweaksModMaker">ME3Tweak ModMaker</system:String>
+	<!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
     <system:String x:Key="string_mixins">Mixins</system:String>
     <system:String x:Key="string_mergingMods">Łączenie modów</system:String>
     <system:String x:Key="string_deployingModsTo7z">Wdrażanie modów do .7z</system:String>
@@ -1393,8 +1400,7 @@
     <system:String x:Key="string_importedFromGame">Zaimportowano z gry</system:String>
     <system:String x:Key="string_defaultDescriptionForImportedMod">Ten mod został zaimportowany z instalacji {0} o godzinie {1}.</system:String>
 	<!-- 0=game name 1=time -->
-    <system:String x:Key="string_dlcImportingNexusModsWatermark">https://nexusmods.com/masseffect... 
-(rekomendowane)</system:String>
+    <system:String x:Key="string_dlcImportingNexusModsWatermark">https://nexusmods.com/masseffect... (rekomendowane)</system:String>
 	<!-- Conflict Detector -->
     <system:String x:Key="string_conflictDetector">Wykrywacz Konfliktów</system:String>
     <system:String x:Key="string_conflictDetectorDescription">W przypadku tak samo nazwyjących się plików zlokalizowanych w różnych DLC, gra użyje pliku z najwyższym priorytetem montowania. Wykrywacz Konfliktów wskaże konflikty powstające pomiędzy plikami modów DLC. To narzędzie TYLKO DLA DEVELOPERÓW, nie interpretuj rezultatów jeśli nie rozumiesz w pełni jak działają pliki gry!</system:String>
