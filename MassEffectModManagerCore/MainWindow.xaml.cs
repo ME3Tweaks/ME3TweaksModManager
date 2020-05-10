@@ -1674,9 +1674,13 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
-                if (canCheckForModUpdates || forceUpdateCheckOnCompletion)
+                if (canCheckForModUpdates)
                 {
                     CheckAllModsForUpdates();
+                }
+                else if (forceUpdateCheckOnCompletion && args.Result is Mod highlightedMod && highlightedMod.IsUpdatable)
+                {
+                    CheckModsForUpdates(new List<Mod>(new[] { highlightedMod }));
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
