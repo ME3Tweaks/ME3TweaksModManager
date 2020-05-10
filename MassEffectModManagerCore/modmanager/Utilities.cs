@@ -1144,7 +1144,7 @@ namespace MassEffectModManagerCore
             return (string)Registry.GetValue(key, name, null);
         }
 
-        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true)
+        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false)
         {
             string path;
             switch (game)
@@ -1162,18 +1162,39 @@ namespace MassEffectModManagerCore
                 default:
                     return null;
             }
+
+            if (logReturnedPath)
+            {
+                Log.Information(" >> Backup path lookup in registry for " + game + " returned: " + path);
+            }
             if (path == null || !Directory.Exists(path))
             {
+                if (logReturnedPath)
+                {
+                    Log.Information(@" >> Path is null or directory doesn't exist.");
+                }
                 return null;
             }
             //Super basic validation
             if (!Directory.Exists(Path.Combine(path, @"BIOGame")) || !Directory.Exists(Path.Combine(path, @"Binaries")))
             {
+                if (logReturnedPath)
+                {
+                    Log.Warning(@" >> " + path + @" is missing biogame/binaries subdirectory, invalid backup");
+                }
                 return null;
             }
             if (forceCmmVanilla && !File.Exists(Path.Combine(path, @"cmm_vanilla")))
             {
+                if (logReturnedPath)
+                {
+                    Log.Warning(@" >> " + path + @" is not marked as a vanilla backup. This backup will not be considered vanilla and thus will not be used by Mod Manager");
+                }
                 return null; //do not accept alot installer backups that are missing cmm_vanilla as they are not vanilla.
+            }
+            if (logReturnedPath)
+            {
+                Log.Information(@" >> " + path + @" is considered a valid backup path");
             }
             return path;
         }
