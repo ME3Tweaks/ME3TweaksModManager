@@ -117,18 +117,18 @@
           </Hyperlink>
         </TextBlock>
                 <TextBlock Text="{DynamicResource string_translators}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
-                <TextBlock Foreground="White" Grid.Row="7" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="7" Grid.Column="0" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="Russian" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="2" TextWrapping="Wrap" Text="German" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="8" Grid.Column="0" TextWrapping="Wrap" Text="Mgamerz" TextAlignment="Center" />
                 <TextBlock Foreground="White" Grid.Row="8" Grid.Column="1" TextWrapping="Wrap" Text="IAmViolon" TextAlignment="Center" />
                 <TextBlock Foreground="White" Grid.Row="8" Grid.Column="2" TextWrapping="Wrap" Text="HarHarLinks" TextAlignment="Center" />
-                <!--<TextBlock Foreground="White" Grid.Row="9" TextWrapping="Wrap" Text="German" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
-                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="1" TextWrapping="Wrap" Text="French" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
-                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="2" TextWrapping="Wrap" Text="Spanish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="HHL" TextAlignment="Center" />
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="N/A" TextAlignment="Center" />
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="" TextAlignment="Center" />-->
+                <!--<TextBlock Foreground="White" Grid.Row="9" Grid.Column="0"  TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />-->
+                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="1" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
+                <!--<TextBlock Foreground="White" Grid.Row="9" Grid.Column="2" TextWrapping="Wrap" Text="Spanish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />--> 
+                <!--<TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="HHL" TextAlignment="Center" />-->
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="circl3" TextAlignment="Center" />
+                <!--<TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="" TextAlignment="Center" />-->
                 <TextBlock Text="{DynamicResource string_specialThanks}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="11" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.Row="12" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Kinkojiro" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="SirCxytryx" TextAlignment="Center" FontWeight="Bold" />
