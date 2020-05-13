@@ -595,7 +595,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 bool? restore = batchRestore;
                 if (!restore.Value) restore = restoreBasegamefileConfirmationCallback?.Invoke(FilePath);
-                if (restore.HasValue && restore.Value && CanRestoreFile())
+                if (restore.HasValue && restore.Value && internalCanRestoreFile(batchRestore))
                 {
                     //Todo: Background thread this maybe?
                     var backupPath = Utilities.GetGameBackupPath(target.Game);
@@ -628,7 +628,12 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public bool CanRestoreFile()
             {
-                if (Restoring) return false;
+                return internalCanRestoreFile(false);
+            }
+
+            private bool internalCanRestoreFile(bool batchMode)
+            {
+                if (Restoring && !batchMode) return false;
                 if (checkedForBackupFile) return canRestoreFile;
                 var backupPath = Utilities.GetGameBackupPath(target.Game);
                 canRestoreFile = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
