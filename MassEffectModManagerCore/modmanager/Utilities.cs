@@ -1349,50 +1349,116 @@ namespace MassEffectModManagerCore
                 throw new Exception("Cannot use softshadows or limit2k parameter of SetLODs() with a game that is not ME1");
             }
 
-            string settingspath = null;
-            switch (game)
+            try
             {
-                case Mod.MEGame.ME1:
-                    settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOEngine.ini");
-                    break;
-                case Mod.MEGame.ME2:
-                    settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 2", "BioGame", "Config", "GamerSettings.ini");
-                    break;
-                case Mod.MEGame.ME3:
-                    settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 3", "BioGame", "Config", "GamerSettings.ini");
-                    break;
-            };
-
-            if (!File.Exists(settingspath) && game == Mod.MEGame.ME1)
-            {
-                Log.Error("Cannot raise/lower LODs on file that doesn't exist (ME1 bioengine file must already exist or exe will overwrite it)");
-                return false;
-            }
-            else if (!File.Exists(settingspath))
-            {
-                Directory.CreateDirectory(Directory.GetParent(settingspath).FullName); //ensure directory exists.
-                File.Create(settingspath).Close();
-            }
-
-            DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
-            if (game > Mod.MEGame.ME1)
-            {
-                #region setting systemsetting for me2/3
-                string operation = null;
-                var iniList = game == Mod.MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
-                var section = ini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
-                if (section == null && highres)
+                string settingspath = null;
+                switch (game)
                 {
-                    //section missing, and we are setting high res
-                    ini.Sections.Add(new Section()
-                    {
-                        Entries = iniList,
-                        Header = "SystemSettings"
-                    });
-                    operation = "Set high-res lod settings on blank gamersettings.ini";
+                    case Mod.MEGame.ME1:
+                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOEngine.ini");
+                        break;
+                    case Mod.MEGame.ME2:
+                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 2", "BioGame", "Config", "GamerSettings.ini");
+                        break;
+                    case Mod.MEGame.ME3:
+                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 3", "BioGame", "Config", "GamerSettings.ini");
+                        break;
                 }
-                else if (highres)
+
+                ;
+
+                if (!File.Exists(settingspath) && game == Mod.MEGame.ME1)
                 {
+                    Log.Error("Cannot raise/lower LODs on file that doesn't exist (ME1 bioengine file must already exist or exe will overwrite it)");
+                    return false;
+                }
+                else if (!File.Exists(settingspath))
+                {
+                    Directory.CreateDirectory(Directory.GetParent(settingspath).FullName); //ensure directory exists.
+                    File.Create(settingspath).Close();
+                }
+
+                DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
+                if (game > Mod.MEGame.ME1)
+                {
+                    #region setting systemsetting for me2/3
+
+                    string operation = null;
+                    var iniList = game == Mod.MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
+                    var section = ini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
+                    if (section == null && highres)
+                    {
+                        //section missing, and we are setting high res
+                        ini.Sections.Add(new Section()
+                        {
+                            Entries = iniList,
+                            Header = "SystemSettings"
+                        });
+                        operation = "Set high-res lod settings on blank gamersettings.ini";
+                    }
+                    else if (highres)
+                    {
+                        //section exists, upgrading still, overwrite keys
+                        foreach (var newItem in iniList)
+                        {
+                            var matchingKey = section.Entries.FirstOrDefault(x => x.Key == newItem.Key);
+                            if (matchingKey != null)
+                            {
+                                matchingKey.Value = newItem.Value; //overwrite value
+                            }
+                            else
+                            {
+                                section.Entries.Add(newItem); //doesn't exist, add new item.
+                            }
+                        }
+
+
+
+                        operation = "Set high-res lod settings in gamersettings.ini";
+
+                    }
+                    else if (section != null)
+                    {
+                        //section exists, downgrading
+                        section.Entries.RemoveAll(x => iniList.Any(i => i.Key == x.Key));
+                        operation = "Removed high-res lod settings from gamersettings.ini";
+                    }
+
+                    #endregion
+
+                    //Update GFx (non LOD) settings
+                    if (highres)
+                    {
+                        var hqKeys = target.Game == Mod.MEGame.ME2 ? ME2HQGraphicsSettings : ME3HQGraphicsSettings;
+                        var hqSection = ini.GetSection(@"SystemSettings");
+                        foreach (var entry in hqKeys)
+                        {
+                            var matchingKey = hqSection.Entries.FirstOrDefault(x => x.Key == entry.Key);
+                            if (matchingKey != null)
+                            {
+                                matchingKey.Value = entry.Value; //overwrite value
+                            }
+                            else
+                            {
+                                hqSection.Entries.Add(entry); //doesn't exist, add new item.
+                            }
+                        }
+                    }
+
+                    File.WriteAllText(settingspath, ini.ToString());
+                    Log.Information(operation);
+                }
+                else if (game == Mod.MEGame.ME1)
+                {
+                    var section = ini.Sections.FirstOrDefault(x => x.Header == "TextureLODSettings");
+                    if (section == null && highres)
+                    {
+                        Log.Error("TextureLODSettings section cannot be null in ME1. Run the game to regenerate the bioengine file.");
+                        return false; //This section cannot be null
+                    }
+
+                    var iniList = highres ? limit2k ? ME1_2KLODs : ME1HighResLODs : ME1_DefaultLODs;
+
                     //section exists, upgrading still, overwrite keys
                     foreach (var newItem in iniList)
                     {
@@ -1407,97 +1473,44 @@ namespace MassEffectModManagerCore
                         }
                     }
 
-
-
-                    operation = "Set high-res lod settings in gamersettings.ini";
-
-                }
-                else if (section != null)
-                {
-                    //section exists, downgrading
-                    section.Entries.RemoveAll(x => iniList.Any(i => i.Key == x.Key));
-                    operation = "Removed high-res lod settings from gamersettings.ini";
-                }
-                #endregion
-
-                //Update GFx (non LOD) settings
-                if (highres)
-                {
-                    var hqKeys = target.Game == Mod.MEGame.ME2 ? ME2HQGraphicsSettings : ME3HQGraphicsSettings;
-                    var hqSection = ini.GetSection(@"SystemSettings");
-                    foreach (var entry in hqKeys)
+                    //Update GFx (non LOD) settings
+                    if (highres)
                     {
-                        var matchingKey = hqSection.Entries.FirstOrDefault(x => x.Key == entry.Key);
-                        if (matchingKey != null)
+                        var me1hq = GetME1HQSettings(target.MEUITMInstalled, softshadows);
+                        foreach (var hqSection in me1hq)
                         {
-                            matchingKey.Value = entry.Value; //overwrite value
-                        }
-                        else
-                        {
-                            hqSection.Entries.Add(entry); //doesn't exist, add new item.
-                        }
-                    }
-                }
-
-                File.WriteAllText(settingspath, ini.ToString());
-                Log.Information(operation);
-            }
-            else if (game == Mod.MEGame.ME1)
-            {
-                var section = ini.Sections.FirstOrDefault(x => x.Header == "TextureLODSettings");
-                if (section == null && highres)
-                {
-                    Log.Error("TextureLODSettings section cannot be null in ME1. Run the game to regenerate the bioengine file.");
-                    return false; //This section cannot be null
-                }
-
-                var iniList = highres ? limit2k ? ME1_2KLODs : ME1HighResLODs : ME1_DefaultLODs;
-
-                //section exists, upgrading still, overwrite keys
-                foreach (var newItem in iniList)
-                {
-                    var matchingKey = section.Entries.FirstOrDefault(x => x.Key == newItem.Key);
-                    if (matchingKey != null)
-                    {
-                        matchingKey.Value = newItem.Value; //overwrite value
-                    }
-                    else
-                    {
-                        section.Entries.Add(newItem); //doesn't exist, add new item.
-                    }
-                }
-
-                //Update GFx (non LOD) settings
-                if (highres)
-                {
-                    var me1hq = GetME1HQSettings(target.MEUITMInstalled, softshadows);
-                    foreach (var hqSection in me1hq)
-                    {
-                        var existingSect = ini.GetSection(hqSection);
-                        if (existingSect != null)
-                        {
-                            foreach (var item in hqSection.Entries)
+                            var existingSect = ini.GetSection(hqSection);
+                            if (existingSect != null)
                             {
-                                var matchingKey = existingSect.Entries.FirstOrDefault(x => x.Key == item.Key);
-                                if (matchingKey != null)
+                                foreach (var item in hqSection.Entries)
                                 {
-                                    matchingKey.Value = item.Value; //overwrite value
-                                }
-                                else
-                                {
-                                    section.Entries.Add(item); //doesn't exist, add new item.
+                                    var matchingKey = existingSect.Entries.FirstOrDefault(x => x.Key == item.Key);
+                                    if (matchingKey != null)
+                                    {
+                                        matchingKey.Value = item.Value; //overwrite value
+                                    }
+                                    else
+                                    {
+                                        section.Entries.Add(item); //doesn't exist, add new item.
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            //!!! Error
-                            Log.Error(@"Error: Could not find ME1 high quality settings key in bioengine.ini: " + hqSection.Header);
+                            else
+                            {
+                                //!!! Error
+                                Log.Error(@"Error: Could not find ME1 high quality settings key in bioengine.ini: " + hqSection.Header);
+                            }
                         }
                     }
+
+                    File.WriteAllText(settingspath, ini.ToString());
+                    Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
                 }
-                File.WriteAllText(settingspath, ini.ToString());
-                Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Error setting LODs: " + e.Message);
+                return false;
             }
 
             return true;
