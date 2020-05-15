@@ -35,12 +35,6 @@ namespace MassEffectModManagerCore
     public partial class App : Application
     {
         public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
-
-        /// <summary>
-        /// Registry key for Mass Effect Mod Manager itself. This likely won't be used much
-        /// </summary>
-        internal const string REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ME3Tweaks Mod Manager";
-
         /// <summary>
         /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
         /// </summary>
