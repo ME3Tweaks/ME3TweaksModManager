@@ -799,7 +799,7 @@
 	<!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altdlc_multilistMissingFileInMultilist">Alternate DLC ({0}) gibt eine Multiliste (Index {1}) an, die eine Datei enthält, welche nicht existiert: {2}</system:String>
 	<!-- 0=FriendlyName 1=multilistid 2=multif -->
-    <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} darf keine leere oder fehlende Conditional DLC-Liste haben, da nicht COND_MANUAL benutzt wird.</system:String>
+    <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} darf keine leere oder fehlende Conditional DLC-Liste haben, da nicht COND_MANUAL oder COND_SPECIFIC_SIZED_FILES benutzt wird.</system:String>
 	<!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_validation_altdlc_specificDlcSetupMissingPlusMinus">Ein Eintrag in ConditionalDLC von Alternate DLC ({0}) beginnt weder mit + noch -. Mit der Bedingung {1} muss DLC-Namen immer + oder - vorherstehen. Ungültiger Wert: {2}</system:String>
 	<!-- 0={FriendlyName} 1={Condition} 2={dlc} -->
