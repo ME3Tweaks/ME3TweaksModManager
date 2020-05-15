@@ -327,7 +327,7 @@
     <system:String x:Key="string_installationSucceededMaybe">Installation succeeded, maybe</system:String>
     <system:String x:Key="string_dialogRunGameOnceFirst">Mods that modify configuration files require that Mass Effect be run at least once before they are installed. This is to ensure the game does not overwrite the files on first boot.</system:String>
     <system:String x:Key="string_gameMustBeRunAtLeastOnce">Game must be run at least once</system:String>
-    <system:String x:Key="string_ui_allAlternatesAreAutomatic">All installation options for this mod are automatic. Ensure you have the listed relevant DLC (mods or official) installed before installing this mod if you plan to use them.</system:String>
+    <system:String x:Key="string_ui_allAlternatesAreAutomatic">All installation options for this mod are automatic. Ensure you have the listed relevant mods/DLC (mods or official) installed before installing this mod if you plan to use them.</system:String>
     <system:String x:Key="string_ui_title_selectInstallationOptions">Select installation options</system:String>
     <system:String x:Key="string_install">Install</system:String>
     <system:String x:Key="string_cancel">Cancel</system:String>
@@ -799,7 +799,7 @@
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altdlc_multilistMissingFileInMultilist">Alternate DLC ({0}) specifies a multilist (index {1}) that contains file that does not exist: {2}</system:String>
     <!-- 0=FriendlyName 1=multilistid 2=multif -->
-    <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.</system:String>
+    <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL or COND_SPECIFIC_SIZED_FILES.</system:String>
     <!-- 0=FriendlyName -->
 
     <system:String x:Key="string_interp_validation_altdlc_specificDlcSetupMissingPlusMinus">An item in Alternate DLC's ({0}) ConditionalDLC doesn't start with + or -. When using the condition {1}, you must precede DLC names with + or -. Bad value: {2}</system:String>
