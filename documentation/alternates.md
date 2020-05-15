@@ -54,6 +54,8 @@ altdlc allows you to add a folder of files to a CustomDLC based on the installed
 |NotApplicableAutoText|String|Sets the string that appears when the alternate is not applicable to the game target the user is installing the mod against. If this value is not set, the default value is 'Not applicable'. Do not localize this string into anything except English for your mod.|No|
 |MultiListId|String|See the [AltDLC MultiList](#AltDLC-MultiLists) documentation on how to use this variable.|if using `ModOperation` `OP_ADD_MULTILISTFILES_TO_CUSTOMDLC`|
 |MultiListRootPath|String|See the [AltDLC MultiList](#AltDLC-MultiLists) documentation on how to use this variable.|if using `ModOperation` `OP_ADD_MULTILISTFILES_TO_CUSTOMDLC`|
+|RequiredFileRelativePaths|Unquoted Semicolon Separated List (String)|List of filepaths from the game root that must exist, and have a specific filesize at the same index in `RequiredFileSizes`|only if using `Condition` `COND_SPECIFIC_SIZED_FILES`|
+|RequiredFileRelativePaths|Unquoted Semicolon Separated List (Integer)|List of filesizes in the same order and count as `RequiredFileRelativePaths`. If any files do not match their listed size, the condition will evaluate to false and the alternate will not be applicable.|only if using `Condition` `COND_SPECIFIC_SIZED_FILES`|
 
 ## MultiLists
 MultiLists are a feature of moddesc 6.0 that enable a developer to provide alternate installation options that use the same file in at least 2 or more variations. This feature was developed initially for PEOM to enable ending compatibility across 4 different ending options, with different options using different files but some common to multiple options. This feature prevents having to pack additional copies of files into the archive.
