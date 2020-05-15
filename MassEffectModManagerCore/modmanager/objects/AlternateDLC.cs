@@ -125,11 +125,6 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 foreach (var dlc in conditionalList)
                 {
-                    //if (modForValidating.Game == Mod.MEGame.ME3)
-                    //{
-
-
-                    //}
                     if (Condition == AltDLCCondition.COND_SPECIFIC_DLC_SETUP)
                     {
 

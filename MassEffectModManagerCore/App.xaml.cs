@@ -450,6 +450,7 @@ namespace MassEffectModManagerCore
                     var currentCultureLang = CultureInfo.InstalledUICulture.Name;
                     if (currentCultureLang.StartsWith("de")) InitialLanguage = Settings.Language = "deu";
                     if (currentCultureLang.StartsWith("ru")) InitialLanguage = Settings.Language = "rus";
+                    if (currentCultureLang.StartsWith("pl")) InitialLanguage = Settings.Language = "pol";
                     Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
