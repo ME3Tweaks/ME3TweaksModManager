@@ -120,7 +120,27 @@ namespace MassEffectModManagerCore
             //Must have admin rights.
             Log.Information("We need admin rights to create this directory");
             string exe = GetCachedExecutablePath("PermissionsGranter.exe");
-            Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+            try
+            {
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error extracting PermissionsGranter.exe: " + e.Message);
+
+                Log.Information("Retrying with appdata temp directory instead.");
+                try
+                {
+                    exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Retry failed! Unable to make this directory writable due to inability to extract PermissionsGranter.exe. Reason: " + ex.Message);
+                    return false;
+                }
+            }
+
             string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
             try
             {
