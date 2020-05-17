@@ -62,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager
                         {
                             foreach (var mf in dlc.MultiListSourceFiles)
                             {
-                                var relpath = Path.Combine(ModPath, dlc.MultiListRootPath, mf).Substring(ModPath.Length + 1);
+                                var relpath = Path.Combine(ModPath, dlc.MultiListRootPath, mf).Substring(ModPath.Length > 0 ? ModPath.Length + 1 : 0);
                                 references.Add(relpath);
                             }
                         }
@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager
                             //}
                             //else
                             //{
-                                references.Add(file.AltFile);
+                            references.Add(file.AltFile);
                             //}
                         }
                         else if (file.MultiListSourceFiles != null)
