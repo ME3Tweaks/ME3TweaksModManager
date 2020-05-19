@@ -759,8 +759,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
+                    try
+                    {
+                        mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
+                    }
+                    catch (Exception ex)
+                    {
+                        //Extraction failed!
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Log.Error(@"Error while extracting archive: " + App.FlattenException(ex));
+                            M3L.ShowDialog(Window.GetWindow(this), $"An error occured extracting the archive: {ex.Message}", "Error extracting archive", MessageBoxButton.OK, MessageBoxImage.Error);
+                            e.Result = ModImportResult.ERROR_EXTRACTING_ARCHIVE;
+                        });
+                        return;
+                    }
 
-                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
                     extractedMods.Add(mod);
                 }
             }
@@ -881,7 +895,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             USER_ABORTED_IMPORT, ERROR_COULD_NOT_DELETE_EXISTING_DIR,
             ERROR_INSUFFICIENT_DISK_SPACE,
-            None
+            None,
+            ERROR_EXTRACTING_ARCHIVE
         }
 
         private bool CanInstallCompressedMod()
