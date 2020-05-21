@@ -154,7 +154,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 int mixincount = 0;
                 var me3tweaksmixinsdata = mixinNode.Elements(@"MixIn")
-                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf(@"v")))).ToList();
+                    .Select(x => int.Parse(x.Value.IndexOf(@"v") > 0 ? x.Value.Substring(0, x.Value.IndexOf(@"v")) : x.Value)).ToList();
                 foreach (var mixin in me3tweaksmixinsdata)
                 {
 
@@ -285,7 +285,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             if (mixinNode != null)
             {
                 var me3tweaksmixinsdata = mixinNode.Elements(@"MixIn")
-                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf(@"v")))).ToList();
+                    .Select(x => int.Parse(x.Value.IndexOf(@"v") > 0 ? x.Value.Substring(0, x.Value.IndexOf(@"v")) : x.Value)).ToList();
                 var dynamicmixindata = mixinNode.Elements(@"DynamicMixIn").ToList();
 
                 List<Mixin> allmixins = new List<Mixin>();
