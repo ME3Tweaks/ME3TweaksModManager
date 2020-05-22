@@ -291,6 +291,18 @@
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Auto-add controller Mixins to ModMaker mods</system:String>
     <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods.&#10;Do not select this if you play with a keyboard/mouse</system:String>
 
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_unsupportedOS">This operating system is not supported. This application has only been validated for use on the following operating systems: \n - {0}. This application may not function correctly on this operating system.</system:String>
+    <!-- 0= bulleted list of supported operating system names -->
+    <system:String x:Key="string_unsupportedOperatingSystem">Unsupported operating system</system:String>
+    <system:String x:Key="string_errorCompilingCoalesced">Error compiling Coalesced</system:String>
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingCoalsecedFileX">Exception occured while compiling Coalesced file: {0}</system:String>
+    <!-- 0=Exception message -->
+    <system:String x:Key="string_errorCompilingTLK">Error compiling TLK</system:String>
+    <system:String x:Key="string_compilingFailed">Compiling failed</system:String>
+    <system:String x:Key="string_interp_errorReadingXmlFileX">Error reading xml file: {0}</system:String>
+    <!-- 0=Exception message -->
+    <system:String x:Key="string_errorReadingXmlFile">Error reading xml file</system:String>
+
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
@@ -650,6 +662,11 @@
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">This file is not in the texture library. Moving it to the texture library</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">Moving ALOT file to texture library, please wait...</system:String>
     <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">This mod cannot be imported or installed with Mod Manager due to one of the following reasons:\n - Installation of this mod is too complex\n - Installation of this mod requires additional tools that must be manually configured by the user\n - Mod has been blacklisted from import/install due to known reports for breaking games\n\nThis mod must be installed manually.</system:String>
+
+    <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">An error occured extracting the archive: {0}</system:String>
+    <!-- 0=Exception message -->
+    <system:String x:Key="string_errorExtractingArchive">Error extracting archive</system:String>
+
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>

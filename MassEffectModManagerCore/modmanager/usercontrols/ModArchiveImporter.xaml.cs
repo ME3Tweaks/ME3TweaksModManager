@@ -772,7 +772,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             Log.Error(@"Error while extracting archive: " + App.FlattenException(ex));
-                            M3L.ShowDialog(Window.GetWindow(this), $"An error occured extracting the archive: {ex.Message}", "Error extracting archive", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_anErrorOccuredExtractingTheArchiveX, ex.Message), M3L.GetString(M3L.string_errorExtractingArchive), MessageBoxButton.OK, MessageBoxImage.Error);
                             e.Result = ModImportResult.ERROR_EXTRACTING_ARCHIVE;
                         });
                         return;

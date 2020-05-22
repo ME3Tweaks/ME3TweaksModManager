@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
-            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? "Archive" : "Library (disk)")}");
+            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}");
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Prepare queues
-            Log.Information("Building installation queues");
+            Log.Information(@"Building installation queues");
             (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
                 List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues =
                 ModBeingInstalled.GetInstallationQueues(gameTarget);
@@ -241,7 +241,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
-                Log.Information("Building map of unpacked file destinations");
+                Log.Information(@"Building map of unpacked file destinations");
 
                 foreach (var originalMapping in unpackedQueue.Value.fileMapping)
                 {
@@ -960,7 +960,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     throw new Exception(@"Mod installer did not have return code (null). This should be caught and handled, but it wasn't!");
                 }
 
-                throw new Exception(@"Mod installer did not have parsed return code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + ". The data was " + e.Result);
+                throw new Exception(@"Mod installer did not have parsed return code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
             }
             Analytics.TrackEvent(@"Installed a mod", new Dictionary<string, string>()
             {
