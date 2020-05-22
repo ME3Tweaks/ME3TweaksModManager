@@ -1226,7 +1226,15 @@ namespace MassEffectModManagerCore
                 if (target != null)
                 {
                     var configTool = Utilities.GetGameConfigToolPath(target);
-                    Utilities.RunProcess(configTool, "", false, true, false, false);
+                    try
+                    {
+                        Utilities.RunProcess(configTool, "", false, true, false, false);
+                    }
+                    catch (Exception e)
+                    {
+                        // user may have canceled running it. seems it sometimes requires admin
+                        Log.Error($@"Error running config tool for {game}: {e.Message}");
+                    }
                 }
             }
         }
@@ -1476,6 +1484,13 @@ namespace MassEffectModManagerCore
             if (App.BootingUpdate)
             {
                 ShowUpdateCompletedPane();
+            }
+
+            if (!App.IsOperatingSystemSupported())
+            {
+                string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
+                Log.Error(@"This operating system is not supported.");
+                M3L.ShowDialog(this, $"This operating system is not supported. This application has only been validated for use on the following opearting systems: \n - {osList}. This application may not function correctly on this operating system.", "Unsupported operating system", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             if (!Settings.ShowedPreviewPanel)
