@@ -290,6 +290,17 @@
     <system:String x:Key="string_programDataAccessDenied">ProgramData Zugriff verweigert</system:String>
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Controller Mixins automatisch zu ModMaker Mods hinzufügen</system:String>
     <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Controller Mixins werden automatisch allen ModMaker Mods hinzugefügt.&#10;Wähle diese Option nicht wenn du mit Maus und Tastatur spielst</system:String>
+    <system:String x:Key="string_interp_dialog_unsupportedOS" xml:space="preserve">Dein Betriebssystem wird nicht unterstützt. Diese Applikation wurde nur mit den folgenden Betriebssystemen getestet: \n - {0}. Diese Applikation funktioniert möglicherweise nicht korrekt auf diesem Betriebssystem.</system:String>
+	<!-- 0= bulleted list of supported operating system names -->
+    <system:String x:Key="string_unsupportedOperatingSystem">Nicht unterstütztes Betriebssystem</system:String>
+    <system:String x:Key="string_errorCompilingCoalesced">Fehler beim Kompilieren einer Coalesced-Datei</system:String>
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingCoalsecedFileX">Beim Kompilieren einer Coalesced-Datei ist ein Fehler aufgetreten: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorCompilingTLK">Fehler beim Kompilieren einer TLK</system:String>
+    <system:String x:Key="string_compilingFailed">Kompilieren fehlgeschlagen</system:String>
+    <system:String x:Key="string_interp_errorReadingXmlFileX">Fehler beim Lesen einer xml-Datei: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorReadingXmlFile">Fehler beim Lesen einer xml-Datei</system:String>
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Bereite Installation vor</system:String>
@@ -650,6 +661,9 @@
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Diese Datei ist nicht in der Textur-Bibliothek. Wird in die Textur-Bibliothek verschoben</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">ALOT-Datei wird in die Textur-Bibliothek verschoben, bitte warten...</system:String>
     <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Dieser Mod kann aus einem der folgenden Gründe nicht von Mod Manager importiert oder installiert werden:\n - Installation dieses Mods ist zu komplex\n - Installation dieses Mods benötigt zusätzliche Werkezeuge, die manuell vom Benutzer eingestellt werden müssen\n - Mod steht auf der schwarzen Liste, da er bekannt dafür ist, Spiele zu zerstören.\n\nDieser Mod muss manuell installiert werden.</system:String>
+    <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">Beim Entpacken der Archivdatei ist ein Fehler aufgetreten: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorExtractingArchive">Fehler beim Entpacken einer Archivdatei</system:String>
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Updates für Mods verfügbar</system:String>
