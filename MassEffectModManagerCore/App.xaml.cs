@@ -73,6 +73,12 @@ namespace MassEffectModManagerCore
         //Windows 8.1 Update 1
         public static readonly Version MIN_SUPPORTED_OS = new Version("6.3.9600");
 
+        internal static readonly string[] SupportedOperatingSystemVersions =
+        {
+            "Windows 8.1",
+            "Windows 10 (not EOL versions)"
+        };
+
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern bool SetDllDirectory(string lpPathName);
 
@@ -608,6 +614,12 @@ namespace MassEffectModManagerCore
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             new MainWindow().Show();
+        }
+
+        public static bool IsOperatingSystemSupported()
+        {
+            OperatingSystem os = Environment.OSVersion;
+            return os.Version >= App.MIN_SUPPORTED_OS;
         }
     }
 

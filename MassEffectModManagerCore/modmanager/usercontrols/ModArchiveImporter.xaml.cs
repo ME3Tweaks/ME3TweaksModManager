@@ -321,6 +321,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     addCompressedModCallback?.Invoke(failed);
                     return;
                 }
+
+                // Used for TPIS information lookup
+                long archiveSize = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
+
                 if (moddesciniEntries.Count > 0)
                 {
                     foreach (var entry in moddesciniEntries)
@@ -405,8 +409,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                     currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
                     var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
-                    long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
-                    var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
+                    var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
                     var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
 
                     if (importingInfo == null && isExe)
@@ -448,12 +451,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     foreach (var sfarEntry in sfarEntries)
                     {
                         var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, Mod.MEGame.ME3, md5);
-                        //if (vMod.ValidMod)
-                        //{
-                        addCompressedModCallback?.Invoke(vMod);
-                        internalModList.Add(vMod);
-                        vMod.ExeExtractionTransform = transform;
-                        //}
+                        if (vMod != null)
+                        {
+                            addCompressedModCallback?.Invoke(vMod);
+                            internalModList.Add(vMod);
+                            vMod.ExeExtractionTransform = transform;
+                        }
                     }
 
                     //TODO: ME2 ?
@@ -484,7 +487,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //see if server has information on version number
                         currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
                         Log.Information(@"Querying ME3Tweaks for additional information for this file...");
-                        var modInfo = OnlineContent.QueryModRelay(md5, size);
+                        var modInfo = OnlineContent.QueryModRelay(md5, archiveSize);
                         //todo: make this work offline.
                         if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
                         {
@@ -759,8 +762,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
+                    try
+                    {
+                        mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
+                    }
+                    catch (Exception ex)
+                    {
+                        //Extraction failed!
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Log.Error(@"Error while extracting archive: " + App.FlattenException(ex));
+                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_anErrorOccuredExtractingTheArchiveX, ex.Message), M3L.GetString(M3L.string_errorExtractingArchive), MessageBoxButton.OK, MessageBoxImage.Error);
+                            e.Result = ModImportResult.ERROR_EXTRACTING_ARCHIVE;
+                        });
+                        return;
+                    }
 
-                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
                     extractedMods.Add(mod);
                 }
             }
@@ -881,7 +898,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             USER_ABORTED_IMPORT, ERROR_COULD_NOT_DELETE_EXISTING_DIR,
             ERROR_INSUFFICIENT_DISK_SPACE,
-            None
+            None,
+            ERROR_EXTRACTING_ARCHIVE
         }
 
         private bool CanInstallCompressedMod()

@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
-            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} for game {modBeingInstalled.Game}");
+            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}");
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
@@ -145,16 +145,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            //todo: If statment on this
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
             if (ModBeingInstalled.Game == Mod.MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
             {
+                Log.Information(@"RCW mod: Beginning RCW mod subinstaller");
                 e.Result = InstallAttachedRCWMod();
                 return;
             }
 
             //Prepare queues
+            Log.Information(@"Building installation queues");
             (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
                 List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues =
                 ModBeingInstalled.GetInstallationQueues(gameTarget);
@@ -208,6 +209,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return;
                     }
                 }
+                else
+                {
+                    Log.Information(@"Game is marked as textured modded, but this mod doesn't install any package files, so it's OK to install");
+                }
             }
 
             Action = M3L.GetString(M3L.string_installing);
@@ -236,6 +241,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
+                Log.Information(@"Building map of unpacked file destinations");
+
                 foreach (var originalMapping in unpackedQueue.Value.fileMapping)
                 {
                     //always unpacked
@@ -316,6 +323,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             string sfarStagingDirectory = (ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
             if (sfarStagingDirectory != null)
             {
+                Log.Information(@"Building list of SFAR staging targets");
                 foreach (var sfarJob in installationQueues.sfarJobs)
                 {
                     foreach (var fileToInstall in sfarJob.sfarInstallationMapping)
@@ -348,6 +356,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Check we have enough disk space
+            Log.Information(@"Checking there is enough space to install mod (this is only an estimate)");
+
             long requiredSpaceToInstall = 0L;
             if (ModBeingInstalled.IsInArchive)
             {
@@ -428,6 +438,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Direct copy
                 Log.Information($@"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
                 CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
+                Log.Information(@"Files have been copied");
             }
             else
             {
@@ -441,10 +452,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return redirectedPath;
                 }
 
-                ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
-                {
-                    //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
-                };
+                //ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
+                //{
+                //    //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                //};
                 List<string> filesInstalled = new List<string>();
                 //List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
                 ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
@@ -503,6 +514,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             foreach (var addedDLCFolder in addedDLCFolders)
             {
+                Log.Information(@"Writing metacmm file for " + addedDLCFolder);
                 var metacmm = Path.Combine(addedDLCFolder, @"_metacmm.txt");
                 ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
                 string contents = $"{assignedDLCName ?? ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}"; //Do not localize
@@ -546,9 +558,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
                 //Todo: Convert to ASI Manager installer
-                Utilities.InstallASIByGroupID(gameTarget, @"DLC Mod Enabler", 16); //16 = DLC M -od Enabler
-
-                //Utilities.InstallEmbeddedASI(@"ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget); //Todo: Switch to ASI Manager
+                Utilities.InstallASIByGroupID(gameTarget, @"DLC Mod Enabler", 16); //16 = DLC Mod Enabler
             }
             else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
             {
@@ -559,9 +569,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
                     Utilities.InstallASIByGroupID(gameTarget, @"Balance Changes Replacer", 5);
-                    //Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 5);
-                    //Utilities.InstallEmbeddedASI(@"BalanceChangesReplacer-v2.0", 2.0, gameTarget); //todo: Switch to ASI Manager
                 }
+
+                //Install Autotoc ASI?
+                //Install logger truncating?
+                // (Is this already handled elsewhere?)
             }
 
             if (sfarStagingDirectory != null)
@@ -579,6 +591,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Warning($@"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
                 e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
             }
+
             Log.Information(@"<<<<<<< Finishing modinstaller");
 
             //Submit basegame telemetry in async way
@@ -882,6 +895,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Error(@"An error occured during mod installation.\n" + App.FlattenException(e.Error));
             }
 
+
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
             if (e.Result is ModInstallCompletedStatus mcis)
             {
@@ -940,7 +954,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                throw new Exception(@"Mod installer did not have return code. This should be caught and handled, but it wasn't.");
+                Log.Fatal(@"The application is going to crash due to a sanity check failure. Please report this to ME3Tweaks so this can be fixed.");
+                if (e.Result != null)
+                {
+                    throw new Exception(@"Mod installer did not have return code (null). This should be caught and handled, but it wasn't!");
+                }
+
+                throw new Exception(@"Mod installer did not have parsed return code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
             }
             Analytics.TrackEvent(@"Installed a mod", new Dictionary<string, string>()
             {

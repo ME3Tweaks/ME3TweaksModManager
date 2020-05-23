@@ -355,6 +355,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_programDataAccessDenied = "string_programDataAccessDenied";
 		public static readonly string string_autoAddControllerMixinsToModMakerMods = "string_autoAddControllerMixinsToModMakerMods";
 		public static readonly string string_tooltip_autoAddControllerMixinsToModMakerMods = "string_tooltip_autoAddControllerMixinsToModMakerMods";
+		public static readonly string string_interp_dialog_unsupportedOS = "string_interp_dialog_unsupportedOS";
+		public static readonly string string_unsupportedOperatingSystem = "string_unsupportedOperatingSystem";
+		public static readonly string string_errorCompilingCoalesced = "string_errorCompilingCoalesced";
+		public static readonly string string_interp_exceptionOccuredWhileCompilingCoalsecedFileX = "string_interp_exceptionOccuredWhileCompilingCoalsecedFileX";
+		public static readonly string string_errorCompilingTLK = "string_errorCompilingTLK";
+		public static readonly string string_compilingFailed = "string_compilingFailed";
+		public static readonly string string_interp_errorReadingXmlFileX = "string_interp_errorReadingXmlFileX";
+		public static readonly string string_errorReadingXmlFile = "string_errorReadingXmlFile";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
@@ -638,6 +646,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary = "string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary";
 		public static readonly string string_movingALOTFileToTextureLibraryPleaseWait = "string_movingALOTFileToTextureLibraryPleaseWait";
 		public static readonly string string_modCannotBeImportedDueToOneOfTheFollowingReasons = "string_modCannotBeImportedDueToOneOfTheFollowingReasons";
+		public static readonly string string_interp_anErrorOccuredExtractingTheArchiveX = "string_interp_anErrorOccuredExtractingTheArchiveX";
+		public static readonly string string_errorExtractingArchive = "string_errorExtractingArchive";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";

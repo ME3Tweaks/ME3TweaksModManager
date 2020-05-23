@@ -320,7 +320,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         return;
                     }
 
-                    reqFile = reqFile.Replace("/", "\\").TrimStart('\\'); //standardize
+                    reqFile = reqFile.Replace('/', '\\').TrimStart('\\'); //standardize
                     if (long.TryParse(reqSizeStr, out var reqSize) && reqSize >= 0)
                     {
                         RequiredSpecificFiles[reqFile] = reqSize;

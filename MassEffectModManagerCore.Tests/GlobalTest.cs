@@ -38,6 +38,7 @@ namespace MassEffectModManagerCore.Tests
                 Analytics.SetEnabledAsync(false);
                 Crashes.SetEnabledAsync(false);
                 Settings.LogModStartup = true;
+                App.BuildNumber = 105; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE
                 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
                 initialized = true;
             }

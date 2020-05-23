@@ -1226,7 +1226,15 @@ namespace MassEffectModManagerCore
                 if (target != null)
                 {
                     var configTool = Utilities.GetGameConfigToolPath(target);
-                    Utilities.RunProcess(configTool, "", false, true, false, false);
+                    try
+                    {
+                        Utilities.RunProcess(configTool, "", false, true, false, false);
+                    }
+                    catch (Exception e)
+                    {
+                        // user may have canceled running it. seems it sometimes requires admin
+                        Log.Error($@"Error running config tool for {game}: {e.Message}");
+                    }
                 }
             }
         }
@@ -1476,6 +1484,13 @@ namespace MassEffectModManagerCore
             if (App.BootingUpdate)
             {
                 ShowUpdateCompletedPane();
+            }
+
+            if (!App.IsOperatingSystemSupported())
+            {
+                string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
+                Log.Error(@"This operating system is not supported.");
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList), M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             if (!Settings.ShowedPreviewPanel)
@@ -2612,7 +2627,7 @@ namespace MassEffectModManagerCore
                                         Application.Current.Dispatcher.Invoke(delegate
                                         {
                                             failedToCompileCoalesced = true;
-                                            Xceed.Wpf.Toolkit.MessageBox.Show(this, message, "Error compiling Coalesced", MessageBoxButton.OK, MessageBoxImage.Error);
+                                            M3L.ShowDialog(this, message, M3L.GetString(M3L.string_errorCompilingCoalesced), MessageBoxButton.OK, MessageBoxImage.Error);
                                         });
                                     }
 
@@ -2632,12 +2647,12 @@ namespace MassEffectModManagerCore
                                         {
                                             Log.Error($@"Error compiling Coalesced file: {e.Message}:");
                                             Log.Error(App.FlattenException(e));
-                                            errorCompilingCoalesced($"Exception occured while compiling Coalseced file: {e.Message}");
+                                            errorCompilingCoalesced(M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingCoalsecedFileX, e.Message));
                                         }
                                     };
                                     nbw.RunWorkerCompleted += (a, b) =>
                                     {
-                                        if (failedToCompileCoalesced) task.finishedUiText = "Error compiling Coalesced";
+                                        if (failedToCompileCoalesced) task.finishedUiText = M3L.GetString(M3L.string_errorCompilingCoalesced);
                                         backgroundTaskEngine.SubmitJobCompletion(task);
                                     };
                                     nbw.RunWorkerAsync();
@@ -2650,7 +2665,7 @@ namespace MassEffectModManagerCore
                                     Application.Current.Dispatcher.Invoke(delegate
                                     {
                                         failedToCompileTLK = true;
-                                        Xceed.Wpf.Toolkit.MessageBox.Show(this, message, "Error compiling TLK", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        Xceed.Wpf.Toolkit.MessageBox.Show(this, message, M3L.GetString(M3L.string_errorCompilingTLK), MessageBoxButton.OK, MessageBoxImage.Error);
                                     });
                                 }
 
@@ -2672,7 +2687,7 @@ namespace MassEffectModManagerCore
                                         nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement, errorCompilingTLK); };
                                         nbw.RunWorkerCompleted += (a, b) =>
                                         {
-                                            if (failedToCompileTLK) task.finishedUiText = "Compiling failed";
+                                            if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
                                         };
                                         nbw.RunWorkerAsync();
@@ -2685,7 +2700,7 @@ namespace MassEffectModManagerCore
                                         nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement, errorCompilingTLK); };
                                         nbw.RunWorkerCompleted += (a, b) =>
                                         {
-                                            if (failedToCompileTLK) task.finishedUiText = "Compiling failed";
+                                            if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
                                         };
                                         nbw.RunWorkerAsync();
@@ -2698,7 +2713,7 @@ namespace MassEffectModManagerCore
                                     nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement, errorCompilingTLK); };
                                     nbw.RunWorkerCompleted += (a, b) =>
                                     {
-                                        if (failedToCompileTLK) task.finishedUiText = "Compiling failed";
+                                        if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                         backgroundTaskEngine.SubmitJobCompletion(task);
                                     };
                                     nbw.RunWorkerAsync();
@@ -2707,7 +2722,7 @@ namespace MassEffectModManagerCore
                             catch (Exception ex)
                             {
                                 Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
-                                Xceed.Wpf.Toolkit.MessageBox.Show(this, $"Error reading xml file: {ex.Message}", "Error reading xml file", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_errorReadingXmlFileX, ex.Message), M3L.GetString(M3L.string_errorReadingXmlFile), MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                         break;
