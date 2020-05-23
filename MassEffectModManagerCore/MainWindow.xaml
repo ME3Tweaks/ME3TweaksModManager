@@ -990,6 +990,10 @@
                         Header="{DynamicResource string_debug_showIntroTutorial}"
                         Click="ShowIntroTutorial_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
+                        Header="MEM Vanilla DB Viewer"
+                        Click="MEMVanillaDBViewer_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"

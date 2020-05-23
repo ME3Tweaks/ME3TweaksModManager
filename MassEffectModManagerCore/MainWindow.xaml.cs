@@ -3140,5 +3140,19 @@ namespace MassEffectModManagerCore
         {
             new IntroTutorial().Show();
         }
+
+        private void MEMVanillaDBViewer_Click(object sender, RoutedEventArgs e)
+        {
+            var previewPanel = new MEMVanillaDBViewer();
+            previewPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is bool loadMods)
+                {
+                    LoadMods();
+                }
+            };
+            ShowBusyControl(previewPanel);
+        }
     }
 }
