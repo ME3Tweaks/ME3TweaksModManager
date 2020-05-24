@@ -32,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdonisUI.ClassicTheme", "Ad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IniFileParser", "IniFileParser\IniFileParser.csproj", "{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalizationHelper", "LocalizationHelper\LocalizationHelper.csproj", "{57F86ADA-7636-4757-9434-85CB57A3D450}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalizationHelper", "LocalizationHelper\LocalizationHelper.csproj", "{57F86ADA-7636-4757-9434-85CB57A3D450}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,8 +116,8 @@ Global
 		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Debug|x86.Build.0 = Debug|Any CPU
 		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|x64.ActiveCfg = Release|Any CPU
-		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|x64.Build.0 = Release|Any CPU
+		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|x64.ActiveCfg = Release|x64
+		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|x64.Build.0 = Release|x64
 		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|x86.ActiveCfg = Release|Any CPU
 		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}.Release|x86.Build.0 = Release|Any CPU
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -128,8 +128,8 @@ Global
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Debug|x86.Build.0 = Debug|Any CPU
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x64.ActiveCfg = Release|Any CPU
-		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x64.Build.0 = Release|Any CPU
+		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x64.ActiveCfg = Release|x64
+		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x64.Build.0 = Release|x64
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x86.ActiveCfg = Release|Any CPU
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA}.Release|x86.Build.0 = Release|Any CPU
 		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
