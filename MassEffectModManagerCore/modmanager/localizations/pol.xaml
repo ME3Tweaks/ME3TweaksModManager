@@ -290,6 +290,17 @@
     <system:String x:Key="string_programDataAccessDenied">Dostęp do ProgramData zabroniony</system:String>
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Automatycznie dodaj Mixins kontrolera do modów ModMaker</system:String>
     <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatycznie dodaje poprawki kontrolera do modów ModMaker.&#10;Nie korzystaj z tej opcji, jeśli grasz za pomocą klawiatury i myszki</system:String>
+    <system:String x:Key="string_interp_dialog_unsupportedOS" xml:space="preserve">Ten system operacyjny nie jest wspierany. Ta aplikacja była walidowana pod względem działania tylko na następujących systemach: \n - {0}. Aplikacja może nie działać poprawnie na tym systemie operacyjnym.</system:String>
+	<!-- 0= bulleted list of supported operating system names -->
+    <system:String x:Key="string_unsupportedOperatingSystem">Niewspierany system operacyjny</system:String>
+    <system:String x:Key="string_errorCompilingCoalesced">Błąd podczas kompilacji Coalesced</system:String>
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingCoalsecedFileX">Wystąpił błąd podczas kompilacji pliku Coalesced: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorCompilingTLK">Błąd przy kompilacji TKL</system:String>
+    <system:String x:Key="string_compilingFailed">Kompilacja nieudana</system:String>
+    <system:String x:Key="string_interp_errorReadingXmlFileX">Błąd przy odczytywaniu pliku xml: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorReadingXmlFile">Błąd przy odczytywaniu pliku xml</system:String>
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Przygotowanie do instalacji</system:String>
@@ -650,6 +661,9 @@
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Ten plik nie jest w bibliotece tekstur. Przenoszenie do biblioteki tekstur</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">Przenoszenie pliku ALOT do biblioteki tekstur, proszę czekać...</system:String>
     <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Ten mod nie może zostać zaimportowany lub zainstalowany za pomocą Mod Manager z następujących powodów:\n - Instalacja tego moda jest zbyt rozbudowana\n - Instalacja moda wymaga dodatkowych narzędzi, które muszą być skonfigurowane manualnie przez użytkownika\n - Mod został dodany do czarnej listy importów/instalacji z powodu doniesień o wywoływaniu problemów z poprawnym działaniem gry\n\nTen mod musi zostać zainstalowany ręcznie.</system:String>
+    <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">Wystąpił błąd podczas wypakowywania archiwum: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorExtractingArchive">Błąd przy wypakowywaniu archiwum</system:String>
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Dostępne są aktualizacje modów</system:String>
