@@ -290,6 +290,17 @@
     <system:String x:Key="string_programDataAccessDenied">Запрещен доступ к ProgramData</system:String>
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Автодобавление Mixins контроллера в моды ModMaker</system:String>
     <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Автоматически добавляет патчи контроллера в моды ModMaker.&#10;Не выбирайте этот пункт, если используете клавиатуру/мышь.</system:String>
+    <system:String x:Key="string_interp_dialog_unsupportedOS" xml:space="preserve">Текущая операционная система не поддерживается. Данное приложение предназначено для использования только в следующих операционных системах: \n - {0}. Приложение может работать неккоретно в текущей операционной системе.</system:String>
+	<!-- 0= bulleted list of supported operating system names -->
+    <system:String x:Key="string_unsupportedOperatingSystem">Неподдерживаемая операционная система</system:String>
+    <system:String x:Key="string_errorCompilingCoalesced">Ошибка компиляции Coalesced</system:String>
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingCoalsecedFileX">При компиляции файла Coalesced возникло исключение: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorCompilingTLK">Ошибка компиляции TLK</system:String>
+    <system:String x:Key="string_compilingFailed">Компиляция не удалась</system:String>
+    <system:String x:Key="string_interp_errorReadingXmlFileX">Ошибка чтения файла xml: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorReadingXmlFile">Ошибка чтения файла xml</system:String>
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Подготовка к установке</system:String>
@@ -650,6 +661,9 @@
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Этот файл не из библиотеки текстур. Перемещение файла в библиотеку текстур</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">Переремещенеи файла ALOT в библиотеку текстур, пожалуйста подождите...</system:String>
     <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Данный мод не может быть импортирован или установлен посредтвом Mod Manager по одной из следующих причин:\n - Установка данного мода слишком сложная\n - Установка данного требует наличия дополнительных инструментов, настраиваемых пользователем вручную\n - Мод попал в черный список импорта/установки из-за нарушений в работе игр\n\Данный мод должен устанавливаться вручную.</system:String>
+    <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">При распаковке архива возникла ошибка: {0}</system:String>
+	<!-- 0=Exception message -->
+    <system:String x:Key="string_errorExtractingArchive">Ошибка распаковки архива</system:String>
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Доступно обновление мода</system:String>
@@ -1230,7 +1244,7 @@
     <system:String x:Key="string_restoringDLC">Восстановление DLC</system:String>
     <system:String x:Key="string_uninstallingALOT">Удаление ALOT</system:String>
     <system:String x:Key="string_modding">Моддинг</system:String>
-    <system:String x:Key="string_mE3TweaksModMaker">ME3Tweals Mod Maker</system:String>
+    <system:String x:Key="string_mE3TweaksModMaker">ME3Tweals ModMaker</system:String>
 	<!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
     <system:String x:Key="string_mixins">Mixins</system:String>
     <system:String x:Key="string_mergingMods">Объединение модов</system:String>
@@ -1362,7 +1376,7 @@
     <system:String x:Key="string_patchDescription">Описание Патча</system:String>
     <system:String x:Key="string_interp_runningAutoTOCOnGamePercentX">Применение AutoTOC к игре {0}%</system:String>
 	<!-- 0=percent -->
-    <system:String x:Key="string_mixinsInstalledMaybe">Mixins установлены, возможно!</system:String>
+    <system:String x:Key="string_mixinsInstalledMaybe">Mixins установлены, наверное!</system:String>
 	<!-- This feature is experimental so I would not trust it works 100% of the time. But it's in build 105 anyways -->
 
 	<!-- Batch Mod Library (Install Group List) -->
