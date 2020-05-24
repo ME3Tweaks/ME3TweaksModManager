@@ -425,6 +425,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             return (TargetPath != null ? TargetPath.GetHashCode() : 0);
         }
 
+        private Queue<SFARObject> SFARRestoreQueue = new Queue<SFARObject>();
+
         public class SFARObject : INotifyPropertyChanged
         {
             public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action startingRestoreCallback, Action<object> notifyNoLongerModifiedCallback)
@@ -476,13 +478,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 RestoreSFAR(false);
             }
 
-            public void RestoreSFAR(bool batchRestore)
+            public void RestoreSFAR(bool batchRestore, Action signalRestoreCompleted = null)
             {
                 bool? restore = batchRestore;
                 if (!restore.Value) restore = RestoreConfirmationCallback?.Invoke(FilePath);
                 if (restore.HasValue && restore.Value)
                 {
-                    //Todo: Background thread this maybe?
                     NamedBackgroundWorker bw = new NamedBackgroundWorker(@"RestoreSFARThread");
                     bw.DoWork += (a, b) =>
                     {
@@ -513,6 +514,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         //restoreCompletedCallback?.Invoke();
                         //}
                         Restoring = false;
+                        signalRestoreCompleted?.Invoke();
                     };
                     startingRestoreCallback?.Invoke();
                     bw.RunWorkerAsync();
@@ -694,6 +696,39 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             var alotInfo = GetInstalledALOTInfo();
             return alotInfo != null && (alotInfo.ALOTVER > 0 || alotInfo.MEUITMVER > 0);
+        }
+
+        private bool RestoringSFAR;
+
+        private void SignalSFARRestore()
+        {
+            if (SFARRestoreQueue.TryDequeue(out var sfar))
+            {
+                RestoringSFAR = true;
+                sfar.RestoreSFAR(true, SFARRestoreCompleted);
+            }
+        }
+
+        private void SFARRestoreCompleted()
+        {
+            RestoringSFAR = false;
+            SignalSFARRestore(); //try next item
+        }
+
+        /// <summary>
+        /// Queues an sfar for restoration.
+        /// </summary>
+        /// <param name="sfar">SFAR to restore</param>
+        /// <param name="batchMode">If this is part of a batch mode, and thus should not show dialogs</param>
+        public void RestoreSFAR(SFARObject sfar, bool batchMode)
+        {
+            sfar.Restoring = true;
+            sfar.RestoreButtonContent = M3L.GetString(M3L.string_restoring);
+            SFARRestoreQueue.Enqueue(sfar);
+            if (!RestoringSFAR)
+            {
+                SignalSFARRestore();
+            }
         }
     }
 }

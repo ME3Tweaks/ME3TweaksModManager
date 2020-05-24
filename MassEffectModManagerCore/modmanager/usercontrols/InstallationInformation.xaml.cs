@@ -162,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void RestoreAllSFARs()
         {
-            bool restore = false;
+            bool restore;
             if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
@@ -186,7 +186,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 foreach (var v in SelectedTarget.ModifiedSFARFiles)
                 {
-                    v.RestoreSFAR(true);
+                    SelectedTarget.RestoreSFAR(v, true);
                 }
             }
         }
