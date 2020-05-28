@@ -235,35 +235,44 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var newstringnodes = tlknode.Elements(@"TLKProperty");
                     string filename = $@"BIOGame_{lang}.tlk";
                     var vanillaTLK = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, filename);
-                    var tf = new TalkFileME2ME3();
-                    tf.LoadTlkDataFromStream(vanillaTLK);
-                    SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
-                    foreach (var strnode in newstringnodes)
+                    if (vanillaTLK != null)
                     {
-                        var id = int.Parse(strnode.Attribute(@"id").Value);
-                        var matchingref = tf.StringRefs.FirstOrDefault(x => x.StringID == id);
-                        if (matchingref != null)
+                        var tf = new TalkFileME2ME3();
+                        tf.LoadTlkDataFromStream(vanillaTLK);
+                        SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
+                        foreach (var strnode in newstringnodes)
                         {
-                            matchingref.Data = strnode.Value;
-                            CLog.Information($@"{loggingPrefix}Set {id} to {matchingref.Data}",
-                                Settings.LogModMakerCompiler);
+                            var id = int.Parse(strnode.Attribute(@"id").Value);
+                            var matchingref = tf.StringRefs.FirstOrDefault(x => x.StringID == id);
+                            if (matchingref != null)
+                            {
+                                matchingref.Data = strnode.Value;
+                                CLog.Information($@"{loggingPrefix}Set {id} to {matchingref.Data}",
+                                    Settings.LogModMakerCompiler);
+                            }
+                            else
+                            {
+                                Log.Warning($@"{loggingPrefix} Could not find string id {id} in TLK");
+                            }
                         }
-                        else
-                        {
-                            Log.Warning($@"{loggingPrefix} Could not find string id {id} in TLK");
-                        }
+
+                        SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //modify
+
+                        string outfolder = Path.Combine(mod.ModPath, @"BASEGAME", @"CookedPCConsole");
+                        Directory.CreateDirectory(outfolder);
+                        string outfile = Path.Combine(outfolder, filename);
+                        CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
+                        HuffmanCompressionME2ME3.SaveToTlkFile(outfile, tf.StringRefs);
+                        CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
+                            Settings.LogModMakerCompiler);
+                        SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
+                    }
+                    else
+                    {
+                        Log.Warning($@"TLK file not found: {vanillaTLK}, skipping");
+                        SetCurrentValueCallback?.Invoke(Interlocked.Add(ref numDoneTLKSteps, 3)); //skip 3 steps
                     }
 
-                    SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //modify
-
-                    string outfolder = Path.Combine(mod.ModPath, @"BASEGAME", @"CookedPCConsole");
-                    Directory.CreateDirectory(outfolder);
-                    string outfile = Path.Combine(outfolder, filename);
-                    CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
-                    HuffmanCompressionME2ME3.SaveToTlkFile(outfile, tf.StringRefs);
-                    CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
-                        Settings.LogModMakerCompiler);
-                    SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
                     var numOverallDone = Interlocked.Add(ref OverallProgressValue, TLK_OVERALL_WEIGHT);
                     SetOverallValueCallback?.Invoke(numOverallDone);
                 });
@@ -356,8 +365,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         Directory.CreateDirectory(outdir);
                         if (mapping.Key == ModJob.JobHeader.BASEGAME)
                         {
-                            //basegame
-                            foreach (var file in mapping.Value)
+                    //basegame
+                    foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream =
                                     VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
@@ -370,16 +379,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                                 package.save(outfile, true); //set to true once compression bugs are fixed
-                                //finalStream.WriteToFile(outfile);
-                                //File.WriteAllBytes(outfile, finalStream.ToArray());
-                            }
+                                                             //finalStream.WriteToFile(outfile);
+                                                             //File.WriteAllBytes(outfile, finalStream.ToArray());
+                    }
                         }
                         else
                         {
-                            //dlc
-                            var dlcPackage =
-                                VanillaDatabaseService
-                                    .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                    //dlc
+                    var dlcPackage =
+                VanillaDatabaseService
+                    .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
                             foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream =
@@ -393,8 +402,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                                 package.save(outfile, true); //set to true once compression bugs are fixed
-                                //finalStream.WriteToFile(outfile);
-                            }
+                                                             //finalStream.WriteToFile(outfile);
+                    }
                         }
                     });
                 MixinHandler.FreeME3TweaksPatchData();

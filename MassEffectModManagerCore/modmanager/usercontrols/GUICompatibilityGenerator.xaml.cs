@@ -101,7 +101,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             GENERATED_PACK
         }
 
-        
+
 
         private int getPercent(long done, long total)
         {
@@ -304,7 +304,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (tpmi == null) return x;
                 return tpmi.modname;
             }).ToList();
-            string dlcs = string.Join(@"\n - ", dlcModList);
+            string dlcs = string.Join("\n - ", dlcModList); // do not localize
 
             StarterKitOptions sko = new StarterKitOptions
             {
@@ -370,6 +370,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             done = 0;
             string singlesuffix = M3L.GetString(M3L.string_singularFile);
             string pluralsuffix = M3L.GetString(M3L.string_pluralFiles);
+
+            // Logging
+            Log.Information(@"The following files will be promoted in the compatibility pack:");
+            foreach (var file in filesToBePatched)
+            {
+                Log.Information(@" - " + file);
+            }
+
             foreach (var file in filesToBePatched)
             {
                 ActionSubstring = Path.GetFileName(file);
@@ -400,7 +408,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (package.IsModified)
                     {
                         Log.Information(@"Saving patched package to " + outpath);
-                        package.save(outpath);
+                        package.save(outpath, true);
                         done++;
                         ActionSubstring = M3L.GetString(M3L.string_interp_patchedXY, done.ToString(), done == 1 ? singlesuffix : pluralsuffix);
                     }
