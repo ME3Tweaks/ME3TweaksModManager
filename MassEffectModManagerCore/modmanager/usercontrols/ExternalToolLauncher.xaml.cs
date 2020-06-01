@@ -357,11 +357,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Version serverVersion = new Version(latestRelease.TagName);
-                    Version localVersion = new Version($@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
-                    if (serverVersion > localVersion)
+                    try
                     {
-                        needsUpdated = true;
+                        Version serverVersion = new Version(latestRelease.TagName);
+                        Version localVersion =
+                            new Version(
+                                $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
+                        if (serverVersion > localVersion)
+                        {
+                            needsUpdated = true;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(@"Invalid version number on release: " + latestRelease.TagName);
                     }
                 }
 
