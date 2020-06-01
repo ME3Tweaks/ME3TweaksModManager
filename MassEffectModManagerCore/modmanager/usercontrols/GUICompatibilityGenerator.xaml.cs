@@ -80,6 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             @"DLC_CON_XBX",
             @"DLC_CON_UIScaling",
+            // ME3 Ultrawide someday?
             @"DLC_CON_UIScaling_Shared"
         };
 
@@ -88,6 +89,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             @"DLC_CON_XBX",
             @"DLC_CON_UIScaling",
             @"DLC_CON_UIScaling_Shared",
+            //  ME3 Ultrawide someday?
             @"DLC_MOD_" + UI_MOD_NAME
         };
 
@@ -380,8 +382,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var file in filesToBePatched)
             {
+                Log.Information(@"Patching file: " + file);
                 ActionSubstring = Path.GetFileName(file);
                 var package = MEPackageHandler.OpenMEPackage(file);
+                if (package == null)
+                {
+                    Log.Error(@"package object is null!!!");
+                }
                 var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == @"GFxMovieInfo").ToList();
                 if (guiExports.Count > 0)
                 {
@@ -391,9 +398,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (uiLibraryData.TryGetValue(export.GetFullPath, out var newData))
                         {
+                            Log.Information(@" >> Patching export " + export.GetFullPath);
                             //Patching this export.
                             var exportProperties = export.GetProperties();
                             var rawData = exportProperties.GetProp<ArrayProperty<ByteProperty>>(@"RawData");
+                            if (rawData == null)
+                            {
+                                Log.Error("Rawdata is null!!");
+                            }
                             rawData.Clear();
                             rawData.AddRange(newData.Select(x => new ByteProperty(x))); //This will be terribly slow. Need to port over new ME3Exp binary data handler
                             export.WriteProperties(exportProperties);
