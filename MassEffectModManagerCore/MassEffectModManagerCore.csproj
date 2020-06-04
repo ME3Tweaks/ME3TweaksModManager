@@ -10,7 +10,7 @@
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
-    <AssemblyVersion>6.0.1.6105</AssemblyVersion>
+    <AssemblyVersion>6.0.1.106</AssemblyVersion>
     <FileVersion>6.0.1.106</FileVersion>
     <Copyright>ME3Tweaks 2012 - 2020</Copyright>
     <Authors>Mgamerz</Authors>
