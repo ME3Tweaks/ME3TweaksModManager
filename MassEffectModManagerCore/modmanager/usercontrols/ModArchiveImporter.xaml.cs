@@ -447,14 +447,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (loadFailedReason != null)
                             {
-                                virutalCustomMod.LoadFailedReason = $"Failed to fetch moddesc.ini file from server. Reason: {loadFailedReason}";
+                                virutalCustomMod.LoadFailedReason = M3L.GetString(M3L.string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason, loadFailedReason);
                             }
                             else
                             {
-
                                 Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
                             }
-
                             return;
                         }
                     }

@@ -666,6 +666,8 @@
     <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">An error occured extracting the archive: {0}</system:String>
     <!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingArchive">Error extracting archive</system:String>
+    <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Failed to fetch moddesc.ini file from server. Reason: {0}</system:String>
+    <!-- 0= loadFailedReason -->
 
 
     <!-- Mod updater -->

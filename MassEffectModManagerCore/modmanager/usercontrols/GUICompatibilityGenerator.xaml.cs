@@ -387,7 +387,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var package = MEPackageHandler.OpenMEPackage(file);
                 if (package == null)
                 {
-                    Log.Error(@"package object is null!!!");
+                    Log.Error(@"pPackage object is null!!!");
                 }
                 var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == @"GFxMovieInfo").ToList();
                 if (guiExports.Count > 0)
@@ -404,7 +404,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var rawData = exportProperties.GetProp<ArrayProperty<ByteProperty>>(@"RawData");
                             if (rawData == null)
                             {
-                                Log.Error("Rawdata is null!!");
+                                Log.Error(@"Rawdata is null!!");
                             }
                             rawData.Clear();
                             rawData.AddRange(newData.Select(x => new ByteProperty(x))); //This will be terribly slow. Need to port over new ME3Exp binary data handler

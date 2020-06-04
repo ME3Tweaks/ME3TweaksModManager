@@ -648,6 +648,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_modCannotBeImportedDueToOneOfTheFollowingReasons = "string_modCannotBeImportedDueToOneOfTheFollowingReasons";
 		public static readonly string string_interp_anErrorOccuredExtractingTheArchiveX = "string_interp_anErrorOccuredExtractingTheArchiveX";
 		public static readonly string string_errorExtractingArchive = "string_errorExtractingArchive";
+		public static readonly string string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason = "string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";
