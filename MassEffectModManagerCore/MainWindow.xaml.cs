@@ -376,7 +376,7 @@ namespace MassEffectModManagerCore
         public ICommand ImportDLCModFromGameCommand { get; set; }
         public ICommand BackupFileFetcherCommand { get; set; }
         public ICommand OpenModDescCommand { get; set; }
-
+        public ICommand CheckAllModsForUpdatesCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -415,6 +415,7 @@ namespace MassEffectModManagerCore
             OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
             LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
+            CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
         }
 
         private void OpenModDesc()
@@ -1710,6 +1711,16 @@ namespace MassEffectModManagerCore
                 ModsLoaded = true;
             };
             bw.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Calls CheckAllModsForUpdates(). This method should be called from the UI thread.
+        /// </summary>
+        private void CheckAllModsForUpdatesWrapper()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("Mod update check");
+            nbw.DoWork += (a,b) => CheckAllModsForUpdates();
+            nbw.RunWorkerAsync();
         }
 
         private void CheckAllModsForUpdates()
