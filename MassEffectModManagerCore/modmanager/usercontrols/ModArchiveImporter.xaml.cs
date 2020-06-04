@@ -423,17 +423,38 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Partially supported unofficial third party mod
                         //Mod has a custom written moddesc.ini stored on ME3Tweaks
                         Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
-                        string custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
+                        string custommoddesc = null;
+                        string loadFailedReason = null;
+                        try
+                        {
+                            custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
+                        }
+                        catch (Exception e)
+                        {
+                            loadFailedReason = e.Message;
+                            Log.Error(@"Error fetching moddesc from server: " + e.Message);
+                        }
+
                         Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virutal mod
                         if (virutalCustomMod.ValidMod)
                         {
+                            Log.Information(@"Mod loaded from server moddesc.");
                             addCompressedModCallback?.Invoke(virutalCustomMod);
                             internalModList.Add(virutalCustomMod);
                             return; //Don't do further parsing as this is custom written
                         }
                         else
                         {
-                            Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                            if (loadFailedReason != null)
+                            {
+                                virutalCustomMod.LoadFailedReason = $"Failed to fetch moddesc.ini file from server. Reason: {loadFailedReason}";
+                            }
+                            else
+                            {
+
+                                Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                            }
+
                             return;
                         }
                     }
