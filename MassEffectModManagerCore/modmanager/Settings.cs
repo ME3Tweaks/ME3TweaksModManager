@@ -81,6 +81,13 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _updaterServiceUsername, value);
         }
 
+        private static int _webclientTimeout = 5; // Defaults to 5
+        public static int WebClientTimeout
+        {
+            get => _webclientTimeout;
+            set => SetProperty(ref _webclientTimeout, value);
+        }
+
         private static string _updateServiceLZMAStoragePath;
         public static string UpdaterServiceLZMAStoragePath
         {
@@ -186,7 +193,7 @@ namespace MassEffectModManagerCore.modmanager
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
             AutoUpdateLODs = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", true);
-
+            WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
 
 
@@ -349,6 +356,7 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", AutoUpdateLODs);
+                SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
                 return SettingsSaveResult.SAVED;
@@ -372,6 +380,11 @@ namespace MassEffectModManagerCore.modmanager
         }
 
         private static void SaveSettingBool(IniData settingsIni, string section, string key, bool value)
+        {
+            settingsIni[section][key] = value.ToString();
+        }
+
+        private static void SaveSettingInt(IniData settingsIni, string section, string key, int value)
         {
             settingsIni[section][key] = value.ToString();
         }
