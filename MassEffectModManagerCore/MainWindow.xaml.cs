@@ -2236,6 +2236,7 @@ namespace MassEffectModManagerCore
                 {
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadObjectInfo", M3L.GetString(M3L.string_loadingPackageInfoDatabases), M3L.GetString(M3L.string_loadedPackageInfoDatabases));
 
+
                     ME3UnrealObjectInfo.loadfromJSON();
                     ME2UnrealObjectInfo.loadfromJSON();
                     ME1UnrealObjectInfo.loadfromJSON();

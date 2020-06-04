@@ -8,6 +8,7 @@ using ME3Explorer.Packages;
 
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
+using Serilog;
 
 namespace ME3Explorer.Unreal
 {
@@ -40,10 +41,14 @@ namespace ME3Explorer.Unreal
                         classInfo.ClassName = className;
                     }
                 }
+                else
+                {
+                    Log.Error(@"Cannot load ME1ObjectInfo: JsonFile is missing.");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return;
+                Log.Error(@"Error loading ME1ObjectInfo: " + ex.Message);
             }
         }
 
