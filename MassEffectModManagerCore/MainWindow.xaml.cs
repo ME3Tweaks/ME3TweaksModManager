@@ -1718,7 +1718,7 @@ namespace MassEffectModManagerCore
         /// </summary>
         private void CheckAllModsForUpdatesWrapper()
         {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("Mod update check");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Mod update check");
             nbw.DoWork += (a,b) => CheckAllModsForUpdates();
             nbw.RunWorkerAsync();
         }
