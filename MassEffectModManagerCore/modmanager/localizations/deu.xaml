@@ -22,8 +22,8 @@
     <system:String x:Key="string_LogMixinStartup">Protokolliere Mixin Start</system:String>
     <system:String x:Key="string_LogModInstallation">Protokolliere Mod Installation</system:String>
     <system:String x:Key="string_LogModMakerCompiler">ModMaker Compiler protokollieren</system:String>
-    <system:String x:Key="string_Checkforcontentupdates">Suche nach Updates</system:String>
-    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Durchsucht ME3Tweaks.com nach Updates für verschiedene Dienste</system:String>
+    <system:String x:Key="string_Checkforcontentupdates">Suche nach Aktualisierungen</system:String>
+    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Durchsucht ME3Tweaks.com nach Aktualisierungen für verschiedene Dienste</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Lädt Mods erneut aus der Mod-Bibliothek</system:String>
     <system:String x:Key="string_tooltip_reloadModsFromLibrary">Mods erneut aus der Mod-Bibliothek laden</system:String>
     <system:String x:Key="string_Exit">Beenden</system:String>
@@ -46,13 +46,13 @@
     <system:String x:Key="string_MixInLibrary">Mixin-Bibliothek</system:String>
     <system:String x:Key="string_ClearMixinCache">Bereinige den Mixin Cache</system:String>
     <system:String x:Key="string_ModUtils">Mod-Werkzeuge</system:String>
-    <system:String x:Key="string_Checkforupdates">Updates suchen</system:String>
+    <system:String x:Key="string_Checkforupdates">Aktualisierungen suchen</system:String>
     <system:String x:Key="string_RestoremodfromME3Tweaks">Mod von ME3Tweaks.com wiederherstellen</system:String>
     <system:String x:Key="string_Installcustomkeybindsintothismod">Installiere benutzerdefinierte Tastaturbelegungen in diesen Mod</system:String>
     <system:String x:Key="string_Developeroptions">Entwickler-Optionen</system:String>
     <system:String x:Key="string_Metadataeditor">Metadata Editor</system:String>
     <system:String x:Key="string_Deploymodto7zfilefordistribution">Exportiere Mod als 7z Archiv zur Veröffentlichung</system:String>
-    <system:String x:Key="string_Prepareforupdaterservice">Vorbereiten auf Update-Dienst</system:String>
+    <system:String x:Key="string_Prepareforupdaterservice">Vorbereiten auf Aktualisierungsdienst</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Mod-Infos an ME3Tweaks.com senden</system:String>
     <system:String x:Key="string_Openmodfolder">Mod-Ordner öffnen</system:String>
     <system:String x:Key="string_Deletemodfromlibrary">Mod aus Bibliothek löschen</system:String>
@@ -124,7 +124,7 @@
     <system:String x:Key="string_consoleEnabled">Konsole freigeschaltet</system:String>
     <system:String x:Key="string_couldNotEnableConsole">Konnte Konsole nicht freischalten</system:String>
     <system:String x:Key="string_confirmDeletion">Löschen bestätigen</system:String>
-    <system:String x:Key="string_updateCompleted">Update abgeschlossen</system:String>
+    <system:String x:Key="string_updateCompleted">Aktualisierung abgeschlossen</system:String>
     <system:String x:Key="string_gameRunning">Spiel läuft</system:String>
     <system:String x:Key="string_errorAddingTarget">Fehler beim Hinzufügen des Ziels</system:String>
     <system:String x:Key="string_dialogCannotAddTargetCmmVanilla">Kann diesen Ordner nicht als Ziel hinzufügen, weil er als Backup markiert ist (cmmvanilla-Datei gefunden).</system:String>
@@ -138,15 +138,15 @@
     <system:String x:Key="string_unableToCreateModLibrary">Kann die Mod-Bibliothek nicht erstellen. Mod Manager wird sich nun beenden.</system:String>
     <system:String x:Key="string_loadingMods">Lade Mods</system:String>
     <system:String x:Key="string_loadedMods">Mods geladen</system:String>
-    <system:String x:Key="string_checkingModsForUpdates">Suche nach Updates für Mods</system:String>
-    <system:String x:Key="string_modUpdateCheckCompleted">Modupdateüberprüfung abgeschlossen</system:String>
-    <system:String x:Key="string_errorCheckingForModUpdates">Fehler beim Suchen nach Modupdates</system:String>
+    <system:String x:Key="string_checkingModsForUpdates">Suche nach Aktualisierungen für Mods</system:String>
+    <system:String x:Key="string_modUpdateCheckCompleted">Modaktualisierungsüberprüfung abgeschlossen</system:String>
+    <system:String x:Key="string_errorCheckingForModUpdates">Fehler beim Suchen nach Modaktualisierungen</system:String>
     <system:String x:Key="string_downloadingRequiredFiles">Lade benötigte Dateien herunter</system:String>
     <system:String x:Key="string_requiredFilesDownloaded">Benötigte Dateien heruntergeladen</system:String>
     <system:String x:Key="string_failedToDownloadRequiredFiles">Konnte benötigte Dateien nicht herunterladen</system:String>
-    <system:String x:Key="string_checkingForModManagerUpdates">Suche nach Mod Manager Updates</system:String>
-    <system:String x:Key="string_completedModManagerUpdateCheck">Mod Manager Updateüberprüfung abgeschlossen</system:String>
-    <system:String x:Key="string_failedToCheckForUpdates">Updateüberprüfung fehlgeschlagen</system:String>
+    <system:String x:Key="string_checkingForModManagerUpdates">Suche nach Mod Manager Aktualisierungen</system:String>
+    <system:String x:Key="string_completedModManagerUpdateCheck">Mod Manager Aktualisierungsüberprüfung abgeschlossen</system:String>
+    <system:String x:Key="string_failedToCheckForUpdates">Aktualisierungsüberprüfung fehlgeschlagen</system:String>
     <system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Konnte statische Bestandteile von ME3Tweaks Mod Manager nicht herunterladen. Mod Manager ist möglicherweise instabil aufgrund des Fehlens dieser Dateien. Stelle sicher, dass du dich zu GitHub.com verbinden kannst, damit diese Dateien heruntergeladen werden können.</system:String>
     <system:String x:Key="string_missingAssets">Fehlende Bestandteile</system:String>
     <system:String x:Key="string_failedToDownloadStaticFiles">Herunterladen statischer Bestandteile fehlgeschlagen</system:String>
@@ -176,12 +176,12 @@
     <system:String x:Key="string_interp_unendorseMod">Empfehlung für {0} zurückziehen?</system:String>
     <system:String x:Key="string_interp_unableToModifyBioinputIni">Kann bioinput.ini nicht verändern: {0}</system:String>
     <system:String x:Key="string_interp_dialogDeleteSelectedModFromLibrary">{0} aus deiner Mod-Bibliothek löschen? Hierdurch wird der Mod aus deiner lokalen Mod-Bibliothek gelöscht, jedoch nicht aus bestehenden Spiel-Installationen.</system:String>
-    <system:String x:Key="string_interp_modManagerHasBeenUpdatedTo">Mod Manager wurde von build {0} auf Version {1} geupdatet.</system:String>
+    <system:String x:Key="string_interp_modManagerHasBeenUpdatedTo">Mod Manager wurde von build {0} auf Version {1} aktualisiert.</system:String>
     <system:String x:Key="string_interp_launching">Starte {0}</system:String>
     <system:String x:Key="string_interp_launched">{0} gestartet</system:String>
     <system:String x:Key="string_interp_cannotInstallModGameNotInstalled">Kann Mod nicht installieren: {0} ist nicht installiert.</system:String>
     <system:String x:Key="string_interp_dialog_installingTextureMod" xml:space="preserve">{0} Dateien können mit ALOT Installer oder Mass Effect Modder (MEM) installiert werden. Beide Programme können über das Werkzeuge-Menü aufgerufen werden.\n\nWARNUNG: Diese Art von Mods verändern Spieldateizeiger (pointers). Daher müssen sie NACH allen anderen DLC-/content Mods installiert werden. Das Installieren von DLC-/content Mods hiernach verursacht verschiedene Probleme im Spiel. Sobald derartige Mods installiert wurden, wird ME3Tweaks Mod Manager die Installation weiterer Mods blockieren, bis das Spiel auf seinen Ursprungszustand zurückgesetzt wurde.</system:String>
-    <system:String x:Key="string_interp_minorUpdateAvailableMessage">Ein Update für ME3Tweaks Mod Manager build {0} ist verfügbar. Kleine ("minor") Updates beseitigen kleine Fehler im Programm und bekommen daher kein vollständiges Re-Release.</system:String>
+    <system:String x:Key="string_interp_minorUpdateAvailableMessage">Eine Aktualisierung für ME3Tweaks Mod Manager build {0} ist verfügbar. Kleine Aktualisierungen ("minor updates") beseitigen kleine Fehler im Programm und bekommen daher kein vollständiges Re-Release.</system:String>
     <system:String x:Key="string_interp_dialogUnableToCreateModLibraryNoPermissions" xml:space="preserve">Kann den Mod-Bibliotheksordner nicht erstellen: {0}\nWähle einen Ordner, auf den du Schreibzugriff hast.</system:String>
     <system:String x:Key="string_interp_dialogCannotInstallModsWhileGameRunning">Kann Mods nicht installieren, während {0} läuft.</system:String>
     <system:String x:Key="string_interp_failedToInstallMod">Installation von {0} fehlgeschlagen</system:String>
@@ -231,14 +231,14 @@
     <system:String x:Key="string_tooltip_createME3TweaksModMakerMod">Erstelle Gameplay-Mods mittels einer einfach zu benutzenden, gut dokumentierten Browserapplikation</system:String>
     <system:String x:Key="string_tooltip_batchModInstaller">Erstelle und installiere eine Gruppe Mods der Reihe nach</system:String>
     <system:String x:Key="string_tooltip_mixinLibrary">Enthält Bibliothek fertiger Patchdateien</system:String>
-    <system:String x:Key="string_tooltip_checksForUpdatesToThisMod" xml:space="preserve">Sucht nach Updates für diesen Mod.&#10;Mods die über NexusMods angeboten werden, müssen von ME3Tweaks für Updateüberprüfungen erlaubt sein</system:String>
-    <system:String x:Key="string_tooltip_forcesUpdateCheck">Erzwingt ein Update für einen Mod, obwohl bereits die aktuellste Version installiert ist</system:String>
+    <system:String x:Key="string_tooltip_checksForUpdatesToThisMod" xml:space="preserve">Sucht nach Aktualisierungen für diesen Mod.&#10;Mods die über NexusMods angeboten werden, müssen von ME3Tweaks für Aktualisierungsüberprüfungen erlaubt sein</system:String>
+    <system:String x:Key="string_tooltip_forcesUpdateCheck">Erzwingt eine Aktualisierung für einen Mod, obwohl bereits die aktuellste Version installiert ist</system:String>
     <system:String x:Key="string_packageModForRelease">Mod zur Veröffentlichung packen</system:String>
     <system:String x:Key="string_tooltip_deployTo7z" xml:space="preserve">Bereitet einen Mod zur Veröffentlichung for, indem automatische Tests ausgeführt werden und komprimiert ihn dann auf eine Weise, auf die er von Mod Manager schnell geladen werden kann</system:String>
-    <system:String x:Key="string_mE3TweaksUpdaterService">ME3Tweaks Updater-Dienst</system:String>
-    <system:String x:Key="string_tooltip_uploadToUpdaterService">Lädt diesen Mod zum ME3Tweaks Updater-Dienst hoch</system:String>
-    <system:String x:Key="string_editUpdaterServiceSettings">Updater-Einstellungen bearbeiten</system:String>
-    <system:String x:Key="string_tooltip_updaterServiceSettings">Update-Dienst-Einstellungen verändern</system:String>
+    <system:String x:Key="string_mE3TweaksUpdaterService">ME3Tweaks Aktualisierungsdienst</system:String>
+    <system:String x:Key="string_tooltip_uploadToUpdaterService">Lädt diesen Mod zum ME3Tweaks Aktualisierungsdienst hoch</system:String>
+    <system:String x:Key="string_editUpdaterServiceSettings">Aktualisierungseinstellungen bearbeiten</system:String>
+    <system:String x:Key="string_tooltip_updaterServiceSettings">Aktualisierungsdienst konfigurieren</system:String>
     <system:String x:Key="string_thirdPartyIdentificationService">Drittanbieter-Mod Indentifikations-Service</system:String>
     <system:String x:Key="string_tooltip_submitTPMI">Sendet Informationen über diesen Mod an ME3Tweaks</system:String>
     <system:String x:Key="string_debugging">Debugging</system:String>
@@ -301,6 +301,10 @@
     <system:String x:Key="string_interp_errorReadingXmlFileX">Fehler beim Lesen einer xml-Datei: {0}</system:String>
 	<!-- 0=Exception message -->
     <system:String x:Key="string_errorReadingXmlFile">Fehler beim Lesen einer xml-Datei</system:String>
+    <system:String x:Key="string_checkModsForUpdates">Mods auf Aktualisierungen überprüfen</system:String>
+    <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Sucht nach Aktualisierungen für Mods, die Suche nach Aktualisierungen unterstützen</system:String>
+    <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Anzeige</system:String>
+	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Bereite Installation vor</system:String>
@@ -488,7 +492,7 @@
 	<!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
     <system:String x:Key="string_interp_extractingX">Entpacke {0}</system:String>
-    <system:String x:Key="string_checkingForUpdates">Suche nach Updates</system:String>
+    <system:String x:Key="string_checkingForUpdates">Aktualisierungen werden gesucht</system:String>
     <system:String x:Key="string_interp_dialogUnableToDownloadX" xml:space="preserve">Kann {0} nicht herunterladen.\nBitte überprüfe deine Netzwerkverbindung und probiere es erneut.\nFalls das Problem weiterhin besteht, kontaktiere uns im ME3Tweaks Discord (Englisch).</system:String>
     <system:String x:Key="string_interp_failedToDownloadX">Download von {0} fehlgeschlagen</system:String>
     <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Fehler beim Herunterladen und Starten des Werkzeugs: {0}</system:String>
@@ -546,12 +550,14 @@
     <system:String x:Key="string_restoringSfarsAlotBlocked">Während ALOT installiert ist können keine SFAR-Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
     <system:String x:Key="string_restoringSfarsAlotDevMode">Wenn SFAR-Dateien wiederhergestellt werden während ALOT installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Diese Operation wird außerdem alle ungepackten Dateien aus dem Ordner löschen. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
     <system:String x:Key="string_restoreAllModifiedSfarsQuestion">Alle modifizierten SFAR-Dateien wiederherstellen?</system:String>
+    <system:String x:Key="string_restoreSPSfarsQuestion">Alle modifizierten Einspielermodus SFARs widerherstellen?</system:String>
+    <system:String x:Key="string_restoreMPSfarsQuestion">Alle modifizierten Mehrspielermodus SFARs widerherstellen?</system:String>
     <system:String x:Key="string_interp_backupAtX">Backup in {0}</system:String>
     <!-- 0 = filepath -->
     <system:String x:Key="string_noBackupForThisGame">Für dieses Spiel existiert kein Backup</system:String>
     <system:String x:Key="string_interp_cannotDeleteModsWhileXIsRunning">Mods können nicht gelöscht werden, während {0} läuft.</system:String>
 	<!-- 0 = gamename -->
-    <system:String x:Key="string_interp_deletingXwhileAlotInstalledUnsupported" xml:space="preserve">Löschen von {0} während ALOT installiert ist wird dein Spiel nicht zerstören, jedoch wirst du keine ALOT-Updates installieren können ohne eine vollständige Neuinstallation (Konfiguration nicht unterstützt).\n\nBist du sicher, dass du diesen DLC-Mod löschen willst?</system:String>
+    <system:String x:Key="string_interp_deletingXwhileAlotInstalledUnsupported" xml:space="preserve">Löschen von {0} während ALOT installiert ist wird dein Spiel nicht zerstören, jedoch wirst du keine ALOT-Aktualisierungen installieren können ohne eine vollständige Neuinstallation (Konfiguration nicht unterstützt).\n\nBist du sicher, dass du diesen DLC-Mod löschen willst?</system:String>
 	<!-- 0 = mod name -->
     <system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Durch Löschen wird ALOT in eine nicht unterstützte Konfiguration versetzt</system:String>
     <system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">{0} aus der Spiel-Installation entfernen?</system:String>
@@ -664,48 +670,50 @@
     <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">Beim Entpacken der Archivdatei ist ein Fehler aufgetreten: {0}</system:String>
 	<!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingArchive">Fehler beim Entpacken einer Archivdatei</system:String>
+    <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Laden von moddesc.ini vom Server fehlgeschlagen: {0}</system:String>
+	<!-- 0= loadFailedReason -->
 
 	<!-- Mod updater -->
-    <system:String x:Key="string_modupdatesavailable">Updates für Mods verfügbar</system:String>
-    <system:String x:Key="string_downloadUpdate">Update herunterladen</system:String>
+    <system:String x:Key="string_modupdatesavailable">Aktualisierungen für Mods verfügbar</system:String>
+    <system:String x:Key="string_downloadUpdate">Aktualisierung herunterladen</system:String>
     <system:String x:Key="string_downloading">Wird heruntergeladen</system:String>
-    <system:String x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage" xml:space="preserve">Beim Update von {0} ist ein Fehler aufgetreten:\n{1}</system:String>
+    <system:String x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage" xml:space="preserve">Beim Aktualisieren von {0} ist ein Fehler aufgetreten:\n{1}</system:String>
 	<!-- 0 = mod name, 1 = error message -->
-    <system:String x:Key="string_interp_errorUpdatingX">Fehler beim Update von {0}</system:String>
+    <system:String x:Key="string_interp_errorUpdatingX">Fehler beim Aktualisieren von {0}</system:String>
 	<!-- 0 = mod name -->
-    <system:String x:Key="string_updated">Update erfolgreich</system:String>
+    <system:String x:Key="string_updated">Aktualisierung erfolgreich</system:String>
     <system:String x:Key="string_interp_localVersion">Lokale Version: {0}</system:String>
 	<!-- 0 = version string -->
     <system:String x:Key="string_interp_serverVersion">Server Version: {0}</system:String>
 	<!-- 0 = version string -->
     <system:String x:Key="string_compiling">Kompiliere</system:String>
-    <system:String x:Key="string_downloadingDelta">Delta-Update wird heruntergeladen</system:String>
-    <system:String x:Key="string_decompressingDelta">Delta-Update wird dekomprimiert</system:String>
+    <system:String x:Key="string_downloadingDelta">Delta-Aktualisierung wird heruntergeladen</system:String>
+    <system:String x:Key="string_decompressingDelta">Delta-Aktualisierung wird dekomprimiert</system:String>
     <system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
 	<!-- 0= modmaker code # -->
-    <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager hat Updates für die folgenden Mods in deiner Bibliothek gefunden.</system:String>
+    <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager hat Aktualisierungen für die folgenden Mods in deiner Bibliothek gefunden.</system:String>
 
 	<!-- Program updater -->
-    <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Ein Update für ME3Tweaks Mod Manager ist verfügbar.</system:String>
-    <system:String x:Key="string_downloadingUpdate">Update wird heruntergeladen</system:String>
-    <system:String x:Key="string_preparingToApplyUpdate">Installation des Updates wird vorbereitet</system:String>
-    <system:String x:Key="string_errorDownloadingUpdate">Fehler beim Download des Updates</system:String>
-    <system:String x:Key="string_update">Update</system:String>
-    <system:String x:Key="string_verifyingUpdate">Update wird verifiziert</system:String>
-    <system:String x:Key="string_unableToApplyUpdateNotSigned">Update kann nicht installiert werden: Die enthaltene ME3TweaksModManager.exe ist nicht signiert und daher nicht vertrauenswürdig.</system:String>
-    <system:String x:Key="string_errorApplyingUpdate">Fehler bei der Updateinstallation</system:String>
-    <system:String x:Key="string_applyingUpdate">Update wird installiert</system:String>
+    <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Eine Aktualisierung für ME3Tweaks Mod Manager ist verfügbar.</system:String>
+    <system:String x:Key="string_downloadingUpdate">Aktualisierung wird heruntergeladen</system:String>
+    <system:String x:Key="string_preparingToApplyUpdate">Installation der Aktualisierung wird vorbereitet</system:String>
+    <system:String x:Key="string_errorDownloadingUpdate">Fehler beim Download der Aktualisierung</system:String>
+    <system:String x:Key="string_update">Aktualisierung</system:String>
+    <system:String x:Key="string_verifyingUpdate">Aktualisierung wird verifiziert</system:String>
+    <system:String x:Key="string_unableToApplyUpdateNotSigned">Aktualisierung kann nicht installiert werden: Die enthaltene ME3TweaksModManager.exe ist nicht signiert und daher nicht vertrauenswürdig.</system:String>
+    <system:String x:Key="string_errorApplyingUpdate">Fehler bei der Aktualisierungsinstallation</system:String>
+    <system:String x:Key="string_applyingUpdate">Aktualisierung wird installiert</system:String>
     <system:String x:Key="string_restartingModManager">Mod Manager wird neu gestartet</system:String>
-    <system:String x:Key="string_unableToApplyUpdateME3TweaksExeNotFound">Update kann nicht installiert werden: Das Update Archiv enthält keine ME3TweaksModManager.exe.</system:String>
-    <system:String x:Key="string_updateAvailable">Update verfügbar</system:String>
-    <system:String x:Key="string_currentVersion">Aktuelle Version:</system:String>
-    <system:String x:Key="string_updateVersion">Update Version:</system:String>
+    <system:String x:Key="string_unableToApplyUpdateME3TweaksExeNotFound">Aktualisierung kann nicht installiert werden: Das Aktualisierungsarchiv enthält keine ME3TweaksModManager.exe.</system:String>
+    <system:String x:Key="string_updateAvailable">Aktualisierung verfügbar</system:String>
+    <system:String x:Key="string_currentVersion">Installierte Version:</system:String>
+    <system:String x:Key="string_updateVersion">Verfügbare Version:</system:String>
     <system:String x:Key="string_releaseNotes">Versionshinweise</system:String>
-    <system:String x:Key="string_updateInProgress">Update wird durchgeführt</system:String>
-    <system:String x:Key="string_modManagerWillAutomaticallyRestart">Mod Manager wird automatisch neu gestartet um das Update zu installieren. Bitte habe ein paar Sekunden Geduld, nachdem sich das Fenster schließt.</system:String>
+    <system:String x:Key="string_updateInProgress">Aktualisierung wird durchgeführt</system:String>
+    <system:String x:Key="string_modManagerWillAutomaticallyRestart">Mod Manager wird automatisch neu gestartet um die Aktualisierung zu installieren. Bitte habe ein paar Sekunden Geduld, nachdem sich das Fenster schließt.</system:String>
     <system:String x:Key="string_notNow">Nicht jetzt</system:String>
     <system:String x:Key="string_viewChangelog">Änderungsprotokoll</system:String>
-    <system:String x:Key="string_installUpdate">Update installieren</system:String>
+    <system:String x:Key="string_installUpdate">Aktualisierung installieren</system:String>
 
     <!-- Restore panel -->
     <system:String x:Key="string_restoreToCustomLocation">An einen anderen Ort wiederherstellen</system:String>
@@ -930,7 +938,7 @@
     <!-- 0 = moddesc.ini file path -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomoddev">In der moddesc.ini-Datei unter {0} ist kein Wert für moddev eingestellt. Dieser Wert wird benötigt.</system:String>
     <!-- 0 = moddesc.ini file path -->
-    <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">Dieser Mod hat sowohl einen updater service update code als auch einen modmaker code. Das ist nicht erlaubt.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">Dieser Mod hat sowohl einen Aktualisierungsdienst Update-Code als auch einen Modmaker-Code. Das ist nicht erlaubt.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">Dieser Mod gibt eine unbekannte Spiel-ID im ModInfo descriptor 'game' an. Erlaubte Werte sind ME1, ME2 oder ME3. Angegebener Wert: {0}</system:String>
     <!-- provided game value from moddesc -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12">Dieser Mod ist für {0}. Die moddesc-Version ist {1}, aber ME1 oder ME2 werden erst ab moddesc-Version 6.0 unterstützt.</system:String>
@@ -1031,7 +1039,7 @@
     <system:String x:Key="string_interp_byXVersionY" xml:space="preserve">Von {0} | Version {1}</system:String>
 	<!-- 0 = author, 1 = version number -->
     <system:String x:Key="string_installedOutdated">Installiert, veraltet</system:String>
-    <system:String x:Key="string_updateASI">ASI updaten</system:String>
+    <system:String x:Key="string_updateASI">ASI aktualisieren</system:String>
     <system:String x:Key="string_installedUpToDate">Installiert, aktuell</system:String>
     <system:String x:Key="string_uninstallASI">ASI deinstallieren</system:String>
     <system:String x:Key="string_notInstalled">Nicht installiert</system:String>
@@ -1175,14 +1183,14 @@
     <system:String x:Key="string_interp_decompressedFileWrongHash">Dekomprimierte Datei ({0}) hat eine falsche Prüfsumme. Erwartet: {1}, empfangen: {2}</system:String>
 	<!-- 0= sourcefile.relativefilepath 1= sourcefile.hash 2= decompressedMD5 -->
     <system:String x:Key="string_applying">Wird angewendet</system:String>
-    <system:String x:Key="string_interp_compressingModForUpdaterServicePercent">Mod wird für Update-Dienst komprimiert {0}%</system:String>
+    <system:String x:Key="string_interp_compressingModForUpdaterServicePercent">Mod wird für Aktualisierungsdienst komprimiert {0}%</system:String>
 	<!-- 0=Math.Round(totalDone * 100.0 / totalAmountToCompress) -->
     <system:String x:Key="string_interp_ModmakerCodeX">ModMaker Code {0}</system:String>
 	<!-- 0=ModMakerId -->
-    <system:String x:Key="string_interp_updatedDateX">Letztes Update {0}</system:String>
+    <system:String x:Key="string_interp_updatedDateX">Letzte Aktualisierung {0}</system:String>
 	<!-- 0=updatedTime -->
     <system:String x:Key="string_openNexusModsPage">NexusMods-Seite öffnen</system:String>
-    <system:String x:Key="string_nexusModsUpdateInstructions">Für diesen Mod ist ein Update auf NexusMods verfügbar. Zum Updaten, lade den Mod von NexusMods herunter und importiere ihn in Mod Manager.</system:String>
+    <system:String x:Key="string_nexusModsUpdateInstructions">Für diesen Mod ist eine Aktualisierung auf NexusMods verfügbar. Zum aktualisieren lade den Mod von NexusMods herunter und importiere ihn in Mod Manager.</system:String>
     <system:String x:Key="string_interp_XfilesWillBeDeleted">{0} Datei(en) werden gelöscht</system:String>
 	<!-- 0=FilesToDeleteUIString -->
     <system:String x:Key="string_interp_XfilesWillBeDownloaded">{0} Datei(en) werden heruntergeladen ({1})</system:String>
@@ -1287,36 +1295,36 @@
     <system:String x:Key="string_errorReadingKeybinds">Fehler beim Lesen der Tastenbelegung</system:String>
 
 	<!-- Updater Service Panel -->
-    <system:String x:Key="string_updaterService">Update-Dienst</system:String>
+    <system:String x:Key="string_updaterService">Aktualisierungsdienst</system:String>
     <system:String x:Key="string_setChangelog">Änderungsprotokoll eingeben</system:String>
-    <system:String x:Key="string_updaterServiceSettings">Update-Dienst-Einstellungen</system:String>
+    <system:String x:Key="string_updaterServiceSettings">Aktualisierungsdienst-Einstellungen</system:String>
     <system:String x:Key="string_tooltip_cancelTheCurrentUploadTask">Aktuellen Hochladen-Auftrag abbrechen</system:String>
     <system:String x:Key="string_validatingSettings">Einstellungen werden geprüft</system:String>
     <system:String x:Key="string_settingsSaved">Einstellungen gespeichert</system:String>
     <system:String x:Key="string_errorValidatingSettings">Fehler beim Prüfen der Einstellungen</system:String>
     <system:String x:Key="string_modMissingUpdatesDescriptor">Mod benötigt den service descriptor im UPDATES-Bereich</system:String>
-    <system:String x:Key="string_enterYourME3TweaksUpdaterServiceInformation">Gib deine ME3Tweaks Update-Dienst Zugangsdaten ein</system:String>
+    <system:String x:Key="string_enterYourME3TweaksUpdaterServiceInformation">Gib deine ME3Tweaks Aktualisierungsdienst Zugangsdaten ein</system:String>
     <system:String x:Key="string_pressSaveToValidateSettings">Klicke auf Speichern um die Einstellungen zu überprüfen</system:String>
     <system:String x:Key="string_authenticatingToME3Tweaks">Authentifiziere mit ME3Tweaks</system:String>
-    <system:String x:Key="string_enterUpdaterServiceSettings">Update-Dienst Einstellungen eingeben</system:String>
+    <system:String x:Key="string_enterUpdaterServiceSettings">Aktualisierungsdienst Einstellungen eingeben</system:String>
     <system:String x:Key="string_checkingLZMAStorageDirectory">LZMA-Speicherort wird überprüft</system:String>
     <system:String x:Key="string_checkingManifestsStorageDirectory">Manifest-Speicherort wird überprüft</system:String>
     <system:String x:Key="string_interp_errorValidatingSettingsXY">Fehler beim Prüfen der Einstellungen: {0}: {1}</system:String>
 	<!-- 0=String of operation that failed, 1= error message -->
-    <system:String x:Key="string_checkingIfUpdaterServiceIsConfiguredForMod">Prüfe ob der Update-Dienst für diesen Mod konfiguriert ist</system:String>
+    <system:String x:Key="string_checkingIfUpdaterServiceIsConfiguredForMod">Prüfe ob der Aktualisierungsdienst für diesen Mod konfiguriert ist</system:String>
     <system:String x:Key="string_serverNotConfiguredForModContactMgamerz">Server ist nicht für diesen Mod konfiguriert - kontaktiere Mgamerz</system:String>
-    <system:String x:Key="string_interp_errorCheckingUpdaterServiceConfiguration" xml:space="preserve">Fehler beim Überprüfen der Dienst-Konfiguration:\n{0}</system:String>
+    <system:String x:Key="string_interp_errorCheckingUpdaterServiceConfiguration" xml:space="preserve">Fehler beim Überprüfen der Aktualisierungsdienst-Konfiguration:\n{0}</system:String>
 	<!-- 0=ex.Message -->
-    <system:String x:Key="string_interp_dialog_serverVersionSameOrNewerThanLocal" xml:space="preserve">Die Version auf dem Server ist gleich oder höher als die Version die du hochlädst. Bist du sicher, dass diese Version hochgeladen werden soll? Clients die eine neuere oder die selbe Version des Mods haben, werden kein Update sehen.\n\nLokale Version: {0}\nServer Version: {1}</system:String>
+    <system:String x:Key="string_interp_dialog_serverVersionSameOrNewerThanLocal" xml:space="preserve">Die Version auf dem Server ist gleich oder höher als die Version die du hochlädst. Bist du sicher, dass diese Version hochgeladen werden soll? Clients die eine neuere oder die selbe Version des Mods haben, werden keine Aktualisierung sehen.\n\nLokale Version: {0}\nServer Version: {1}</system:String>
 	<!-- 0=mod.ParsedModVersion 1=latestVersionOnServer -->
     <system:String x:Key="string_serverVersionSameOrNewerThanLocal">Server Version gleich oder neuer als lokale</system:String>
     <system:String x:Key="string_uploadAbortedModOnServerIsSameOrNewerThanLocalOneBeingUploaded">Upload abgebrochen - Mod auf dem Server hat die gleiche oder neuere Version wie die hochgeladene</system:String>
-    <system:String x:Key="string_compressingModForUpdaterService">Komprimiere Mod für Update-Dienst</system:String>
+    <system:String x:Key="string_compressingModForUpdaterService">Komprimiere Mod für Aktualisierungsdienst</system:String>
     <system:String x:Key="string_buildingServerManifest">Server-Manifest wird gebaut</system:String>
 	<!-- 0= Percent # -->
-    <system:String x:Key="string_waitingForChangelogToBeSet">Warte auf Changelog</system:String>
-    <system:String x:Key="string_connectingToME3TweaksUpdaterService">Verbindung zu ME3Tweaks Update-Dienst wird hergestellt</system:String>
-    <system:String x:Key="string_connectedToME3TweaksUpdaterService">Verbindung zu ME3Tweaks Update-Dienst hergestellt</system:String>
+    <system:String x:Key="string_waitingForChangelogToBeSet">Warte auf Änderungsprotokoll</system:String>
+    <system:String x:Key="string_connectingToME3TweaksUpdaterService">Verbindung zu ME3Tweaks Aktualisierungsdienst wird hergestellt</system:String>
+    <system:String x:Key="string_connectedToME3TweaksUpdaterService">Verbindung zu ME3Tweaks Aktualisierungsdienst hergestellt</system:String>
     <system:String x:Key="string_creatingServerFolderForMod">Mod-Ordner auf Server wird erstellt</system:String>
     <system:String x:Key="string_hashingFilesOnServerForDelta">Berechne Prüfsumme der Dateien auf dem Server für Delta</system:String>
     <system:String x:Key="string_creatingModDirectoriesOnServer">Erstelle Mod-Ordner auf dem Server</system:String>
@@ -1326,23 +1334,23 @@
     <system:String x:Key="string_uploadingUpdateManifestToServer">Update-Manifest wird zum Server hochgeladen</system:String>
     <system:String x:Key="string_validatingModOnServer">Validiere Mod auf dem Server</system:String>
     <system:String x:Key="string_someHashesOnServerAreIncorrectContactMgamerz">Einige Prüfsummen auf dem Server stimmen nicht - kontaktiere Mgamerz</system:String>
-    <system:String x:Key="string_modUploadedToUpdaterService">Mod wurde zum Update-Dienst hochgeladen</system:String>
-    <system:String x:Key="string_uploadAborted">Upload abgebrochen</system:String>
+    <system:String x:Key="string_modUploadedToUpdaterService">Mod wurde zum Aktualisierungsdienst hochgeladen</system:String>
+    <system:String x:Key="string_uploadAborted">Hochladen abgebrochen</system:String>
     <system:String x:Key="string_interp_uploadingFilesToServerXY">Lade Dateien zum Server hoch {0}/{1}</system:String>
 	<!-- 0=amount uploaded 1=total to upload -->
     <system:String x:Key="string_username">Benutzername</system:String>
     <system:String x:Key="string_password">Passwort</system:String>
     <system:String x:Key="string_lZMAStoragePath">LZMA-Speicherort</system:String>
     <system:String x:Key="string_manifestsStoragePath">Manifest-Speicherort</system:String>
-    <system:String x:Key="string_interp_updaterServiceDeltaMessageHeader">Das folgende Delta wird für {0} zum ME3Tweaks Update-Dienst übertragen:</system:String>
+    <system:String x:Key="string_interp_updaterServiceDeltaMessageHeader">Das folgende Delta wird für {0} zum ME3Tweaks Aktualisierungsdienst übertragen:</system:String>
 	<!-- 0=mod.ModName -->
-    <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">Das folgende Delta wird für {0} zum ME3Tweaks Update-Dienst übertragen:</system:String>
+    <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">Das folgende Delta wird für {0} zum ME3Tweaks Aktualisierungsdienst übertragen:</system:String>
 	<!-- 0=Mod name -->
     <system:String x:Key="string_nnFilesToUploadToServern" xml:space="preserve">\n\nZum Server hochzuladende Dateien:\n -</system:String>
 	<!-- ensure you do not change any positions of the \n or the -! -->
     <system:String x:Key="string_nnFilesToDeleteOffServern" xml:space="preserve">\n\nVom Server zu löschende Dateien:\n -</system:String>
 	<!-- ensure you do not change any positions of the \n or the -! -->
-    <system:String x:Key="string_interp_updaterServiceDeltaConfirmationFooter" xml:space="preserve">\n\nBestätige, dass du diese Änderungen an diesem Mod zum ME3Tweaks Update-Dienst übertragen willst.</system:String>
+    <system:String x:Key="string_interp_updaterServiceDeltaConfirmationFooter" xml:space="preserve">\n\nBestätige, dass du diese Änderungen an diesem Mod zum ME3Tweaks Aktualisierungsdienst übertragen willst.</system:String>
     <system:String x:Key="string_confirmChanges">Änderungen bestätigen</system:String>
 
 	<!-- Mixin Library -->
@@ -1391,7 +1399,7 @@
 
 	<!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Einen installierten DLC-Mod installieren</system:String>
-    <system:String x:Key="string_description_importFromGameToModManager">Mit diesem Importer kannst du einen Mod aus einer Spiel-Installation in Mod Manager importieren, was dir erlaubt diesen Mod später schnell und einfach zu installieren. Auf diese Art installierte Mods unterstützen keine Konfigurationsoptionen, Updates, oder andere Mod Manager Funktionen. Importiere Mods aus einer Archivdatei für vollständigen Funktionsumfang.</system:String>
+    <system:String x:Key="string_description_importFromGameToModManager">Mit diesem Importer kannst du einen Mod aus einer Spiel-Installation in Mod Manager importieren, was dir erlaubt diesen Mod später schnell und einfach zu installieren. Auf diese Art installierte Mods unterstützen keine Konfigurationsoptionen, Aktualisierungen, oder andere Mod Manager Funktionen. Importiere Mods aus einer Archivdatei für vollständigen Funktionsumfang.</system:String>
     <system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mods die via Managed Installer (z.B. Mod Manager oder ALOT Installer) importiert wurden, können nicht mit diesem Importer importiert werden.</system:String>
     <system:String x:Key="string_importMod">Mod Importieren</system:String>
     <system:String x:Key="string_thisInstallationHasBeenTextureModded">Diese Installation hat Textur-Mods installiert</system:String>
