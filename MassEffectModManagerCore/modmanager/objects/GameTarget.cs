@@ -429,7 +429,8 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public class SFARObject : INotifyPropertyChanged
         {
-            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action startingRestoreCallback, Action<object> notifyNoLongerModifiedCallback)
+            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback,
+                Action startingRestoreCallback, Action<object> notifyNoLongerModifiedCallback)
             {
                 RestoreConfirmationCallback = restoreSFARCallback;
                 IsModified = true;
@@ -442,21 +443,40 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (Path.GetFileName(file) == @"Patch_001.sfar")
                 {
                     UIString = @"TestPatch";
+                    IsMPSFAR = true;
+                    IsSPSFAR = true;
                 }
                 else
                 {
-                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(Directory.GetParent(Directory.GetParent(file).FullName).FullName), out var name);
+                    var dlcFoldername = Directory.GetParent(Directory.GetParent(file).FullName).FullName;
+                    if (dlcFoldername.Contains(@"DLC_UPD") || dlcFoldername.Contains(@"DLC_CON_MP"))
+                    {
+                        IsMPSFAR = true;
+                    }
+                    else
+                    {
+                        IsSPSFAR = true;
+                    }
+
+                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(dlcFoldername), out var name);
                     UIString = name;
                     if (Unpacked)
                     {
                         UIString += @" - " + M3L.GetString(M3L.string_unpacked);
                     }
+
                     var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
                     // not TOC is due to bug in autotoc
-                    if (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC") && !Unpacked) Inconsistent = true;
+                    if (unpackedFiles.Any(x =>
+                        Path.GetExtension(x) == @".bin" &&
+                        Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC") && !Unpacked) Inconsistent = true;
                 }
+
                 RestoreCommand = new GenericCommand(RestoreSFARWrapper, CanRestoreSFAR);
             }
+
+            public bool IsSPSFAR { get; private set; }
+            public bool IsMPSFAR { get; private set; }
 
             public bool RevalidateIsModified(bool notify = true)
             {
@@ -467,8 +487,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //Debug.WriteLine("Notifying that " + FilePath + " is no longer modified.");
                     notifyNoLongerModified?.Invoke(this);
                 }
+
                 return IsModified;
             }
+
             public bool IsModified { get; set; }
 
             private Action<object> notifyNoLongerModified;
@@ -491,7 +513,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
                         Restoring = true;
                         Log.Information($@"Restoring SFAR from backup: {backupFile} {targetFile}");
-                        XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent, pce.ProgressPercentage.ToString()); });
+                        XCopy.Copy(backupFile, targetFile, true, true,
+                            (o, pce) =>
+                            {
+                                RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent,
+                                    pce.ProgressPercentage.ToString());
+                            });
                         var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
                         RestoreButtonContent = M3L.GetString(M3L.string_cleaningUp);
                         foreach (var file in unpackedFiles)
@@ -502,6 +529,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 File.Delete(file);
                             }
                         }
+
                         Utilities.DeleteEmptySubdirectories(DLCDirectory);
                         RestoreButtonContent = M3L.GetString(M3L.string_restored);
                     };
@@ -524,13 +552,18 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public static bool HasUnpackedFiles(string sfarFile)
             {
-                var unpackedFiles = Directory.GetFiles(Directory.GetParent(Directory.GetParent(sfarFile).FullName).FullName, @"*", SearchOption.AllDirectories);
-                return (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC"));
+                var unpackedFiles =
+                    Directory.GetFiles(Directory.GetParent(Directory.GetParent(sfarFile).FullName).FullName, @"*",
+                        SearchOption.AllDirectories);
+                return (unpackedFiles.Any(x =>
+                    Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC"));
             }
+
             private bool checkedForBackupFile;
             private bool canRestoreSfar;
             public bool Restoring { get; set; }
             public bool OtherSFARBeingRestored { get; set; }
+
             private bool CanRestoreSFAR()
             {
                 if (Restoring) return false;
@@ -559,6 +592,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             public string FilePath { get; }
             public string UIString { get; }
             public bool Inconsistent { get; }
+
         }
 
         public class ModifiedFileObject : INotifyPropertyChanged
@@ -657,7 +691,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     fs.WriteUInt16(0); //major
                     fs.WriteByte(0); //minor
                     fs.WriteByte(0); //hotfix
-                    //fs.WriteByte(0); //unused
+                                     //fs.WriteByte(0); //unused
                     fs.WriteInt32(100); //installer version
                     fs.WriteUInt32(MEMI_TAG);
                 }
@@ -730,5 +764,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 SignalSFARRestore();
             }
         }
+
+        public bool HasModifiedMPSFAR() => ModifiedSFARFiles.Any(x => x.IsMPSFAR);
+        public bool HasModifiedSPSFAR() => ModifiedSFARFiles.Any(x => x.IsSPSFAR);
     }
 }

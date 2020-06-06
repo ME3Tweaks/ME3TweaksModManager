@@ -363,6 +363,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_compilingFailed = "string_compilingFailed";
 		public static readonly string string_interp_errorReadingXmlFileX = "string_interp_errorReadingXmlFileX";
 		public static readonly string string_errorReadingXmlFile = "string_errorReadingXmlFile";
+		public static readonly string string_checkModsForUpdates = "string_checkModsForUpdates";
+		public static readonly string string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates = "string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates";
+		public static readonly string string_mEMVanillaDBViewer = "string_mEMVanillaDBViewer";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
@@ -556,6 +559,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_restoringSfarsAlotBlocked = "string_restoringSfarsAlotBlocked";
 		public static readonly string string_restoringSfarsAlotDevMode = "string_restoringSfarsAlotDevMode";
 		public static readonly string string_restoreAllModifiedSfarsQuestion = "string_restoreAllModifiedSfarsQuestion";
+		public static readonly string string_restoreSPSfarsQuestion = "string_restoreSPSfarsQuestion";
+		public static readonly string string_restoreMPSfarsQuestion = "string_restoreMPSfarsQuestion";
 		public static readonly string string_interp_backupAtX = "string_interp_backupAtX";
 		public static readonly string string_noBackupForThisGame = "string_noBackupForThisGame";
 		public static readonly string string_interp_cannotDeleteModsWhileXIsRunning = "string_interp_cannotDeleteModsWhileXIsRunning";
@@ -579,7 +584,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_restoreallmodifiedbasegamefiles = "string_restoreallmodifiedbasegamefiles";
 		public static readonly string string_modifiedDLCarchivesSFAR = "string_modifiedDLCarchivesSFAR";
 		public static readonly string string_willAttemptToRestoreAllModifiedSFARs = "string_willAttemptToRestoreAllModifiedSFARs";
+		public static readonly string string_willAttemptToRestoreSPModifiedSFARs = "string_willAttemptToRestoreSPModifiedSFARs";
+		public static readonly string string_willAttemptToRestoreMPModifiedSFARs = "string_willAttemptToRestoreMPModifiedSFARs";
 		public static readonly string string_restoreAllModifiedSFARs = "string_restoreAllModifiedSFARs";
+		public static readonly string string_restoreMPfModifiedSFARs = "string_restoreMPfModifiedSFARs";
+		public static readonly string string_restoreSPModifiedSFARs = "string_restoreSPModifiedSFARs";
 		public static readonly string string_inconsistencyDetected = "string_inconsistencyDetected";
 		public static readonly string string_removeTargetFromM3 = "string_removeTargetFromM3";
 		public static readonly string string_openInExplorer = "string_openInExplorer";

@@ -51,6 +51,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SelectedTarget = selectedTarget;
         }
         public ICommand RestoreAllModifiedSFARs { get; set; }
+        public ICommand RestoreSPModifiedSFARs { get; set; }
+        public ICommand RestoreMPModifiedSFARs { get; set; }
         public ICommand RestoreAllModifiedBasegame { get; set; }
         public ICommand CloseCommand { get; set; }
         public ICommand RemoveTargetCommand { get; set; }
@@ -58,9 +60,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadCommands()
         {
             RestoreAllModifiedSFARs = new GenericCommand(RestoreAllSFARs, CanRestoreAllSFARs);
+            RestoreMPModifiedSFARs = new GenericCommand(RestoreMPSFARs, CanRestoreMPSFARs);
+            RestoreSPModifiedSFARs = new GenericCommand(RestoreSPSFARs, CanRestoreSPSFARs);
             RestoreAllModifiedBasegame = new GenericCommand(RestoreAllBasegame, CanRestoreAllBasegame);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
             RemoveTargetCommand = new GenericCommand(RemoveTarget, CanRemoveTarget);
+        }
+
+        private bool CanRestoreMPSFARs()
+        {
+            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
+        }
+        private bool CanRestoreSPSFARs()
+        {
+            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
         }
 
         private bool CanRemoveTarget() => SelectedTarget != null && !SelectedTarget.RegistryActive;
@@ -157,6 +170,74 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     CommandManager.InvalidateRequerySuggested();
                 };
                 bw.RunWorkerAsync();
+            }
+        }
+
+        private void RestoreSPSFARs()
+        {
+            bool restore;
+            if (SelectedTarget.TextureModded)
+            {
+                if (!Settings.DeveloperMode)
+                {
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                else
+                {
+                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    restore = res == MessageBoxResult.Yes;
+
+                }
+            }
+            else
+            {
+                restore = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoreSPSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+
+            }
+            if (restore)
+            {
+                foreach (var v in SelectedTarget.ModifiedSFARFiles)
+                {
+                    if (v.IsSPSFAR)
+                    {
+                        SelectedTarget.RestoreSFAR(v, true);
+                    }
+                }
+            }
+        }
+
+        private void RestoreMPSFARs()
+        {
+            bool restore;
+            if (SelectedTarget.TextureModded)
+            {
+                if (!Settings.DeveloperMode)
+                {
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                else
+                {
+                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    restore = res == MessageBoxResult.Yes;
+
+                }
+            }
+            else
+            {
+                restore = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoreMPSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+
+            }
+            if (restore)
+            {
+                foreach (var v in SelectedTarget.ModifiedSFARFiles)
+                {
+                    if (v.IsMPSFAR)
+                    {
+                        SelectedTarget.RestoreSFAR(v, true);
+                    }
+                }
             }
         }
 

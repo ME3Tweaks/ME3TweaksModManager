@@ -550,6 +550,8 @@
     <system:String x:Key="string_restoringSfarsAlotBlocked">Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
     <system:String x:Key="string_restoringSfarsAlotDevMode">Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.</system:String>
     <system:String x:Key="string_restoreAllModifiedSfarsQuestion">Restore all modified SFARs?</system:String>
+    <system:String x:Key="string_restoreSPSfarsQuestion">Restore all modified singleplayer SFARs?</system:String>
+    <system:String x:Key="string_restoreMPSfarsQuestion">Restore all modified multiplayer SFARs?</system:String>
     <system:String x:Key="string_interp_backupAtX">Backup at {0}</system:String>
     <!-- 0 = filepath -->
     <system:String x:Key="string_noBackupForThisGame">No backup for this game</system:String>
@@ -581,8 +583,12 @@
     <system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Will attempt to restore all modified basegame + unpacked DLC (ME2) files.</system:String>
     <system:String x:Key="string_restoreallmodifiedbasegamefiles">Restore all modified basegame files</system:String>
     <system:String x:Key="string_modifiedDLCarchivesSFAR">Modified DLC archives (SFAR)</system:String>
-    <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Will attempt to restore all modified SFARs. Will delete unpacked files too.</system:String>
+    <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Will attempt to restore all modified SFARs. Will delete unpacked files too</system:String>
+    <system:String x:Key="string_willAttemptToRestoreSPModifiedSFARs">Will attempt to restore all modified singleplayer SFARs. Will delete unpacked files too</system:String>
+    <system:String x:Key="string_willAttemptToRestoreMPModifiedSFARs">Will attempt to restore all modified multiplayer SFARs. Will delete unpacked files too</system:String>
     <system:String x:Key="string_restoreAllModifiedSFARs">Restore all modified SFARs</system:String>
+    <system:String x:Key="string_restoreMPfModifiedSFARs">Restore modified MP SFARs</system:String>
+    <system:String x:Key="string_restoreSPModifiedSFARs">Restore modified SP SFARs</system:String>
     <system:String x:Key="string_inconsistencyDetected">Inconsistency detected</system:String>
     <system:String x:Key="string_removeTargetFromM3">Remove target</system:String>
     <system:String x:Key="string_openInExplorer">Open in Explorer</system:String>
