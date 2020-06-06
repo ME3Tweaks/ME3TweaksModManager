@@ -301,6 +301,10 @@
     <system:String x:Key="string_interp_errorReadingXmlFileX">Ошибка чтения файла xml: {0}</system:String>
 	<!-- 0=Exception message -->
     <system:String x:Key="string_errorReadingXmlFile">Ошибка чтения файла xml</system:String>
+    <system:String x:Key="string_checkModsForUpdates">Проверить обновления модов</system:String>
+    <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Проверяет обновления для модов, поддерживающих обновления</system:String>
+    <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
+	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
 
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Подготовка к установке</system:String>
@@ -546,6 +550,8 @@
     <system:String x:Key="string_restoringSfarsAlotBlocked">Восстановление файлов SFAR при установленном ALOT запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
     <system:String x:Key="string_restoringSfarsAlotDevMode">Восстановление SFAR при установленном ALOT внесет недопустимые указатели текстур в установку игры, что приведет к отсутствующим текстурам и, возможно, к падению игры. Эта операция также удалит все нераспакованные файлы в папке назначения. Пожалуйста, убедитесь что вы знаете, что делаете, перед тем как продолжить.</system:String>
     <system:String x:Key="string_restoreAllModifiedSfarsQuestion">Восстановить все модифицированные SFAR?</system:String>
+    <system:String x:Key="string_restoreSPSfarsQuestion">Восстановить все модифицированные SFAR одиночной игры?</system:String>
+    <system:String x:Key="string_restoreMPSfarsQuestion">Восстановить все модифицированные SFAR коллективной игры?</system:String>
     <system:String x:Key="string_interp_backupAtX">Архив по адресу {0}</system:String>
 	<!-- 0 = filepath -->
     <system:String x:Key="string_noBackupForThisGame">Отсутствует архив для данной игры</system:String>
@@ -577,8 +583,12 @@
     <system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Будет выполнена попытка восстановить все модифицированные файлы базовой игры и распакованных файлов DLC (ME2).</system:String>
     <system:String x:Key="string_restoreallmodifiedbasegamefiles">Восстановить все модифицированные файлы базовой игры</system:String>
     <system:String x:Key="string_modifiedDLCarchivesSFAR">Модифицированные архивы DLC (SFAR)</system:String>
-    <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Будет выполнена попытка восстановить вссе модифицированные SFAR. Также будут удалены все распакованные файлы.</system:String>
+    <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Будет выполнена попытка восстановить все модифицированные SFAR. Также будут удалены все распакованные файлы.</system:String>
+    <system:String x:Key="string_willAttemptToRestoreSPModifiedSFARs">Будет выполнена попытка восстановить все модифицированные SFAR одиночной игры. Также будут удалены все распакованные файлы.</system:String>
+    <system:String x:Key="string_willAttemptToRestoreMPModifiedSFARs">Будет выполнена попытка восстановить все модифицированные SFAR коллективной игры. Также будут удалены все распакованные файлы.</system:String>
     <system:String x:Key="string_restoreAllModifiedSFARs">Восстановить все модицированные SFAR</system:String>
+    <system:String x:Key="string_restoreMPModifiedSFARs">Восстановить модифицированные MP SFAR</system:String>
+    <system:String x:Key="string_restoreSPModifiedSFARs">Восстановить модифицированные SP SFAR</system:String>
     <system:String x:Key="string_inconsistencyDetected">Обнаружено нарушение целостности</system:String>
     <system:String x:Key="string_removeTargetFromM3">Убрать из списка игр</system:String>
     <system:String x:Key="string_openInExplorer">Открыть в Проводнике</system:String>
@@ -664,6 +674,8 @@
     <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">При распаковке архива возникла ошибка: {0}</system:String>
 	<!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingArchive">Ошибка распаковки архива</system:String>
+    <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Не удалось выгрузить файл moddesc.ini с сервера: {0}</system:String>
+	<!-- 0= loadFailedReason -->
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Доступно обновление мода</system:String>
