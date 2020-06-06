@@ -587,7 +587,7 @@
     <system:String x:Key="string_willAttemptToRestoreSPModifiedSFARs">Will attempt to restore all modified singleplayer SFARs. Will delete unpacked files too</system:String>
     <system:String x:Key="string_willAttemptToRestoreMPModifiedSFARs">Will attempt to restore all modified multiplayer SFARs. Will delete unpacked files too</system:String>
     <system:String x:Key="string_restoreAllModifiedSFARs">Restore all modified SFARs</system:String>
-    <system:String x:Key="string_restoreMPfModifiedSFARs">Restore modified MP SFARs</system:String>
+    <system:String x:Key="string_restoreMPModifiedSFARs">Restore modified MP SFARs</system:String>
     <system:String x:Key="string_restoreSPModifiedSFARs">Restore modified SP SFARs</system:String>
     <system:String x:Key="string_inconsistencyDetected">Inconsistency detected</system:String>
     <system:String x:Key="string_removeTargetFromM3">Remove target</system:String>

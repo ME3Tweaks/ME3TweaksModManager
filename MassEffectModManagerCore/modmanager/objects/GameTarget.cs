@@ -503,6 +503,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             public void RestoreSFAR(bool batchRestore, Action signalRestoreCompleted = null)
             {
                 bool? restore = batchRestore;
+
                 if (!restore.Value) restore = RestoreConfirmationCallback?.Invoke(FilePath);
                 if (restore.HasValue && restore.Value)
                 {

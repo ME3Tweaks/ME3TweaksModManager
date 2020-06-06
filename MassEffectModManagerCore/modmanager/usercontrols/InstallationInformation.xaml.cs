@@ -599,13 +599,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (obj is GameTarget gt)
                 {
-                    var confirmDelete = deleteConfirmationCallback?.Invoke(this);
+                    bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                    if (!holdingShift.Value) holdingShift = null;
+                    var confirmDelete = holdingShift ?? deleteConfirmationCallback?.Invoke(this);
                     if (confirmDelete.HasValue && confirmDelete.Value)
                     {
                         Log.Information(@"Deleting DLC mod from target: " + dlcFolderPath);
                         Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
                         notifyDeleted?.Invoke();
                     }
+
                 }
             }
 
