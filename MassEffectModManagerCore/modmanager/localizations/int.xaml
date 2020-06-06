@@ -671,13 +671,11 @@
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">This file is not in the texture library. Moving it to the texture library</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">Moving ALOT file to texture library, please wait...</system:String>
     <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">This mod cannot be imported or installed with Mod Manager due to one of the following reasons:\n - Installation of this mod is too complex\n - Installation of this mod requires additional tools that must be manually configured by the user\n - Mod has been blacklisted from import/install due to known reports for breaking games\n\nThis mod must be installed manually.</system:String>
-
     <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">An error occured extracting the archive: {0}</system:String>
     <!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingArchive">Error extracting archive</system:String>
-    <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Failed to fetch moddesc.ini file from server. Reason: {0}</system:String>
+    <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Failed to fetch moddesc.ini file from server: {0}</system:String>
     <!-- 0= loadFailedReason -->
-
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>

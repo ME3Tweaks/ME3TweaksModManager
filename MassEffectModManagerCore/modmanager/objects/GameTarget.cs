@@ -74,12 +74,12 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool Selectable { get; internal set; } = true;
         public string ALOTVersion { get; private set; }
         public bool IsCustomOption { get; set; } = false;
-        public GameTarget(Mod.MEGame game, string target, bool currentRegistryActive, bool isCustomOption = false)
+        public GameTarget(Mod.MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false)
         {
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
-            this.TargetPath = target.TrimEnd('\\');
+            this.TargetPath = targetRootPath.TrimEnd('\\');
             ReloadGameTarget();
         }
 
@@ -87,47 +87,57 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
-                var oldTMOption = TextureModded;
-                var alotInfo = GetInstalledALOTInfo();
-                if (alotInfo != null)
+                if (Directory.Exists(TargetPath))
                 {
-                    TextureModded = true;
-                    ALOTVersion = alotInfo.ToString();
-                    if (alotInfo.MEUITMVER > 0)
+                    var oldTMOption = TextureModded;
+                    var alotInfo = GetInstalledALOTInfo();
+                    if (alotInfo != null)
                     {
-                        MEUITMInstalled = true;
-                        MEUITMVersion = alotInfo.MEUITMVER;
+                        TextureModded = true;
+                        ALOTVersion = alotInfo.ToString();
+                        if (alotInfo.MEUITMVER > 0)
+                        {
+                            MEUITMInstalled = true;
+                            MEUITMVersion = alotInfo.MEUITMVER;
+                        }
+                    }
+                    else
+                    {
+                        TextureModded = false;
+                        ALOTVersion = null;
+                        MEUITMInstalled = false;
+                        MEUITMVersion = 0;
+                    }
+
+
+                    Log.Information(@"Getting game source for target " + TargetPath);
+                    var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
+
+                    GameSource = hashCheckResult.result;
+                    ExecutableHash = hashCheckResult.hash;
+                    if (GameSource == null)
+                    {
+                        Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash);
+                    }
+                    else
+                    {
+                        Log.Information(@"Source: " + GameSource);
+                    }
+
+                    IsPolishME1 = Game == Mod.MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
+                    if (IsPolishME1)
+                    {
+                        Log.Information(@"ME1 Polish Edition detected");
+                    }
+
+                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded)
+                    {
+                        UpdateLODs();
                     }
                 }
                 else
                 {
-                    TextureModded = false;
-                    ALOTVersion = null;
-                    MEUITMInstalled = false;
-                    MEUITMVersion = 0;
-                }
-                Log.Information(@"Getting game source for target " + TargetPath);
-                var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
-
-                GameSource = hashCheckResult.result;
-                ExecutableHash = hashCheckResult.hash;
-                if (GameSource == null)
-                {
-                    Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash);
-                }
-                else
-                {
-                    Log.Information(@"Source: " + GameSource);
-                }
-                IsPolishME1 = Game == Mod.MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
-                if (IsPolishME1)
-                {
-                    Log.Information(@"ME1 Polish Edition detected");
-                }
-
-                if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded)
-                {
-                    UpdateLODs();
+                    Log.Error($@"Target is invalid: {TargetPath} does not exist (or is not accessible)");
                 }
             }
         }
