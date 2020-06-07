@@ -1210,7 +1210,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                             else
                             {
-                                addDiagLine("Diagnostic reports no files appear to have been added or r since texture scan took place.");
+                                addDiagLine("Diagnostic reports no files appear to have been added or removed since texture scan took place.");
                             }
 
                         }
@@ -1767,14 +1767,20 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     maxLodSize = int.Parse(StringStructParser.GetCommaSplitValues(textureChar1024.Value)[selectedDiagnosticTarget.Game == Mod.MEGame.ME1 ? "MinLODSize" : "MaxLODSize"]);
                 }
 
+                // Texture mod installed, HQ LODs
                 var HQLine = "High quality texture LOD settings appear to be set";
+
+                // Texture mod installed, missing HQ LODs
                 var HQSettingsMissingLine = "High quality texture LOD settings appear to be missing, but a high resolution texture mod appears to be installed.\n[ERROR]The game will not use these new high quality assets - config file was probably deleted or texture quality settings were changed in game";
+
+                // No texture mod, no HQ LODs
                 var HQVanillaLine = "High quality LOD settings are not set and no high quality texture mod is installed";
                 switch (selectedDiagnosticTarget.Game)
                 {
                     case Mod.MEGame.ME1:
                         if (maxLodSize != 1024) //ME1 Default
                         {
+                            //LODS MODIFIED!
                             if (maxLodSize == 4096)
                             {
                                 addDiagLine("LOD quality settings: 4K textures", Severity.INFO);
@@ -1796,6 +1802,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                         else
                         {
+                            //Default ME1 LODs
                             if (selectedDiagnosticTarget.TextureModded && selectedDiagnosticTarget.HasALOTOrMEUITM())
                             {
                                 addDiagLine(HQSettingsMissingLine, Severity.ERROR);
@@ -1824,21 +1831,25 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     addDiagLine("LOD quality settings: 2K textures", Severity.INFO);
                                 }
                             }
-                            //else if (selectedDiagnosticTarget.TextureModded) //not vanilla, but no MEM/MEUITM
-                            //{
-                            if (maxLodSize == 4096)
+                            else
                             {
-                                addDiagLine("LOD quality settings: 4K textures (no high res mod installed)", Severity.WARN);
-                            }
-                            else if (maxLodSize == 2048)
-                            {
-                                addDiagLine("LOD quality settings: 2K textures (no high res mod installed)", Severity.INFO);
-                            }
-                            //}
-                            if (!selectedDiagnosticTarget.TextureModded)
-                            {
-                                //no texture mod, but has set LODs
-                                addDiagLine("LODs have been explicitly set, but a texture mod is not installed - game may have black textures as empty mips may not be removed", Severity.WARN);
+                                //else if (selectedDiagnosticTarget.TextureModded) //not vanilla, but no MEM/MEUITM
+                                //{
+                                if (maxLodSize == 4096)
+                                {
+                                    addDiagLine("LOD quality settings: 4K textures (no high res mod installed)", Severity.WARN);
+                                }
+                                else if (maxLodSize == 2048)
+                                {
+                                    addDiagLine("LOD quality settings: 2K textures (no high res mod installed)", Severity.INFO);
+                                }
+
+                                //}
+                                if (!selectedDiagnosticTarget.TextureModded)
+                                {
+                                    //no texture mod, but has set LODs
+                                    addDiagLine("LODs have been explicitly set, but a texture mod is not installed - game may have black textures as empty mips may not be removed", Severity.WARN);
+                                }
                             }
                         }
                         else //default
