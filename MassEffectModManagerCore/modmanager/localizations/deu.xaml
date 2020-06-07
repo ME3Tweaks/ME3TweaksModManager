@@ -583,8 +583,12 @@
     <system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Werde versuchen, alle modifizierten Hauptspiel-Dateien und entpackte DLC-Dateien (ME2) wiederherzustellen.</system:String>
     <system:String x:Key="string_restoreallmodifiedbasegamefiles">Alle modifizierten Hauptspiel-Dateien wiederherstellen</system:String>
     <system:String x:Key="string_modifiedDLCarchivesSFAR">Modifizierte DLC-Archive (SFAR)</system:String>
-    <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Werde versuchen, alle modifizierten SFAR-Dateien wiederherzustellen. Alle entpackten Dateien werden dabei gelöscht.</system:String>
+    <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Werde versuchen, alle modifizierten SFAR-Dateien wiederherzustellen. Alle entpackten Dateien werden dabei auch gelöscht</system:String>
+    <system:String x:Key="string_willAttemptToRestoreSPModifiedSFARs">Werde versuchen, alle modifizierten Einzelspieler SFAR-Dateien wiederherzustellen. Alle entpackten Dateien werden dabei auch gelöscht</system:String>
+    <system:String x:Key="string_willAttemptToRestoreMPModifiedSFARs">Werde versuchen, alle modifizierten Mehrspieler SFAR-Dateien wiederherzustellen. Alle entpackten Dateien werden dabei auch gelöscht</system:String>
     <system:String x:Key="string_restoreAllModifiedSFARs">Alle modifizierten SFAR-Dateien wiederherstellen</system:String>
+    <system:String x:Key="string_restoreMPModifiedSFARs">Alle modifizierten MP SFAR-Dateien wiederherstellen</system:String>
+    <system:String x:Key="string_restoreSPModifiedSFARs">Alle modifizierten SP SFAR-Dateien wiederherstellen</system:String>
     <system:String x:Key="string_inconsistencyDetected">Inkonsistenzen gefunden</system:String>
     <system:String x:Key="string_removeTargetFromM3">Ziel entfernen</system:String>
     <system:String x:Key="string_openInExplorer">Im Explorer öffnen</system:String>
@@ -835,6 +839,8 @@
 	<!-- 0={FriendlyName} 1={reqFile} 2={reqSizeStr} -->
     <system:String x:Key="string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams">Alternate DLC {0} ist ungültig: COND_SPECIFIC_SIZED_FILES ist als Bedingung angegeben, aber RequiredFileRelativePaths/RequiredFileSizes enthalten keine Werte.</system:String>
 	<!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_validation_altdlc_dlcRequirementInvalid">Ein Eintrag in DLCRequirements von Alternate DLC ({0}) beginnt nicht mit DLC_ und ist auch kein offizieller Header. Ungültiger Wert: {2}</system:String>
+	<!-- 0=FriendlyName -->
 
 	<!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">Mindestens einer angegebenen Alternate File fehlt der FriendlyName, welcher jedoch ab Version >= 6.0 benötigt wird.</system:String>
