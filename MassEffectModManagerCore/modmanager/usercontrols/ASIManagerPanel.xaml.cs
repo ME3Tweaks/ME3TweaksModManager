@@ -99,18 +99,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var onlineManifest = OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
             if (onlineManifest != null)
             {
-                File.WriteAllText(StagedManifestLocation, onlineManifest);
-                ParseManifest(StagedManifestLocation, games, true, selectionStateUpdateCallback);
+                try
+                {
+                    File.WriteAllText(StagedManifestLocation, onlineManifest);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(@"Error writing cached ASI manifest to disk: " + e.Message);
+                }
+
+                ParseManifest(onlineManifest, games, true, selectionStateUpdateCallback);
             }
             else if (File.Exists(ManifestLocation))
             {
                 Log.Information(@"Loading ASI local manifest");
-                ParseManifest(ManifestLocation, games, false, selectionStateUpdateCallback);
+                LoadManifestFromDisk(ManifestLocation, games, false, selectionStateUpdateCallback);
             }
             else
             {
                 //can't get manifest or local manifest.
                 //Todo: some sort of handling here as we are running in panel startup
+                Log.Error(@"Cannot load ASI manifest: Could not fetch online manifest and no local manifest exists");
             }
         }
 
@@ -197,12 +206,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod;
 
+        private static void LoadManifestFromDisk(string manifestPath, List<ASIGame> games, bool isStaged = false, Action<object> selectionStateUpdateCallback = null)
+        {
+            ParseManifest(File.ReadAllText(manifestPath), games, isStaged, selectionStateUpdateCallback);
+        }
 
-        private static void ParseManifest(string manifestToLoad, List<ASIGame> Games, bool isStaged = false, Action<object> selectionStateUpdateCallback = null)
+        /// <summary>
+        /// Parses a string (xml) into an ASI manifest.
+        /// </summary>
+        /// <param name="manifestString"></param>
+        /// <param name="games"></param>
+        /// <param name="isStaged"></param>
+        /// <param name="selectionStateUpdateCallback"></param>
+        private static void ParseManifest(string manifestString, List<ASIGame> games, bool isStaged = false, Action<object> selectionStateUpdateCallback = null)
         {
             try
             {
-                XElement rootElement = XElement.Load(manifestToLoad);
+                XElement rootElement = XElement.Parse(manifestString);
 
                 //I Love Linq
                 var ASIModUpdateGroups = (from e in rootElement.Elements(@"updategroup")
@@ -228,12 +248,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Must run on UI thread
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    foreach (var g in Games)
+                    foreach (var g in games)
                     {
                         g.SetUpdateGroups(ASIModUpdateGroups);
                     }
 
-                    foreach (var game in Games)
+                    foreach (var game in games)
                     {
                         game.RefreshASIStates();
                     }
@@ -249,11 +269,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (isStaged && File.Exists(ManifestLocation))
                 {
                     //try cached instead
-                    ParseManifest(ManifestLocation, Games, false);
+                    LoadManifestFromDisk(ManifestLocation, games, false);
                     return;
                 }
 
-                foreach (var game in Games)
+                foreach (var game in games)
                 {
                     game.RefreshASIStates();
                 }
