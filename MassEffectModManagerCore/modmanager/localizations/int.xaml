@@ -827,7 +827,6 @@
     <!-- 0=FriendlyName 1=multilistid 2=multif -->
     <system:String x:Key="string_interp_altdlc_emptyConditionalDLCList">Alternate DLC {0} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL or COND_SPECIFIC_SIZED_FILES.</system:String>
     <!-- 0=FriendlyName -->
-
     <system:String x:Key="string_interp_validation_altdlc_specificDlcSetupMissingPlusMinus">An item in Alternate DLC's ({0}) ConditionalDLC doesn't start with + or -. When using the condition {1}, you must precede DLC names with + or -. Bad value: {2}</system:String>
     <!-- 0={FriendlyName} 1={Condition} 2={dlc} -->
     <system:String x:Key="string_interp_validation_altdlc_specificDlcSetupInvalidDlcName">An item in Alternate DLC's ({0}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {1}). Bad value: {2}</system:String>
@@ -840,6 +839,8 @@
     <!-- 0={FriendlyName} 1={reqFile} 2={reqSizeStr} -->
     <system:String x:Key="string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams">Alternate DLC {0} is invalid: COND_SPECIFIC_SIZED_FILES is specified as the condition but there are no values in RequiredFileRelativePaths/RequiredFileSizes</system:String>
     <!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_validation_altdlc_dlcRequirementInvalid">An item in Alternate DLC's ({0}) DLCRequirements list doesn't start with DLC_ or is not official header. Bad value: {2}</system:String>
+    <!-- 0=FriendlyName -->
 
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
@@ -935,7 +936,7 @@
     <!-- 0 = moddescpath 1 = error message-->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Error occured parsing {0}: {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message-->
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occured parsing virtualized moddesc.ini: {e.Message}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occured parsing virtualized moddesc.ini: {0}</system:String>
     <!-- 0 = error message. Virtualized means it's using one we generated on the fly -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomodname">The moddesc.ini file located at {0} does not have a value set for modname. This value is required.</system:String>
     <!-- 0 = moddesc.ini file path -->

@@ -930,7 +930,7 @@
     <!-- 0 = moddescpath 1 = error message -->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Wystąpił błąd podczas parsowania {0}: {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message -->
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Wystąpił błąd podczas parsowania wirtualizowanego moddesc.ini: {e.Message}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Wystąpił błąd podczas parsowania wirtualizowanego moddesc.ini: {0}</system:String>
     <!-- 0 = error message. Virtualized means it's using one we generated on the fly -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomodname">Plik moddesc.ini zlokalizowany w {0} nie ma określonej wartości dla modname. Ta wartość jest wymagana.</system:String>
     <!-- 0 = moddesc.ini file path -->

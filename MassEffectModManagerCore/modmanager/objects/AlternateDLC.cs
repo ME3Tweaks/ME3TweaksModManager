@@ -113,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
-                Log.Error($@"Alternate DLC {FriendlyName} cannot have empty Description or missing description as it targets cmmver >= 6");
+                Log.Error($@"Alternate DLC {FriendlyName} cannot have empty Description or missing Description descriptor as it targets cmmver >= 6");
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_cmmver6RequiresDescription, FriendlyName);
                 return;
@@ -292,7 +292,36 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            DLCRequirementsForManual = properties.TryGetValue(@"DLCRequirements", out string dlcReqs) ? dlcReqs.Split(';') : null;
+            var dlcReqs = properties.TryGetValue(@"DLCRequirements", out string _dlcReqs) ? _dlcReqs.Split(';') : null;
+            if (dlcReqs != null)
+            {
+                var reqList = new List<string>();
+                foreach (var req in dlcReqs)
+                {
+
+                    //official headers
+                    if (Enum.TryParse(req, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                    {
+                        reqList.Add(foldername);
+                        continue;
+                    }
+
+                    //dlc mods
+                    if (!req.StartsWith(@"DLC_"))
+                    {
+                        Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {req}");
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, Condition, req);
+                        return;
+                    }
+                    else
+                    {
+                        reqList.Add(req);
+                    }
+                }
+
+
+                DLCRequirementsForManual = reqList.ToArray();
+            }
 
             if (Condition == AltDLCCondition.COND_SPECIFIC_SIZED_FILES)
             {

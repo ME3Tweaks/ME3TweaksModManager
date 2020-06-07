@@ -834,7 +834,7 @@
     <!-- 0 = moddescpath 1 = error message -->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Une erreur s'est produite lors de l'analyse syntaxique {0} : {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message -->
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Une erreur s'est produite lors de l'analyse du fichier virtualisé moddesc.ini : {e.Message}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Une erreur s'est produite lors de l'analyse du fichier virtualisé moddesc.ini : {0}</system:String>
     <!-- 0 = error message. Virtualized means it's using one we generated on the fly -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomodname">Le fichier moddesc.ini situé à {0} n'a pas de valeur définie pour modname. Cette valeur est obligatoire.</system:String>
     <!-- 0 = moddesc.ini file path -->

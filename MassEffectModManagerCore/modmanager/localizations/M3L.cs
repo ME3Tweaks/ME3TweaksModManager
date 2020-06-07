@@ -587,7 +587,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_willAttemptToRestoreSPModifiedSFARs = "string_willAttemptToRestoreSPModifiedSFARs";
 		public static readonly string string_willAttemptToRestoreMPModifiedSFARs = "string_willAttemptToRestoreMPModifiedSFARs";
 		public static readonly string string_restoreAllModifiedSFARs = "string_restoreAllModifiedSFARs";
-		public static readonly string string_restoreMPfModifiedSFARs = "string_restoreMPfModifiedSFARs";
+		public static readonly string string_restoreMPModifiedSFARs = "string_restoreMPModifiedSFARs";
 		public static readonly string string_restoreSPModifiedSFARs = "string_restoreSPModifiedSFARs";
 		public static readonly string string_inconsistencyDetected = "string_inconsistencyDetected";
 		public static readonly string string_removeTargetFromM3 = "string_removeTargetFromM3";
@@ -776,6 +776,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_altdlc_specificSizedFilesContainsIllegalPattern = "string_interp_validation_altdlc_specificSizedFilesContainsIllegalPattern";
 		public static readonly string string_interp_validation_altdlc_specificSizedFileMustBeLargerThanZero = "string_interp_validation_altdlc_specificSizedFileMustBeLargerThanZero";
 		public static readonly string string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams = "string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams";
+		public static readonly string string_interp_validation_altdlc_dlcRequirementInvalid = "string_interp_validation_altdlc_dlcRequirementInvalid";
 		public static readonly string string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6";
 		public static readonly string string_validation_altfile_unknownCondition = "string_validation_altfile_unknownCondition";
 		public static readonly string string_validation_altfile_unknownOperation = "string_validation_altfile_unknownOperation";

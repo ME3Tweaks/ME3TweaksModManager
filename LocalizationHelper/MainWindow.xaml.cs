@@ -184,7 +184,7 @@ namespace LocalizationHelper
         private void Synchronize_Clicked(object sender, RoutedEventArgs e)
         {
             //get out of project in debug mod
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var localizationsFolder = Path.Combine(solutionroot, "MassEffectModManagerCore", "modmanager", "localizations");
             var m3lFile = Path.Combine(localizationsFolder, "M3L.cs");
             var m3lTemplateFile = Path.Combine(localizationsFolder, "M3L_Template.txt");
