@@ -43,7 +43,7 @@ namespace LocalizationHelper
             //}
             //Environment.Exit(0);
             DataContext = this;
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
             var rootLen = modmanagerroot.Length + 1;
             //localizable folders
