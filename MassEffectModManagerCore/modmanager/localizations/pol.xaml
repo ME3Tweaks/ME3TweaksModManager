@@ -817,7 +817,7 @@
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altdlc_multilistMissingMultiListX">Multilist ID Alternatywnego DLC ({0}) nie istniejie jako częśc zadania: {1}</system:String>
     <!-- 0=FriendlyName 1=id -->
-    <system:String x:Key="string_interp_altdlc_multilistIdNotIntegerOrMissing">Alternatywne DLC ({0}) określa operację OP_ADD_MULTILISTFILES_TO_CUSTOMDLC, ale nie określa atrybutu MultiListId lub jego wartość nie mogła zostać sparsowana do liczby całkowitej.</system:String>
+    <system:String x:Key="string_interp_altdlc_multilistIdNotIntegerOrMissing">Alternatywne DLC ({0}) określa operację OP_ADD_MULTILISTFILES_TO_CUSTOMDLC, ale nie określa atrybutu MultiListId lub jego d nie mogła zostać sparsowana do liczby całkowitej.</system:String>
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altdlc_multilistMissingFileInMultilist">Alternatywne DLC ({0}) określa multilistę (indeks {1}), na której jest plik, który nie istnieje.</system:String>
     <!-- 0=FriendlyName 1=multilistid 2=multif -->
@@ -835,6 +835,8 @@
     <!-- 0={FriendlyName} 1={reqFile} 2={reqSizeStr} -->
     <system:String x:Key="string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams">Alternatywne DLC {0} jest nieprawidłowe. COND_SPECIFIC_SIZED_FILES jest podane jako warunek, ale nie ma wartości w RequiredFileRelativePaths/RequiredFileSizes</system:String>
     <!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_validation_altdlc_dlcRequirementInvalid">Pozycja na liście ConditionalDLC dla Alternatywnego DLC ({0}) nie zaczyna się na DLC_ lub nie jest oficjalnym nagłówkiem. Niepoprawna wartość: {1}</system:String>
+    <!-- 0=FriendlyName -->
 
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">Przynajmniej jeden wskazany Alternatywny Plik nie zawiera FriendlyName, które jest wymagane dla modów wskazujących na cmmver >= 6.0.</system:String>

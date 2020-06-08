@@ -310,7 +310,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (!req.StartsWith(@"DLC_"))
                     {
                         Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {req}");
-                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, Condition, req);
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, req);
                         return;
                     }
                     else

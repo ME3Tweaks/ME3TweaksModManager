@@ -839,7 +839,7 @@
     <!-- 0={FriendlyName} 1={reqFile} 2={reqSizeStr} -->
     <system:String x:Key="string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams">Alternate DLC {0} is invalid: COND_SPECIFIC_SIZED_FILES is specified as the condition but there are no values in RequiredFileRelativePaths/RequiredFileSizes</system:String>
     <!-- 0={FriendlyName} -->
-    <system:String x:Key="string_interp_validation_altdlc_dlcRequirementInvalid">An item in Alternate DLC's ({0}) DLCRequirements list doesn't start with DLC_ or is not official header. Bad value: {2}</system:String>
+    <system:String x:Key="string_interp_validation_altdlc_dlcRequirementInvalid">An item in Alternate DLC's ({0}) DLCRequirements list doesn't start with DLC_ or is not official header. Bad value: {1}</system:String>
     <!-- 0=FriendlyName -->
 
     <!-- Alternate File -->
