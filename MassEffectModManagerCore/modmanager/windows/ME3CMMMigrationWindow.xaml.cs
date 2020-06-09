@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             numMigrated++;
                             MigratingModsTask.TaskText = M3L.GetString(M3L.string_interp_migratingModsXoFY, numMigrated, numToMigrate);
                             //Migrate this folder
-                            var targetDir = Path.Combine(modsDir, @"ME3", Path.GetFileName(modDirToMove));
+                            var targetDir = Path.Combine(targetModLibrary, @"ME3", Path.GetFileName(modDirToMove));
                             Log.Information($@"Migrating mod into ME3 directory: {modDirToMove} -> {targetDir}");
                             if (!Directory.Exists(targetDir))
                             {
@@ -91,10 +91,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 }
                                 else
                                 {
-                                    Log.Information(@"Copying existing mod directory");
+                                    Log.Information(@" >> Copying existing mod directory");
                                     Directory.CreateDirectory(targetDir);
                                     CopyDir.CopyAll_ProgressBar(new DirectoryInfo(modDirToMove), new DirectoryInfo(targetDir));
-                                    Log.Information(@"Deleting existing directory");
+                                    Log.Information(@" >> Deleting existing directory");
                                     Utilities.DeleteFilesAndFoldersRecursively(modDirToMove);
                                 }
 
