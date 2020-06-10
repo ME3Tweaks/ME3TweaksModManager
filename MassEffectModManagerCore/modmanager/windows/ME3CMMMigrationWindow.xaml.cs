@@ -111,7 +111,6 @@ namespace MassEffectModManagerCore.modmanager.windows
                     MigratingModsTask.SetDone();
                     Log.Information(@"Step 1: Finished mod migration");
 
-
                     // 2. MIGRATE SETTINGS
                     MigratingSettings.SetInProgress();
                     Log.Information(@"Step 2: Begin settings migration");
@@ -222,6 +221,34 @@ namespace MassEffectModManagerCore.modmanager.windows
                     // 3. CLEANUP
                     Log.Information(@"Step 3: Cleaning up");
                     CleaningUpTask.SetInProgress();
+                    var directoriesInDataDir = Directory.GetFileSystemEntries(dataDir);
+                    foreach (var entry in directoriesInDataDir)
+                    {
+                        var name = Path.GetFileName(entry);
+                        if (Directory.Exists(entry))
+                        {
+                            switch (name.ToLower())
+                            {
+                                case @"deployed mods":
+                                case @"override":
+                                case @"patch_001_extracted":
+                                    continue;
+                                default:
+                                    try
+                                    {
+                                        Utilities.DeleteFilesAndFoldersRecursively(entry, true);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Log.Error($@"Unable to delete item in data directory: {entry}, reason: {e.Message}");
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+
+                    //todo: Cleanup files
+
                     CleaningUpTask.SetDone();
                     Log.Information(@"Step 3: Cleaned up");
                     Thread.Sleep(3000);
@@ -236,6 +263,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 Log.Information(@"Migration has completed.");
+                Xceed.Wpf.Toolkit.MessageBox.Show("Migration from Mass Effect 3 Mod Manager to ME3Tweaks Mod Manager completed.\n\nLaunch ME3TweaksModManager.exe from now on instead of ME3CMM.exe.");
                 Close();
             };
             nbw.RunWorkerAsync();
