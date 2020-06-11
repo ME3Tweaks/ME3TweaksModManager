@@ -152,7 +152,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public static void ExtractDefaultASIResources()
         {
             var outpath = CachedASIsFolder;
-            string[] defaultResources = { @"BalanceChangesReplacer-v2.0.asi", @"ME1-DLC-ModEnabler-v1.0.asi", @"ME3Logger_truncating-v1.0.asi", @"manifest.xml" };
+            string[] defaultResources = { @"BalanceChangesReplacer-v3.0.asi", @"ME1-DLC-ModEnabler-v1.0.asi", @"ME3Logger_truncating-v1.0.asi", @"manifest.xml" };
             foreach (var file in defaultResources)
             {
                 var outfile = Path.Combine(CachedASIsFolder, file);

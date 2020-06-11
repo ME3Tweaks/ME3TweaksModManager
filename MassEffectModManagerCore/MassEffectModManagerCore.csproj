@@ -64,6 +64,7 @@
     <None Remove="images\unknown.png" />
     <None Remove="images\windowicon.png" />
     <None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
+    <None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
     <None Remove="modmanager\asi\manifest.xml" />
     <None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
     <None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
@@ -132,7 +133,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
+    <Resource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
     <EmbeddedResource Include="modmanager\asi\manifest.xml" />
   </ItemGroup>
 
