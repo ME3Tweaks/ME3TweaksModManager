@@ -31,22 +31,7 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
                                 adonisExtensions:CursorSpotlightExtension.MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
-                                SnapsToDevicePixels="False"
-                                Panel.ZIndex="1"/>
-
-                        <adonisControls:RippleHost x:Name="RippleLayer"
-                                                   MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
-                                                   FadeInDuration="{TemplateBinding adonisExtensions:RippleExtension.FadeInDuration}"
-                                                   FadeOutDuration="{TemplateBinding adonisExtensions:RippleExtension.FadeOutDuration}"
-                                                   Background="{TemplateBinding adonisExtensions:RippleExtension.BackgroundBrush}"
-                                                   BorderBrush="{TemplateBinding adonisExtensions:RippleExtension.BorderBrush}"
-                                                   BorderThickness="{TemplateBinding BorderThickness}"
-                                                   CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
-                                                   Foreground="{TemplateBinding adonisExtensions:RippleExtension.ForegroundBrush}"
-                                                   Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static adonisConverters:IsImmutableFilterConverter.Instance}}"
-                                                   ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                   Padding="{TemplateBinding Padding}"
-                                                   Panel.ZIndex="2"/>
+                                SnapsToDevicePixels="False"/>
 
                         <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
