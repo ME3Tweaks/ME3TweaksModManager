@@ -1541,8 +1541,9 @@
                     <TextBox
                         Name="ModDescription_TextBox"
                         IsReadOnly="True"
+                        Padding="5,3,0,3"
                         IsReadOnlyCaretVisible="False"
-                        HorizontalContentAlignment="Left"
+                        HorizontalContentAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                         TextWrapping="Wrap"
