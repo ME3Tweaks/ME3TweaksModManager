@@ -75,7 +75,7 @@ namespace AdonisUI.Controls
         /// </summary>
         public object TitleBarContent
         {
-            get => (object)GetValue(TitleBarContentProperty);
+            get => GetValue(TitleBarContentProperty);
             set => SetValue(TitleBarContentProperty, value);
         }
 
@@ -84,8 +84,8 @@ namespace AdonisUI.Controls
         /// </summary>
         public Brush TitleBarForeground
         {
-            get { return (Brush)GetValue(TitleBarForegroundProperty); }
-            set { SetValue(TitleBarForegroundProperty, value); }
+            get => (Brush)GetValue(TitleBarForegroundProperty);
+            set => SetValue(TitleBarForegroundProperty, value);
         }
 
         /// <summary>
@@ -93,8 +93,8 @@ namespace AdonisUI.Controls
         /// </summary>
         public Brush TitleBarBackground
         {
-            get { return (Brush)GetValue(TitleBarBackgroundProperty); }
-            set { SetValue(TitleBarBackgroundProperty, value); }
+            get => (Brush)GetValue(TitleBarBackgroundProperty);
+            set => SetValue(TitleBarBackgroundProperty, value);
         }
 
         /// <summary>
@@ -103,8 +103,8 @@ namespace AdonisUI.Controls
         /// </summary>
         public Brush WindowButtonHighlightBrush
         {
-            get { return (Brush)GetValue(WindowButtonHighlightBrushProperty); }
-            set { SetValue(WindowButtonHighlightBrushProperty, value); }
+            get => (Brush)GetValue(WindowButtonHighlightBrushProperty);
+            set => SetValue(WindowButtonHighlightBrushProperty, value);
         }
 
         /// <summary>
@@ -114,6 +114,16 @@ namespace AdonisUI.Controls
         {
             get => (Thickness)GetValue(MaximizeBorderThicknessProperty);
             private set => SetValue(MaximizeBorderThicknessPropertyKey, value);
+        }
+
+        /// <summary>
+        /// Controls whether to shrink the title bar height a little when the window is maximized.
+        /// The default is <see langword="true"/> as this is how native windows behave.
+        /// </summary>
+        public bool ShrinkTitleBarWhenMaximized
+        {
+            get => (bool)GetValue(ShrinkTitleBarWhenMaximizedProperty);
+            set => SetValue(ShrinkTitleBarWhenMaximizedProperty, value);
         }
 
         public static readonly DependencyProperty IconVisibilityProperty = DependencyProperty.Register("IconVisibility", typeof(Visibility), typeof(AdonisWindow), new PropertyMetadata(Visibility.Visible));
@@ -132,6 +142,8 @@ namespace AdonisUI.Controls
 
         protected internal static readonly DependencyProperty MaximizeBorderThicknessProperty = MaximizeBorderThicknessPropertyKey.DependencyProperty;
 
+        public static readonly DependencyProperty ShrinkTitleBarWhenMaximizedProperty = DependencyProperty.Register("ShrinkTitleBarWhenMaximized", typeof(bool), typeof(AdonisWindow), new PropertyMetadata(true));
+
         static AdonisWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(AdonisWindow), new FrameworkPropertyMetadata(typeof(AdonisWindow)));
@@ -142,6 +154,12 @@ namespace AdonisUI.Controls
         {
             if (!(d is AdonisWindow sourceWindow))
                 return;
+
+            if (e.NewValue is ImageSource image)
+            {
+                sourceWindow.IconSource = image;
+                return;
+            }
 
             string newIcon = e.NewValue.ToString();
 
@@ -157,7 +175,7 @@ namespace AdonisUI.Controls
 
         private BitmapSource GetApplicationIcon()
         {
-            Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly()?.ManifestModule.Name);
+            Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly()?.ManifestModule.FullyQualifiedName);
 
             if (appIcon == null)
                 return null;
@@ -368,6 +386,16 @@ namespace AdonisUI.Controls
 
             Matrix transformToDevice = presentationSource.CompositionTarget.TransformToDevice;
             return (Size)transformToDevice.Transform(new Vector(size.Width, size.Height));
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Size"/> that represents the native coordinate system of the screen
+        /// into a <see cref="Size"/> in device independent coordinates.
+        /// </summary>
+        protected Size TransformToWindowCoordinates(Size size)
+        {
+            Point transformedCoordinates = TransformToWindowCoordinates(new Point(size.Width, size.Height));
+            return new Size(transformedCoordinates.X, transformedCoordinates.Y);
         }
 
         /// <summary>
