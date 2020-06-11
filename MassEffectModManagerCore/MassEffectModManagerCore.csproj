@@ -133,7 +133,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
+    <EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
     <EmbeddedResource Include="modmanager\asi\manifest.xml" />
   </ItemGroup>
 
