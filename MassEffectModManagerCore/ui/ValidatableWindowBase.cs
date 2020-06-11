@@ -27,7 +27,7 @@ namespace MassEffectModManagerCore.ui
 
         private void OnErrorsChanged(object sender, DataErrorsChangedEventArgs e)
         {
-            Debug.WriteLine(@"Error changing");
+            //Debug.WriteLine(@"Error changing");
             // Notify the UI that the property has changed so that the validation error gets displayed (or removed).
             OnPropertyChanged(e.PropertyName);
         }
