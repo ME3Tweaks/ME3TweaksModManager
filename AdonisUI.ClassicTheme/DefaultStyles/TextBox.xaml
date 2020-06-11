@@ -8,7 +8,8 @@
                      TargetType="{x:Type ScrollViewer}">
 
         <Grid x:Name="Grid"
-              Background="{TemplateBinding Background}">
+              Background="{TemplateBinding Background}"
+              Margin="1">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -28,7 +29,7 @@
             <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
                                     Grid.Row="0"
                                     Grid.Column="0"
-                                    Margin="-2, 0"
+                                    Margin="2, 0"
                                     CanContentScroll="{TemplateBinding CanContentScroll}"
                                     CanHorizontallyScroll="False"
                                     CanVerticallyScroll="False"
@@ -114,7 +115,7 @@
                             </Border.Background>
                         </Border>
 
-                        <DockPanel Margin="{TemplateBinding Padding}">
+                        <DockPanel>
 
                             <adonisControls:ValidationErrorIndicator x:Name="ErrorAlertHost"
                                                                      ValidatedElement="{Binding ., RelativeSource={RelativeSource TemplatedParent}}"
@@ -136,7 +137,7 @@
                                                   Visibility="Collapsed"/>
 								<!-- MMCODE USED HorizontalAlignment = Stretch here pre June 11 2020 update -->
                                 <ScrollViewer x:Name="PART_ContentHost"
-                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              HorizontalAlignment="Stretch"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                               adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="{Binding Path=(adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode), RelativeSource={RelativeSource TemplatedParent}}"
                                               adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode="{Binding Path=(adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode), RelativeSource={RelativeSource TemplatedParent}}"

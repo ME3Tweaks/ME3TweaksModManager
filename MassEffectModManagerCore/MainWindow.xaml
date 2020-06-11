@@ -1541,7 +1541,6 @@
                     <TextBox
                         Name="ModDescription_TextBox"
                         IsReadOnly="True"
-                        Padding="5,3,0,3"
                         IsReadOnlyCaretVisible="False"
                         HorizontalContentAlignment="Stretch"
                         HorizontalAlignment="Stretch"
