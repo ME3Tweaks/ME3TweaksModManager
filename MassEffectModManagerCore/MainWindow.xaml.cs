@@ -147,7 +147,9 @@ namespace MassEffectModManagerCore
             }
 
             LoadCommands();
-            RefreshNexusStatus();
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"NexusModsInitialAuthentication");
+            nbw.DoWork += (a, b) => RefreshNexusStatus();
+            nbw.RunWorkerAsync();
             InitializeComponent();
             languageMenuItems = new Dictionary<string, MenuItem>()
             {
@@ -252,12 +254,12 @@ namespace MassEffectModManagerCore
                         Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occured while checking credentials. Setting not authorized");
                         SetNexusNotAuthorizedUI();
                     }
-                    else
-                    {
-                        return;
-                    }
                 }
+             
+                //prevent reseting ui to not authorized
+                return;
             }
+
             SetNexusNotAuthorizedUI();
         }
 
@@ -1719,7 +1721,7 @@ namespace MassEffectModManagerCore
         private void CheckAllModsForUpdatesWrapper()
         {
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Mod update check");
-            nbw.DoWork += (a,b) => CheckAllModsForUpdates();
+            nbw.DoWork += (a, b) => CheckAllModsForUpdates();
             nbw.RunWorkerAsync();
         }
 
