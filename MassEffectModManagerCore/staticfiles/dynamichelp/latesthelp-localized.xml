@@ -3,8 +3,6 @@
   <helpmenu lang="int">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services"/>
     <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Chat server for finding other players of Mass Effect 3 MP and Mass Effect Andromeda MP"/>
-    <helpitem title="ME3Tweaks Mod Manager is a work in progress" modaltitle="Warning: Construction ahead" icon="INFO">ME3Tweaks Mod Manager is currently in a preview stage. Many features from Mass Effect 3 Mod Manager are being ported over but this procedure will take some time. Please report any crashes to the ME3Tweaks Discord.</helpitem>
-
     <list title="Get Mods">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="ME3Tweaks Curated Mod List" url="https://me3tweaks.com/mods" tooltip="Browse mods curated by ME3Tweaks"/>
@@ -102,8 +100,6 @@
   <helpmenu lang="rus">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Чат-сервер для оперативной попощи по продуктам и сервисам ME3Tweaks"/>
     <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Чат-сервер для поиска других игроков Mass Effect 3 MP и Mass Effect Andromeda MP"/>
-    <helpitem title="ME3Tweaks Mod Manager находится в разработке" modaltitle="Внимание: Впереди стройка" icon="INFO">ME3Tweaks Mod Manager сейчас находится на предварительной стадии. Многие функции из Mass Effect 3 Mod Manager уже перенесены, но для завершения процесса потребуется еще некоторое время. Пожалуйста, сообщайте обо всех проблемах программы на ME3Tweaks Discord.</helpitem>
-
     <list title="Поиск Модов">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="ME3Tweaks Курируемые Моды" url="https://me3tweaks.com/mods" tooltip="Просмотреть моды, курируемые ME3Tweaks"/>
@@ -300,7 +296,6 @@
   <helpmenu lang="pol">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Serwer czatu zapewniający szybką obsługę produktów i usług związanych z ME3Tweaks" />
     <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Serwer czatu do wyszukiwania innych graczy Mass Effect 3 MP i Mass Effect Andromeda MP" />
-    <helpitem title="ME3Tweaks Mod Manager jest cały czas w trakcie rozwoju" modaltitle="Uwaga: Prace budowlane" icon="INFO">ME3Tweaks Mod Manager jest obecnie w fazie rozowju. Wiele funkcji programu Mass Effect 3 Mod Manager jest przenoszonych, ale ta procedura zajmie trochę czasu. Zgłaszaj wszelkie awarie na ME3Tweaks Discord.</helpitem>
     <list title="Pobierz mody">
       <!--<helpitem title="Galeria ME3Tweaks ModMaker" url="https://me3tweaks.com/modmaker/gallery" tooltip="Przeglądaj mody stworzone przy pomocy ME3Tweaks ModMaker"/>-->
       <helpitem title="Mody wybrane przez ME3Tweaks" url="https://me3tweaks.com/mods" tooltip="Przeglądaj mody wybrane przez ME3Tweaks" />
