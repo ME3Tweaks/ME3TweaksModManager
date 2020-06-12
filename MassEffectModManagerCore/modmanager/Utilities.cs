@@ -111,64 +111,75 @@ namespace MassEffectModManagerCore
 
         public static bool CreateDirectoryWithWritePermission(string directoryPath, bool forcePermissions = false)
         {
-            if (!forcePermissions && Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
+            if (!forcePermissions && Directory.Exists(Directory.GetParent(directoryPath).FullName) && Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
             {
                 Directory.CreateDirectory(directoryPath);
                 return true;
             }
 
-            //Must have admin rights.
-            Log.Information("We need admin rights to create this directory");
-            string exe = GetCachedExecutablePath("PermissionsGranter.exe");
             try
             {
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                //try first without admin.
+                if (forcePermissions) throw new UnauthorizedAccessException(); //just go to the alternate case.
+                Directory.CreateDirectory(directoryPath);
+                return true;
             }
-            catch (Exception e)
+            catch (UnauthorizedAccessException uae)
             {
-                Log.Error("Error extracting PermissionsGranter.exe: " + e.Message);
-
-                Log.Information("Retrying with appdata temp directory instead.");
+                //Must have admin rights.
+                Log.Information("We need admin rights to create this directory");
+                string exe = GetCachedExecutablePath("PermissionsGranter.exe");
                 try
                 {
-                    exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Log.Error("Retry failed! Unable to make this directory writable due to inability to extract PermissionsGranter.exe. Reason: " + ex.Message);
-                    return false;
-                }
-            }
+                    Log.Error("Error extracting PermissionsGranter.exe: " + e.Message);
 
-            string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
-            try
-            {
-                int result = Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
-                if (result == 0)
-                {
-                    Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
-                    return true;
-                }
-                else
-                {
-                    Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                if (e is Win32Exception w32e)
-                {
-                    if (w32e.NativeErrorCode == 1223)
+                    Log.Information("Retrying with appdata temp directory instead.");
+                    try
                     {
-                        //Admin canceled.
+                        exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
+                        Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Retry failed! Unable to make this directory writable due to inability to extract PermissionsGranter.exe. Reason: " + ex.Message);
                         return false;
                     }
                 }
-                Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
-                return false;
 
+                string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
+                try
+                {
+                    int result = Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
+                    if (result == 0)
+                    {
+                        Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
+                        return true;
+                    }
+                    else
+                    {
+                        Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e is Win32Exception w32e)
+                    {
+                        if (w32e.NativeErrorCode == 1223)
+                        {
+                            //Admin canceled.
+                            return false;
+                        }
+                    }
+
+                    Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
+                    return false;
+
+                }
             }
         }
 
