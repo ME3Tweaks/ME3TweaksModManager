@@ -2110,9 +2110,6 @@ namespace MassEffectModManagerCore
                     try
                     {
                         App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
-                        //#if DEBUG
-                        //                    if (int.Parse(manifest["latest_build_number"]) > 0)
-                        //#else
                         if (int.TryParse(App.OnlineManifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)

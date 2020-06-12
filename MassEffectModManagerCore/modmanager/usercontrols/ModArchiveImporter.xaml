@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <local:MMBusyPanelBase
     x:Class="MassEffectModManagerCore.modmanager.usercontrols.ModArchiveImporter" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:fa="http://schemas.fontawesome.io/icons/"
+    xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     mc:Ignorable="d"
-    Height="440"
+    Height="490"
     Width="720">
     <DockPanel
         Margin="0,0">
@@ -14,8 +15,14 @@
             TextAlignment="Center" />
         <TextBlock
             DockPanel.Dock="Top"
+            FontSize="14"
             Text="{Binding ScanningFile, FallbackValue=Placeholder.7z}"
             TextAlignment="Center" />
+        <TextBlock
+            DockPanel.Dock="Top"
+            Text="Importing a mod to your library places the mod in a ready to install state and enables the mod to check for updates, if supported. Once a mod is imported, you can install it by pressing Apply Mod in the bottom right of the main window.&#10;Installing the mod from this dialog will immediately install it to the active target." TextWrapping="Wrap"
+            TextAlignment="Center" />
+
         <DockPanel
             DockPanel.Dock="Bottom">
             <ProgressBar
@@ -27,13 +34,14 @@
                 Maximum="{Binding CompressionProgressMaximum, Mode=OneWay}" />
             <ProgressBar
                 DockPanel.Dock="Bottom"
-                Height="14"
+                Height="18"
+                extensions:ProgressBarExtension.Content="{Binding ActionText}"
                 Margin="0,5,0,0"
                 IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}"
                 Value="{Binding ProgressValue, Mode=OneWay}"
                 Maximum="{Binding ProgressMaximum, Mode=OneWay}" />
             <DockPanel
-                Margin="0,5,0,0">
+                                                                                                                                                                                                                                                                                                                                      Margin="0,5,0,0">
                 <Button
                     DockPanel.Dock="Right"
                     Content="{Binding InstallModText}"
@@ -47,12 +55,14 @@
                     Padding="8,3"
                     Margin="5,0"
                     Command="{Binding ImportModsCommand}"
+                    ToolTip="Imports the selected mods into your mod library.&#10;Importing provides additional features in Mod Manager:&#10; - Update checks for mods (if supported)&#10; - Compression on import (if supported)&#10; - Restoring mod from ME3Tweaks (if supported)"
                     Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
                     DockPanel.Dock="Right"
                     Content="{DynamicResource string_launchALOTInstaller}"
                     Padding="8,3"
                     Margin="5,0"
+                    ToolTip="Launches ALOT Installer"
                     Command="{Binding LaunchALOTInstallerCommand}"
                     Visibility="{Binding TextureFilesImported, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
@@ -62,21 +72,21 @@
                     Command="{Binding CancelCommand}" />
                 <StackPanel
                     Orientation="Horizontal"
-                    DockPanel.Dock="Right"
-                    Visibility="{Binding CanCompressPackages, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+                    DockPanel.Dock="Right">
                     <CheckBox
                         Content="{DynamicResource string_compressPackages}"
                         VerticalContentAlignment="Center"
                         Padding="8,3"
+                        ToolTip="Compresses package files on import, reducing their file size. This is an experimental feature - if mods experience issues, you should not use this option.&#10;This option is not available for the following scenarios due to complexity:&#10; - Direct installation from archive&#10; - Mass Effect 1 files&#10;&#10;This feature can be disabled ME3Tweaks when Mod Manager checks into the server"
                         IsChecked="{Binding CompressPackages}"
                         Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"
-                        IsEnabled="{Binding TaskRunning, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
+                        IsEnabled="{Binding CanCompressPackages}" />
                 </StackPanel>
-                <TextBlock
+                <!--<TextBlock
                     DockPanel.Dock="Left"
                     Text="{Binding ActionText, FallbackValue=Scanning archive...}"
                     VerticalAlignment="Center"
-                    TextWrapping="Wrap" />
+                    TextWrapping="Wrap" />-->
             </DockPanel>
         </DockPanel>
         <Grid>

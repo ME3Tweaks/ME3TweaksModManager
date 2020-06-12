@@ -22,6 +22,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -37,6 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string NoModSelectedText { get; set; } = M3L.GetString(M3L.string_selectAModOnTheLeftToViewItsDescription);
         public bool ArchiveScanned { get; set; }
         public bool TextureFilesImported { get; set; }
+
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && CanCancel())
@@ -60,11 +62,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long ProgressMaximum { get; private set; }
         public bool ProgressIndeterminate { get; private set; }
 
-        public bool CanCompressPackages { get; private set; }
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game > Mod.MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
         {
+            MemoryAnalyzer.AddTrackedMemoryItem($"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
             DataContext = this;
             LoadCommands();
             ArchiveFilePath = file;
@@ -95,10 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
                     ArchiveScanned = true;
-
-                    //Initial release disables this.
-                    //TODO: RE-ENABLE THIS
-                    CanCompressPackages = false && CompressedMods.Any() && CompressedMods.Any(x => x.Game == Mod.MEGame.ME3); //Change to include ME2 when support for LZO is improved
+                    TriggerPropertyChangedFor(nameof(CanCompressPackages));
                 }
                 else if (TextureFilesImported)
                 {
@@ -130,14 +130,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        /// <summary>
-        /// Notifies listeners when given property is updated.
-        /// </summary>
-        /// <param name="propertyname">Name of property to give notification for. If called in property, argument can be ignored as it will be default.</param>
-        protected virtual void hack_NotifyPropertyChanged([CallerMemberName] string propertyname = null)
-        {
-            hack_PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
-        }
+        ///// <summary>
+        ///// Notifies listeners when given property is updated.
+        ///// </summary>
+        ///// <param name="propertyname">Name of property to give notification for. If called in property, argument can be ignored as it will be default.</param>
+        //protected virtual void hack_NotifyPropertyChanged([CallerMemberName] string propertyname = null)
+        //{
+        //    hack_PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        //}
         private bool openedMultipanel = false;
 
         /// <summary>
@@ -148,6 +148,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
             TaskRunning = true;
+            TriggerPropertyChangedFor(nameof(CanCompressPackages));
             ActionText = M3L.GetString(M3L.string_interp_openingX, ScanningFile);
 
             var archive = e.Argument as string;
@@ -680,6 +681,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 OnClosing(DataEventArgs.Empty);
             };
             TaskRunning = true;
+            TriggerPropertyChangedFor(nameof(CanCompressPackages));
             bw.RunWorkerAsync(modsToExtract);
         }
 
@@ -926,7 +928,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //This will have to pass some sort of validation code later.
             return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
-                   && !TaskRunning;
+                   && !TaskRunning && !CompressPackages;
         }
 
         private void InstallCompressedMod()
@@ -942,8 +944,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanCancel() => !TaskRunning;
 
         private bool CanImportMods() => !TaskRunning && CompressedMods.Any(x => x.SelectedForImport && x.ValidMod);
-
-        public event PropertyChangedEventHandler hack_PropertyChanged;
 
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {
