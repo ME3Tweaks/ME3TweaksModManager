@@ -1542,7 +1542,7 @@
                         Name="ModDescription_TextBox"
                         IsReadOnly="True"
                         IsReadOnlyCaretVisible="False"
-                        HorizontalContentAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
                         HorizontalAlignment="Stretch"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                         TextWrapping="Wrap"
