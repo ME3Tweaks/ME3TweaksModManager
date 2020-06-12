@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Xml.Linq;
 using MassEffectModManagerCore.modmanager.localizations;
+using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -670,10 +671,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(cachedPath))).Replace(@"-", "").ToLower();
                         if (md5 == asiToInstall.Hash)
                         {
-                            Log.Information($@"Copying local ASI from libary to destination: {cachedPath} -> {finalPath}");
+                            Log.Information($@"Copying local ASI from library to destination: {cachedPath} -> {finalPath}");
 
-                            File.Copy(cachedPath, finalPath);
+                            File.Copy(cachedPath, finalPath, true);
                             operationCompletedCallback?.Invoke();
+                            Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
+                            {
+                                { "Filename", Path.GetFileNameWithoutExtension(finalPath)}
+                            });
                             return;
                         }
                     }
@@ -693,8 +698,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
-
-                        File.WriteAllBytes(finalPath, memoryStream.ToArray());
+                        memoryStream.WriteToFile(finalPath);
+                        Analytics.TrackEvent("Installed ASI", new Dictionary<string, string>()
+                        {
+                            { @"Filename", Path.GetFileNameWithoutExtension(finalPath)}
+                        });
                         if (!Directory.Exists(CachedASIsFolder))
                         {
                             Directory.CreateDirectory(CachedASIsFolder);

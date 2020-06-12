@@ -65,17 +65,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), window));
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), window));
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), window));
+            GameBackups.Add(new GameBackup(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), mainwindow));
+            GameBackups.Add(new GameBackup(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), mainwindow));
+            GameBackups.Add(new GameBackup(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), mainwindow));
         }
 
         public class GameBackup : INotifyPropertyChanged
         {
             private Mod.MEGame Game;
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
-            private Window window;
-            public GameBackup(Mod.MEGame game, IEnumerable<GameTarget> availableBackupSources, Window window)
+            private MainWindow window;
+            public GameBackup(Mod.MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window)
             {
                 this.window = window;
                 this.Game = game;
@@ -201,6 +201,35 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                             M3L.ShowDialog(window,
                                                 M3L.GetString(M3L.string_directoryIsNotEmptyMustBeEmpty),
                                                 M3L.GetString(M3L.string_directoryNotEmpty), MessageBoxButton.OK,
+                                                MessageBoxImage.Error);
+                                            end = true;
+                                            EndBackup();
+                                            return;
+                                        }
+                                    }
+
+                                    //Check is Documents folder
+                                    var docsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", Utilities.GetGameName(Game));
+                                    if (backupPath.Contains(docsPath, StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        Log.Error(@"User chose path in or around the documents path for the game- not allowed as game can load files from here.");
+                                        M3L.ShowDialog(window, $"The Documents/BioWare/{Utilities.GetGameName(Game)} directory (and it's descendants) cannot be used as a backup location, as the game can load files from it. Please choose another directory.",
+                                            "Location not allowed for backup", MessageBoxButton.OK,
+                                            MessageBoxImage.Error);
+                                        end = true;
+                                        EndBackup();
+                                        return;
+                                    }
+                                    
+                                    //Check is in a game directory
+                                    foreach (var t in window.InstallationTargets)
+                                    {
+                                        if (t.TargetPath.StartsWith(backupPath, StringComparison.InvariantCultureIgnoreCase))
+                                        {
+                                            //Backup is subdirectory of a target. This is not allowed as a restore will wipe out the backup
+                                            Log.Error(@"User chose path in a game target, this is not allowed as a restore will wipe out the backup");
+                                            M3L.ShowDialog(window, $"A backup cannot be placed as a subdirectory of a game. Restoring a backup would result in the backup being deleted when the game is removed before restoration begins. Please choose another directory.",
+                                                "Location not allowed for backup", MessageBoxButton.OK,
                                                 MessageBoxImage.Error);
                                             end = true;
                                             EndBackup();

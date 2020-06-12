@@ -23,8 +23,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
-                                Panel.ZIndex="0"/>
+                                CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"/>
 
                         <Border x:Name="SpotlightLayer"
                                 Background="{TemplateBinding adonisExtensions:CursorSpotlightExtension.BackgroundBrush}"
@@ -32,44 +31,15 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
                                 adonisExtensions:CursorSpotlightExtension.MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
-                                SnapsToDevicePixels="False"
-                                Panel.ZIndex="1"/>
-
-                        <adonisControls:RippleHost x:Name="RippleLayer"
-                                                   MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
-                                                   FadeInDuration="{TemplateBinding adonisExtensions:RippleExtension.FadeInDuration}"
-                                                   FadeOutDuration="{TemplateBinding adonisExtensions:RippleExtension.FadeOutDuration}"
-                                                   Background="{TemplateBinding adonisExtensions:RippleExtension.BackgroundBrush}"
-                                                   BorderBrush="{TemplateBinding adonisExtensions:RippleExtension.BorderBrush}"
-                                                   BorderThickness="{TemplateBinding BorderThickness}"
-                                                   CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
-                                                   Foreground="{TemplateBinding adonisExtensions:RippleExtension.ForegroundBrush}"
-                                                   Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static adonisConverters:IsImmutableFilterConverter.Instance}}"
-                                                   ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                   Padding="{TemplateBinding Padding}"
-                                                   Panel.ZIndex="2"/>
+                                SnapsToDevicePixels="False"/>
 
                         <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           Margin="{TemplateBinding Padding}"
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          Panel.ZIndex="3"/>
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 
                     </Grid>
-
-                    <ControlTemplate.Triggers>
-                        
-                        <DataTrigger Binding="{Binding ContentTemplate, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsNullToBoolConverter.Instance}}" Value="False">
-                            <Setter Property="Panel.ZIndex" TargetName="RippleLayer" Value="4"/>
-                        </DataTrigger>
-
-                        <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsImmutableToBoolConverter.Instance}}" Value="True">
-                            <Setter Property="Panel.ZIndex" TargetName="RippleLayer" Value="4"/>
-                        </DataTrigger>
-
-                    </ControlTemplate.Triggers>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -159,6 +129,11 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="adonisExtensions:RippleExtension.ForegroundBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"/>
         <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="{DynamicResource {x:Static adonisUi:Dimensions.CornerRadius}}"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="ExpandOnHover"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="ExpandOnHover"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HideScrollBarsUntilMouseOver" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
@@ -170,7 +145,12 @@
 
                         <ScrollViewer Focusable="False"
                                       Margin="{TemplateBinding Padding}"
-                                      Padding="0">
+                                      Padding="0"
+                                      adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="{Binding Path=(adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode), RelativeSource={RelativeSource TemplatedParent}}"
+                                      adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode="{Binding Path=(adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode), RelativeSource={RelativeSource TemplatedParent}}"
+                                      adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement="{Binding Path=(adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement), RelativeSource={RelativeSource TemplatedParent}}"
+                                      adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement="{Binding Path=(adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement), RelativeSource={RelativeSource TemplatedParent}}"
+                                      adonisExtensions:ScrollViewerExtension.HideScrollBarsUntilMouseOver="{Binding Path=(adonisExtensions:ScrollViewerExtension.HideScrollBarsUntilMouseOver), RelativeSource={RelativeSource TemplatedParent}}">
                             <ItemsPresenter />
                         </ScrollViewer>
 

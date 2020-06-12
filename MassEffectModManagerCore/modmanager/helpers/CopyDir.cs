@@ -100,7 +100,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var dest = singleMapping.Value;
                 if (!testrun)
                 {
-                    Directory.CreateDirectory(Directory.GetParent(dest).FullName);
+                    //Will attempt to create dir, prompt for admin if necessary (not sure how this will work in the wild)
+                    Utilities.CreateDirectoryWithWritePermission(Directory.GetParent(dest).FullName);
 
                     if (File.Exists(dest))
                     {

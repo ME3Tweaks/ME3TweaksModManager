@@ -320,7 +320,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     }
                 }
-                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                if (!holdingShift.Value) holdingShift = null;
+                return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             bool restoreSfarConfirmationCallback(string sfarPath)
@@ -346,7 +348,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
                 //Todo: warn of unpacked file deletion
-                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                if (!holdingShift.Value) holdingShift = null;
+                return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             void notifyStartingSfarRestoreCallback()

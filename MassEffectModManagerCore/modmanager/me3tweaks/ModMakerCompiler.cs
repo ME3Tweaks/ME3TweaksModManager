@@ -157,18 +157,25 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     .Select(x => int.Parse(x.Value.IndexOf(@"v") > 0 ? x.Value.Substring(0, x.Value.IndexOf(@"v")) : x.Value)).ToList();
                 foreach (var mixin in me3tweaksmixinsdata)
                 {
-
-                    var tmtext = MixinHandler.GetMixinByME3TweaksID(mixin).TargetModule;
-                    var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
-                    Debug.WriteLine(tm);
-                    if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
-                    if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    var mixinobj = MixinHandler.GetMixinByME3TweaksID(mixin);
+                    if (mixinobj != null)
                     {
-                        mixincount++;
+                        var tmtext = mixinobj.TargetModule;
+                        var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
+                        Debug.WriteLine(tm);
+                        if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
+                        if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                        {
+                            mixincount++;
+                        }
+                        else
+                        {
+                            Debug.WriteLine(@"Not adding " + tm);
+                        }
                     }
                     else
                     {
-                        Debug.WriteLine(@"Not adding " + tm);
+                        Log.Error($@"MixinHandler returned null for mixinid {mixin}! Has the MixinPackage loaded?");
                     }
                 }
 
@@ -365,8 +372,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         Directory.CreateDirectory(outdir);
                         if (mapping.Key == ModJob.JobHeader.BASEGAME)
                         {
-                    //basegame
-                    foreach (var file in mapping.Value)
+                            //basegame
+                            foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream =
                                     VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
@@ -381,14 +388,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 package.save(outfile, true); //set to true once compression bugs are fixed
                                                              //finalStream.WriteToFile(outfile);
                                                              //File.WriteAllBytes(outfile, finalStream.ToArray());
-                    }
+                            }
                         }
                         else
                         {
-                    //dlc
-                    var dlcPackage =
-                VanillaDatabaseService
-                    .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                            //dlc
+                            var dlcPackage =
+                        VanillaDatabaseService
+                            .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
                             foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream =
@@ -403,7 +410,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                                 package.save(outfile, true); //set to true once compression bugs are fixed
                                                              //finalStream.WriteToFile(outfile);
-                    }
+                            }
                         }
                     });
                 MixinHandler.FreeME3TweaksPatchData();

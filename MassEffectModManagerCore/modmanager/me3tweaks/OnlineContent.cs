@@ -448,8 +448,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             (string filename, string md5)[] objectInfoFiles = { ("ME1ObjectInfo.json", "d0b8c1786134b4aecc6a0543d32ddb59"), ("ME2ObjectInfo.json", "1c1f6f6354e7ad6be6ea0a7e473223a8"), ("ME3ObjectInfo.json", "300754261e40b58f27c9cf53b3c62005") };
             string localBaseDir = Utilities.GetObjectInfoFolder();
+
             try
             {
+                bool downloadOK = false;
+
                 foreach (var info in objectInfoFiles)
                 {
                     var localPath = Path.Combine(localBaseDir, info.filename);
@@ -464,6 +467,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         Log.Information($"Local asset missing: {info.md5}, downloading");
                     }
+
                     if (download)
                     {
                         foreach (var staticurl in StaticFilesBaseEndpoints)
@@ -475,6 +479,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 using var wc = new ShortTimeoutWebClient();
                                 Log.Information("Downloading static asset: " + fullURL);
                                 wc.DownloadFile(fullURL, localPath);
+                                downloadOK = true;
                                 break;
                             }
                             catch (Exception e)
@@ -483,6 +488,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                         }
                     }
+                    else downloadOK = true; //say we're OK
+                }
+
+                if (!downloadOK)
+                {
+                    throw new Exception("At least one static asset failed to download. Mod Manager will not properly function without these assets. See logs for more information");
                 }
             }
             catch (Exception e)
