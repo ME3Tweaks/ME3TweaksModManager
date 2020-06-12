@@ -106,12 +106,12 @@ namespace AdonisUI.Controls
             clickEventSource.PreviewMouseLeftButtonDown += MouseEventSourceOnMouseDown();
             clickEventSource.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
 
-            Window parentWindow = Window.GetWindow(clickEventSource);
-            if (parentWindow != null)
-            {
-                parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
-                parentWindow.Deactivated += ParentWindowOnDeactivated;
-            }
+            //Window parentWindow = Window.GetWindow(clickEventSource);
+            //if (parentWindow != null)
+            //{
+            //    parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+            //    parentWindow.Deactivated += ParentWindowOnDeactivated;
+            //}
 
             IsVisibleChanged += (s, e) => Reset();
         }
@@ -148,7 +148,7 @@ namespace AdonisUI.Controls
             opacityMask.Visual = rippleContainer;
             OpacityMask = opacityMask;
 
-			//THIS IS NOT PRESENT IN NEW ADONIS CODE JUNE 11 2020 -----------
+            //THIS IS NOT PRESENT IN NEW ADONIS CODE JUNE 11 2020 -----------
             //clickEventSource.PreviewMouseLeftButtonDown += MouseEventSourceOnMouseDown();
             //clickEventSource.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
 
@@ -156,7 +156,7 @@ namespace AdonisUI.Controls
             //if (parentWindow != null)
             //{
             //    //Debug.WriteLine("Add ripple layer");
-            //    //not sure if this is usful, so we're 
+            //    //not sure if this is useful, so we're 
             //    //parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
             //    //parentWindow.Deactivated += ParentWindowOnDeactivated;
             //}
@@ -165,8 +165,22 @@ namespace AdonisUI.Controls
             //END NOT PRESENT ----------
         }
 
+        private void ClearClickHandlers(FrameworkElement clickEventSource)
+        {
+            clickEventSource.PreviewMouseLeftButtonDown -= MouseEventSourceOnMouseDown();
+            clickEventSource.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
+
+            Window parentWindow = Window.GetWindow(clickEventSource);
+            if (parentWindow != null)
+            {
+                parentWindow.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
+                parentWindow.Deactivated -= ParentWindowOnDeactivated;
+            }
+        }
+
         private void ClearRippleLayer(FrameworkElement clickEventSource)
         {
+            Debug.WriteLine("Clearing ripple layer");
             OpacityMask = null;
 
             clickEventSource.PreviewMouseLeftButtonDown -= MouseEventSourceOnMouseDown();
@@ -175,7 +189,6 @@ namespace AdonisUI.Controls
             Window parentWindow = Window.GetWindow(clickEventSource);
             if (parentWindow != null)
             {
-                Debug.WriteLine("Clear ripple layer");
                 parentWindow.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
                 parentWindow.Deactivated -= ParentWindowOnDeactivated;
             }
@@ -218,15 +231,16 @@ namespace AdonisUI.Controls
 
         private MouseButtonEventHandler MouseEventSourceOnMouseUp()
         {
-            return (sender, args) => EndRipple();
+            return (sender, args) =>
+                EndRipple(args.Source as FrameworkElement);
         }
 
         private void ParentWindowOnDeactivated(object sender, EventArgs args)
         {
-            EndRipple();
+            EndRipple(null);
         }
 
-        private void EndRipple()
+        private void EndRipple(FrameworkElement element)
         {
             if (!((OpacityMask as VisualBrush)?.Visual is Panel rippleContainer))
                 return;
@@ -238,7 +252,11 @@ namespace AdonisUI.Controls
 
             Duration animationDuration = new Duration(FadeOutDuration);
             DoubleAnimation removeAnimation = new DoubleAnimation(0, animationDuration);
-            removeAnimation.Completed += (s, e) => rippleContainer.Background = null;
+            removeAnimation.Completed += (s, e) =>
+            {
+                rippleContainer.Background = null;
+                if (element != null) ClearClickHandlers(element);
+            };
 
             if (AnimationToComplete == null || GetIsAnimationComplete(AnimationToComplete))
                 rippleContainer.BeginAnimation(UIElement.OpacityProperty, removeAnimation);
