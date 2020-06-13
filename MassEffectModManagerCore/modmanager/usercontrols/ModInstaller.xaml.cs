@@ -133,6 +133,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Log.Error(@"Required DLC is missing for installation: " + string.Join(@", ", missingRequiredDLC));
                 e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING, missingRequiredDLC);
+                Log.Information(@"<<<<<<< Finishing modinstaller");
                 return;
             }
 
@@ -142,6 +143,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //logs handled in precheck
                 e.Result = ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
+                Log.Information(@"<<<<<<< Exiting modinstaller");
+
                 return;
             }
 
@@ -151,6 +154,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Log.Information(@"RCW mod: Beginning RCW mod subinstaller");
                 e.Result = InstallAttachedRCWMod();
+                Log.Information(@"<<<<<<< Finishing modinstaller");
                 return;
             }
 
@@ -176,10 +180,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 foreach (var jobMappings in installationQueues.sfarJobs)
                 {
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
+                    //Only check if it's not TESTPATCH. TestPatch is classes only and will have no bearing on ALOT
+                    if (Path.GetFileName(jobMappings.sfarPath) != @"Patch_001.sfar")
+                    {
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
+                    }
                 }
 
                 if (installsPackageFile)
@@ -197,6 +205,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (cancel)
                         {
                             e.Result = ModInstallCompletedStatus.USER_CANCELED_INSTALLATION;
+                            Log.Information(@"<<<<<<< Exiting modinstaller");
                             return;
                         }
                         Log.Warning(@"User installing mod anyways even with ALOT installed");
@@ -206,6 +215,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Error(@"ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
                         //ALOT Installed, this is attempting to install a package file
                         e.Result = ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING;
+                        Log.Information(@"<<<<<<< Exiting modinstaller");
                         return;
                     }
                 }
@@ -367,6 +377,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //we are installing this file
                         requiredSpaceToInstall += (long)f.Size;
+                        CLog.Information(@"Adding to size calculation: " + f.FileName + ", size " + f.Size, Settings.LogModInstallation);
+
+                    }
+                    else
+                    {
+                        CLog.Information(@"Skip adding to size calculation: " + f.FileName, Settings.LogModInstallation);
                     }
                 }
             }
@@ -379,7 +395,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             Utilities.DriveFreeBytes(gameTarget.TargetPath, out var freeSpaceOnTargetDisk);
-            requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.05); //+5% for some overhead
+            requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.1); //+10% for some overhead
             if (requiredSpaceToInstall > (long)freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
             {
                 string driveletter = Path.GetPathRoot(gameTarget.TargetPath);
@@ -390,6 +406,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(window, message, M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                 });
                 e.Result = ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
+                Log.Information(@"<<<<<<< Exiting modinstaller");
                 return;
             }
 
@@ -400,7 +417,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Directory.Exists(path))
                 {
                     Log.Information($@"Deleting existing DLC directory: {path}");
-                    Utilities.DeleteFilesAndFoldersRecursively(path);
+                    try
+                    {
+                        Utilities.DeleteFilesAndFoldersRecursively(path, true);
+                    }
+                    catch (UnauthorizedAccessException exd)
+                    {
+                        // for some reason we don't have permission to do this.
+                        Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
+                        Utilities.CreateDirectoryWithWritePermission(path, true);
+                        Utilities.DeleteFilesAndFoldersRecursively(path);
+                    }
                 }
             }
 
@@ -890,11 +917,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+
             if (e.Error != null)
             {
                 Log.Error(@"An error occured during mod installation.\n" + App.FlattenException(e.Error));
             }
-
 
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
             if (e.Result is ModInstallCompletedStatus mcis)
@@ -955,13 +982,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 Log.Fatal(@"The application is going to crash due to a sanity check failure. Please report this to ME3Tweaks so this can be fixed.");
-                if (e.Result != null)
+                if (e.Result == null)
                 {
-                    throw new Exception(@"Mod installer did not have return code (null). This should be caught and handled, but it wasn't!");
+                    throw new Exception(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
                 }
-
-                throw new Exception(@"Mod installer did not have parsed return code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
+                else
+                {
+                    throw new Exception(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
+                }
             }
+
             Analytics.TrackEvent(@"Installed a mod", new Dictionary<string, string>()
             {
                 { @"Mod name", $@"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },
