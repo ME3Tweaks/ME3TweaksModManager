@@ -253,11 +253,12 @@
                                 
 
 
+                                <!-- EditableTextBox takes up space so it's collapsed here. Default Adonis has it set to Hidden -->
                                 <TextBox x:Name="PART_EditableTextBox"
                                          IsReadOnly="{TemplateBinding IsReadOnly}"
                                          Background="{TemplateBinding Background}"
                                          Foreground="{TemplateBinding Foreground}"
-                                         Visibility="Hidden" 
+                                         Visibility="Collapsed" 
                                          HorizontalAlignment="Stretch"
                                          VerticalAlignment="Stretch"
                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
