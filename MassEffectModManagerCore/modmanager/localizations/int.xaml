@@ -52,7 +52,7 @@
     <system:String x:Key="string_Developeroptions">Developer options</system:String>
     <system:String x:Key="string_Metadataeditor">Metadata editor</system:String>
     <system:String x:Key="string_Deploymodto7zfilefordistribution">Deploy mod to 7z file for distribution</system:String>
-    <system:String x:Key="string_Prepareforupdaterservice">Prepare for updater service</system:String>
+    <system:String x:Key="string_Prepareforupdaterservice">Upload to ME3Tweaks Updater Service</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Submit mod information to ME3Tweaks</system:String>
     <system:String x:Key="string_Openmodfolder">Open mod folder</system:String>
     <system:String x:Key="string_Deletemodfromlibrary">Delete mod from library</system:String>

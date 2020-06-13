@@ -386,6 +386,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     return; //skip
                 }
                 LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
+                GC.Collect(); //As this can use lots of memory we're going to have to run a GC collect here
                 var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
                 updateUiTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingModForUpdaterServicePercent, Math.Round(totalDone * 100.0 / totalAmountToCompress))); //force localize
             });
