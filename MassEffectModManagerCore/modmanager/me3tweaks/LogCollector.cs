@@ -882,7 +882,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 foreach (var dlc in installedDLCs)
                 {
                     string dlctext = dlc.Key;
-                    if (!officialDLC.Contains(dlc.Key))
+                    if (!officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase))
                     {
                         dlctext += ";;";
                         if (dlc.Value != null)
@@ -906,7 +906,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
 
-                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key) ? Severity.OFFICIALDLC : Severity.DLC);
+                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase) ? Severity.OFFICIALDLC : Severity.DLC);
                 }
 
                 var supercedanceList = MEDirectories.GetFileSupercedances(selectedDiagnosticTarget).Where(x => x.Value.Count > 1).ToList();
