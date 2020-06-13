@@ -73,6 +73,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public bool Selectable { get; internal set; } = true;
         public string ALOTVersion { get; private set; }
+        /// <summary>
+        /// Indicates that this is a custom, abnormal game object. It may be used only for UI purposes, but it depends on the context.
+        /// </summary>
         public bool IsCustomOption { get; set; } = false;
         public GameTarget(Mod.MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false)
         {
@@ -343,9 +346,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// Validates a game directory by checking for multiple things that should be present in a working game.
         /// </summary>
-        /// <param name="target">Game target to check</param>
+        /// <param name="ignoreCmmVanilla">Ignore the check for a cmm_vanilla file. Presence of this file will cause validation to fail</param>
         /// <returns>String of failure reason, null if OK</returns>
-        public string ValidateTarget()
+        public string ValidateTarget(bool ignoreCmmVanilla = false)
         {
             if (!Selectable)
             {
@@ -399,7 +402,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return M3L.GetString(M3L.string_interp_invalidTargetMissingFile, Path.GetFileName(f));
                 }
             }
-            if (File.Exists(Path.Combine(TargetPath, @"cmm_vanilla"))) return M3L.GetString(M3L.string_invalidTargetProtectedByCmmvanilla);
+
+            if (!ignoreCmmVanilla)
+            {
+                if (File.Exists(Path.Combine(TargetPath, @"cmm_vanilla"))) return M3L.GetString(M3L.string_invalidTargetProtectedByCmmvanilla);
+            }
 
             IsValid = true;
             return null;
