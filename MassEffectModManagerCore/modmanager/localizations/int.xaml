@@ -306,6 +306,10 @@
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
 
+    <!-- Global Styles -->
+    <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
+
+
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
