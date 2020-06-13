@@ -136,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         var lzmaStoragePath = me3cmmini[@"UpdaterService"][@"lzmastoragepath"];
                         if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceLZMAStoragePath) && !string.IsNullOrWhiteSpace(lzmaStoragePath))
                         {
-                            Settings.UpdaterServiceLZMAStoragePath = updaterServiceUsername;
+                            Settings.UpdaterServiceLZMAStoragePath = lzmaStoragePath;
                             Log.Information(@"Migrated Updater Service LZMA Storage Path: " + lzmaStoragePath);
                         }
 
