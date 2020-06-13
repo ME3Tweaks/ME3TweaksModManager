@@ -236,6 +236,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 default:
                                     try
                                     {
+                                        Log.Information(@"Deleting directory: " + entry);
                                         Utilities.DeleteFilesAndFoldersRecursively(entry, true);
                                     }
                                     catch (Exception e)
@@ -243,6 +244,18 @@ namespace MassEffectModManagerCore.modmanager.windows
                                         Log.Error($@"Unable to delete item in data directory: {entry}, reason: {e.Message}");
                                     }
                                     break;
+                            }
+                        }
+                        else if (File.Exists(entry))
+                        {
+                            try
+                            {
+                                Log.Information(@"Cleanup: Deleting file " + entry);
+                                File.Delete(entry);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error($@"Unable to delete {entry}: {e.Message}");
                             }
                         }
                     }
