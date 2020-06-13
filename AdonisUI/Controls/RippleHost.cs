@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -83,7 +84,13 @@ namespace AdonisUI.Controls
             FrameworkElement mouseEventSource = MouseEventSource ?? this;
 
             InitRippleLayer(mouseEventSource);
+            //Unloaded += RippleHostUnload;
         }
+
+        //private void RippleHostUnload(object sender, RoutedEventArgs e)
+        //{
+        //    Debug.WriteLine("Unloading...");
+        //}
 
         private static void MouseEventSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -103,15 +110,21 @@ namespace AdonisUI.Controls
 
             InitRippleOpacityMask();
 
-            clickEventSource.PreviewMouseLeftButtonDown += MouseEventSourceOnMouseDown();
-            clickEventSource.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+            WeakEventManager<FrameworkElement, MouseButtonEventArgs>.AddHandler(clickEventSource, "PreviewMouseLeftButtonDown", MouseEventSourceOnMouseDown);
+            WeakEventManager<FrameworkElement, MouseButtonEventArgs>.AddHandler(clickEventSource, "PreviewMouseLeftButtonUp", MouseEventSourceOnMouseUp);
 
-            //Window parentWindow = Window.GetWindow(clickEventSource);
-            //if (parentWindow != null)
-            //{
-            //    parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
-            //    parentWindow.Deactivated += ParentWindowOnDeactivated;
-            //}
+            //clickEventSource.PreviewMouseLeftButtonDown += MouseEventSourceOnMouseDown();
+            //clickEventSource.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+
+            Window parentWindow = Window.GetWindow(clickEventSource);
+            if (parentWindow != null)
+            {
+                WeakEventManager<FrameworkElement, MouseButtonEventArgs>.AddHandler(parentWindow, "PreviewMouseLeftButtonUp", MouseEventSourceOnMouseUp);
+                WeakEventManager<Window, EventArgs>.AddHandler(parentWindow, "Deactivated", ParentWindowOnDeactivated);
+
+                //parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+                //parentWindow.Deactivated += ParentWindowOnDeactivated;
+            }
 
             IsVisibleChanged += (s, e) => Reset();
         }
@@ -170,12 +183,13 @@ namespace AdonisUI.Controls
             clickEventSource.PreviewMouseLeftButtonDown -= MouseEventSourceOnMouseDown();
             clickEventSource.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
 
-            Window parentWindow = Window.GetWindow(clickEventSource);
-            if (parentWindow != null)
-            {
-                parentWindow.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
-                parentWindow.Deactivated -= ParentWindowOnDeactivated;
-            }
+            //I think these shouldn't be removed here as they're only defined in initripplelayer
+            //Window parentWindow = Window.GetWindow(clickEventSource);
+            //if (parentWindow != null)
+            //{
+            //    parentWindow.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
+            //    parentWindow.Deactivated -= ParentWindowOnDeactivated;
+            //}
         }
 
         private void ClearRippleLayer(FrameworkElement clickEventSource)
@@ -197,6 +211,11 @@ namespace AdonisUI.Controls
         private MouseButtonEventHandler MouseEventSourceOnMouseDown()
         {
             return (sender, args) => StartRipple(args.MouseDevice.GetPosition(this));
+        }
+
+        private void MouseEventSourceOnMouseDown(object sender, MouseButtonEventArgs args)
+        {
+            StartRipple(args.MouseDevice.GetPosition(this));
         }
 
         private void StartRipple(Point center)
@@ -235,6 +254,11 @@ namespace AdonisUI.Controls
                 EndRipple(args.Source as FrameworkElement);
         }
 
+        private void MouseEventSourceOnMouseUp(object sender, MouseButtonEventArgs args)
+        {
+            EndRipple(args.Source as FrameworkElement);
+        }
+
         private void ParentWindowOnDeactivated(object sender, EventArgs args)
         {
             EndRipple(null);
@@ -255,7 +279,6 @@ namespace AdonisUI.Controls
             removeAnimation.Completed += (s, e) =>
             {
                 rippleContainer.Background = null;
-                if (element != null) ClearClickHandlers(element);
             };
 
             if (AnimationToComplete == null || GetIsAnimationComplete(AnimationToComplete))
