@@ -250,13 +250,7 @@
                                                                          DockPanel.Dock="Left"
                                                                          Margin="0, 0, 4, 0"/>
 
-                                <ContentPresenter x:Name="ContentSite" 
-                                                  IsHitTestVisible="False"
-                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                  Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
-                                                  ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
-                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                                
 
 
                                 <TextBox x:Name="PART_EditableTextBox"
@@ -295,6 +289,13 @@
                                         </ControlTemplate>
                                     </TextBox.Template>
                                 </TextBox>
+                                <ContentPresenter x:Name="ContentSite" 
+                                                  IsHitTestVisible="False"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                                                  ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
                             </DockPanel>
                         </Border>
 
