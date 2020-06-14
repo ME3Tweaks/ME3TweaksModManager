@@ -75,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.window = window;
                 this.Game = game;
                 this.AvailableBackupSources.AddRange(availableBackupSources);
-                this.AvailableBackupSources.Add(new GameTarget(Game, "Link backup to an existing game copy", false, true));
+                this.AvailableBackupSources.Add(new GameTarget(Game, M3L.GetString(M3L.string_linkBackupToAnExistingGameCopy), false, true));
                 LoadCommands();
                 switch (Game)
                 {
@@ -127,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         // Can't point to an existing modding target
                         Log.Error(@"This target is not valid to point to as a backup: It is listed a modding target already, it must be removed as a target first");
-                        M3L.ShowDialog(window, $"This installation cannot be linked as a backup as it is already in the list of available modding targets. To link this installation as a backup, first remove the target from the Installation Information panel, under 'Manage Game'.", "Cannot link game copy", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_linkFailedAlreadyATarget), M3L.GetString(M3L.string_cannotLinkGameCopy), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -135,7 +135,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (!targetToBackup.IsValid)
                     {
                         Log.Error(@"This installation is not valid to point to as a backup: " + validationFailureReason);
-                        M3L.ShowDialog(window, $"The selected installation cannot be linked to for a backup due to validation errors: {validationFailureReason}.", "Invalid game copy", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_linkFailedInvalidTarget, validationFailureReason), M3L.GetString(M3L.string_invalidGameCopy), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                 }
@@ -471,8 +471,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (backupPath.Equals(docsPath, StringComparison.InvariantCultureIgnoreCase) || backupPath.IsSubPathOf(docsPath))
                 {
                     Log.Error(@"User chose path in or around the documents path for the game - not allowed as game can load files from here.");
-                    M3L.ShowDialog(window, $"The Documents/BioWare/{Utilities.GetGameName(Game)} directory (and its descendants) cannot be used as a backup location, as the game can load files from it. Please choose another directory.",
-                        "Location not allowed for backup", MessageBoxButton.OK,
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder, Utilities.GetGameName(Game)),
+                        M3L.GetString(M3L.string_locationNotAllowedForBackup), MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return false;
                 }

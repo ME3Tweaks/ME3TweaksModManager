@@ -474,7 +474,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
                 }
             }
-
+            public string EnableDisableTooltip { get; set; }
             public string ModName { get; private set; }
             public string DLCFolderName { get; private set; }
             public string DLCFolderNameString { get; private set; }
@@ -574,6 +574,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var source = dlcFolderPath;
                 var dlcdir = Directory.GetParent(dlcFolderPath).FullName;
+                var isBecomingDisabled = DLCFolderName.StartsWith(@"DLC"); //about to change to xDLC, so it's becoming disabled
                 var newdlcname = DLCFolderName.StartsWith(@"xDLC") ? DLCFolderName.TrimStart('x') : @"x" + DLCFolderName;
                 var target = Path.Combine(dlcdir, newdlcname);
                 try
@@ -581,6 +582,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Directory.Move(source, target);
                     DLCFolderName = newdlcname;
                     dlcFolderPath = target;
+                    EnableDisableTooltip = M3L.GetString(isBecomingDisabled ? M3L.string_tooltip_enableDLC : M3L.string_tooltip_disableDLC);
                 }
                 catch (Exception e)
                 {

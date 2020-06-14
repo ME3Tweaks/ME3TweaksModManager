@@ -523,6 +523,13 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_cannotCreateBackup = "string_cannotCreateBackup";
 		public static readonly string string_someDlcNotInstalled = "string_someDlcNotInstalled";
 		public static readonly string string_dialog_notAllDLCInstalled = "string_dialog_notAllDLCInstalled";
+		public static readonly string string_linkBackupToAnExistingGameCopy = "string_linkBackupToAnExistingGameCopy";
+		public static readonly string string_interp_dialog_linkFailedAlreadyATarget = "string_interp_dialog_linkFailedAlreadyATarget";
+		public static readonly string string_cannotLinkGameCopy = "string_cannotLinkGameCopy";
+		public static readonly string string_interp_dialog_linkFailedInvalidTarget = "string_interp_dialog_linkFailedInvalidTarget";
+		public static readonly string string_invalidGameCopy = "string_invalidGameCopy";
+		public static readonly string string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder = "string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder";
+		public static readonly string string_locationNotAllowedForBackup = "string_locationNotAllowedForBackup";
 		public static readonly string string_interp_downloadingX = "string_interp_downloadingX";
 		public static readonly string string_interp_extractingX = "string_interp_extractingX";
 		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";
@@ -607,6 +614,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_enable = "string_enable";
 		public static readonly string string_disable = "string_disable";
 		public static readonly string string_disabled = "string_disabled";
+		public static readonly string string_tooltip_disableDLC = "string_tooltip_disableDLC";
+		public static readonly string string_tooltip_enableDLC = "string_tooltip_enableDLC";
+		public static readonly string string_tooltip_deleteDLC = "string_tooltip_deleteDLC";
+		public static readonly string string_tooltip_openTargetInExplorer = "string_tooltip_openTargetInExplorer";
 		public static readonly string string_selectALogToView = "string_selectALogToView";
 		public static readonly string string_collectingLogInformation = "string_collectingLogInformation";
 		public static readonly string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";

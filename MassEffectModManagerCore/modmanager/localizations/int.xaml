@@ -502,6 +502,15 @@
     <system:String x:Key="string_someDlcNotInstalled">Some DLC not installed</system:String>
     <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">This target does not have have all OFFICIAL DLC installed. Ensure you have installed all OFFICIAL DLC you want to include in your backup, otherwise a game restore will not include all of it.\n\nThe following DLC is not installed:\n{0}\n\nNote that you don't need all DLC in a backup (such as DLC you have not purchased), however some Mod Manager features depend on specific DLC being installed, such as ME3Tweaks ModMaker.\n\nMake a backup of this target?</system:String>
     <!-- 0 = bulleted list of DLC -->
+    <system:String x:Key="string_linkBackupToAnExistingGameCopy">Link backup to an existing game copy</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">This installation cannot be linked as a backup as it is already in the list of available modding targets. To link this installation as a backup, first remove the target from the Installation Information panel, under 'Manage Game'.</system:String>
+    <system:String x:Key="string_cannotLinkGameCopy">Cannot link game copy</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">The selected installation cannot be linked to for a backup due to validation errors: {0}.</system:String>
+    <!-- 0=Validation failure reason -->
+    <system:String x:Key="string_invalidGameCopy">Invalid game copy</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">The Documents/BioWare/{0} directory (and its descendants) cannot be used as a backup location, as the game can load files from it. Please choose another directory.</system:String>
+    <!-- 0=Game name (Mass Effect, Mass Effect 3, etc)-->
+    <system:String x:Key="string_locationNotAllowedForBackup">Location not allowed for backup</system:String>
 
     <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Downloading {0}</system:String>
@@ -611,6 +620,10 @@
     <system:String x:Key="string_enable">Enable</system:String>
     <system:String x:Key="string_disable">Disable</system:String>
     <system:String x:Key="string_disabled">Disabled</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_disableDLC">Disables this DLC mod from loading.&#10;This does not modify any files and can be safely done after texture mods have been installed</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_enableDLC">Enables this DLC mod to load in the game</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_deleteDLC">Remove this DLC mod from the game.&#10;Hold SHIFT to bypass the confirmation dialog (if there are no warnings)</system:String>
+    <system:String  x:Key="string_tooltip_openTargetInExplorer">Opens this game target directory in File Explorer</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
