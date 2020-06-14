@@ -70,7 +70,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_MALFORMED_RCW_FILE,
             INSTALL_ABORTED_NOT_ENOUGH_SPACE,
             INSTALL_FAILED_BAD_ME2_COALESCED,
-            INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION
+            INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION,
+            INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER
         }
 
         public string Action { get; set; }
@@ -396,6 +397,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Utilities.DriveFreeBytes(gameTarget.TargetPath, out var freeSpaceOnTargetDisk);
             requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.1); //+10% for some overhead
+            Log.Information($@"Mod requires {ByteSize.FromBytes(requiredSpaceToInstall)} of disk space to install. We have {ByteSize.FromBytes(freeSpaceOnTargetDisk)} available");
             if (requiredSpaceToInstall > (long)freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
             {
                 string driveletter = Path.GetPathRoot(gameTarget.TargetPath);
@@ -581,10 +583,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Action = M3L.GetString(M3L.string_installingSupportFiles);
             PercentVisibility = Visibility.Collapsed;
-            Log.Information(@"Installing supporting ASI files");
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
-                //Todo: Convert to ASI Manager installer
+                Log.Information(@"Installing supporting ASI files");
                 Utilities.InstallASIByGroupID(gameTarget, @"DLC Mod Enabler", 16); //16 = DLC Mod Enabler
             }
             else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
@@ -595,12 +596,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
+                    Log.Information(@"Installing supporting ASI files");
                     Utilities.InstallASIByGroupID(gameTarget, @"Balance Changes Replacer", 5);
                 }
 
                 //Install Autotoc ASI?
                 //Install logger truncating?
                 // (Is this already handled elsewhere?)
+                // Don't install these until ALOT installer is also on ASI Manager code
             }
 
             if (sfarStagingDirectory != null)
@@ -787,7 +790,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
                 }
-
             }
             me2c.Serialize();
             return ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
@@ -917,78 +919,89 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
+            var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
             if (e.Error != null)
             {
                 Log.Error(@"An error occured during mod installation.\n" + App.FlattenException(e.Error));
-            }
-
-            var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
-            if (e.Result is ModInstallCompletedStatus mcis)
-            {
-                telemetryResult = mcis;
-                //Success, canceled (generic and handled), ALOT canceled
-                InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
-                if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
-                {
-                    InstallationCancelled = true;
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationBlockedByALOT), M3L.GetString(M3L.string_installationBlocked), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
-                {
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck), M3L.GetString(M3L.string_installationSucceededMaybe), MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE)
-                {
-                    InstallationCancelled = true;
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED)
-                {
-                    InstallationCancelled = true;
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidME2Coalesced), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
-                {
-                    InstallationCancelled = true;
-                }
-            }
-            else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
-            {
-                telemetryResult = result;
-                //Failures with results
-                Log.Warning(@"Installation failed with status " + result.ToString());
-                switch (result)
-                {
-                    case ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING:
-                        string dlcText = "";
-                        foreach (var dlc in items)
-                        {
-                            var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
-                            if (info != null)
-                            {
-                                dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
-                            }
-                            else
-                            {
-                                dlcText += $"\n - {dlc}"; //Do not localize
-                            }
-                        }
-                        InstallationCancelled = true;
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                        break;
-                }
+                telemetryResult = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
+                Xceed.Wpf.Toolkit.MessageBox.Show($"An error occured during mod installation:\n{App.FlattenException(e.Error)}\n\nThe mod may not have correctly installed. Come to the ME3Tweaks Discord if you need assistance.");
             }
             else
             {
-                Log.Fatal(@"The application is going to crash due to a sanity check failure. Please report this to ME3Tweaks so this can be fixed.");
-                if (e.Result == null)
+                if (e.Result is ModInstallCompletedStatus mcis)
                 {
-                    throw new Exception(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
+                    telemetryResult = mcis;
+                    //Success, canceled (generic and handled), ALOT canceled
+                    InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
+                    if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
+                    {
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationBlockedByALOT), M3L.GetString(M3L.string_installationBlocked), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
+                    {
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck), M3L.GetString(M3L.string_installationSucceededMaybe), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE)
+                    {
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED)
+                    {
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidME2Coalesced), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
+                    {
+                        InstallationCancelled = true;
+                    }
+                }
+                else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
+                {
+                    telemetryResult = result;
+                    //Failures with results
+                    Log.Warning(@"Installation failed with status " + result.ToString());
+                    switch (result)
+                    {
+                        case ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING:
+                            string dlcText = "";
+                            foreach (var dlc in items)
+                            {
+                                var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
+                                if (info != null)
+                                {
+                                    dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
+                                }
+                                else
+                                {
+                                    dlcText += $"\n - {dlc}"; //Do not localize
+                                }
+                            }
+
+                            InstallationCancelled = true;
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                    }
                 }
                 else
                 {
-                    throw new Exception(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
+                    Log.Fatal(@"The application is going to crash due to a sanity check failure. Please report this to ME3Tweaks so this can be fixed.");
+
+                    // Once this issue has been fixed these lines can be commented out or removed (June 14 2020)
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, "You've triggered a bug/crash in Mod Manager's mod installer that is currently being investigated and needs more information! Please come to the ME3Tweaks Discord and report that you saw this message on #enduser_support so they can help troubleshoot the issue further. (The application is about to crash)", "App crash", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
+                    // End bug message
+                    if (e.Result == null)
+                    {
+                        Log.Fatal(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
+                        throw new Exception(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
+                    }
+                    else
+                    {
+                        Log.Fatal(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
+                        throw new Exception(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
+                    }
                 }
             }
 

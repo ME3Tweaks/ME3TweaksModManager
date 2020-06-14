@@ -845,7 +845,7 @@
                             <Image
                                 Source="/modmanager/toolicons/alot_32.png"
                                 Width="16"
-                                RenderOptions.BitmapScalingMode="Linear" />
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem

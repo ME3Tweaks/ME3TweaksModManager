@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager
             bool testRun = false)
         {
             if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
-            compressPackages &= Game == MEGame.ME3; //ME3 ONLY FOR NOW
+            compressPackages &= Game >= MEGame.ME2;
             var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
             var archiveFile = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
             using (archiveFile)

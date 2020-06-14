@@ -62,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long ProgressMaximum { get; private set; }
         public bool ProgressIndeterminate { get; private set; }
 
-        public bool CanCompressPackages => CompressedMods.Any(x => x.Game > Mod.MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= Mod.MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
