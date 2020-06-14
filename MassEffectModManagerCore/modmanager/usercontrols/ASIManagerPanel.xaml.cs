@@ -677,7 +677,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             operationCompletedCallback?.Invoke();
                             Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
                             {
-                                { "Filename", Path.GetFileNameWithoutExtension(finalPath)}
+                                { @"Filename", Path.GetFileNameWithoutExtension(finalPath)}
                             });
                             return;
                         }
@@ -699,7 +699,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
                         memoryStream.WriteToFile(finalPath);
-                        Analytics.TrackEvent("Installed ASI", new Dictionary<string, string>()
+                        Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
                         {
                             { @"Filename", Path.GetFileNameWithoutExtension(finalPath)}
                         });

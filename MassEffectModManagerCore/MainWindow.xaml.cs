@@ -1731,7 +1731,7 @@ namespace MassEffectModManagerCore
             Log.Information($@"Checking {updatableMods.Count} mods for updates. Turn on mod update logging to view which mods");
             foreach (var m in updatableMods)
             {
-                CLog.Information($" >> Checking for updates to {m.ModName} {m.ParsedModVersion}", Settings.LogModUpdater);
+                CLog.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}", Settings.LogModUpdater);
             }
             BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModCheckForUpdates", M3L.GetString(M3L.string_checkingModsForUpdates), M3L.GetString(M3L.string_modUpdateCheckCompleted));
             var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode);

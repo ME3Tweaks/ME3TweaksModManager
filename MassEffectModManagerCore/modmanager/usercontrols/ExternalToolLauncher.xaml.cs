@@ -100,7 +100,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);
             };
 
-            Log.Information("Downloading file: " + url);
+            Log.Information(@"Downloading file: " + url);
             var extension = Path.GetExtension(url);
             string downloadPath = temppath + toolName + extension;
 
@@ -499,7 +499,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             switch (tool)
             {
                 case ME3Explorer_Beta:
-                    if (App.ServerManifest.TryGetValue("me3explorerbeta_latestversion", out var me3expbLatestversion))
+                    if (App.ServerManifest.TryGetValue(@"me3explorerbeta_latestversion", out var me3expbLatestversion))
                     {
                         return new Version(me3expbLatestversion);
                     }
@@ -514,7 +514,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             switch (tool)
             {
                 case ME3Explorer_Beta:
-                    if (App.ServerManifest.TryGetValue("me3explorerbeta_latestlink", out var me3expbLatestlink))
+                    if (App.ServerManifest.TryGetValue(@"me3explorerbeta_latestlink", out var me3expbLatestlink))
                     {
                         return me3expbLatestlink;
                     }
@@ -532,7 +532,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private static string toolNameToExeName(string toolname)
         {
-            if (toolname == ME3Explorer_Beta) return "ME3Explorer.exe";
+            if (toolname == ME3Explorer_Beta) return @"ME3Explorer.exe";
             return toolname + @".exe";
         }
 

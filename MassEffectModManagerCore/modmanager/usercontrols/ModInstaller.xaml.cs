@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
-            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}");
+            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
@@ -378,7 +378,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //we are installing this file
                         requiredSpaceToInstall += (long)f.Size;
-                        CLog.Information(@"Adding to size calculation: " + f.FileName + ", size " + f.Size, Settings.LogModInstallation);
+                        CLog.Information(@"Adding to size calculation: " + f.FileName + @", size " + f.Size, Settings.LogModInstallation);
 
                     }
                     else

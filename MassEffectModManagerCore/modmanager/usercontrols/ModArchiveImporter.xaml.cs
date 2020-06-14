@@ -67,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
         {
-            MemoryAnalyzer.AddTrackedMemoryItem($"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
+            MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
             DataContext = this;
             LoadCommands();
             ArchiveFilePath = file;

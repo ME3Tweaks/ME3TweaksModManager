@@ -619,7 +619,7 @@ namespace LocalizationHelper
 
         private void Check_Clicked(object sender, RoutedEventArgs e)
         {
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             string[] dirs =
@@ -646,9 +646,10 @@ namespace LocalizationHelper
                     Regex r = new Regex(regex);
                     var filelines = File.ReadAllLines(csFile);
                     HashSet<string> s = new HashSet<string>();
-
+                    int lineIndex = -1;
                     foreach (var line in filelines)
                     {
+                        lineIndex++;
                         var commentIndex = line.IndexOf("//");
                         var matches = r.Matches(line);
                         if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
@@ -664,7 +665,10 @@ namespace LocalizationHelper
                             if (newStr.Length > 1)
                             {
                                 strname += toCamelCase(newStr);
-                                s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+                                
+                                //LN is line number
+                                s.Add($"  LN:{lineIndex}  <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+                                //s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
                             }
                         }
                     }
@@ -679,7 +683,7 @@ namespace LocalizationHelper
 
         private void CheckXamls_Clicked(object sender, RoutedEventArgs e)
         {
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             string[] dirs =
