@@ -149,7 +149,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_MassEffectRandomizer = "string_MassEffectRandomizer";
 		public static readonly string string_RandomizerforthefirstMassEffectgame = "string_RandomizerforthefirstMassEffectgame";
 		public static readonly string string_ME3ExplorerME3TweaksFork = "string_ME3ExplorerME3TweaksFork";
+		public static readonly string string_ME3ExplorerME3TweaksForkBeta = "string_ME3ExplorerME3TweaksForkBeta";
 		public static readonly string string_ME3ExplorerME3TweaksForkTooltip = "string_ME3ExplorerME3TweaksForkTooltip";
+		public static readonly string string_ME3ExplorerME3TweaksForkBetaTooltip = "string_ME3ExplorerME3TweaksForkBetaTooltip";
 		public static readonly string string_BackupRestore = "string_BackupRestore";
 		public static readonly string string_Backup = "string_Backup";
 		public static readonly string string_Createentiregamebackups = "string_Createentiregamebackups";
@@ -366,6 +368,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_checkModsForUpdates = "string_checkModsForUpdates";
 		public static readonly string string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates = "string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates";
 		public static readonly string string_mEMVanillaDBViewer = "string_mEMVanillaDBViewer";
+		public static readonly string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
 		public static readonly string string_brokenTexturesWarning = "string_brokenTexturesWarning";
@@ -485,6 +488,13 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_languageCheckDetectedIssues = "string_languageCheckDetectedIssues";
 		public static readonly string string_mod = "string_mod";
 		public static readonly string string_checkingModBeforeDeployment = "string_checkingModBeforeDeployment";
+		public static readonly string string_miscellaneousChecks = "string_miscellaneousChecks";
+		public static readonly string string_atLeastOneMiscellaneousCheckFailed = "string_atLeastOneMiscellaneousCheckFailed";
+		public static readonly string string_detectedMiscellaneousIssues = "string_detectedMiscellaneousIssues";
+		public static readonly string string_checkingForMiscellaneousIssues = "string_checkingForMiscellaneousIssues";
+		public static readonly string string_interp_modReferencesMetaCmm = "string_interp_modReferencesMetaCmm";
+		public static readonly string string_noMiscellaneousIssuesDetected = "string_noMiscellaneousIssuesDetected";
+		public static readonly string string_tooltip_deploymentChecksFoundMiscIssues = "string_tooltip_deploymentChecksFoundMiscIssues";
 		public static readonly string string_backupsAreShared = "string_backupsAreShared";
 		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public static readonly string string_backUp = "string_backUp";

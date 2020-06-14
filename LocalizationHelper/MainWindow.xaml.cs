@@ -81,7 +81,7 @@ namespace LocalizationHelper
             SelectedCS = false;
             SelectedXAML = false;
             if (SelectedFile == null) return;
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             var selectedFilePath = Path.Combine(modmanagerroot, SelectedFile);
@@ -444,7 +444,7 @@ namespace LocalizationHelper
                 Debug.WriteLine(str.Value);
             }
 
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
 
