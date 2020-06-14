@@ -318,7 +318,7 @@
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Invalid audio pointer, does not point to RIFF header</system:String>
     <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.</system:String>
     <!-- 0 = filepath, 1=export path in-package -->
-    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Error validating audio reference: {e.Message}</system:String>
+    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Error validating audio reference: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noAudioIssuesWereDetected">No audio issues were detected</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Audio issues were detected</system:String>

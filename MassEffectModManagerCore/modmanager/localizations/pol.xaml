@@ -436,7 +436,7 @@
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Niepoprawny wskaźnik audio, nie wskazuje nagłówka RIFF</system:String>
     <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: Ten dźwięk jest w basegame/DLC AFC, ale nie jest dźwiękiem bazowym. Użytkownicy końcowi nie będą mieli do niego dostępu. Użyj kompresora AFC w ME3Explorer, aby pobrać ten dźwięk lokalnie do AFC dla tego moda.</system:String>
     <!-- 0 = filepath, 1=export path in-package -->
-    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Błąd sprawdzania poprawności referencji audio: {e.Message}</system:String>
+    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Błąd sprawdzania poprawności referencji audio: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noAudioIssuesWereDetected">Nie wykryto problemów z dźwiękiem</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Wykryto problemy z dźwiękiem</system:String>

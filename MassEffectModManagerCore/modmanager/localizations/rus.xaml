@@ -436,7 +436,7 @@
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Недопустимый указатель аудио, нет ссылки на заголок RIFF</system:String>
     <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: Этот аудиофайл находится в AFC базовой игры/DLC, но не является оригинальным. Он будет недоступен для конечных пользователей. Используйте AFC Сompactor в ME3Explorer, чтобы поместить аудиофайл внутрь AFC данного мода.</system:String>
 	<!-- 0 = filepath, 1=export path in-package -->
-    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Ошибка подтверждения ссылки на аудиофайл: {e.Message}</system:String>
+    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Ошибка подтверждения ссылки на аудиофайл: {2}</system:String>
 	<!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noAudioIssuesWereDetected">Проблемы с аудиофайлами не обнаружены</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Обнаружены проблемы с аудиофайлами</system:String>
