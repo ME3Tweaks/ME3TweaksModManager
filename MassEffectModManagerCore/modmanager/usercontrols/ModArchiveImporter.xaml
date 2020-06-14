@@ -3,7 +3,7 @@
     x:Class="MassEffectModManagerCore.modmanager.usercontrols.ModArchiveImporter" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     mc:Ignorable="d"
-    Height="490"
+    Height="460"
     Width="720">
     <DockPanel
         Margin="0,0">
@@ -18,11 +18,6 @@
             FontSize="14"
             Text="{Binding ScanningFile, FallbackValue=Placeholder.7z}"
             TextAlignment="Center" />
-        <TextBlock
-            DockPanel.Dock="Top"
-            Text="Importing a mod to your library places the mod in a ready to install state and enables the mod to check for updates, if supported. Once a mod is imported, you can install it by pressing Apply Mod in the bottom right of the main window.&#10;Installing the mod from this dialog will immediately install it to the active target." TextWrapping="Wrap"
-            TextAlignment="Center" />
-
         <DockPanel
             DockPanel.Dock="Bottom">
             <ProgressBar
