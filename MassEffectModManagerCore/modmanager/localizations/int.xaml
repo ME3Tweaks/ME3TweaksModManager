@@ -79,9 +79,9 @@
     <system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
     <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Randomizer for the first Mass Effect game</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork (Stable)</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (Beta)</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (Nightly)</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip" xml:space="preserve">Toolset for developing Mass Effect trilogy mods.&#10;This is the stable version, which is typically a few months old</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksForkBetaTooltip" xml:space="preserve">Toolset for developing Mass Effect trilogy mods. This is the beta version which contain many new features.&#10;Active developers are encouraged to use this version and join the ME3Tweaks Discord where development is done</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkBetaTooltip" xml:space="preserve">Toolset for developing Mass Effect trilogy mods.&#10;This is the nightly version, which means it's built fresh every time one of the developers commits code.&#10;This version will be less stable and may have significant bugs.&#10;Active developers are encouraged to use this version and join the ME3Tweaks Discord</system:String>
     <system:String x:Key="string_BackupRestore">Backup &amp; Restore</system:String>
     <system:String x:Key="string_Backup">Backup</system:String>
     <system:String x:Key="string_Createentiregamebackups">Create entire game backups</system:String>

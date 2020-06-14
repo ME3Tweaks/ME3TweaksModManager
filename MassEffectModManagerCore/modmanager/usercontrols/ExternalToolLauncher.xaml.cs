@@ -100,6 +100,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);
             };
 
+            Log.Information("Downloading file: " + url);
             var extension = Path.GetExtension(url);
             string downloadPath = temppath + toolName + extension;
 
@@ -457,6 +458,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             exe => resultingExecutableStringCallback?.Invoke(exe),
                             (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
                         );
+                        ToolsCheckedForUpdatesInThisSession.Add(tool);
+                        return; //is this the right place for this?
                     }
                     else
                     {
@@ -467,24 +470,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             needsDownloading = true;
                         }
-
                     }
-                }
 
 
-                if (!needsDownloading)
-                {
-                    resultingExecutableStringCallback?.Invoke(localExecutable);
-                }
-                else
-                {
-                    DownloadToolME3Tweaks(localToolFolderName, downloadLink, downloadVersion, localExecutable,
-                        s => currentTaskUpdateCallback?.Invoke(s),
-                        vis => setPercentVisibilityCallback?.Invoke(vis),
-                        percent => setPercentTaskDone?.Invoke(percent),
-                        exe => resultingExecutableStringCallback?.Invoke(exe),
-                        (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
-                    );
+
+                    if (!needsDownloading)
+                    {
+                        resultingExecutableStringCallback?.Invoke(localExecutable);
+                    }
+                    else
+                    {
+                        DownloadToolME3Tweaks(localToolFolderName, downloadLink, downloadVersion, localExecutable,
+                            s => currentTaskUpdateCallback?.Invoke(s),
+                            vis => setPercentVisibilityCallback?.Invoke(vis),
+                            percent => setPercentTaskDone?.Invoke(percent),
+                            exe => resultingExecutableStringCallback?.Invoke(exe),
+                            (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
+                        );
+                    }
                 }
             }
 
