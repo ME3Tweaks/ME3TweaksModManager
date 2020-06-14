@@ -30,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         //have to be const apparently
         public const string EGMSettings = @"EGMSettings";
         public const string ME3Explorer = @"ME3Explorer";
-        public const string ME3Explorer_Beta = @"ME3Explorer (Beta)";
+        public const string ME3Explorer_Beta = @"ME3Explorer (Nightly)";
         public const string ALOTInstaller = @"ALOT Installer";
         public const string MEIM = @"Mass Effect INI Modder"; //this is no longer external.
         public const string MEM = @"Mass Effect Modder";
