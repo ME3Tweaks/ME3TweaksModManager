@@ -924,7 +924,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Log.Error(@"An error occured during mod installation.\n" + App.FlattenException(e.Error));
                 telemetryResult = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
-                Xceed.Wpf.Toolkit.MessageBox.Show($"An error occured during mod installation:\n{App.FlattenException(e.Error)}\n\nThe mod may not have correctly installed. Come to the ME3Tweaks Discord if you need assistance.");
+                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_dialog_errorOccuredDuringInstallation, App.FlattenException(e.Error)));
             }
             else
             {
@@ -989,7 +989,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Fatal(@"The application is going to crash due to a sanity check failure. Please report this to ME3Tweaks so this can be fixed.");
 
                     // Once this issue has been fixed these lines can be commented out or removed (June 14 2020)
-                    Xceed.Wpf.Toolkit.MessageBox.Show(window, "You've triggered a bug/crash in Mod Manager's mod installer that is currently being investigated and needs more information! Please come to the ME3Tweaks Discord and report that you saw this message on #enduser_support so they can help troubleshoot the issue further. (The application is about to crash)", "App crash", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialog_appAboutToCrashYouFoundBug), M3L.GetString(M3L.string_appCrash), MessageBoxButton.OK, MessageBoxImage.Error);
                     Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
                     // End bug message
                     if (e.Result == null)

@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.ModArchiveImporter" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:fa="http://schemas.fontawesome.io/icons/"
-    xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.ModArchiveImporter" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     mc:Ignorable="d"
     Height="460"
     Width="720">
@@ -36,7 +35,7 @@
                 Value="{Binding ProgressValue, Mode=OneWay}"
                 Maximum="{Binding ProgressMaximum, Mode=OneWay}" />
             <DockPanel
-                                                                                                                                                                                                                                                                                                                                      Margin="0,5,0,0">
+                Margin="0,5,0,0">
                 <Button
                     DockPanel.Dock="Right"
                     Content="{Binding InstallModText}"
@@ -50,14 +49,14 @@
                     Padding="8,3"
                     Margin="5,0"
                     Command="{Binding ImportModsCommand}"
-                    ToolTip="Imports the selected mods into your mod library.&#10;Importing provides additional features in Mod Manager:&#10; - Update checks for mods (if supported)&#10; - Compression on import (if supported)&#10; - Restoring mod from ME3Tweaks (if supported)"
+                    ToolTip="{DynamicResource string_tooltip_importMods}"
                     Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
                     DockPanel.Dock="Right"
                     Content="{DynamicResource string_launchALOTInstaller}"
                     Padding="8,3"
                     Margin="5,0"
-                    ToolTip="Launches ALOT Installer"
+                    ToolTip="{DynamicResource string_tooltip_launchesALOTInstaller}"
                     Command="{Binding LaunchALOTInstallerCommand}"
                     Visibility="{Binding TextureFilesImported, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
@@ -72,7 +71,7 @@
                         Content="{DynamicResource string_compressPackages}"
                         VerticalContentAlignment="Center"
                         Padding="8,3"
-                        ToolTip="Compresses package files on import, reducing their file size. This is an experimental feature - if mods experience issues, you should not use this option.&#10;This option is not available for the following scenarios due to complexity:&#10; - Direct installation from archive&#10; - Mass Effect 1 files&#10;&#10;This feature can be disabled ME3Tweaks when Mod Manager checks into the server"
+                        ToolTip="{DynamicResource string_tooltip_compressPackages}"
                         IsChecked="{Binding CompressPackages}"
                         Visibility="{Binding ArchiveScanned, Converter={StaticResource BoolToVisibilityConverter}}"
                         IsEnabled="{Binding CanCompressPackages}" />

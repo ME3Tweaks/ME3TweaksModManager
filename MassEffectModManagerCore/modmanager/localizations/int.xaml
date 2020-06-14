@@ -311,7 +311,6 @@
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
-
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
@@ -365,6 +364,11 @@
     <system:String xml:space="preserve" x:Key="string_interp_errorWhileExtractingArchiveInstall">An error occured extracting the archive file for installation:\n\n{0}\n\nThe mod may be partially installed.</system:String>
     <!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingMod">Error extracting mod</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_errorOccuredDuringInstallation">An error occured during mod installation:\n{0}\n\nThe mod may not have correctly installed. Come to the ME3Tweaks Discord if you need assistance.</system:String>
+    <!-- 0=full error stacktrace -->
+    <system:String x:Key="string_dialog_appAboutToCrashYouFoundBug">You've triggered a bug/crash in Mod Manager's mod installer that is currently being investigated and needs more information! Please come to the ME3Tweaks Discord and report that you saw this message on #enduser_support so they can help troubleshoot the issue further. (The application is about to crash)</system:String>
+    <system:String x:Key="string_appCrash">App crash</system:String>
+
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -703,6 +707,9 @@
     <system:String x:Key="string_errorExtractingArchive">Error extracting archive</system:String>
     <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Failed to fetch moddesc.ini file from server: {0}</system:String>
     <!-- 0= loadFailedReason -->
+    <system:String xml:space="preserve" x:Key="string_tooltip_importMods">Imports the selected mods into your mod library.&#10;Importing provides additional features in Mod Manager:&#10; - Update checks for mods (if supported)&#10; - Compression on import (if supported)&#10; - Restoring mod from ME3Tweaks (if supported)</system:String>
+    <system:String  x:Key="string_tooltip_launchesALOTInstaller">Launches ALOT Installer</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_compressPackages">Compresses package files on import, reducing their file size. This is an experimental feature - if mods experience issues, you should not use this option.&#10;This option is not available for the following scenarios due to complexity:&#10; - Direct installation from archive&#10; - Mass Effect 1 files&#10;&#10;This feature can be disabled ME3Tweaks when Mod Manager checks into the server</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -1398,7 +1405,6 @@
     <system:String x:Key="string_compiledFromTheFollowingMixins">Compiled from the following mixins:</system:String>
     <system:String x:Key="string_failedToApplyAllMixins">Failed to apply all Mixins</system:String>
     <system:String x:Key="string_theFollowingMixinsFailedToApply">The following Mixins failed to apply.</system:String>
-
     <system:String x:Key="string_compileEllipses">Compile...</system:String>
     <system:String x:Key="string_compileIntoANewMod">Compile into a new mod</system:String>
     <system:String x:Key="string_modNameColon">Mod name:</system:String>
@@ -1471,6 +1477,9 @@
     <system:String x:Key="string_migratingSettings">Migrating settings</system:String>
     <system:String x:Key="string_interp_migratingModsXoFY">Migrating mods [{0}/{1}]</system:String>
     <!-- 0=numMigrated 1=numToMigrate -->
+    <system:String xml:space="preserve" x:Key="string_dialog_me3cmmMigrationCompleted">Migration from Mass Effect 3 Mod Manager to ME3Tweaks Mod Manager completed.\n\nLaunch ME3TweaksModManager.exe from now on instead of ME3CMM.exe.</system:String>
+    <system:String x:Key="string_dialog_performMe3cmmCleanup">Cleanup ME3CMM files? This will delete loose files in the data directory, ME3CMM specific folders in the data directory, and ME3CMM.exe.</system:String>
+    <system:String x:Key="string_performCleanupQuestion">Perform cleanup?</system:String>
 
     <!-- Official DLC Toggler -->
     <system:String x:Key="string_officialDLCToggler">Official DLC toggler</system:String>

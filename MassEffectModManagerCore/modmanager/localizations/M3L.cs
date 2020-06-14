@@ -409,6 +409,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_debugPrintQueue = "string_debugPrintQueue";
 		public static readonly string string_interp_errorWhileExtractingArchiveInstall = "string_interp_errorWhileExtractingArchiveInstall";
 		public static readonly string string_errorExtractingMod = "string_errorExtractingMod";
+		public static readonly string string_interp_dialog_errorOccuredDuringInstallation = "string_interp_dialog_errorOccuredDuringInstallation";
+		public static readonly string string_dialog_appAboutToCrashYouFoundBug = "string_dialog_appAboutToCrashYouFoundBug";
+		public static readonly string string_appCrash = "string_appCrash";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -679,6 +682,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_anErrorOccuredExtractingTheArchiveX = "string_interp_anErrorOccuredExtractingTheArchiveX";
 		public static readonly string string_errorExtractingArchive = "string_errorExtractingArchive";
 		public static readonly string string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason = "string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason";
+		public static readonly string string_tooltip_importMods = "string_tooltip_importMods";
+		public static readonly string string_tooltip_launchesALOTInstaller = "string_tooltip_launchesALOTInstaller";
+		public static readonly string string_tooltip_compressPackages = "string_tooltip_compressPackages";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";
@@ -1214,6 +1220,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_migratingMods = "string_migratingMods";
 		public static readonly string string_migratingSettings = "string_migratingSettings";
 		public static readonly string string_interp_migratingModsXoFY = "string_interp_migratingModsXoFY";
+		public static readonly string string_dialog_me3cmmMigrationCompleted = "string_dialog_me3cmmMigrationCompleted";
+		public static readonly string string_dialog_performMe3cmmCleanup = "string_dialog_performMe3cmmCleanup";
+		public static readonly string string_performCleanupQuestion = "string_performCleanupQuestion";
 		public static readonly string string_officialDLCToggler = "string_officialDLCToggler";
 		public static readonly string string_officialDLCTogglerDescription = "string_officialDLCTogglerDescription";
 		public static readonly string string_officialDLCTogglerME1ME2Warning = "string_officialDLCTogglerME1ME2Warning";

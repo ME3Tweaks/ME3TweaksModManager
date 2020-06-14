@@ -219,48 +219,59 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                     Log.Information(@"Step 2: Finished settings migration");
                     // 3. CLEANUP
-                    Log.Information(@"Step 3: Cleaning up");
-                    CleaningUpTask.SetInProgress();
-                    var directoriesInDataDir = Directory.GetFileSystemEntries(dataDir);
-                    foreach (var entry in directoriesInDataDir)
+                    bool cleanup = false;
+                    App.Current.Dispatcher.Invoke(delegate
                     {
-                        var name = Path.GetFileName(entry);
-                        if (Directory.Exists(entry))
+                        cleanup = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_performMe3cmmCleanup), M3L.GetString(M3L.string_performCleanupQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
+                    });
+                    if (cleanup)
+                    {
+                        Log.Information(@"Step 3: Cleaning up");
+                        CleaningUpTask.SetInProgress();
+                        var directoriesInDataDir = Directory.GetFileSystemEntries(dataDir);
+                        foreach (var entry in directoriesInDataDir)
                         {
-                            switch (name.ToLower())
+                            var name = Path.GetFileName(entry);
+                            if (Directory.Exists(entry))
                             {
-                                case @"deployed mods":
-                                case @"override":
-                                case @"patch_001_extracted":
-                                    continue;
-                                default:
-                                    try
-                                    {
-                                        Log.Information(@"Deleting directory: " + entry);
-                                        Utilities.DeleteFilesAndFoldersRecursively(entry, true);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Log.Error($@"Unable to delete item in data directory: {entry}, reason: {e.Message}");
-                                    }
-                                    break;
+                                switch (name.ToLower())
+                                {
+                                    case @"deployed mods":
+                                    case @"override":
+                                    case @"patch_001_extracted":
+                                        continue;
+                                    default:
+                                        try
+                                        {
+                                            Log.Information(@"Deleting directory: " + entry);
+                                            Utilities.DeleteFilesAndFoldersRecursively(entry, true);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Error($@"Unable to delete item in data directory: {entry}, reason: {e.Message}");
+                                        }
+
+                                        break;
+                                }
                             }
-                        }
-                        else if (File.Exists(entry))
-                        {
-                            try
+                            else if (File.Exists(entry))
                             {
-                                Log.Information(@"Cleanup: Deleting file " + entry);
-                                File.Delete(entry);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error($@"Unable to delete {entry}: {e.Message}");
+                                try
+                                {
+                                    Log.Information(@"Cleanup: Deleting file " + entry);
+                                    File.Delete(entry);
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.Error($@"Unable to delete {entry}: {e.Message}");
+                                }
                             }
                         }
                     }
-
-                    //todo: Cleanup files
+                    else
+                    {
+                        Log.Information(@"Skipping step 3: cleanup due to user request.");
+                    }
 
                     CleaningUpTask.SetDone();
                     Log.Information(@"Step 3: Cleaned up");
@@ -276,7 +287,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 Log.Information(@"Migration has completed.");
-                Xceed.Wpf.Toolkit.MessageBox.Show("Migration from Mass Effect 3 Mod Manager to ME3Tweaks Mod Manager completed.\n\nLaunch ME3TweaksModManager.exe from now on instead of ME3CMM.exe.");
+                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));
                 Close();
             };
             nbw.RunWorkerAsync();
