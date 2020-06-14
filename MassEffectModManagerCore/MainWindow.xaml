@@ -1254,7 +1254,8 @@
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                         ToolTip="{DynamicResource string_tooltip_currentTarget}"
                         ItemTemplate="{StaticResource TargetSelectorTemplate}"
-                        ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+                        ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
+                        />
                     <Button
                         Content="{DynamicResource string_addTarget}"
                         Command="{Binding AddTargetCommand}"

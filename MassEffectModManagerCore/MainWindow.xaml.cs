@@ -1659,14 +1659,6 @@ namespace MassEffectModManagerCore
                     else
                     {
                         FailedMods.Add(mod);
-
-
-                        //Application.Current.Dispatcher.Invoke(delegate
-                        //{
-                        //    Storyboard sb = this.FindResource("OpenWebsitePanel") as Storyboard;
-                        //    Storyboard.SetTarget(sb, FailedModsPanel);
-                        //    sb.Begin();
-                        //});
                     }
                 }
 
@@ -1736,13 +1728,21 @@ namespace MassEffectModManagerCore
 
         private void CheckModsForUpdates(List<Mod> updatableMods, bool restoreMode = false)
         {
+            Log.Information($@"Checking {updatableMods.Count} mods for updates. Turn on mod update logging to view which mods");
+            foreach (var m in updatableMods)
+            {
+                CLog.Information($" >> Checking for updates to {m.ModName} {m.ParsedModVersion}", Settings.LogModUpdater);
+            }
             BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModCheckForUpdates", M3L.GetString(M3L.string_checkingModsForUpdates), M3L.GetString(M3L.string_modUpdateCheckCompleted));
             var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode);
             if (allModsInManifest != null)
             {
-
                 //Calculate CLASSIC Updates
                 var updates = allModsInManifest.Where(x => x.updatecode > 0 && (x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0)).ToList();
+                foreach (var v in updates)
+                {
+                    Log.Information($@"Classic mod out of date: {v.mod.ModName} {v.mod.ParsedModVersion}, server version: {v.LocalizedServerVersionString}");
+                }
 
                 //Calculate MODMAKER Updates
                 foreach (var mm in updatableMods.Where(x => x.ModModMakerID > 0))
@@ -1753,6 +1753,7 @@ namespace MassEffectModManagerCore
                         var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
                         if (serverVer > mm.ParsedModVersion)
                         {
+                            Log.Information($@"ModMaker mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
                             matchingServerMod.mod = mm;
                             updates.Add(matchingServerMod);
                             matchingServerMod.SetLocalizedInfo();
@@ -1773,6 +1774,8 @@ namespace MassEffectModManagerCore
                                 matchingServerMod.mod = mm;
                                 updates.Add(matchingServerMod);
                                 matchingServerMod.SetLocalizedInfo();
+                                Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
+
                             }
                         }
                         else
