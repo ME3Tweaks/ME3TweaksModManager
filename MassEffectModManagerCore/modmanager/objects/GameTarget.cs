@@ -209,6 +209,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                         fs.Position = endPos - 8;
                         short memVersionUsed = fs.ReadInt16();
                         short installerVersionUsed = fs.ReadInt16();
+                        fs.Position -= 4; //roll back so we can read this whole thing as 4 bytes
+                        int preMemi4Bytes = fs.ReadInt32();
                         int perGameFinal4Bytes = -20;
                         switch (Game)
                         {
@@ -223,7 +225,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 break;
                         }
 
-                        if (installerVersionUsed >= 10 && installerVersionUsed != perGameFinal4Bytes) //default bytes before 178 MEMI Format
+                        if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format
                         {
                             fs.Position = endPos - 12;
                             short ALOTVER = fs.ReadInt16();
@@ -256,17 +258,8 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         private string getALOTMarkerFilePath()
         {
-            switch (Game)
-            {
-                case Mod.MEGame.ME1:
-                    return Path.Combine(TargetPath, @"BioGame\CookedPC\testVolumeLight_VFX.upk");
-                case Mod.MEGame.ME2:
-                    return Path.Combine(TargetPath, @"BioGame\CookedPC\BIOC_Materials.pcc");
-                case Mod.MEGame.ME3:
-                    return Path.Combine(TargetPath, @"BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc");
-                default:
-                    throw new Exception(@"Unknown game to find ALOT marker for!");
-            }
+            // this used to be shared method
+            return MEDirectories.ALOTMarkerPath(this);
         }
 
         public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();

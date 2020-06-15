@@ -540,7 +540,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += " DEBUG";
 #else
-                //version += " PRERELEASE";
+                version += " PRERELEASE";
 #endif
                 return $"{version}, Build {BuildNumber}";
             }
@@ -554,7 +554,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += " DEBUG";
 #else
-                //version += " PRERELEASE";
+                version += " PRERELEASE";
 #endif
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
