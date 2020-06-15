@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shell;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -36,7 +37,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             modsWithUpdates.ForEach(x =>
             {
                 x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
-                x.DownloadButtonText = M3L.GetString(M3L.string_downloadUpdate);
+                if (x.mod.ModModMakerID > 0 && Utilities.GetGameBackupPath(x.mod.Game) == null)
+                {
+                    x.DownloadButtonText = "Requires backup";
+                }
+                else
+                {
+                    x.DownloadButtonText = M3L.GetString(M3L.string_downloadUpdate);
+                }
             });
             UpdatableMods.AddRange(modsWithUpdates);
             LoadCommands();
@@ -47,6 +55,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (obj is OnlineContent.ModUpdateInfo ui)
             {
+                if (ui.mod.ModModMakerID > 0 && Utilities.GetGameBackupPath(ui.mod.Game) == null)
+                {
+                    return false;
+                }
                 return !ui.UpdateInProgress && ui.CanUpdate && !OperationInProgress;
             }
             return false;
@@ -75,6 +87,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             //throw new NotImplementedException();
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModmakerModUpdaterThread-" + mui.mod.ModName);
+            bw.WorkerReportsProgress = true;
+            bw.ProgressChanged += (a, b) =>
+            {
+                if (b.UserState is double d)
+                {
+                    mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
+                }
+            };
             bw.DoWork += (a, b) =>
             {
                 mui.DownloadButtonText = M3L.GetString(M3L.string_compiling);
@@ -99,7 +119,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         // OK
                         var decompressed = SevenZipHelper.LZMA.DecompressLZMAFile(download.result.ToArray());
                         modDelta = Encoding.UTF8.GetString(decompressed);
-                        // File.WriteAllText(@"C:\users\mgamerz\desktop\decomp.txt", modDelta);
                     }
                     else
                     {
@@ -133,6 +152,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 void setOverallValue(int current)
                 {
                     mui.OverallProgressValue = current;
+                    bw.ReportProgress(0, current * 1.0 / mui.OverallProgressMax);
                     if (current > mui.OverallProgressMax)
                     {
                         Debugger.Break();
@@ -168,25 +188,39 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
             };
+            mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
+            mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
             bw.RunWorkerAsync();
         }
 
         private void UpdateClassicMod(OnlineContent.ModUpdateInfo ui)
         {
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModUpdaterThread-" + ui.mod.ModName);
+            bw.WorkerReportsProgress = true;
+            bw.ProgressChanged += (a, b) =>
+            {
+                if (b.UserState is double d)
+                {
+                    mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
+                }
+            };
             bw.DoWork += (a, b) =>
             {
                 OperationInProgress = true;
                 ui.UpdateInProgress = true;
                 ui.Indeterminate = false;
                 ui.DownloadButtonText = M3L.GetString(M3L.string_downloading);
-                //void updateProgressCallback(long bytesReceived, long totalBytes)
-                //{
-                //    ui.By
-                //}
+                ui.ProgressChanged += (a, b) =>
+                {
+                    if (b.totalToDl != 0)
+                    {
+                        bw.ReportProgress(0, b.currentDl * 1.0 / b.totalToDl);
+                    }
+                };
                 bool errorShown = false;
                 void errorCallback(string message)
                 {
@@ -207,9 +241,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
             };
+            mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
+            mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
             bw.RunWorkerAsync();
         }
 

@@ -19,6 +19,10 @@
             TargetType="Window"
             BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="TaskBarItemInfoHandler">
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
     <Window.Resources>
         <Style
             x:Key="MenuItemHeaderStyle"

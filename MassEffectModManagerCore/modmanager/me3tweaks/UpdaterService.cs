@@ -365,7 +365,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         [Localizable(true)]
-        public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null)
+        public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null, Action<double> setProgressCallback = null)
         {
             //create staging dir
             var stagingPath = Utilities.GetUpdaterServiceUploadStagingPath();
@@ -378,7 +378,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             long amountDone = 0;
             //run files 
-            Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1) }, x =>
+            Parallel.ForEach(files.AsParallel().AsOrdered(), new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount / 2) }, x =>
             {
                 var canceledCheck = canceledCallback?.Invoke();
                 if (canceledCheck.HasValue && canceledCheck.Value)
@@ -388,6 +388,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 LZMACompressFileForUpload(x, stagingPath, mod.ModPath, canceledCallback);
                 GC.Collect(); //As this can use lots of memory we're going to have to run a GC collect here
                 var totalDone = Interlocked.Add(ref amountDone, new FileInfo(Path.Combine(mod.ModPath, x)).Length);
+                setProgressCallback?.Invoke(totalDone * 1.0 / totalAmountToCompress);
                 updateUiTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingModForUpdaterServicePercent, Math.Round(totalDone * 100.0 / totalAmountToCompress))); //force localize
             });
             return stagingPath;
@@ -484,8 +485,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string LocalizedServerVersionString { get; set; }
             public void RecalculateAmountDownloaded()
             {
+                var cbDlOld = CurrentBytesDownloaded;
                 CurrentBytesDownloaded = sourceFiles.Sum(x => x.AmountDownloaded);
                 RemainingDataToDownload = ""; //trigger value change
+                if (cbDlOld != CurrentBytesDownloaded)
+                {
+                    ProgressChanged?.Invoke(this, (CurrentBytesDownloaded, TotalBytesToDownload));
+                }
             }
             public string FilesToDeleteUIString => M3L.GetString(M3L.string_interp_XfilesWillBeDeleted, filesToDelete.Count);
 
@@ -517,6 +523,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? ByteSize.FromBytes(TotalBytesToDownload - CurrentBytesDownloaded).ToString(@"0.00") : "";
                 set { } //do nothing.
             }
+
+            public event Action<object, (long currentDl, long totalToDl)> ProgressChanged;
         }
 
         public class SourceFile

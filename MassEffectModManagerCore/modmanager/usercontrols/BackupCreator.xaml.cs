@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Serilog;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
+using System.Windows.Shell;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter.Analytics;
@@ -141,6 +142,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 NamedBackgroundWorker bw = new NamedBackgroundWorker(Game + @"Backup");
+                bw.WorkerReportsProgress = true;
+                bw.ProgressChanged += (a, b) =>
+                {
+                    if (b.UserState is double d)
+                    {
+                        window.TaskBarItemInfoHandler.ProgressValue = d;
+                    }
+                    else if (b.UserState is TaskbarItemProgressState tbs)
+                    {
+                        window.TaskBarItemInfoHandler.ProgressState = tbs;
+                    }
+                };
                 bw.DoWork += (a, b) =>
                 {
                     BackupInProgress = true;
@@ -183,7 +196,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     List<string> allOfficialDLC = MEDirectories.OfficialDLC(targetToBackup.Game);
 
                     bool end = false;
-
                     if (installedDLC.Count() < allOfficialDLC.Count())
                     {
                         var dlcList = string.Join("\n - ", allOfficialDLC.Except(installedDLC).Select(x => $@"{MEDirectories.OfficialDLCNames(targetToBackup.Game)[x]} ({x})")); //do not localize
@@ -210,6 +222,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (!targetToBackup.IsCustomOption)
                             {
                                 // Creating a new backup
+                                bw.ReportProgress(0, TaskDialogProgressBarState.Paused);
+
                                 Application.Current.Dispatcher.Invoke(delegate
                                 {
                                     Log.Information(@"Prompting user to select backup destination");
@@ -244,6 +258,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 {
                                     return;
                                 }
+                                bw.ReportProgress(0, TaskbarItemProgressState.Indeterminate);
+
                             }
                             else
                             {
@@ -271,6 +287,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 void fileCopiedCallback()
                                 {
                                     ProgressValue++;
+                                    if (ProgressMax > 0)
+                                    {
+                                        bw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
+                                    }
                                 }
 
                                 string dlcFolderpath = MEDirectories.DLCPath(targetToBackup) + '\\';
@@ -334,14 +354,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     ProgressValue = 0;
                                     ProgressIndeterminate = false;
                                     ProgressMax = total;
+                                    bw.ReportProgress(0, TaskbarItemProgressState.Normal);
                                 }
-
-
-
+                                
                                 BackupStatus = M3L.GetString(M3L.string_creatingBackup);
-
                                 Log.Information($@"Backing up {targetToBackup.TargetPath} to {backupPath}");
-
+                                bw.ReportProgress(0, TaskbarItemProgressState.Normal);
                                 CopyDir.CopyAll_ProgressBar(new DirectoryInfo(targetToBackup.TargetPath),
                                     new DirectoryInfo(backupPath),
                                     totalItemsToCopyCallback: totalFilesToCopyCallback,
@@ -364,8 +382,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         backupPath);
                                     break;
                             }
-
-
+                            
                             var cmmvanilla = Path.Combine(backupPath, @"cmm_vanilla");
                             if (!File.Exists(cmmvanilla))
                             {
@@ -432,7 +449,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 };
                 bw.RunWorkerCompleted += (a, b) =>
                 {
-
+                    window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                     if (b.Result is (List<string> listItems, string title, string text))
                     {
                         ListDialog ld = new ListDialog(listItems, title, text, window);
@@ -442,7 +459,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         M3L.ShowDialog(window, message, errortitle, MessageBoxButton.OK, MessageBoxImage.Error);
                     }
-
                     CommandManager.InvalidateRequerySuggested();
                 };
                 bw.RunWorkerAsync();

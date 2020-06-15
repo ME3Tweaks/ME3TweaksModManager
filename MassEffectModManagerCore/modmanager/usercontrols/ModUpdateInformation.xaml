@@ -6,7 +6,7 @@
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_modupdatesavailable}" FontWeight="Bold" TextAlignment="Center" FontSize="20" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_modManagerDetectedModUpdates}" TextAlignment="Center" />
         <Button DockPanel.Dock="Bottom" Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" Padding="7,4" HorizontalAlignment="Right" Margin="5,5,0,5" />
-        <ItemsControl ItemsSource="{Binding UpdatableMods}">
+        <ItemsControl ItemsSource="{Binding UpdatableMods}" AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type me3Tweaks:OnlineContent+ModUpdateInfo}">
                     <StackPanel Margin="0,5,5,5">
@@ -16,19 +16,21 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding LocalizedLocalVersionString}" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding LocalizedServerVersionString}" />
-                            <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center">
+                            <Separator Name="ItemSeparatorCM" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding LocalizedLocalVersionString}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding LocalizedServerVersionString}" />
+                            <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Center">
                                 <Button Command="{Binding ApplyUpdateCommand}" CommandParameter="{Binding}" Content="{Binding DownloadButtonText}" HorizontalAlignment="Right" Padding="4" />
                                 <TextBlock Text="{Binding RemainingDataToDownload, FallbackValue=32MB}" TextAlignment="Center" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                             </StackPanel>
-                            <ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="3" Height="12" Maximum="{Binding TotalBytesToDownload}" Value="{Binding CurrentBytesDownloaded}" IsIndeterminate="{Binding Indeterminate}" />
+                            <ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="4" Height="12" Maximum="{Binding TotalBytesToDownload}" Value="{Binding CurrentBytesDownloaded}" IsIndeterminate="{Binding Indeterminate}" />
                         </Grid>
                         <TextBlock Text="{Binding changelog}" TextWrapping="Wrap" />
                         <Expander Header="{Binding FilesToDownloadUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDownload}">
@@ -37,7 +39,13 @@
                         <Expander Header="{Binding FilesToDeleteUIString}" Margin="5,3" IsEnabled="{Binding HasFilesToDelete}">
                             <TreeView ItemsSource="{Binding filesToDelete}" Background="Transparent" BorderThickness="0" />
                         </Expander>
+                        <TextBlock Text="Powered by ME3Tweaks Updater Service" FontStyle="Italic" FontSize="10" ToolTip="Mods hosted on the ME3Tweaks Updater Service can be directly updated in Mod Manager"/>
                     </StackPanel>
+                    <DataTemplate.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Visibility" TargetName="ItemSeparatorCM" Value="Collapsed" />
+                        </Trigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type me3Tweaks:OnlineContent+ModMakerModUpdateInfo}">
                     <Grid Margin="0,5,5,5" HorizontalAlignment="Stretch">
@@ -48,25 +56,27 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding LocalizedLocalVersionString}" />
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding LocalizedServerVersionString}" />
-                        <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center">
+                        <Separator Name="ItemSeparatorMM" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding LocalizedLocalVersionString}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding LocalizedServerVersionString}" />
+                        <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Center">
                             <Button Command="{Binding ApplyUpdateCommand}" CommandParameter="{Binding}" Content="{Binding DownloadButtonText}" HorizontalAlignment="Right" Padding="4" />
                             <TextBlock Text="{Binding UIStatusString}" TextAlignment="Center" FontSize="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                         </StackPanel>
-                        <!--<ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Height="12" 
-                                         Maximum="10" Value="5" IsIndeterminate="{Binding Indeterminate}" />-->
-                        <ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="3" Height="12" Maximum="{Binding OverallProgressMax}" Value="{Binding OverallProgressValue}" IsIndeterminate="{Binding Indeterminate}" />
-                        <TextBlock Text="{Binding changelog}" Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap" />
+                        <ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding UpdateInProgress, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="4" Height="12" Maximum="{Binding OverallProgressMax}" Value="{Binding OverallProgressValue}" IsIndeterminate="{Binding Indeterminate}" />
+                        <TextBlock Text="{Binding changelog}" Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0" TextWrapping="Wrap" />
                     </Grid>
+                    <DataTemplate.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Visibility" TargetName="ItemSeparatorMM" Value="Collapsed" />
+                        </Trigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type me3Tweaks:OnlineContent+NexusModUpdateInfo}">
                     <Grid Margin="0,5,5,5" HorizontalAlignment="Stretch">
@@ -76,23 +86,26 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding LocalizedLocalVersionString}" />
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding LocalizedServerVersionString}" />
-                        <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center">
+                        <Separator  Name="ItemSeparatorNM" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding mod.ModName}" FontWeight="Bold" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding LocalizedLocalVersionString}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding LocalizedServerVersionString}" />
+                        <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Center">
                             <Button Command="{Binding ApplyUpdateCommand}" CommandParameter="{Binding}" Content="{Binding DownloadButtonText}" HorizontalAlignment="Right" Padding="4" />
                             <TextBlock Text="{Binding UIStatusString}" TextAlignment="Center" FontSize="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                         </StackPanel>
-                        <TextBlock Text="{Binding changelog}" Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding changelog}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" />
                     </Grid>
+                    <DataTemplate.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Visibility" TargetName="ItemSeparatorNM" Value="Collapsed" />
+                        </Trigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
             </ItemsControl.Resources>
             <ItemsControl.Template>
