@@ -170,6 +170,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 extractTool(tool, executable, extension, downloadPath, currentTaskUpdateCallback, setPercentVisibilityCallback, setPercentTaskDone, resultingExecutableStringCallback, errorExtractingCallback);
             };
+            Log.Information(@"Downloading file: " + downloadLink);
+
             downloadClient.DownloadFileAsync(downloadLink, downloadPath);
         }
 
@@ -216,6 +218,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         }
                     }
+                    break;
+                default:
+                    var ex = new Exception($"Unsupported extension: {extension}");
+                    errorExtractingCallback?.Invoke(ex, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, ex.Message), M3L.GetString(M3L.string_errorLaunchingTool));
                     break;
             }
         }
@@ -348,7 +354,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             var toolName = tool.Replace(@" ", "");
             var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", toolName);
-            var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
+            var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(toolName));
             bool needsDownloading = !File.Exists(localExecutable);
 
             if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
