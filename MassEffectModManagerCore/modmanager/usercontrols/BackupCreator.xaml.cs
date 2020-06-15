@@ -305,15 +305,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         {
                                             //It's a DLC!
                                             string dlcname = file.Substring(dlcSubStringLen);
-                                            dlcname = dlcname.Substring(0, dlcname.IndexOf('\\'));
-                                            if (MEDirectories.OfficialDLCNames(targetToBackup.Game)
-                                                .TryGetValue(dlcname, out var hrName))
+                                            var dlcFolderNameEndPos = dlcname.IndexOf('\\');
+                                            if (dlcFolderNameEndPos > 0)
                                             {
-                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, hrName);
+                                                dlcname = dlcname.Substring(0, dlcFolderNameEndPos);
+                                                if (MEDirectories.OfficialDLCNames(targetToBackup.Game)
+                                                    .TryGetValue(dlcname, out var hrName))
+                                                {
+                                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                        hrName);
+                                                }
+                                                else
+                                                {
+                                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                        dlcname);
+                                                }
                                             }
                                             else
                                             {
-                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX, dlcname);
+                                                // Loose files in the DLC folder
+                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                    M3L.GetString(M3L.string_basegame));
                                             }
                                         }
                                         else
@@ -356,7 +368,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     ProgressMax = total;
                                     bw.ReportProgress(0, TaskbarItemProgressState.Normal);
                                 }
-                                
+
                                 BackupStatus = M3L.GetString(M3L.string_creatingBackup);
                                 Log.Information($@"Backing up {targetToBackup.TargetPath} to {backupPath}");
                                 bw.ReportProgress(0, TaskbarItemProgressState.Normal);
@@ -382,7 +394,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         backupPath);
                                     break;
                             }
-                            
+
                             var cmmvanilla = Path.Combine(backupPath, @"cmm_vanilla");
                             if (!File.Exists(cmmvanilla))
                             {

@@ -354,7 +354,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             var toolName = tool.Replace(@" ", "");
             var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", toolName);
-            var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(toolName));
+            var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
             bool needsDownloading = !File.Exists(localExecutable);
 
             if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
