@@ -18,9 +18,9 @@
     <system:String x:Key="string_SwitchUItodarktheme">Ansicht auf dunkles Design ändern</system:String>
     <system:String x:Key="string_Logging">Ereignisprotokoll</system:String>
     <system:String x:Key="string_Enabletelemetry">Telemetrie aktivieren</system:String>
-    <system:String x:Key="string_LogModStartup">Protokolliere Mod Start</system:String>
-    <system:String x:Key="string_LogMixinStartup">Protokolliere Mixin Start</system:String>
-    <system:String x:Key="string_LogModInstallation">Protokolliere Mod Installation</system:String>
+    <system:String x:Key="string_LogModStartup">Protokolliere Mod-Start</system:String>
+    <system:String x:Key="string_LogMixinStartup">Protokolliere Mixin-Start</system:String>
+    <system:String x:Key="string_LogModInstallation">Protokolliere Mod-Installation</system:String>
     <system:String x:Key="string_LogModMakerCompiler">ModMaker Compiler protokollieren</system:String>
     <system:String x:Key="string_Checkforcontentupdates">Suche nach Aktualisierungen</system:String>
     <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Durchsucht ME3Tweaks.com nach Aktualisierungen für verschiedene Dienste</system:String>
@@ -52,7 +52,7 @@
     <system:String x:Key="string_Developeroptions">Entwickler-Optionen</system:String>
     <system:String x:Key="string_Metadataeditor">Metadata Editor</system:String>
     <system:String x:Key="string_Deploymodto7zfilefordistribution">Exportiere Mod als 7z Archiv zur Veröffentlichung</system:String>
-    <system:String x:Key="string_Prepareforupdaterservice">Vorbereiten auf Aktualisierungsdienst</system:String>
+    <system:String x:Key="string_Prepareforupdaterservice">Zum ME3Tweaks-Aktualisierungsdienst hochladen</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Mod-Infos an ME3Tweaks.com senden</system:String>
     <system:String x:Key="string_Openmodfolder">Mod-Ordner öffnen</system:String>
     <system:String x:Key="string_Deletemodfromlibrary">Mod aus Bibliothek löschen</system:String>
@@ -78,8 +78,10 @@
     <system:String x:Key="string_Texturebrowserandinstaller">Textur-Browser und -Installer</system:String>
     <system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
     <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Ein zufallsgeneriertes Erlebnis für das erste Mass Effect Spiel</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip">Werkzeuge zum Entwickeln von Mods für die Mass Effect Trilogie</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork (Stable)</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (Nightly)</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip" xml:space="preserve">Werkzeuge zum Entwickeln von Mods für die Mass Effect Trilogie.&#10;Dies ist die stabile Version, welche üblicherweise einige Monate alt ist</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkBetaTooltip" xml:space="preserve">Werkzeuge zum Entwickeln von Mods für die Mass Effect Trilogie.&#10;Dies ist die nightly-Version, das heißt sie basiert stets auf dem aktuellsten Quellcode.&#10;Diese Version ist weniger stabil und kann grobe Fehler enthalten.&#10;Aktive Entwickler sollten diese Version nutzen und dem ME3Tweaks Discord (Englisch) beitreten</system:String>
     <system:String x:Key="string_BackupRestore">Backup &amp; Wiederherstellen</system:String>
     <system:String x:Key="string_Backup">Backup</system:String>
     <system:String x:Key="string_Createentiregamebackups">Erstelle Backups vom kompletten Spiel</system:String>
@@ -306,6 +308,9 @@
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Anzeige</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
 
+	<!-- Global Styles -->
+    <system:String x:Key="string_thisTargetHasBeenTextureModded">Diese Zielinstallation enthält modifizierte Texturen</system:String>
+
 	<!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Bereite Installation vor</system:String>
     <system:String x:Key="string_interp_devModeAlotInstalledWarning" xml:space="preserve">ALOT ist installiert und dieser Mod installiert Paketdateien. Fortsetzen der Installation dieses Mods wird wahrscheinlich aufgrund von ungültigen Texturzeigern und möglicherweise leeren Mips zu defekten Texturen oder Spielabstürzen führen. Außerdem befindet sich dadurch deine ALOT-Installation in einem nicht unterstützten Zustand.\n\nInstallation von {0} fortsetzen? Du wurdest gewarnt.</system:String>
@@ -359,6 +364,10 @@
     <system:String x:Key="string_interp_errorWhileExtractingArchiveInstall" xml:space="preserve">Beim Entpacken der Archivdatei zur Installation ist ein Fehler aufgetreten:\n\n{0}\n\nDer Mod ist möglicherweise teilweise installiert.</system:String>
 	<!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingMod">Fehler beim Entpacken eines Mods</system:String>
+    <system:String x:Key="string_interp_dialog_errorOccuredDuringInstallation" xml:space="preserve">Bei der Installation eines Mods ist ein Fehler aufgetreten:\n{0}\n\nDer Mod wurde möglicherweise nicht korrekt installiert. Tritt dem ME3Tweaks Discord (Englisch) bei, wenn du Hilfe benötigst.</system:String>
+	<!-- 0=full error stacktrace -->
+    <system:String x:Key="string_dialog_appAboutToCrashYouFoundBug">Du hast einen Fehler im Installationsprozess von Mod Manager gefunden, der aktuell untersucht wird und über den mehr Informationen benötigt werden! Bitte tritt dem ME3Tweaks Discord (Englisch) bei und benachrichtige #enduser_support, dass du diese Nachricht gesehen hast, damit das Problem behandelt werden kann. (Die Anwendung wird nun abstürzen)</system:String>
+    <system:String x:Key="string_appCrash">Anwendungsabsturz</system:String>
 
 	<!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Willkommen beim ME3Tweaks Mod Manager</system:String>
@@ -435,9 +444,9 @@
     <!-- 0 = filepath, 1=export path in-package, 2=AFC cache name (like wwise_biosnd_end002) -->
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Ungültiger Audio-Zeiger; Zeigt nicht auf RIFF-Header</system:String>
     <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: Dieser Audioinhalt ist Teil einer Hauptspiel-/DLC-AFC, ist jedoch kein vanilla Audioinhalt. Dieser Audioinhalt wird für Endbenutzer nicht verfügbar sein. Benutze "AFC compactor" in ME3Explorer um diesen Audioinhalt lokal in eine AFC für diesen Mod zu packen.</system:String>
-    <!-- 0 = filepath, 1=export path in-package -->
-    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Fehler beim Validieren einer Audio-Referenz: {0}</system:String>
-    <!-- 0 = filepath, 1=export path in-package, 2=error message -->
+	<!-- 0 = filepath, 1=export path in-package -->
+    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Fehler beim Validieren einer Audio-Referenz: {2}</system:String>
+	<!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noAudioIssuesWereDetected">Keine Audio-Probleme wurden gefunden.</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Audio-Probleme wurden gefunden</system:String>
     <system:String x:Key="string_checkingTexturesInMod">Texturen im Mod werden überprüft</system:String>
@@ -453,8 +462,16 @@
     <system:String x:Key="string_languageCheckDetectedIssues">Der Sprachunterstützungs-Check hat Probleme gefunden</system:String>
     <system:String x:Key="string_mod">Mod</system:String>
     <system:String x:Key="string_checkingModBeforeDeployment">Mod wird vor der Veröffentlichung überprüft...</system:String>
+    <system:String x:Key="string_miscellaneousChecks">Sonstige Überprüfungen</system:String>
+    <system:String x:Key="string_atLeastOneMiscellaneousCheckFailed">Mindestens eine der sonstigen Prüfungen ist fehlgeschalgen</system:String>
+    <system:String x:Key="string_detectedMiscellaneousIssues">Sonstige Probleme wurden gefunden</system:String>
+    <system:String x:Key="string_checkingForMiscellaneousIssues">Prüfe auf sonstige Probleme</system:String>
+    <system:String x:Key="string_interp_modReferencesMetaCmm">Mod referenziert eine Datei namens _metacmm.txt. Diese Datei wird von Mod Manager bei der Mod-Installation erzeugt und darf nicht in Mods enthalten sein. Lösche folgende Datei vor dem Packen: {0}</system:String>
+	<!-- 0=filepath -->
+    <system:String x:Key="string_noMiscellaneousIssuesDetected">Keine sonstigen Probleme wurden gefunden</system:String>
+    <system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Überprüfungen haben einige sonstige Probleme gefunden, die vor der Veröffentlichung behoben werden sollten</system:String>
 
-    <!-- Backup Creator-->
+	<!-- Backup Creator -->
     <system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer und ALOT Installer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups müssen von einer frischen, unmodifizierten Installation des Spielt erstellt werden. Backups von modifizierten Installationen werden nicht unterstützt.</system:String>
     <system:String x:Key="string_backUp">Backup erstellen</system:String>
@@ -488,6 +505,15 @@
     <system:String x:Key="string_someDlcNotInstalled">DLC nicht installiert</system:String>
     <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">In diesem Ziel sind nicht alle OFFIZIELLEN DLCs installiert. Stelle sicher, dass du alle OFFIZIELLEN DLCs installiert hast, die dein Backup enthalten soll, ansonsten können nun fehlende DLCs nicht wiederhergestellt werden.\n\nDie folgenden DLCs sind nicht installiert:\n{0}\n\nHinweis: du brauchst nicht alle DLCs in einem Backup (z.B. wenn du ein DLC nicht besitzt), jedoch sind einige Mod Manager Funktionen von bestimmten DLCs abhängig und können dann nicht benutzt werden, wie beispielsweise ME3Tweaks ModMaker.\n\nBackup dieses Ziels erstellen?</system:String>
 	<!-- 0 = bulleted list of DLC -->
+    <system:String x:Key="string_linkBackupToAnExistingGameCopy">Backup mit einer bestehenden Spielkopie verknüpfen</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">Diese Installation kann nicht als Backup verknüpft werden, da sie bereits in der Liste der modifizierbaren Ziele ist. Um diese Installation als Backup zu verknüpfen, lösche zuerst das Ziel aus dem Installationsinformationsfenster, unter 'Ziel verwalten'.</system:String>
+    <system:String x:Key="string_cannotLinkGameCopy">Spielkopie kann nicht verknüpft werden</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">Die gewählte Installation kann aufgrund von Validierungsfehlern nicht als Backup verknüpft werden: {0}.</system:String>
+	<!-- 0=Validation failure reason -->
+    <system:String x:Key="string_invalidGameCopy">Unzulässige Spielkopie</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Der Ordner Dokumente/BioWare/{0} (und Unterordner) können nicht als Ort für Backups benutzt werden, da das Spiel Dateien daraus lädt. Bitte wähle einen anderen Ordner.</system:String>
+	<!-- 0=Game name (Mass Effect, Mass Effect 3, etc) -->
+    <system:String x:Key="string_locationNotAllowedForBackup">Ordner nicht für Backup zulässig</system:String>
 
 	<!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
@@ -597,6 +623,10 @@
     <system:String x:Key="string_enable">Aktivieren</system:String>
     <system:String x:Key="string_disable">Deaktivieren</system:String>
     <system:String x:Key="string_disabled">Deaktiviert</system:String>
+    <system:String x:Key="string_tooltip_disableDLC" xml:space="preserve">Deaktiviert das Laden dieses DLC-Mods.&#10;Da keine Dateien verändert werden, ist dies auch nach der Insallation von Texturmods sicher möglich</system:String>
+    <system:String x:Key="string_tooltip_enableDLC" xml:space="preserve">Aktiviert das Laden dieses DLC-Mods im Spiel.</system:String>
+    <system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">Entfernt diesen DLC-Mod aus dem Spiel.&#10;Halte SHIFT gedrückt, um den Bestätigungsdialog zu überspringen (falls es keine Warnungen gibt)</system:String>
+    <system:String x:Key="string_tooltip_openTargetInExplorer">Öffnet den Ordner dieses Installationsziels im Datei-Explorer</system:String>
 
 	<!-- Log uploader -->
     <system:String x:Key="string_selectALogToView">Wähle das anzuzeigende Ereignisprotokoll</system:String>
@@ -676,6 +706,9 @@
     <system:String x:Key="string_errorExtractingArchive">Fehler beim Entpacken einer Archivdatei</system:String>
     <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Laden von moddesc.ini vom Server fehlgeschlagen: {0}</system:String>
 	<!-- 0= loadFailedReason -->
+    <system:String x:Key="string_tooltip_importMods" xml:space="preserve">Importiert die gewählten Mods in deine Mod-Bibliothek.&#10;Importieren ermöglicht zusätzliche Mod Manager-Funktionen;&#10; - Aktualisierungsüberprüfungen für Mods (falls unterstützt)&#10; - Komprimierung beim Importieren (falls unterstützt)&#10; - Mod von ME3Tweaks wiederherstellen (falls unterstützt)</system:String>
+    <system:String x:Key="string_tooltip_launchesALOTInstaller">Startet ALOT Installer</system:String>
+    <system:String x:Key="string_tooltip_compressPackages" xml:space="preserve">Komprimiert Paketdateien beim Importieren und reduziert dadurch ihre Größe. Dies ist eine experimentelle Funktion - falls es Probleme mit Mods gibt, solltest du diese Option nicht benutzen.&#10;Diese Option ist aufgrund ihrer Komplexität in den folgenden Situationen nicht verfügbar:&#10; - Direkte Installation aus Archivdatei&#10; - Dateien von Mass Effect 1&#10;&#10;Diese Funktion kann von ME3Tweaks deaktiviert werden, wenn Mod Manager sich mit dem Server verbindet</system:String>
 
 	<!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Aktualisierungen für Mods verfügbar</system:String>
@@ -1020,7 +1053,7 @@
 	<!-- 0 = error message -->
     <system:String x:Key="string_loadFailed">Laden fehlgeschlagen</system:String>
     <system:String x:Key="string_interp_errorReadingArchiveModdesc">Beim Lesen von moddesc.ini aus dieser Archivdatei ist ein Fehler aufgetreten: {0}</system:String>
-	<!-- 0=e.Message -->
+	<!-- 0=Error message -->
     <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">Dieser Mod kann nur von Mod Manager Versionen ab build {0} geladen werden. Die aktuelle Version ist {1}.</system:String>
 	<!-- 0=minBuild 1=App.BuildNumber -->
     <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">{0} gibt keinen ModInfo game descriptor an, welcher jedoch ab ModDesc Version 6 benötigt wird.</system:String>
@@ -1442,6 +1475,9 @@
     <system:String x:Key="string_migratingSettings">Migrationseinstellungen</system:String>
     <system:String x:Key="string_interp_migratingModsXoFY">Mods werden migriert [{0}/{1}]</system:String>
 	<!-- 0=numMigrated 1=numToMigrate -->
+    <system:String x:Key="string_dialog_me3cmmMigrationCompleted" xml:space="preserve">Migration von Mass Effect 3 Mod Manager zu ME3Tweaks Mod Manager abgeschlossen.\n\nStarte ab jetzt ME3TweaksModManager.exe anstatt ME3CMM.exe</system:String>
+    <system:String x:Key="string_dialog_performMe3cmmCleanup">ME3CMM-Dateien aufräumen? Lose Dateien und ME3CMM-spezifische Ordner im Datenverzeichnis sowie ME3CMM.exe werden hierdurch entfernt.</system:String>
+    <system:String x:Key="string_performCleanupQuestion">Aufräumen starten?</system:String>
 
 	<!-- Official DLC Toggler -->
     <system:String x:Key="string_officialDLCToggler">Offizielle DLCs Umschalter</system:String>
