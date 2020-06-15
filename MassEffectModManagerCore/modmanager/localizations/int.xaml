@@ -730,6 +730,9 @@
     <system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
     <!-- 0= modmaker code #-->
     <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager has detected updates for the following mods in your library.</system:String>
+    <system:String  x:Key="string_tooltip_poweredByME3TweaksUpdaterService">Mods hosted on the ME3Tweaks Updater Service can be directly updated in Mod Manager</system:String>
+    <system:String  x:Key="string_poweredByME3TweaksUpdaterService">Powered by ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_requiresBackup">Requires backup</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>

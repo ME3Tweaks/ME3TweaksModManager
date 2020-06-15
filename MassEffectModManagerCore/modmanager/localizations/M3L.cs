@@ -698,6 +698,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_decompressingDelta = "string_decompressingDelta";
 		public static readonly string string_interp_modMakerCodeX = "string_interp_modMakerCodeX";
 		public static readonly string string_modManagerDetectedModUpdates = "string_modManagerDetectedModUpdates";
+		public static readonly string string_tooltip_poweredByME3TweaksUpdaterService = "string_tooltip_poweredByME3TweaksUpdaterService";
+		public static readonly string string_poweredByME3TweaksUpdaterService = "string_poweredByME3TweaksUpdaterService";
+		public static readonly string string_requiresBackup = "string_requiresBackup";
 		public static readonly string string_anUpdateToME3TweaksModManagerIsAvailable = "string_anUpdateToME3TweaksModManagerIsAvailable";
 		public static readonly string string_downloadingUpdate = "string_downloadingUpdate";
 		public static readonly string string_preparingToApplyUpdate = "string_preparingToApplyUpdate";

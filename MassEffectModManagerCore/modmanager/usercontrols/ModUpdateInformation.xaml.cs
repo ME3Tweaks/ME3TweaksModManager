@@ -39,7 +39,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
                 if (x.mod.ModModMakerID > 0 && Utilities.GetGameBackupPath(x.mod.Game) == null)
                 {
-                    x.DownloadButtonText = "Requires backup";
+                    x.DownloadButtonText = M3L.GetString(M3L.string_requiresBackup);
                 }
                 else
                 {
