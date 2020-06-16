@@ -354,6 +354,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             void failedToDownload()
             {
                 Thread.Sleep(100); //try to stop deadlock
+                Log.Error(@"Failed to acquire MEM for diagnostics.");
                 hasMEM = false;
                 lock (memEnsuredSignaler)
                 {
