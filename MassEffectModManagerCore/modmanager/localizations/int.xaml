@@ -531,8 +531,6 @@
     <!-- 0=exception message -->
     <system:String x:Key="string_interp_unsupportedExtensionX">Unsupported extension: {0}</system:String>
     <!-- 0={extension} -->
-    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
-    <system:String x:Key="string_interp_unsupportedExtensionX">Unsupported extension: {extension}</system:String>
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>

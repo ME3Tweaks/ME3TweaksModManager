@@ -544,7 +544,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_errorLaunchingTool = "string_errorLaunchingTool";
 		public static readonly string string_interp_errorLaunchingToolX = "string_interp_errorLaunchingToolX";
 		public static readonly string string_interp_unsupportedExtensionX = "string_interp_unsupportedExtensionX";
-		public static readonly string string_interp_unsupportedExtensionX = "string_interp_unsupportedExtensionX";
 		public static readonly string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public static readonly string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public static readonly string string_failedMods = "string_failedMods";
@@ -1242,7 +1241,5 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_skipTutorial = "string_skipTutorial";
 		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster = "string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster";
 		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp = "string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp";
-		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKSubfileSourcefileEMessage = "string_interp_exceptionOccuredWhileCompilingTLKSubfileSourcefileEMessage";
-		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKFileEMessage = "string_interp_exceptionOccuredWhileCompilingTLKFileEMessage";
 	}
 }
