@@ -220,7 +220,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     break;
                 default:
-                    var ex = new Exception($"Unsupported extension: {extension}");
+                    var ex = new Exception(M3L.GetString(M3L.string_interp_unsupportedExtensionX, extension));
                     errorExtractingCallback?.Invoke(ex, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, ex.Message), M3L.GetString(M3L.string_errorLaunchingTool));
                     break;
             }

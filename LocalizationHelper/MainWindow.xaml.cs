@@ -52,6 +52,7 @@ namespace LocalizationHelper
             var me3tweaks = Path.Combine(modmanagerroot, "modmanager", "me3tweaks");
             var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
             var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
+            var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
 
             List<string> files = new List<string>();
             files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
@@ -59,6 +60,7 @@ namespace LocalizationHelper
             files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+            files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
 
             //these files are not localized
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "LogCollector.cs").Substring(rootLen));
@@ -68,6 +70,9 @@ namespace LocalizationHelper
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
             files.Add("MainWindow.xaml");
             files.Add("MainWindow.xaml.cs");
+
+            files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
+
             files.Sort();
             SourceFiles.ReplaceAll(files);
             InitializeComponent();
@@ -665,7 +670,7 @@ namespace LocalizationHelper
                             if (newStr.Length > 1)
                             {
                                 strname += toCamelCase(newStr);
-                                
+
                                 //LN is line number
                                 s.Add($"  LN:{lineIndex}  <system:String x:Key=\"{strname}\">{newStr}</system:String>");
                                 //s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
@@ -840,7 +845,7 @@ namespace LocalizationHelper
         {
             new LocalizationTablesUI().Show();
         }
-        
+
         private void PerformINTDiff_Clicked(object sender, RoutedEventArgs e)
         {
             string oldfile = null, newfile = null;

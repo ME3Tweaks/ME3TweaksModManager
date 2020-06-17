@@ -368,7 +368,9 @@
     <!-- 0=full error stacktrace -->
     <system:String x:Key="string_dialog_appAboutToCrashYouFoundBug">You've triggered a bug/crash in Mod Manager's mod installer that is currently being investigated and needs more information! Please come to the ME3Tweaks Discord and report that you saw this message on #enduser_support so they can help troubleshoot the issue further. (The application is about to crash)</system:String>
     <system:String x:Key="string_appCrash">App crash</system:String>
-
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_errorCopyingFilesToTarget">An error occured copying the mod files to the target:\n\n{0}\n\nThe mod may be partially installed.</system:String>
+    <!-- 0=error message -->
+    <system:String x:Key="string_errorInstallingMod">Error installing mod</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -527,6 +529,10 @@
     <system:String x:Key="string_errorLaunchingTool">Error launching tool</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_errorLaunchingToolX">Error launching tool:\n{0}</system:String>
     <!-- 0=exception message -->
+    <system:String x:Key="string_interp_unsupportedExtensionX">Unsupported extension: {0}</system:String>
+    <!-- 0={extension} -->
+    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
+    <system:String x:Key="string_interp_unsupportedExtensionX">Unsupported extension: {extension}</system:String>
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
@@ -1500,4 +1506,12 @@
     <system:String x:Key="string_next">Next</system:String>
 	<system:String x:Key="string_previous">Previous</system:String>
 	<system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
+
+    <!-- TLK Transpiler -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Exception occured while compiling TLK subfile {0}: {1}</system:String>
+    <!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Exception occured while compiling TLK file: {0}</system:String>
+    <!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
+
+
 </ResourceDictionary>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -47,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         Log.Error($@"Error compiling TLK submodule {subxmlfile}:");
                         Log.Error(App.FlattenException(e));
-                        exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file {sourcefile}: {e.Message}");
+                        exceptionCompilingCallback?.Invoke(M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster, sourcefile, e.Message));
                     }
                 }
 
@@ -60,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 Log.Error(@"Error compiling TLK:");
                 Log.Error(App.FlattenException(e));
-                exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file: {e.Message}");
+                exceptionCompilingCallback?.Invoke(M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp, e.Message));
             }
         }
 
@@ -97,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 Log.Error(@"Error compiling TLK:");
                 Log.Error(App.FlattenException(e));
-                exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file: {e.Message}");
+                exceptionCompilingCallback?.Invoke(M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp, e.Message));
             }
         }
 
@@ -130,7 +131,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 Log.Error(@"Error compiling TLK:");
                 Log.Error(App.FlattenException(e));
-                exceptionCompilingCallback?.Invoke($"Exception occured while compiling TLK file: {e.Message}");
+                exceptionCompilingCallback?.Invoke(M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp, e.Message));
             }
         }
     }

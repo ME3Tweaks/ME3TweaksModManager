@@ -482,7 +482,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_FILE_COPY;
                     if (Application.Current != null)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, $"An error occured copying the mod files to the target:\n\n{ex.Message}\n\nThe mod may be partially installed.", "Error installing mod", MessageBoxButton.OK, MessageBoxImage.Error); });
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorCopyingFilesToTarget, ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
                     Log.Warning(@"<<<<<<< Aborting modinstaller");
                     return;
