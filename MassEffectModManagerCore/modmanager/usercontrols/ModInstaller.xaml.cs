@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -71,7 +70,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_ABORTED_NOT_ENOUGH_SPACE,
             INSTALL_FAILED_BAD_ME2_COALESCED,
             INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION,
-            INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER
+            INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER,
+            INSTALL_FAILED_EXCEPTION_FILE_COPY
         }
 
         public string Action { get; set; }
@@ -466,8 +466,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Direct copy
                 Log.Information($@"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
-                CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
-                Log.Information(@"Files have been copied");
+                try
+                {
+                    CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
+                    Log.Information(@"Files have been copied");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(@"Error extracting files: " + ex.Message);
+                    Crashes.TrackError(ex, new Dictionary<string, string>()
+                    {
+                        {@"Mod name", ModBeingInstalled.ModName },
+                        {@"Version", ModBeingInstalled.ModVersionString}
+                    });
+                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_FILE_COPY;
+                    if (Application.Current != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorCopyingFilesToTarget, ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
+                    }
+                    Log.Warning(@"<<<<<<< Aborting modinstaller");
+                    return;
+                }
             }
             else
             {
@@ -530,7 +549,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
-
+                    Log.Warning(@"<<<<<<< Aborting modinstaller");
                     return;
                 }
             }

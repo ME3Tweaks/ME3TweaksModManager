@@ -222,7 +222,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     break;
                 default:
                     Log.Error($@"Failed to download correct file! We don't support this extension. The extension was {extension}");
-                    var ex = new Exception($@"Unsupported extension: {extension}");
+                    var ex = new Exception(M3L.GetString(M3L.string_interp_unsupportedExtensionX, extension));
                     errorExtractingCallback?.Invoke(ex, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, ex.Message), M3L.GetString(M3L.string_errorLaunchingTool));
                     break;
             }

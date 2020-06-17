@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             int unknownInt = fs.ReadInt32();
             if (unknownInt != 0x1E)
             {
-                throw new Exception("First 4 bytes were not 0x1E (was " + unknownInt.ToString("X8") + ").This does not appear to be a Coalesced file.");
+                throw new Exception("First 4 bytes were not 0x1E (was " + unknownInt.ToString("X8") + "). This does not appear to be a Coalesced file.");
             }
 
             while (fs.Position < fs.Length)

@@ -412,6 +412,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_dialog_errorOccuredDuringInstallation = "string_interp_dialog_errorOccuredDuringInstallation";
 		public static readonly string string_dialog_appAboutToCrashYouFoundBug = "string_dialog_appAboutToCrashYouFoundBug";
 		public static readonly string string_appCrash = "string_appCrash";
+		public static readonly string string_interp_dialog_errorCopyingFilesToTarget = "string_interp_dialog_errorCopyingFilesToTarget";
+		public static readonly string string_errorInstallingMod = "string_errorInstallingMod";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -541,6 +543,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_errorDownloadingAndLaunchingTool = "string_interp_errorDownloadingAndLaunchingTool";
 		public static readonly string string_errorLaunchingTool = "string_errorLaunchingTool";
 		public static readonly string string_interp_errorLaunchingToolX = "string_interp_errorLaunchingToolX";
+		public static readonly string string_interp_unsupportedExtensionX = "string_interp_unsupportedExtensionX";
 		public static readonly string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public static readonly string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public static readonly string string_failedMods = "string_failedMods";
@@ -1236,5 +1239,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_next = "string_next";
 		public static readonly string string_previous = "string_previous";
 		public static readonly string string_skipTutorial = "string_skipTutorial";
+		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster = "string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster";
+		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp = "string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp";
 	}
 }

@@ -133,64 +133,6 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
-            /* string generateKey(string keyname, string defaultvalue, string listsource, List<(string, string)> kp)
-             {
-                 string res = $"<Key name=\"{keyname}\">";
-                 res += $"\n\t<ListSource name=\"{listsource}\" defaultValue=\"{defaultvalue}\">";
-                 foreach (var item in kp)
-                 {
-                     res += $"\n\t\t<Item value=\"{item.Item1}\" caption=\"{item.Item2}\"/>";
-                 }
-                 res += "\n\t</ListSource>";
-                 res += "\n</Key>";
-                 return res;
-             }
-
-             XDocument x = new XDocument();
-             List<string> sectionKeys = new List<string>();
-             List<string> uiStuff = new List<string>();
-             foreach (var line in File.ReadAllLines(@"C:\users\mgame\desktop\lod.txt"))
-             {
-                 var eqi = line.IndexOf("=");
-                 var key = line.Substring(0, eqi);
-                 var value = line.Substring(eqi + 1, line.Length - (eqi + 1));
-
-                 var uiSTR = key.Substring("TEXTUREGROUP_".Length);
-                 var listSourceName = "TextureLODs_" + uiSTR;
-                 List<(string itemValue, string itemCaption)> items = new List<(string, string)>();
-
-                 var vals = StringStructParser.GetCommaSplitValues(value);
-                 var baseMAXLODSIZE = int.Parse(vals["MaxLODSize"]);
-                 var curMaxLod = baseMAXLODSIZE;
-                 while (curMaxLod <= 4096)
-                 {
-                     vals["MaxLODSize"] = curMaxLod.ToString();
-                     items.Add((StringStructParser.BuildCommaSeparatedSplitValueList(vals), curMaxLod == baseMAXLODSIZE ? "Default" : curMaxLod.ToString()));
-                     curMaxLod *= 2;
-                 }
-                 var generatedKey = generateKey(key, value, listSourceName, items);
-                 sectionKeys.Add(generatedKey);
-
-                 string sectionKeyItems = $"<c:Label text=\"{uiSTR}\"/>";
-                 sectionKeyItems += $"\n<c:Combo source=\"{listSourceName}\" type=\"dropdown\" width=\"150\" height=\"15\" />\n";
-                 uiStuff.Add(sectionKeyItems);
-             }
-
-             foreach (var v in sectionKeys)
-             {
-                 Debug.WriteLine(v);
-             }
-
-             Debug.WriteLine("");
-             foreach (var v in uiStuff)
-             {
-                 Debug.WriteLine(v);
-             }
-
-             Environment.Exit(0);*/
-
-
-            // var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
             ExecutableLocation = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
