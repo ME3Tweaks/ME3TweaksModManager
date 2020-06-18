@@ -368,6 +368,9 @@
 	<!-- 0=full error stacktrace -->
     <system:String x:Key="string_dialog_appAboutToCrashYouFoundBug">Вы вызвали баг/падение установщика модов Mod Manager, который в настоящий момент исследуется и требует больше информации! Пожалуйста, зайдите на ME3Tweaks Discord и сообщите увиденное в данном сообщении в #enduser_support, где вам смогут помочь разобраться с данной проблемой. (Программа сейчас упадет)</system:String>
     <system:String x:Key="string_appCrash">Падение программы</system:String>
+    <system:String x:Key="string_interp_dialog_errorCopyingFilesToTarget" xml:space="preserve">Возникла ошибка при копировании файлов мода в игру:\n\n{0}Мод может быть установлен частично.</system:String>
+	<!-- 0=error message -->
+    <system:String x:Key="string_errorInstallingMod">Ошибка установки мода.</system:String>
 
 	<!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Добро пожаловать в ME3Tweaks Mod Manager</system:String>
@@ -526,6 +529,8 @@
     <system:String x:Key="string_errorLaunchingTool">Ошибка запуска инструмента</system:String>
     <system:String x:Key="string_interp_errorLaunchingToolX" xml:space="preserve">Ошибка запуска инструмента:\n{0}</system:String>
 	<!-- 0=exception message -->
+    <system:String x:Key="string_interp_unsupportedExtensionX">Неподдерживаемое расширение: {0}</system:String>
+	<!-- 0={extension} -->
 
 	<!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Восстановить с ME3Tweaks</system:String>
@@ -729,6 +734,9 @@
     <system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
 	<!-- 0= modmaker code # -->
     <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager обнаружил обновления для следующих модов в библиотеке.</system:String>
+    <system:String x:Key="string_tooltip_poweredByME3TweaksUpdaterService">Моды, размещенные в ME3Tweaks Updater Service могут обновляться напрямую через Mod Manager.</system:String>
+    <system:String x:Key="string_poweredByME3TweaksUpdaterService">При поддержке ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_requiresBackup">Требует наличия архива</system:String>
 
 	<!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Доступно обновление ME3Tweaks Mod Manager.</system:String>
@@ -1495,4 +1503,10 @@
     <system:String x:Key="string_next">Далее</system:String>
     <system:String x:Key="string_previous">Назад</system:String>
     <system:String x:Key="string_skipTutorial">Пропустить обучение</system:String>
+
+	<!-- TLK Transpiler -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Возникло исключение при компиляции подфайла TLK {0}: {1}</system:String>
+	<!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Возникло исключение при компиляции файла TLK {0}: {1}</system:String>
+	<!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
 </ResourceDictionary>
