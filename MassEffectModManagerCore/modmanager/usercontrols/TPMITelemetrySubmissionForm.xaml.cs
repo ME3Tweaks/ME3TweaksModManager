@@ -65,14 +65,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"telemetrydatagathering");
-            bw.DoWork += GatherTelemetryDataBGThread;
-            bw.RunWorkerCompleted += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"telemetrydatagathering");
+            nbw.DoWork += GatherTelemetryDataBGThread;
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 List<TelemetryPackage> list = (List<TelemetryPackage>)b.Result;
                 TelemetryPackages.ReplaceAll(list);
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         public class TelemetryPackage : INotifyPropertyChanged

@@ -270,6 +270,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                 Analytics.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
                 {
@@ -313,6 +317,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 Log.Information(@"Auth checked");
                 OperationInProgress = false;
                 authCompletedCallback?.Invoke(b.Result);

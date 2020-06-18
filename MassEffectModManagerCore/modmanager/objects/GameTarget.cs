@@ -517,8 +517,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (!restore.Value) restore = RestoreConfirmationCallback?.Invoke(FilePath);
                 if (restore.HasValue && restore.Value)
                 {
-                    NamedBackgroundWorker bw = new NamedBackgroundWorker(@"RestoreSFARThread");
-                    bw.DoWork += (a, b) =>
+                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"RestoreSFARThread");
+                    nbw.DoWork += (a, b) =>
                     {
                         var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
@@ -544,8 +544,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Utilities.DeleteEmptySubdirectories(DLCDirectory);
                         RestoreButtonContent = M3L.GetString(M3L.string_restored);
                     };
-                    bw.RunWorkerCompleted += (a, b) =>
+                    nbw.RunWorkerCompleted += (a, b) =>
                     {
+                        if (b.Error != null)
+                        {
+                            Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                        }
                         //File.Copy(backupFile, targetFile, true);
                         //if (!batchRestore)
                         //{
@@ -556,7 +560,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         signalRestoreCompleted?.Invoke();
                     };
                     startingRestoreCallback?.Invoke();
-                    bw.RunWorkerAsync();
+                    nbw.RunWorkerAsync();
                 }
             }
 

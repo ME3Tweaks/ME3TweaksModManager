@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
@@ -66,11 +67,17 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+        /// <summary>
+        /// Attempts to endorse/unendorse this mod on NexusMods.
+        /// </summary>
+        /// <param name="newEndorsementStatus"></param>
+        /// <param name="endorse"></param>
+        /// <param name="currentuserid"></param>
         public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
         {
             if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ModSpecificEndorsement");
+            nbw.DoWork += (a, b) =>
             {
                 var client = NexusModsUtilities.GetClient();
                 string gamename = @"masseffect";
@@ -103,8 +110,13 @@ namespace MassEffectModManagerCore.modmanager
                 });
 
             };
-            bw.RunWorkerCompleted += (a, b) => { newEndorsementStatus.Invoke(this, IsEndorsed); };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerCompleted += (a, b) => {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
+                newEndorsementStatus.Invoke(this, IsEndorsed); };
+            nbw.RunWorkerAsync();
         }
     }
 }

@@ -222,19 +222,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"AutoTOC");
-            bw.DoWork += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"AutoTOC");
+            nbw.DoWork += (a, b) =>
             {
                 if (mode == AutoTOCMode.MODE_GAMEWIDE)
                 {
                     RunTOCOnGameTarget(gameWideModeTarget, x => Percent = x);
                 }
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 OnClosing(DataEventArgs.Empty);
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
     }
 }

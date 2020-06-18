@@ -54,8 +54,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var outputarchive = d.ShowDialog();
             if (outputarchive.HasValue && outputarchive.Value)
             {
-                var bw = new NamedBackgroundWorker(@"TestArchiveGenerator");
-                bw.DoWork += (a, b) =>
+                var nbw = new NamedBackgroundWorker(@"TestArchiveGenerator");
+                nbw.DoWork += (a, b) =>
                 {
                     var stagingPath = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"TestGenerator")).FullName;
                     var referencedFiles = ModForArchive.GetAllRelativeReferences();
@@ -90,8 +90,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Utilities.HighlightInExplorer(d.FileName);
                     }
                 };
-                bw.RunWorkerCompleted += (a, b) => { OnClosing(DataEventArgs.Empty); };
-                bw.RunWorkerAsync();
+                nbw.RunWorkerCompleted += (a, b) =>
+                {
+                    if (b.Error != null)
+                    {
+                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    }
+                    OnClosing(DataEventArgs.Empty);
+                };
+                nbw.RunWorkerAsync();
             }
             else
             {

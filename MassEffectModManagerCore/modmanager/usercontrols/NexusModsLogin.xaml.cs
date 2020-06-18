@@ -80,8 +80,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void AuthorizeWithNexus()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"NexusAPICredentialsCheck");
-            bw.DoWork += async (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"NexusAPICredentialsCheck");
+            nbw.DoWork += async (a, b) =>
             {
                 IsAuthorizing = true;
                 VisibleIcon = true;
@@ -143,8 +143,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 IsAuthorizing = false;
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 VisibleIcon = IsAuthorized;
                 if (IsAuthorized)
                 {
@@ -154,7 +158,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 AuthorizeCommand.RaiseCanExecuteChanged();
                 CloseCommand.RaiseCanExecuteChanged();
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         private void UnlinkFromNexus()

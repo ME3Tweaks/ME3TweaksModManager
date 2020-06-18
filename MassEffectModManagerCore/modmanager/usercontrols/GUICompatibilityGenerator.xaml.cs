@@ -155,8 +155,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartGuiCompatibilityScanner()
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"GUICompatibilityScanner");
-            bw.DoWork += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"GUICompatibilityScanner");
+            nbw.DoWork += (a, b) =>
             {
                 Percent = 0;
                 ActionString = M3L.GetString(M3L.string_preparingCompatGenerator);
@@ -277,8 +277,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     b.Result = GUICompatibilityThreadResult.NO_UI_MODS_INSTALLED;
                 }
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 if (b.Result is GUICompatibilityThreadResult gctr)
                 {
                     Analytics.TrackEvent(@"Generated a UI compatibility pack", new Dictionary<string, string>() { { @"Result", gctr.ToString() } });
@@ -293,7 +297,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     throw new Exception(@"GUI Compatibility generator thread did not return a result! Please report this to ME3Tweaks");
                 }
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         private object modGeneratedSignaler = new object();

@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -177,6 +178,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 LoadingInProgress = false;
                 ME1FilesView.Filter = FilterBackupFilesME1;
                 ME2FilesView.Filter = FilterBackupFilesME2;

@@ -142,16 +142,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 if (restore)
                 {
-                    NamedBackgroundWorker bw = new NamedBackgroundWorker(Game + @"-Restore");
-                    bw.WorkerReportsProgress = true;
-                    bw.ProgressChanged += (a, b) =>
+                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(Game + @"-Restore");
+                    nbw.WorkerReportsProgress = true;
+                    nbw.ProgressChanged += (a, b) =>
                     {
                         if (b.UserState is double d)
                         {
                             window.TaskBarItemInfoHandler.ProgressValue = d;
                         }
                     };
-                    bw.DoWork += (a, b) =>
+                    nbw.DoWork += (a, b) =>
                     {
                         RestoreInProgress = true;
 
@@ -208,7 +208,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 ProgressValue++;
                                 if (ProgressMax != 0)
                                 {
-                                    bw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
+                                    nbw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
                                 }
                             }
 
@@ -300,8 +300,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         RestoreTarget.ReloadGameTarget();
                         b.Result = RestoreResult.RESTORE_OK;
                     };
-                    bw.RunWorkerCompleted += (a, b) =>
+                    nbw.RunWorkerCompleted += (a, b) =>
                     {
+                        if (b.Error != null)
+                        {
+                            Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                        }
                         window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                         if (b.Result is RestoreResult result)
                         {
@@ -381,7 +385,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     RefreshTargets = true;
                     window.TaskBarItemInfoHandler.ProgressValue = 0;
                     window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
-                    bw.RunWorkerAsync(restTarget);
+                    nbw.RunWorkerAsync(restTarget);
                 }
             }
 

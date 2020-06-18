@@ -82,14 +82,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InspectArchiveFile(string filepath)
         {
             ScanningFile = Path.GetFileName(filepath);
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModArchiveInspector");
-            bw.DoWork += InspectArchiveBackgroundThread;
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModArchiveInspector");
+            nbw.DoWork += InspectArchiveBackgroundThread;
             ProgressValue = 0;
             ProgressMaximum = 100;
             ProgressIndeterminate = true;
 
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 if (CompressedMods.Count > 0)
                 {
                     ActionText = M3L.GetString(M3L.string_selectModsToImportIntoModManagerLibrary);
@@ -126,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
 
-            bw.RunWorkerAsync(filepath);
+            nbw.RunWorkerAsync(filepath);
         }
 
 
@@ -623,10 +627,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void BeginImportingMods()
         {
             var modsToExtract = CompressedMods.Where(x => x.SelectedForImport).ToList();
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModExtractor");
-            bw.DoWork += ExtractModsBackgroundThread;
-            bw.RunWorkerCompleted += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModExtractor");
+            nbw.DoWork += ExtractModsBackgroundThread;
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 TaskRunning = false;
                 if (b.Result is List<Mod> modList)
                 {
@@ -682,7 +690,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             TaskRunning = true;
             TriggerPropertyChangedFor(nameof(CanCompressPackages));
-            bw.RunWorkerAsync(modsToExtract);
+            nbw.RunWorkerAsync(modsToExtract);
         }
 
         private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
