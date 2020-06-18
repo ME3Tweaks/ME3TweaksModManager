@@ -489,7 +489,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     //AutoLoad.ini
                     IniData autoload = new IniData();
-                    autoload[@"Packages"][@"GlobalTalkTable1"] = $@"{dlcFolderName}.GlobalTlk_tlk";
+                    autoload[@"Packages"][@"GlobalTalkTable1"] = $@"{dlcFolderName}_GlobalTlk.GlobalTlk_tlk";
 
                     autoload[@"GUI"][@"NameStrRef"] = skOption.ModInternalTLKID.ToString();
 
