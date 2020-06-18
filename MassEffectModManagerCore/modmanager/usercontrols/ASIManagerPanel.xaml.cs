@@ -705,6 +705,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         });
                         if (!Directory.Exists(CachedASIsFolder))
                         {
+                            Log.Information(@"Creating cached ASIs folder");
                             Directory.CreateDirectory(CachedASIsFolder);
                         }
                         Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
@@ -717,6 +718,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 };
                 worker.RunWorkerCompleted += (a, b) =>
                 {
+                    if (b.Error != null)
+                    {
+                        Log.Error(@"Error occured in ASI installer thread: " + b.Error.Message);
+                    }
                     RefreshASIStates();
                     operationCompletedCallback?.Invoke();
                 };
