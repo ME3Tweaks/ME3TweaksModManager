@@ -1495,4 +1495,10 @@
     <system:String x:Key="string_next">Далее</system:String>
     <system:String x:Key="string_previous">Назад</system:String>
     <system:String x:Key="string_skipTutorial">Пропустить обучение</system:String>
+
+	<!-- TLK Transpiler -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Возникло исключение при компиляции подфайла TLK {0}: {1}</system:String>
+	<!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Возникло исключение при компиляции файла TLK {0}: {1}</system:String>
+	<!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
 </ResourceDictionary>
