@@ -15,6 +15,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 
 
@@ -69,6 +70,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (obj is OnlineContent.ModMakerModUpdateInfo mui)
             {
                 UpdateModMakerMod(mui);
+
             }
             else if (obj is OnlineContent.ModUpdateInfo ui)
             {
@@ -177,17 +179,40 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //compiler.SetCompileStarted = CompilationInProgress;
                     //compiler.SetModNotFoundCallback = ModNotFound;
                     Mod m = compiler.DownloadAndCompileMod(modDelta);
-                    File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
-                    mui.DownloadButtonText = M3L.GetString(M3L.string_updated);
-                    mui.UIStatusString = M3L.GetString(M3L.string_interp_modMakerCodeX, mui.ModMakerId);
-                    mui.UpdateInProgress = false;
-                    mui.CanUpdate = false;
-                    AnyModUpdated = true;
-                    //b.Result = m;
+                    if (m != null)
+                    {
+                        try
+                        {
+                            File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(@"Couldn't cache modmaker xml file: " + e.Message);
+                        }
+
+                        mui.DownloadButtonText = M3L.GetString(M3L.string_updated);
+                        mui.UIStatusString = M3L.GetString(M3L.string_interp_modMakerCodeX, mui.ModMakerId);
+                        mui.UpdateInProgress = false;
+                        mui.CanUpdate = false;
+                        AnyModUpdated = true;
+                    }
+                    else
+                    {
+                        mui.UpdateInProgress = false;
+                        mui.DownloadButtonText = M3L.GetString(M3L.string_compilingFailed);
+                        mui.UpdateInProgress = false;
+                    }
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                {
+                    {@"Type", @"ModMaker"},
+                    {@"ModName", mui.mod.ModName},
+                    {@"Result", mui.CanUpdate ? @"Success" : @"Failed"}
+                });
+
                 mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
@@ -241,6 +266,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                {
+                    {@"Type", @"Classic"},
+                    {@"ModName", ui.mod.ModName},
+                    {@"Result", ui.CanUpdate ? @"Success" : @"Failed"}
+                });
                 mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();

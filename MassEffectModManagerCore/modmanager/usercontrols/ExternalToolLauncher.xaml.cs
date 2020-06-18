@@ -182,7 +182,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action<Exception, string, string> errorExtractingCallback = null)
         {
             //Todo: Account for errors
-            var outputDiretory = Directory.CreateDirectory(Path.GetDirectoryName(executable)).FullName;
+            var outputDirectory = Directory.CreateDirectory(Path.GetDirectoryName(executable)).FullName;
             switch (extension)
             {
                 case @".exe":
@@ -197,6 +197,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 case @".rar":
                 case @".7z":
                 case @".zip":
+                    Log.Information(@"Extracting tool archive: " + downloadPath);
                     using (var archiveFile = new SevenZipExtractor(downloadPath))
                     {
                         currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
@@ -208,7 +209,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         archiveFile.Extracting += progressCallback;
                         try
                         {
-                            archiveFile.ExtractArchive(outputDiretory); // extract all
+                            archiveFile.ExtractArchive(outputDirectory); // extract all
                             resultingExecutableStringCallback?.Invoke(executable);
                         }
                         catch (Exception e)
@@ -220,6 +221,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     break;
                 default:
+                    Log.Error($@"Failed to download correct file! We don't support this extension. The extension was {extension}");
                     var ex = new Exception(M3L.GetString(M3L.string_interp_unsupportedExtensionX, extension));
                     errorExtractingCallback?.Invoke(ex, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, ex.Message), M3L.GetString(M3L.string_errorLaunchingTool));
                     break;
@@ -352,6 +354,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action failedToDownloadCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
+            Log.Information($@"FetchAndLaunchTool() for {tool}");
             var toolName = tool.Replace(@" ", "");
             var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", toolName);
             var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
@@ -539,7 +542,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private static string toolNameToExeName(string toolname)
         {
             if (toolname == ME3Explorer_Beta) return @"ME3Explorer.exe";
-            return toolname + @".exe";
+            return toolname.Replace(@" ", @"") + @".exe";
         }
 
         private static string[] SupportedToolIDs =

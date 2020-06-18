@@ -663,6 +663,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     string destinationFilename = $@"{asiToInstall.InstalledPrefix}-v{asiToInstall.Version}.asi";
                     string cachedPath = Path.Combine(CachedASIsFolder, destinationFilename);
                     string destinationDirectory = MEDirectories.ASIPath(SelectedTarget);
+                    if (!Directory.Exists(destinationDirectory))
+                    {
+                        Log.Information(@"Creating ASI directory: " + destinationDirectory);
+                        Directory.CreateDirectory(destinationDirectory);
+                    }
                     string finalPath = Path.Combine(destinationDirectory, destinationFilename);
                     string md5;
                     if (File.Exists(cachedPath))
@@ -699,12 +704,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
                         memoryStream.WriteToFile(finalPath);
+                        Log.Information(@"ASI successfully installed.");
                         Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
                         {
                             { @"Filename", Path.GetFileNameWithoutExtension(finalPath)}
                         });
                         if (!Directory.Exists(CachedASIsFolder))
                         {
+                            Log.Information(@"Creating cached ASIs folder");
                             Directory.CreateDirectory(CachedASIsFolder);
                         }
                         Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
@@ -717,6 +724,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 };
                 worker.RunWorkerCompleted += (a, b) =>
                 {
+                    if (b.Error != null)
+                    {
+                        Log.Error(@"Error occured in ASI installer thread: " + b.Error.Message);
+                    }
                     RefreshASIStates();
                     operationCompletedCallback?.Invoke();
                 };
