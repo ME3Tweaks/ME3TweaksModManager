@@ -73,13 +73,16 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public bool Selectable { get; internal set; } = true;
         public string ALOTVersion { get; private set; }
+        /// <summary>
+        /// Indicates that this is a custom, abnormal game object. It may be used only for UI purposes, but it depends on the context.
+        /// </summary>
         public bool IsCustomOption { get; set; } = false;
-        public GameTarget(Mod.MEGame game, string target, bool currentRegistryActive, bool isCustomOption = false)
+        public GameTarget(Mod.MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false)
         {
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
-            this.TargetPath = target.TrimEnd('\\');
+            this.TargetPath = targetRootPath.TrimEnd('\\');
             ReloadGameTarget();
         }
 
@@ -87,47 +90,57 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
-                var oldTMOption = TextureModded;
-                var alotInfo = GetInstalledALOTInfo();
-                if (alotInfo != null)
+                if (Directory.Exists(TargetPath))
                 {
-                    TextureModded = true;
-                    ALOTVersion = alotInfo.ToString();
-                    if (alotInfo.MEUITMVER > 0)
+                    var oldTMOption = TextureModded;
+                    var alotInfo = GetInstalledALOTInfo();
+                    if (alotInfo != null)
                     {
-                        MEUITMInstalled = true;
-                        MEUITMVersion = alotInfo.MEUITMVER;
+                        TextureModded = true;
+                        ALOTVersion = alotInfo.ToString();
+                        if (alotInfo.MEUITMVER > 0)
+                        {
+                            MEUITMInstalled = true;
+                            MEUITMVersion = alotInfo.MEUITMVER;
+                        }
+                    }
+                    else
+                    {
+                        TextureModded = false;
+                        ALOTVersion = null;
+                        MEUITMInstalled = false;
+                        MEUITMVersion = 0;
+                    }
+
+
+                    Log.Information(@"Getting game source for target " + TargetPath);
+                    var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
+
+                    GameSource = hashCheckResult.result;
+                    ExecutableHash = hashCheckResult.hash;
+                    if (GameSource == null)
+                    {
+                        Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash);
+                    }
+                    else
+                    {
+                        Log.Information(@"Source: " + GameSource);
+                    }
+
+                    IsPolishME1 = Game == Mod.MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
+                    if (IsPolishME1)
+                    {
+                        Log.Information(@"ME1 Polish Edition detected");
+                    }
+
+                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded)
+                    {
+                        UpdateLODs();
                     }
                 }
                 else
                 {
-                    TextureModded = false;
-                    ALOTVersion = null;
-                    MEUITMInstalled = false;
-                    MEUITMVersion = 0;
-                }
-                Log.Information(@"Getting game source for target " + TargetPath);
-                var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
-
-                GameSource = hashCheckResult.result;
-                ExecutableHash = hashCheckResult.hash;
-                if (GameSource == null)
-                {
-                    Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash);
-                }
-                else
-                {
-                    Log.Information(@"Source: " + GameSource);
-                }
-                IsPolishME1 = Game == Mod.MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
-                if (IsPolishME1)
-                {
-                    Log.Information(@"ME1 Polish Edition detected");
-                }
-
-                if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded)
-                {
-                    UpdateLODs();
+                    Log.Error($@"Target is invalid: {TargetPath} does not exist (or is not accessible)");
                 }
             }
         }
@@ -196,6 +209,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                         fs.Position = endPos - 8;
                         short memVersionUsed = fs.ReadInt16();
                         short installerVersionUsed = fs.ReadInt16();
+                        fs.Position -= 4; //roll back so we can read this whole thing as 4 bytes
+                        int preMemi4Bytes = fs.ReadInt32();
                         int perGameFinal4Bytes = -20;
                         switch (Game)
                         {
@@ -210,7 +225,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 break;
                         }
 
-                        if (installerVersionUsed >= 10 && installerVersionUsed != perGameFinal4Bytes) //default bytes before 178 MEMI Format
+                        if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format
                         {
                             fs.Position = endPos - 12;
                             short ALOTVER = fs.ReadInt16();
@@ -243,17 +258,8 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         private string getALOTMarkerFilePath()
         {
-            switch (Game)
-            {
-                case Mod.MEGame.ME1:
-                    return Path.Combine(TargetPath, @"BioGame\CookedPC\testVolumeLight_VFX.upk");
-                case Mod.MEGame.ME2:
-                    return Path.Combine(TargetPath, @"BioGame\CookedPC\BIOC_Materials.pcc");
-                case Mod.MEGame.ME3:
-                    return Path.Combine(TargetPath, @"BIOGame\CookedPCConsole\adv_combat_tutorial_xbox_D_Int.afc");
-                default:
-                    throw new Exception(@"Unknown game to find ALOT marker for!");
-            }
+            // this used to be shared method
+            return MEDirectories.ALOTMarkerPath(this);
         }
 
         public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
@@ -305,7 +311,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             UIInstalledDLCMods.ClearEx();
             var dlcDir = MEDirectories.DLCPath(this);
             var installedMods = MEDirectories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList();
-            UIInstalledDLCMods.AddRange(installedMods);
+            UIInstalledDLCMods.AddRange(installedMods.OrderBy(x => x.ModName));
         }
 
         public bool IsTargetWritable()
@@ -333,9 +339,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// Validates a game directory by checking for multiple things that should be present in a working game.
         /// </summary>
-        /// <param name="target">Game target to check</param>
+        /// <param name="ignoreCmmVanilla">Ignore the check for a cmm_vanilla file. Presence of this file will cause validation to fail</param>
         /// <returns>String of failure reason, null if OK</returns>
-        public string ValidateTarget()
+        public string ValidateTarget(bool ignoreCmmVanilla = false)
         {
             if (!Selectable)
             {
@@ -389,7 +395,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return M3L.GetString(M3L.string_interp_invalidTargetMissingFile, Path.GetFileName(f));
                 }
             }
-            if (File.Exists(Path.Combine(TargetPath, @"cmm_vanilla"))) return M3L.GetString(M3L.string_invalidTargetProtectedByCmmvanilla);
+
+            if (!ignoreCmmVanilla)
+            {
+                if (File.Exists(Path.Combine(TargetPath, @"cmm_vanilla"))) return M3L.GetString(M3L.string_invalidTargetProtectedByCmmvanilla);
+            }
 
             IsValid = true;
             return null;
@@ -425,9 +435,12 @@ namespace MassEffectModManagerCore.modmanager.objects
             return (TargetPath != null ? TargetPath.GetHashCode() : 0);
         }
 
+        private Queue<SFARObject> SFARRestoreQueue = new Queue<SFARObject>();
+
         public class SFARObject : INotifyPropertyChanged
         {
-            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback, Action startingRestoreCallback, Action<object> notifyNoLongerModifiedCallback)
+            public SFARObject(string file, GameTarget target, Func<string, bool> restoreSFARCallback,
+                Action startingRestoreCallback, Action<object> notifyNoLongerModifiedCallback)
             {
                 RestoreConfirmationCallback = restoreSFARCallback;
                 IsModified = true;
@@ -440,21 +453,40 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (Path.GetFileName(file) == @"Patch_001.sfar")
                 {
                     UIString = @"TestPatch";
+                    IsMPSFAR = true;
+                    IsSPSFAR = true;
                 }
                 else
                 {
-                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(Directory.GetParent(Directory.GetParent(file).FullName).FullName), out var name);
+                    var dlcFoldername = Directory.GetParent(Directory.GetParent(file).FullName).FullName;
+                    if (dlcFoldername.Contains(@"DLC_UPD") || dlcFoldername.Contains(@"DLC_CON_MP"))
+                    {
+                        IsMPSFAR = true;
+                    }
+                    else
+                    {
+                        IsSPSFAR = true;
+                    }
+
+                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(dlcFoldername), out var name);
                     UIString = name;
                     if (Unpacked)
                     {
                         UIString += @" - " + M3L.GetString(M3L.string_unpacked);
                     }
+
                     var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
                     // not TOC is due to bug in autotoc
-                    if (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC") && !Unpacked) Inconsistent = true;
+                    if (unpackedFiles.Any(x =>
+                        Path.GetExtension(x) == @".bin" &&
+                        Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC") && !Unpacked) Inconsistent = true;
                 }
+
                 RestoreCommand = new GenericCommand(RestoreSFARWrapper, CanRestoreSFAR);
             }
+
+            public bool IsSPSFAR { get; private set; }
+            public bool IsMPSFAR { get; private set; }
 
             public bool RevalidateIsModified(bool notify = true)
             {
@@ -465,8 +497,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //Debug.WriteLine("Notifying that " + FilePath + " is no longer modified.");
                     notifyNoLongerModified?.Invoke(this);
                 }
+
                 return IsModified;
             }
+
             public bool IsModified { get; set; }
 
             private Action<object> notifyNoLongerModified;
@@ -476,13 +510,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                 RestoreSFAR(false);
             }
 
-            public void RestoreSFAR(bool batchRestore)
+            public void RestoreSFAR(bool batchRestore, Action signalRestoreCompleted = null)
             {
                 bool? restore = batchRestore;
+
                 if (!restore.Value) restore = RestoreConfirmationCallback?.Invoke(FilePath);
                 if (restore.HasValue && restore.Value)
                 {
-                    //Todo: Background thread this maybe?
                     NamedBackgroundWorker bw = new NamedBackgroundWorker(@"RestoreSFARThread");
                     bw.DoWork += (a, b) =>
                     {
@@ -490,7 +524,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
                         Restoring = true;
                         Log.Information($@"Restoring SFAR from backup: {backupFile} {targetFile}");
-                        XCopy.Copy(backupFile, targetFile, true, true, (o, pce) => { RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent, pce.ProgressPercentage.ToString()); });
+                        XCopy.Copy(backupFile, targetFile, true, true,
+                            (o, pce) =>
+                            {
+                                RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent,
+                                    pce.ProgressPercentage.ToString());
+                            });
                         var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
                         RestoreButtonContent = M3L.GetString(M3L.string_cleaningUp);
                         foreach (var file in unpackedFiles)
@@ -501,6 +540,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 File.Delete(file);
                             }
                         }
+
                         Utilities.DeleteEmptySubdirectories(DLCDirectory);
                         RestoreButtonContent = M3L.GetString(M3L.string_restored);
                     };
@@ -513,6 +553,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         //restoreCompletedCallback?.Invoke();
                         //}
                         Restoring = false;
+                        signalRestoreCompleted?.Invoke();
                     };
                     startingRestoreCallback?.Invoke();
                     bw.RunWorkerAsync();
@@ -522,13 +563,18 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public static bool HasUnpackedFiles(string sfarFile)
             {
-                var unpackedFiles = Directory.GetFiles(Directory.GetParent(Directory.GetParent(sfarFile).FullName).FullName, @"*", SearchOption.AllDirectories);
-                return (unpackedFiles.Any(x => Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC"));
+                var unpackedFiles =
+                    Directory.GetFiles(Directory.GetParent(Directory.GetParent(sfarFile).FullName).FullName, @"*",
+                        SearchOption.AllDirectories);
+                return (unpackedFiles.Any(x =>
+                    Path.GetExtension(x) == @".bin" && Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC"));
             }
+
             private bool checkedForBackupFile;
             private bool canRestoreSfar;
             public bool Restoring { get; set; }
             public bool OtherSFARBeingRestored { get; set; }
+
             private bool CanRestoreSFAR()
             {
                 if (Restoring) return false;
@@ -557,6 +603,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             public string FilePath { get; }
             public string UIString { get; }
             public bool Inconsistent { get; }
+
         }
 
         public class ModifiedFileObject : INotifyPropertyChanged
@@ -595,7 +642,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 bool? restore = batchRestore;
                 if (!restore.Value) restore = restoreBasegamefileConfirmationCallback?.Invoke(FilePath);
-                if (restore.HasValue && restore.Value && CanRestoreFile())
+                if (restore.HasValue && restore.Value && internalCanRestoreFile(batchRestore))
                 {
                     //Todo: Background thread this maybe?
                     var backupPath = Utilities.GetGameBackupPath(target.Game);
@@ -628,7 +675,12 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public bool CanRestoreFile()
             {
-                if (Restoring) return false;
+                return internalCanRestoreFile(false);
+            }
+
+            private bool internalCanRestoreFile(bool batchMode)
+            {
+                if (Restoring && !batchMode) return false;
                 if (checkedForBackupFile) return canRestoreFile;
                 var backupPath = Utilities.GetGameBackupPath(target.Game);
                 canRestoreFile = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
@@ -650,7 +702,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     fs.WriteUInt16(0); //major
                     fs.WriteByte(0); //minor
                     fs.WriteByte(0); //hotfix
-                    //fs.WriteByte(0); //unused
+                                     //fs.WriteByte(0); //unused
                     fs.WriteInt32(100); //installer version
                     fs.WriteUInt32(MEMI_TAG);
                 }
@@ -690,5 +742,41 @@ namespace MassEffectModManagerCore.modmanager.objects
             var alotInfo = GetInstalledALOTInfo();
             return alotInfo != null && (alotInfo.ALOTVER > 0 || alotInfo.MEUITMVER > 0);
         }
+
+        private bool RestoringSFAR;
+
+        private void SignalSFARRestore()
+        {
+            if (SFARRestoreQueue.TryDequeue(out var sfar))
+            {
+                RestoringSFAR = true;
+                sfar.RestoreSFAR(true, SFARRestoreCompleted);
+            }
+        }
+
+        private void SFARRestoreCompleted()
+        {
+            RestoringSFAR = false;
+            SignalSFARRestore(); //try next item
+        }
+
+        /// <summary>
+        /// Queues an sfar for restoration.
+        /// </summary>
+        /// <param name="sfar">SFAR to restore</param>
+        /// <param name="batchMode">If this is part of a batch mode, and thus should not show dialogs</param>
+        public void RestoreSFAR(SFARObject sfar, bool batchMode)
+        {
+            sfar.Restoring = true;
+            sfar.RestoreButtonContent = M3L.GetString(M3L.string_restoring);
+            SFARRestoreQueue.Enqueue(sfar);
+            if (!RestoringSFAR)
+            {
+                SignalSFARRestore();
+            }
+        }
+
+        public bool HasModifiedMPSFAR() => ModifiedSFARFiles.Any(x => x.IsMPSFAR);
+        public bool HasModifiedSPSFAR() => ModifiedSFARFiles.Any(x => x.IsSPSFAR);
     }
 }

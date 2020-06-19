@@ -318,7 +318,7 @@
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Invalid audio pointer, does not point to RIFF header</system:String>
     <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.</system:String>
     <!-- 0 = filepath, 1=export path in-package -->
-    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Error validating audio reference: {e.Message}</system:String>
+    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Error validating audio reference: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noAudioIssuesWereDetected">No audio issues were detected</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Audio issues were detected</system:String>
@@ -720,7 +720,7 @@
     <!-- 0 = moddescpath 1 = error message-->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Error occured parsing {0}: {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message-->
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occured parsing virtualized moddesc.ini: {e.Message}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occured parsing virtualized moddesc.ini: {0}</system:String>
     <!-- 0 = error message. Virtualized means it's using one we generated on the fly -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomodname">The moddesc.ini file located at {0} does not have a value set for modname. This value is required.</system:String>
     <!-- 0 = moddesc.ini file path -->

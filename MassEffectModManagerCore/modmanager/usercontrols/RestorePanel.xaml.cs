@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Shell;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -72,9 +73,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), window));
-            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), window));
-            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), window));
+            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), mainwindow));
         }
 
         public class GameRestoreObject : INotifyPropertyChanged
@@ -83,9 +84,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private Mod.MEGame Game;
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
-            private Window window;
+            private MainWindow window;
 
-            public GameRestoreObject(Mod.MEGame game, IEnumerable<GameTarget> availableBackupSources, Window window)
+            public GameRestoreObject(Mod.MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window)
             {
                 this.window = window;
                 this.Game = game;
@@ -137,10 +138,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return;
                 }
 
-                var result = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.Yes)
+                bool restore = RestoreTarget.IsCustomOption; //custom option is restore to custom location
+                restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                if (restore)
                 {
                     NamedBackgroundWorker bw = new NamedBackgroundWorker(Game + @"-Restore");
+                    bw.WorkerReportsProgress = true;
+                    bw.ProgressChanged += (a, b) =>
+                    {
+                        if (b.UserState is double d)
+                        {
+                            window.TaskBarItemInfoHandler.ProgressValue = d;
+                        }
+                    };
                     bw.DoWork += (a, b) =>
                     {
                         RestoreInProgress = true;
@@ -196,6 +206,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             void fileCopiedCallback()
                             {
                                 ProgressValue++;
+                                if (ProgressMax != 0)
+                                {
+                                    bw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
+                                }
                             }
 
                             string dlcFolderpath = MEDirectories.DLCPath(backupPath, Game) + '\\'; //\ at end makes sure we are restoring a subdir
@@ -283,11 +297,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
 
                         Log.Information(@"Restore thread wrapping up");
-                        RestoreTarget.ReloadGameTarget(); 
+                        RestoreTarget.ReloadGameTarget();
                         b.Result = RestoreResult.RESTORE_OK;
                     };
                     bw.RunWorkerCompleted += (a, b) =>
                     {
+                        window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                         if (b.Result is RestoreResult result)
                         {
                             switch (result)
@@ -364,6 +379,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     RefreshTargets = true;
+                    window.TaskBarItemInfoHandler.ProgressValue = 0;
+                    window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
                     bw.RunWorkerAsync(restTarget);
                 }
             }

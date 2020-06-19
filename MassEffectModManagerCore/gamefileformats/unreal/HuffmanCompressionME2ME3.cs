@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -16,6 +17,7 @@ namespace ME3Explorer
         private List<HuffmanNode> _huffmanTree = new List<HuffmanNode>();
         private Dictionary<char, BitArray> _huffmanCodes = new Dictionary<char, BitArray>();
 
+        [DebuggerDisplay("TLKEntry {StringID} {data}")]
         public class TLKEntry : IComparable
         {
             public int StringID;
@@ -85,8 +87,7 @@ namespace ME3Explorer
             File.Delete(fileName);
             if (stringRefs != null)
             {
-                _inputData = stringRefs;
-                _inputData.Sort();
+                _inputData = stringRefs.OrderBy(x => x.StringID).ToList();
                 PrepareHuffmanCoding();
             }
             /* converts Huffmann Tree to binary form */

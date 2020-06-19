@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<RootNamespace>IniParser</RootNamespace>
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <RootNamespace>IniParser</RootNamespace>
 		<AssemblyName>IniFileParser</AssemblyName>
 		<Description>A .NET, Mono and Unity3d compatible(*) library for reading/writing INI data from IO streams, file streams, and strings written in C#.
 
@@ -24,6 +24,7 @@ Also implements merging operations, both for complete ini files, sections, or ev
 		<Product>INI Parser</Product>
     <PlatformTarget>x64</PlatformTarget>
     <ReleaseVersion></ReleaseVersion>
+    <Platforms>x64</Platforms>
 	</PropertyGroup>
 
 	<!-- Auto-select supported target frameworks based on MSBuild version -->

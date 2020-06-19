@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -13,8 +14,16 @@ using System.Windows.Shapes;
 
 namespace AdonisUI.Controls
 {
+    /// <summary>
+    /// A control offering elliptical fade-in and fade-out animations for its content on mouse down.
+    /// </summary>
+    [TemplatePart(Name = "PART_ContentHost", Type = typeof(FrameworkElement))]
     public class RippleHost : ContentControl
     {
+        private const string PART_ContentHost = "PART_ContentHost";
+
+        public FrameworkElement ContentHost { get; protected set; }
+
         static RippleHost()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(RippleHost), new FrameworkPropertyMetadata(typeof(RippleHost)));
@@ -70,10 +79,18 @@ namespace AdonisUI.Controls
         {
             base.OnApplyTemplate();
 
+            ContentHost = GetTemplateChild(PART_ContentHost) as FrameworkElement;
+
             FrameworkElement mouseEventSource = MouseEventSource ?? this;
 
             InitRippleLayer(mouseEventSource);
+            //Unloaded += RippleHostUnload;
         }
+
+        //private void RippleHostUnload(object sender, RoutedEventArgs e)
+        //{
+        //    Debug.WriteLine("Unloading...");
+        //}
 
         private static void MouseEventSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -85,6 +102,44 @@ namespace AdonisUI.Controls
         }
 
         private void InitRippleLayer(FrameworkElement clickEventSource)
+        {
+            if (ContentHost != null)
+            {
+                BindDataContext(ContentHost);
+            }
+
+            InitRippleOpacityMask();
+
+            WeakEventManager<FrameworkElement, MouseButtonEventArgs>.AddHandler(clickEventSource, "PreviewMouseLeftButtonDown", MouseEventSourceOnMouseDown);
+            WeakEventManager<FrameworkElement, MouseButtonEventArgs>.AddHandler(clickEventSource, "PreviewMouseLeftButtonUp", MouseEventSourceOnMouseUp);
+
+            //clickEventSource.PreviewMouseLeftButtonDown += MouseEventSourceOnMouseDown();
+            //clickEventSource.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+
+            Window parentWindow = Window.GetWindow(clickEventSource);
+            if (parentWindow != null)
+            {
+                WeakEventManager<FrameworkElement, MouseButtonEventArgs>.AddHandler(parentWindow, "PreviewMouseLeftButtonUp", MouseEventSourceOnMouseUp);
+                WeakEventManager<Window, EventArgs>.AddHandler(parentWindow, "Deactivated", ParentWindowOnDeactivated);
+
+                //parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+                //parentWindow.Deactivated += ParentWindowOnDeactivated;
+            }
+
+            IsVisibleChanged += (s, e) => Reset();
+        }
+
+        private void BindDataContext(DependencyObject elementToInheritDataContext)
+        {
+            BindingOperations.SetBinding(elementToInheritDataContext, FrameworkElement.DataContextProperty, new Binding
+            {
+                Path = new PropertyPath("DataContext"),
+                Source = LogicalTreeHelper.GetParent(this),
+                Mode = BindingMode.OneWay,
+            });
+        }
+
+        private void InitRippleOpacityMask()
         {
             // binding required to enable bindings to target's size in visual brush
             // see https://social.msdn.microsoft.com/Forums/vstudio/en-US/21580413-6f42-429c-b9e0-17331bae87cc/binding-width-and-height-of-a-border-in-a-visualbrush-resource?forum=wpf
@@ -106,23 +161,40 @@ namespace AdonisUI.Controls
             opacityMask.Visual = rippleContainer;
             OpacityMask = opacityMask;
 
-            clickEventSource.PreviewMouseLeftButtonDown += MouseEventSourceOnMouseDown();
-            clickEventSource.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+            //THIS IS NOT PRESENT IN NEW ADONIS CODE JUNE 11 2020 -----------
+            //clickEventSource.PreviewMouseLeftButtonDown += MouseEventSourceOnMouseDown();
+            //clickEventSource.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
 
-            Window parentWindow = Window.GetWindow(clickEventSource);
-            if (parentWindow != null)
-            {
-                //Debug.WriteLine("Add ripple layer");
-                //not sure if this is usful, so we're 
-                //parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
-                //parentWindow.Deactivated += ParentWindowOnDeactivated;
-            }
+            //Window parentWindow = Window.GetWindow(clickEventSource);
+            //if (parentWindow != null)
+            //{
+            //    //Debug.WriteLine("Add ripple layer");
+            //    //not sure if this is useful, so we're 
+            //    //parentWindow.PreviewMouseLeftButtonUp += MouseEventSourceOnMouseUp();
+            //    //parentWindow.Deactivated += ParentWindowOnDeactivated;
+            //}
 
-            IsVisibleChanged += (s, e) => Reset();
+            //IsVisibleChanged += (s, e) => Reset();
+            //END NOT PRESENT ----------
+        }
+
+        private void ClearClickHandlers(FrameworkElement clickEventSource)
+        {
+            clickEventSource.PreviewMouseLeftButtonDown -= MouseEventSourceOnMouseDown();
+            clickEventSource.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
+
+            //I think these shouldn't be removed here as they're only defined in initripplelayer
+            //Window parentWindow = Window.GetWindow(clickEventSource);
+            //if (parentWindow != null)
+            //{
+            //    parentWindow.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
+            //    parentWindow.Deactivated -= ParentWindowOnDeactivated;
+            //}
         }
 
         private void ClearRippleLayer(FrameworkElement clickEventSource)
         {
+            Debug.WriteLine("Clearing ripple layer");
             OpacityMask = null;
 
             clickEventSource.PreviewMouseLeftButtonDown -= MouseEventSourceOnMouseDown();
@@ -131,7 +203,6 @@ namespace AdonisUI.Controls
             Window parentWindow = Window.GetWindow(clickEventSource);
             if (parentWindow != null)
             {
-                Debug.WriteLine("Clear ripple layer");
                 parentWindow.PreviewMouseLeftButtonUp -= MouseEventSourceOnMouseUp();
                 parentWindow.Deactivated -= ParentWindowOnDeactivated;
             }
@@ -140,6 +211,11 @@ namespace AdonisUI.Controls
         private MouseButtonEventHandler MouseEventSourceOnMouseDown()
         {
             return (sender, args) => StartRipple(args.MouseDevice.GetPosition(this));
+        }
+
+        private void MouseEventSourceOnMouseDown(object sender, MouseButtonEventArgs args)
+        {
+            StartRipple(args.MouseDevice.GetPosition(this));
         }
 
         private void StartRipple(Point center)
@@ -174,15 +250,21 @@ namespace AdonisUI.Controls
 
         private MouseButtonEventHandler MouseEventSourceOnMouseUp()
         {
-            return (sender, args) => EndRipple();
+            return (sender, args) =>
+                EndRipple(args.Source as FrameworkElement);
+        }
+
+        private void MouseEventSourceOnMouseUp(object sender, MouseButtonEventArgs args)
+        {
+            EndRipple(args.Source as FrameworkElement);
         }
 
         private void ParentWindowOnDeactivated(object sender, EventArgs args)
         {
-            EndRipple();
+            EndRipple(null);
         }
 
-        private void EndRipple()
+        private void EndRipple(FrameworkElement element)
         {
             if (!((OpacityMask as VisualBrush)?.Visual is Panel rippleContainer))
                 return;
@@ -194,7 +276,10 @@ namespace AdonisUI.Controls
 
             Duration animationDuration = new Duration(FadeOutDuration);
             DoubleAnimation removeAnimation = new DoubleAnimation(0, animationDuration);
-            removeAnimation.Completed += (s, e) => rippleContainer.Background = null;
+            removeAnimation.Completed += (s, e) =>
+            {
+                rippleContainer.Background = null;
+            };
 
             if (AnimationToComplete == null || GetIsAnimationComplete(AnimationToComplete))
                 rippleContainer.BeginAnimation(UIElement.OpacityProperty, removeAnimation);

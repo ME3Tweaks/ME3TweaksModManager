@@ -33,7 +33,17 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return M3L.GetString(M3L.string_textureModded);
             }
 
-            return $@"{ALOTVER}.{ALOTUPDATEVER}";
+            if (ALOTVER == 0 && ALOTUPDATEVER == 0 && MEUITMVER > 0)
+            {
+                return @"MEUITM v" + MEUITMVER;
+            }
+
+            if (MEUITMVER > 0 && ALOTVER > 0)
+            {
+                return $@"ALOT {ALOTVER}.{ALOTUPDATEVER}, MEUITM v{MEUITMVER}";
+            }
+
+            return $@"ALOT {ALOTVER}.{ALOTUPDATEVER}";
         }
     }
 }

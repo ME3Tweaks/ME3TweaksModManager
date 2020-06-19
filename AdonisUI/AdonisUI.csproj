@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <Version>1.12.1</Version>
+    <Version>1.15</Version>
     <Description>Core theme definitions for AdonisUI - a lightweight UI toolkit for WPF applications offering classic but enhanced windows visuals</Description>
     <Company>benruehl</Company>
     <Authors>benruehl</Authors>
     <PackageId>AdonisUI</PackageId>
-    <Copyright>Copyright ©  2019 Benjamin Rühl</Copyright>
+    <Copyright>Copyright ©  2020 Benjamin Rühl</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/benruehl/adonis-ui</PackageProjectUrl>
     <RepositoryUrl>https://github.com/benruehl/adonis-ui.git</RepositoryUrl>
@@ -15,7 +15,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryType>git</RepositoryType>
     <PackageTags>UI Styles Themes Templates Controls WPF XAML</PackageTags>
-    <PackageReleaseNotes>Update .NET Core version to 3.0 stable (from preview 5).</PackageReleaseNotes>
+    <PackageReleaseNotes>See release notes at https://github.com/benruehl/adonis-ui/releases </PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <UseWpf>true</UseWpf>
@@ -23,14 +23,14 @@
     <noWarn>1591</noWarn> <!-- XML Property missing attributes-->
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
   </ItemGroup>
 </Project>

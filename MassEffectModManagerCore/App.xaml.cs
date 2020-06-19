@@ -35,12 +35,6 @@ namespace MassEffectModManagerCore
     public partial class App : Application
     {
         public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
-
-        /// <summary>
-        /// Registry key for Mass Effect Mod Manager itself. This likely won't be used much
-        /// </summary>
-        internal const string REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ME3Tweaks Mod Manager";
-
         /// <summary>
         /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
         /// </summary>
@@ -78,6 +72,12 @@ namespace MassEffectModManagerCore
 
         //Windows 8.1 Update 1
         public static readonly Version MIN_SUPPORTED_OS = new Version("6.3.9600");
+
+        internal static readonly string[] SupportedOperatingSystemVersions =
+        {
+            "Windows 8.1",
+            "Windows 10 (not EOL versions)"
+        };
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern bool SetDllDirectory(string lpPathName);
@@ -133,64 +133,6 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
-           /* string generateKey(string keyname, string defaultvalue, string listsource, List<(string, string)> kp)
-            {
-                string res = $"<Key name=\"{keyname}\">";
-                res += $"\n\t<ListSource name=\"{listsource}\" defaultValue=\"{defaultvalue}\">";
-                foreach (var item in kp)
-                {
-                    res += $"\n\t\t<Item value=\"{item.Item1}\" caption=\"{item.Item2}\"/>";
-                }
-                res += "\n\t</ListSource>";
-                res += "\n</Key>";
-                return res;
-            }
-
-            XDocument x = new XDocument();
-            List<string> sectionKeys = new List<string>();
-            List<string> uiStuff = new List<string>();
-            foreach (var line in File.ReadAllLines(@"C:\users\mgame\desktop\lod.txt"))
-            {
-                var eqi = line.IndexOf("=");
-                var key = line.Substring(0, eqi);
-                var value = line.Substring(eqi + 1, line.Length - (eqi + 1));
-
-                var uiSTR = key.Substring("TEXTUREGROUP_".Length);
-                var listSourceName = "TextureLODs_" + uiSTR;
-                List<(string itemValue, string itemCaption)> items = new List<(string, string)>();
-
-                var vals = StringStructParser.GetCommaSplitValues(value);
-                var baseMAXLODSIZE = int.Parse(vals["MaxLODSize"]);
-                var curMaxLod = baseMAXLODSIZE;
-                while (curMaxLod <= 4096)
-                {
-                    vals["MaxLODSize"] = curMaxLod.ToString();
-                    items.Add((StringStructParser.BuildCommaSeparatedSplitValueList(vals), curMaxLod == baseMAXLODSIZE ? "Default" : curMaxLod.ToString()));
-                    curMaxLod *= 2;
-                }
-                var generatedKey = generateKey(key, value, listSourceName, items);
-                sectionKeys.Add(generatedKey);
-
-                string sectionKeyItems = $"<c:Label text=\"{uiSTR}\"/>";
-                sectionKeyItems += $"\n<c:Combo source=\"{listSourceName}\" type=\"dropdown\" width=\"150\" height=\"15\" />\n";
-                uiStuff.Add(sectionKeyItems);
-            }
-
-            foreach (var v in sectionKeys)
-            {
-                Debug.WriteLine(v);
-            }
-
-            Debug.WriteLine("");
-            foreach (var v in uiStuff)
-            {
-                Debug.WriteLine(v);
-            }
-
-            Environment.Exit(0);*/
-
-
-            // var f = Assembly.GetCallingAssembly().GetManifestResourceNames();
             ExecutableLocation = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
@@ -203,7 +145,15 @@ namespace MassEffectModManagerCore
             try
             {
                 string exeFolder = Directory.GetParent(ExecutableLocation).ToString();
-                LogCollector.CreateLogger();
+                try
+                {
+                    LogCollector.CreateLogger();
+                }
+                catch (Exception e)
+                {
+                    //Unable to create logger...!
+
+                }
 
                 string[] args = Environment.GetCommandLineArgs();
                 //Parsed<Options> parsedCommandLineArgs = null;
@@ -293,6 +243,7 @@ namespace MassEffectModManagerCore
                 string version = fvi.FileVersion;
                 Log.Information("ME3Tweaks Mod Manager " + version);
                 Log.Information("Application boot: " + DateTime.UtcNow);
+                Log.Information("Running as " + Environment.UserName);
                 Log.Information("Executable location: " + ExecutableLocation);
                 Log.Information("Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
@@ -383,12 +334,12 @@ namespace MassEffectModManagerCore
                 }
 
                 Log.Information("The following backup paths are listed in the registry:");
-                Log.Information("ME1: " + Utilities.GetGameBackupPath(Mod.MEGame.ME1), false);
-                Log.Information("ME1 (w/ vanilla check): " + Utilities.GetGameBackupPath(Mod.MEGame.ME1), true);
-                Log.Information("ME2: " + Utilities.GetGameBackupPath(Mod.MEGame.ME2), false);
-                Log.Information("ME2 (w/ vanilla check): " + Utilities.GetGameBackupPath(Mod.MEGame.ME2), true);
-                Log.Information("ME3: " + Utilities.GetGameBackupPath(Mod.MEGame.ME3), false);
-                Log.Information("ME3 (w/ vanilla check): " + Utilities.GetGameBackupPath(Mod.MEGame.ME3), true);
+                Log.Information("Mass Effect ======");
+                Log.Information(Utilities.GetGameBackupPath(Mod.MEGame.ME1, true, true));
+                Log.Information("Mass Effect 2 ====");
+                Log.Information(Utilities.GetGameBackupPath(Mod.MEGame.ME2, true, true));
+                Log.Information("Mass Effect 3 ====");
+                Log.Information(Utilities.GetGameBackupPath(Mod.MEGame.ME3, true, true));
 
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 //Build 104 changed location of settings from AppData to ProgramData.
@@ -441,6 +392,7 @@ namespace MassEffectModManagerCore
                     var currentCultureLang = CultureInfo.InstalledUICulture.Name;
                     if (currentCultureLang.StartsWith("de")) InitialLanguage = Settings.Language = "deu";
                     if (currentCultureLang.StartsWith("ru")) InitialLanguage = Settings.Language = "rus";
+                    if (currentCultureLang.StartsWith("pl")) InitialLanguage = Settings.Language = "pol";
                     Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
@@ -467,7 +419,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        public static string[] SupportedLanguages = { "int", /*"pol",*/ "rus", "deu", "fra"};
+        public static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra" };
         public static Dictionary<string, string> ServerManifest { get; set; }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
@@ -485,6 +437,27 @@ namespace MassEffectModManagerCore
         public static string InitialLanguage = "int";
         internal static Dictionary<string, List<string>> TipsService;
         internal static string CurrentLanguage = InitialLanguage;
+
+        private static bool? _allowCompressingPackageOnImport;
+        /// <summary>
+        /// Allow package compression when importing a mod. This is controlled by the server manifest and currently defaults to false.
+        /// </summary>
+        public static bool AllowCompressingPackagesOnImport
+        {
+            get
+            {
+                if (_allowCompressingPackageOnImport != null) return _allowCompressingPackageOnImport.Value;
+                if (ServerManifest != null)
+                {
+                    if (ServerManifest.TryGetValue(@"allowcompressingpackagesonimport", out var acpoiStr) && bool.TryParse(acpoiStr, out var acpoiVal))
+                    {
+                        _allowCompressingPackageOnImport = acpoiVal;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         public static string AppVersion
         {
@@ -604,6 +577,12 @@ namespace MassEffectModManagerCore
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             new MainWindow().Show();
+        }
+
+        public static bool IsOperatingSystemSupported()
+        {
+            OperatingSystem os = Environment.OSVersion;
+            return os.Version >= App.MIN_SUPPORTED_OS;
         }
     }
 

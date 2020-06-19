@@ -385,7 +385,7 @@
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1} : Pointeur audio invalide, ne pointe pas vers l'en-tête RIFF</system:String>
     <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1} : Cet audio est dans un AFC basegame/DLC mais n'est pas un audio vanilla. Les utilisateurs finaux n'auront pas accès à cet audio. Utilisez le compacteur AFC dans ME3Explorer pour extraire cet audio localement dans un AFC pour ce mod.</system:String>
     <!-- 0 = filepath, 1=export path in-package -->
-    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1} :Erreur de validation de la référence audio : {e.Message}</system:String>
+    <system:String x:Key="string_errorValidatingAudioReference">{0} - {1} :Erreur de validation de la référence audio: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
     <system:String x:Key="string_noAudioIssuesWereDetected">Aucun problème audio n'a été détecté</system:String>
     <system:String x:Key="string_audioIssuesWereDetected">Des problèmes audio ont été détectés</system:String>
@@ -834,7 +834,7 @@
     <!-- 0 = moddescpath 1 = error message -->
     <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Une erreur s'est produite lors de l'analyse syntaxique {0} : {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message -->
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Une erreur s'est produite lors de l'analyse du fichier virtualisé moddesc.ini : {e.Message}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Une erreur s'est produite lors de l'analyse du fichier virtualisé moddesc.ini : {0}</system:String>
     <!-- 0 = error message. Virtualized means it's using one we generated on the fly -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomodname">Le fichier moddesc.ini situé à {0} n'a pas de valeur définie pour modname. Cette valeur est obligatoire.</system:String>
     <!-- 0 = moddesc.ini file path -->

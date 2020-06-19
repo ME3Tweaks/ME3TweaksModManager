@@ -1,3 +1,4 @@
+
 <?xml version="1.0"?>
 <ASIManifest>
   <updategroup groupid="0" game="3" hidden="0">
@@ -89,6 +90,16 @@
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/BalanceChangesReplacer-v2.asi</downloadlink>
     </asimod>
+    <asimod>
+      <name>Balance Changes Replacer</name>
+      <installedname>BalanceChangesReplacer</installedname>
+      <author>Erik JS</author>
+      <description>This plugin will replace the server-side Coalesced (balance changes for MP) with any custom Coalesced you want, as long as your file is named ServerCoalesced.bin, and put in "Mass Effect 3\Binaries\Win32" or "Mass Effect 3\Binaries\Win32\ASI" (the latter path will be ignored if the file is already found in the former). ModMaker mods will automatically use the latter when installing a balance changes file. DO NOT USE ANY COALESCED FILE THAT IS NOT BASED ON THE ORIGINAL SERVER ONE.</description>
+      <version>3</version>
+      <hash>6143daf3f9db91eef76590ffae09d743</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/BalanceChangesReplacer-v3.asi</downloadlink>
+    </asimod>
   </updategroup>
   <updategroup groupid="6" game="3" hidden="0">
     <asimod>
@@ -146,6 +157,16 @@
       <hash>6a85a3d46718a5326d02b0e12da59cc7</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/AutoTOC-v1.asi</downloadlink>
+    </asimod>
+    <asimod>
+      <name>AutoTOC ASI</name>
+      <installedname>AutoTOC</installedname>
+      <author>SirCxyrtyx</author>
+      <description>Runs AutoTOC for basegame and unpacked DLC every time the game boots. v2 of this ASI works with ME3Explorer - ME3Tweaks v 4.2.0.1115 to update the in-memory TOC of a running Mass Effect 3 on file save. See the source code link for more information.</description>
+      <version>2</version>
+      <hash>6eab5b81f2390b352681fb900e78e430</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/v2.1/AutoTOC-v2.1.asi</downloadlink>
     </asimod>
   </updategroup>
   <updategroup groupid="10" game="3" hidden="0">
@@ -260,6 +281,18 @@
       <hash>1e8311283fa2630ff40c930df2960bab</hash>
       <sourcecode>https://github.com/SirCxyrtyx/ME1-DLC-ModEnabler</sourcecode>
       <downloadlink>https://github.com/SirCxyrtyx/ME1-DLC-ModEnabler/releases/download/v1.0/ME1-DLC-ModEnabler-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="17" game="3" hidden="0">
+    <asimod>
+      <name>Documents Folder Redirector</name>
+      <installedname>DocumentsRedirector</installedname>
+      <author>Erik JS</author>
+      <description>This plugin acts like a proxy for the SHGetFolderPathW function from Shell32.dll, making the game use an alternate folder in the place of the current user's Documents folder. See the source code link for more information on how to use this ASI.</description>
+      <version>1</version>
+      <hash>6b1f0f29ea10a6e4c5c3a078df469dd9</hash>
+      <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3DocumentsRedirector</sourcecode>
+      <downloadlink>https://github.com/Erik-JS/ME3-ASI/raw/master/ME3DocumentsRedirector/Release/ME3DocumentsRedirector.asi</downloadlink>
     </asimod>
   </updategroup>
 </ASIManifest>

@@ -191,13 +191,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        private static void runMassEffectModderNoGuiIPC(string exe, string args, object lockObject, Action<int?> setExitCodeCallback = null, Action<string, string> ipcCallback = null)
+        private static void runMassEffectModderNoGuiIPC(string operationName, string exe, string args, object lockObject, Action<string, string> exceptionOccuredCallback, Action<int?> setExitCodeCallback = null, Action<string, string> ipcCallback = null)
         {
             Log.Information($"Running Mass Effect Modder No GUI w/ IPC: {exe} {args}");
             var memProcess = new ConsoleApp(exe, args);
+            bool hasExceptionOccured = false;
             memProcess.ConsoleOutput += (o, args2) =>
             {
                 string str = args2.Line;
+                if (hasExceptionOccured)
+                {
+                    Log.Fatal("MassEffectModderNoGui.exe: " + str);
+                }
                 if (str.StartsWith("[IPC]", StringComparison.Ordinal))
                 {
                     string command = str.Substring(5);
@@ -208,6 +213,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
 
                     string param = str.Substring(endOfCommand + 5).Trim();
+                    if (command == "EXCEPTION_OCCURRED")
+                    {
+                        hasExceptionOccured = true;
+                        exceptionOccuredCallback?.Invoke(operationName, param);
+                        return; //don't process this command further, nothing handles it.
+                    }
+
                     ipcCallback?.Invoke(command, param);
                 }
                 //Debug.WriteLine(args2.Line);
@@ -651,7 +663,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine("System Memory", Severity.BOLD);
                 var computerInfo = new ComputerInfo();
                 long ramInBytes = (long)computerInfo.TotalPhysicalMemory;
-                addDiagLine("Total memory available: " + ByteSize.FromBytes(ramInBytes).GibiBytes.ToString("#.#") + "GB");
+                addDiagLine("Total memory available: " + ByteSize.FromBytes(ramInBytes).GibiBytes.ToString("#.##") + "GB");
                 addDiagLine("Processors", Severity.BOLD);
                 addDiagLine(GetProcessorInformationForDiag());
                 if (ramInBytes == 0)
@@ -683,15 +695,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string displayVal;
                     if (returnvalue != null && (long)returnvalue != 0)
                     {
-                        displayVal = ByteSize.FromBytes((long)returnvalue).ToString();
+                        displayVal = ByteSize.FromBytes((long)returnvalue).GibiBytes.ToString("#.##");
                     }
                     else
                     {
                         try
                         {
                             UInt32 wmiValue = (UInt32)obj["AdapterRam"];
-                            displayVal = ByteSize.FromBytes((long)wmiValue).ToString();
-                            if (displayVal == "4GB" || displayVal == "4 GB")
+                            var numBytes = ByteSize.FromBytes((long)wmiValue);
+                            displayVal = numBytes.MebiBytes.ToString("#.##") + " MB";
+                            if (numBytes.MebiBytes == 4095)
                             {
                                 displayVal += " (possibly more, variable is 32-bit unsigned)";
                             }
@@ -797,24 +810,31 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #region Blacklisted mods check
 
+                void memExceptionOccured(string operation, string line)
+                {
+                    addDiagLine($"An exception occured performing operation '{operation}': {line}", Severity.ERROR);
+                    addDiagLine("Check the Mod Manager application log for more information.", Severity.ERROR);
+                    addDiagLine("Report this to ALOT or ME3Tweaks Discord for further assistance.", Severity.ERROR);
+                }
+
                 if (hasMEM)
                 {
                     updateStatusCallback?.Invoke("Checking for blacklisted mods");
                     args = $"--detect-bad-mods --gameid {gameID} --ipc";
                     exitcode = null;
                     var blacklistedMods = new List<string>();
-                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
-                    {
-                        switch (command)
-                        {
-                            case "ERROR":
-                                blacklistedMods.Add(param);
-                                break;
-                            default:
-                                Debug.WriteLine("oof?");
-                                break;
-                        }
-                    });
+                    runMassEffectModderNoGuiIPC(@"Detect Blacklisted Mods", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                      {
+                          switch (command)
+                          {
+                              case "ERROR":
+                                  blacklistedMods.Add(param);
+                                  break;
+                              default:
+                                  Debug.WriteLine("oof?");
+                                  break;
+                          }
+                      });
                     lock (memFinishedLock)
                     {
                         Monitor.Wait(memFinishedLock);
@@ -862,7 +882,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 foreach (var dlc in installedDLCs)
                 {
                     string dlctext = dlc.Key;
-                    if (!officialDLC.Contains(dlc.Key))
+                    if (!officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase))
                     {
                         dlctext += ";;";
                         if (dlc.Value != null)
@@ -886,7 +906,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
 
-                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key) ? Severity.OFFICIALDLC : Severity.DLC);
+                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase) ? Severity.OFFICIALDLC : Severity.DLC);
                 }
 
                 var supercedanceList = MEDirectories.GetFileSupercedances(selectedDiagnosticTarget).Where(x => x.Value.Count > 1).ToList();
@@ -904,7 +924,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             isFirst = false;
                         else
                             addDiagLine();
-                        
+
                         addDiagLine(sl.Key);
                         foreach (var dlc in sl.Value)
                         {
@@ -913,173 +933,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     addDiagLine("[/SUB]");
                 }
-                /*
-                bool isCompatPatch = false;
-                string value = Path.GetFileName(dir);
-                if (value == "__metadata")
-                {
-                    metadataPresent = true;
-                    continue;
-                }
-                long sfarsize = 0;
-                long propersize = 32L;
-                long me3expUnpackedSize = GetME3ExplorerUnpackedSFARSize(value);
-                bool hasSfarSizeErrorMemiFound = false;
-                string duplicatePriorityStr = "";
-                if (DIAGNOSTICS_GAME == 3)
-                {
-                    //check for ISM/Controller patch
-                    int mountpriority = GetDLCPriority(dir);
-                    if (mountpriority != -1)
-                    {
-                        if (priorities.ContainsKey(mountpriority))
-                        {
-                            duplicatePriorityStr = priorities[mountpriority];
-                        }
-                        else
-                        {
-                            priorities[mountpriority] = value;
-                        }
-                    }
-                    if (mountpriority == 31050)
-                    {
-                        compatPatchInstalled = isCompatPatch = true;
-                    }
-                    if (value != "DLC_CON_XBX" && value != "DLC_CON_UIScaling" && value != "DLC_CON_UIScaling_Shared" && InteralGetDLCName(value) == null)
-                    {
-                        hasNonUIDLCMod = true;
-                    }
-                    if (value == "DLC_CON_XBX" || value == "DLC_CON_UIScaling" || value == "DLC_CON_UIScaling_Shared")
-                    {
-                        hasUIMod = true;
-                    }
-
-                    //Check for SFAR size not being 32 bytes
-                    string sfar = Path.Combine(dir, "CookedPCConsole", "Default.sfar");
-                    string unpackedDir = Path.Combine(dir, "CookedPCConsole");
-                    if (File.Exists(sfar))
-                    {
-                        FileInfo fi = new FileInfo(sfar);
-                        sfarsize = fi.Length;
-                        hasSfarSizeErrorMemiFound = sfarsize != propersize;
-
-                        var filesInSfarDir = Directory.EnumerateFiles(unpackedDir).ToList();
-                        var hasUnpackedFiles = filesInSfarDir.Any(d => unpackedFileExtensions.Contains(Path.GetExtension(d.ToLower())));
-                        var officialPackedSize = GetPackedSFARSize(value);
-                        if (hasSfarSizeErrorMemiFound && MEMI_FOUND)
-                        {
-                            if (me3expUnpackedSize == sfarsize)
-                            {
-                                addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
-                                addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
-                                if (HASH_SUPPORTED)
-                                {
-                                    addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
-                                }
-                            }
-                            else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
-                            {
-                                addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
-                                addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
-                                addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                            }
-                            else if (officialPackedSize == sfarsize)
-                            {
-                                addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed");
-                                addDiagLine("[ERROR]      SFAR is not unpacked. This DLC was either installed after ALOT was installed or was attempted to be repaired by Origin.");
-                                addDiagLine("[ERROR]      The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                            }
-                            else
-                            {
-                                addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Unknown SFAR size");
-                                addDiagLine("[ERROR]      SFAR is not the MEM unpacked size, ME3Explorer unpacked size, or packed size. This SFAR is " + ByteSize.FromBytes(sfarsize) + " bytes.");
-                            }
-                        }
-                        else
-                        {
-                            //ALOT not detected
-                            if (me3expUnpackedSize == sfarsize)
-                            {
-                                addDiagLine("~~~" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - ME3Explorer mainline unpacked");
-                                addDiagLine("[ERROR]      SFAR has been unpacked with ME3Explorer. SFAR unpacking with ME3Explorer is extremely slow and prone to failure. Do not unpack your DLC with ME3Explorer.");
-                                if (HASH_SUPPORTED)
-                                {
-                                    addDiagLine("[ERROR]      If you used ME3Explorer for AutoTOC, you can use the one in ALOT Installer by going to Settings -> Game Utilities -> AutoTOC.");
-                                }
-                            }
-                            else if (sfarsize >= officialPackedSize && officialPackedSize != 0 && hasUnpackedFiles)
-                            {
-                                addDiagLine("[FATAL]" + GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibilty Pack" : null) + " - Packed with unpacked files");
-                                addDiagLine("[ERROR]      SFAR is not unpacked, but directory contains unpacked files. This DLC was unpacked and then restored.");
-                                addDiagLine("[ERROR]      This DLC is in an inconsistent state. The game must be restored from backup or deleted. Once reinstalled, ALOT must be installed again.");
-                            }
-                            else if (sfarsize >= officialPackedSize && officialPackedSize != 0)
-                            {
-                                addDiagLine(GetDLCDisplayString(value) + " - Packed");
-                            }
-                            else
-                            {
-                                addDiagLine(GetDLCDisplayString(value, isCompatPatch ? "[MOD] UI Mod Compatibility Pack" : null));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //SFAR MISSING
-                        addDiagLine("~~~" + GetDLCDisplayString(value) + " - SFAR missing");
-                    }
-                }
-                else
-                {
-                    addDiagLine(GetDLCDisplayString(value));
-                }
-
-                if (duplicatePriorityStr != "")
-                {
-                    addDiagLine("[ERROR] - This DLC has the same mount priority as another DLC: " + duplicatePriorityStr);
-                    addDiagLine("[ERROR]   These conflicting DLCs will likely encounter issues as the game will not know which files should be used");
-                }
-            }
-
-                /*
-                if (DIAGNOSTICS_GAME == 3)
-                {
-                    if (hasUIMod && hasNonUIDLCMod && compatPatchInstalled)
-                    {
-                        addDiagLine("This installation requires a UI compatibility patch. This patch appears to be installed.");
-                    }
-                    else if (hasUIMod && hasNonUIDLCMod && !compatPatchInstalled)
-                    {
-                        addDiagLine("~~~This installation may require a UI compatibility patch from Mass Effect 3 Mod Manager due to installation of a UI mod with other mods.");
-                        addDiagLine("~~~In Mass Effect 3 Mod Manager use Mod Management > Check for Custom DLC conflicts to see if you need one.");
-                    }
-                    else if (!hasUIMod && compatPatchInstalled)
-                    {
-                        addDiagLine("[ERROR] -  This installation does not require a UI compatibilty patch but one is installed. This may lead to game crashing.");
-                    }
-
-                    if (metadataPresent)
-                    {
-                        addDiagLine("__metadata folder is present");
-                    }
-                    else
-                    {
-                        addDiagLine("~~~__metadata folder is missing");
-                    }
-                }
-            }
-            else
-            {
-                if (DIAGNOSTICS_GAME == 3)
-                {
-                    addDiagLine("[ERROR]DLC directory is missing: " + dlcPath + ". Mass Effect 3 always has a DLC folder so this should not be missing.");
-                }
-                else
-                {
-                    addDiagLine("DLC directory is missing: " + dlcPath + ". If no DLC is installed, this folder will be missing.");
-                }
-            }*/
-
                 #endregion
 
                 #region Get list of TFCs
@@ -1099,7 +952,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             FileInfo fi = new FileInfo(tfc);
                             long tfcSize = fi.Length;
                             string tfcPath = tfc.Substring(bgPath.Length + 1);
-                            addDiagLine($" - {tfcPath}, {ByteSize.FromBytes(tfcSize)}");
+                            addDiagLine($" - {tfcPath}, {ByteSize.FromBytes(tfcSize).MebiBytes.ToString("#.##")} MB");
                         }
                     }
                     else
@@ -1127,7 +980,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             List<string> removedFiles = new List<string>();
                             List<string> addedFiles = new List<string>();
                             List<string> replacedFiles = new List<string>();
-                            runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
+                            runMassEffectModderNoGuiIPC(@"Texture map check", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
                             {
                                 switch (command)
                                 {
@@ -1144,7 +997,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         {
                                             replacedFiles.Add(param);
                                         }
-
                                         break;
                                     default:
                                         Debug.WriteLine("oof?");
@@ -1191,7 +1043,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                             else
                             {
-                                addDiagLine("Diagnostic reports no files appear to have been added or r since texture scan took place.");
+                                addDiagLine("Diagnostic reports no files appear to have been added or removed since texture scan took place.");
                             }
 
                         }
@@ -1321,43 +1173,43 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         var badTFCReferences = new List<string>();
                         var scanErrors = new List<string>();
                         string lastMissingTFC = null;
-                        runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
-                        {
-                            switch (command)
-                            {
-                                case "ERROR_MIPMAPS_NOT_REMOVED":
-                                    if (selectedDiagnosticTarget.TextureModded)
-                                    {
-                                        //only matters when game is texture modded
-                                        emptyMipsNotRemoved.Add(param);
-                                    }
-                                    break;
-                                case "TASK_PROGRESS":
-                                    updateStatusCallback?.Invoke($"Performing full textures check {param}%");
-                                    break;
-                                case "PROCESSING_FILE":
-                                    //Don't think there's anything to do with this right now
-                                    break;
-                                case "ERROR_REFERENCED_TFC_NOT_FOUND":
-                                    //badTFCReferences.Add(param);
-                                    lastMissingTFC = param;
-                                    break;
-                                case "ERROR_TEXTURE_SCAN_DIAGNOSTIC":
-                                    if (lastMissingTFC != null)
-                                    {
-                                        badTFCReferences.Add(lastMissingTFC + ", " + param);
-                                    }
-                                    else
-                                    {
-                                        scanErrors.Add(param);
-                                    }
-                                    lastMissingTFC = null; //reset
-                                    break;
-                                default:
-                                    Debug.WriteLine($"{command} {param}");
-                                    break;
-                            }
-                        });
+                        runMassEffectModderNoGuiIPC(@"Full textures check", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                         {
+                             switch (command)
+                             {
+                                 case "ERROR_MIPMAPS_NOT_REMOVED":
+                                     if (selectedDiagnosticTarget.TextureModded)
+                                     {
+                                         //only matters when game is texture modded
+                                         emptyMipsNotRemoved.Add(param);
+                                     }
+                                     break;
+                                 case "TASK_PROGRESS":
+                                     updateStatusCallback?.Invoke($"Performing full textures check {param}%");
+                                     break;
+                                 case "PROCESSING_FILE":
+                                     //Don't think there's anything to do with this right now
+                                     break;
+                                 case "ERROR_REFERENCED_TFC_NOT_FOUND":
+                                     //badTFCReferences.Add(param);
+                                     lastMissingTFC = param;
+                                     break;
+                                 case "ERROR_TEXTURE_SCAN_DIAGNOSTIC":
+                                     if (lastMissingTFC != null)
+                                     {
+                                         badTFCReferences.Add(lastMissingTFC + ", " + param);
+                                     }
+                                     else
+                                     {
+                                         scanErrors.Add(param);
+                                     }
+                                     lastMissingTFC = null; //reset
+                                     break;
+                                 default:
+                                     Debug.WriteLine($"{command} {param}");
+                                     break;
+                             }
+                         });
                         lock (memFinishedLock)
                         {
                             Monitor.Wait(memFinishedLock);
@@ -1445,19 +1297,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     updateStatusCallback?.Invoke("Collecting LOD settings");
                     args = $"--print-lods --gameid {gameID} --ipc";
                     var lods = new Dictionary<string, string>();
-                    runMassEffectModderNoGuiIPC(mempath, args, memFinishedLock, i => exitcode = i, (string command, string param) =>
-                    {
-                        switch (command)
-                        {
-                            case "LODLINE":
-                                var lodSplit = param.Split("=");
-                                lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
-                                break;
-                            default:
-                                Debug.WriteLine("oof?");
-                                break;
-                        }
-                    });
+                    runMassEffectModderNoGuiIPC(@"MEM - Fetch LODS", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                     {
+                         switch (command)
+                         {
+                             case "LODLINE":
+                                 var lodSplit = param.Split("=");
+                                 lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
+                                 break;
+                             default:
+                                 Debug.WriteLine("oof?");
+                                 break;
+                         }
+                     });
                     lock (memFinishedLock)
                     {
                         Monitor.Wait(memFinishedLock);
@@ -1473,6 +1325,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     addDiagLine("Mass Effect Modder No Gui was not available for use when this diagnostic was run.", Severity.WARN);
                     addDiagLine("The following checks were skipped:", Severity.WARN);
                     addDiagLine(" - Files added or removed after texture install", Severity.WARN);
+                    addDiagLine(" - Blacklisted mods check", Severity.WARN);
                     addDiagLine(" - Textures check", Severity.WARN);
                     addDiagLine(" - Texture LODs check", Severity.WARN);
                 }
@@ -1485,7 +1338,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine("Installed ASI mods", Severity.DIAGSECTION);
                 if (Directory.Exists(asidir))
                 {
-                    addDiagLine("The follow files are located in the ASI directory:");
+                    addDiagLine("The following ASI files are located in the ASI directory:");
                     string[] files = Directory.GetFiles(asidir, "*.asi");
                     if (!files.Any())
                     {
@@ -1497,6 +1350,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             addDiagLine(" - " + Path.GetFileName(f));
                         }
+                        addDiagLine();
+                        addDiagLine("Ensure that only one version of an ASI is installed. If multiple copies of the same one are installed, the game may crash on startup.");
                     }
                 }
                 else
@@ -1745,14 +1600,20 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     maxLodSize = int.Parse(StringStructParser.GetCommaSplitValues(textureChar1024.Value)[selectedDiagnosticTarget.Game == Mod.MEGame.ME1 ? "MinLODSize" : "MaxLODSize"]);
                 }
 
+                // Texture mod installed, HQ LODs
                 var HQLine = "High quality texture LOD settings appear to be set";
+
+                // Texture mod installed, missing HQ LODs
                 var HQSettingsMissingLine = "High quality texture LOD settings appear to be missing, but a high resolution texture mod appears to be installed.\n[ERROR]The game will not use these new high quality assets - config file was probably deleted or texture quality settings were changed in game";
+
+                // No texture mod, no HQ LODs
                 var HQVanillaLine = "High quality LOD settings are not set and no high quality texture mod is installed";
                 switch (selectedDiagnosticTarget.Game)
                 {
                     case Mod.MEGame.ME1:
                         if (maxLodSize != 1024) //ME1 Default
                         {
+                            //LODS MODIFIED!
                             if (maxLodSize == 4096)
                             {
                                 addDiagLine("LOD quality settings: 4K textures", Severity.INFO);
@@ -1774,6 +1635,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                         else
                         {
+                            //Default ME1 LODs
                             if (selectedDiagnosticTarget.TextureModded && selectedDiagnosticTarget.HasALOTOrMEUITM())
                             {
                                 addDiagLine(HQSettingsMissingLine, Severity.ERROR);
@@ -1802,21 +1664,25 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     addDiagLine("LOD quality settings: 2K textures", Severity.INFO);
                                 }
                             }
-                            //else if (selectedDiagnosticTarget.TextureModded) //not vanilla, but no MEM/MEUITM
-                            //{
-                            if (maxLodSize == 4096)
+                            else
                             {
-                                addDiagLine("LOD quality settings: 4K textures (no high res mod installed)", Severity.WARN);
-                            }
-                            else if (maxLodSize == 2048)
-                            {
-                                addDiagLine("LOD quality settings: 2K textures (no high res mod installed)", Severity.INFO);
-                            }
-                            //}
-                            if (!selectedDiagnosticTarget.TextureModded)
-                            {
-                                //no texture mod, but has set LODs
-                                addDiagLine("LODs have been explicitly set, but a texture mod is not installed - game may have black textures as empty mips may not be removed", Severity.WARN);
+                                //else if (selectedDiagnosticTarget.TextureModded) //not vanilla, but no MEM/MEUITM
+                                //{
+                                if (maxLodSize == 4096)
+                                {
+                                    addDiagLine("LOD quality settings: 4K textures (no high res mod installed)", Severity.WARN);
+                                }
+                                else if (maxLodSize == 2048)
+                                {
+                                    addDiagLine("LOD quality settings: 2K textures (no high res mod installed)", Severity.INFO);
+                                }
+
+                                //}
+                                if (!selectedDiagnosticTarget.TextureModded)
+                                {
+                                    //no texture mod, but has set LODs
+                                    addDiagLine("LODs have been explicitly set, but a texture mod is not installed - game may have black textures as empty mips may not be removed", Severity.WARN);
+                                }
                             }
                         }
                         else //default

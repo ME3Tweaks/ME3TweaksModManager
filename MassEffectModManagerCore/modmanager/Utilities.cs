@@ -16,6 +16,7 @@ using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using Microsoft.Win32;
@@ -109,46 +110,77 @@ namespace MassEffectModManagerCore
             return bytes;
         }
 
-        public static bool CreateDirectoryWithWritePermission(string directoryPath)
+        public static bool CreateDirectoryWithWritePermission(string directoryPath, bool forcePermissions = false)
         {
-            if (Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
+            if (!forcePermissions && Directory.Exists(Directory.GetParent(directoryPath).FullName) && Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
             {
                 Directory.CreateDirectory(directoryPath);
                 return true;
             }
 
-            //Must have admin rights.
-            Log.Information("We need admin rights to create this directory");
-            string exe = GetCachedExecutablePath("PermissionsGranter.exe");
-            Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
-            string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
             try
             {
-                int result = Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
-                if (result == 0)
-                {
-                    Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
-                    return true;
-                }
-                else
-                {
-                    Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
-                    return false;
-                }
+                //try first without admin.
+                if (forcePermissions) throw new UnauthorizedAccessException(); //just go to the alternate case.
+                Directory.CreateDirectory(directoryPath);
+                return true;
             }
-            catch (Exception e)
+            catch (UnauthorizedAccessException uae)
             {
-                if (e is Win32Exception w32e)
+                //Must have admin rights.
+                Log.Information("We need admin rights to create this directory");
+                string exe = GetCachedExecutablePath("PermissionsGranter.exe");
+                try
                 {
-                    if (w32e.NativeErrorCode == 1223)
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Error extracting PermissionsGranter.exe: " + e.Message);
+
+                    Log.Information("Retrying with appdata temp directory instead.");
+                    try
                     {
-                        //Admin canceled.
+                        exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
+                        Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Retry failed! Unable to make this directory writable due to inability to extract PermissionsGranter.exe. Reason: " + ex.Message);
                         return false;
                     }
                 }
-                Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
-                return false;
 
+                string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
+                try
+                {
+                    int result = Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
+                    if (result == 0)
+                    {
+                        Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
+                        return true;
+                    }
+                    else
+                    {
+                        Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e is Win32Exception w32e)
+                    {
+                        if (w32e.NativeErrorCode == 1223)
+                        {
+                            //Admin canceled.
+                            return false;
+                        }
+                    }
+
+                    Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
+                    return false;
+
+                }
             }
         }
 
@@ -157,12 +189,12 @@ namespace MassEffectModManagerCore
             String[] files = Directory.GetFiles(dir, "*", SearchOption.AllDirectories);
             long totalSize = 0;
             Parallel.For(0, files.Length,
-                         index =>
-                         {
-                             FileInfo fi = new FileInfo(files[index]);
-                             long size = fi.Length;
-                             Interlocked.Add(ref totalSize, size);
-                         });
+                index =>
+                {
+                    FileInfo fi = new FileInfo(files[index]);
+                    long size = fi.Length;
+                    Interlocked.Add(ref totalSize, size);
+                });
             return totalSize;
         }
 
@@ -184,24 +216,26 @@ namespace MassEffectModManagerCore
             return res;
         }
 
-        public static bool EnableWritePermissionsToFolders(List<GameTarget> targets, bool me1ageia)
+        public static bool EnableWritePermissionsToFolders(List<string> folders, bool me1ageia)
         {
             string args = "";
-            if (targets.Any() || me1ageia)
+            if (folders.Any() || me1ageia)
             {
-                foreach (var target in targets)
+                foreach (var target in folders)
                 {
                     if (args != "")
                     {
                         args += " ";
                     }
-                    args += $"\"{target.TargetPath}\"";
+
+                    args += $"\"{target}\"";
                 }
 
                 if (me1ageia)
                 {
                     args += " -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
                 }
+
                 string exe = GetCachedExecutablePath("PermissionsGranter.exe");
                 Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                 args = $"\"{System.Security.Principal.WindowsIdentity.GetCurrent().Name}\" " + args;
@@ -302,6 +336,7 @@ namespace MassEffectModManagerCore
                 Log.Error("Error checking permissions to folder: " + dir);
                 Log.Error("Directory write test had error that was not UnauthorizedAccess: " + e.Message);
             }
+
             return false;
         }
 
@@ -325,6 +360,7 @@ namespace MassEffectModManagerCore
                 subkey = subkey.CreateSubKey(subkeys[i]);
                 i++;
             }
+
             subkey.SetValue(value, data);
         }
 
@@ -440,6 +476,7 @@ namespace MassEffectModManagerCore
                     }
                 }
             }
+
             if (requireAdmin)
             {
                 Log.Information($"Running process as admin: {exe} {argsStr}");
@@ -521,6 +558,7 @@ namespace MassEffectModManagerCore
                 Debug.WriteLine("Directory to delete doesn't exist: " + targetDirectory);
                 return true;
             }
+
             bool result = true;
             foreach (string file in Directory.GetFiles(targetDirectory))
             {
@@ -550,8 +588,6 @@ namespace MassEffectModManagerCore
             Thread.Sleep(10); // This makes the difference between whether it works or not. Sleep(0) is not enough.
             try
             {
-                //Debug.WriteLine("Deleting directory: " + targetDirectory);
-
                 Directory.Delete(targetDirectory);
             }
             catch (Exception e)
@@ -561,8 +597,10 @@ namespace MassEffectModManagerCore
                 {
                     throw;
                 }
+
                 return false;
             }
+
             return result;
         }
 
@@ -683,12 +721,13 @@ namespace MassEffectModManagerCore
         internal static void InstallASIByGroupID(GameTarget gameTarget, string nameForLogging, int updateGroup)
         {
             var asigame = new ASIManagerPanel.ASIGame(gameTarget);
-            ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] { asigame }));
+            ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] {asigame}));
             var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == updateGroup); //DLC mod enabler is group 16
             if (dlcModEnabler != null)
             {
                 Log.Information($"Installing {nameForLogging} ASI");
                 var asiLockObject = new object();
+
                 void asiInstalled()
                 {
                     lock (asiLockObject)
@@ -696,6 +735,7 @@ namespace MassEffectModManagerCore
                         Monitor.Pulse(asiLockObject);
                     }
                 }
+
                 var asiNotInstalledAlready = asigame.ApplyASI(dlcModEnabler.GetLatestVersion(), asiInstalled);
                 if (asiNotInstalledAlready)
                 {
@@ -742,6 +782,7 @@ namespace MassEffectModManagerCore
      * @return String that has been fixed
      */
         public static string ConvertBrToNewline(string str) => str?.Replace("<br>", "\n");
+
         public static string ConvertNewlineToBr(string str) => str?.Replace("\n", "<br>");
 
 
@@ -781,6 +822,7 @@ namespace MassEffectModManagerCore
         private static (bool isRunning, DateTime lastChecked) me2RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me3RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static int TIME_BETWEEN_PROCESS_CHECKS = 5;
+
         /// <summary>
         /// Determines if a specific game is running. This method only updates every 3 seconds due to the huge overhead it has
         /// </summary>
@@ -825,6 +867,7 @@ namespace MassEffectModManagerCore
                     me3RunningInfo = runningInfo;
                     break;
             }
+
             return runningInfo.isRunning;
         }
 
@@ -835,6 +878,7 @@ namespace MassEffectModManagerCore
             {
                 Directory.CreateDirectory(folder);
             }
+
             return folder;
         }
 
@@ -883,6 +927,7 @@ namespace MassEffectModManagerCore
                             fi.IsReadOnly = false; //clear read only. might happen on some binkw32 in archives, maybe
                         }
                     }
+
                     using (var file = new FileStream(destination, FileMode.Create, FileAccess.Write))
                     {
                         stream.CopyTo(file);
@@ -893,6 +938,7 @@ namespace MassEffectModManagerCore
             {
                 Log.Warning("File already exists. Not overwriting file.");
             }
+
             return destination;
         }
 
@@ -908,9 +954,9 @@ namespace MassEffectModManagerCore
             List<string> av = new List<string>();
             // for Windows Vista and above '\root\SecurityCenter2'
             using (var searcher = new ManagementObjectSearcher(@"\\" +
-                                                Environment.MachineName +
-                                                @"\root\SecurityCenter2",
-                                                "SELECT * FROM AntivirusProduct"))
+                                                               Environment.MachineName +
+                                                               @"\root\SecurityCenter2",
+                "SELECT * FROM AntivirusProduct"))
             {
                 var searcherInstance = searcher.Get();
                 foreach (var instance in searcherInstance)
@@ -918,6 +964,7 @@ namespace MassEffectModManagerCore
                     av.Add(instance["displayName"].ToString());
                 }
             }
+
             return av;
         }
 
@@ -951,6 +998,7 @@ namespace MassEffectModManagerCore
                 Log.Error("Unknown game for gametarget (InstallBinkBypass)");
                 return false;
             }
+
             Log.Information($"Installed Binkw32 bypass for {target.Game}");
             return true;
         }
@@ -996,6 +1044,7 @@ namespace MassEffectModManagerCore
 
                 Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
             }
+
             return true;
         }
 
@@ -1017,6 +1066,7 @@ namespace MassEffectModManagerCore
                     {
                         continue; //don't try to load an existing target
                     }
+
                     GameTarget target = new GameTarget(game, file, false);
                     var failureReason = target.ValidateTarget();
                     if (failureReason == null)
@@ -1048,14 +1098,15 @@ namespace MassEffectModManagerCore
                 case Mod.MEGame.ME3:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffect3Config.exe");
             }
+
             return null;
         }
 
         internal static void AddCachedTarget(GameTarget target)
         {
             var cachefile = GetCachedTargetsFile(target.Game);
-            if (!File.Exists(cachefile)) File.Create(cachefile).Close();
-            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
+            bool creatingFile = !File.Exists(cachefile);
+            var savedTargets = creatingFile ? new List<string>() : Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
             try
             {
@@ -1106,6 +1157,7 @@ namespace MassEffectModManagerCore
         private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
         private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
         private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
+
         internal static bool CheckIfBinkw32ASIIsInstalled(GameTarget target)
         {
             if (target == null) return false;
@@ -1126,10 +1178,12 @@ namespace MassEffectModManagerCore
                 binkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
                 expectedHash = ME3ASILoaderHash;
             }
+
             if (File.Exists(binkPath))
             {
                 return CalculateMD5(binkPath) == expectedHash;
             }
+
             return false;
         }
 
@@ -1141,10 +1195,10 @@ namespace MassEffectModManagerCore
         /// <returns></returns>
         public static string GetRegistrySettingString(string key, string name)
         {
-            return (string)Registry.GetValue(key, name, null);
+            return (string) Registry.GetValue(key, name, null);
         }
 
-        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true)
+        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false)
         {
             string path;
             switch (game)
@@ -1162,19 +1216,48 @@ namespace MassEffectModManagerCore
                 default:
                     return null;
             }
+
+            if (logReturnedPath)
+            {
+                Log.Information(" >> Backup path lookup in registry for " + game + " returned: " + path);
+            }
+
             if (path == null || !Directory.Exists(path))
             {
+                if (logReturnedPath)
+                {
+                    Log.Information(@" >> Path is null or directory doesn't exist.");
+                }
+
                 return null;
             }
+
             //Super basic validation
             if (!Directory.Exists(Path.Combine(path, @"BIOGame")) || !Directory.Exists(Path.Combine(path, @"Binaries")))
             {
+                if (logReturnedPath)
+                {
+                    Log.Warning(@" >> " + path + @" is missing biogame/binaries subdirectory, invalid backup");
+                }
+
                 return null;
             }
+
             if (forceCmmVanilla && !File.Exists(Path.Combine(path, @"cmm_vanilla")))
             {
+                if (logReturnedPath)
+                {
+                    Log.Warning(@" >> " + path + @" is not marked as a vanilla backup. This backup will not be considered vanilla and thus will not be used by Mod Manager");
+                }
+
                 return null; //do not accept alot installer backups that are missing cmm_vanilla as they are not vanilla.
             }
+
+            if (logReturnedPath)
+            {
+                Log.Information(@" >> " + path + @" is considered a valid backup path");
+            }
+
             return path;
         }
 
@@ -1189,6 +1272,7 @@ namespace MassEffectModManagerCore
             {
                 return null;
             }
+
             return path;
         }
 
@@ -1275,6 +1359,7 @@ namespace MassEffectModManagerCore
             {
                 expression = expression.Replace(@".", newCharacter);
             }
+
             // space : allowed (apart MS-DOS) but the space is also used as a parameter separator in command line applications. 
             // This can be solved by quoting, but typing quotes around the name every time is inconvenient.
             //expression = expression.Replace(@"%", " ");
@@ -1310,6 +1395,7 @@ namespace MassEffectModManagerCore
             {
                 path = path.RemoveSpecialCharactersUsingFrameworkMethod();
             }
+
             return path;
         }
 
@@ -1317,7 +1403,7 @@ namespace MassEffectModManagerCore
         {
             return Directory.EnumerateFiles(path, "*.*", subdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
                 .Where(s => s.EndsWith(".pcc", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".sfm", StringComparison.InvariantCultureIgnoreCase)
-                 || s.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase)).ToList();
+                                                                                            || s.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         internal static bool SetLODs(GameTarget target, bool highres, bool limit2k, bool softshadows)
@@ -1328,50 +1414,116 @@ namespace MassEffectModManagerCore
                 throw new Exception("Cannot use softshadows or limit2k parameter of SetLODs() with a game that is not ME1");
             }
 
-            string settingspath = null;
-            switch (game)
+            try
             {
-                case Mod.MEGame.ME1:
-                    settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOEngine.ini");
-                    break;
-                case Mod.MEGame.ME2:
-                    settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 2", "BioGame", "Config", "GamerSettings.ini");
-                    break;
-                case Mod.MEGame.ME3:
-                    settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 3", "BioGame", "Config", "GamerSettings.ini");
-                    break;
-            };
-
-            if (!File.Exists(settingspath) && game == Mod.MEGame.ME1)
-            {
-                Log.Error("Cannot raise/lower LODs on file that doesn't exist (ME1 bioengine file must already exist or exe will overwrite it)");
-                return false;
-            }
-            else if (!File.Exists(settingspath))
-            {
-                Directory.CreateDirectory(Directory.GetParent(settingspath).FullName); //ensure directory exists.
-                File.Create(settingspath).Close();
-            }
-
-            DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
-            if (game > Mod.MEGame.ME1)
-            {
-                #region setting systemsetting for me2/3
-                string operation = null;
-                var iniList = game == Mod.MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
-                var section = ini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
-                if (section == null && highres)
+                string settingspath = null;
+                switch (game)
                 {
-                    //section missing, and we are setting high res
-                    ini.Sections.Add(new Section()
-                    {
-                        Entries = iniList,
-                        Header = "SystemSettings"
-                    });
-                    operation = "Set high-res lod settings on blank gamersettings.ini";
+                    case Mod.MEGame.ME1:
+                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOEngine.ini");
+                        break;
+                    case Mod.MEGame.ME2:
+                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 2", "BioGame", "Config", "GamerSettings.ini");
+                        break;
+                    case Mod.MEGame.ME3:
+                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 3", "BioGame", "Config", "GamerSettings.ini");
+                        break;
                 }
-                else if (highres)
+
+                ;
+
+                if (!File.Exists(settingspath) && game == Mod.MEGame.ME1)
                 {
+                    Log.Error("Cannot raise/lower LODs on file that doesn't exist (ME1 bioengine file must already exist or exe will overwrite it)");
+                    return false;
+                }
+                else if (!File.Exists(settingspath))
+                {
+                    Directory.CreateDirectory(Directory.GetParent(settingspath).FullName); //ensure directory exists.
+                    File.Create(settingspath).Close();
+                }
+
+                DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
+                if (game > Mod.MEGame.ME1)
+                {
+                    #region setting systemsetting for me2/3
+
+                    string operation = null;
+                    var iniList = game == Mod.MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
+                    var section = ini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
+                    if (section == null && highres)
+                    {
+                        //section missing, and we are setting high res
+                        ini.Sections.Add(new Section()
+                        {
+                            Entries = iniList,
+                            Header = "SystemSettings"
+                        });
+                        operation = "Set high-res lod settings on blank gamersettings.ini";
+                    }
+                    else if (highres)
+                    {
+                        //section exists, upgrading still, overwrite keys
+                        foreach (var newItem in iniList)
+                        {
+                            var matchingKey = section.Entries.FirstOrDefault(x => x.Key == newItem.Key);
+                            if (matchingKey != null)
+                            {
+                                matchingKey.Value = newItem.Value; //overwrite value
+                            }
+                            else
+                            {
+                                section.Entries.Add(newItem); //doesn't exist, add new item.
+                            }
+                        }
+
+
+
+                        operation = "Set high-res lod settings in gamersettings.ini";
+
+                    }
+                    else if (section != null)
+                    {
+                        //section exists, downgrading
+                        section.Entries.RemoveAll(x => iniList.Any(i => i.Key == x.Key));
+                        operation = "Removed high-res lod settings from gamersettings.ini";
+                    }
+
+                    #endregion
+
+                    //Update GFx (non LOD) settings
+                    if (highres)
+                    {
+                        var hqKeys = target.Game == Mod.MEGame.ME2 ? ME2HQGraphicsSettings : ME3HQGraphicsSettings;
+                        var hqSection = ini.GetSection(@"SystemSettings");
+                        foreach (var entry in hqKeys)
+                        {
+                            var matchingKey = hqSection.Entries.FirstOrDefault(x => x.Key == entry.Key);
+                            if (matchingKey != null)
+                            {
+                                matchingKey.Value = entry.Value; //overwrite value
+                            }
+                            else
+                            {
+                                hqSection.Entries.Add(entry); //doesn't exist, add new item.
+                            }
+                        }
+                    }
+
+                    File.WriteAllText(settingspath, ini.ToString());
+                    Log.Information(operation);
+                }
+                else if (game == Mod.MEGame.ME1)
+                {
+                    var section = ini.Sections.FirstOrDefault(x => x.Header == "TextureLODSettings");
+                    if (section == null && highres)
+                    {
+                        Log.Error("TextureLODSettings section cannot be null in ME1. Run the game to regenerate the bioengine file.");
+                        return false; //This section cannot be null
+                    }
+
+                    var iniList = highres ? limit2k ? ME1_2KLODs : ME1HighResLODs : ME1_DefaultLODs;
+
                     //section exists, upgrading still, overwrite keys
                     foreach (var newItem in iniList)
                     {
@@ -1386,97 +1538,44 @@ namespace MassEffectModManagerCore
                         }
                     }
 
-
-
-                    operation = "Set high-res lod settings in gamersettings.ini";
-
-                }
-                else if (section != null)
-                {
-                    //section exists, downgrading
-                    section.Entries.RemoveAll(x => iniList.Any(i => i.Key == x.Key));
-                    operation = "Removed high-res lod settings from gamersettings.ini";
-                }
-                #endregion
-
-                //Update GFx (non LOD) settings
-                if (highres)
-                {
-                    var hqKeys = target.Game == Mod.MEGame.ME2 ? ME2HQGraphicsSettings : ME3HQGraphicsSettings;
-                    var hqSection = ini.GetSection(@"SystemSettings");
-                    foreach (var entry in hqKeys)
+                    //Update GFx (non LOD) settings
+                    if (highres)
                     {
-                        var matchingKey = hqSection.Entries.FirstOrDefault(x => x.Key == entry.Key);
-                        if (matchingKey != null)
+                        var me1hq = GetME1HQSettings(target.MEUITMInstalled, softshadows);
+                        foreach (var hqSection in me1hq)
                         {
-                            matchingKey.Value = entry.Value; //overwrite value
-                        }
-                        else
-                        {
-                            hqSection.Entries.Add(entry); //doesn't exist, add new item.
-                        }
-                    }
-                }
-
-                File.WriteAllText(settingspath, ini.ToString());
-                Log.Information(operation);
-            }
-            else if (game == Mod.MEGame.ME1)
-            {
-                var section = ini.Sections.FirstOrDefault(x => x.Header == "TextureLODSettings");
-                if (section == null && highres)
-                {
-                    Log.Error("TextureLODSettings section cannot be null in ME1. Run the game to regenerate the bioengine file.");
-                    return false; //This section cannot be null
-                }
-
-                var iniList = highres ? limit2k ? ME1_2KLODs : ME1HighResLODs : ME1_DefaultLODs;
-
-                //section exists, upgrading still, overwrite keys
-                foreach (var newItem in iniList)
-                {
-                    var matchingKey = section.Entries.FirstOrDefault(x => x.Key == newItem.Key);
-                    if (matchingKey != null)
-                    {
-                        matchingKey.Value = newItem.Value; //overwrite value
-                    }
-                    else
-                    {
-                        section.Entries.Add(newItem); //doesn't exist, add new item.
-                    }
-                }
-
-                //Update GFx (non LOD) settings
-                if (highres)
-                {
-                    var me1hq = GetME1HQSettings(target.MEUITMInstalled, softshadows);
-                    foreach (var hqSection in me1hq)
-                    {
-                        var existingSect = ini.GetSection(hqSection);
-                        if (existingSect != null)
-                        {
-                            foreach (var item in hqSection.Entries)
+                            var existingSect = ini.GetSection(hqSection);
+                            if (existingSect != null)
                             {
-                                var matchingKey = existingSect.Entries.FirstOrDefault(x => x.Key == item.Key);
-                                if (matchingKey != null)
+                                foreach (var item in hqSection.Entries)
                                 {
-                                    matchingKey.Value = item.Value; //overwrite value
-                                }
-                                else
-                                {
-                                    section.Entries.Add(item); //doesn't exist, add new item.
+                                    var matchingKey = existingSect.Entries.FirstOrDefault(x => x.Key == item.Key);
+                                    if (matchingKey != null)
+                                    {
+                                        matchingKey.Value = item.Value; //overwrite value
+                                    }
+                                    else
+                                    {
+                                        section.Entries.Add(item); //doesn't exist, add new item.
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            //!!! Error
-                            Log.Error(@"Error: Could not find ME1 high quality settings key in bioengine.ini: " + hqSection.Header);
+                            else
+                            {
+                                //!!! Error
+                                Log.Error(@"Error: Could not find ME1 high quality settings key in bioengine.ini: " + hqSection.Header);
+                            }
                         }
                     }
+
+                    File.WriteAllText(settingspath, ini.ToString());
+                    Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
                 }
-                File.WriteAllText(settingspath, ini.ToString());
-                Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Error setting LODs: " + e.Message);
+                return false;
             }
 
             return true;
@@ -1501,7 +1600,8 @@ namespace MassEffectModManagerCore
             var engineGameEngine = new Section()
             {
                 Header = "Engine.GameEngine",
-                Entries = new List<IniEntry>() {
+                Entries = new List<IniEntry>()
+                {
 
                     new IniEntry("MaxShadowResolution=2048"),
                     new IniEntry("bEnableBranchingPCFShadows=True")
@@ -1530,7 +1630,8 @@ namespace MassEffectModManagerCore
             var textureStreaming = new Section()
             {
                 Header = "TextureStreaming",
-                Entries = new List<IniEntry>() {
+                Entries = new List<IniEntry>()
+                {
                     new IniEntry("PoolSize=1536"),
                     new IniEntry("MinTimeToGuaranteeMinMipCount=0"),
                     new IniEntry("MaxTimeToGuaranteeMinMipCount=0")
@@ -1540,7 +1641,8 @@ namespace MassEffectModManagerCore
             var windrvWindowsclient = new Section()
             {
                 Header = "WinDrv.WindowsClient",
-                Entries = new List<IniEntry>() {
+                Entries = new List<IniEntry>()
+                {
                     new IniEntry("EnableDynamicShadows=True"),
                     new IniEntry("TextureLODLevel=3"),
                     new IniEntry("FilterLevel=2")
@@ -1633,6 +1735,7 @@ namespace MassEffectModManagerCore
             new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=32,MaxLODSize=256,LODBias=0)")
         };
+
         private static List<IniEntry> ME1_2KLODs = new List<IniEntry>()
         {
             //ME1 lods have bug where they use MinLodSize
@@ -1712,31 +1815,31 @@ namespace MassEffectModManagerCore
         private static List<IniEntry> ME2HighResLODs = new List<IniEntry>()
         {
             //under GamerSettings.ini [SystemSettings]
-                new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-                new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
+            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
         };
 
         private static List<IniEntry> ME3HQGraphicsSettings = new List<IniEntry>()
@@ -1787,6 +1890,54 @@ namespace MassEffectModManagerCore
             new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
         };
+
         #endregion
+
+        public static string PromptForGameExecutable(Mod.MEGame[] acceptedGames)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
+            string executableNames = "";
+            foreach (var v in acceptedGames)
+            {
+                if (executableNames.Length > 0) executableNames += ";";
+                switch (v)
+                {
+                    case Mod.MEGame.ME1:
+                        executableNames += "MassEffect.exe";
+                        break;
+                    case Mod.MEGame.ME2:
+                        executableNames += "MassEffect2.exe";
+                        break;
+                    case Mod.MEGame.ME3:
+                        executableNames += "MassEffect3.exe";
+                        break;
+                }
+            }
+
+
+            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|{executableNames}"; //only partially localizable.
+            ofd.Filter = filter;
+            if (ofd.ShowDialog() == true)
+            {
+                return ofd.FileName;
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// Given a game and executable path, returns the basepath of the installation.
+        /// </summary>
+        /// <param name="game">What game this exe is for</param>
+        /// <param name="exe">Executable path</param>
+        /// <returns></returns>
+        public static string GetGamePathFromExe(Mod.MEGame game, string exe)
+        {
+            string result = Path.GetDirectoryName(Path.GetDirectoryName(exe));
+
+            if (game == Mod.MEGame.ME3)
+                result = Path.GetDirectoryName(result); //up one more because of win32 directory.
+            return result;
+        }
     }
 }

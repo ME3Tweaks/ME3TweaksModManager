@@ -10,7 +10,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         protected override WebRequest GetWebRequest(Uri uri)
         {
             WebRequest w = base.GetWebRequest(uri);
-            w.Timeout = 5 * 1000;
+            w.Timeout = Settings.WebClientTimeout * 1000;
             return w;
         }
     }

@@ -64,7 +64,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// Used by COND_SIZED_FILE_PRESENT
         /// </summary>
-        public Dictionary<string, long> RequiredSpecificFiles { get; private set; }
+        public Dictionary<string, long> RequiredSpecificFiles { get; private set; } = new Dictionary<string, long>();
         /// <summary>
         /// Used by COND_SIZED_FILE_PRESENT
         /// </summary>
@@ -113,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
-                Log.Error($@"Alternate DLC {FriendlyName} cannot have empty Description or missing description as it targets cmmver >= 6");
+                Log.Error($@"Alternate DLC {FriendlyName} cannot have empty Description or missing Description descriptor as it targets cmmver >= 6");
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_cmmver6RequiresDescription, FriendlyName);
                 return;
@@ -125,11 +125,6 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 foreach (var dlc in conditionalList)
                 {
-                    //if (modForValidating.Game == Mod.MEGame.ME3)
-                    //{
-
-
-                    //}
                     if (Condition == AltDLCCondition.COND_SPECIFIC_DLC_SETUP)
                     {
 
@@ -297,7 +292,36 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            DLCRequirementsForManual = properties.TryGetValue(@"DLCRequirements", out string dlcReqs) ? dlcReqs.Split(';') : null;
+            var dlcReqs = properties.TryGetValue(@"DLCRequirements", out string _dlcReqs) ? _dlcReqs.Split(';') : null;
+            if (dlcReqs != null)
+            {
+                var reqList = new List<string>();
+                foreach (var req in dlcReqs)
+                {
+
+                    //official headers
+                    if (Enum.TryParse(req, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                    {
+                        reqList.Add(foldername);
+                        continue;
+                    }
+
+                    //dlc mods
+                    if (!req.StartsWith(@"DLC_"))
+                    {
+                        Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {req}");
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, req);
+                        return;
+                    }
+                    else
+                    {
+                        reqList.Add(req);
+                    }
+                }
+
+
+                DLCRequirementsForManual = reqList.ToArray();
+            }
 
             if (Condition == AltDLCCondition.COND_SPECIFIC_SIZED_FILES)
             {
@@ -325,6 +349,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         return;
                     }
 
+                    reqFile = reqFile.Replace('/', '\\').TrimStart('\\'); //standardize
                     if (long.TryParse(reqSizeStr, out var reqSize) && reqSize >= 0)
                     {
                         RequiredSpecificFiles[reqFile] = reqSize;
@@ -360,12 +385,12 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 CheckedByDefault = cbd;
             }
-            if (Condition != AltDLCCondition.COND_MANUAL && Condition != AltDLCCondition.INVALID_CONDITION)
+            if (Condition != AltDLCCondition.COND_MANUAL && Condition != AltDLCCondition.COND_SPECIFIC_SIZED_FILES && Condition != AltDLCCondition.INVALID_CONDITION)
             {
                 //ensure conditional dlc list has at least one item.
                 if (ConditionalDLC.Count == 0)
                 {
-                    Log.Error($@"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL.");
+                    Log.Error($@"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL or COND_SPECIFIC_SIZED_FILES.");
                     ValidAlternate = false;
                     LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_emptyConditionalDLCList, FriendlyName);
                     return;

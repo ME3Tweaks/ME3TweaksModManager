@@ -45,6 +45,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModStartup, value);
         }
 
+
         private static bool _logModUpdater = true;
         public static bool LogModUpdater
         {
@@ -65,11 +66,26 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _betaMode, value);
         }
 
+        private static bool _modMakerControllerModOption = false;
+
+        public static bool ModMakerControllerModOption
+        {
+            get => _modMakerControllerModOption;
+            set => SetProperty(ref _modMakerControllerModOption, value);
+        }
+
         private static string _updaterServiceUsername;
         public static string UpdaterServiceUsername
         {
             get => _updaterServiceUsername;
             set => SetProperty(ref _updaterServiceUsername, value);
+        }
+
+        private static int _webclientTimeout = 5; // Defaults to 5
+        public static int WebClientTimeout
+        {
+            get => _webclientTimeout;
+            set => SetProperty(ref _webclientTimeout, value);
         }
 
         private static string _updateServiceLZMAStoragePath;
@@ -121,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _autoUpdateLods, value);
         }
 
-        
+
 
 
         private static string _modLibraryPath;
@@ -177,6 +193,9 @@ namespace MassEffectModManagerCore.modmanager
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
             AutoUpdateLODs = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", true);
+            WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
+            ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
+
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
             UpdaterServiceLZMAStoragePath = LoadSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", null);
@@ -300,10 +319,17 @@ namespace MassEffectModManagerCore.modmanager
             return null; //No password
         }
 
+        public enum SettingsSaveResult
+        {
+            SAVED,
+            FAILED_UNAUTHORIZED,
+            FAILED_OTHER
+        }
+
         /// <summary>
-        /// Saves the settings. Note this does not update the Updates/EncryptedPassword value.
+        /// Saves the settings. Note this does not update the Updates/EncryptedPassword value. Returns false if commiting failed
         /// </summary>
-        public static void Save()
+        public static SettingsSaveResult Save()
         {
             try
             {
@@ -311,6 +337,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     File.Create(SettingsPath).Close();
                 }
+
                 var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
                 SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
@@ -318,7 +345,8 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
                 SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
                 SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
-                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
+                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath",
+                    UpdaterServiceManifestStoragePath);
                 SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
                 SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
                 SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
@@ -328,12 +356,22 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", AutoUpdateLODs);
+                SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
+                SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
+                return SettingsSaveResult.SAVED;
+            }
+            catch (UnauthorizedAccessException uae)
+            {
+                Log.Error("Unauthorized access exception: " + App.FlattenException(uae));
+                return SettingsSaveResult.FAILED_UNAUTHORIZED;
             }
             catch (Exception e)
             {
                 Log.Error("Error commiting settings: " + App.FlattenException(e));
             }
+
+            return SettingsSaveResult.FAILED_OTHER;
         }
 
         private static void SaveSettingString(IniData settingsIni, string section, string key, string value)
@@ -342,6 +380,11 @@ namespace MassEffectModManagerCore.modmanager
         }
 
         private static void SaveSettingBool(IniData settingsIni, string section, string key, bool value)
+        {
+            settingsIni[section][key] = value.ToString();
+        }
+
+        private static void SaveSettingInt(IniData settingsIni, string section, string key, int value)
         {
             settingsIni[section][key] = value.ToString();
         }

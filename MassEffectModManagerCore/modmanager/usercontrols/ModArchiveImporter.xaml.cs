@@ -22,6 +22,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -37,6 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string NoModSelectedText { get; set; } = M3L.GetString(M3L.string_selectAModOnTheLeftToViewItsDescription);
         public bool ArchiveScanned { get; set; }
         public bool TextureFilesImported { get; set; }
+
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && CanCancel())
@@ -60,11 +62,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long ProgressMaximum { get; private set; }
         public bool ProgressIndeterminate { get; private set; }
 
-        public bool CanCompressPackages { get; private set; }
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= Mod.MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
         {
+            MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
             DataContext = this;
             LoadCommands();
             ArchiveFilePath = file;
@@ -95,10 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
                     ArchiveScanned = true;
-
-                    //Initial release disables this.
-                    //TODO: RE-ENABLE THIS
-                    CanCompressPackages = false && CompressedMods.Any() && CompressedMods.Any(x => x.Game == Mod.MEGame.ME3); //Change to include ME2 when support for LZO is improved
+                    TriggerPropertyChangedFor(nameof(CanCompressPackages));
                 }
                 else if (TextureFilesImported)
                 {
@@ -130,14 +130,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        /// <summary>
-        /// Notifies listeners when given property is updated.
-        /// </summary>
-        /// <param name="propertyname">Name of property to give notification for. If called in property, argument can be ignored as it will be default.</param>
-        protected virtual void hack_NotifyPropertyChanged([CallerMemberName] string propertyname = null)
-        {
-            hack_PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
-        }
+        ///// <summary>
+        ///// Notifies listeners when given property is updated.
+        ///// </summary>
+        ///// <param name="propertyname">Name of property to give notification for. If called in property, argument can be ignored as it will be default.</param>
+        //protected virtual void hack_NotifyPropertyChanged([CallerMemberName] string propertyname = null)
+        //{
+        //    hack_PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        //}
         private bool openedMultipanel = false;
 
         /// <summary>
@@ -148,6 +148,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InspectArchiveBackgroundThread(object sender, DoWorkEventArgs e)
         {
             TaskRunning = true;
+            TriggerPropertyChangedFor(nameof(CanCompressPackages));
             ActionText = M3L.GetString(M3L.string_interp_openingX, ScanningFile);
 
             var archive = e.Argument as string;
@@ -321,6 +322,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     addCompressedModCallback?.Invoke(failed);
                     return;
                 }
+
+                // Used for TPIS information lookup
+                long archiveSize = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
+
                 if (moddesciniEntries.Count > 0)
                 {
                     foreach (var entry in moddesciniEntries)
@@ -405,8 +410,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                     currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
                     var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
-                    long size = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
-                    var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(size);
+                    var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
                     var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
 
                     if (importingInfo == null && isExe)
@@ -420,17 +424,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Partially supported unofficial third party mod
                         //Mod has a custom written moddesc.ini stored on ME3Tweaks
                         Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
-                        string custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
+                        string custommoddesc = null;
+                        string loadFailedReason = null;
+                        try
+                        {
+                            custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
+                        }
+                        catch (Exception e)
+                        {
+                            loadFailedReason = e.Message;
+                            Log.Error(@"Error fetching moddesc from server: " + e.Message);
+                        }
+
                         Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virutal mod
                         if (virutalCustomMod.ValidMod)
                         {
+                            Log.Information(@"Mod loaded from server moddesc.");
                             addCompressedModCallback?.Invoke(virutalCustomMod);
                             internalModList.Add(virutalCustomMod);
                             return; //Don't do further parsing as this is custom written
                         }
                         else
                         {
-                            Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                            if (loadFailedReason != null)
+                            {
+                                virutalCustomMod.LoadFailedReason = M3L.GetString(M3L.string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason, loadFailedReason);
+                            }
+                            else
+                            {
+                                Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                            }
                             return;
                         }
                     }
@@ -448,7 +471,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     foreach (var sfarEntry in sfarEntries)
                     {
                         var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, Mod.MEGame.ME3, md5);
-                        if (vMod.ValidMod)
+                        if (vMod != null)
                         {
                             addCompressedModCallback?.Invoke(vMod);
                             internalModList.Add(vMod);
@@ -484,7 +507,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //see if server has information on version number
                         currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
                         Log.Information(@"Querying ME3Tweaks for additional information for this file...");
-                        var modInfo = OnlineContent.QueryModRelay(md5, size);
+                        var modInfo = OnlineContent.QueryModRelay(md5, archiveSize);
                         //todo: make this work offline.
                         if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
                         {
@@ -542,48 +565,58 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var thirdPartyInfo = ThirdPartyServices.GetThirdPartyModInfo(dlcFolderName, game);
                     if (thirdPartyInfo != null)
                     {
-                        Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
-                        //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build and feed it a virtual one.
-                        IniData virtualModDesc = new IniData();
-                        virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
-                        virtualModDesc[@"ModManager"][@"importedby"] = App.BuildNumber.ToString();
-                        virtualModDesc[@"ModInfo"][@"game"] = @"ME3";
-                        virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
-                        virtualModDesc[@"ModInfo"][@"moddev"] = thirdPartyInfo.moddev;
-                        virtualModDesc[@"ModInfo"][@"modsite"] = thirdPartyInfo.modsite;
-                        virtualModDesc[@"ModInfo"][@"moddesc"] = thirdPartyInfo.moddesc;
-                        virtualModDesc[@"ModInfo"][@"unofficial"] = @"true";
-                        if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
+                        if (thirdPartyInfo.PreventImport == false)
                         {
-                            virtualModDesc[@"ModInfo"][@"updatecode"] = updatecode.ToString();
-                            virtualModDesc[@"ModInfo"][@"modver"] = 0.001.ToString(CultureInfo.InvariantCulture); //This will force mod to check for update after reload
-                        }
-                        else
-                        {
-                            virtualModDesc[@"ModInfo"][@"modver"] = 0.0.ToString(CultureInfo.InvariantCulture); //Will attempt to look up later after mods have parsed.
+                            Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
+                            //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build and feed it a virtual one.
+                            IniData virtualModDesc = new IniData();
+                            virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
+                            virtualModDesc[@"ModManager"][@"importedby"] = App.BuildNumber.ToString();
+                            virtualModDesc[@"ModInfo"][@"game"] = @"ME3";
+                            virtualModDesc[@"ModInfo"][@"modname"] = thirdPartyInfo.modname;
+                            virtualModDesc[@"ModInfo"][@"moddev"] = thirdPartyInfo.moddev;
+                            virtualModDesc[@"ModInfo"][@"modsite"] = thirdPartyInfo.modsite;
+                            virtualModDesc[@"ModInfo"][@"moddesc"] = thirdPartyInfo.moddesc;
+                            virtualModDesc[@"ModInfo"][@"unofficial"] = @"true";
+                            if (int.TryParse(thirdPartyInfo.updatecode, out var updatecode) && updatecode > 0)
+                            {
+                                virtualModDesc[@"ModInfo"][@"updatecode"] = updatecode.ToString();
+                                virtualModDesc[@"ModInfo"][@"modver"] = 0.001.ToString(CultureInfo.InvariantCulture); //This will force mod to check for update after reload
+                            }
+                            else
+                            {
+                                virtualModDesc[@"ModInfo"][@"modver"] = 0.0.ToString(CultureInfo.InvariantCulture); //Will attempt to look up later after mods have parsed.
+                            }
+
+                            virtualModDesc[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
+                            virtualModDesc[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
+                            virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
+
+                            var archiveSize = new FileInfo(archive.FileName).Length;
+                            var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+                            if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
+                            {
+                                OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
+                                virtualModDesc[@"ModInfo"][@"requireddlc"] = importingInfos[0].requireddlc;
+                            }
+
+                            return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
                         }
 
-                        virtualModDesc[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
-                        virtualModDesc[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
-                        virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
-
-                        var archiveSize = new FileInfo(archive.FileName).Length;
-                        var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
-                        if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
+                        //Mod is marked for preventing import
+                        return new Mod(false)
                         {
-                            OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
-                            virtualModDesc[@"ModInfo"][@"requireddlc"] = importingInfos[0].requireddlc;
-                        }
-
-                        return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
+                            ModName = thirdPartyInfo.modname,
+                            ModDeveloper = thirdPartyInfo.moddev,
+                            LoadFailedReason = M3L.GetString(M3L.string_modCannotBeImportedDueToOneOfTheFollowingReasons)
+                        };
+                    }
+                    else
+                    {
+                        Log.Information($@"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
                     }
                 }
-                else
-                {
-                    Log.Information($@"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
-                }
             }
-
             return null;
         }
 
@@ -648,6 +681,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 OnClosing(DataEventArgs.Empty);
             };
             TaskRunning = true;
+            TriggerPropertyChangedFor(nameof(CanCompressPackages));
             bw.RunWorkerAsync(modsToExtract);
         }
 
@@ -749,8 +783,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
+                    try
+                    {
+                        mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
+                    }
+                    catch (Exception ex)
+                    {
+                        //Extraction failed!
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Log.Error(@"Error while extracting archive: " + App.FlattenException(ex));
+                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_anErrorOccuredExtractingTheArchiveX, ex.Message), M3L.GetString(M3L.string_errorExtractingArchive), MessageBoxButton.OK, MessageBoxImage.Error);
+                            e.Result = ModImportResult.ERROR_EXTRACTING_ARCHIVE;
+                        });
+                        return;
+                    }
 
-                    mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
                     extractedMods.Add(mod);
                 }
             }
@@ -871,7 +919,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             USER_ABORTED_IMPORT, ERROR_COULD_NOT_DELETE_EXISTING_DIR,
             ERROR_INSUFFICIENT_DISK_SPACE,
-            None
+            None,
+            ERROR_EXTRACTING_ARCHIVE
         }
 
         private bool CanInstallCompressedMod()
@@ -879,7 +928,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //This will have to pass some sort of validation code later.
             return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
-                   && !TaskRunning;
+                   && !TaskRunning && !CompressPackages;
         }
 
         private void InstallCompressedMod()
@@ -895,8 +944,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanCancel() => !TaskRunning;
 
         private bool CanImportMods() => !TaskRunning && CompressedMods.Any(x => x.SelectedForImport && x.ValidMod);
-
-        public event PropertyChangedEventHandler hack_PropertyChanged;
 
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {

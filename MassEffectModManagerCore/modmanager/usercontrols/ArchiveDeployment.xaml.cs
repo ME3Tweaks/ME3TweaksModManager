@@ -1,5 +1,4 @@
-﻿
-using MassEffectModManagerCore.modmanager.helpers;
+﻿using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using System;
@@ -40,19 +39,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ArchiveDeployment : MMBusyPanelBase
     {
-        private MainWindow mainWindow;
-
         public Mod ModBeingDeployed { get; }
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
-        public ArchiveDeployment(Mod mod, MainWindow mainWindow)
+        public ArchiveDeployment(Mod mod)
         {
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
             });
             DataContext = this;
-            this.mainWindow = mainWindow;
             ModBeingDeployed = mod;
             string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
             string versionFormat = mod.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
@@ -123,8 +119,55 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ErrorsTitle = M3L.GetString(M3L.string_textureErrorsInMod),
                 ValidationFunction = CheckModForTFCCompactability
             });
+            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+            {
+                ItemText = M3L.GetString(M3L.string_miscellaneousChecks),
+                ModToValidateAgainst = mod,
+                ErrorsMessage = M3L.GetString(M3L.string_atLeastOneMiscellaneousCheckFailed),
+                ErrorsTitle = M3L.GetString(M3L.string_detectedMiscellaneousIssues),
+                ValidationFunction = CheckModForMiscellaneousIssues
+            });
             LoadCommands();
             InitializeComponent();
+
+        }
+
+        private void CheckModForMiscellaneousIssues(DeploymentChecklistItem item)
+        {
+            bool hasError = false;
+            item.HasError = false;
+            item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
+            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
+
+            var metacmms = referencedFiles.Where(x => Path.GetFileName(x) == @"_metacmm.txt").ToList();
+
+            if (metacmms.Any())
+            {
+                item.HasError = true;
+                foreach (var m in metacmms)
+                {
+                    //Mods cannot include metacmm files
+                    item.Errors.Add(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
+                }
+            }
+
+            //end setup
+            if (!item.Errors.Any())
+            {
+                item.Foreground = Brushes.Green;
+                item.Icon = FontAwesomeIcon.CheckCircle;
+                item.ItemText = M3L.GetString(M3L.string_noMiscellaneousIssuesDetected);
+                item.ToolTip = M3L.GetString(M3L.string_validationOK);
+            }
+            else
+            {
+                item.ItemText = M3L.GetString(M3L.string_detectedMiscellaneousIssues);
+                item.ToolTip = M3L.GetString(M3L.string_tooltip_deploymentChecksFoundMiscIssues);
+                item.Foreground = Brushes.Red;
+                item.Icon = FontAwesomeIcon.TimesCircle;
+            }
+
+            item.HasError = item.Errors.Any();
 
         }
 
@@ -250,7 +293,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.ItemText = M3L.GetString(M3L.string_checkingSFARFilesSizes);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
-            GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
+            GameTarget validationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
             List<string> gameFiles = MEDirectories.EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
 
             var errors = new List<string>();
@@ -317,7 +360,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
-            GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
+            GameTarget validationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
             List<string> gameFiles = MEDirectories.EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
 
             var errors = new List<string>();
@@ -496,7 +539,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == @".tfc").ToList();
             int numChecked = 0;
-            GameTarget validationTarget = mainWindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
+            GameTarget validationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
             var errors = new List<string>();
             foreach (var f in referencedFiles)
             {

@@ -13,6 +13,6 @@
         <Image Source="{Binding ToolImageSource, FallbackValue='/modmanager/toolicons/alot_big.png'}" Width="128" Height="128"/>
         <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10"/>
         <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding PercentDownloaded, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
-        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Downloading Placeholder}"/>
+        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=Downloading Placeholder}" TextWrapping="Wrap"/>
     </StackPanel>
 </local:MMBusyPanelBase>

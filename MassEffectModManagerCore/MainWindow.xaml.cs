@@ -147,13 +147,15 @@ namespace MassEffectModManagerCore
             }
 
             LoadCommands();
-            RefreshNexusStatus();
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"NexusModsInitialAuthentication");
+            nbw.DoWork += (a, b) => RefreshNexusStatus();
+            nbw.RunWorkerAsync();
             InitializeComponent();
             languageMenuItems = new Dictionary<string, MenuItem>()
             {
                 {@"int", LanguageINT_MenuItem},
                 {@"rus", LanguageRUS_MenuItem},
-                //{@"pol", LanguagePOL_MenuItem},
+                {@"pol", LanguagePOL_MenuItem},
                 {@"deu", LanguageDEU_MenuItem},
                 //{@"fra", LanguageFRA_MenuItem}
                 //{@"esn", LanguageESN_MenuItem}
@@ -164,6 +166,8 @@ namespace MassEffectModManagerCore
             {
                 SetLanguage(App.InitialLanguage, true);
             }
+
+            CheckProgramDataWritable();
 
             PopulateTargets();
             AttachListeners();
@@ -203,6 +207,40 @@ namespace MassEffectModManagerCore
             );
         }
 
+        private void CheckProgramDataWritable()
+        {
+            Log.Information(@"Checking settings.ini is writable (ProgramData check)...");
+            var settingsResult = Settings.Save();
+            if (settingsResult == Settings.SettingsSaveResult.FAILED_UNAUTHORIZED)
+            {
+                Log.Error(@"No permissions to appdata! Prompting for user to grant consent");
+                var result = Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_multiUserProgramDataWindowsRestrictions), M3L.GetString(M3L.string_grantingWritePermissions), MessageBoxButton.OKCancel, MessageBoxImage.Error);
+                if (result == MessageBoxResult.OK)
+                {
+                    bool done = Utilities.CreateDirectoryWithWritePermission(Utilities.GetAppDataFolder(), true);
+                    if (done)
+                    {
+                        Log.Information(@"Granted permissions to ProgramData");
+                    }
+                    else
+                    {
+                        Log.Error(@"User declined consenting permissions to ProgramData!");
+                        Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    }
+                }
+                else
+                {
+                    Log.Error(@"User denied granting permissions!");
+                    Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                Log.Information(@"settings.ini is writable");
+            }
+        }
+
         public async void RefreshNexusStatus(bool languageUpdateOnly = false)
         {
             if (NexusModsUtilities.HasAPIKey)
@@ -216,12 +254,12 @@ namespace MassEffectModManagerCore
                         Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occured while checking credentials. Setting not authorized");
                         SetNexusNotAuthorizedUI();
                     }
-                    else
-                    {
-                        return;
-                    }
                 }
+             
+                //prevent reseting ui to not authorized
+                return;
             }
+
             SetNexusNotAuthorizedUI();
         }
 
@@ -340,7 +378,7 @@ namespace MassEffectModManagerCore
         public ICommand ImportDLCModFromGameCommand { get; set; }
         public ICommand BackupFileFetcherCommand { get; set; }
         public ICommand OpenModDescCommand { get; set; }
-
+        public ICommand CheckAllModsForUpdatesCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -379,6 +417,7 @@ namespace MassEffectModManagerCore
             OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
             LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
+            CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
         }
 
         private void OpenModDesc()
@@ -836,7 +875,7 @@ namespace MassEffectModManagerCore
                 M3L.ShowDialog(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription), M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var archiveDeploymentPane = new ArchiveDeployment(SelectedMod, this);
+            var archiveDeploymentPane = new ArchiveDeployment(SelectedMod);
             archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(archiveDeploymentPane);
         }
@@ -1190,7 +1229,15 @@ namespace MassEffectModManagerCore
                 if (target != null)
                 {
                     var configTool = Utilities.GetGameConfigToolPath(target);
-                    Utilities.RunProcess(configTool, "", false, true, false, false);
+                    try
+                    {
+                        Utilities.RunProcess(configTool, "", false, true, false, false);
+                    }
+                    catch (Exception e)
+                    {
+                        // user may have canceled running it. seems it sometimes requires admin
+                        Log.Error($@"Error running config tool for {game}: {e.Message}");
+                    }
                 }
             }
         }
@@ -1407,7 +1454,7 @@ namespace MassEffectModManagerCore
                         Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList(), me1AGEIAKeyNotWritable);
                         }
                         catch (Exception e)
                         {
@@ -1423,7 +1470,7 @@ namespace MassEffectModManagerCore
                 else
                 {
                     Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
-                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate, me1AGEIAKeyNotWritable);
+                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList(), me1AGEIAKeyNotWritable);
                 }
             }
             else if (showDialogEvenIfNone)
@@ -1440,6 +1487,13 @@ namespace MassEffectModManagerCore
             if (App.BootingUpdate)
             {
                 ShowUpdateCompletedPane();
+            }
+
+            if (!App.IsOperatingSystemSupported())
+            {
+                string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
+                Log.Error(@"This operating system is not supported.");
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList), M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             if (!Settings.ShowedPreviewPanel)
@@ -1605,14 +1659,6 @@ namespace MassEffectModManagerCore
                     else
                     {
                         FailedMods.Add(mod);
-
-
-                        //Application.Current.Dispatcher.Invoke(delegate
-                        //{
-                        //    Storyboard sb = this.FindResource("OpenWebsitePanel") as Storyboard;
-                        //    Storyboard.SetTarget(sb, FailedModsPanel);
-                        //    sb.Begin();
-                        //});
                     }
                 }
 
@@ -1638,9 +1684,13 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
-                if (canCheckForModUpdates || forceUpdateCheckOnCompletion)
+                if (canCheckForModUpdates)
                 {
                     CheckAllModsForUpdates();
+                }
+                else if (forceUpdateCheckOnCompletion && args.Result is Mod highlightedMod && highlightedMod.IsUpdatable)
+                {
+                    CheckModsForUpdates(new List<Mod>(new[] { highlightedMod }));
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
@@ -1657,6 +1707,16 @@ namespace MassEffectModManagerCore
             bw.RunWorkerAsync();
         }
 
+        /// <summary>
+        /// Calls CheckAllModsForUpdates(). This method should be called from the UI thread.
+        /// </summary>
+        private void CheckAllModsForUpdatesWrapper()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Mod update check");
+            nbw.DoWork += (a, b) => CheckAllModsForUpdates();
+            nbw.RunWorkerAsync();
+        }
+
         private void CheckAllModsForUpdates()
         {
             var updatableMods = VisibleFilteredMods.Where(x => x.IsUpdatable).ToList();
@@ -1668,13 +1728,21 @@ namespace MassEffectModManagerCore
 
         private void CheckModsForUpdates(List<Mod> updatableMods, bool restoreMode = false)
         {
+            Log.Information($@"Checking {updatableMods.Count} mods for updates. Turn on mod update logging to view which mods");
+            foreach (var m in updatableMods)
+            {
+                CLog.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}", Settings.LogModUpdater);
+            }
             BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModCheckForUpdates", M3L.GetString(M3L.string_checkingModsForUpdates), M3L.GetString(M3L.string_modUpdateCheckCompleted));
             var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode);
             if (allModsInManifest != null)
             {
-
                 //Calculate CLASSIC Updates
                 var updates = allModsInManifest.Where(x => x.updatecode > 0 && (x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0)).ToList();
+                foreach (var v in updates)
+                {
+                    Log.Information($@"Classic mod out of date: {v.mod.ModName} {v.mod.ParsedModVersion}, server version: {v.LocalizedServerVersionString}");
+                }
 
                 //Calculate MODMAKER Updates
                 foreach (var mm in updatableMods.Where(x => x.ModModMakerID > 0))
@@ -1685,6 +1753,7 @@ namespace MassEffectModManagerCore
                         var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
                         if (serverVer > mm.ParsedModVersion)
                         {
+                            Log.Information($@"ModMaker mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
                             matchingServerMod.mod = mm;
                             updates.Add(matchingServerMod);
                             matchingServerMod.SetLocalizedInfo();
@@ -1705,6 +1774,8 @@ namespace MassEffectModManagerCore
                                 matchingServerMod.mod = mm;
                                 updates.Add(matchingServerMod);
                                 matchingServerMod.SetLocalizedInfo();
+                                Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
+
                             }
                         }
                         else
@@ -2042,9 +2113,6 @@ namespace MassEffectModManagerCore
                     try
                     {
                         App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
-                        //#if DEBUG
-                        //                    if (int.Parse(manifest["latest_build_number"]) > 0)
-                        //#else
                         if (int.TryParse(App.OnlineManifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
@@ -2181,11 +2249,13 @@ namespace MassEffectModManagerCore
                 {
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadObjectInfo", M3L.GetString(M3L.string_loadingPackageInfoDatabases), M3L.GetString(M3L.string_loadedPackageInfoDatabases));
 
+
+                    Log.Information(@"Loading ME3ObjectInfo");
                     ME3UnrealObjectInfo.loadfromJSON();
+                    Log.Information(@"Loading ME2ObjectInfo");
                     ME2UnrealObjectInfo.loadfromJSON();
+                    Log.Information(@"Loading ME1ObjectInfo");
                     ME1UnrealObjectInfo.loadfromJSON();
-
-
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 #if DEBUG
@@ -2371,6 +2441,7 @@ namespace MassEffectModManagerCore
             if (sender == ALOTInstaller_MenuItem) tool = ExternalToolLauncher.ALOTInstaller;
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
+            if (sender == ME3ExplorerBeta_MenuItem) tool = ExternalToolLauncher.ME3Explorer_Beta;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
             //if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings;
             if (tool == null) throw new Exception(@"LaunchExternalTool handler set but no relevant tool was specified! This is a bug. Please report it to Mgamerz on Discord");
@@ -2562,8 +2633,20 @@ namespace MassEffectModManagerCore
                                     break;
                                 }
 
+
+
                                 if (rootElement.Name == @"CoalesceFile")
                                 {
+                                    bool failedToCompileCoalesced = false;
+                                    void errorCompilingCoalesced(string message)
+                                    {
+                                        Application.Current.Dispatcher.Invoke(delegate
+                                        {
+                                            failedToCompileCoalesced = true;
+                                            M3L.ShowDialog(this, message, M3L.GetString(M3L.string_errorCompilingCoalesced), MessageBoxButton.OK, MessageBoxImage.Error);
+                                        });
+                                    }
+
                                     //Coalesced manifest
                                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Compiler");
                                     var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompile", M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
@@ -2571,12 +2654,35 @@ namespace MassEffectModManagerCore
                                     {
                                         var dest = Path.Combine(Directory.GetParent(files[0]).FullName, rootElement.Attribute(@"name").Value);
                                         Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
-                                        Converter.ConvertToBin(files[0], dest);
-                                        Log.Information(@"Compiled coalesced file");
+                                        try
+                                        {
+                                            Converter.ConvertToBin(files[0], dest);
+                                            Log.Information(@"Compiled coalesced file");
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Error($@"Error compiling Coalesced file: {e.Message}:");
+                                            Log.Error(App.FlattenException(e));
+                                            errorCompilingCoalesced(M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingCoalsecedFileX, e.Message));
+                                        }
                                     };
-                                    nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                    nbw.RunWorkerCompleted += (a, b) =>
+                                    {
+                                        if (failedToCompileCoalesced) task.finishedUiText = M3L.GetString(M3L.string_errorCompilingCoalesced);
+                                        backgroundTaskEngine.SubmitJobCompletion(task);
+                                    };
                                     nbw.RunWorkerAsync();
                                     break;
+                                }
+
+                                bool failedToCompileTLK = false;
+                                void errorCompilingTLK(string message)
+                                {
+                                    Application.Current.Dispatcher.Invoke(delegate
+                                    {
+                                        failedToCompileTLK = true;
+                                        Xceed.Wpf.Toolkit.MessageBox.Show(this, message, M3L.GetString(M3L.string_errorCompilingTLK), MessageBoxButton.OK, MessageBoxImage.Error);
+                                    });
                                 }
 
                                 // Tankmaster's uses a capital T where ME3Explorer used lowercase t
@@ -2594,8 +2700,12 @@ namespace MassEffectModManagerCore
                                          */
                                         NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
                                         var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
-                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement); };
-                                        nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement, errorCompilingTLK); };
+                                        nbw.RunWorkerCompleted += (a, b) =>
+                                        {
+                                            if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
+                                            backgroundTaskEngine.SubmitJobCompletion(task);
+                                        };
                                         nbw.RunWorkerAsync();
                                     }
                                     else
@@ -2603,8 +2713,12 @@ namespace MassEffectModManagerCore
                                         //Is this a straight up TLK?
                                         NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileTankmaster");
                                         var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
-                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement); };
-                                        nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                        nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement, errorCompilingTLK); };
+                                        nbw.RunWorkerCompleted += (a, b) =>
+                                        {
+                                            if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
+                                            backgroundTaskEngine.SubmitJobCompletion(task);
+                                        };
                                         nbw.RunWorkerAsync();
                                     }
                                 }
@@ -2612,14 +2726,19 @@ namespace MassEffectModManagerCore
                                 {
                                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"TLKTranspiler - CompileME3Exp");
                                     var task = backgroundTaskEngine.SubmitBackgroundJob(@"TranspilerCompile", M3L.GetString(M3L.string_compilingTLKFile), M3L.GetString(M3L.string_compiledTLKFile));
-                                    nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement); };
-                                    nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                                    nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement, errorCompilingTLK); };
+                                    nbw.RunWorkerCompleted += (a, b) =>
+                                    {
+                                        if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
+                                        backgroundTaskEngine.SubmitJobCompletion(task);
+                                    };
                                     nbw.RunWorkerAsync();
                                 }
                             }
                             catch (Exception ex)
                             {
                                 Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_errorReadingXmlFileX, ex.Message), M3L.GetString(M3L.string_errorReadingXmlFile), MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                         break;
@@ -2855,10 +2974,10 @@ namespace MassEffectModManagerCore
             {
                 lang = @"int";
             }
-            //else if (sender == LanguagePOL_MenuItem)
-            //{
-            //    lang = @"pol";
-            //}
+            else if (sender == LanguagePOL_MenuItem)
+            {
+                lang = @"pol";
+            }
             else if (sender == LanguageRUS_MenuItem)
             {
                 lang = @"rus";
@@ -2871,10 +2990,10 @@ namespace MassEffectModManagerCore
             //{
             //    lang = @"esn";
             //}
-            else if (sender == LanguageFRA_MenuItem)
-            {
-                lang = @"fra";
-            }
+            //else if (sender == LanguageFRA_MenuItem)
+            //{
+            //    lang = @"fra";
+            //}
             //else if (sender == LanguageCZE_MenuItem)
             //{
             //    lang = @"cze";
@@ -3051,6 +3170,20 @@ namespace MassEffectModManagerCore
         private void ShowIntroTutorial_Click(object sender, RoutedEventArgs e)
         {
             new IntroTutorial().Show();
+        }
+
+        private void MEMVanillaDBViewer_Click(object sender, RoutedEventArgs e)
+        {
+            var previewPanel = new MEMVanillaDBViewer();
+            previewPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is bool loadMods)
+                {
+                    LoadMods();
+                }
+            };
+            ShowBusyControl(previewPanel);
         }
     }
 }

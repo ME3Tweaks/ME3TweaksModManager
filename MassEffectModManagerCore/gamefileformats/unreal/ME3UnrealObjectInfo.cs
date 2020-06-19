@@ -8,6 +8,7 @@ using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using ME3Explorer.Packages;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace ME3Explorer.Unreal
 {
@@ -33,15 +34,26 @@ namespace ME3Explorer.Unreal
             switch (entry.FileRef.Game)
             {
                 case Mod.MEGame.ME1:
-                    return ME1UnrealObjectInfo.InheritsFrom(entry, baseClass);
+                    return ME1UnrealObjectInfo.InheritsFrom(entry.ClassName, baseClass);
                 case Mod.MEGame.ME2:
-                    return ME2UnrealObjectInfo.InheritsFrom(entry, baseClass);
+                    return ME2UnrealObjectInfo.InheritsFrom(entry.ClassName, baseClass);
                 case Mod.MEGame.ME3:
-                    return ME3UnrealObjectInfo.InheritsFrom(entry, baseClass);
+                    return ME3UnrealObjectInfo.InheritsFrom(entry.ClassName, baseClass);
                 default:
                     return false;
             }
         }
+
+        public static bool IsA(this ClassInfo info, string baseClass, Mod.MEGame game) => IsA(info.ClassName, baseClass, game);
+        public static bool IsA(this IEntry entry, string baseClass) => IsA(entry.ClassName, baseClass, entry.FileRef.Game);
+        public static bool IsA(string className, string baseClass, Mod.MEGame game) =>
+            className == baseClass || game switch
+            {
+                Mod.MEGame.ME1 => ME1UnrealObjectInfo.InheritsFrom(className, baseClass),
+                Mod.MEGame.ME2 => ME2UnrealObjectInfo.InheritsFrom(className, baseClass),
+                Mod.MEGame.ME3 => ME3UnrealObjectInfo.InheritsFrom(className, baseClass),
+                _ => false
+            };
 
         public static string GetEnumType(Mod.MEGame game, string propName, string typeName, ClassInfo nonVanillaClassInfo = null)
         {
@@ -326,10 +338,23 @@ namespace ME3Explorer.Unreal
                     Classes = blob.Classes;
                     Structs = blob.Structs;
                     Enums = blob.Enums;
+                    foreach ((string className, ClassInfo classInfo) in Classes)
+                    {
+                        classInfo.ClassName = className;
+                    }
+                    foreach ((string className, ClassInfo classInfo) in Structs)
+                    {
+                        classInfo.ClassName = className;
+                    }
+                }
+                else
+                {
+                    Log.Error(@"Cannot load ME3ObjectInfo: JsonFile is missing.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(@"Error loading ME3ObjectInfo: " + ex.Message);
             }
         }
 
@@ -638,9 +663,8 @@ namespace ME3Explorer.Unreal
             }
         }
 
-        public static bool InheritsFrom(IEntry entry, string baseClass)
+        public static bool InheritsFrom(string className, string baseClass)
         {
-            string className = entry.ClassName;
             while (Classes.ContainsKey(className))
             {
                 if (className == baseClass)

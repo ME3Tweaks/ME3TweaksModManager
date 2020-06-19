@@ -8,6 +8,7 @@ using ME3Explorer.Packages;
 
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
+using Serilog;
 
 namespace ME3Explorer.Unreal
 {
@@ -31,11 +32,23 @@ namespace ME3Explorer.Unreal
                     Classes = blob.Classes;
                     Structs = blob.Structs;
                     Enums = blob.Enums;
+                    foreach ((string className, ClassInfo classInfo) in Classes)
+                    {
+                        classInfo.ClassName = className;
+                    }
+                    foreach ((string className, ClassInfo classInfo) in Structs)
+                    {
+                        classInfo.ClassName = className;
+                    }
+                }
+                else
+                {
+                    Log.Error(@"Cannot load ME1ObjectInfo: JsonFile is missing.");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return;
+                Log.Error(@"Error loading ME1ObjectInfo: " + ex.Message);
             }
         }
 
@@ -363,9 +376,8 @@ namespace ME3Explorer.Unreal
             }
         }
 
-        public static bool InheritsFrom(IEntry entry, string baseClass)
+        public static bool InheritsFrom(string className, string baseClass)
         {
-            string className = entry.ClassName;
             while (Classes.ContainsKey(className))
             {
                 if (className == baseClass)

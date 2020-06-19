@@ -80,6 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             @"DLC_CON_XBX",
             @"DLC_CON_UIScaling",
+            // ME3 Ultrawide someday?
             @"DLC_CON_UIScaling_Shared"
         };
 
@@ -88,6 +89,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             @"DLC_CON_XBX",
             @"DLC_CON_UIScaling",
             @"DLC_CON_UIScaling_Shared",
+            //  ME3 Ultrawide someday?
             @"DLC_MOD_" + UI_MOD_NAME
         };
 
@@ -101,7 +103,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             GENERATED_PACK
         }
 
-        
+
 
         private int getPercent(long done, long total)
         {
@@ -304,7 +306,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (tpmi == null) return x;
                 return tpmi.modname;
             }).ToList();
-            string dlcs = string.Join(@"\n - ", dlcModList);
+            string dlcs = string.Join("\n - ", dlcModList); // do not localize
 
             StarterKitOptions sko = new StarterKitOptions
             {
@@ -370,10 +372,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             done = 0;
             string singlesuffix = M3L.GetString(M3L.string_singularFile);
             string pluralsuffix = M3L.GetString(M3L.string_pluralFiles);
+
+            // Logging
+            Log.Information(@"The following files will be promoted in the compatibility pack:");
             foreach (var file in filesToBePatched)
             {
+                Log.Information(@" - " + file);
+            }
+
+            foreach (var file in filesToBePatched)
+            {
+                Log.Information(@"Patching file: " + file);
                 ActionSubstring = Path.GetFileName(file);
                 var package = MEPackageHandler.OpenMEPackage(file);
+                if (package == null)
+                {
+                    Log.Error(@"pPackage object is null!!!");
+                }
                 var guiExports = package.Exports.Where(x => !x.IsDefaultObject && x.ClassName == @"GFxMovieInfo").ToList();
                 if (guiExports.Count > 0)
                 {
@@ -383,9 +398,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (uiLibraryData.TryGetValue(export.GetFullPath, out var newData))
                         {
+                            Log.Information(@" >> Patching export " + export.GetFullPath);
                             //Patching this export.
                             var exportProperties = export.GetProperties();
                             var rawData = exportProperties.GetProp<ArrayProperty<ByteProperty>>(@"RawData");
+                            if (rawData == null)
+                            {
+                                Log.Error(@"Rawdata is null!!");
+                            }
                             rawData.Clear();
                             rawData.AddRange(newData.Select(x => new ByteProperty(x))); //This will be terribly slow. Need to port over new ME3Exp binary data handler
                             export.WriteProperties(exportProperties);
@@ -400,7 +420,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (package.IsModified)
                     {
                         Log.Information(@"Saving patched package to " + outpath);
-                        package.save(outpath);
+                        package.save(outpath, true);
                         done++;
                         ActionSubstring = M3L.GetString(M3L.string_interp_patchedXY, done.ToString(), done == 1 ? singlesuffix : pluralsuffix);
                     }

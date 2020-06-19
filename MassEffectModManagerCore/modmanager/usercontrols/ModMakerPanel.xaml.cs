@@ -120,6 +120,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void StartCompiler()
         {
             CompileInProgress = true;
+            Settings.Save(); //Persist controller mixin option
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModmakerCompiler");
 
             bw.DoWork += (a, b) =>

@@ -154,21 +154,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 int mixincount = 0;
                 var me3tweaksmixinsdata = mixinNode.Elements(@"MixIn")
-                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf(@"v")))).ToList();
+                    .Select(x => int.Parse(x.Value.IndexOf(@"v") > 0 ? x.Value.Substring(0, x.Value.IndexOf(@"v")) : x.Value)).ToList();
                 foreach (var mixin in me3tweaksmixinsdata)
                 {
-
-                    var tmtext = MixinHandler.GetMixinByME3TweaksID(mixin).TargetModule;
-                    var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
-                    Debug.WriteLine(tm);
-                    if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
-                    if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                    var mixinobj = MixinHandler.GetMixinByME3TweaksID(mixin);
+                    if (mixinobj != null)
                     {
-                        mixincount++;
+                        var tmtext = mixinobj.TargetModule;
+                        var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
+                        Debug.WriteLine(tm);
+                        if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
+                        if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
+                        {
+                            mixincount++;
+                        }
+                        else
+                        {
+                            Debug.WriteLine(@"Not adding " + tm);
+                        }
                     }
                     else
                     {
-                        Debug.WriteLine(@"Not adding " + tm);
+                        Log.Error($@"MixinHandler returned null for mixinid {mixin}! Has the MixinPackage loaded?");
                     }
                 }
 
@@ -235,35 +242,44 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var newstringnodes = tlknode.Elements(@"TLKProperty");
                     string filename = $@"BIOGame_{lang}.tlk";
                     var vanillaTLK = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, filename);
-                    var tf = new TalkFileME2ME3();
-                    tf.LoadTlkDataFromStream(vanillaTLK);
-                    SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
-                    foreach (var strnode in newstringnodes)
+                    if (vanillaTLK != null)
                     {
-                        var id = int.Parse(strnode.Attribute(@"id").Value);
-                        var matchingref = tf.StringRefs.FirstOrDefault(x => x.StringID == id);
-                        if (matchingref != null)
+                        var tf = new TalkFileME2ME3();
+                        tf.LoadTlkDataFromStream(vanillaTLK);
+                        SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
+                        foreach (var strnode in newstringnodes)
                         {
-                            matchingref.Data = strnode.Value;
-                            CLog.Information($@"{loggingPrefix}Set {id} to {matchingref.Data}",
-                                Settings.LogModMakerCompiler);
+                            var id = int.Parse(strnode.Attribute(@"id").Value);
+                            var matchingref = tf.StringRefs.FirstOrDefault(x => x.StringID == id);
+                            if (matchingref != null)
+                            {
+                                matchingref.Data = strnode.Value;
+                                CLog.Information($@"{loggingPrefix}Set {id} to {matchingref.Data}",
+                                    Settings.LogModMakerCompiler);
+                            }
+                            else
+                            {
+                                Log.Warning($@"{loggingPrefix} Could not find string id {id} in TLK");
+                            }
                         }
-                        else
-                        {
-                            Log.Warning($@"{loggingPrefix} Could not find string id {id} in TLK");
-                        }
+
+                        SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //modify
+
+                        string outfolder = Path.Combine(mod.ModPath, @"BASEGAME", @"CookedPCConsole");
+                        Directory.CreateDirectory(outfolder);
+                        string outfile = Path.Combine(outfolder, filename);
+                        CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
+                        HuffmanCompressionME2ME3.SaveToTlkFile(outfile, tf.StringRefs);
+                        CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
+                            Settings.LogModMakerCompiler);
+                        SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
+                    }
+                    else
+                    {
+                        Log.Warning($@"TLK file not found: {vanillaTLK}, skipping");
+                        SetCurrentValueCallback?.Invoke(Interlocked.Add(ref numDoneTLKSteps, 3)); //skip 3 steps
                     }
 
-                    SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //modify
-
-                    string outfolder = Path.Combine(mod.ModPath, @"BASEGAME", @"CookedPCConsole");
-                    Directory.CreateDirectory(outfolder);
-                    string outfile = Path.Combine(outfolder, filename);
-                    CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
-                    HuffmanCompressionME2ME3.SaveToTlkFile(outfile, tf.StringRefs);
-                    CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
-                        Settings.LogModMakerCompiler);
-                    SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
                     var numOverallDone = Interlocked.Add(ref OverallProgressValue, TLK_OVERALL_WEIGHT);
                     SetOverallValueCallback?.Invoke(numOverallDone);
                 });
@@ -285,11 +301,27 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             if (mixinNode != null)
             {
                 var me3tweaksmixinsdata = mixinNode.Elements(@"MixIn")
-                    .Select(x => int.Parse(x.Value.Substring(0, x.Value.IndexOf(@"v")))).ToList();
+                    .Select(x => int.Parse(x.Value.IndexOf(@"v") > 0 ? x.Value.Substring(0, x.Value.IndexOf(@"v")) : x.Value)).ToList();
                 var dynamicmixindata = mixinNode.Elements(@"DynamicMixIn").ToList();
 
                 List<Mixin> allmixins = new List<Mixin>();
                 allmixins.AddRange(me3tweaksmixinsdata.Select(MixinHandler.GetMixinByME3TweaksID));
+
+                //Controller addins
+                if (Settings.ModMakerControllerModOption)
+                {
+                    if (allmixins.Any(x => Path.GetFileName(x.TargetFile) == @"SFXGame.pcc"))
+                    {
+                        Log.Information(@"Added controller camera mixin as this mod modifies SFXGame and controller option is on");
+                        allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1533));
+                    }
+                    if (allmixins.Any(x => Path.GetFileName(x.TargetFile) == @"Patch_BioPlayerController.pcc"))
+                    {
+                        Log.Information(@"Added controller vibration mixin as this mod modifies Patch_BioPlayerController and controller option is on");
+                        allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1557));
+                    }
+                }
+
                 MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
                 allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
 
@@ -354,16 +386,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                                 package.save(outfile, true); //set to true once compression bugs are fixed
-                                //finalStream.WriteToFile(outfile);
-                                //File.WriteAllBytes(outfile, finalStream.ToArray());
+                                                             //finalStream.WriteToFile(outfile);
+                                                             //File.WriteAllBytes(outfile, finalStream.ToArray());
                             }
                         }
                         else
                         {
                             //dlc
                             var dlcPackage =
-                                VanillaDatabaseService
-                                    .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                        VanillaDatabaseService
+                            .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
                             foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream =
@@ -377,7 +409,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                                 package.save(outfile, true); //set to true once compression bugs are fixed
-                                //finalStream.WriteToFile(outfile);
+                                                             //finalStream.WriteToFile(outfile);
                             }
                         }
                     });

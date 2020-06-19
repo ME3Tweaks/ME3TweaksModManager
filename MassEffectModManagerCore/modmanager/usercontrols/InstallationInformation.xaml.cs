@@ -51,6 +51,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SelectedTarget = selectedTarget;
         }
         public ICommand RestoreAllModifiedSFARs { get; set; }
+        public ICommand RestoreSPModifiedSFARs { get; set; }
+        public ICommand RestoreMPModifiedSFARs { get; set; }
         public ICommand RestoreAllModifiedBasegame { get; set; }
         public ICommand CloseCommand { get; set; }
         public ICommand RemoveTargetCommand { get; set; }
@@ -58,9 +60,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadCommands()
         {
             RestoreAllModifiedSFARs = new GenericCommand(RestoreAllSFARs, CanRestoreAllSFARs);
+            RestoreMPModifiedSFARs = new GenericCommand(RestoreMPSFARs, CanRestoreMPSFARs);
+            RestoreSPModifiedSFARs = new GenericCommand(RestoreSPSFARs, CanRestoreSPSFARs);
             RestoreAllModifiedBasegame = new GenericCommand(RestoreAllBasegame, CanRestoreAllBasegame);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
             RemoveTargetCommand = new GenericCommand(RemoveTarget, CanRemoveTarget);
+        }
+
+        private bool CanRestoreMPSFARs()
+        {
+            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
+        }
+        private bool CanRestoreSPSFARs()
+        {
+            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
         }
 
         private bool CanRemoveTarget() => SelectedTarget != null && !SelectedTarget.RegistryActive;
@@ -160,9 +173,77 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
+        private void RestoreSPSFARs()
+        {
+            bool restore;
+            if (SelectedTarget.TextureModded)
+            {
+                if (!Settings.DeveloperMode)
+                {
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                else
+                {
+                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    restore = res == MessageBoxResult.Yes;
+
+                }
+            }
+            else
+            {
+                restore = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoreSPSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+
+            }
+            if (restore)
+            {
+                foreach (var v in SelectedTarget.ModifiedSFARFiles)
+                {
+                    if (v.IsSPSFAR)
+                    {
+                        SelectedTarget.RestoreSFAR(v, true);
+                    }
+                }
+            }
+        }
+
+        private void RestoreMPSFARs()
+        {
+            bool restore;
+            if (SelectedTarget.TextureModded)
+            {
+                if (!Settings.DeveloperMode)
+                {
+                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                else
+                {
+                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    restore = res == MessageBoxResult.Yes;
+
+                }
+            }
+            else
+            {
+                restore = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoreMPSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+
+            }
+            if (restore)
+            {
+                foreach (var v in SelectedTarget.ModifiedSFARFiles)
+                {
+                    if (v.IsMPSFAR)
+                    {
+                        SelectedTarget.RestoreSFAR(v, true);
+                    }
+                }
+            }
+        }
+
         private void RestoreAllSFARs()
         {
-            bool restore = false;
+            bool restore;
             if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
@@ -186,7 +267,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 foreach (var v in SelectedTarget.ModifiedSFARFiles)
                 {
-                    v.RestoreSFAR(true);
+                    SelectedTarget.RestoreSFAR(v, true);
                 }
             }
         }
@@ -239,7 +320,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     }
                 }
-                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                if (!holdingShift.Value) holdingShift = null;
+                return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             bool restoreSfarConfirmationCallback(string sfarPath)
@@ -265,7 +348,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
                 //Todo: warn of unpacked file deletion
-                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                if (!holdingShift.Value) holdingShift = null;
+                return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
 
             void notifyStartingSfarRestoreCallback()
@@ -389,7 +474,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
                 }
             }
-
+            public string EnableDisableTooltip { get; set; }
             public string ModName { get; private set; }
             public string DLCFolderName { get; private set; }
             public string DLCFolderNameString { get; private set; }
@@ -489,6 +574,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var source = dlcFolderPath;
                 var dlcdir = Directory.GetParent(dlcFolderPath).FullName;
+                var isBecomingDisabled = DLCFolderName.StartsWith(@"DLC"); //about to change to xDLC, so it's becoming disabled
                 var newdlcname = DLCFolderName.StartsWith(@"xDLC") ? DLCFolderName.TrimStart('x') : @"x" + DLCFolderName;
                 var target = Path.Combine(dlcdir, newdlcname);
                 try
@@ -496,6 +582,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Directory.Move(source, target);
                     DLCFolderName = newdlcname;
                     dlcFolderPath = target;
+                    EnableDisableTooltip = M3L.GetString(isBecomingDisabled ? M3L.string_tooltip_enableDLC : M3L.string_tooltip_disableDLC);
                 }
                 catch (Exception e)
                 {
@@ -518,13 +605,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (obj is GameTarget gt)
                 {
-                    var confirmDelete = deleteConfirmationCallback?.Invoke(this);
+                    bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                    if (!holdingShift.Value) holdingShift = null;
+                    var confirmDelete = holdingShift ?? deleteConfirmationCallback?.Invoke(this);
                     if (confirmDelete.HasValue && confirmDelete.Value)
                     {
                         Log.Information(@"Deleting DLC mod from target: " + dlcFolderPath);
                         Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
                         notifyDeleted?.Invoke();
                     }
+
                 }
             }
 

@@ -43,7 +43,7 @@ namespace LocalizationHelper
             //}
             //Environment.Exit(0);
             DataContext = this;
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
             var rootLen = modmanagerroot.Length + 1;
             //localizable folders
@@ -52,6 +52,7 @@ namespace LocalizationHelper
             var me3tweaks = Path.Combine(modmanagerroot, "modmanager", "me3tweaks");
             var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
             var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
+            var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
 
             List<string> files = new List<string>();
             files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
@@ -59,6 +60,7 @@ namespace LocalizationHelper
             files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+            files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
 
             //these files are not localized
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "LogCollector.cs").Substring(rootLen));
@@ -68,6 +70,9 @@ namespace LocalizationHelper
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
             files.Add("MainWindow.xaml");
             files.Add("MainWindow.xaml.cs");
+
+            files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
+
             files.Sort();
             SourceFiles.ReplaceAll(files);
             InitializeComponent();
@@ -81,7 +86,7 @@ namespace LocalizationHelper
             SelectedCS = false;
             SelectedXAML = false;
             if (SelectedFile == null) return;
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             var selectedFilePath = Path.Combine(modmanagerroot, SelectedFile);
@@ -184,7 +189,7 @@ namespace LocalizationHelper
         private void Synchronize_Clicked(object sender, RoutedEventArgs e)
         {
             //get out of project in debug mod
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var localizationsFolder = Path.Combine(solutionroot, "MassEffectModManagerCore", "modmanager", "localizations");
             var m3lFile = Path.Combine(localizationsFolder, "M3L.cs");
             var m3lTemplateFile = Path.Combine(localizationsFolder, "M3L_Template.txt");
@@ -444,7 +449,7 @@ namespace LocalizationHelper
                 Debug.WriteLine(str.Value);
             }
 
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
 
@@ -517,7 +522,7 @@ namespace LocalizationHelper
             XNamespace system = "clr-namespace:System;assembly=System.Runtime";
             XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
             var lstrings = xdoc.Root.Descendants(system + "String").ToList();
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             var file = Path.Combine(M3folder, SelectedFile);
@@ -619,7 +624,7 @@ namespace LocalizationHelper
 
         private void Check_Clicked(object sender, RoutedEventArgs e)
         {
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             string[] dirs =
@@ -646,9 +651,10 @@ namespace LocalizationHelper
                     Regex r = new Regex(regex);
                     var filelines = File.ReadAllLines(csFile);
                     HashSet<string> s = new HashSet<string>();
-
+                    int lineIndex = -1;
                     foreach (var line in filelines)
                     {
+                        lineIndex++;
                         var commentIndex = line.IndexOf("//");
                         var matches = r.Matches(line);
                         if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
@@ -664,7 +670,10 @@ namespace LocalizationHelper
                             if (newStr.Length > 1)
                             {
                                 strname += toCamelCase(newStr);
-                                s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+
+                                //LN is line number
+                                s.Add($"  LN:{lineIndex}  <system:String x:Key=\"{strname}\">{newStr}</system:String>");
+                                //s.Add($"    <system:String x:Key=\"{strname}\">{newStr}</system:String>");
                             }
                         }
                     }
@@ -679,7 +688,7 @@ namespace LocalizationHelper
 
         private void CheckXamls_Clicked(object sender, RoutedEventArgs e)
         {
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName;
+            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             string[] dirs =
@@ -836,7 +845,7 @@ namespace LocalizationHelper
         {
             new LocalizationTablesUI().Show();
         }
-        
+
         private void PerformINTDiff_Clicked(object sender, RoutedEventArgs e)
         {
             string oldfile = null, newfile = null;

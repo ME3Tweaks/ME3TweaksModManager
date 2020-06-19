@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -43,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
-            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} for game {modBeingInstalled.Game}");
+            Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
@@ -70,7 +69,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_MALFORMED_RCW_FILE,
             INSTALL_ABORTED_NOT_ENOUGH_SPACE,
             INSTALL_FAILED_BAD_ME2_COALESCED,
-            INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION
+            INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION,
+            INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER,
+            INSTALL_FAILED_EXCEPTION_FILE_COPY
         }
 
         public string Action { get; set; }
@@ -133,6 +134,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Log.Error(@"Required DLC is missing for installation: " + string.Join(@", ", missingRequiredDLC));
                 e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING, missingRequiredDLC);
+                Log.Information(@"<<<<<<< Finishing modinstaller");
                 return;
             }
 
@@ -142,19 +144,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //logs handled in precheck
                 e.Result = ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
+                Log.Information(@"<<<<<<< Exiting modinstaller");
+
                 return;
             }
 
-            //todo: If statment on this
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
             if (ModBeingInstalled.Game == Mod.MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
             {
+                Log.Information(@"RCW mod: Beginning RCW mod subinstaller");
                 e.Result = InstallAttachedRCWMod();
+                Log.Information(@"<<<<<<< Finishing modinstaller");
                 return;
             }
 
             //Prepare queues
+            Log.Information(@"Building installation queues");
             (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
                 List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues =
                 ModBeingInstalled.GetInstallationQueues(gameTarget);
@@ -175,10 +181,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 foreach (var jobMappings in installationQueues.sfarJobs)
                 {
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
+                    //Only check if it's not TESTPATCH. TestPatch is classes only and will have no bearing on ALOT
+                    if (Path.GetFileName(jobMappings.sfarPath) != @"Patch_001.sfar")
+                    {
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
+                    }
                 }
 
                 if (installsPackageFile)
@@ -196,6 +206,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (cancel)
                         {
                             e.Result = ModInstallCompletedStatus.USER_CANCELED_INSTALLATION;
+                            Log.Information(@"<<<<<<< Exiting modinstaller");
                             return;
                         }
                         Log.Warning(@"User installing mod anyways even with ALOT installed");
@@ -205,8 +216,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Error(@"ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
                         //ALOT Installed, this is attempting to install a package file
                         e.Result = ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING;
+                        Log.Information(@"<<<<<<< Exiting modinstaller");
                         return;
                     }
+                }
+                else
+                {
+                    Log.Information(@"Game is marked as textured modded, but this mod doesn't install any package files, so it's OK to install");
                 }
             }
 
@@ -236,6 +252,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
+                Log.Information(@"Building map of unpacked file destinations");
+
                 foreach (var originalMapping in unpackedQueue.Value.fileMapping)
                 {
                     //always unpacked
@@ -316,6 +334,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             string sfarStagingDirectory = (ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
             if (sfarStagingDirectory != null)
             {
+                Log.Information(@"Building list of SFAR staging targets");
                 foreach (var sfarJob in installationQueues.sfarJobs)
                 {
                     foreach (var fileToInstall in sfarJob.sfarInstallationMapping)
@@ -348,6 +367,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Check we have enough disk space
+            Log.Information(@"Checking there is enough space to install mod (this is only an estimate)");
+
             long requiredSpaceToInstall = 0L;
             if (ModBeingInstalled.IsInArchive)
             {
@@ -357,6 +378,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //we are installing this file
                         requiredSpaceToInstall += (long)f.Size;
+                        CLog.Information(@"Adding to size calculation: " + f.FileName + @", size " + f.Size, Settings.LogModInstallation);
+
+                    }
+                    else
+                    {
+                        CLog.Information(@"Skip adding to size calculation: " + f.FileName, Settings.LogModInstallation);
                     }
                 }
             }
@@ -369,7 +396,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             Utilities.DriveFreeBytes(gameTarget.TargetPath, out var freeSpaceOnTargetDisk);
-            requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.05); //+5% for some overhead
+            requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.1); //+10% for some overhead
+            Log.Information($@"Mod requires {ByteSize.FromBytes(requiredSpaceToInstall)} of disk space to install. We have {ByteSize.FromBytes(freeSpaceOnTargetDisk)} available");
             if (requiredSpaceToInstall > (long)freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
             {
                 string driveletter = Path.GetPathRoot(gameTarget.TargetPath);
@@ -380,6 +408,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3L.ShowDialog(window, message, M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                 });
                 e.Result = ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
+                Log.Information(@"<<<<<<< Exiting modinstaller");
                 return;
             }
 
@@ -390,7 +419,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Directory.Exists(path))
                 {
                     Log.Information($@"Deleting existing DLC directory: {path}");
-                    Utilities.DeleteFilesAndFoldersRecursively(path);
+                    try
+                    {
+                        Utilities.DeleteFilesAndFoldersRecursively(path, true);
+                    }
+                    catch (UnauthorizedAccessException exd)
+                    {
+                        // for some reason we don't have permission to do this.
+                        Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
+                        Utilities.CreateDirectoryWithWritePermission(path, true);
+                        Utilities.DeleteFilesAndFoldersRecursively(path);
+                    }
                 }
             }
 
@@ -427,7 +466,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Direct copy
                 Log.Information($@"Installing {fullPathMappingDisk.Count} unpacked files into game directory");
-                CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
+                try
+                {
+                    CopyDir.CopyFiles_ProgressBar(fullPathMappingDisk, FileInstalledCallback, testrun);
+                    Log.Information(@"Files have been copied");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(@"Error extracting files: " + ex.Message);
+                    Crashes.TrackError(ex, new Dictionary<string, string>()
+                    {
+                        {@"Mod name", ModBeingInstalled.ModName },
+                        {@"Version", ModBeingInstalled.ModVersionString}
+                    });
+                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_FILE_COPY;
+                    if (Application.Current != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorCopyingFilesToTarget, ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
+                    }
+                    Log.Warning(@"<<<<<<< Aborting modinstaller");
+                    return;
+                }
             }
             else
             {
@@ -441,10 +500,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return redirectedPath;
                 }
 
-                ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
-                {
-                    //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
-                };
+                //ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
+                //{
+                //    //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                //};
                 List<string> filesInstalled = new List<string>();
                 //List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
                 ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
@@ -490,7 +549,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
-
+                    Log.Warning(@"<<<<<<< Aborting modinstaller");
                     return;
                 }
             }
@@ -503,6 +562,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             foreach (var addedDLCFolder in addedDLCFolders)
             {
+                Log.Information(@"Writing metacmm file for " + addedDLCFolder);
                 var metacmm = Path.Combine(addedDLCFolder, @"_metacmm.txt");
                 ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
                 string contents = $"{assignedDLCName ?? ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}"; //Do not localize
@@ -542,13 +602,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Action = M3L.GetString(M3L.string_installingSupportFiles);
             PercentVisibility = Visibility.Collapsed;
-            Log.Information(@"Installing supporting ASI files");
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
-                //Todo: Convert to ASI Manager installer
-                Utilities.InstallASIByGroupID(gameTarget, @"DLC Mod Enabler", 16); //16 = DLC M -od Enabler
-
-                //Utilities.InstallEmbeddedASI(@"ME1-DLC-ModEnabler-v1.0", 1.0, gameTarget); //Todo: Switch to ASI Manager
+                Log.Information(@"Installing supporting ASI files");
+                Utilities.InstallASIByGroupID(gameTarget, @"DLC Mod Enabler", 16); //16 = DLC Mod Enabler
             }
             else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
             {
@@ -558,10 +615,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
+                    Log.Information(@"Installing supporting ASI files");
                     Utilities.InstallASIByGroupID(gameTarget, @"Balance Changes Replacer", 5);
-                    //Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 5);
-                    //Utilities.InstallEmbeddedASI(@"BalanceChangesReplacer-v2.0", 2.0, gameTarget); //todo: Switch to ASI Manager
                 }
+
+                //Install Autotoc ASI?
+                //Install logger truncating?
+                // (Is this already handled elsewhere?)
+                // Don't install these until ALOT installer is also on ASI Manager code
             }
 
             if (sfarStagingDirectory != null)
@@ -579,6 +640,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Warning($@"Number of completed items does not equal the amount of items to install! Number installed {numdone} Number expected: {numFilesToInstall}");
                 e.Result = ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS;
             }
+
             Log.Information(@"<<<<<<< Finishing modinstaller");
 
             //Submit basegame telemetry in async way
@@ -747,7 +809,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
                 }
-
             }
             me2c.Serialize();
             return ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
@@ -877,71 +938,92 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
             if (e.Error != null)
             {
                 Log.Error(@"An error occured during mod installation.\n" + App.FlattenException(e.Error));
-            }
-
-            var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
-            if (e.Result is ModInstallCompletedStatus mcis)
-            {
-                telemetryResult = mcis;
-                //Success, canceled (generic and handled), ALOT canceled
-                InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
-                if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
-                {
-                    InstallationCancelled = true;
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationBlockedByALOT), M3L.GetString(M3L.string_installationBlocked), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
-                {
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck), M3L.GetString(M3L.string_installationSucceededMaybe), MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE)
-                {
-                    InstallationCancelled = true;
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED)
-                {
-                    InstallationCancelled = true;
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidME2Coalesced), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
-                {
-                    InstallationCancelled = true;
-                }
-            }
-            else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
-            {
-                telemetryResult = result;
-                //Failures with results
-                Log.Warning(@"Installation failed with status " + result.ToString());
-                switch (result)
-                {
-                    case ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING:
-                        string dlcText = "";
-                        foreach (var dlc in items)
-                        {
-                            var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
-                            if (info != null)
-                            {
-                                dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
-                            }
-                            else
-                            {
-                                dlcText += $"\n - {dlc}"; //Do not localize
-                            }
-                        }
-                        InstallationCancelled = true;
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                        break;
-                }
+                telemetryResult = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
+                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_interp_dialog_errorOccuredDuringInstallation, App.FlattenException(e.Error)));
             }
             else
             {
-                throw new Exception(@"Mod installer did not have return code. This should be caught and handled, but it wasn't.");
+                if (e.Result is ModInstallCompletedStatus mcis)
+                {
+                    telemetryResult = mcis;
+                    //Success, canceled (generic and handled), ALOT canceled
+                    InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
+                    if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
+                    {
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationBlockedByALOT), M3L.GetString(M3L.string_installationBlocked), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_WRONG_NUMBER_OF_COMPLETED_ITEMS)
+                    {
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInstallationSucceededFailedInstallCountCheck), M3L.GetString(M3L.string_installationSucceededMaybe), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_MALFORMED_RCW_FILE)
+                    {
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidRCWFile), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_BAD_ME2_COALESCED)
+                    {
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidME2Coalesced), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
+                    {
+                        InstallationCancelled = true;
+                    }
+                }
+                else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
+                {
+                    telemetryResult = result;
+                    //Failures with results
+                    Log.Warning(@"Installation failed with status " + result.ToString());
+                    switch (result)
+                    {
+                        case ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING:
+                            string dlcText = "";
+                            foreach (var dlc in items)
+                            {
+                                var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
+                                if (info != null)
+                                {
+                                    dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
+                                }
+                                else
+                                {
+                                    dlcText += $"\n - {dlc}"; //Do not localize
+                                }
+                            }
+
+                            InstallationCancelled = true;
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                    }
+                }
+                else
+                {
+                    Log.Fatal(@"The application is going to crash due to a sanity check failure. Please report this to ME3Tweaks so this can be fixed.");
+
+                    // Once this issue has been fixed these lines can be commented out or removed (June 14 2020)
+                    Xceed.Wpf.Toolkit.MessageBox.Show(window, M3L.GetString(M3L.string_dialog_appAboutToCrashYouFoundBug), M3L.GetString(M3L.string_appCrash), MessageBoxButton.OK, MessageBoxImage.Error);
+                    Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
+                    // End bug message
+                    if (e.Result == null)
+                    {
+                        Log.Fatal(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
+                        throw new Exception(@"Mod installer did not have result code (null). This should be caught and handled, but it wasn't!");
+                    }
+                    else
+                    {
+                        Log.Fatal(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
+                        throw new Exception(@"Mod installer did not have parsed result code. This should be caught and handled, but it wasn't. The returned object was: " + e.Result.GetType() + @". The data was " + e.Result);
+                    }
+                }
             }
+
             Analytics.TrackEvent(@"Installed a mod", new Dictionary<string, string>()
             {
                 { @"Mod name", $@"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },

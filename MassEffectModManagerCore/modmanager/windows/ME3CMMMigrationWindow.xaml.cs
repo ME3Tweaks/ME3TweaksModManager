@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             numMigrated++;
                             MigratingModsTask.TaskText = M3L.GetString(M3L.string_interp_migratingModsXoFY, numMigrated, numToMigrate);
                             //Migrate this folder
-                            var targetDir = Path.Combine(modsDir, @"ME3", Path.GetFileName(modDirToMove));
+                            var targetDir = Path.Combine(targetModLibrary, @"ME3", Path.GetFileName(modDirToMove));
                             Log.Information($@"Migrating mod into ME3 directory: {modDirToMove} -> {targetDir}");
                             if (!Directory.Exists(targetDir))
                             {
@@ -91,10 +91,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 }
                                 else
                                 {
-                                    Log.Information(@"Copying existing mod directory");
+                                    Log.Information(@" >> Copying existing mod directory");
                                     Directory.CreateDirectory(targetDir);
                                     CopyDir.CopyAll_ProgressBar(new DirectoryInfo(modDirToMove), new DirectoryInfo(targetDir));
-                                    Log.Information(@"Deleting existing directory");
+                                    Log.Information(@" >> Deleting existing directory");
                                     Utilities.DeleteFilesAndFoldersRecursively(modDirToMove);
                                 }
 
@@ -110,7 +110,6 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                     MigratingModsTask.SetDone();
                     Log.Information(@"Step 1: Finished mod migration");
-
 
                     // 2. MIGRATE SETTINGS
                     MigratingSettings.SetInProgress();
@@ -137,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         var lzmaStoragePath = me3cmmini[@"UpdaterService"][@"lzmastoragepath"];
                         if (string.IsNullOrWhiteSpace(Settings.UpdaterServiceLZMAStoragePath) && !string.IsNullOrWhiteSpace(lzmaStoragePath))
                         {
-                            Settings.UpdaterServiceLZMAStoragePath = updaterServiceUsername;
+                            Settings.UpdaterServiceLZMAStoragePath = lzmaStoragePath;
                             Log.Information(@"Migrated Updater Service LZMA Storage Path: " + lzmaStoragePath);
                         }
 
@@ -220,8 +219,60 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                     Log.Information(@"Step 2: Finished settings migration");
                     // 3. CLEANUP
-                    Log.Information(@"Step 3: Cleaning up");
-                    CleaningUpTask.SetInProgress();
+                    bool cleanup = false;
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        cleanup = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_performMe3cmmCleanup), M3L.GetString(M3L.string_performCleanupQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
+                    });
+                    if (cleanup)
+                    {
+                        Log.Information(@"Step 3: Cleaning up");
+                        CleaningUpTask.SetInProgress();
+                        var directoriesInDataDir = Directory.GetFileSystemEntries(dataDir);
+                        foreach (var entry in directoriesInDataDir)
+                        {
+                            var name = Path.GetFileName(entry);
+                            if (Directory.Exists(entry))
+                            {
+                                switch (name.ToLower())
+                                {
+                                    case @"deployed mods":
+                                    case @"override":
+                                    case @"patch_001_extracted":
+                                        continue;
+                                    default:
+                                        try
+                                        {
+                                            Log.Information(@"Deleting directory: " + entry);
+                                            Utilities.DeleteFilesAndFoldersRecursively(entry, true);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Error($@"Unable to delete item in data directory: {entry}, reason: {e.Message}");
+                                        }
+
+                                        break;
+                                }
+                            }
+                            else if (File.Exists(entry))
+                            {
+                                try
+                                {
+                                    Log.Information(@"Cleanup: Deleting file " + entry);
+                                    File.Delete(entry);
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.Error($@"Unable to delete {entry}: {e.Message}");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Log.Information(@"Skipping step 3: cleanup due to user request.");
+                    }
+
                     CleaningUpTask.SetDone();
                     Log.Information(@"Step 3: Cleaned up");
                     Thread.Sleep(3000);
@@ -236,6 +287,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 Log.Information(@"Migration has completed.");
+                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));
                 Close();
             };
             nbw.RunWorkerAsync();
