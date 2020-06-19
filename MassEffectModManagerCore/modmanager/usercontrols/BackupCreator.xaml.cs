@@ -183,7 +183,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ProgressVisible = true;
                     ProgressIndeterminate = true;
                     BackupStatus = M3L.GetString(M3L.string_validatingBackupSource);
-                    VanillaDatabaseService.LoadDatabaseFor(Game, targetToBackup.IsPolishME1);
                     bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(targetToBackup, nonVanillaFileFoundCallback);
                     bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(targetToBackup, inconsistentDLCCallback: inconsistentDLCFoundCallback);
                     List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(targetToBackup).Select(x =>
