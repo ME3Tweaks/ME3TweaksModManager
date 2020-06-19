@@ -78,8 +78,10 @@
     <system:String x:Key="string_Texturebrowserandinstaller">Przeglądarka i instalator tekstur</system:String>
     <system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
     <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Randomizer do pierwszej gry Mass Effect</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip">Zestaw narzędzi do opracowywania modów trylogii Mass Effect</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork (wersja stabilna)</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (wersja nightly)</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip" xml:space="preserve">Zestaw narzędzi do opracowywania modów trylogii Mass Effect</system:String>
+    <system:String x:Key="string_ME3ExplorerME3TweaksForkBetaTooltip" xml:space="preserve">Zestaw narzędzi do tworzenia modów do trylogii Mass Effect.&#10;Jest to wersja nightly, co oznacza, że jest budowana za każdym razem, gry twórcy dokonają zmian w kodzie.&#10;Ta wersja jest mniej stabilna i może zawierać błędy krytyczne.&#10;Do korzystania z tej wersji zachęcamy aktywnych developerów oraz zapraszam do dołączenia do ME3Tweaks na Discord.</system:String>
     <system:String x:Key="string_BackupRestore">Kopia zapasowa i Przywracanie</system:String>
     <system:String x:Key="string_Backup">Utwórz kopię zapasową</system:String>
     <system:String x:Key="string_Createentiregamebackups">Twórz kopię zapasową całej gry</system:String>
@@ -304,7 +306,10 @@
     <system:String x:Key="string_checkModsForUpdates">Sprawdź mody pod kątem aktualizacji</system:String>
     <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Sprawdza aktualizacje modów, które obsługują sprawdzanie aktualizacji</system:String>
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
-    <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+	  <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+
+	  <!-- Global Styles -->
+    <system:String x:Key="string_thisTargetHasBeenTextureModded">Ścieżka ma zmodyfikowane tekstury</system:String>
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Przygotowanie do instalacji</system:String>
@@ -359,6 +364,13 @@
     <system:String x:Key="string_interp_errorWhileExtractingArchiveInstall" xml:space="preserve">Wystąpił błąd przy wypakowywaniu archiwum dla instalacji:\n\n{0}\n\nMod może być zainstalowany częściowo.</system:String>
     <!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingMod">Błąd przy wypakowywaniu moda</system:String>
+    <system:String x:Key="string_interp_dialog_errorOccuredDuringInstallation" xml:space="preserve">Wystąpił błąd podczas instalacji moda:\n{0}\n\nMod może nie być zainstalowany prawidłowo. Jeżeli potrzebujesz pomocy odwiedź ME3Tweaks na Discord.</system:String>
+	<!-- 0=full error stacktrace -->
+    <system:String x:Key="string_dialog_appAboutToCrashYouFoundBug">Wywołałeś błąd w instalatorze modów Mod Managera, nad którym obecnie pracujemy i potrzebujemy więcej informacji! Jeżeli to możliwe, dołącz do ME3Tweaks na Discord i zgłoś na kanale #enduser_support, że widziałeś ten komunikat. Pomożesz nam szybciej rozwiązać problem (aplikacja zostanie zaraz zamknięta).</system:String>
+    <system:String x:Key="string_appCrash">Nieoczekiwane zamknięcie aplikacji</system:String>
+    <system:String x:Key="string_interp_dialog_errorCopyingFilesToTarget" xml:space="preserve">Wystąpił błąd podczas kopiowania plików moda do ścieżki:\n\n{0}\n\nMod może być zainstalowany tylko częściowo.</system:String>
+	<!-- 0=error message -->
+    <system:String x:Key="string_errorInstallingMod">Błąd podczas instalacji moda</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Witaj w ME3Tweaks Mod Manager</system:String>
@@ -453,6 +465,14 @@
     <system:String x:Key="string_languageCheckDetectedIssues">Sprawdzanie języka wykryło problemy</system:String>
     <system:String x:Key="string_mod">Mod</system:String>
     <system:String x:Key="string_checkingModBeforeDeployment">Sprawdzanie moda przed wdrożeniem...</system:String>
+    <system:String x:Key="string_miscellaneousChecks">[EN] Miscellaneous checks</system:String>
+    <system:String x:Key="string_atLeastOneMiscellaneousCheckFailed">[EN] At least one miscellaneous check failed</system:String>
+    <system:String x:Key="string_detectedMiscellaneousIssues">[EN] Detected miscellaneous issues</system:String>
+    <system:String x:Key="string_checkingForMiscellaneousIssues">[EN] Checking for miscellaneous issues</system:String>
+    <system:String x:Key="string_interp_modReferencesMetaCmm">[EN] Mod references a file named _metacmm.txt. This file is generated by Mod Manager on mod installation and cannot be included in mods. Delete this file before deployment: {0}</system:String>
+	  <!-- 0=filepath -->
+    <system:String x:Key="string_noMiscellaneousIssuesDetected">[EN] No miscellaneous issues detected</system:String>
+    <system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">[EN] Deployment checks found some miscellaneous issues that should be fixed before deployment</system:String>
 
     <!-- Backup Creator -->
     <system:String x:Key="string_backupsAreShared">Kopie zapasowe są dzielone przez różne narzędzia, takie jak Mass Effect Randomizer czy ALOT Installer.</system:String>
@@ -487,7 +507,16 @@
     <system:String x:Key="string_cannotCreateBackup">Nie można stworzyć kopii zapasowej</system:String>
     <system:String x:Key="string_someDlcNotInstalled">Niektóre DLC niezainstalowane</system:String>
     <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">Ta ścieżka nie ma zainstalowanych wszystkich oficjalnych DLC. Upewnij się, że zainstalowałeś wszystkie oficjalne DLC, które chcesz uwzględnić w swojej kopii zapasowej, w przeciwnym wypadku kopia nie będzie ich zawierać.\n\nNastępujące DLC nie są zainstalowane:\n{0}\n\nNie musisz mieć wszystkich DLC do stworzenia kopii zapasowej (np. takich, których nie kupiłeś), ale niektóre funkcje Mod Managera opierają się na konkretnych DLC, np. ME3Tweaks ModMaker.\n\nStworzyć kopię zapasową z tej ścieżki?</system:String>
-    <!-- 0 = bulleted list of DLC -->
+	  <!-- 0 = bulleted list of DLC -->
+    <system:String x:Key="string_linkBackupToAnExistingGameCopy">Przyłącz kopię zapasową do istniejącej kopii gry</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">Wskazana instalacja nie może zostać połączona jako kopia zapasowa, ponieważ jest już wskazana jako ścieżka do modowania. Aby wykorzystać tę instalację jako kopię zapasową, najpierw usuń ją z listy ścieżek w Panelu Informacyjnym, za pomocą opcji 'Zarządzanie ścieżką'.</system:String>
+    <system:String x:Key="string_cannotLinkGameCopy">Nie można połączyć kopii gry</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">Wskazana instalacja nie może zostać połączona jako kopia zapasowa z powodu błędu walidacyjnego: {0}</system:String>
+	  <!-- 0=Validation failure reason -->
+    <system:String x:Key="string_invalidGameCopy">Nieprawidłowa kopia gry</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Ścieżka Dokumenty/Bioware/{0} (i jej zagłębienia) nie może być użyta jako lokalizacja kopii zapasowych, ponieważ ładowane są z niej pliki gry. Prosimy o wybranie innej lokalizacji.</system:String>
+	  <!-- 0=Game name (Mass Effect, Mass Effect 3, etc) -->
+    <system:String x:Key="string_locationNotAllowedForBackup">Lokalizacja niedozwolona dla kopii zapasowych</system:String>
 
     <!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Pobieranie {0}</system:String>
@@ -499,7 +528,9 @@
     <!-- 0 = error message -->
     <system:String x:Key="string_errorLaunchingTool">Błąd przy uruchamianiu narzędzia</system:String>
     <system:String x:Key="string_interp_errorLaunchingToolX" xml:space="preserve">Błąd przy uruchamianiu narzędzia:\n{0}</system:String>
-    <!-- 0=exception message -->
+	  <!-- 0=exception message -->
+    <system:String x:Key="string_interp_unsupportedExtensionX">Niewspierane rozszerzenie: {0}</system:String>
+	  <!-- 0={extension} -->
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Przywróć z ME3Tweaks</system:String>
@@ -584,7 +615,11 @@
     <system:String x:Key="string_restoreallmodifiedbasegamefiles">Przywróć wszystkie zmodyfikowane pliki bazowej wersji gry</system:String>
     <system:String x:Key="string_modifiedDLCarchivesSFAR">Zmodyfikowane archiwa DLC (SFAR)</system:String>
     <system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Spróbuje przywrócić wszystkie zmodyfikowane pliki SFAR. Usunie również wypakowane pliki.</system:String>
+    <system:String x:Key="string_willAttemptToRestoreSPModifiedSFARs">Dokona próby przywrócenia wszystkich zmodyfikowanych SFARs trybu singeplayer. Usunie również nierozpakowane pliki</system:String>
+    <system:String x:Key="string_willAttemptToRestoreMPModifiedSFARs">Dokona próby przywrócenia wszystkich zmodyfikowanych SFARs trybu multiplayer. Usunie również nierozpakowane pliki</system:String>
     <system:String x:Key="string_restoreAllModifiedSFARs">Przywróć wszystkie zmodyfikowane pliki SFAR</system:String>
+    <system:String x:Key="string_restoreMPModifiedSFARs">Przywróć zmodyfikowane SFARs (multiplayer)</system:String>
+    <system:String x:Key="string_restoreSPModifiedSFARs">Przywróć zmodyfikowane SFARs (singleplayer)</system:String>
     <system:String x:Key="string_inconsistencyDetected">Wykryto niespójność</system:String>
     <system:String x:Key="string_removeTargetFromM3">Usuń ścieżkę</system:String>
     <system:String x:Key="string_openInExplorer">Otwórz w Eksploratorze plików</system:String>
@@ -593,6 +628,10 @@
     <system:String x:Key="string_enable">Włącz</system:String>
     <system:String x:Key="string_disable">Wyłącz</system:String>
     <system:String x:Key="string_disabled">Wyłączone</system:String>
+    <system:String x:Key="string_tooltip_disableDLC" xml:space="preserve">Wyłącza wybrany DLC mod z ładowania.&#10;Nie modyfikuje plików - można z tej opcji bezpiecznie skorzystać po zainstalowaniu modów tekstur</system:String>
+    <system:String x:Key="string_tooltip_enableDLC" xml:space="preserve">Włącza wybrany DLC mod do ładowania w grze</system:String>
+    <system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">Usuwa wybrany DLC mod z gry.&#10;Przytrzymaj SHIFT aby pominąć okno z potwierdzeniem (jeżeli nie ma ostrzeżeń)</system:String>
+    <system:String x:Key="string_tooltip_openTargetInExplorer">Otwiera wskazaną ścieżkę w Eksploratorze Plików</system:String>
 
     <!-- Log uploader -->
     <system:String x:Key="string_selectALogToView">Wybierz log aby wyświetlić go w log viewer</system:String>
@@ -671,7 +710,10 @@
     <!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingArchive">Błąd przy wypakowywaniu archiwum</system:String>
     <system:String x:Key="string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason">Nie udało się pobrać moddesc.ini z serwera: {0}</system:String>
-    <!-- 0= loadFailedReason -->
+	  <!-- 0= loadFailedReason -->
+    <system:String x:Key="string_tooltip_importMods" xml:space="preserve">Importuje wybrane mody do Twojej biblioteki modów.&#10;Importowanie zapewnia dodatkowe funkcje Mod Managera.:&#10; - Sprawdzanie aktualizacji dla modów (jeżeli wspierane)&#10; - Kompresja podczas importu (jeżeli wspierana)&#10; - Przywracanie modów z ME3Tweaks (jeżeli wspierane)</system:String>
+    <system:String x:Key="string_tooltip_launchesALOTInstaller">Włącza ALOT Installer</system:String>
+    <system:String x:Key="string_tooltip_compressPackages" xml:space="preserve">Kompresuje paczki plików podczas importu, zmniejszając ich rozmiar. Jest to funkcja eksperymentalna - jeżeli wystąpią problemy z modami, nie używaj tej funkcji.&#10;Ta opcja nie jest dostępna dla następujących scenariuszy ze względu na skomplikowanie:&#10; - Bezpośrednia instalacja z archiwum&#10; - Pliki Mass Effect 1&#10;&#10;Ta funkcja ME3Tweaks może zostać wyłączona kiedy Mod Manager połaczy się z serwerem</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Dostępne są aktualizacje modów</system:String>
@@ -692,6 +734,9 @@
     <system:String x:Key="string_interp_modMakerCodeX">Kod ModMaker</system:String>
     <!-- 0= modmaker code # -->
     <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager wykrył aktualizacje dla następujących modów w Twojej bibliotece.</system:String>
+    <system:String x:Key="string_tooltip_poweredByME3TweaksUpdaterService">Mody hostowane w ME3Tweaks Updater Service mogą być bezpośrednio aktualizowane w Mod Managerze</system:String>
+    <system:String x:Key="string_poweredByME3TweaksUpdaterService">Wspierane przez ME3Tweaks Updater Service</system:String>
+    <system:String x:Key="string_requiresBackup">Wymaga kopii zapasowej</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Aktualizacja do ME3Tweaks Mod Manager jest dostępna.</system:String>
@@ -1016,7 +1061,8 @@
     <!-- 0 = error message -->
     <system:String x:Key="string_loadFailed">Ładowanie nieudane</system:String>
     <system:String x:Key="string_interp_errorReadingArchiveModdesc">Wystąpił błąd przy odczytywaniu moddesc.ini z tego archiwum: {0}</system:String>
-    <!-- 0=e.Message -->
+	  <!-- 0=Error message -->
+
     <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">Ten mod wskazuje, że może być załadowany tylko z buildem {0} Mod Managera lub wyższym. Obecna wersja to {1}.</system:String>
     <!-- 0=minBuild 1=App.BuildNumber -->
     <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">{0} nie ustawia deskryptora 'game' w ModInfo, które jest wymagane przez wszystkie mody wskazujące ModDesc 6 lub wyższy.</system:String>
@@ -1033,7 +1079,7 @@
     <system:String x:Key="string_translators">Tłumacze</system:String>
     <system:String x:Key="string_NA">Nie dotyczy</system:String>
     <system:String x:Key="string_specialThanks">Specjalne podziękowania</system:String>
-    <system:String x:Key="string_youTheEndUser">Tobie, użytkownikowi, za uczynienie tego oprogramowania wartym opracowania</system:String>
+    <system:String x:Key="string_youTheEndUser">Dla Ciebie, użytkownika, za uczynienie tego oprogramowania wartym opracowania.</system:String>
     <system:String x:Key="string_license">Licencja</system:String>
 
     <!-- ASI Manager Panel -->
@@ -1437,7 +1483,10 @@
     <system:String x:Key="string_migratingMods">Migrowanie modów</system:String>
     <system:String x:Key="string_migratingSettings">Migrowanie ustawień</system:String>
     <system:String x:Key="string_interp_migratingModsXoFY">Migrowanie modów [{0}/{1}]</system:String>
-    <!-- 0=numMigrated 1=numToMigrate -->
+	  <!-- 0=numMigrated 1=numToMigrate -->
+    <system:String x:Key="string_dialog_me3cmmMigrationCompleted" xml:space="preserve">Migracja modów z Mass Effect 3 Mod Manager do ME3Tweaks Mod Manager zakończona pomyślnie.\n\nMożesz teraz korzystać z ME3TweaksModManager.exe zamiast ME3CMM.exe</system:String>
+    <system:String x:Key="string_dialog_performMe3cmmCleanup">Oczyścić pliki ME3CMM? Ten proces usunie wszystkie pozostałości z folderów powiązanych z ME3CMM oraz  plik ME3CMM.exe</system:String>
+    <system:String x:Key="string_performCleanupQuestion">Oczyścić pliki?</system:String>
 
     <!-- Official DLC Toggler -->
     <system:String x:Key="string_officialDLCToggler">Przełącznik Oficjalnych DLC</system:String>
@@ -1455,4 +1504,10 @@
     <system:String x:Key="string_next">Następny</system:String>
     <system:String x:Key="string_previous">Poprzedni</system:String>
     <system:String x:Key="string_skipTutorial">Pomiń samouczek</system:String>
+
+	<!-- TLK Transpiler -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Wystąpił błąd podczas kompilowania plików TLK {0}: {1}</system:String>
+	<!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Wystąpił błąd podczas kompilowania pliku TLK {0}</system:String>
+	<!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
 </ResourceDictionary>
