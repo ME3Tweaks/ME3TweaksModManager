@@ -368,6 +368,9 @@
 	<!-- 0=full error stacktrace -->
     <system:String x:Key="string_dialog_appAboutToCrashYouFoundBug">Du hast einen Fehler im Installationsprozess von Mod Manager gefunden, der aktuell untersucht wird und über den mehr Informationen benötigt werden! Bitte tritt dem ME3Tweaks Discord (Englisch) bei und benachrichtige #enduser_support, dass du diese Nachricht gesehen hast, damit das Problem behandelt werden kann. (Die Anwendung wird nun abstürzen)</system:String>
     <system:String x:Key="string_appCrash">Anwendungsabsturz</system:String>
+    <system:String x:Key="string_interp_dialog_errorCopyingFilesToTarget" xml:space="preserve">Beim Kopieren der Mod-Dateien zum Ziel ist ein Fehler aufgetreten:\n\n{0}\n\nDer Mod ist möglicherweise unvollständig installiert.</system:String>
+	<!-- 0=error message -->
+    <system:String x:Key="string_errorInstallingMod">Fehler bei der Modinstallation</system:String>
 
 	<!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Willkommen beim ME3Tweaks Mod Manager</system:String>
@@ -526,6 +529,8 @@
     <system:String x:Key="string_errorLaunchingTool">Fehler beim Starten eines Werkzeugs</system:String>
     <system:String x:Key="string_interp_errorLaunchingToolX" xml:space="preserve">Fehler beim Starten eines Werkzeugs:\n{0}</system:String>
 	<!-- 0=exception message -->
+    <system:String x:Key="string_interp_unsupportedExtensionX">Nicht unterstützte Dateiendung: {0}</system:String>
+	<!-- 0={extension} -->
 
 	<!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Von ME3Tweaks wiederherstellen</system:String>
@@ -1495,4 +1500,10 @@
     <system:String x:Key="string_next">Weiter</system:String>
     <system:String x:Key="string_previous">Zurück</system:String>
     <system:String x:Key="string_skipTutorial">Tutorial überspringen</system:String>
+
+	<!-- TLK Transpiler -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Beim Kompilieren der TLK subfile {0} ist ein Fehler aufgetreten: {1}</system:String>
+	<!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
+    <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Beim Kompilieren der TLK-Datei ist ein Fehler aufgetreten: {0}</system:String>
+	<!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
 </ResourceDictionary>
