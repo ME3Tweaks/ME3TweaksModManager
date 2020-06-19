@@ -20,6 +20,7 @@ using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
+using System.Management;
 using System.Windows.Documents;
 using System.Xml.Linq;
 using ME3Explorer.Packages;
@@ -393,6 +394,7 @@ namespace MassEffectModManagerCore
                     if (currentCultureLang.StartsWith("de")) InitialLanguage = Settings.Language = "deu";
                     if (currentCultureLang.StartsWith("ru")) InitialLanguage = Settings.Language = "rus";
                     if (currentCultureLang.StartsWith("pl")) InitialLanguage = Settings.Language = "pol";
+                    Analytics.TrackEvent("Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
                     Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
@@ -407,6 +409,9 @@ namespace MassEffectModManagerCore
                 ASIManagerPanel.ExtractDefaultASIResources();
 
 
+                collectHardwareInfo();
+
+
 
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
                 Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
@@ -418,6 +423,41 @@ namespace MassEffectModManagerCore
                 throw;
             }
         }
+
+        private void collectHardwareInfo()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker("HardwareInventory");
+            nbw.DoWork += (a, b) =>
+            {
+                var data = new Dictionary<string, string>();
+                try
+                {
+                    ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+
+                    foreach (ManagementObject moProcessor in mosProcessor.Get())
+                    {
+                        // For seeing AMD vs Intel (for ME1 lighting)
+                        if (moProcessor["name"] != null)
+                        {
+                            data[@"Processor"] = moProcessor["name"].ToString();
+                            IsRunningOnAMD = data[@"Processor"].Contains("AMD");
+                        }
+                    }
+
+                    if (Settings.EnableTelemetry)
+                    {
+                        Analytics.TrackEvent(@"Hardware Info", data);
+                    }
+                }
+                catch //(Exception e)
+                {
+
+                }
+            };
+            nbw.RunWorkerAsync();
+        }
+
+        public static bool IsRunningOnAMD;
 
         public static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra" };
         public static Dictionary<string, string> ServerManifest { get; set; }
