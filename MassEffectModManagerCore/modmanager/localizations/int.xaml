@@ -517,6 +517,7 @@
     <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">The Documents/BioWare/{0} directory (and its descendants) cannot be used as a backup location, as the game can load files from it. Please choose another directory.</system:String>
     <!-- 0=Game name (Mass Effect, Mass Effect 3, etc)-->
     <system:String x:Key="string_locationNotAllowedForBackup">Location not allowed for backup</system:String>
+    <system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Your user account doesn't have write permissions to the selected destination directory. Choose a different directory.</system:String>
 
     <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Downloading {0}</system:String>

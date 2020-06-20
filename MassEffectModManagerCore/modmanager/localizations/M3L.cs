@@ -535,6 +535,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_invalidGameCopy = "string_invalidGameCopy";
 		public static readonly string string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder = "string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder";
 		public static readonly string string_locationNotAllowedForBackup = "string_locationNotAllowedForBackup";
+		public static readonly string string_dialog_userAccountDoesntHaveWritePermissionsBackup = "string_dialog_userAccountDoesntHaveWritePermissionsBackup";
 		public static readonly string string_interp_downloadingX = "string_interp_downloadingX";
 		public static readonly string string_interp_extractingX = "string_interp_extractingX";
 		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";

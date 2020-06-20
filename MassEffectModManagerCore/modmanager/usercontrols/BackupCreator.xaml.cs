@@ -541,6 +541,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return false;
                     }
                 }
+
+                //Check writable
+                var writable = Utilities.IsDirectoryWritable(backupPath);
+                if (!writable)
+                {
+                    //Not enough space.
+                    Log.Error(
+                        $@"Backup destination selected is not writable.");
+                    M3L.ShowDialog(window,
+                        M3L.GetString(M3L.string_dialog_userAccountDoesntHaveWritePermissionsBackup),
+                        M3L.GetString(M3L.string_cannotCreateBackup), MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return false;
+                }
                 return true;
             }
 
