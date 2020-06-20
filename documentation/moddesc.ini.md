@@ -13,8 +13,6 @@ M3 is backwards compatible with Mass Effect 3 Mod Manager mods and it's older ve
 #### What target do I choose?
 Targetting different versions indicates which versions of M3 or Mass Effect 3 Mod Manager can use your mod and what features/mod operations you can describe in your moddesc file. For the most part it is best to use the latest version, as the automatic updater in M3 and Mass Effect 3 Manager brings most users to the latest version. If you are making simple mods, sometimes using an older moddesc format is easier. I describe the features of each version of moddesc.ini below.
 
-As of November 10 2019, if you are making ME3 mods, I suggest not targeting higher than 5.1 as ME3Tweaks Mod Manager is still a work in progress. Once it reaches a stable build I will begin upgrading users to M3, after which you can start using M3 features in Moddesc 6.
-
 #### Mod restrictions
 M3 mods cannot include .exe, .dll, or .asi files. Mods will always fail validation if these files are found. Do not include them in your mod.
 
