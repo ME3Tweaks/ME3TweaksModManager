@@ -84,8 +84,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             UploadingLog = true;
             //TopText = M3L.GetString(M3L.string_collectingLogInformation);
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"LogUpload");
-            bw.DoWork += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"LogUpload");
+            nbw.DoWork += (a, b) =>
             {
                 void updateStatusCallback(string status)
                 {
@@ -176,8 +176,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Log pull failed
                 }
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 if (b.Result is string response)
                 {
                     if (response.StartsWith(@"http"))
@@ -193,7 +197,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 OnClosing(DataEventArgs.Empty);
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         public bool TextureCheck { get; set; } = true;

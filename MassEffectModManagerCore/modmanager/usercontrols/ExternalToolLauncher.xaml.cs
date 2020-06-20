@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             WebClient downloadClient = new WebClient();
 
             downloadClient.Headers[@"user-agent"] = @"ME3TweaksModManager";
-            string temppath = Path.GetTempPath();
+            string temppath = Utilities.GetTempPath();
             downloadClient.DownloadProgressChanged += (s, e) =>
             {
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);
@@ -157,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             downloadClient.Headers[@"Accept"] = @"application/vnd.github.v3+json";
             downloadClient.Headers[@"user-agent"] = @"ME3TweaksModManager";
-            string temppath = Path.GetTempPath();
+            string temppath = Utilities.GetTempPath();
             downloadClient.DownloadProgressChanged += (s, e) =>
             {
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);
@@ -489,7 +489,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        DownloadToolME3Tweaks(localToolFolderName, downloadLink, downloadVersion, localExecutable,
+                        DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
                             s => currentTaskUpdateCallback?.Invoke(s),
                             vis => setPercentVisibilityCallback?.Invoke(vis),
                             percent => setPercentTaskDone?.Invoke(percent),

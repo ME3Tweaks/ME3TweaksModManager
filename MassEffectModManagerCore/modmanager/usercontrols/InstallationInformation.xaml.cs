@@ -144,8 +144,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             if (restore)
             {
-                NamedBackgroundWorker bw = new NamedBackgroundWorker(@"RestoreAllBasegameFilesThread");
-                bw.DoWork += (a, b) =>
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"RestoreAllBasegameFilesThread");
+                nbw.DoWork += (a, b) =>
                 {
                     RestoreAllBasegameInProgress = true;
                     var restorableFiles = SelectedTarget.ModifiedBasegameFiles.Where(x => x.CanRestoreFile()).ToList();
@@ -160,8 +160,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         v.RestoreFile(true);
                     }
                 };
-                bw.RunWorkerCompleted += (a, b) =>
+                nbw.RunWorkerCompleted += (a, b) =>
                 {
+                    if (b.Error != null)
+                    {
+                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    }
                     RestoreAllBasegameInProgress = false;
                     if (SelectedTarget.Game == Mod.MEGame.ME3)
                     {
@@ -169,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     CommandManager.InvalidateRequerySuggested();
                 };
-                bw.RunWorkerAsync();
+                nbw.RunWorkerAsync();
             }
         }
 

@@ -650,14 +650,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var result = d.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModDeploymentThread");
-                bw.DoWork += Deployment_BackgroundThread;
-                bw.RunWorkerCompleted += (a, b) =>
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModDeploymentThread");
+                nbw.DoWork += Deployment_BackgroundThread;
+                nbw.RunWorkerCompleted += (a, b) =>
                 {
+                    if (b.Error != null)
+                    {
+                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    }
                     DeploymentInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
                 };
-                bw.RunWorkerAsync(d.FileName);
+                nbw.RunWorkerAsync(d.FileName);
                 DeploymentInProgress = true;
             }
         }
@@ -832,8 +836,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             lastPercentUpdateTime = DateTime.Now;
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"DeploymentValidation");
-            bw.DoWork += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"DeploymentValidation");
+            nbw.DoWork += (a, b) =>
             {
                 ProgressIndeterminate = true;
                 foreach (var checkItem in DeploymentChecklistItems)
@@ -841,14 +845,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     checkItem.ExecuteValidationFunction();
                 }
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 PrecheckCompleted = true;
                 ProgressIndeterminate = false;
                 OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
                 CommandManager.InvalidateRequerySuggested();
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         public bool ProgressIndeterminate { get; set; }

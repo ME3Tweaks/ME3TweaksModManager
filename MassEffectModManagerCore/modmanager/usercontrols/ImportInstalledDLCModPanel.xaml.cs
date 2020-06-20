@@ -106,10 +106,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"GameDLCModImporter");
-            bw.DoWork += ImportDLCFolder_BackgroundThread;
-            bw.RunWorkerCompleted += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"GameDLCModImporter");
+            nbw.DoWork += ImportDLCFolder_BackgroundThread;
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 Analytics.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
                 {
                     {@"Game", SelectedTarget.Game.ToString()},
@@ -118,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 OperationInProgress = false;
                 OnClosing(new DataEventArgs(b.Result));
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         private async void ImportDLCFolder_BackgroundThread(object sender, DoWorkEventArgs e)

@@ -88,16 +88,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void UpdateModMakerMod(OnlineContent.ModMakerModUpdateInfo mui)
         {
             //throw new NotImplementedException();
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModmakerModUpdaterThread-" + mui.mod.ModName);
-            bw.WorkerReportsProgress = true;
-            bw.ProgressChanged += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModmakerModUpdaterThread-" + mui.mod.ModName);
+            nbw.WorkerReportsProgress = true;
+            nbw.ProgressChanged += (a, b) =>
             {
                 if (b.UserState is double d)
                 {
                     mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
                 }
             };
-            bw.DoWork += (a, b) =>
+            nbw.DoWork += (a, b) =>
             {
                 mui.DownloadButtonText = M3L.GetString(M3L.string_compiling);
 
@@ -154,7 +154,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 void setOverallValue(int current)
                 {
                     mui.OverallProgressValue = current;
-                    bw.ReportProgress(0, current * 1.0 / mui.OverallProgressMax);
+                    nbw.ReportProgress(0, current * 1.0 / mui.OverallProgressMax);
                     if (current > mui.OverallProgressMax)
                     {
                         Debugger.Break();
@@ -204,8 +204,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"ModMaker"},
@@ -219,21 +223,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
             mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         private void UpdateClassicMod(OnlineContent.ModUpdateInfo ui)
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModUpdaterThread-" + ui.mod.ModName);
-            bw.WorkerReportsProgress = true;
-            bw.ProgressChanged += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModUpdaterThread-" + ui.mod.ModName);
+            nbw.WorkerReportsProgress = true;
+            nbw.ProgressChanged += (a, b) =>
             {
                 if (b.UserState is double d)
                 {
                     mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
                 }
             };
-            bw.DoWork += (a, b) =>
+            nbw.DoWork += (a, b) =>
             {
                 OperationInProgress = true;
                 ui.UpdateInProgress = true;
@@ -243,7 +247,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.totalToDl != 0)
                     {
-                        bw.ReportProgress(0, b.currentDl * 1.0 / b.totalToDl);
+                        nbw.ReportProgress(0, b.currentDl * 1.0 / b.totalToDl);
                     }
                 };
                 bool errorShown = false;
@@ -264,8 +268,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ui.DownloadButtonText = ui.CanUpdate ? M3L.GetString(M3L.string_downloadUpdate) : M3L.GetString(M3L.string_updated);
                 Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"Classic"},
@@ -278,7 +286,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
             mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
 

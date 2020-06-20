@@ -222,7 +222,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     bool cleanup = false;
                     App.Current.Dispatcher.Invoke(delegate
                     {
-                        cleanup = Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_dialog_performMe3cmmCleanup), M3L.GetString(M3L.string_performCleanupQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
+                        cleanup = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_performMe3cmmCleanup), M3L.GetString(M3L.string_performCleanupQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
                     });
                     if (cleanup)
                     {
@@ -286,8 +286,12 @@ namespace MassEffectModManagerCore.modmanager.windows
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 Log.Information(@"Migration has completed.");
-                Xceed.Wpf.Toolkit.MessageBox.Show(M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));
                 Close();
             };
             nbw.RunWorkerAsync();

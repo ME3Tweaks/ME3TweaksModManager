@@ -79,6 +79,7 @@
                     Width="1*" />
             </Grid.ColumnDefinitions>
             <TextBlock
+                Foreground="Black"
                 Grid.Row="{Binding CurrentStep.RowIndex}"
                 Grid.Column="{Binding CurrentStep.ColumnIndex}"
                 Grid.RowSpan="{Binding CurrentStep.RowSpan}"

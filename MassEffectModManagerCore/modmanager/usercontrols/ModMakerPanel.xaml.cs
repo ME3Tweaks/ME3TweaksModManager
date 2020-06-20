@@ -53,6 +53,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 if (b.Error == null && b.Result is List<OnlineContent.ServerModMakerModInfo> topMods)
                 {
                     TopMods.ReplaceAll(topMods);
@@ -121,9 +125,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             CompileInProgress = true;
             Settings.Save(); //Persist controller mixin option
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModmakerCompiler");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModmakerCompiler");
 
-            bw.DoWork += (a, b) =>
+            nbw.DoWork += (a, b) =>
             {
                 string modDelta = null;
 
@@ -215,8 +219,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     b.Result = m;
                 }
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 CompileInProgress = false;
                 if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)
                 {
@@ -230,7 +238,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CommandManager.InvalidateRequerySuggested();
 
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         private bool NotifySomeDLCIsMissing(List<string> listItems)

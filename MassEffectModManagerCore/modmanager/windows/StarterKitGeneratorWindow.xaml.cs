@@ -466,8 +466,8 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         public static void CreateStarterKitMod(StarterKitOptions options, Action<string> UITextCallback, Action<Mod> finishedCallback)
         {
-            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"StarterKitThread");
-            bw.DoWork += (sender, args) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"StarterKitThread");
+            nbw.DoWork += (sender, args) =>
             {
                 var skOption = args.Argument as StarterKitOptions;
 
@@ -489,7 +489,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     //AutoLoad.ini
                     IniData autoload = new IniData();
-                    autoload[@"Packages"][@"GlobalTalkTable1"] = $@"{dlcFolderName}.GlobalTlk_tlk";
+                    autoload[@"Packages"][@"GlobalTalkTable1"] = $@"{dlcFolderName}_GlobalTlk.GlobalTlk_tlk";
 
                     autoload[@"GUI"][@"NameStrRef"] = skOption.ModInternalTLKID.ToString();
 
@@ -620,8 +620,15 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Mod m = new Mod(modDescPath, skOption.ModGame);
                 args.Result = m;
             };
-            bw.RunWorkerCompleted += (a, b) => { finishedCallback(b.Result as Mod); };
-            bw.RunWorkerAsync(options);
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
+                finishedCallback(b.Result as Mod);
+            };
+            nbw.RunWorkerAsync(options);
         }
 
         public class StarterKitOptions

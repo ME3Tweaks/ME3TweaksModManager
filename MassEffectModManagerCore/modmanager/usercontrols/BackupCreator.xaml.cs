@@ -141,9 +141,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                NamedBackgroundWorker bw = new NamedBackgroundWorker(Game + @"Backup");
-                bw.WorkerReportsProgress = true;
-                bw.ProgressChanged += (a, b) =>
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(Game + @"Backup");
+                nbw.WorkerReportsProgress = true;
+                nbw.ProgressChanged += (a, b) =>
                 {
                     if (b.UserState is double d)
                     {
@@ -154,7 +154,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         window.TaskBarItemInfoHandler.ProgressState = tbs;
                     }
                 };
-                bw.DoWork += (a, b) =>
+                nbw.DoWork += (a, b) =>
                 {
                     BackupInProgress = true;
                     List<string> nonVanillaFiles = new List<string>();
@@ -183,7 +183,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ProgressVisible = true;
                     ProgressIndeterminate = true;
                     BackupStatus = M3L.GetString(M3L.string_validatingBackupSource);
-                    VanillaDatabaseService.LoadDatabaseFor(Game, targetToBackup.IsPolishME1);
                     bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(targetToBackup, nonVanillaFileFoundCallback);
                     bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(targetToBackup, inconsistentDLCCallback: inconsistentDLCFoundCallback);
                     List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(targetToBackup).Select(x =>
@@ -222,7 +221,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (!targetToBackup.IsCustomOption)
                             {
                                 // Creating a new backup
-                                bw.ReportProgress(0, TaskDialogProgressBarState.Paused);
+                                nbw.ReportProgress(0, TaskDialogProgressBarState.Paused);
 
                                 Application.Current.Dispatcher.Invoke(delegate
                                 {
@@ -258,7 +257,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 {
                                     return;
                                 }
-                                bw.ReportProgress(0, TaskbarItemProgressState.Indeterminate);
+                                nbw.ReportProgress(0, TaskbarItemProgressState.Indeterminate);
 
                             }
                             else
@@ -289,7 +288,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     ProgressValue++;
                                     if (ProgressMax > 0)
                                     {
-                                        bw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
+                                        nbw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
                                     }
                                 }
 
@@ -366,12 +365,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     ProgressValue = 0;
                                     ProgressIndeterminate = false;
                                     ProgressMax = total;
-                                    bw.ReportProgress(0, TaskbarItemProgressState.Normal);
+                                    nbw.ReportProgress(0, TaskbarItemProgressState.Normal);
                                 }
 
                                 BackupStatus = M3L.GetString(M3L.string_creatingBackup);
                                 Log.Information($@"Backing up {targetToBackup.TargetPath} to {backupPath}");
-                                bw.ReportProgress(0, TaskbarItemProgressState.Normal);
+                                nbw.ReportProgress(0, TaskbarItemProgressState.Normal);
                                 CopyDir.CopyAll_ProgressBar(new DirectoryInfo(targetToBackup.TargetPath),
                                     new DirectoryInfo(backupPath),
                                     totalItemsToCopyCallback: totalFilesToCopyCallback,
@@ -459,8 +458,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         EndBackup();
                     }
                 };
-                bw.RunWorkerCompleted += (a, b) =>
+                nbw.RunWorkerCompleted += (a, b) =>
                 {
+                    if (b.Error != null)
+                    {
+                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    }
                     window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
                     if (b.Result is (List<string> listItems, string title, string text))
                     {
@@ -473,7 +476,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     CommandManager.InvalidateRequerySuggested();
                 };
-                bw.RunWorkerAsync();
+                nbw.RunWorkerAsync();
             }
 
             private bool validateBackupPath(string backupPath, GameTarget targetToBackup)

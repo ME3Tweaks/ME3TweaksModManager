@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using MassEffectModManagerCore.modmanager.helpers;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;
@@ -164,8 +165,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         public static void EndorseFile(string gamedomain, bool endorse, int fileid, int currentuserid, Action<bool> newEndorsementStatusCallback = null)
         {
             if (!NexusModsUtilities.HasAPIKey) return;
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += (a, b) =>
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"EndorseMod");
+            nbw.DoWork += (a, b) =>
             {
                 var client = NexusModsUtilities.GetClient();
                 string telemetryOverride = null;
@@ -196,14 +197,18 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 });
                 b.Result = newStatus;
             };
-            bw.RunWorkerCompleted += (a, b) =>
+            nbw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                }
                 if (b.Result is bool val)
                 {
                     newEndorsementStatusCallback?.Invoke(val);
                 }
             };
-            bw.RunWorkerAsync();
+            nbw.RunWorkerAsync();
         }
 
         public static int EncryptDataToStream(byte[] Buffer, byte[] Entropy, DataProtectionScope Scope, Stream S)

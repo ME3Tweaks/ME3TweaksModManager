@@ -214,7 +214,7 @@ namespace MassEffectModManagerCore
             if (settingsResult == Settings.SettingsSaveResult.FAILED_UNAUTHORIZED)
             {
                 Log.Error(@"No permissions to appdata! Prompting for user to grant consent");
-                var result = Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_multiUserProgramDataWindowsRestrictions), M3L.GetString(M3L.string_grantingWritePermissions), MessageBoxButton.OKCancel, MessageBoxImage.Error);
+                var result = M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_multiUserProgramDataWindowsRestrictions), M3L.GetString(M3L.string_grantingWritePermissions), MessageBoxButton.OKCancel, MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
                     bool done = Utilities.CreateDirectoryWithWritePermission(Utilities.GetAppDataFolder(), true);
@@ -225,14 +225,14 @@ namespace MassEffectModManagerCore
                     else
                     {
                         Log.Error(@"User declined consenting permissions to ProgramData!");
-                        Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
 
                     }
                 }
                 else
                 {
                     Log.Error(@"User denied granting permissions!");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -255,7 +255,7 @@ namespace MassEffectModManagerCore
                         SetNexusNotAuthorizedUI();
                     }
                 }
-             
+
                 //prevent reseting ui to not authorized
                 return;
             }
@@ -1695,6 +1695,10 @@ namespace MassEffectModManagerCore
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error(@"Exception occured in ModLoader thread: " + b.Error.Message);
+                }
                 IsLoadingMods = false;
                 if (b.Result is Mod m)
                 {
@@ -2293,6 +2297,10 @@ namespace MassEffectModManagerCore
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                if (b.Error != null)
+                {
+                    Log.Error(@"Exception occured in NetworkFetch thread: " + b.Error.Message);
+                }
                 if (b.Result is int i)
                 {
                     if (i != 0)
@@ -2598,6 +2606,10 @@ namespace MassEffectModManagerCore
                                 };
                                 nbw.RunWorkerCompleted += (a, b) =>
                                 {
+                                    if (b.Error != null)
+                                    {
+                                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                    }
                                     backgroundTaskEngine.SubmitJobCompletion(task);
                                 };
                                 nbw.RunWorkerAsync();
@@ -2668,6 +2680,11 @@ namespace MassEffectModManagerCore
                                     };
                                     nbw.RunWorkerCompleted += (a, b) =>
                                     {
+                                        if (b.Error != null)
+                                        {
+                                            Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                        }
+
                                         if (failedToCompileCoalesced) task.finishedUiText = M3L.GetString(M3L.string_errorCompilingCoalesced);
                                         backgroundTaskEngine.SubmitJobCompletion(task);
                                     };
@@ -2681,7 +2698,7 @@ namespace MassEffectModManagerCore
                                     Application.Current.Dispatcher.Invoke(delegate
                                     {
                                         failedToCompileTLK = true;
-                                        Xceed.Wpf.Toolkit.MessageBox.Show(this, message, M3L.GetString(M3L.string_errorCompilingTLK), MessageBoxButton.OK, MessageBoxImage.Error);
+                                        M3L.ShowDialog(this, message, M3L.GetString(M3L.string_errorCompilingTLK), MessageBoxButton.OK, MessageBoxImage.Error);
                                     });
                                 }
 
@@ -2703,6 +2720,10 @@ namespace MassEffectModManagerCore
                                         nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(files[0], rootElement, errorCompilingTLK); };
                                         nbw.RunWorkerCompleted += (a, b) =>
                                         {
+                                            if (b.Error != null)
+                                            {
+                                                Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                            }
                                             if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
                                         };
@@ -2716,6 +2737,10 @@ namespace MassEffectModManagerCore
                                         nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(files[0], rootElement, errorCompilingTLK); };
                                         nbw.RunWorkerCompleted += (a, b) =>
                                         {
+                                            if (b.Error != null)
+                                            {
+                                                Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                            }
                                             if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
                                         };
@@ -2729,6 +2754,10 @@ namespace MassEffectModManagerCore
                                     nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(files[0], rootElement, errorCompilingTLK); };
                                     nbw.RunWorkerCompleted += (a, b) =>
                                     {
+                                        if (b.Error != null)
+                                        {
+                                            Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                        }
                                         if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                         backgroundTaskEngine.SubmitJobCompletion(task);
                                     };
@@ -2738,7 +2767,7 @@ namespace MassEffectModManagerCore
                             catch (Exception ex)
                             {
                                 Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
-                                Xceed.Wpf.Toolkit.MessageBox.Show(this, M3L.GetString(M3L.string_interp_errorReadingXmlFileX, ex.Message), M3L.GetString(M3L.string_errorReadingXmlFile), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorReadingXmlFileX, ex.Message), M3L.GetString(M3L.string_errorReadingXmlFile), MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                         break;
@@ -2756,7 +2785,14 @@ namespace MassEffectModManagerCore
                                 tf.DumpToFile(dest);
                                 Log.Information(@"Decompiled TLK file");
                             };
-                            nbw.RunWorkerCompleted += (a, b) => { backgroundTaskEngine.SubmitJobCompletion(task); };
+                            nbw.RunWorkerCompleted += (a, b) =>
+                            {
+                                if (b.Error != null)
+                                {
+                                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                }
+                                backgroundTaskEngine.SubmitJobCompletion(task);
+                            };
                             nbw.RunWorkerAsync();
 
                         }
