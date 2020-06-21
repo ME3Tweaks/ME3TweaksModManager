@@ -183,7 +183,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 });
                 if (!alreadyInstalledAndUpToDate)
                 {
-                    Games.First(x => x.Game == asi.Game).DeleteASI(asi); //UI doesn't allow you to install on top of an already installed ASI that is up to date. So we delete ith ere.
+                    void exceptionCallback(Exception e)
+                    {
+                        M3L.ShowDialog(mainwindow, $"An error occured deleting the ASI: {e.Message}", "Error deleting ASI", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    Games.First(x => x.Game == asi.Game).DeleteASI(asi, exceptionCallback); //UI doesn't allow you to install on top of an already installed ASI that is up to date. So we delete ith ere.
                     InstallInProgress = false;
                     RefreshASIStates();
                     UpdateSelectionTexts(SelectedASIObject);
@@ -735,15 +739,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 worker.RunWorkerAsync();
             }
 
-            internal void DeleteASI(ASIMod asi)
+            internal void DeleteASI(ASIMod asi, Action<Exception> exceptionCallback = null)
             {
                 var installedInfo = asi.InstalledInfo;
                 if (installedInfo != null)
                 {
                     //Up to date - delete mod
                     Log.Information(@"Deleting installed ASI: " + installedInfo.InstalledPath);
-                    File.Delete(installedInfo.InstalledPath);
-                    RefreshASIStates();
+                    try
+                    {
+                        File.Delete(installedInfo.InstalledPath);
+                        RefreshASIStates();
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Error deleting asi: {e.Message}");
+                        exceptionCallback?.Invoke(e);
+                    }
                 }
             }
 
