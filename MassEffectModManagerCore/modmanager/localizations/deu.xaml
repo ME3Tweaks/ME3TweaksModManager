@@ -517,6 +517,7 @@
     <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Der Ordner Dokumente/BioWare/{0} (und Unterordner) können nicht als Ort für Backups benutzt werden, da das Spiel Dateien daraus lädt. Bitte wähle einen anderen Ordner.</system:String>
 	<!-- 0=Game name (Mass Effect, Mass Effect 3, etc) -->
     <system:String x:Key="string_locationNotAllowedForBackup">Ordner nicht für Backup zulässig</system:String>
+    <system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Dein Benutzerkonto hat keinen Schreibzugriff auf das gewählte Zielverzeichnis. Wähle ein anderes Verzeichnis.</system:String>
 
 	<!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
