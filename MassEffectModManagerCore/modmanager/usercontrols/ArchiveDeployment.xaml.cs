@@ -578,6 +578,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
                                     }
                                 }
+                                else if (cache.Value.Name.Contains(@"CustTextures"))
+                                {
+                                    // ME3Explorer 3.0 or below Texplorer
+                                    hasError = true;
+                                    item.Icon = FontAwesomeIcon.TimesCircle;
+                                    item.Foreground = Brushes.Red;
+                                    item.Spinning = false;
+                                    errors.Add($"{texture.FileRef.FilePath} {texture.GetInstancedFullPath} uses TFC name {cache.Value.Name}. This TFC name is used when replacing textures with the outdated ME3Explorer texturing tools and is a common source of broken textures. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.");
+                                }
+                                else if (cache.Value.Name.Contains(@"TexturesMEM"))
+                                {
+                                    // Textures replaced by MEM. This is not 
+                                    hasError = true;
+                                    item.Icon = FontAwesomeIcon.TimesCircle;
+                                    item.Foreground = Brushes.Red;
+                                    item.Spinning = false;
+                                    errors.Add( $"{texture.FileRef.FilePath} {texture.GetInstancedFullPath} uses TFC name {cache.Value.Name}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.");
+
+                                }
                             }
                         }
                         else
@@ -776,6 +795,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public SolidColorBrush Foreground { get; set; }
             public FontAwesomeIcon Icon { get; set; }
             public bool Spinning { get; set; }
+            public bool DeploymentBlocking{ get; set; }
 
             public Action<DeploymentChecklistItem> ValidationFunction;
             public Mod ModToValidateAgainst;
