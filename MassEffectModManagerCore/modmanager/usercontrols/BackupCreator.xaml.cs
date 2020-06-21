@@ -513,7 +513,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     out var totalFreeBytes);
                 var requiredSpace =
                     Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1; //10% buffer
-
+                Log.Information($@"Backup space check. Backup size: {ByteSize.FromBytes(requiredSpace)}, free space: {ByteSize.FromBytes(freeBytes)}");
                 if (freeBytes < requiredSpace)
                 {
                     //Not enough space.
