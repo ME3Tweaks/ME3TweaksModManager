@@ -71,7 +71,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_BAD_ME2_COALESCED,
             INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION,
             INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER,
-            INSTALL_FAILED_EXCEPTION_FILE_COPY
+            INSTALL_FAILED_EXCEPTION_FILE_COPY,
+            INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER
         }
 
         public string Action { get; set; }
@@ -421,6 +422,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Information($@"Deleting existing DLC directory: {path}");
                     try
                     {
+                        throw new Exception("Derp test");
                         Utilities.DeleteFilesAndFoldersRecursively(path, true);
                     }
                     catch (UnauthorizedAccessException exd)
@@ -429,6 +431,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
                         Utilities.CreateDirectoryWithWritePermission(path, true);
                         Utilities.DeleteFilesAndFoldersRecursively(path);
+                    }
+                    catch (Exception ge)
+                    {
+                        Log.Error($@"Error deleting existing mod directory {path}: {ge.Message}");
+                        e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER, new List<string>(new[] { path }));
+                        Log.Information(@"<<<<<<< Exiting modinstaller");
+                        return;
                     }
                 }
             }
@@ -482,6 +491,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_FILE_COPY;
                     if (Application.Current != null)
                     {
+                        // handled here so we can show what failed in string
                         Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorCopyingFilesToTarget, ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
                     Log.Warning(@"<<<<<<< Aborting modinstaller");
@@ -574,7 +584,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 InstallIntoSFAR(sfarJob, ModBeingInstalled, FileInstalledCallback, ModBeingInstalled.IsInArchive ? sfarStagingDirectory : null);
             }
-
 
             //Main installation step has completed
             Log.Information(@"Main stage of mod installation has completed");
@@ -1000,6 +1009,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                             InstallationCancelled = true;
                             M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                        case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:
+                            // Will only be one item in this list
+                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(Path.GetFileName(items[0]), ModBeingInstalled.Game);
+                            string message = $"Unable to fully delete existing mod directory:\n{items[0]}\n\nThe folder may have been partially deleted.";
+                            message += @" "; //this is here for localization tool
+                            if (tpmi != null)
+                            {
+                                message += $"This mod ({tpmi.modname}) should be reinstalled.";
+                            }
+                            else
+                            {
+                                message += "This mod should be reinstalled.";
+                            }
+                            M3L.ShowDialog(window, message, "Error installing mod", MessageBoxButton.OK, MessageBoxImage.Error);
                             break;
                     }
                 }
