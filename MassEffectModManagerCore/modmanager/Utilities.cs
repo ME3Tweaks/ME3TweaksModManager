@@ -43,6 +43,25 @@ namespace MassEffectModManagerCore
             }
         }
 
+        private static readonly string MEMendFileMarker = "ThisIsMEMEndOfFile";
+        public static bool HasALOTMarker(string file)
+        {
+            using var s = File.OpenRead(file);
+            return HasALOTMarker(s);
+        }
+
+        public static bool HasALOTMarker(Stream stream)
+        {
+            bool returnValue = false;
+            var pos = stream.Position;
+            stream.Seek(-MEMendFileMarker.Length, SeekOrigin.End);
+            string marker = stream.ReadStringASCII(MEMendFileMarker.Length);
+            if (marker == MEMendFileMarker)
+                returnValue = true;
+            stream.Seek(pos, SeekOrigin.Begin);
+            return returnValue;
+        }
+
         public static bool IsWindows10OrNewer()
         {
             var os = Environment.OSVersion;
@@ -721,7 +740,7 @@ namespace MassEffectModManagerCore
         internal static void InstallASIByGroupID(GameTarget gameTarget, string nameForLogging, int updateGroup)
         {
             var asigame = new ASIManagerPanel.ASIGame(gameTarget);
-            ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] {asigame}));
+            ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] { asigame }));
             var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == updateGroup); //DLC mod enabler is group 16
             if (dlcModEnabler != null)
             {
@@ -1195,7 +1214,7 @@ namespace MassEffectModManagerCore
         /// <returns></returns>
         public static string GetRegistrySettingString(string key, string name)
         {
-            return (string) Registry.GetValue(key, name, null);
+            return (string)Registry.GetValue(key, name, null);
         }
 
         public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false)

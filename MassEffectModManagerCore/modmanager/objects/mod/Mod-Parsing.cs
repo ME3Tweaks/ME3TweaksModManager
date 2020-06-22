@@ -50,6 +50,8 @@ namespace MassEffectModManagerCore.modmanager
         public string ModDeveloper { get; set; }
         public string ModDescription { get; set; }
         public int ModModMakerID { get; set; }
+        public bool IsUnofficial { get; set; }
+        public int ImportedByBuild { get; set; }
         public List<string> UpdaterServiceBlacklistedFiles { get; private set; } = new List<string>();
         public string UpdaterServiceServerFolder { get; private set; }
         public string UpdaterServiceServerFolderShortname
@@ -145,7 +147,7 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         foreach (var conditionaldlc in altdlc.ConditionalDLC)
                         {
-                            autoConfigs.Add(conditionaldlc.TrimStart('-','+'));
+                            autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
                         }
                     }
                     foreach (var altfile in InstallationJob.AlternateFiles)
@@ -332,14 +334,19 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (App.BuildNumber < minBuild)
                 {
-                    ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
-                    Log.Error($@"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
-                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_cannotLoadBuildTooOld, minBuild, App.BuildNumber);
+                    ModName = (ModPath == "" && IsInArchive)
+                        ? Path.GetFileNameWithoutExtension(Archive.FileName)
+                        : Path.GetFileName(ModPath);
+                    Log.Error(
+                        $@"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_cannotLoadBuildTooOld,
+                        minBuild, App.BuildNumber);
                     return; //Won't set valid
                 }
             }
 
             int.TryParse(iniData[@"ModManager"][@"importedby"], out int importedByBuild);
+            ImportedByBuild = importedByBuild;
 
             if (double.TryParse(iniData[@"ModManager"][@"cmmver"], out double parsedModCmmVer))
             {
@@ -354,7 +361,9 @@ namespace MassEffectModManagerCore.modmanager
             ModName = iniData[@"ModInfo"][@"modname"];
             if (string.IsNullOrEmpty(ModName))
             {
-                ModName = (ModPath == "" && IsInArchive) ? Path.GetFileNameWithoutExtension(Archive.FileName) : Path.GetFileName(ModPath);
+                ModName = (ModPath == "" && IsInArchive)
+                    ? Path.GetFileNameWithoutExtension(Archive.FileName)
+                    : Path.GetFileName(ModPath);
                 Log.Error($@"moddesc.ini in {ModPath} does not set the modname descriptor.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_nomodname, ModPath);
                 return; //Won't set valid
@@ -367,6 +376,7 @@ namespace MassEffectModManagerCore.modmanager
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_nomoddesc, ModPath);
                 return; //Won't set valid
             }
+
             ModDeveloper = iniData[@"ModInfo"][@"moddev"];
             if (string.IsNullOrWhiteSpace(ModDeveloper))
             {
@@ -381,6 +391,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 ModVersionString += @".0";
             }
+
             Version.TryParse(ModVersionString, out var parsedValue);
             ParsedModVersion = parsedValue;
 
@@ -405,7 +416,9 @@ namespace MassEffectModManagerCore.modmanager
             NexusModID = nexuscode;
 
             #region NexusMods ID from URL
-            if (NexusModID == 0 && ModModMakerID == 0 /*&& ModClassicUpdateCode == 0 */ && !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
+
+            if (NexusModID == 0 && ModModMakerID == 0 /*&& ModClassicUpdateCode == 0 */ &&
+                !string.IsNullOrWhiteSpace(ModWebsite) && ModWebsite.Contains(@"nexusmods.com/masseffect"))
             {
                 try
                 {
@@ -421,7 +434,8 @@ namespace MassEffectModManagerCore.modmanager
                             nexusId = nexusId.Substring(1); //number
                         }
 
-                        nexusId = nexusId.Substring(6).TrimEnd('/'); // /mods/ and any / after number in the event url has that in it.
+                        nexusId = nexusId.Substring(6)
+                            .TrimEnd('/'); // /mods/ and any / after number in the event url has that in it.
 
                         int questionMark = nexusId.IndexOf(@"?", StringComparison.InvariantCultureIgnoreCase);
                         if (questionMark > 0)
@@ -440,14 +454,27 @@ namespace MassEffectModManagerCore.modmanager
                     //don't bother.
                 }
             }
+
             #endregion
 
-            CLog.Information($@"Read modmaker update code (or used default): {ModClassicUpdateCode}", Settings.LogModStartup);
+            CLog.Information($@"Read modmaker update code (or used default): {ModClassicUpdateCode}",
+                Settings.LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
             {
-                Log.Error($@"{ModName} has both an updater service update code and a modmaker code assigned. This is not allowed.");
-                LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker);
+                Log.Error(
+                    $@"{ModName} has both an updater service update code and a modmaker code assigned. This is not allowed.");
+                LoadFailedReason =
+                    M3L.GetString(M3L.string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker);
                 return; //Won't set valid
+            }
+
+            var unofficialStr = iniData[@"ModInfo"][@"unofficial"];
+            if (!string.IsNullOrWhiteSpace(unofficialStr))
+            {
+                IsUnofficial = true;
+                CLog.Information($@"Found unofficial descriptor. Marking mod as unofficial. This will block deployment of the mod until it is removed.",
+                    Settings.LogModStartup);
+
             }
 
             string game = iniData[@"ModInfo"][@"game"];

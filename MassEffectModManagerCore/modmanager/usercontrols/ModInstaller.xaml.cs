@@ -1054,7 +1054,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 { @"Installed from", ModBeingInstalled.IsInArchive ? @"Archive" : @"Library" },
                 { @"Type", ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null ? @"RCW .me2mod" : @"Standard" },
                 { @"Game", ModBeingInstalled.Game.ToString() },
-                { @"Result", telemetryResult.ToString() }
+                { @"Result", telemetryResult.ToString() },
+                { @"Author", ModBeingInstalled.ModDeveloper}
             });
             OnClosing(DataEventArgs.Empty);
         }

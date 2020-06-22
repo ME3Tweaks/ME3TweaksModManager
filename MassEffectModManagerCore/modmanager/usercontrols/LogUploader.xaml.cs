@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Shell;
 using ByteSizeLib;
 using Flurl.Http;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -13,6 +14,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
 using SevenZip;
 
@@ -85,18 +87,41 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             UploadingLog = true;
             //TopText = M3L.GetString(M3L.string_collectingLogInformation);
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"LogUpload");
+            nbw.WorkerReportsProgress = true;
+            nbw.ProgressChanged += (a, b) =>
+            {
+                if (b.UserState is double d)
+                {
+                    window.TaskbarItemInfo.ProgressValue = d;
+
+                }
+                else if (b.UserState is TaskbarItemProgressState tbps)
+                {
+                    window.TaskbarItemInfo.ProgressState = tbps;
+                }
+            };
             nbw.DoWork += (a, b) =>
             {
                 void updateStatusCallback(string status)
                 {
                     CollectionStatusMessage = status;
                 }
+
+                void updateProgressCallback(int progress)
+                {
+                    nbw.ReportProgress(0,progress / 100.0);
+                }
+
+                void updateTaskbarProgressStateCallback(TaskbarItemProgressState state)
+                {
+                    nbw.ReportProgress(-1, state);
+                }
                 StringBuilder logUploadText = new StringBuilder();
                 if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown)
                 {
                     Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
                     logUploadText.Append("[MODE]diagnostics\n"); //do not localize
-                    logUploadText.Append(LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck, updateStatusCallback));
+                    logUploadText.Append(LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck, updateStatusCallback, updateProgressCallback, updateTaskbarProgressStateCallback));
                     logUploadText.Append("\n"); //do not localize
                 }
 
@@ -182,6 +207,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
                 }
+
+                window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
                 if (b.Result is string response)
                 {
                     if (response.StartsWith(@"http"))

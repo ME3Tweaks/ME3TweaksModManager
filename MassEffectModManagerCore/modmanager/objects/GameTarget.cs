@@ -86,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             ReloadGameTarget();
         }
 
-        public void ReloadGameTarget()
+        public void ReloadGameTarget(bool lodUpdate = true)
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
@@ -133,7 +133,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Log.Information(@"ME1 Polish Edition detected");
                     }
 
-                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded)
+                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded && lodUpdate)
                     {
                         UpdateLODs();
                     }
@@ -207,8 +207,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         //ALOT has been installed
                         fs.Position = endPos - 8;
-                        short memVersionUsed = fs.ReadInt16();
                         short installerVersionUsed = fs.ReadInt16();
+                        short memVersionUsed = fs.ReadInt16();
                         fs.Position -= 4; //roll back so we can read this whole thing as 4 bytes
                         int preMemi4Bytes = fs.ReadInt32();
                         int perGameFinal4Bytes = -20;
