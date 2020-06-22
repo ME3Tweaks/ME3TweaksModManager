@@ -127,8 +127,7 @@ namespace MassEffectModManagerCore.Tests
                         }
 
                         //size test
-                        var sizeReq = mod.GetRequiredSpaceForExtraction(archive);
-                        Assert.AreNotEqual(0, sizeReq, "Archive extraction size is zero! For file " + archive);
+                        Assert.AreNotEqual(0, mod.SizeRequiredtoExtract, "Archive extraction size is zero! For file " + archive);
 
                         var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                         foreach (var target in targetsForMod)
