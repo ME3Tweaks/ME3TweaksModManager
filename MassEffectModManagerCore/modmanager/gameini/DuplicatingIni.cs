@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             foreach (var line in splits)
             {
                 string trimmed = line.Trim();
-                if (trimmed.Length == 0) continue; //blank line
+                if (string.IsNullOrWhiteSpace(trimmed)) continue; //blank line
                 if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
                 {
                     //New section

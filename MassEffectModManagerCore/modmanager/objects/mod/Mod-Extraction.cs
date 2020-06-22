@@ -32,16 +32,19 @@ namespace MassEffectModManagerCore.modmanager
         private BlockingCollection<string> compressionQueue;
         private object compressionCompletedSignaler = new object();
 
-        public long GetRequiredSpaceForExtraction(string archivePath)
+        /// <summary>
+        /// Attempts to retreive the amount of data that will be deoompressed. Sine not all archive formats list this information, this method is not 100% reliable.
+        /// </summary>
+        /// <returns></returns>
+        private long GetRequiredSpaceForExtraction()
         {
-            if (GetJob(ModJob.JobHeader.ME2_RCWMOD) != null) { return new FileInfo(archivePath).Length; }
-            var archiveFile = archivePath.EndsWith(@".exe") ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+            if (GetJob(ModJob.JobHeader.ME2_RCWMOD) != null) { return new FileInfo(ArchivePath).Length; }
 
             var itemsToExtract = new List<ArchiveFileInfo>();
-            var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archiveFile);
+            var referencedFiles = GetAllRelativeReferences(!IsVirtualized, Archive);
             //unsure if this is required?? doesn't work for MEHEM EXE
             //referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
-            foreach (var info in archiveFile.ArchiveFileData)
+            foreach (var info in Archive.ArchiveFileData)
             {
                 if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains(ModPath)))
                 {
@@ -69,13 +72,28 @@ namespace MassEffectModManagerCore.modmanager
             return requiredSize;
         }
 
+        /// <summary>
+        /// Extracts the mod from the archive. The caller should handle exception that may be thrown.
+        /// </summary>
+        /// <param name="archivePath"></param>
+        /// <param name="outputFolderPath"></param>
+        /// <param name="compressPackages"></param>
+        /// <param name="updateTextCallback"></param>
+        /// <param name="extractingCallback"></param>
+        /// <param name="compressedPackageCallback"></param>
+        /// <param name="testRun"></param>
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
             Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null,
             bool testRun = false)
         {
             if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
+            if (!File.Exists(archivePath))
+            {
+                throw new Exception($"The archive file {archivePath} is no longer available.");
+            }
             compressPackages &= Game >= MEGame.ME2;
             var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
+
             var archiveFile = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
             using (archiveFile)
             {

@@ -51,6 +51,10 @@ namespace MassEffectModManagerCore.modmanager
         public string ModDescription { get; set; }
         public int ModModMakerID { get; set; }
         public bool IsUnofficial { get; set; }
+        /// <summary>
+        /// This variable is only set if IsInArchive is true
+        /// </summary>
+        public long SizeRequiredtoExtract { get; set; }
         public int ImportedByBuild { get; set; }
         public List<string> UpdaterServiceBlacklistedFiles { get; private set; } = new List<string>();
         public string UpdaterServiceServerFolder { get; private set; }
@@ -264,6 +268,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini, moddescArchiveEntry.FileName, e.Message);
             }
+            SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, new WeakReference(this));
 
             //Retain reference to archive as we might need this.
@@ -314,6 +319,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini, e.Message);
             }
+            SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
         }
 
