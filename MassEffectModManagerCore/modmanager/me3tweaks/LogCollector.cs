@@ -445,9 +445,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                 }
 
-
+                selectedDiagnosticTarget.ReloadGameTarget(false); //reload vars
                 ALOTVersionInfo avi = selectedDiagnosticTarget.GetInstalledALOTInfo();
-                var texturesInstalled = avi != null;
 
                 string exePath = MEDirectories.ExecutablePath(selectedDiagnosticTarget);
                 if (File.Exists(exePath))
