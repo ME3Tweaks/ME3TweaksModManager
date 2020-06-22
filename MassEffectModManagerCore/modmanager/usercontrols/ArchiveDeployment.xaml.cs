@@ -42,6 +42,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public Mod ModBeingDeployed { get; }
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
+        public string DeployButtonText { get; set; } = "Please wait";
         public ArchiveDeployment(Mod mod)
         {
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
@@ -135,6 +136,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void CheckModForMiscellaneousIssues(DeploymentChecklistItem item)
         {
             bool hasError = false;
+            bool blocking = false;
             item.HasError = false;
             item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
@@ -151,6 +153,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            // Check for ALOT markers
+            var packageFiles = Utilities.GetPackagesInDirectory(item.ModToValidateAgainst.ModPath, true);
+            foreach (var p in packageFiles)
+            {
+                if (Utilities.HasALOTMarker(p))
+                {
+                    item.Errors.Add($"{p} has the texture modded marker tagged on it. This file cannot be distributed in a mod. Mod files cannot be used if they have been modified with Mass Effect Modder or ALOT Installer - use Package Editor in ME3Explorer to replace textures for mods that use package files. Distributing mods with ALOT markers on the files will lead to the mod being blacklisted in ALOT Installer and Mass Effect Modder.");
+                    blocking = true;
+                    DeployButtonText = "Deployment blocked";
+                }
+            }
+
+            //Check moddesc.ini for things that shouldn't be present - unofficial
+            if (ModBeingDeployed.IsUnofficial)
+            {
+                item.Errors.Add("The moddesc.ini for this mod is marked with the 'unofficial' descriptor, which means this mod was previously imported. Unofficially imported mods only import the data and not the alternates and other important information. This descriptor must be removed before deployment.");
+                blocking = true;
+            }
+
+            //Check moddesc.ini for things that shouldn't be present - importedby
+            if (ModBeingDeployed.ImportedByBuild > 0)
+            {
+                item.Errors.Add("The moddesc.ini for this mod is marked with the 'importedbybuild' descriptor. This descriptor only is used for mods that were imported using the Third Party Importing Service - as this mod is being deployed, it is considered official, and thus this descriptor must be removed before deployment.");
+                blocking = true;
+                DeployButtonText = "Deployment blocked";
+            }
+
             //end setup
             if (!item.Errors.Any())
             {
@@ -164,6 +193,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 item.ItemText = M3L.GetString(M3L.string_detectedMiscellaneousIssues);
                 item.ToolTip = M3L.GetString(M3L.string_tooltip_deploymentChecksFoundMiscIssues);
                 item.Foreground = Brushes.Red;
+                item.DeploymentBlocking = blocking;
                 item.Icon = FontAwesomeIcon.TimesCircle;
             }
 
@@ -578,7 +608,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
                                     }
                                 }
-                                else if (cache.Value.Name.Contains(@"CustTextures"))
+                                
+                                if (cache.Value.Name.Contains(@"CustTextures"))
                                 {
                                     // ME3Explorer 3.0 or below Texplorer
                                     hasError = true;
@@ -594,7 +625,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add( $"{texture.FileRef.FilePath} {texture.GetInstancedFullPath} uses TFC name {cache.Value.Name}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.");
+                                    item.DeploymentBlocking = true;
+                                    DeployButtonText = "Deployment blocked";
+                                    errors.Add($"{texture.FileRef.FilePath} {texture.GetInstancedFullPath} uses TFC name {cache.Value.Name}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.");
 
                                 }
                             }
@@ -775,7 +808,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanDeploy()
         {
-            return PrecheckCompleted && !DeploymentInProgress;
+            return PrecheckCompleted && !DeploymentInProgress &&
+                   !DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
         }
 
         public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
@@ -795,7 +829,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public SolidColorBrush Foreground { get; set; }
             public FontAwesomeIcon Icon { get; set; }
             public bool Spinning { get; set; }
-            public bool DeploymentBlocking{ get; set; }
+            public bool DeploymentBlocking { get; set; }
 
             public Action<DeploymentChecklistItem> ValidationFunction;
             public Mod ModToValidateAgainst;
@@ -873,7 +907,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 PrecheckCompleted = true;
                 ProgressIndeterminate = false;
-                OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
+                if (DeploymentChecklistItems.Any(x => x.DeploymentBlocking))
+                {
+                    OperationText = "Deployment blocked until above items are fixed";
+                }
+                else
+                {
+                    DeployButtonText = M3L.GetString(M3L.string_deploy);
+                    OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
+                }
                 CommandManager.InvalidateRequerySuggested();
             };
             nbw.RunWorkerAsync();
