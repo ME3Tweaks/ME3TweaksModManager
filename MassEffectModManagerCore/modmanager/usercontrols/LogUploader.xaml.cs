@@ -90,9 +90,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             nbw.WorkerReportsProgress = true;
             nbw.ProgressChanged += (a, b) =>
             {
-                if (b.ProgressPercentage >= 0)
+                if (b.UserState is double d)
                 {
-                    window.TaskbarItemInfo.ProgressValue = b.ProgressPercentage;
+                    window.TaskbarItemInfo.ProgressValue = d;
 
                 }
                 else if (b.UserState is TaskbarItemProgressState tbps)
@@ -109,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 void updateProgressCallback(int progress)
                 {
-                    nbw.ReportProgress(progress);
+                    nbw.ReportProgress(0,progress / 100.0);
                 }
 
                 void updateTaskbarProgressStateCallback(TaskbarItemProgressState state)
@@ -207,6 +207,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
                 }
+
+                window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
                 if (b.Result is string response)
                 {
                     if (response.StartsWith(@"http"))
