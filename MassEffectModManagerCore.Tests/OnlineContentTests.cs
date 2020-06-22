@@ -11,7 +11,7 @@ namespace MassEffectModManagerCore.Tests
     {
 
         [TestMethod]
-        public void ValidateModLoading()
+        public void ValidateOnlineFetches()
         {
             GlobalTest.Init();
             var helpItems = OnlineContent.FetchLatestHelp("int", false, true);
