@@ -202,6 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     me1files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
+                me1files.Sort(); //sort basegame
 
                 var dlcDir = MEDirectories.DLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
@@ -210,10 +211,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var cookedDLCPath = Path.Combine(dlcDir, v, @"CookedPC");
                     if (Directory.Exists(cookedDLCPath))
                     {
+                        var filesToAdd = new List<BackupFile>();
+
                         foreach (var f in Extensions.GetFiles(cookedDLCPath, @"\.u|\.upk|\.sfm", SearchOption.AllDirectories))
                         {
-                            me1files.Add(new BackupFile(v, Path.GetFileName(f)));
+                            filesToAdd.Add(new BackupFile(v, Path.GetFileName(f)));
                         }
+                        filesToAdd.Sort();
+                        me1files.AddRange(filesToAdd);
                     }
                 }
             }
@@ -238,6 +243,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     me2files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
+                me2files.Sort(); //sort basegame
 
                 var dlcDir = MEDirectories.DLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
@@ -246,10 +252,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var cookedDLCPath = Path.Combine(dlcDir, v, @"CookedPC");
                     if (Directory.Exists(cookedDLCPath))
                     {
+                        var filesToAdd = new List<BackupFile>();
+
                         foreach (var f in Directory.EnumerateFiles(cookedDLCPath, @"*.pcc", SearchOption.TopDirectoryOnly))
                         {
-                            me2files.Add(new BackupFile(v, Path.GetFileName(f)));
+                            filesToAdd.Add(new BackupFile(v, Path.GetFileName(f)));
                         }
+                        filesToAdd.Sort();
+                        me2files.AddRange(filesToAdd);
                     }
                 }
             }
@@ -325,6 +335,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     me3files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
+                me3files.Sort(); //sort basegame
 
                 var dlcDir = MEDirectories.DLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
@@ -365,7 +376,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Debug.WriteLine(@"Num ME3 files: " + ME3Files.Count);
         }
 
-        public class BackupFile
+        public class BackupFile : IComparable<BackupFile>
         {
             public string Module { get; }
             public string Filename { get; }
@@ -374,6 +385,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Module = module;
                 Filename = fileName;
+            }
+
+            public int CompareTo(BackupFile other)
+            {
+                if (other.Module == Module) return Filename.CompareTo(other.Filename);
+                return (Module.CompareTo(other.Module));
             }
         }
     }
