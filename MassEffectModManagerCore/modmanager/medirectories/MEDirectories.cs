@@ -260,7 +260,7 @@ namespace MassEffectModManagerCore.GameDirectories
 
             if (header == ModJob.JobHeader.TESTPATCH)
             {
-                return File.Exists(Utilities.GetTestPatchPath(gameTarget));
+                return File.Exists(ME3Directory.GetTestPatchPath(gameTarget));
             }
             else
             {

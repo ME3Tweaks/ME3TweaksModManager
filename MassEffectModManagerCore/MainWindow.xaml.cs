@@ -379,6 +379,7 @@ namespace MassEffectModManagerCore
         public ICommand BackupFileFetcherCommand { get; set; }
         public ICommand OpenModDescCommand { get; set; }
         public ICommand CheckAllModsForUpdatesCommand { get; set; }
+        public ICommand CustomKeybindsInjectorCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -418,6 +419,15 @@ namespace MassEffectModManagerCore
             LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
             CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
+            CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded);
+
+        }
+
+        private void OpenKeybindsInjector()
+        {
+            var conflictDetectorPanel = new KeybindsInjectorPanel();
+            conflictDetectorPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(conflictDetectorPanel);
         }
 
         private void OpenModDesc()

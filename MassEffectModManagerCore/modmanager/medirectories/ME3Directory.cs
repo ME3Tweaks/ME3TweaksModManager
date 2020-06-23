@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
+using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
@@ -36,6 +37,16 @@ namespace MassEffectModManagerCore.GameDirectories
         public static string cookedPath => gamePath != null ? Path.Combine(gamePath, @"BIOGame\CookedPCConsole\") : "Not Found";
         public static string CookedPath(GameTarget target) => Path.Combine(target.TargetPath, @"BioGame\CookedPCConsole");
 
+        /// <summary>
+        /// Gets the path to the testpatch DLC file for the specified game target
+        /// </summary>
+        /// <param name="target">target to resolve path for</param>
+        /// <returns>Null if gametarget game is not ME3. Path where SFAR should be if ME3.</returns>
+        public static string GetTestPatchPath(GameTarget target)
+        {
+            if (target.Game != Mod.MEGame.ME3) return null;
+            return Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar");
+        }
         public static string DLCPath => gamePath != null ? Path.Combine(gamePath, @"BIOGame\DLC\") : "Not Found";
 
         // "C:\...\MyDocuments\BioWare\Mass Effect 3\" folder

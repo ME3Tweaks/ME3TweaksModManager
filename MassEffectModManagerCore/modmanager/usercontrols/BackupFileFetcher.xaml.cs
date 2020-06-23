@@ -333,15 +333,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var sfarPath = Path.Combine(dlcDir, v, @"CookedPCConsole", @"Default.sfar");
                     if (File.Exists(sfarPath))
                     {
+                        var filesToAdd = new List<BackupFile>();
                         DLCPackage dlc = new DLCPackage(sfarPath);
                         foreach (var f in dlc.Files)
                         {
-                            //if (f.FileName.EndsWith(@".pcc"))
-                            //{
-                            me3files.Add(new BackupFile(v, Path.GetFileName(f.FileName)));
-                            //}
+                            filesToAdd.Add(new BackupFile(v, Path.GetFileName(f.FileName)));
                         }
+                        filesToAdd.Sort();
+                        me3files.AddRange(filesToAdd);
                     }
+                }
+
+                //TESTPATCH
+                var tpPath = ME3Directory.GetTestPatchPath(target);
+                if (File.Exists(tpPath))
+                {
+                    var filesToAdd = new List<BackupFile>();
+                    DLCPackage dlc = new DLCPackage(tpPath);
+                    foreach (var f in dlc.Files)
+                    {
+                        filesToAdd.Add(new BackupFile(@"TESTPATCH", Path.GetFileName(f.FileName)));
+                    }
+                    filesToAdd.Sort();
+                    me3files.AddRange(filesToAdd);
                 }
             }
             Application.Current.Dispatcher.Invoke(delegate

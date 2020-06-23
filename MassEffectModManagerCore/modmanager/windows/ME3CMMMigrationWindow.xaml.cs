@@ -223,7 +223,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         var filesInKBDir = Directory.EnumerateFiles(modGroupsDir, @"*.xml").ToList();
                         foreach (var file in filesInKBDir)
                         {
-                            var keybindDir = Path.Combine(Utilities.GetKeybindsOverrideDir(), Path.GetFileName(file));
+                            var keybindDir = Path.Combine(Utilities.GetKeybindsOverrideFolder(), @"me3-" + Path.GetFileName(file));
                             Log.Information($@"Migrating keybinds override: {file} -> {keybindDir}");
                             File.Move(file, keybindDir, true);
                             Log.Information(@"Migrated " + Path.GetFileName(file));

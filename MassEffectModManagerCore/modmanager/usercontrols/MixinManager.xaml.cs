@@ -410,7 +410,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //dlc
                     var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
                     var targetCookedPCDir = Path.Combine(MEDirectories.DLCPath(SelectedInstallTarget), dlcFolderName, @"CookedPCConsole");
-                    var sfar = mapping.Key == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(SelectedInstallTarget) : Path.Combine(targetCookedPCDir, @"Default.sfar");
+                    var sfar = mapping.Key == ModJob.JobHeader.TESTPATCH ? ME3Directory.GetTestPatchPath(SelectedInstallTarget) : Path.Combine(targetCookedPCDir, @"Default.sfar");
                     bool unpacked = new FileInfo(sfar).Length == 32;
                     DLCPackage targetDLCPackage = unpacked ? null : new DLCPackage(sfar); //cache SFAR target
 

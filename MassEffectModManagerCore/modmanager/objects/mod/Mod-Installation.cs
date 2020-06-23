@@ -173,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager
 
                     if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
-                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? Utilities.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
+                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? ME3Directory.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
 
 
                         if (File.Exists(sfarPath))

@@ -1303,16 +1303,6 @@ namespace MassEffectModManagerCore
         /// <returns>True if protected, false otherwise</returns>
         internal static bool IsProtectedDLCFolder(string dlcFolderName, Mod.MEGame game) => dlcFolderName.Equals("__metadata", StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
 
-        /// <summary>
-        /// Gets the path to the testpatch DLC file for the specified game target
-        /// </summary>
-        /// <param name="target">target to resolve path for</param>
-        /// <returns>Null if gametarget game is not ME3. Path where SFAR should be if ME3.</returns>
-        public static string GetTestPatchPath(GameTarget target)
-        {
-            if (target.Game != Mod.MEGame.ME3) return null;
-            return Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar");
-        }
 
         /// <summary>
         /// Recursively deletes all empty subdirectories.
@@ -1959,9 +1949,9 @@ namespace MassEffectModManagerCore
             return result;
         }
 
-        public static string GetKeybindsOverrideDir()
+        public static string GetKeybindsOverrideFolder()
         {
-            throw new NotImplementedException();
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "keybindsoverride")).FullName;
         }
     }
 }
