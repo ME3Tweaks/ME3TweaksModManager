@@ -57,6 +57,22 @@ altdlc allows you to add a folder of files to a CustomDLC based on the installed
 |RequiredFileRelativePaths|Unquoted Semicolon Separated List (String)|List of filepaths from the game root that must exist, and have a specific filesize at the same index in `RequiredFileSizes`|only if using `Condition` `COND_SPECIFIC_SIZED_FILES`|
 |RequiredFileRelativePaths|Unquoted Semicolon Separated List (Integer)|List of filesizes in the same order and count as `RequiredFileRelativePaths`. If any files do not match their listed size, the condition will evaluate to false and the alternate will not be applicable.|only if using `Condition` `COND_SPECIFIC_SIZED_FILES`|
 
+## Examples
+Attributes have been put onto newlines for readability. 
+
+Example 1: Installing a folder of files only if a specific sized file is found. This would be used if you want to install only if a variant of a mod is installed.
+```
+(Condition = COND_SPECIFIC_SIZED_FILES, 
+ModOperation = OP_ADD_FOLDERFILES_TO_CUSTOMDLC, 
+ModAltDLC = Patches_Alternates/TALI_ME2, 
+ModDestDLC = DLC_MOD_ALOV_Patches/Movies, 
+Description = "Automatically installs files for the Tali Remastered mod in the ME2 like variant.", 
+FriendlyName = "Tali Remastered ME2 Like", 
+RequiredFileRelativePaths = \BIOGame\DLC\DLC_CON_TaliMaster\Movies\End03_Flashback_Tali.bik, 
+RequiredFileSizes = 13834296)
+```
+This condition will automatically apply if the file `BIOGame\DLC\DLC_CON_TaliMaster\Movies\End03_Flashback_Tali.bik` is found and is of size `13834296`.
+
 ## MultiLists
 MultiLists are a feature of moddesc 6.0 that enable a developer to provide alternate installation options that use the same file in at least 2 or more variations. This feature was developed initially for PEOM to enable ending compatibility across 4 different ending options, with different options using different files but some common to multiple options. This feature prevents having to pack additional copies of files into the archive.
 
