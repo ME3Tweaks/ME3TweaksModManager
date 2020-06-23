@@ -9,7 +9,11 @@
     <DockPanel>
         <TextBlock Text="Custom Keybinds Injector" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
         <TextBlock Text="Inject custom keybinds into your game with this tool." TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
-        <Button Content="{DynamicResource string_close}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
+
+        <DockPanel Dock="Bottom">
+            <Button Content="Open keybinds directory" HorizontalAlignment="Right" Padding="7,4" Command="{Binding OpenKeybindsDirectoryCommand}" />
+            <Button Content="{DynamicResource string_close}" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
+        </DockPanel>
 
         <StackPanel>
             <Grid Margin="0,5,5,5">

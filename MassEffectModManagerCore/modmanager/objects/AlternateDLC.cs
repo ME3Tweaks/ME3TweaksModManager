@@ -442,6 +442,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     var dlc = MEDirectories.GetInstalledDLC(target);
                     UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
+                    CLog.Information($@" > AlternateDLC SetupInitialSelection() {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
+
                 }
                 else //TODO: FILE LEVEL CHECKS FOR ALOV
                 {
@@ -488,7 +490,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         {
                             if (selected)
                             {
-                                bool existenceRule = condDlc.Substring(0, 1) == "+";
+                                bool existenceRule = condDlc.Substring(0, 1) == @"+";
                                 var dlcfoldername = condDlc.Substring(1);
 
                                 if (existenceRule)
