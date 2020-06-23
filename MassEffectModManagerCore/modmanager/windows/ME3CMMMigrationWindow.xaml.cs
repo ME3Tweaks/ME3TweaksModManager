@@ -215,6 +215,21 @@ namespace MassEffectModManagerCore.modmanager.windows
                         }
                     }
 
+                    // MIGRATE override
+                    var overrideDir = Path.Combine(dataDir, @"override");
+                    if (Directory.Exists(overrideDir))
+                    {
+                        Log.Information(@"Migrating override");
+                        var filesInKBDir = Directory.EnumerateFiles(modGroupsDir, @"*.xml").ToList();
+                        foreach (var file in filesInKBDir)
+                        {
+                            var keybindDir = Path.Combine(Utilities.GetKeybindsOverrideDir(), Path.GetFileName(file));
+                            Log.Information($@"Migrating keybinds override: {file} -> {keybindDir}");
+                            File.Move(file, keybindDir, true);
+                            Log.Information(@"Migrated " + Path.GetFileName(file));
+                        }
+                    }
+
                     MigratingSettings.SetDone();
 
                     Log.Information(@"Step 2: Finished settings migration");
@@ -237,7 +252,6 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 switch (name.ToLower())
                                 {
                                     case @"deployed mods":
-                                    case @"override":
                                     case @"patch_001_extracted":
                                         continue;
                                     default:

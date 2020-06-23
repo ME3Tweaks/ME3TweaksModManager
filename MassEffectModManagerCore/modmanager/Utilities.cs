@@ -1958,5 +1958,10 @@ namespace MassEffectModManagerCore
                 result = Path.GetDirectoryName(result); //up one more because of win32 directory.
             return result;
         }
+
+        public static string GetKeybindsOverrideDir()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
