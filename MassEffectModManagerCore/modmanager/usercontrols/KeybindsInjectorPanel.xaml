@@ -41,9 +41,9 @@
                 </StackPanel>
                 
                 <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME3Target, Converter={StaticResource NullVisibilityConverter}}">
-                    <Button Content="Reset Keybinds" Command="{Binding ChangeME3FullCommand}" />
-                    <Button Content="Fix Talon Merc" Margin="3,0" Command="{Binding ChangeME3MiniCommand}" />
-                    <Button Content="Install Keybinds" Command="{Binding DefaultME3KeysCommand}" />
+                    <Button Content="Reset Keybinds" Command="{Binding ResetKeybindsME3Command}" />
+                    <Button Content="Fix Talon Merc" Margin="3,0" Command="{Binding FixTalonMercME3Keybinds}" />
+                    <Button Content="Install Keybinds" Command="{Binding InstallSelectedKeybindsME3Command}" />
                 </StackPanel>
             </Grid>
          </StackPanel>

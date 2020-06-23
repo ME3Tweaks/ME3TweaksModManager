@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using ByteSizeLib;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 
@@ -29,6 +30,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<KeybindsFile> ME2Keybinds { get; } = new ObservableCollectionExtended<KeybindsFile>();
         public ObservableCollectionExtended<KeybindsFile> ME3Keybinds { get; } = new ObservableCollectionExtended<KeybindsFile>();
 
+        public KeybindsFile SelectedME1Keybinds { get; set; }
+        public KeybindsFile SelectedME2Keybinds { get; set; }
+        public KeybindsFile SelectedME3Keybinds { get; set; }
 
         public ObservableCollectionExtended<GameTarget> ME2Targets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<GameTarget> ME3Targets { get; } = new ObservableCollectionExtended<GameTarget>();
@@ -42,10 +46,60 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ICommand CloseCommand { get; private set; }
         public ICommand OpenKeybindsDirectoryCommand { get; private set; }
+
+        public ICommand ResetKeybindsME3Command { get; set; }
+        public ICommand FixTalonMercME3Keybinds { get; set; }
+        public ICommand InstallSelectedKeybindsME3Command { get; set; }
         private void LoadCommands()
         {
             OpenKeybindsDirectoryCommand = new GenericCommand(() => Utilities.OpenExplorer(Utilities.GetKeybindsOverrideFolder()));
             CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
+
+            ResetKeybindsME3Command = new GenericCommand(ResetME3Keybinds, CanRestoreKeybinds);
+            //FixTalonMercME3Keybinds = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
+            InstallSelectedKeybindsME3Command = new GenericCommand(InstallME3Keybinds, CanInstallME3Keybinds);
+
+        }
+
+        private bool CanInstallME3Keybinds()
+        {
+            return SelectedME3Keybinds != null && SelectedME3Target != null;
+        }
+
+        private void InstallME3Keybinds()
+        {
+            var xmlText = File.ReadAllText(SelectedME3Keybinds.filepath);
+            internalInstallME3Keybinds(xmlText, SelectedME3Target);
+        }
+
+        private void internalInstallME3Keybinds(string bioInputXml, GameTarget target)
+        {
+            var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+            if (File.Exists(coalPath))
+            {
+                using FileStream fs = new FileStream(coalPath, FileMode.Open);
+                var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                fs.Close(); //release
+                coalescedFilemapping["BioInput.xml"] = bioInputXml;
+                var outStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
+                outStream.WriteToFile(coalPath);
+            }
+        }
+
+        private void ResetME3Keybinds()
+        {
+            var coalPath = Path.Combine(Utilities.GetGameBackupPath(Mod.MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+            if (File.Exists(coalPath))
+            {
+                using FileStream fs = new FileStream(coalPath, FileMode.Open);
+                var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                internalInstallME3Keybinds(coalescedFilemapping["BioInput.xml"], SelectedME3Target);
+            }
+        }
+
+        private bool CanRestoreKeybinds()
+        {
+            return Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null && SelectedME3Target != null;
         }
 
         private bool CanClose() => true;
