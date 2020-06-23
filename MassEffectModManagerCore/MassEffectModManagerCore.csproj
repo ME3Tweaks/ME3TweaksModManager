@@ -10,8 +10,8 @@
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
-    <AssemblyVersion>6.0.2.107</AssemblyVersion>
-    <FileVersion>6.0.2.107</FileVersion>
+    <AssemblyVersion>6.0.3.108</AssemblyVersion>
+    <FileVersion>6.0.3.108</FileVersion>
     <Copyright>ME3Tweaks 2012 - 2020</Copyright>
     <Authors>Mgamerz</Authors>
     <PackageId>MassEffectModManagerCore</PackageId>
@@ -21,7 +21,7 @@
     <StartupObject>MassEffectModManagerCore.App</StartupObject>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
     <AssemblyName>ME3TweaksModManager</AssemblyName>
-    <Version>6.0.2.107</Version>
+    <Version>6.0.3.108</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 

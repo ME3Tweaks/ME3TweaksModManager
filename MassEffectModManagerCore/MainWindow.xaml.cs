@@ -1123,7 +1123,7 @@ namespace MassEffectModManagerCore
                     break;
                 case Mod.MEGame.ME2:
                     {
-                        var existingPath = ME1Directory.gamePath;
+                        var existingPath = ME2Directory.gamePath;
                         if (existingPath != null)
                         {
                             regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 2";
@@ -1133,7 +1133,7 @@ namespace MassEffectModManagerCore
                     break;
                 case Mod.MEGame.ME3:
                     {
-                        var existingPath = ME1Directory.gamePath;
+                        var existingPath = ME3Directory.gamePath;
                         if (existingPath != null)
                         {
                             regPath = @"HKLM\SOFTWARE\Wow6432Node\BioWare\Mass Effect 3";

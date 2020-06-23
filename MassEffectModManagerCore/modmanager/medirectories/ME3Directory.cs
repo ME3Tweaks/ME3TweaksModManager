@@ -58,7 +58,8 @@ namespace MassEffectModManagerCore.GameDirectories
             string hkey64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\";
             string subkey = @"BioWare\Mass Effect 3";
 
-            string keyName = hkey32 + subkey;
+            // Check 64-bit first
+            string keyName = hkey64 + subkey;
             string test = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null);
             if (test != null)
             {
@@ -66,7 +67,7 @@ namespace MassEffectModManagerCore.GameDirectories
                 return;
             }
 
-            keyName = hkey64 + subkey;
+            keyName = hkey32 + subkey;
             gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null);
         }
 
