@@ -1,9 +1,9 @@
-## Alternates - conditional file installation both manual and automatic
+# Alternates - conditional file installation both manual and automatic
 Alternates are a feature of M3 that allow you to change what is installed based on current game state, and manually so user can choose a supported configuration of your mod. It is a complex but powerful system, and many users enjoy these features given feedback I have received.
 
 **Note that these only take place at install time. So installation order for automatic configuration can matter! If a conditional DLC is installed after your mod, it may make mod install different than if it it was installed before.**
 
-### altfiles specification
+## altfiles specification
 The altfiles descriptor allows you to substitute, add, or remove files from your BASEGAME, Official DLC, or CUSTOMDLC job based on the existence, or non existence, of one or more other DLC. It uses a list of parenthesis objects. Below is a substitution done in SP Controller Support for example, which is targeting ModDesc 5.0.
 ```
 [CUSTOMDLC]
@@ -16,7 +16,7 @@ The altfiles descriptor value is a struct list (see above). The table below show
 
 ![Autoconfig Dialog](https://i.imgur.com/yGEOgaj.png)
 
-#### altfiles struct variables
+### altfiles struct variables
 |Variable Name|Value|Purpose & Notes|Required|
 |--- |--- |--- |--- |
 |Condition|String|Specifies what operation to perform if the condition for the conditional DLC is true. Valid values are as follows:<br>`COND_DLC_PRESENT` - listed `ConditionalDLC` is installed<br>`COND_DLC_NOT_PRESENT` - listed `ConditionalDLC` is not installed<br>`COND_MANUAL` - user must manually choose this alternate file at install time<br>`COND_ALWAYS` - an always true condition. It is used if you want to convey that something will always be installed, like a 'core' package that is simply the base mod. It should be used with `ModOperation` `OP_NOTHING`.|Yes|
@@ -35,10 +35,10 @@ The altfiles descriptor value is a struct list (see above). The table below show
 |MultiListTargetPath|String|See the [AltFile MultiList](#AltFile-MultiLists) documentation on how to use this variable.|if using `ModOperation` `OP_APPLY_MULTILISTFILES`|
 |DLCRequirements|Semicolon Separated List (String)|Defines a list of DLC folders that must be installed in order for this option to be selectable by the user. This variable only does something when `Condition` is `COND_MANUAL`. You should ensure this value is not also selected with `CheckedByDefault`, as it may make an unselectable checkbox/radiobutton become checked without the ability for the user to uncheck it. You can use this variable to disable manual options that are not applicable to the user.|No|
 
-### altdlc specification
+## altdlc specification
 altdlc allows you to add a folder of files to a CustomDLC based on the installed game state. You can alternatively add an entire Custom DLC folder to the game using this specification. This is useful for automatically applying compatibility packs if your mod has known incompatibilities with another, as you can detect that and automatically reconfigure your mod to work around it. You can also have manual options to allow users to add their own developer-provided options, like lower resolution asset files.
 
-#### altdlc struct variables
+### altdlc struct variables
 |Variable Name|Value|Purpose & Notes|Required|
 |--- |--- |--- |--- |
 |Condition|String|Specifies what operation to perform if the condition for the conditional DLC is true. Valid values are as follows:<br>`COND_DLC_PRESENT` - listed ConditionalDLC is installed<br>`COND_DLC_NOT_PRESENT` - listed ConditionalDLC is not installed<br>`COND_ANY_DLC_NOT_PRESENT` - any of the items in the `ConditionalDLC` list are not present. The `ConditionalDLC` parameter is a list when this condition is used.<br>`COND_ALL_DLC_PRESENT` - all items in the `ConditionalDLC` list are present. The `ConditionalDLC` parameter is a list when this condition is used.<br>`COND_ANY_DLC_PRESENT` - any items in the ConditionalDLC list are present. The `ConditionalDLC` parameter is a list when this condition is used.<br>`COND_ALL_DLC_NOT_PRESENT` - all items in the ConditionalDLC list are not present. The ConditionalDLC parameter is a list when this condition is used.<br>`COND_SPECIFIC_SIZED_FILES` - Specific files must exist and their sizes must match the values. The files are stored by `RequiredFileRelativePaths` and the size values by `RequiredFileSizes`<br>`COND_SPECIFIC_DLC_SETUP` - A specific set of DLC is installed or not installed. Using this condition changes how `ConditionalDLC` is parsed, see the `ConditionalDLC` section.<br>`COND_MANUAL` - user must manually choose this alternate file from the installation dialog|Yes|
