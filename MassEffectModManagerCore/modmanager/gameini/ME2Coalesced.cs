@@ -33,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             }
         }
 
-        public static ME2Coalesced OpenFromTarget(GameTarget target)
+        public static ME2Coalesced OpenFromTarget(GameTarget target, bool throwExceptionOnError = false)
         {
             var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"Config", @"PC", @"Cooked", @"Coalesced.ini");
             if (!File.Exists(coalPath)) return null;
@@ -44,6 +44,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             catch (Exception e)
             {
                 Log.Error("Cannot open ME2Coalesced file from target: " + e.Message);
+                if (throwExceptionOnError) throw e;
                 return null;
             }
         }

@@ -411,7 +411,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool HasME1Install { get; set; } = true;
         private void LoadME1Keys()
         {
-            if (mainwindow.InstallationTargets.Where(x=>x.Selectable).Any())
+            if (mainwindow.InstallationTargets.Where(x => x.Selectable).Any())
             {
                 var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
                 if (File.Exists(iniFile))
@@ -485,7 +485,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadME2Keys(GameTarget target)
         {
             if (target.Game != Mod.MEGame.ME2) throw new Exception(@"Cannot load ME2 keys from target that is not ME2");
-            var me2c = ME2Coalesced.OpenFromTarget(target);
+            ME2Coalesced me2c = null;
+
+            try
+            {
+                me2c = ME2Coalesced.OpenFromTarget(target, true);
+            }
+            catch (Exception e)
+            {
+                Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, $"Cannot open Mass Effect 2 Coalesced.ini: {e.Message}", "Error reading Coalesced.ini", MessageBoxButton.OK, MessageBoxImage.Error); });
+                ME2MiniConsoleKeyText = "Error reading Coalesced.ini";
+                ME2MiniConsoleKeyText = "Error reading Coalesced.ini";
+                return;
+            }
+
             var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
             var engineConsole = bioinput.Value.Sections.FirstOrDefault(x => x.Header == @"Engine.Console");
             if (engineConsole != null)
