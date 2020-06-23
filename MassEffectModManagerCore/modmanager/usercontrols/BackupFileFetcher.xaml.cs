@@ -67,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SaveFileDialog m = new SaveFileDialog
             {
                 Title = M3L.GetString(M3L.string_selectDestinationLocation),
-                Filter = M3L.GetString(M3L.string_packageFile) + @"|*" + Path.GetExtension(fileTofetch.Filename),
+                Filter = M3L.GetString(M3L.string_packageFile) + @"|*" + Path.GetExtension(fileTofetch.Filename), //TODO CHANGE FILTER
                 FileName = fileTofetch.Filename
             };
             var result = m.ShowDialog(mainwindow);

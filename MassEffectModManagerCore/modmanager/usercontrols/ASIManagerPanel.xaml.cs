@@ -94,11 +94,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private static void internalLoadManifest(List<ASIGame> games, Action<object> selectionStateUpdateCallback = null)
+        private static void internalLoadManifest(List<ASIGame> games, Action<object> selectionStateUpdateCallback = null, bool forceLocal = false)
         {
             using WebClient wc = new WebClient();
-            var onlineManifest = OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
-            if (onlineManifest != null)
+            var onlineManifest = forceLocal ? null : OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
+            if (onlineManifest != null) //this cannot be triggered if forceLocal is true
             {
                 try
                 {
@@ -109,7 +109,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error(@"Error writing cached ASI manifest to disk: " + e.Message);
                 }
 
-                ParseManifest(onlineManifest, games, true, selectionStateUpdateCallback);
+                try
+                {
+                    ParseManifest(onlineManifest, games, true, selectionStateUpdateCallback);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(@"Error parsing online manifest: " + e.Message);
+                    internalLoadManifest(games, selectionStateUpdateCallback, true); //force local load instead
+                }
             }
             else if (File.Exists(ManifestLocation))
             {
