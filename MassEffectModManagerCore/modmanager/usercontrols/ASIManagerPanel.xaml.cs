@@ -655,7 +655,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (SelectedTarget != null)
                 {
                     RefreshBinkStatus();
-                    RefreshASIStates();
+                    if (ASIModUpdateGroups != null)
+                    {
+                        RefreshASIStates();
+                    }
                 }
             }
 
@@ -677,8 +680,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     string md5;
                     if (File.Exists(cachedPath))
                     {
-                    //Check hash first
-                    md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(cachedPath))).Replace(@"-", "").ToLower();
+                        //Check hash first
+                        md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(File.ReadAllBytes(cachedPath))).Replace(@"-", "").ToLower();
                         if (md5 == asiToInstall.Hash)
                         {
                             Log.Information($@"Copying local ASI from library to destination: {cachedPath} -> {finalPath}");
@@ -698,12 +701,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     using WebResponse response = request.GetResponse();
                     MemoryStream memoryStream = new MemoryStream();
                     response.GetResponseStream().CopyTo(memoryStream);
-                //MD5 check on file for security
-                md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(memoryStream.ToArray())).Replace(@"-", "").ToLower();
+                    //MD5 check on file for security
+                    md5 = BitConverter.ToString(System.Security.Cryptography.MD5.Create().ComputeHash(memoryStream.ToArray())).Replace(@"-", "").ToLower();
                     if (md5 != asiToInstall.Hash)
                     {
-                    //ERROR!
-                    Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
+                        //ERROR!
+                        Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
                     }
                     else
                     {
