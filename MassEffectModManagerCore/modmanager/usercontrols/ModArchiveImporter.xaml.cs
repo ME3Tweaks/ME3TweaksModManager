@@ -704,7 +704,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //get total size requirement
-            long requiredDiskSpace = mods.Sum(x => x.GetRequiredSpaceForExtraction(ArchiveFilePath));
+            long requiredDiskSpace = mods.Sum(x=>x.SizeRequiredtoExtract);
             if (Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freespaceBytes))
             {
                 requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
