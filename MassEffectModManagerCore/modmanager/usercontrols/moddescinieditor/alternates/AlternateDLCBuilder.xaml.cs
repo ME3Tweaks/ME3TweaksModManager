@@ -22,10 +22,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
     /// </summary>
     public partial class AlternateDLCBuilder : UserControl, INotifyPropertyChanged
     {
+        public Mod EditingMod { get; set; }
+        public ModJob CustomDLCJob { get; set; }
         public AlternateDLCBuilder()
         {
             DataContext = this;
             InitializeComponent();
+        }
+
+        public void SetEditingMod(Mod m)
+        {
+            EditingMod = m;
+            CustomDLCJob = m.GetJob(ModJob.JobHeader.CUSTOMDLC);
         }
 
         public ObservableCollectionExtended<AlternateDLC> AlternateDLCs { get; } = new ObservableCollectionExtended<AlternateDLC>();

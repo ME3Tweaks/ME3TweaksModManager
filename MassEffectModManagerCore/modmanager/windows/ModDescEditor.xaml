@@ -5,19 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
         xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
+        xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
         mc:Ignorable="d"
         Title="moddesc.ini Editor" Height="450" Width="800">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    <ScrollViewer>
-        <DockPanel>
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click"/>
-                <Button Content="Close" Click="Close_Click"/>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="5">
+            <Button Content="Open moddesc.ini documentation" DockPanel.Dock="Left"/>
+            <Button Content="Close" Click="Close_Click" DockPanel.Dock="Right"/>
 
-            </StackPanel>
-            <alternates:AlternateDLCBuilder x:Name="AltDlcBuilder"/>
+            <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click" HorizontalAlignment="Right"/>
+
         </DockPanel>
-    </ScrollViewer>
+        <TabControl>
+            <TabItem Header="Metadata">
+                <moddescinieditor:MetadataEditorControl x:Name="metadataEditor_control"/>
+            </TabItem>
+            <TabItem Header="Alternate Files">
+            </TabItem>
+
+            <TabItem Header="Alternate DLC">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header."/>
+                    <ScrollViewer>
+                        <alternates:AlternateDLCBuilder x:Name="alternateDlcEditor_control"/>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+
 </Window>

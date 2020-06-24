@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -394,9 +395,9 @@ namespace MassEffectModManagerCore.modmanager
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }
         }
-        public string RequirementText;
-        public List<AlternateFile> AlternateFiles = new List<AlternateFile>();
-        public List<AlternateDLC> AlternateDLCs = new List<AlternateDLC>();
+        public string RequirementText { get; set; }
+        public ObservableCollection<AlternateFile> AlternateFiles { get; } = new ObservableCollection<AlternateFile>();
+        public ObservableCollection<AlternateDLC> AlternateDLCs { get; } = new ObservableCollection<AlternateDLC>();
         public List<string> ReadOnlyIndicators = new List<string>();
 
         internal static JobHeader[] GetSupportedNonCustomDLCHeaders(Mod.MEGame game)

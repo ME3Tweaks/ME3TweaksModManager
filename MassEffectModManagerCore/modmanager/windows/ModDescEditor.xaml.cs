@@ -19,14 +19,15 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class ModDescEditor : Window, INotifyPropertyChanged
     {
-        private Mod selectedMod;
+        public Mod EditingMod { get; private set; }
 
         public ModDescEditor(Mod selectedMod)
         {
             DataContext = this;
-            this.selectedMod = selectedMod;
+            EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game); //RELOAD MOD TO CREATE NEW OBJECT
             InitializeComponent();
-            AltDlcBuilder.AlternateDLCs.ReplaceAll(selectedMod.GetJob(ModJob.JobHeader.CUSTOMDLC).AlternateDLCs);
+            metadataEditor_control.EditingMod = EditingMod;
+            alternateDlcEditor_control.EditingMod = EditingMod;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -36,11 +37,13 @@ namespace MassEffectModManagerCore.modmanager.windows
             Close();
         }
 
+
+        // this should move into the control
         private void SerializeData_Click(object sender, RoutedEventArgs e)
         {
             string str = "altdlc = (";
             bool first = true;
-            foreach (var v in AltDlcBuilder.AlternateDLCs)
+            foreach (var v in alternateDlcEditor_control.AlternateDLCs)
             {
                 string subItem = "";
                 if (first)

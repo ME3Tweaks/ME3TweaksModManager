@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.ui;
 using ME3Explorer.Packages;
 using Serilog;
 using SevenZip;
@@ -34,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager
         public const string DefaultWebsite = @"http://example.com"; //this is required to prevent exceptions when binding the navigateuri
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int NexusModID { get; private set; }
+        public int NexusModID { get; set; }
 
         // Constants
 
@@ -56,8 +57,8 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public long SizeRequiredtoExtract { get; set; }
         public int ImportedByBuild { get; set; }
-        public List<string> UpdaterServiceBlacklistedFiles { get; private set; } = new List<string>();
-        public string UpdaterServiceServerFolder { get; private set; }
+        public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
+        public string UpdaterServiceServerFolder { get; set; }
         public string UpdaterServiceServerFolderShortname
         {
             get
@@ -211,6 +212,7 @@ namespace MassEffectModManagerCore.modmanager
         public SevenZipExtractor Archive;
         public string ModDescPath => FilesystemInterposer.PathCombine(IsInArchive, ModPath, @"moddesc.ini");
         public bool IsInArchive { get; }
+        public int MinimumSupportedBuild { get; set; }
         public bool IsVirtualized { get; private set; }
         public string OriginalArchiveHash { get; private set; }
         public string PostInstallToolLaunch { get; private set; }
@@ -338,6 +340,7 @@ namespace MassEffectModManagerCore.modmanager
 
             if (int.TryParse(iniData[@"ModManager"][@"minbuild"], out int minBuild))
             {
+                MinimumSupportedBuild = minBuild;
                 if (App.BuildNumber < minBuild)
                 {
                     ModName = (ModPath == "" && IsInArchive)
@@ -1342,7 +1345,7 @@ namespace MassEffectModManagerCore.modmanager
                         return;
                     }
                 }
-                UpdaterServiceBlacklistedFiles = blacklistedFiles;
+                UpdaterServiceBlacklistedFiles.ReplaceAll(blacklistedFiles);
             }
             #endregion
 
