@@ -10,14 +10,14 @@
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    <DockPanel Margin="5">
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click"/>
-            <Button Content="Close" Click="Close_Click"/>
+    <ScrollViewer>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click"/>
+                <Button Content="Close" Click="Close_Click"/>
 
-        </StackPanel>
-        <ScrollViewer>
-        <alternates:AlternateDLCBuilder x:Name="AltDlcBuilder"/>
+            </StackPanel>
+            <alternates:AlternateDLCBuilder x:Name="AltDlcBuilder"/>
+        </DockPanel>
     </ScrollViewer>
-    </DockPanel>
 </Window>
