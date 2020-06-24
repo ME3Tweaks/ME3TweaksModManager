@@ -544,7 +544,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="hash">Hash check value (md5). Leave null if no hash check</param>
         /// <returns></returns>
 
-        public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null)
+        public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false)
         {
             using var wc = new ShortTimeoutWebClient();
             string downloadError = null;
@@ -576,7 +576,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var syncObject = new Object();
             lock (syncObject)
             {
-                Debug.WriteLine("Download file to memory: " + url);
+                if (logDownload)
+                {
+                    Log.Information(@"Downloading to memory: " + url);
+                }
+                else
+                {
+                    Debug.WriteLine("Downloading to memory: " + url);
+                }
                 wc.DownloadDataAsync(new Uri(url), syncObject);
                 //This will block the thread until download completes
                 Monitor.Wait(syncObject);

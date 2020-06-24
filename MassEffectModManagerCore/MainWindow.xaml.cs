@@ -3231,5 +3231,10 @@ namespace MassEffectModManagerCore
             };
             ShowBusyControl(previewPanel);
         }
+
+        private void OpenModDescEditor_Click(object sender, RoutedEventArgs e)
+        {
+            new ModDescEditor(SelectedMod).Show();
+        }
     }
 }

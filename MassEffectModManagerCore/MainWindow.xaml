@@ -1007,6 +1007,10 @@
                         Click="ReloadSelectedMod_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem
+                        Header="Open Moddesc Editor for modd"
+                        Click="OpenModDescEditor_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
                         Header="{DynamicResource string_debugPrintAllReferencedFiles}"
                         Click="DebugPrintReferencedFiles_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />

@@ -4,12 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
+        xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
         mc:Ignorable="d"
         Title="moddesc.ini Editor" Height="450" Width="800">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    <Grid>
-        
-    </Grid>
+    <DockPanel Margin="5">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click"/>
+            <Button Content="Close" Click="Close_Click"/>
+
+        </StackPanel>
+        <ScrollViewer>
+        <alternates:AlternateDLCBuilder x:Name="AltDlcBuilder"/>
+    </ScrollViewer>
+    </DockPanel>
 </Window>

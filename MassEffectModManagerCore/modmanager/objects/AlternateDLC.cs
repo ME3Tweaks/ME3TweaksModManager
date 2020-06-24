@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using MassEffectModManagerCore.GameDirectories;
@@ -8,6 +9,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using System.ComponentModel;
 using System.Configuration;
 using System.IO;
+using System.Reflection.Metadata;
 using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -70,10 +72,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public bool ValidAlternate;
         public string LoadFailedReason;
-
         public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
+            ParameterMap.ReplaceAll(properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }));
+
             //todo: if statements to check these.
             if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
             {
@@ -508,7 +511,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     break;
             }
             UIIsSelectable = false; //autos
-            //IsSelected; //autos
+                                    //IsSelected; //autos
         }
     }
 }

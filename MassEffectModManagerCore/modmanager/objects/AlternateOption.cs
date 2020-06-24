@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 
@@ -29,5 +30,16 @@ namespace MassEffectModManagerCore.modmanager.objects
         public virtual string GroupName { get; internal set; }
         public virtual string FriendlyName { get; internal set; }
         public virtual string Description { get; internal set; }
+        public ObservableCollection<AlternateOption.Parameter> ParameterMap { get; } = new ObservableCollection<AlternateOption.Parameter>();
+
+        /// <summary>
+        /// Parameter for the alternate. Used in the editor
+        /// </summary>
+        public class Parameter
+        {
+            // This class exists cause we can't bind to a dictionary
+            public string Key { get; set; }
+            public string Value { get; set; }
+        }
     }
 }

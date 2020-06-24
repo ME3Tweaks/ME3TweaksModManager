@@ -245,8 +245,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ui.DownloadButtonText = M3L.GetString(M3L.string_downloading);
                 ui.ProgressChanged += (a, b) =>
                 {
-                    if (b.totalToDl != 0 && nbw.IsBusy) //? IsBusy needs to be here for some reason
-
+                    if (b.totalToDl != 0 && nbw.IsBusy) //? IsBusy needs to be here for some reason or it crashes, like progress comes in late or something.
                     {
                         nbw.ReportProgress(0, b.currentDl * 1.0 / b.totalToDl);
                     }
