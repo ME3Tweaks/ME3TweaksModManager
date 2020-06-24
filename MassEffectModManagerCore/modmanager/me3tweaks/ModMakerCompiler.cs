@@ -22,6 +22,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using Microsoft.AppCenter.Analytics;
 using static MassEffectModManagerCore.modmanager.Mod;
 
@@ -45,7 +46,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public Action SetModNotFoundCallback;
 
         private const int MaxModmakerCores = 4;
-
         private int OverallProgressMax;
         private int OverallProgressValue;
 
@@ -521,6 +521,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string updatedDocumentText = compileCoalescedChunkFile(coalFileDoc, fileNode, $@"{loggingPrefix}[{fileNode.Name}]: ");
                     coalescedFilemapping[fileNode.Name + @".xml"] = updatedDocumentText;
                 }
+
+                if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3) != null)
+                {
+                    Log.Information(@"Injecting keybinds file into mod: " + KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
+                    coalescedFilemapping[@"BioInput.xml"] = File.ReadAllText(KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
+                }
+
                 CLog.Information($@"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
                 var newFileStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
 

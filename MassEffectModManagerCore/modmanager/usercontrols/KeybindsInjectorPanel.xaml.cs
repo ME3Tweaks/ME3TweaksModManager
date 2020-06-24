@@ -15,6 +15,7 @@ using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -37,6 +38,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<GameTarget> ME2Targets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<GameTarget> ME3Targets { get; } = new ObservableCollectionExtended<GameTarget>();
 
+        public bool KeybindsInstallingME1 { get; set; }
+        public bool KeybindsInstallingME2 { get; set; }
+        public bool KeybindsInstallingME3 { get; set; }
+
         public KeybindsInjectorPanel()
         {
             DataContext = this;
@@ -52,35 +57,65 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand InstallSelectedKeybindsME3Command { get; set; }
         private void LoadCommands()
         {
-            OpenKeybindsDirectoryCommand = new GenericCommand(() => Utilities.OpenExplorer(Utilities.GetKeybindsOverrideFolder()));
+            OpenKeybindsDirectoryCommand = new GenericCommand(() => Utilities.OpenExplorer(Utilities.GetKeybindsOverrideFolder()), CanClose);
             CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
 
             ResetKeybindsME3Command = new GenericCommand(ResetME3Keybinds, CanRestoreKeybinds);
             //FixTalonMercME3Keybinds = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
-            InstallSelectedKeybindsME3Command = new GenericCommand(InstallME3Keybinds, CanInstallME3Keybinds);
+            InstallSelectedKeybindsME3Command = new GenericCommand(InternalInstallME3Keybinds, CanInstallME3Keybinds);
 
         }
 
         private bool CanInstallME3Keybinds()
         {
-            return SelectedME3Keybinds != null && SelectedME3Target != null;
+            return SelectedME3Keybinds != null && SelectedME3Target != null && !KeybindsInstallingME3;
         }
 
-        private void InstallME3Keybinds()
+        private void InternalInstallME3Keybinds()
         {
-            var xmlText = File.ReadAllText(SelectedME3Keybinds.filepath);
-            internalInstallME3Keybinds(xmlText, SelectedME3Target);
+            KeybindsInstallingME3 = true;
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3KeybindsInstaller");
+            nbw.DoWork += (await, b) =>
+            {
+                var xmlText = File.ReadAllText(SelectedME3Keybinds.filepath);
+                InstallME3Keybinds(xmlText, SelectedME3Target);
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Error != null)
+                {
+                    Log.Error("Error setting ME3 keybinds: " + b.Error.Message);
+                }
+                KeybindsInstallingME3 = false;
+                CommandManager.InvalidateRequerySuggested();
+            };
+            nbw.RunWorkerAsync();
         }
 
-        private void internalInstallME3Keybinds(string bioInputXml, GameTarget target)
+        /// <summary>
+        /// Installs the specified text as the BioInput file for the target's Coalesced.bin file. This call is synchronous and should be run on a background thread.
+        /// </summary>
+        /// <param name="bioInputXml">TEXT of the bioinput.xml file</param>
+        /// <param name="target">Target to update</param>
+        public static void InstallME3Keybinds(string bioInputXml, GameTarget target)
         {
             var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+            InstallME3Keybinds(bioInputXml, coalPath);
+        }
+
+        /// <summary>
+        /// Installs the specified text as the BioInput file to the specified Coalesced.bin file. This call is synchronous and should be run on a background thread.
+        /// </summary>
+        /// <param name="bioInputXml">TEXT of the bioinput.xml file</param>
+        /// <param name="target">Target to update</param>
+        public static void InstallME3Keybinds(string bioInputXml, string coalPath)
+        {
             if (File.Exists(coalPath))
             {
                 using FileStream fs = new FileStream(coalPath, FileMode.Open);
                 var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
                 fs.Close(); //release
-                coalescedFilemapping["BioInput.xml"] = bioInputXml;
+                coalescedFilemapping[@"BioInput.xml"] = bioInputXml;
                 var outStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
                 outStream.WriteToFile(coalPath);
             }
@@ -88,21 +123,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ResetME3Keybinds()
         {
-            var coalPath = Path.Combine(Utilities.GetGameBackupPath(Mod.MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
-            if (File.Exists(coalPath))
+            KeybindsInstallingME3 = true;
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3KeybindsInstaller");
+            nbw.DoWork += (await, b) =>
             {
-                using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
-                internalInstallME3Keybinds(coalescedFilemapping["BioInput.xml"], SelectedME3Target);
-            }
+                var coalPath = Path.Combine(Utilities.GetGameBackupPath(Mod.MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                if (File.Exists(coalPath))
+                {
+                    using FileStream fs = new FileStream(coalPath, FileMode.Open);
+                    var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                    InstallME3Keybinds(coalescedFilemapping[@"BioInput.xml"], SelectedME3Target);
+                }
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Error != null)
+                {
+                    Log.Error("Error resetting ME3 keybinds: " + b.Error.Message);
+                }
+                KeybindsInstallingME3 = false;
+                CommandManager.InvalidateRequerySuggested();
+            };
+            nbw.RunWorkerAsync();
         }
 
         private bool CanRestoreKeybinds()
         {
-            return Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null && SelectedME3Target != null;
+            return Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null && SelectedME3Target != null && !KeybindsInstallingME3;
         }
 
-        private bool CanClose() => true;
+        private bool CanClose() => !KeybindsInstallingME3 && !KeybindsInstallingME2 && !KeybindsInstallingME1;
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
 
@@ -137,6 +187,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             public override string ToString() => !Selectable ? filepath : Path.GetFileName(filepath);
+        }
+
+        public static string GetDefaultKeybindsOverride(Mod.MEGame game)
+        {
+            var path = Utilities.GetKeybindsOverrideFolder();
+            if (game == Mod.MEGame.ME1) return Path.Combine(path, "me1-bioinput.ini");
+            if (game == Mod.MEGame.ME2) return Path.Combine(path, "me2-bioinput.ini");
+            if (game == Mod.MEGame.ME3) return Path.Combine(path, "me3-bioinput.xml");
+            return null;
         }
     }
 }

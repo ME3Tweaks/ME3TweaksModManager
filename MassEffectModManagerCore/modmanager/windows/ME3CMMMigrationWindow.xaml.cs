@@ -140,8 +140,20 @@ namespace MassEffectModManagerCore.modmanager.windows
                             Log.Information(@"Migrated Updater Service LZMA Storage Path: " + lzmaStoragePath);
                         }
 
-                        //TODO: MODMAKER CONTROLLER AUTO-ADDINS
+                        //Modmaker Auto Injections
+                        var controllerModOption = me3cmmini[@"Settings"][@"controllermoduser"];
+                        if (Settings.ModMakerControllerModOption == false && controllerModOption == "1")
+                        {
+                            Settings.ModMakerControllerModOption = true; //Set to true (default is false)
+                            Log.Information(@"Migrated Auto install controller mixins for ModMaker (true)");
+                        }
 
+                        var keybindsInjectionOption = me3cmmini[@"Settings"][@"autoinjectkeybinds"];
+                        if (Settings.ModMakerAutoInjectCustomKeybindsOption == false && keybindsInjectionOption == "1")
+                        {
+                            Settings.ModMakerAutoInjectCustomKeybindsOption = true; //Set to true (default is false)
+                            Log.Information(@"Migrated Auto inject keybinds for ModMaker (true)");
+                        }
                         Settings.Save();
                     }
 

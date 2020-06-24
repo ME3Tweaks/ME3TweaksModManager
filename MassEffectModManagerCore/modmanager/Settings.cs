@@ -66,6 +66,14 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _betaMode, value);
         }
 
+        private static bool _modMakerAutoInjectCustomKeybindsOption = false;
+
+        public static bool ModMakerAutoInjectCustomKeybindsOption
+        {
+            get => _modMakerAutoInjectCustomKeybindsOption;
+            set => SetProperty(ref _modMakerAutoInjectCustomKeybindsOption, value);
+        }
+
         private static bool _modMakerControllerModOption = false;
 
         public static bool ModMakerControllerModOption
@@ -195,6 +203,7 @@ namespace MassEffectModManagerCore.modmanager
             AutoUpdateLODs = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", true);
             WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
+            ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
 
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
@@ -345,8 +354,7 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
                 SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
                 SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
-                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath",
-                    UpdaterServiceManifestStoragePath);
+                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
                 SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
                 SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
                 SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
@@ -358,6 +366,8 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", AutoUpdateLODs);
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
+                SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
+
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
                 return SettingsSaveResult.SAVED;
             }

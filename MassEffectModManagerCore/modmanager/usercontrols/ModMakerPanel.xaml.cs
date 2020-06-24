@@ -22,6 +22,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         private bool KeepOpenWhenThreadFinishes;
         public bool ShowCloseButton { get; set; }
+        public bool CanInjectKeybinds { get; set; }
         public bool LocalFileOption { get; set; }
         public string LocalFilePath { get; set; }
         public string ModMakerCode { get; set; }
@@ -124,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void StartCompiler()
         {
             CompileInProgress = true;
-            Settings.Save(); //Persist controller mixin option
+            Settings.Save(); //Persist controller mixin option, keybinds injection
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModmakerCompiler");
 
             nbw.DoWork += (a, b) =>
@@ -308,6 +309,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            CanInjectKeybinds = File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
             if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
             {
                 M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);

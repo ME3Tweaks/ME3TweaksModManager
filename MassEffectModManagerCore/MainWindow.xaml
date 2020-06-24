@@ -420,6 +420,14 @@
                             ToolTip="{DynamicResource string_tooltip_autoAddControllerMixinsToModMakerMods}"
                             IsCheckable="True" />
                         <MenuItem
+                            Name="ModMakerKeybindsInjection_MenuItem"
+                            Header="Auto inject custom keybinds into ModMaker mods"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerAutoInjectCustomKeybindsOption)}"
+                            ToolTip="Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu"
+                            IsCheckable="True" />
+                        <MenuItem
                             Header="{DynamicResource string_Logging}"
                             Style="{StaticResource MenuItemHeaderStyle}" />
                         <MenuItem

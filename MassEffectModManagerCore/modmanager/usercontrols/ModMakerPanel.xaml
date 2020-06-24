@@ -5,7 +5,7 @@
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Width="430">
+    Width="500">
     <UserControl.Resources>
         <Storyboard
             x:Key="OpenProgressPanel"
@@ -61,6 +61,7 @@
         <DockPanel
             Name="DownloadInfoPanel">
             <ListBox
+                BorderThickness="1"
                 ItemsSource="{Binding TopMods}"
                 Height="200"
                 DockPanel.Dock="Top"
@@ -155,6 +156,14 @@
             <DockPanel
                 HorizontalAlignment="Stretch"
                 Margin="0,5,0,0">
+                <CheckBox
+                    Content="Inject custom keybinds (if available)"
+                    ToolTip="Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu"
+                    Margin="0,5"
+                    HorizontalAlignment="Left"
+                    IsEnabled="{Binding CanInjectKeybinds}"
+                    IsChecked="{Binding Path=(modmanager:Settings.ModMakerAutoInjectCustomKeybindsOption)}"
+                    DockPanel.Dock="Top" />
                 <CheckBox
                     Content="{DynamicResource string_addControllerSupportMixinsIfNecessary}"
                     ToolTip="{DynamicResource string_tooltip_addControllerSupportMixinsDetailed}"
