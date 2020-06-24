@@ -1902,6 +1902,11 @@ namespace MassEffectModManagerCore
 
         #endregion
 
+        /// <summary>
+        /// Prompts the user to select a game executable, with the specified list of accepted games. Logs if the user selected or did not seelct it.
+        /// </summary>
+        /// <param name="acceptedGames"></param>
+        /// <returns></returns>
         public static string PromptForGameExecutable(Mod.MEGame[] acceptedGames)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -1929,9 +1934,10 @@ namespace MassEffectModManagerCore
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
+                Log.Information($@"Executable path selected: {ofd.FileName}");
                 return ofd.FileName;
             }
-
+            Log.Information(@"User aborted selecting executable");
             return null;
         }
         /// <summary>
@@ -1942,7 +1948,7 @@ namespace MassEffectModManagerCore
         /// <returns></returns>
         public static string GetGamePathFromExe(Mod.MEGame game, string exe)
         {
-            string result = Path.GetDirectoryName(Path.GetDirectoryName(exe));
+            string result = Path.GetDirectoryName(Path.GetDirectoryName(exe)); //binaries, <GAME>
 
             if (game == Mod.MEGame.ME3)
                 result = Path.GetDirectoryName(result); //up one more because of win32 directory.

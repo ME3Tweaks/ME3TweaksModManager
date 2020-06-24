@@ -498,6 +498,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
             ["70dc87862da9010aad1acd7d0c2c857b"] = "Origin - Russian",
         };
 
+        /// <summary>
+        /// Checks the existing listed backup and tags it with cmm_vanilla if determined to be vanilla. This is because ALOT Installer allows modified backups where as Mod Manager will not
+        /// </summary>
+        /// <param name="game"></param>
         internal static void CheckAndTagBackup(Mod.MEGame game)
         {
             Log.Information("Validating backup for " + Utilities.GetGameName(game));

@@ -121,8 +121,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     // Point to existing game installation
+                    Log.Information(@"BeginBackup() with IsCustomOption. Prompting user to select executable of link target");
                     var gameexe = Utilities.PromptForGameExecutable(new[] { Game });
-                    if (gameexe == null) return;
+                    if (gameexe == null) { return; }
                     targetToBackup = new GameTarget(Game, Utilities.GetGamePathFromExe(Game, gameexe), false, true);
                     if (AvailableBackupSources.Any(x => x.TargetPath.Equals(targetToBackup.TargetPath, StringComparison.InvariantCultureIgnoreCase)))
                     {
@@ -156,6 +157,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 };
                 nbw.DoWork += (a, b) =>
                 {
+                    Log.Information(@"Starting the backup thread. Checking path: " + targetToBackup.TargetPath);
                     BackupInProgress = true;
                     List<string> nonVanillaFiles = new List<string>();
 
@@ -183,8 +185,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ProgressVisible = true;
                     ProgressIndeterminate = true;
                     BackupStatus = M3L.GetString(M3L.string_validatingBackupSource);
+                    Log.Information(@"Checking target is vanilla");
                     bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(targetToBackup, nonVanillaFileFoundCallback);
+
+                    Log.Information(@"Checking DLC consistency");
                     bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(targetToBackup, inconsistentDLCCallback: inconsistentDLCFoundCallback);
+
+                    Log.Information(@"Checking only vanilla DLC is installed");
                     List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(targetToBackup).Select(x =>
                     {
                         var tpmi = ThirdPartyServices.GetThirdPartyModInfo(x, targetToBackup.Game);
@@ -199,6 +206,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         var dlcList = string.Join("\n - ", allOfficialDLC.Except(installedDLC).Select(x => $@"{MEDirectories.OfficialDLCNames(targetToBackup.Game)[x]} ({x})")); //do not localize
                         dlcList = @" - " + dlcList;
+                        Log.Information(@"The following dlc will be missing in the backup if user continues: " + dlcList);
+
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             var cancelDueToNotAllDLC = M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_notAllDLCInstalled, dlcList), M3L.GetString(M3L.string_someDlcNotInstalled), MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -262,6 +271,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             else
                             {
+                                Log.Information(@"Linking existing backup at " + targetToBackup.TargetPath);
                                 backupPath = targetToBackup.TargetPath;
                                 // Linking existing backup
                                 Application.Current.Dispatcher.Invoke(delegate
@@ -397,7 +407,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var cmmvanilla = Path.Combine(backupPath, @"cmm_vanilla");
                             if (!File.Exists(cmmvanilla))
                             {
-                                Log.Information($@"Writing cmm_vanilla");
+                                Log.Information($@"Writing cmm_vanilla to " + cmmvanilla);
                                 File.Create(cmmvanilla).Close();
                             }
 
