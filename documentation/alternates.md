@@ -55,7 +55,7 @@ altdlc allows you to add a folder of files to a CustomDLC based on the installed
 |MultiListId|String|See the [AltDLC MultiList](#AltDLC-MultiLists) documentation on how to use this variable.|if using `ModOperation` `OP_ADD_MULTILISTFILES_TO_CUSTOMDLC`|
 |MultiListRootPath|String|See the [AltDLC MultiList](#AltDLC-MultiLists) documentation on how to use this variable.|if using `ModOperation` `OP_ADD_MULTILISTFILES_TO_CUSTOMDLC`|
 |RequiredFileRelativePaths|Unquoted Semicolon Separated List (String)|List of filepaths from the game root that must exist, and have a specific filesize at the same index in `RequiredFileSizes`|only if using `Condition` `COND_SPECIFIC_SIZED_FILES`|
-|RequiredFileRelativePaths|Unquoted Semicolon Separated List (Integer)|List of filesizes in the same order and count as `RequiredFileRelativePaths`. If any files do not match their listed size, the condition will evaluate to false and the alternate will not be applicable.|only if using `Condition` `COND_SPECIFIC_SIZED_FILES`|
+|RequiredFileSizes|Unquoted Semicolon Separated List (Integer)|List of filesizes in the same order and count as `RequiredFileRelativePaths`. If any files do not match their listed size, the condition will evaluate to false and the alternate will not be applicable.|only if using `Condition` `COND_SPECIFIC_SIZED_FILES`|
 
 ## Examples
 Attributes have been put onto newlines for readability. 
