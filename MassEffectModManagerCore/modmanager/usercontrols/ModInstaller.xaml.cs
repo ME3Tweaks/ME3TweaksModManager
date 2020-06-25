@@ -422,20 +422,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Information($@"Deleting existing DLC directory: {path}");
                     try
                     {
-                        throw new Exception("Derp test");
                         Utilities.DeleteFilesAndFoldersRecursively(path, true);
                     }
                     catch (UnauthorizedAccessException exd)
                     {
-                        // for some reason we don't have permission to do this.
-                        Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
-                        Utilities.CreateDirectoryWithWritePermission(path, true);
-                        Utilities.DeleteFilesAndFoldersRecursively(path);
+                        try
+                        {
+                            // for some reason we don't have permission to do this.
+                            Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
+                            Utilities.CreateDirectoryWithWritePermission(path, true);
+                            Utilities.DeleteFilesAndFoldersRecursively(path);
+                        }
+                        catch (Exception finalException)
+                        {
+                            Log.Error($@"Error deleting existing mod directory after admin attempt, {path}: {finalException.Message}");
+                            e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER, new List<string>(new[] { path, finalException.Message }));
+                            Log.Information(@"<<<<<<< Exiting modinstaller");
+                            return;
+                        }
                     }
                     catch (Exception ge)
                     {
                         Log.Error($@"Error deleting existing mod directory {path}: {ge.Message}");
-                        e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER, new List<string>(new[] { path }));
+                        e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER, new List<string>(new[] { path, ge.Message }));
                         Log.Information(@"<<<<<<< Exiting modinstaller");
                         return;
                     }
@@ -1017,7 +1026,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:
                             // Will only be one item in this list
                             var tpmi = ThirdPartyServices.GetThirdPartyModInfo(Path.GetFileName(items[0]), ModBeingInstalled.Game);
-                            string message = $"Unable to fully delete existing mod directory:\n{items[0]}\n\nThe folder may have been partially deleted.";
+                            string message = $"Unable to fully delete existing mod directory:\n{items[0]}\n\nReason:\n{items[1]}\n\nThe folder may have been partially deleted.";
                             message += @" "; //this is here for localization tool
                             if (tpmi != null)
                             {
