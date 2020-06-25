@@ -18,6 +18,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     partial class OnlineContent
     {
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
+        private static readonly string StartupManifestBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
         private const string StaticFilesBaseURL_ME3Tweaks = "https://me3tweaks.com/modmanager/tools/staticfiles/";
@@ -42,13 +43,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, string> FetchOnlineStartupManifest(bool betamode)
         {
-            using var wc = new ShortTimeoutWebClient();
-            var fetchUrl = StartupManifestURL;
-            if (betamode) fetchUrl += "&beta=true";
-            string json = wc.DownloadString(fetchUrl);
-            App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            return App.ServerManifest;
+            string[] ulrs = new[] { StartupManifestURL, StartupManifestBackupURL };
+            foreach (var staticurl in ulrs)
+            {
+                Uri myUri = new Uri(staticurl);
+                string host = myUri.Host;
+
+                var fetchUrl = staticurl;
+                if (betamode && host == @"me3tweaks.com") fetchUrl += "&beta=true"; //only me3tweaks source supports beta. fallback will always just use whatever was live when it synced
+
+                try
+                {
+                    using var wc = new ShortTimeoutWebClient();
+                    string json = wc.DownloadString(fetchUrl);
+                    App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    Log.Information($@"Fetched startup manifest from endoint {host}");
+                    return App.ServerManifest;
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to fetch startup manifest from endpoint {host}: {e.Message}");
+                }
+            }
+
+            Log.Error("Failed to fetch startup manifest.");
+            return new Dictionary<string, string>();
         }
+
 
         public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> FetchBasegameFileIdentificationServiceManifest(bool overrideThrottling = false)
         {
@@ -520,8 +541,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 lock (args.UserState)
                 {
-                    //releases blocked thread
-                    Monitor.Pulse(args.UserState);
+                        //releases blocked thread
+                        Monitor.Pulse(args.UserState);
                 }
             };
             var syncObject = new Object();
@@ -564,13 +585,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             responseStream = null;
                             downloadError = $"Hash of downloaded item ({url}) does not match expected hash. Expected: {hash}, got: {md5}"; //needs localized
-                        }
+                            }
                     }
                 }
                 lock (args.UserState)
                 {
-                    //releases blocked thread
-                    Monitor.Pulse(args.UserState);
+                        //releases blocked thread
+                        Monitor.Pulse(args.UserState);
                 }
             };
             var syncObject = new Object();
