@@ -20,23 +20,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
     /// <summary>
     /// Interaction logic for AlternateDLCBuilder.xaml
     /// </summary>
-    public partial class AlternateDLCBuilder : UserControl, INotifyPropertyChanged
+    public partial class AlternateFileBuilder : UserControl, INotifyPropertyChanged
     {
         public Mod EditingMod { get; set; }
-
-        public void OnEditingModChanged()
-        {
-            if (EditingMod != null)
-            {
-                CustomDLCJob = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
-            }
-            else
-            {
-                CustomDLCJob = null;
-            }
-        }
-        public ModJob CustomDLCJob { get; set; }
-        public AlternateDLCBuilder()
+        public ModJob Job { get; set; }
+        public AlternateFileBuilder()
         {
             DataContext = this;
             InitializeComponent();

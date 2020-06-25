@@ -27,7 +27,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game); //RELOAD MOD TO CREATE NEW OBJECT
             InitializeComponent();
             metadataEditor_control.EditingMod = EditingMod;
-            alternateDlcEditor_control.EditingMod = EditingMod;
+            customdlcEditor_control.EditingMod = EditingMod;
+            customdlc_alternateDlcEditor_control.EditingMod = EditingMod;
+            customdlc_alternateFileEditor_control.EditingMod = EditingMod;
+            customdlc_alternateFileEditor_control.Job = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -41,48 +44,10 @@ namespace MassEffectModManagerCore.modmanager.windows
         // this should move into the control
         private void SerializeData_Click(object sender, RoutedEventArgs e)
         {
-            string str = "altdlc = (";
-            bool first = true;
-            foreach (var v in alternateDlcEditor_control.AlternateDLCs)
-            {
-                string subItem = "";
-                if (first)
-                {
-                    first = false;
-                    subItem += "(";
-                }
-                else
-                {
-                    subItem += ",(";
-                }
+            var moddesc = EditingMod.SerializeModdesc();
+            Mod m = new Mod(moddesc, EditingMod.ModPath, null);
 
-                bool subFirst = true;
-                foreach (var i in v.ParameterMap)
-                {
-                    if (subFirst)
-                        subFirst = false;
-                    else
-                    {
-                        subItem += ",";
-                    }
-                    subItem += $"{i.Key}=";
-                    if (i.Value.Contains(" "))
-                    {
-                        subItem += $"\"{i.Value}\"";
-                    }
-                    else
-                    {
-                        subItem += i.Value;
-                    }
-                }
-
-
-                subItem += ")";
-
-                str += subItem;
-            }
-            str += ")";
-            Clipboard.SetText(str);
+            Clipboard.SetText(moddesc);
         }
     }
 }

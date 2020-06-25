@@ -33,10 +33,20 @@ namespace MassEffectModManagerCore.modmanager.objects
         public ObservableCollection<AlternateOption.Parameter> ParameterMap { get; } = new ObservableCollection<AlternateOption.Parameter>();
 
         /// <summary>
-        /// Parameter for the alternate. Used in the editor
+        /// Parameter for the alternate. Used in the editor, because we don't have bindable dictionary
         /// </summary>
         public class Parameter
         {
+            public Parameter()
+            {
+
+            }
+            public Parameter(string key, string value)
+            {
+                Key = key;
+                Value = value;
+            }
+
             // This class exists cause we can't bind to a dictionary
             public string Key { get; set; }
             public string Value { get; set; }

@@ -33,13 +33,13 @@ namespace MassEffectModManagerCore.modmanager
         private object compressionCompletedSignaler = new object();
 
         /// <summary>
-        /// Attempts to retreive the amount of data that will be deoompressed. Sine not all archive formats list this information, this method is not 100% reliable.
+        /// Attempts to retreive the amount of data that will be decompressed. Sine not all archive formats list this information, this method is not 100% reliable.
         /// </summary>
         /// <returns></returns>
         private long GetRequiredSpaceForExtraction()
         {
             if (GetJob(ModJob.JobHeader.ME2_RCWMOD) != null) { return new FileInfo(ArchivePath).Length; }
-
+            if (Archive == null) return 0; //Nothing we can look at
             var itemsToExtract = new List<ArchiveFileInfo>();
             var referencedFiles = GetAllRelativeReferences(!IsVirtualized, Archive);
             //unsure if this is required?? doesn't work for MEHEM EXE

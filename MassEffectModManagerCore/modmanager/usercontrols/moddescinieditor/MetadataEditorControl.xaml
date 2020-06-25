@@ -51,7 +51,7 @@
         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditingMod.MinimumSupportedBuild}" Margin="{StaticResource topBottomMargin}"/>
 
         <TextBlock FontWeight="Bold" Text="[ModInfo]" Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="2"/>
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Mod Name" Margin="{StaticResource topBottomMargin}"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Mod Name (modname)" Margin="{StaticResource topBottomMargin}"/>
         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding EditingMod.ModName}" Margin="{StaticResource topBottomMargin}"/>
 
         <TextBlock Grid.Row="5" Grid.Column="0" Text="Game (game)" Margin="{StaticResource topBottomMargin}"/>

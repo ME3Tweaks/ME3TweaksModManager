@@ -299,18 +299,22 @@ namespace MassEffectModManagerCore.modmanager
         }
 
         /// <summary>
-        /// Loads a mod from a virtual moddesc.ini file, forcing the ini path. This is used to load a third party mod through a virtual moddesc.ini file.
+        /// Loads a mod from a virtual moddesc.ini file, forcing the ini path. If archive is specified, the archive will be used, otherwise it will load as if on disk.
         /// </summary>
         /// <param name="iniText">Virtual Ini text</param>
-        /// <param name="forcedModPath">Path where this moddesc.ini would be if it existed in the archive</param>
-        /// <param name="archive">Archive file to parse against</param>
+        /// <param name="forcedModPath">Directory where this moddesc.ini would reside be if it existed in the archive or on disk</param>
+        /// <param name="archive">Archive file to parse against. If null, this mod will be parsed as if on-disk</param>
         public Mod(string iniText, string forcedModPath, SevenZipExtractor archive)
         {
             ModPath = forcedModPath;
-            Archive = archive;
-            ArchivePath = archive.FileName;
-            IsInArchive = true;
-            IsVirtualized = true;
+            if (archive != null)
+            {
+                Archive = archive;
+                ArchivePath = archive.FileName;
+                IsInArchive = true;
+                IsVirtualized = true;
+            }
+
             VirtualizedIniText = iniText;
             Log.Information(@"Loading virtualized moddesc.ini");
             try
@@ -321,7 +325,12 @@ namespace MassEffectModManagerCore.modmanager
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini, e.Message);
             }
-            SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
+
+            if (archive != null)
+            {
+                SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
+            }
+
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
         }
 

@@ -23,14 +23,27 @@
             <TabItem Header="Metadata">
                 <moddescinieditor:MetadataEditorControl x:Name="metadataEditor_control"/>
             </TabItem>
-            <TabItem Header="Alternate Files">
+            <TabItem Header="Basegame">
+            </TabItem>
+            <TabItem Header="Official DLC">
+            </TabItem>
+            <TabItem Header="Custom DLC">
+                <moddescinieditor:CustomDLCEditorControl x:Name="customdlcEditor_control"/>
+            </TabItem>
+            <TabItem Header="Alternate Files (Custom DLC)">
+                <DockPanel>
+                    <TextBlock TextWrapping="Wrap"  DockPanel.Dock="Top" Text="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead."/>
+                    <ScrollViewer>
+                        <alternates:AlternateFileBuilder x:Name="customdlc_alternateFileEditor_control"/>
+                    </ScrollViewer>
+                </DockPanel>
             </TabItem>
 
-            <TabItem Header="Alternate DLC">
+            <TabItem Header="Alternate DLC (Custom DLC)">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header."/>
                     <ScrollViewer>
-                        <alternates:AlternateDLCBuilder x:Name="alternateDlcEditor_control"/>
+                        <alternates:AlternateDLCBuilder x:Name="customdlc_alternateDlcEditor_control"/>
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>

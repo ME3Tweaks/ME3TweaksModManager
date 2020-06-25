@@ -24,6 +24,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return inputString.Split(';').ToList();
         }
 
+        /// <summary>
+        /// Builds a list resulting in the form of (Property=Value, Property2=Value2, 
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
         public static string BuildCommaSeparatedSplitValueList(Dictionary<string, string> keys)
         {
             string str = "(";
@@ -33,13 +38,21 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (first)
                 {
                     first = false;
-                } else
+                }
+                else
                 {
                     str += ",";
                 }
                 str += kp.Key;
                 str += "=";
-                str += kp.Value;
+                if (!kp.Value.Contains(" "))
+                {
+                    str += kp.Value;
+                }
+                else
+                {
+                    str += $"\"{kp.Value}\"";
+                }
             }
             return str + ")";
         }

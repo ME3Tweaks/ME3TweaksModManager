@@ -486,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        Log.Information($"Local asset missing: {info.md5}, downloading");
+                        Log.Information($"Local asset missing: {info.filename}, downloading");
                     }
 
                     if (download)

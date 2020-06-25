@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using IniParser.Model;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
@@ -107,14 +108,12 @@ namespace MassEffectModManagerCore.modmanager
         /// Maps in-game relative paths to the file that will be used to install to that location. The key is the target, the value is the source file that will be used.
         /// </summary>
         public Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        /// <summary>
-        /// List of files that will be removed from the game relative to this job's header directory.
-        /// </summary>
-        List<string> FilesToRemove = new List<string>();
+
         /// <summary>
         /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game)
         /// </summary>
         public Dictionary<string, string> CustomDLCFolderMapping = new Dictionary<string, string>();
+
 
         /// <summary>
         /// List of ME1-only supported headers. BASEGAME, BRING_DOWN_THE_SKY, and PINNACLE_STATION.
@@ -195,7 +194,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public string JobDirectory { get; internal set; }
         /// <summary>
-        /// MultiLists are tied to multilist[x] descriptors. These are esssentially an array variable you can reference in moddesc.
+        /// MultiLists are tied to multilist[x] descriptors. These are essentially an array variable you can reference in moddesc.
         /// </summary>
         public Dictionary<int, string[]> MultiLists { get; internal set; } = new Dictionary<int, string[]>();
 
@@ -474,6 +473,28 @@ namespace MassEffectModManagerCore.modmanager
 
             failureReason = null;
             return true; //validated
+        }
+
+        /// <summary>
+        /// Serializes this job into the specified IniData object
+        /// </summary>
+        /// <param name="moddessc"></param>
+        public void Serialize(IniData moddessc)
+        {
+            var header = Header.ToString();
+            if (!string.IsNullOrWhiteSpace(JobDirectory))
+            {
+                moddessc[header][@"moddir"] = JobDirectory;
+            }
+
+            if (Header == JobHeader.CUSTOMDLC)
+            {
+                if (CustomDLCFolderMapping.Any())
+                {
+                    moddessc[header][@"sourcedirs"] = string.Join(';', CustomDLCFolderMapping.Keys);
+                    moddessc[header][@"destdirs"] = string.Join(';', CustomDLCFolderMapping.Values);
+                }
+            }
         }
     }
 }

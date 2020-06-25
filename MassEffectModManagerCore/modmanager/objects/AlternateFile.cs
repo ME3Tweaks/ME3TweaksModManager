@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -13,6 +14,25 @@ namespace MassEffectModManagerCore.modmanager.objects
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
     public class AlternateFile : AlternateOption
     {
+        private static readonly string[] AllParameters =
+        {
+            @"Condition",
+            @"ConditionalDLC",
+            @"ModOperation",
+            @"FriendlyName",
+            @"ModFile",
+            @"ModAltFile",
+            @"Description",
+            @"CheckedByDefault",
+            @"OptionGroup",
+            @"ApplicableAutoText",
+            @"NotApplicableAutoText",
+            @"MultiListId",
+            @"MultiListRootPath",
+            @"MultiListTargetPath",
+            @"DLCRequirements"
+        };
+
         public enum AltFileOperation
         {
             INVALID_OPERATION,
@@ -90,6 +110,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
+            buildParameterMap(properties);
             if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
             {
                 FriendlyName = friendlyName;
@@ -333,6 +354,23 @@ namespace MassEffectModManagerCore.modmanager.objects
             ValidAlternate = true;
         }
 
+        /// <summary>
+        /// Builds the editable parameter map for use in moddesc.ini editor
+        /// </summary>
+        /// <param name="properties"></param>
+        private void buildParameterMap(Dictionary<string, string> properties)
+        {
+            var parms = properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }).ToList();
+            foreach (var v in AllParameters)
+            {
+                if (!parms.Any(x => x.Key == v))
+                {
+                    parms.Add(new Parameter(v, ""));
+                }
+            }
+            ParameterMap.ReplaceAll(parms.OrderBy(x => x.Key));
+        }
+
         public void SetupInitialSelection(GameTarget target)
         {
             IsSelected = CheckedByDefault; //Reset
@@ -343,7 +381,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             if (IsManual)
             {
-                IsSelected = CheckedByDefault;         
+                IsSelected = CheckedByDefault;
                 return;
             }
             var installedDLC = MEDirectories.GetInstalledDLC(target);

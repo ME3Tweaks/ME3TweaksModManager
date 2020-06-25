@@ -3234,7 +3234,10 @@ namespace MassEffectModManagerCore
 
         private void OpenModDescEditor_Click(object sender, RoutedEventArgs e)
         {
-            new ModDescEditor(SelectedMod).Show();
+            if (SelectedMod != null)
+            {
+                new ModDescEditor(SelectedMod).Show();
+            }
         }
     }
 }

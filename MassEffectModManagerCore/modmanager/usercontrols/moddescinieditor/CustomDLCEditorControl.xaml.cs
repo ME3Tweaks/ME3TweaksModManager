@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,34 +14,43 @@ using System.Windows.Shapes;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates
+namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
-    /// Interaction logic for AlternateDLCBuilder.xaml
+    /// Interaction logic for CustomDLCEditorControl.xaml
     /// </summary>
-    public partial class AlternateDLCBuilder : UserControl, INotifyPropertyChanged
+    public partial class CustomDLCEditorControl : UserControl, INotifyPropertyChanged
     {
         public Mod EditingMod { get; set; }
-
         public void OnEditingModChanged()
         {
             if (EditingMod != null)
             {
                 CustomDLCJob = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                if (CustomDLCJob != null)
+                {
+                    foreach (var v in CustomDLCJob.CustomDLCFolderMapping)
+                    {
+                        CustomDLCMapping.Add(new AlternateOption.Parameter(v.Key, v.Value));
+                    }
+                }
             }
             else
             {
                 CustomDLCJob = null;
+                CustomDLCMapping.ClearEx();
             }
         }
-        public ModJob CustomDLCJob { get; set; }
-        public AlternateDLCBuilder()
+
+        public CustomDLCEditorControl()
         {
             DataContext = this;
             InitializeComponent();
         }
 
-        //public ObservableCollectionExtended<AlternateDLC> AlternateDLCs { get; } = new ObservableCollectionExtended<AlternateDLC>();
+        public ModJob CustomDLCJob { get; set; }
+        public ObservableCollectionExtended<AlternateOption.Parameter> CustomDLCMapping { get; } = new ObservableCollectionExtended<AlternateOption.Parameter>();
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

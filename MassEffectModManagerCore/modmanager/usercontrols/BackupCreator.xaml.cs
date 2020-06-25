@@ -220,253 +220,250 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         });
                     }
 
-                    if (!end)
+                    if (end) return;
+                    if (isVanilla && isDLCConsistent && dlcModsInstalled.Count == 0)
                     {
-                        if (isVanilla && isDLCConsistent && dlcModsInstalled.Count == 0)
+                        BackupStatus = M3L.GetString(M3L.string_waitingForUserInput);
+
+                        string backupPath = null;
+                        if (!targetToBackup.IsCustomOption)
                         {
-                            BackupStatus = M3L.GetString(M3L.string_waitingForUserInput);
+                            // Creating a new backup
+                            nbw.ReportProgress(0, TaskDialogProgressBarState.Paused);
 
-                            string backupPath = null;
-                            if (!targetToBackup.IsCustomOption)
+                            Application.Current.Dispatcher.Invoke(delegate
                             {
-                                // Creating a new backup
-                                nbw.ReportProgress(0, TaskDialogProgressBarState.Paused);
+                                Log.Information(@"Prompting user to select backup destination");
 
-                                Application.Current.Dispatcher.Invoke(delegate
+                                CommonOpenFileDialog m = new CommonOpenFileDialog
                                 {
-                                    Log.Information(@"Prompting user to select backup destination");
-
-                                    CommonOpenFileDialog m = new CommonOpenFileDialog
-                                    {
-                                        IsFolderPicker = true,
-                                        EnsurePathExists = true,
-                                        Title = M3L.GetString(M3L.string_selectBackupDestination)
-                                    };
-                                    if (m.ShowDialog() == CommonFileDialogResult.Ok)
-                                    {
-                                        backupPath = m.FileName;
-                                        Log.Information(@"Backup path chosen: " + backupPath);
-
-                                        bool okToBackup = validateBackupPath(backupPath, targetToBackup);
-                                        if (!okToBackup)
-                                        {
-                                            end = true;
-                                            EndBackup();
-                                            return;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        end = true;
-                                        EndBackup();
-                                        return;
-                                    }
-                                });
-                                if (end)
+                                    IsFolderPicker = true,
+                                    EnsurePathExists = true,
+                                    Title = M3L.GetString(M3L.string_selectBackupDestination)
+                                };
+                                if (m.ShowDialog() == CommonFileDialogResult.Ok)
                                 {
-                                    return;
-                                }
-                                nbw.ReportProgress(0, TaskbarItemProgressState.Indeterminate);
+                                    backupPath = m.FileName;
+                                    Log.Information(@"Backup path chosen: " + backupPath);
 
-                            }
-                            else
-                            {
-                                Log.Information(@"Linking existing backup at " + targetToBackup.TargetPath);
-                                backupPath = targetToBackup.TargetPath;
-                                // Linking existing backup
-                                Application.Current.Dispatcher.Invoke(delegate
-                                {
-                                    bool okToBackup = validateBackupPath(targetToBackup.TargetPath, targetToBackup);
+                                    bool okToBackup = validateBackupPath(backupPath, targetToBackup);
                                     if (!okToBackup)
                                     {
                                         end = true;
                                         EndBackup();
                                         return;
                                     }
-                                });
+                                }
+                                else
+                                {
+                                    end = true;
+                                    EndBackup();
+                                    return;
+                                }
+                            });
+                            if (end)
+                            {
+                                return;
+                            }
+                            nbw.ReportProgress(0, TaskbarItemProgressState.Indeterminate);
+
+                        }
+                        else
+                        {
+                            Log.Information(@"Linking existing backup at " + targetToBackup.TargetPath);
+                            backupPath = targetToBackup.TargetPath;
+                            // Linking existing backup
+                            Application.Current.Dispatcher.Invoke(delegate
+                            {
+                                bool okToBackup = validateBackupPath(targetToBackup.TargetPath, targetToBackup);
+                                if (!okToBackup)
+                                {
+                                    end = true;
+                                    EndBackup();
+                                    return;
+                                }
+                            });
+                        }
+
+                        if (end) return;
+
+                        if (!targetToBackup.IsCustomOption)
+                        {
+                            #region callbacks and copy code
+
+                            // Copy to new backup
+                            void fileCopiedCallback()
+                            {
+                                ProgressValue++;
+                                if (ProgressMax > 0)
+                                {
+                                    nbw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
+                                }
                             }
 
-                            if (end) return;
+                            string dlcFolderpath = MEDirectories.DLCPath(targetToBackup) + '\\';
+                            int dlcSubStringLen = dlcFolderpath.Length;
 
-                            if (!targetToBackup.IsCustomOption)
+                            bool aboutToCopyCallback(string file)
                             {
-                                #region callbacks and copy code
-
-                                // Copy to new backup
-                                void fileCopiedCallback()
+                                try
                                 {
-                                    ProgressValue++;
-                                    if (ProgressMax > 0)
+                                    if (file.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
+                                    if (file.StartsWith(dlcFolderpath))
                                     {
-                                        nbw.ReportProgress(0, ProgressValue * 1.0 / ProgressMax);
-                                    }
-                                }
-
-                                string dlcFolderpath = MEDirectories.DLCPath(targetToBackup) + '\\';
-                                int dlcSubStringLen = dlcFolderpath.Length;
-
-                                bool aboutToCopyCallback(string file)
-                                {
-                                    try
-                                    {
-                                        if (file.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
-                                        if (file.StartsWith(dlcFolderpath))
+                                        //It's a DLC!
+                                        string dlcname = file.Substring(dlcSubStringLen);
+                                        var dlcFolderNameEndPos = dlcname.IndexOf('\\');
+                                        if (dlcFolderNameEndPos > 0)
                                         {
-                                            //It's a DLC!
-                                            string dlcname = file.Substring(dlcSubStringLen);
-                                            var dlcFolderNameEndPos = dlcname.IndexOf('\\');
-                                            if (dlcFolderNameEndPos > 0)
+                                            dlcname = dlcname.Substring(0, dlcFolderNameEndPos);
+                                            if (MEDirectories.OfficialDLCNames(targetToBackup.Game)
+                                                .TryGetValue(dlcname, out var hrName))
                                             {
-                                                dlcname = dlcname.Substring(0, dlcFolderNameEndPos);
-                                                if (MEDirectories.OfficialDLCNames(targetToBackup.Game)
-                                                    .TryGetValue(dlcname, out var hrName))
-                                                {
-                                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                        hrName);
-                                                }
-                                                else
-                                                {
-                                                    BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                        dlcname);
-                                                }
+                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                    hrName);
                                             }
                                             else
                                             {
-                                                // Loose files in the DLC folder
                                                 BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                    M3L.GetString(M3L.string_basegame));
+                                                    dlcname);
                                             }
                                         }
                                         else
                                         {
-                                            //It's basegame
-                                            if (file.EndsWith(@".bik"))
-                                            {
-                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                    M3L.GetString(M3L.string_movies));
-                                            }
-                                            else if (new FileInfo(file).Length > 52428800)
-                                            {
-                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                    Path.GetFileName(file));
-                                            }
-                                            else
-                                            {
-                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                    M3L.GetString(M3L.string_basegame));
-                                            }
+                                            // Loose files in the DLC folder
+                                            BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                M3L.GetString(M3L.string_basegame));
                                         }
                                     }
-                                    catch (Exception e)
+                                    else
                                     {
-                                        Crashes.TrackError(e, new Dictionary<string, string>()
+                                        //It's basegame
+                                        if (file.EndsWith(@".bik"))
+                                        {
+                                            BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                M3L.GetString(M3L.string_movies));
+                                        }
+                                        else if (new FileInfo(file).Length > 52428800)
+                                        {
+                                            BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                Path.GetFileName(file));
+                                        }
+                                        else
+                                        {
+                                            BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
+                                                M3L.GetString(M3L.string_basegame));
+                                        }
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    Crashes.TrackError(e, new Dictionary<string, string>()
                                     {
                                         {@"dlcFolderpath", dlcFolderpath},
                                         {@"dlcSubStringLen", dlcSubStringLen.ToString()},
                                         {@"file", file}
                                     });
-                                    }
-
-                                    return true;
                                 }
 
-                                void totalFilesToCopyCallback(int total)
-                                {
-                                    ProgressValue = 0;
-                                    ProgressIndeterminate = false;
-                                    ProgressMax = total;
-                                    nbw.ReportProgress(0, TaskbarItemProgressState.Normal);
-                                }
+                                return true;
+                            }
 
-                                BackupStatus = M3L.GetString(M3L.string_creatingBackup);
-                                Log.Information($@"Backing up {targetToBackup.TargetPath} to {backupPath}");
+                            void totalFilesToCopyCallback(int total)
+                            {
+                                ProgressValue = 0;
+                                ProgressIndeterminate = false;
+                                ProgressMax = total;
                                 nbw.ReportProgress(0, TaskbarItemProgressState.Normal);
-                                CopyDir.CopyAll_ProgressBar(new DirectoryInfo(targetToBackup.TargetPath),
-                                    new DirectoryInfo(backupPath),
-                                    totalItemsToCopyCallback: totalFilesToCopyCallback,
-                                    aboutToCopyCallback: aboutToCopyCallback,
-                                    fileCopiedCallback: fileCopiedCallback,
-                                    ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
-                                #endregion
                             }
 
-                            // Write key
-                            switch (Game)
-                            {
-                                case Mod.MEGame.ME1:
-                                case Mod.MEGame.ME2:
-                                    Utilities.WriteRegistryKey(App.BACKUP_REGISTRY_KEY, Game + @"VanillaBackupLocation",
-                                        backupPath);
-                                    break;
-                                case Mod.MEGame.ME3:
-                                    Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation",
-                                        backupPath);
-                                    break;
-                            }
+                            BackupStatus = M3L.GetString(M3L.string_creatingBackup);
+                            Log.Information($@"Backing up {targetToBackup.TargetPath} to {backupPath}");
+                            nbw.ReportProgress(0, TaskbarItemProgressState.Normal);
+                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(targetToBackup.TargetPath),
+                                new DirectoryInfo(backupPath),
+                                totalItemsToCopyCallback: totalFilesToCopyCallback,
+                                aboutToCopyCallback: aboutToCopyCallback,
+                                fileCopiedCallback: fileCopiedCallback,
+                                ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
+                            #endregion
+                        }
 
-                            var cmmvanilla = Path.Combine(backupPath, @"cmm_vanilla");
-                            if (!File.Exists(cmmvanilla))
-                            {
-                                Log.Information($@"Writing cmm_vanilla to " + cmmvanilla);
-                                File.Create(cmmvanilla).Close();
-                            }
+                        // Write key
+                        switch (Game)
+                        {
+                            case Mod.MEGame.ME1:
+                            case Mod.MEGame.ME2:
+                                Utilities.WriteRegistryKey(App.BACKUP_REGISTRY_KEY, Game + @"VanillaBackupLocation",
+                                    backupPath);
+                                break;
+                            case Mod.MEGame.ME3:
+                                Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation",
+                                    backupPath);
+                                break;
+                        }
 
-                            Log.Information($@"Backup completed.");
+                        var cmmvanilla = Path.Combine(backupPath, @"cmm_vanilla");
+                        if (!File.Exists(cmmvanilla))
+                        {
+                            Log.Information($@"Writing cmm_vanilla to " + cmmvanilla);
+                            File.Create(cmmvanilla).Close();
+                        }
 
-                            Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
+                        Log.Information($@"Backup completed.");
+
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                             {
                                 {@"Game", Game.ToString()},
                                 {@"Result", @"Success"},
                                 {@"Type", targetToBackup.IsCustomOption ? @"Linked" : @"Copy"}
                             });
 
-                            EndBackup();
-                            return;
-                        }
+                        EndBackup();
+                        return;
+                    }
 
 
-                        if (!isVanilla)
-                        {
-                            //Show UI for non vanilla
-                            Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
+                    if (!isVanilla)
+                    {
+                        //Show UI for non vanilla
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                             {
                                 {@"Game", Game.ToString()},
                                 {@"Result", @"Failure, Game modified"}
                             });
-                            b.Result = (nonVanillaFiles, M3L.GetString(M3L.string_cannotBackupModifiedGame),
-                                M3L.GetString(M3L.string_followingFilesDoNotMatchTheVanillaDatabase));
-                        }
-                        else if (!isDLCConsistent)
-                        {
-                            Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
+                        b.Result = (nonVanillaFiles, M3L.GetString(M3L.string_cannotBackupModifiedGame),
+                            M3L.GetString(M3L.string_followingFilesDoNotMatchTheVanillaDatabase));
+                    }
+                    else if (!isDLCConsistent)
+                    {
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                             {
                                 {@"Game", Game.ToString()},
                                 {@"Result", @"Failure, DLC inconsistent"}
                             });
-                            if (targetToBackup.Supported)
-                            {
-                                b.Result = (inconsistentDLC, M3L.GetString(M3L.string_inconsistentDLCDetected),
-                                    M3L.GetString(M3L.string_dialogTheFollowingDLCAreInAnInconsistentState));
-                            }
-                            else
-                            {
-                                b.Result = (M3L.GetString(M3L.string_inconsistentDLCDetected),
-                                    M3L.GetString(M3L.string_inconsistentDLCDetectedUnofficialGame));
-                            }
-                        }
-                        else if (dlcModsInstalled.Count > 0)
+                        if (targetToBackup.Supported)
                         {
-                            Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
+                            b.Result = (inconsistentDLC, M3L.GetString(M3L.string_inconsistentDLCDetected),
+                                M3L.GetString(M3L.string_dialogTheFollowingDLCAreInAnInconsistentState));
+                        }
+                        else
+                        {
+                            b.Result = (M3L.GetString(M3L.string_inconsistentDLCDetected),
+                                M3L.GetString(M3L.string_inconsistentDLCDetectedUnofficialGame));
+                        }
+                    }
+                    else if (dlcModsInstalled.Count > 0)
+                    {
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                             {
                                 {@"Game", Game.ToString()},
                                 {@"Result", @"Failure, DLC mods found"}
                             });
-                            b.Result = (dlcModsInstalled, M3L.GetString(M3L.string_dlcModsAreInstalled),
-                                M3L.GetString(M3L.string_dialogDLCModsWereDetectedCannotBackup));
-                        }
-
-                        EndBackup();
+                        b.Result = (dlcModsInstalled, M3L.GetString(M3L.string_dlcModsAreInstalled),
+                            M3L.GetString(M3L.string_dialogDLCModsWereDetectedCannotBackup));
                     }
+                    EndBackup();
                 };
                 nbw.RunWorkerCompleted += (a, b) =>
                 {
