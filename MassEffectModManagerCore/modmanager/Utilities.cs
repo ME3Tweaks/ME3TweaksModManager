@@ -623,31 +623,6 @@ namespace MassEffectModManagerCore
             return result;
         }
 
-
-        internal static void InstallEmbeddedASI(string asiFname, double installingVersion, GameTarget gameTarget)
-        {
-            string asiTargetDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetExecutableDirectory(gameTarget), "asi")).FullName;
-
-            var existingmatchingasis = Directory.GetFiles(asiTargetDirectory, asiFname.Substring(0, asiFname.LastIndexOf('-')) + "*").ToList();
-            if (existingmatchingasis.Count > 0)
-            {
-                foreach (var v in existingmatchingasis)
-                {
-                    string shortName = Path.GetFileNameWithoutExtension(v);
-                    var asiVersion = shortName.Substring(shortName.LastIndexOf('-') + 2); //Todo: Try catch this as it might explode if for some reason filename is like ASIMod-.asi
-                    if (double.TryParse(asiVersion, out double version) && version > installingVersion)
-                    {
-                        Log.Information("A newer version of a supporting ASI is installed: " + shortName + ". Not installing ASI.");
-                        return;
-                    }
-                }
-            }
-
-            //Todo: Use ASI manifest to identify malformed names
-            string asiPath = "MassEffectModManagerCore.modmanager.asi." + asiFname + ".asi";
-            Utilities.ExtractInternalFile(asiPath, Path.Combine(asiTargetDirectory, asiFname + ".asi"), true);
-        }
-
         public static string GetModDirectoryForGame(Mod.MEGame game)
         {
             if (game == Mod.MEGame.ME1) return GetME1ModsDirectory();

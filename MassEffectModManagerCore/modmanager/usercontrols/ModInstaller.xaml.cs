@@ -624,14 +624,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    Log.Information(@"Installing supporting ASI files");
+                    Log.Information(@"Installing supporting ASI files - balance changes replacer");
                     Utilities.InstallASIByGroupID(gameTarget, @"Balance Changes Replacer", 5);
                 }
 
-                //Install Autotoc ASI?
-                //Install logger truncating?
-                // (Is this already handled elsewhere?)
-                // Don't install these until ALOT installer is also on ASI Manager code
+                if (gameTarget.Supported)
+                {
+                    Log.Information(@"Installing AutoTOC, ME3Logger-Truncating");
+                    Utilities.InstallASIByGroupID(gameTarget, @"AutoTOCASI", 9);
+                    Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 8);
+
+                }
+
             }
 
             if (sfarStagingDirectory != null)
