@@ -40,8 +40,18 @@ namespace MassEffectModManagerCore.modmanager.windows
             DataContext = this;
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialModLibrary",
-                ImagePath = "/images/introtutorial/modlibrary.png",
+                StringKey = @"string_tutorialIntro",
+                ImagePath = @"/images/introtutorial/startpage.png",
+                UIString = "This quick tutorial will show you around the Mod Manager Interface.\nPress Next and Previous on the bottom right to navigate the tutorial.",
+                ColumnIndex = 3,
+                RowIndex = 4,
+                ColumnSpan = 5,
+                RowSpan = 4
+            });
+            TutorialSteps.Add(new TutorialStep
+            {
+                StringKey = @"string_tutorialModLibrary",
+                ImagePath = @"/images/introtutorial/modlibrary.png",
                 UIString = "Your mod library is where mods are imported from their original archives. This makes it easy to reinstall mods, as well as be notified of updates to mods.\n\nMods shown in the mod library are NOT installed mods. You must press Apply Mod to install a mod to an Installation Target.",
                 ColumnIndex = 4,
                 RowIndex = 4,
@@ -50,8 +60,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialTArgetDescription",
-                ImagePath = "/images/introtutorial/target_description.png",
+                StringKey = @"string_tutorialTArgetDescription",
+                ImagePath = @"/images/introtutorial/target_description.png",
                 UIString = "An Installation Target is a copy of the game and is shown at the top of the main window. Pressing Apply Mod will install the selected mod to this target.\n\nUsing the Manage Target button, you can manage what mods are installed.",
                 ColumnIndex = 4,
                 RowIndex = 5,
@@ -60,8 +70,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialInstallationInformation",
-                ImagePath = "/images/introtutorial/installation_information.png",
+                StringKey = @"string_tutorialInstallationInformation",
+                ImagePath = @"/images/introtutorial/installation_information.png",
                 UIString = "In the Installation Information panel (accessed by clicking Manage Target), you can manage installed mods and modified basegame files.",
                 ColumnIndex = 2,
                 RowIndex = 6,
@@ -72,8 +82,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             // Menus
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialOptionsMenu",
-                ImagePath = "/images/introtutorial/optionsmenu.png",
+                StringKey = @"string_tutorialOptionsMenu",
+                ImagePath = @"/images/introtutorial/optionsmenu.png",
                 UIString = "You can change settings for Mod Manager in the Options menu, in the Actions menu. Check them out at least once before you start modding.",
                 ColumnIndex = 2,
                 RowIndex = 8,
@@ -82,8 +92,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialModManagementMenu",
-                ImagePath = "/images/introtutorial/modmanagement.png",
+                StringKey = @"string_tutorialModManagementMenu",
+                ImagePath = @"/images/introtutorial/modmanagement.png",
                 UIString = "The Mod Management menu has many useful things for managing and importing mods. Hover the mouse over items to get a description of what they do.\n\nYou can also generate a UI compatibility pack from this menu if you're using the Singleplayer Native Controller Support mod for Mass Effect 3.",
                 ColumnIndex = 1,
                 RowIndex = 7,
@@ -92,8 +102,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialModUtilsMenu",
-                ImagePath = "/images/introtutorial/modutils.png",
+                StringKey = @"string_tutorialModUtilsMenu",
+                ImagePath = @"/images/introtutorial/modutils.png",
                 UIString = "You can open the Mod Utils menu by right clicking a mod, or selecting it at the top menu bar when a mod is selected. You can do actions with the mod through this menu.\n\nThere are additional features in this menu (and others) if you're in Developer Mode.",
                 ColumnIndex = 2,
                 RowIndex = 8,
@@ -102,8 +112,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialToolsMenu",
-                ImagePath = "/images/introtutorial/toolsmenu.png",
+                StringKey = @"string_tutorialToolsMenu",
+                ImagePath = @"/images/introtutorial/toolsmenu.png",
                 UIString = "The Tools menu contains many useful programs and utilities for modding, including AutoTOC for ME3, binkw32 bypass, and up to date modding tools if you're a mod developer.",
                 ColumnIndex = 2,
                 RowIndex = 8,
@@ -112,8 +122,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialBackupRestoreMenu",
-                ImagePath = "/images/introtutorial/backupmenu.png",
+                StringKey = @"string_tutorialBackupRestoreMenu",
+                ImagePath = @"/images/introtutorial/backupmenu.png",
                 UIString = "You can take full backups of your game with the Backup option. You can also do full restores, or game clones using the Restore option.\n\nBackups are an important step in modding - mistakes happen!",
                 ColumnIndex = 3,
                 RowIndex = 5,
@@ -122,8 +132,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             TutorialSteps.Add(new TutorialStep
             {
-                StringKey = "string_tutorialHelpMenu",
-                ImagePath = "/images/introtutorial/helpmenu.png",
+                StringKey = @"string_tutorialHelpMenu",
+                ImagePath = @"/images/introtutorial/helpmenu.png",
                 UIString = "The Help menu in Mod Manager is automatically updated from ME3Tweaks.com and contains useful information, diagnostics and logs, and other information about the program.",
                 ColumnIndex = 2,
                 RowIndex = 7,

@@ -57,6 +57,7 @@
     <None Remove="images\introtutorial\modmanagement.png" />
     <None Remove="images\introtutorial\modutils.png" />
     <None Remove="images\introtutorial\optionsmenu.png" />
+    <None Remove="images\introtutorial\startpage.png" />
     <None Remove="images\introtutorial\target_description.png" />
     <None Remove="images\introtutorial\toolsmenu.png" />
     <None Remove="images\lighttheme.png" />
@@ -128,6 +129,7 @@
     <Resource Include="images\introtutorial\modmanagement.png" />
     <Resource Include="images\introtutorial\modutils.png" />
     <Resource Include="images\introtutorial\optionsmenu.png" />
+    <Resource Include="images\introtutorial\startpage.png" />
     <Resource Include="images\introtutorial\target_description.png" />
     <Resource Include="images\introtutorial\toolsmenu.png" />
     <Resource Include="images\steam.png" />
