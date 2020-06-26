@@ -30,6 +30,7 @@
                 Command="{Binding UploadLogCommand}"
                 Width="170"
                 HorizontalAlignment="Right"
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                 Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
             <Button
                 DockPanel.Dock="Right"
@@ -66,9 +67,10 @@
                 Text="{DynamicResource string_applicationLogDescription}"
                 TextWrapping="Wrap" />
             <ComboBox
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                Margin="0,4,0,0"
                 SelectedItem="{Binding SelectedLog}"
                 ItemsSource="{Binding AvailableLogs}"
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentComboBox}}"
                 IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
             <TextBlock
                 Text="{DynamicResource string_gameDiagnostic}"
@@ -79,9 +81,10 @@
                 Text="{DynamicResource string_gameDiagnosticDescription}"
                 TextWrapping="Wrap" />
             <ComboBox
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentComboBox}}"
+                Margin="0,4,0,0"
                 ItemsSource="{Binding DiagnosticTargets}"
                 SelectedItem="{Binding SelectedDiagnosticTarget}"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                 ToolTip="{DynamicResource string_tooltip_currentTarget}"
                 ItemTemplate="{StaticResource TargetSelectorTemplate}"
                 ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"

@@ -519,7 +519,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var d3d9file = Path.Combine(exeDir, @"d3d9.dll");
                     if (File.Exists(d3d9file))
                     {
-                        addDiagLine(@"d3d9.dll exists - a dll is hooking the process (reshade?), may cause stability issues", Severity.WARN);
+                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(d3d9file);
+                        string d3d9message = @"Product name on dll not set";
+                        if (!string.IsNullOrEmpty(fvi.ProductName))
+                        {
+                            d3d9message = fvi.ProductName;
+                        }
+
+                        addDiagLine(@"d3d9.dll exists - " + d3d9message, Severity.WARN);
                     }
 
                     var fpscounter = Path.Combine(exeDir, @"fpscounter\fpscounter.dll");
@@ -1472,7 +1479,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             foreach (var sig in info.GetSignatures())
             {
                 var signingTime = sig.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
-                addDiagLine(@" > Executable signed on " + signingTime, Severity.INFO);
+                addDiagLine(@" > Signed on " + signingTime, Severity.INFO);
 
                 foreach (var signChain in sig.AdditionalCertificates)
                 {

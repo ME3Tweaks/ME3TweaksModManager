@@ -508,7 +508,7 @@
     <system:String x:Key="string_someDlcNotInstalled">Some DLC not installed</system:String>
     <system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">This target does not have have all OFFICIAL DLC installed. Ensure you have installed all OFFICIAL DLC you want to include in your backup, otherwise a game restore will not include all of it.\n\nThe following DLC is not installed:\n{0}\n\nNote that you don't need all DLC in a backup (such as DLC you have not purchased), however some Mod Manager features depend on specific DLC being installed, such as ME3Tweaks ModMaker.\n\nMake a backup of this target?</system:String>
     <!-- 0 = bulleted list of DLC -->
-    <system:String x:Key="string_linkBackupToAnExistingGameCopy">Link backup to an existing game copy</system:String>
+    <system:String x:Key="string_linkBackupToAnExistingGameCopy">Link to an existing backup</system:String>
     <system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">This installation cannot be linked as a backup as it is already in the list of available modding targets. To link this installation as a backup, first remove the target from the Installation Information panel, under 'Manage Target'.</system:String>
     <system:String x:Key="string_cannotLinkGameCopy">Cannot link game copy</system:String>
     <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">The selected installation cannot be linked to for a backup due to validation errors: {0}.</system:String>
@@ -645,14 +645,14 @@
     <system:String x:Key="string_logUploadFailed">Log upload failed</system:String>
     <system:String x:Key="string_logsAndDiagnostics">Logs and Diagnostics</system:String>
     <system:String x:Key="string_uploadToLogViewer">Upload to log viewer</system:String>
-    <system:String x:Key="string_selectWhatDataToCollect">Select what data to collect</system:String>
+    <system:String x:Key="string_selectWhatDataToCollect">Select what data to collect.</system:String>
     <system:String x:Key="string_modManagerApplicationLog">Mod Manager application log</system:String>
-    <system:String x:Key="string_applicationLogDescription">The application log details a Mod Manager session and can be used by ME3Tweaks to debug the application.</system:String>
+    <system:String x:Key="string_applicationLogDescription">The application log details what occured during a Mod Manager session and can be used to troubleshoot the application. If you are trying to identify why something occurred in Mod Manager, select an application log.</system:String>
     <system:String x:Key="string_gameDiagnostic">Game diagnostic</system:String>
-    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects game information including data on ALOT status, installed DLC, game version, crash logs (if any), and more. If you are having an issue in-game, please select the game you are having an issue with.</system:String>
+    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects information about a specific game target, including data on ALOT status, installed DLC, game version, crash logs (if any), texture issues, and more. If you are having an issue with a game, please select it.</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_checkAllTexturesInGameDescription">Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes</system:String>
     <system:String x:Key="string_fullTexturesCheck">Full textures check</system:String>
-    <system:String x:Key="string_diagShareTheLink">Share the resulting link of your log/diagnostic with your recipient.</system:String>
+    <system:String x:Key="string_diagShareTheLink">Share the resulting link of your log/diagnostic with your recipient. If you aren't sure what options to pick, simply select one from both.</system:String>
     <system:String x:Key="string_selectAnApplicationLog">Select an application log</system:String>
     <system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Select a game target to generate diagnostics for</system:String>
     <system:String x:Key="string_compressingForUpload">Compressing for upload</system:String>
