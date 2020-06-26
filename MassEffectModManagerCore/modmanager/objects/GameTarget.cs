@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             get
             {
                 if (GameSource == null) return @"/images/unknown.png";
-                if (GameSource.Contains(@"Steam")) return @"/images/steam.png";
+                if (GameSource.Contains(@"Steam")) return @"/images/steam.png"; //higher priority than Origin in icon will make the Steam/Origin mix work
                 if (GameSource.Contains(@"Origin")) return @"/images/origin.png";
                 if (GameSource.Contains(@"DVD")) return @"/images/dvd.png";
                 return @"/images/unknown.png";
@@ -124,6 +124,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
+                        if (GameSource.Contains("Origin") && Game == Mod.MEGame.ME3)
+                        {
+                            // Check for steam
+                            if (Directory.Exists(Path.Combine(TargetPath, @"__overlay")))
+                            {
+                                GameSource += @" (Steam version)";
+                            }
+                        }
                         Log.Information(@"Source: " + GameSource);
                     }
 
