@@ -228,7 +228,6 @@
     <Resource Include="images\gameicons\ME2_48.ico" />
     <Resource Include="images\gameicons\ME3_48.ico" />
     <Resource Include="images\gameicons\Unknown_48.ico" />
-    <Resource Include="images\loadingspinner.png" />
     <Resource Include="images\origin.png" />
     <EmbeddedResource Include="modmanager\executables\vpat.exe" />
     <Resource Include="modmanager\localizations\icons\english.png" />
