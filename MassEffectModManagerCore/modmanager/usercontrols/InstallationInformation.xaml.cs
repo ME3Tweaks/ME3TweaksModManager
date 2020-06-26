@@ -281,6 +281,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
+        /// <summary>
+        /// This method is run on a background thread so all UI calls needs to be wrapped
+        /// </summary>
         private void PopulateUI()
         {
             bool deleteConfirmationCallback(InstalledDLCMod mod)
@@ -297,10 +300,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_removeXFromTheGameInstallationQuestion, mod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             }
+
             void notifyDeleted()
             {
-                PopulateUI();
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"InstallationInformationDataPopulator");
+                nbw.DoWork += (a, b) => { PopulateUI(); };
+                nbw.RunWorkerAsync();
             }
+
             SelectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDeleted);
 
             bool restoreBasegamefileConfirmationCallback(string filepath)
@@ -427,6 +434,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 notifyStartingBasegameFileRestoreCallback,
                 notifyRestoredCallback);
             SFARBeingRestored = false;
+
+            if (SelectedTarget != null && !SelectedTarget.TextureModded)
+            {
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BasegameSourceIdentifier");
+                nbw.DoWork += (a, b) =>
+                {
+                    foreach (var v in SelectedTarget.ModifiedBasegameFiles)
+                    {
+                        v.DetermineSource();
+                    }
+                };
+                nbw.RunWorkerAsync();
+            }
         }
 
         public void OnSelectedTargetChanged()
@@ -438,6 +458,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DLCModsInstalled.ClearEx();
 
             //Get installed mod information
+            //NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"InstallationInformationDataPopulator");
+            //nbw.DoWork += (a, b) =>
+            //{
             if (SelectedTarget != null)
             {
                 PopulateUI();
@@ -457,7 +480,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 BackupLocationString = null;
             }
-
+            //};
+            //nbw.RunWorkerCompleted += (await, b) =>
+            //{
+            //    if (b.Error != null)
+            //    {
+            //        Log.Error($@"Error in installation information data populator: {b.Error.Message}");
+            //    }
+            //};
+            //nbw.RunWorkerAsync();
             PreviousTarget = SelectedTarget;
         }
 

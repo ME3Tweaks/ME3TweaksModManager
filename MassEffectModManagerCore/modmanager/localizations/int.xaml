@@ -608,7 +608,7 @@
     <!-- 0 = noun of tool (alot installer, mod manager, etc)-->
     <system:String x:Key="string_notInstalledByModManager">Not installed by Mod Manager</system:String>
     <system:String x:Key="string_installationInformation">Installation Information</system:String>
-    <system:String x:Key="string_installationInformationSubheader">Files installed into the basegame or official DLC directories cannot be tracked</system:String>
+    <system:String x:Key="string_installationInformationSubheader">Files installed into the basegame and official DLC directories are tracked on a best-effort system. The data may not be 100% accurate.</system:String>
     <system:String x:Key="string_installedDLCmods">Installed DLC mods</system:String>
     <system:String x:Key="string_delete">Delete</system:String>
     <system:String x:Key="string_modifiedBasegameFiles">Modified basegame files</system:String>

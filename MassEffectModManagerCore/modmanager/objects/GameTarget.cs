@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -11,6 +12,7 @@ using System.Windows.Media;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using Serilog;
@@ -282,20 +284,26 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             ModifiedBasegameFiles.ClearEx();
             ModifiedSFARFiles.ClearEx();
+
+            List<string> modifiedSfars = new List<string>();
+            List<string> modifiedFiles = new List<string>();
             void failedCallback(string file)
             {
                 //todo: Filter out SFARs?
                 if (file.EndsWith(@".sfar"))
                 {
-                    ModifiedSFARFiles.Add(new SFARObject(file, this, restoreSfarConfirmationCallback, notifySFARRestoringCallback, notifyRestoredCallback));
+                    modifiedSfars.Add(file);
                     return;
                 }
-                ModifiedBasegameFiles.Add(new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this,
-                    restoreBasegamefileConfirmationCallback,
-                    notifyFileRestoringCallback,
-                    notifyRestoredCallback));
+                modifiedFiles.Add(file);
             }
             VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
+
+            ModifiedSFARFiles.AddRange(modifiedSfars.Select(file => new SFARObject(file, this, restoreSfarConfirmationCallback, notifySFARRestoringCallback, notifyRestoredCallback)));
+            ModifiedBasegameFiles.AddRange(modifiedFiles.Select(file => new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this,
+                restoreBasegamefileConfirmationCallback,
+                notifyFileRestoringCallback,
+                notifyRestoredCallback)));
         }
 
         /// <summary>
@@ -303,23 +311,32 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public void DumpModifiedFilesFromMemory()
         {
-            ModifiedBasegameFiles.ClearEx();
-            ModifiedSFARFiles.ClearEx();
-            foreach (var uiInstalledDlcMod in UIInstalledDLCMods)
+            //Some commands are made from a background thread, which means this might not be called from dispatcher
+            App.Current.Dispatcher.Invoke(delegate
             {
-                uiInstalledDlcMod.ClearHandlers();
-            }
-            UIInstalledDLCMods.ClearEx();
+                ModifiedBasegameFiles.ClearEx();
+                ModifiedSFARFiles.ClearEx();
+                foreach (var uiInstalledDlcMod in UIInstalledDLCMods)
+                {
+                    uiInstalledDlcMod.ClearHandlers();
+                }
+
+                UIInstalledDLCMods.ClearEx();
+            });
         }
 
         public ObservableCollectionExtended<InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
 
         public void PopulateDLCMods(bool includeDisabled, Func<InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
         {
-            UIInstalledDLCMods.ClearEx();
             var dlcDir = MEDirectories.DLCPath(this);
-            var installedMods = MEDirectories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase)).Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList();
-            UIInstalledDLCMods.AddRange(installedMods.OrderBy(x => x.ModName));
+            var installedMods = MEDirectories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase));
+            //Must run on UI thread
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                UIInstalledDLCMods.ClearEx();
+                UIInstalledDLCMods.AddRange(installedMods.Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
+            });
         }
 
         public bool IsTargetWritable()
@@ -644,6 +661,31 @@ namespace MassEffectModManagerCore.modmanager.objects
                 this.restoreBasegamefileConfirmationCallback = restoreBasegamefileConfirmationCallback;
                 this.notifyRestoringCallback = notifyRestoringFileCallback;
                 RestoreCommand = new GenericCommand(RestoreFileWrapper, CanRestoreFile);
+            }
+
+            public string ModificationSource { get; set; }
+            /// <summary>
+            /// Uses the basegame file DB to attempt to determine the source mod of this file. This method should be run on a background thread.
+            /// </summary>
+            public void DetermineSource()
+            {
+                var fullpath = Path.Combine(target.TargetPath, FilePath);
+                if (File.Exists(fullpath))
+                {
+                    //if (FilePath.Equals(Utilities.Getth, StringComparison.InvariantCultureIgnoreCase)) return; //don't report this file
+                    var info = BasegameFileIdentificationService.GetBasegameFileSource(target, fullpath);
+                    if (info != null)
+                    {
+                        Debug.WriteLine("Source " + info.source);
+                        ModificationSource = info.source;
+                    }
+#if DEBUG
+                    else
+                    {
+                        ModificationSource = Utilities.CalculateMD5(fullpath);
+                    }
+#endif
+                }
             }
 
             private void RestoreFileWrapper()
