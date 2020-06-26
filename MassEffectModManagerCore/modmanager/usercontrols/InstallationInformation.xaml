@@ -393,6 +393,78 @@
                 <DockPanel
                     Height="300"
                     Margin="-8">
+                    <TextBlock Margin="4,4,4,0" Text="Extra dlls found" DockPanel.Dock="Top" FontSize="14" FontWeight="Bold"/>
+                    <ItemsControl
+                        ItemsSource="{Binding ExtraFiles}"
+                        HorizontalContentAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        AlternationCount="2"
+                        VirtualizingStackPanel.IsVirtualizing="True"
+                        ScrollViewer.CanContentScroll="True">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <DockPanel.Resources>
+                                        <Style
+                                            TargetType="{x:Type DockPanel}">
+                                            <Style.Triggers>
+                                                <Trigger
+                                                    Property="IsMouseOver"
+                                                    Value="True">
+                                                    <Setter
+                                                        Property="Background"
+                                                        Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DockPanel.Resources>
+                                    <Grid
+                                        Margin="0,1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition
+                                                Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition
+                                                Width="*" />
+                                            <ColumnDefinition
+                                                Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            FontSize="12"
+                                            Text="{Binding FileName}"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Stretch"
+                                            Background="Transparent" />
+                                        <Button
+                                            Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Grid.Column="1"
+                                            Content="{DynamicResource string_delete}"
+                                            HorizontalAlignment="Right"
+                                            Padding="5,2"
+                                            Command="{Binding DeleteCommand}" />
+                                    </Grid>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <ScrollViewer
+                                    x:Name="ScrollViewer"
+                                    Padding="2">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>                
                 </DockPanel>
             </TabItem>
         </TabControl>

@@ -1532,6 +1532,7 @@ namespace MassEffectModManagerCore
                 {
                     LoadMods();
                 }
+                new IntroTutorial().Show();
             };
             ShowBusyControl(previewPanel);
         }

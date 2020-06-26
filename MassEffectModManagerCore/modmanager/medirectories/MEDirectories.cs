@@ -405,5 +405,34 @@ namespace MassEffectModManagerCore.GameDirectories
 
             return mountMapping;
         }
+
+        public static string ExecutableDirectory(GameTarget gameTarget)
+        {
+            switch (gameTarget.Game)
+            {
+                case Mod.MEGame.ME1:
+                case Mod.MEGame.ME2:
+                    return Path.Combine(gameTarget.TargetPath, "Binaries");
+                case Mod.MEGame.ME3:
+                    return Path.Combine(gameTarget.TargetPath, "Binaries", "win32");
+            }
+            throw new ArgumentOutOfRangeException("gameTarget.Game");
+        }
+
+        public static List<string> VanillaDlls(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return ME1Directory.VanillaDlls;
+                case Mod.MEGame.ME2:
+                    return ME2Directory.VanillaDlls;
+                case Mod.MEGame.ME3:
+                    return ME3Directory.VanillaDlls;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(game), game, null);
+            }
+            throw new NotImplementedException();
+        }
     }
 }

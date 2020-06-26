@@ -46,7 +46,24 @@ namespace MassEffectModManagerCore.GameDirectories
         internal static string ASIPath(GameTarget target) => Path.Combine(target.TargetPath, "Binaries", "asi");
 
         public static string ExecutablePath(string gameRoot) => Path.Combine(gameRoot, "Binaries", "MassEffect2.exe");
-
+        public static List<string> VanillaDlls = new List<string>
+        {
+            "binkw23.dll",
+            "binkw32.dll",
+            "cudart.dll",
+            "GDFDLL.dll",
+            "nvtt.dll",
+            "NxCooking.dll",
+            "ogg.dll",
+            "OpenAL32.dll",
+            "PhysXExtensions.dll",
+            "umbra.dll",
+            "unrar.dll",
+            "vorbis.dll",
+            "vorbisenc.dll",
+            "vorbisfile.dll",
+            "wrap_oal.dll"
+        };
         static ME2Directory()
         {
             ReloadActivePath();

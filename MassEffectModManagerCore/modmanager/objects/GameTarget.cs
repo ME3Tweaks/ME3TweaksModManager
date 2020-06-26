@@ -17,6 +17,7 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using Serilog;
 using static MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation;
+using Path = System.IO.Path;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -832,5 +833,63 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool HasModifiedMPSFAR() => ModifiedSFARFiles.Any(x => x.IsMPSFAR);
         public bool HasModifiedSPSFAR() => ModifiedSFARFiles.Any(x => x.IsSPSFAR);
+
+
+        public class InstalledExtraFile
+        {
+            private Action<InstalledExtraFile> notifyDeleted;
+            private Mod.MEGame game;
+            public ICommand DeleteCommand { get; }
+            public InstalledExtraFile(string filepath, string type, Mod.MEGame game, Action<InstalledExtraFile> notifyDeleted = null)
+            {
+                this.game = game;
+                this.notifyDeleted = notifyDeleted;
+                FilePath = filepath;
+                FileName = Path.GetFileName(filepath);
+                FileType = type;
+                DeleteCommand = new GenericCommand(DeleteExtraFile, CanDeleteFile);
+            }
+
+            private bool CanDeleteFile() => !Utilities.IsGameRunning(game);
+
+            private void DeleteExtraFile()
+            {
+                if (!Utilities.IsGameRunning(game))
+                {
+                    try
+                    {
+                        File.Delete(FilePath);
+                        notifyDeleted?.Invoke(this);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Error deleting extra file {FilePath}: {e.Message}");
+                    }
+                }
+            }
+
+            public string FileName { get; set; }
+
+            public string FileType { get; set; }
+
+            public string FilePath { get; set; }
+        }
+        public ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ObservableCollectionExtended<InstalledExtraFile>();
+        /// <summary>
+        /// Populates list of 'extra' items for the game. This includes things like dlls, and for ME1, config files
+        /// </summary>
+        public void PopulateExtras()
+        {
+            var exeDir = MEDirectories.ExecutableDirectory(this);
+            var dlls = Directory.GetFiles(exeDir, @"*.dll").Select(x => Path.GetFileName(x));
+            var expectedDlls = MEDirectories.VanillaDlls(this.Game);
+            var extraDlls = dlls.Except(expectedDlls, StringComparer.InvariantCultureIgnoreCase);
+
+            void notifyExtraFileDeleted(InstalledExtraFile ief)
+            {
+                ExtraFiles.Remove(ief);
+            }
+            ExtraFiles.ReplaceAll(extraDlls.Select(x => new InstalledExtraFile(Path.Combine(exeDir, x), @"DLL", Game, notifyExtraFileDeleted)));
+        }
     }
 }

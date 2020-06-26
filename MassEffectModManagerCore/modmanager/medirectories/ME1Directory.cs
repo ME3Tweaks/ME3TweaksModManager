@@ -40,6 +40,23 @@ namespace MassEffectModManagerCore.GameDirectories
         // "C:\...\MyDocuments\BioWare\Mass Effect\" folder
         public static string BioWareDocPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"\BioWare\Mass Effect\");
         public static string GamerSettingsIniFile => Path.Combine(BioWareDocPath, @"BIOGame\Config\GamerSettings.ini");
+        public static List<string> VanillaDlls = new List<string>
+        {
+            "binkw23.dll",
+            "binkw32.dll",
+            "MassEffectGDF.dll",
+            "NxCooking.dll",
+            "ogg.dll",
+            "OpenAL32.dll",
+            "PhysXCore.dll",
+            "PhysXLoader.dll",
+            "unicows.dll",
+            "unrar.dll",
+            "vorbis.dll",
+            "vorbisfile.dll",
+            "WINUI.dll",
+            "wrap_oal.dll"
+        };
 
         internal static string ASIPath(GameTarget target) => Path.Combine(target.TargetPath, "Binaries", "asi");
 

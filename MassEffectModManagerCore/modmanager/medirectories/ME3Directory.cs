@@ -57,7 +57,13 @@ namespace MassEffectModManagerCore.GameDirectories
 
 
         public static string ExecutablePath(string gameRoot) => Path.Combine(gameRoot, "Binaries", "win32", "MassEffect3.exe");
-
+        public static List<string> VanillaDlls = new List<string>
+        {
+            "atiags.dll",
+            "binkw32.dll",
+            "binkw23.dll", //We put this here so this is not detected as non-vanilla since almost all modded games will have this
+            "PhysXExtensions.dll"
+        };
         static ME3Directory()
         {
             ReloadActivePath();

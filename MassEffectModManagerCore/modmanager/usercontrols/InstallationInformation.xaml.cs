@@ -303,13 +303,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             void notifyDeleted()
             {
-                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"InstallationInformationDataPopulator");
-                nbw.DoWork += (a, b) => { PopulateUI(); };
-                nbw.RunWorkerAsync();
+                PopulateUI();
             }
 
             SelectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDeleted);
-
+            SelectedTarget.PopulateExtras();
             bool restoreBasegamefileConfirmationCallback(string filepath)
             {
                 if (Utilities.IsGameRunning(SelectedTarget.Game))
