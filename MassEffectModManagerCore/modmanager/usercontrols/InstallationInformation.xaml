@@ -387,6 +387,14 @@
                     </ItemsControl>
                 </DockPanel>
             </TabItem>
+            <TabItem Header="Other"
+                Margin="0"
+                Padding="0">
+                <DockPanel
+                    Height="300"
+                    Margin="-8">
+                </DockPanel>
+            </TabItem>
         </TabControl>
         <DockPanel>
             <Image

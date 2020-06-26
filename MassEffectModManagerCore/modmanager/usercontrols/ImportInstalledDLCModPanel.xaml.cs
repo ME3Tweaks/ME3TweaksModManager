@@ -114,13 +114,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
                 }
-                Analytics.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
+                else
                 {
-                    {@"Game", SelectedTarget.Game.ToString()},
-                    {@"Folder", SelectedDLCFolder.DLCFolderName}
-                });
-                OperationInProgress = false;
-                OnClosing(new DataEventArgs(b.Result));
+
+                    if (b.Error == null && b.Result != null)
+                    {
+                        Analytics.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
+                        {
+                            {@"Game", SelectedTarget.Game.ToString()},
+                            {@"Folder", SelectedDLCFolder.DLCFolderName}
+                        });
+                    }
+
+                    OperationInProgress = false;
+                    if (b.Error == null && b.Result != null)
+                    {
+                        OnClosing(new DataEventArgs(b.Result)); //avoid accessing b.Result if error occurred
+                    }
+                }
             };
             nbw.RunWorkerAsync();
         }
@@ -129,6 +140,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             OperationInProgress = true;
             var sourceDir = Path.Combine(MEDirectories.DLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
+            // Check for MEMI, we will not allow importing files with MEMI
+            foreach (var file in Directory.GetFiles(sourceDir, @"*.*", SearchOption.AllDirectories))
+            {
+                if (file.RepresentsPackageFilePath() && Utilities.HasALOTMarker(file))
+                {
+                    Log.Error($@"Found a file marked as texture modded: {file}. These files cannot be imported into mod manager");
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        M3L.ShowDialog(window, "This mod contains files that have been marked as being part of a texture modded installation. Mods that have been modified by a texture mod cannot be imported.", "Cannot import mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
+                    return;
+                }
+            }
+
+
+
             var library = Utilities.GetModDirectoryForGame(SelectedTarget.Game);
             var destinationName = Utilities.SanitizePath(ModNameText);
             var modFolder = Path.Combine(library, destinationName);
@@ -161,7 +188,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ini[@"ModInfo"][@"moddev"] = M3L.GetString(M3L.string_importedFromGame);
             ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_defaultDescriptionForImportedMod, Utilities.GetGameName(SelectedTarget.Game), DateTime.Now);
             ini[@"ModInfo"][@"modver"] = M3L.GetString(M3L.string_unknown);
-
+            ini[@"ModInfo"][@"unofficial"] = @"true";
+            ini[@"ModInfo"][@"importedby"] = App.BuildNumber.ToString();
             ini[@"CUSTOMDLC"][@"sourcedirs"] = SelectedDLCFolder.DLCFolderName;
             ini[@"CUSTOMDLC"][@"destdirs"] = SelectedDLCFolder.DLCFolderName;
 
@@ -173,6 +201,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Mod m = new Mod(moddescPath, Mod.MEGame.ME3);
             e.Result = m;
             Log.Information(@"Mod import complete.");
+            Analytics.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()
+            {
+                {@"Mod name", m.ModName},
+                {@"Game", SelectedTarget.Game.ToString()},
+                {@"Folder name", SelectedDLCFolder.DLCFolderName}
+            });
 
             if (!CurrentModInTPMI)
             {

@@ -44,6 +44,11 @@ namespace MassEffectModManagerCore
         }
 
         private static readonly string MEMendFileMarker = "ThisIsMEMEndOfFile";
+        /// <summary>
+        /// Checks if the specified file has been tagged as part of an ALOT Installation. This is not the version marker.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public static bool HasALOTMarker(string file)
         {
             using var s = File.OpenRead(file);
