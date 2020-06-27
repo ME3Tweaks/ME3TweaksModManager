@@ -294,4 +294,16 @@
       <downloadlink>https://github.com/Erik-JS/ME3-ASI/raw/master/ME3DocumentsRedirector/Release/ME3DocumentsRedirector.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="18" game="2" hidden="0">
+    <asimod>
+      <name>Ace Slammer for ME2</name>
+      <installedname>AceSlammer-ME2</installedname>
+      <author>Mgamerz</author>
+      <description>Ace Slammer changes gravity every few seconds, giong through a pattern. Gravity will invert, throwing enemies not based on the ground into the sky, after which it will become zero G for a brief moment allowing enemies (or players) to float, before slamming them into the ground with tremendous force and then returning to normal gravity.</description>
+      <version>1</version>
+      <hash>9179456d118c2ad02d280aec681acd8f</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/AceSlammer</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/me2/AceSlammer-ME2-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
