@@ -1197,7 +1197,7 @@ namespace MassEffectModManagerCore
             return (string)Registry.GetValue(key, name, null);
         }
 
-        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false)
+        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false, bool forceReturnPath = false)
         {
             string path;
             switch (game)
@@ -1215,6 +1215,8 @@ namespace MassEffectModManagerCore
                 default:
                     return null;
             }
+
+            if (forceReturnPath) return path; // do not check it
 
             if (logReturnedPath)
             {

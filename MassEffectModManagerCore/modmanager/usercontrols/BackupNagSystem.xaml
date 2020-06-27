@@ -7,29 +7,26 @@
         </DockPanel>
         <TextBlock Text="{DynamicResource string_description_vanillaBackupRequired}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <DockPanel LastChildFill="False">
-                <TextBlock Text="Mass Effect" FontWeight="Bold" DockPanel.Dock="Bottom" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top">
-                    <fa:ImageAwesome Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Margin="0,0,5,0" Visibility="{Binding ME1BackedUp, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <fa:ImageAwesome Icon="TimesCircle" Width="16" Height="16" Foreground="Red" Margin="0,0,5,0" Visibility="{Binding ME1BackedUp, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
-                    <Image Source="/images/gameicons/ME1_48.ico" Height="32" />
-                </StackPanel>
+            <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME1Installed,Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding ME1BackupStatus}" ToolTip="{Binding ME1BackupStatusTooltip}" HorizontalAlignment="Center" />
+                <TextBlock Text="Mass Effect"   FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
+                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding ME1BackedUp, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,3,0,0"/>
+                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="TimesCircle" Width="16" Height="16" Foreground="Red" Visibility="{Binding ME1BackedUp, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
+                <Image DockPanel.Dock="Top" Source="/images/gameicons/ME1_48.ico" Height="32" />
             </DockPanel>
-            <DockPanel LastChildFill="False" Margin="15,0" DockPanel.Dock="Top">
-                <TextBlock Text="Mass Effect 2" FontWeight="Bold" DockPanel.Dock="Bottom" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top">
-                    <fa:ImageAwesome Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Margin="0,0,5,0" Visibility="{Binding ME2BackedUp, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <fa:ImageAwesome Icon="TimesCircle" Width="16" Height="16" Foreground="Red" Margin="0,0,5,0" Visibility="{Binding ME2BackedUp, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
-                    <Image Source="/images/gameicons/ME2_48.ico" Height="32" />
-                </StackPanel>
+            <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME2Installed,Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding ME2BackupStatus}" ToolTip="{Binding ME1BackupStatusTooltip}" HorizontalAlignment="Center" />
+                <TextBlock Text="Mass Effect 2"   FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
+                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding ME2BackedUp, Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,3,0,0"/>
+                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="TimesCircle" Width="16" Height="16" Foreground="Red" Visibility="{Binding ME2BackedUp, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
+                <Image DockPanel.Dock="Top" Source="/images/gameicons/ME2_48.ico" Height="32" />
             </DockPanel>
-            <DockPanel LastChildFill="False">
-                <TextBlock Text="Mass Effect 3" FontWeight="Bold" DockPanel.Dock="Bottom" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top">
-                    <fa:ImageAwesome Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Margin="0,0,5,0" Visibility="{Binding ME3BackedUp, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <fa:ImageAwesome Icon="TimesCircle" Width="16" Height="16" Foreground="Red" Margin="0,0,5,0" Visibility="{Binding ME3BackedUp, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
-                    <Image Source="/images/gameicons/ME3_48.ico" Height="32" />
-                </StackPanel>
+            <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME3Installed,Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding ME3BackupStatus}" ToolTip="{Binding ME1BackupStatusTooltip}" HorizontalAlignment="Center" />
+                <TextBlock Text="Mass Effect 3"   FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
+                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding ME3BackedUp, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,3,0,0"/>
+                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="TimesCircle" Width="16" Height="16" Foreground="Red" Visibility="{Binding ME3BackedUp, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
+                <Image DockPanel.Dock="Top" Source="/images/gameicons/ME3_48.ico" Height="32" />
             </DockPanel>
         </StackPanel>
         <TextBlock Text="{DynamicResource string_description_missingBackupWillLimitFeatures}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />

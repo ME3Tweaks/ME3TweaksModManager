@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -28,6 +29,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ME1Installed { get; set; }
         public bool ME2Installed { get; set; }
         public bool ME3Installed { get; set; }
+        public string ME1BackupStatus { get; set; }
+        public string ME1BackupStatusTooltip { get; set; }
+        public string ME2BackupStatus { get; set; }
+        public string ME2BackupStatusTooltip { get; set; }
+        public string ME3BackupStatus { get; set; }
+        public string ME3BackupStatusTooltip { get; set; }
         public bool AnyGameMissingBackup => (!ME1BackedUp && ME1Installed) || (!ME2BackedUp && ME2Installed) || (!ME3BackedUp && ME3Installed);
 
         public string Title
@@ -122,7 +129,38 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            SetupStatus(Mod.MEGame.ME1, ME1Installed, ME1BackedUp, (string msg) => ME1BackupStatus = msg, (string msg) => ME1BackupStatusTooltip = msg);
+            SetupStatus(Mod.MEGame.ME2, ME2Installed, ME2BackedUp, (string msg) => ME2BackupStatus = msg, (string msg) => ME2BackupStatusTooltip = msg);
+            SetupStatus(Mod.MEGame.ME3, ME3Installed, ME3BackedUp, (string msg) => ME3BackupStatus = msg, (string msg) => ME3BackupStatusTooltip = msg);
+        }
 
+        private void SetupStatus(Mod.MEGame game, bool installed, bool backedUp, Action<string> setStatus, Action<string> setStatusToolTip)
+        {
+            if (installed)
+            {
+                var bPath = Utilities.GetGameBackupPath(game, forceReturnPath: true);
+                if (backedUp)
+                {
+                    setStatus("Backed up");
+                    setStatusToolTip($"Backup stored at {bPath}");
+                }
+                else if (bPath == null)
+                {
+
+                    setStatus("Not backed up");
+                    setStatusToolTip("Game has not been backed up");
+                }
+                else if (!Directory.Exists(bPath))
+                {
+                    setStatus("Backup unavailable");
+                    setStatusToolTip($"Backup stored at {bPath}\nBackup path is not accessible, was it renamed or moved?");
+                }
+            }
+            else
+            {
+                setStatus("Not installed");
+                setStatusToolTip("Game does not appear to be installed, or is not yet a moddable target in Mod Manager.&#10;If game from Steam, ensure it has been run at least once");
+            }
         }
     }
 }
