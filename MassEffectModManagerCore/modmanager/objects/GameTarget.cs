@@ -840,13 +840,31 @@ namespace MassEffectModManagerCore.modmanager.objects
             private Action<InstalledExtraFile> notifyDeleted;
             private Mod.MEGame game;
             public ICommand DeleteCommand { get; }
-            public InstalledExtraFile(string filepath, string type, Mod.MEGame game, Action<InstalledExtraFile> notifyDeleted = null)
+            public string DisplayName { get; }
+            public enum EFileType
+            {
+                DLL
+            }
+
+            public EFileType FileType { get; }
+            public InstalledExtraFile(string filepath, EFileType type, Mod.MEGame game, Action<InstalledExtraFile> notifyDeleted = null)
             {
                 this.game = game;
                 this.notifyDeleted = notifyDeleted;
                 FilePath = filepath;
                 FileName = Path.GetFileName(filepath);
                 FileType = type;
+                DisplayName = FileName;
+                switch (type)
+                {
+                    case EFileType.DLL:
+                        var info = FileVersionInfo.GetVersionInfo(FilePath);
+                        if (!string.IsNullOrWhiteSpace(info.ProductName))
+                        {
+                            DisplayName += $@" ({info.ProductName.Trim()})";
+                        }
+                        break;
+                }
                 DeleteCommand = new GenericCommand(DeleteExtraFile, CanDeleteFile);
             }
 
@@ -870,8 +888,6 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public string FileName { get; set; }
 
-            public string FileType { get; set; }
-
             public string FilePath { get; set; }
         }
         public ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ObservableCollectionExtended<InstalledExtraFile>();
@@ -889,7 +905,22 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 ExtraFiles.Remove(ief);
             }
-            ExtraFiles.ReplaceAll(extraDlls.Select(x => new InstalledExtraFile(Path.Combine(exeDir, x), @"DLL", Game, notifyExtraFileDeleted)));
+            ExtraFiles.ReplaceAll(extraDlls.Select(x => new InstalledExtraFile(Path.Combine(exeDir, x), InstalledExtraFile.EFileType.DLL, Game, notifyExtraFileDeleted)));
+        }
+
+        public string NumASIModsInstalledText { get; private set; }
+        public void PopulateASIInfo()
+        {
+            var asi = new ASIManagerPanel.ASIGame(this);
+            var installedASIs = asi.GetInstalledASIMods();
+            if (installedASIs.Any())
+            {
+                NumASIModsInstalledText = $"This installation has {installedASIs.Count} ASI mod(s) installed";
+            }
+            else
+            {
+                NumASIModsInstalledText = "This installation has no ASI mods installed";
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ASIManagerPanel : MMBusyPanelBase
     {
-
+        public int SelectedTabIndex { get; set; }
         public static readonly string CachedASIsFolder = Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs")).FullName;
 
         public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, @"manifest.xml");
@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ME1TabEnabled { get; set; }
         public bool ME2TabEnabled { get; set; }
         public bool ME3TabEnabled { get; set; }
-
+        private GameTarget preselectedTarget;
         public string InstallLoaderText { get; set; }
 
 
@@ -60,11 +60,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// This ASI Manager is a feature ported from ME3CMM and maintains synchronization with Mass Effect 3 Mod Manager's code for 
         /// managing and installing ASIs. ASIs are useful for debugging purposes, which is why this feature is now 
         /// part of ME3Explorer.
-        /// 
-        /// Please do not change the logic for this code (at least, for Mass Effect 3) as it may break compatibility with Mass
-        /// Effect 3 Mod Manager (e.g. dual same ASIs are installed) and the ME3Tweaks serverside components.
         /// </summary>
-        public ASIManagerPanel()
+        public ASIManagerPanel(GameTarget preselectedTarget = null)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"ASI Manager", new WeakReference(this));
             Log.Information(@"Opening ASI Manager");
@@ -73,6 +70,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Directory.CreateDirectory(CachedASIsFolder);
             LoadCommands();
             InitializeComponent();
+            this.preselectedTarget = preselectedTarget;
         }
 
         public static void LoadManifest(bool async, List<ASIGame> games, Action<object> selectionStateUpdateCallback = null)
@@ -188,6 +186,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     InstallInProgress = false;
                     RefreshASIStates();
                     UpdateSelectionTexts(SelectedASIObject);
+                    CommandManager.InvalidateRequerySuggested();
                 });
                 if (!alreadyInstalledAndUpToDate)
                 {
@@ -470,13 +469,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             //This has to be done here as mainwindow will not be available until this is called
             Mod.MEGame[] gameEnum = new[] { Mod.MEGame.ME1, Mod.MEGame.ME2, Mod.MEGame.ME3 };
+            int index = 0;
             foreach (var game in gameEnum)
             {
                 var targets = mainwindow.InstallationTargets.Where(x => x.Game == game).ToList();
+                ASIGame asiGame = null;
                 if (targets.Count > 0)
                 {
-                    Games.Add(new ASIGame(game, targets));
+                    asiGame = new ASIGame(game, targets);
+                    Games.Add(asiGame);
+
+                    if (preselectedTarget != null && preselectedTarget.Game == game)
+                    {
+                        asiGame.SelectedTarget = preselectedTarget;
+                        SelectedTabIndex = index;
+                    }
                 }
+
+                index++;
             }
             //Technically this could load earlier, but it's not really worth the effort for the miniscule time saved
             LoadManifest(true, Games.ToList(), UpdateSelectionTexts);
@@ -518,7 +528,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string GameName => Utilities.GetGameName(Game);
             public List<ASIModUpdateGroup> ASIModUpdateGroups { get; internal set; }
 
-            private List<InstalledASIMod> InstalledASIs;
+            public List<InstalledASIMod> InstalledASIs;
 
             public ICommand InstallLoaderCommand { get; }
             public ASIGame(Mod.MEGame game, List<GameTarget> targets)
@@ -562,21 +572,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 foreach (InstalledASIMod asi in InstalledASIs)
                 {
                     bool mapped = false;
-                    foreach (ASIModUpdateGroup amug in ASIModUpdateGroups)
+                    if (ASIModUpdateGroups != null)
                     {
-                        var matchingAsi = amug.ASIModVersions.FirstOrDefault(x => x.Hash == asi.Hash);
-                        if (matchingAsi != null)
+                        foreach (ASIModUpdateGroup amug in ASIModUpdateGroups)
                         {
-                            //We have an installed ASI in the manifest
-                            var displayedItem = amug.ASIModVersions.MaxBy(y => y.Version);
-                            displayedItem.UIOnly_Installed = true;
-                            displayedItem.UIOnly_Outdated = displayedItem != matchingAsi; //is the displayed item (the latest) the same as the item we found?
-                            displayedItem.InstalledInfo = asi;
-                            mapped = true;
-                            break;
+                            var matchingAsi = amug.ASIModVersions.FirstOrDefault(x => x.Hash == asi.Hash);
+                            if (matchingAsi != null)
+                            {
+                                //We have an installed ASI in the manifest
+                                var displayedItem = amug.ASIModVersions.MaxBy(y => y.Version);
+                                displayedItem.UIOnly_Installed = true;
+                                displayedItem.UIOnly_Outdated = displayedItem != matchingAsi; //is the displayed item (the latest) the same as the item we found?
+                                displayedItem.InstalledInfo = asi;
+                                mapped = true;
+                                break;
+                            }
                         }
-
                     }
+
                     if (!mapped)
                     {
                         DisplayedASIMods.Add(asi);
@@ -602,7 +615,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         a.InstalledInfo = null;
                     }
                 }
-                InstalledASIs = getInstalledASIMods();
+                InstalledASIs = GetInstalledASIMods();
                 MapInstalledASIs();
                 //UpdateSelectionTexts(SelectedASI);
             }
@@ -612,7 +625,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             /// </summary>
             /// <param name="game">Game to filter results by. Enter 1 2 or 3 for that game only, or anything else to get everything.</param>
             /// <returns></returns>
-            private List<InstalledASIMod> getInstalledASIMods(Mod.MEGame game = Mod.MEGame.Unknown)
+            public List<InstalledASIMod> GetInstalledASIMods(Mod.MEGame game = Mod.MEGame.Unknown)
             {
                 List<InstalledASIMod> results = new List<InstalledASIMod>();
                 if (SelectedTarget != null)

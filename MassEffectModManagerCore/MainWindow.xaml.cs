@@ -992,6 +992,20 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
                 if (b.Data is string result)
                 {
+                    if (result == @"ASIManager")
+                    {
+                        // This is kinda risky since when the control unloads it might dump the list and 
+                        // the SelectedTarget might be null. I think the worst case is that it simply won't select the tab/target in ASI Manager.
+                        var selectedTarget = installationInformation.SelectedTarget;
+
+                        var asiManager = new ASIManagerPanel(selectedTarget);
+                        asiManager.Close += (a, b) => { ReleaseBusyControl(); };
+                        ShowBusyControl(asiManager);
+                        Analytics.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
+                        {
+                            {@"Invocation method", @"Installation Information"}
+                        });
+                    }
                     if (result == @"ALOTInstaller")
                     {
                         LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
@@ -2485,10 +2499,12 @@ namespace MassEffectModManagerCore
 
         private void ASIModManager_Click(object sender, RoutedEventArgs e)
         {
-            Analytics.TrackEvent(@"Launched ASI Manager");
+            Analytics.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
+            {
+                {@"Invocation method", @"Menu"}
+            });
             var exLauncher = new ASIManagerPanel();
             exLauncher.Close += (a, b) => { ReleaseBusyControl(); };
-            //Todo: Update Busy UI Content
             ShowBusyControl(exLauncher);
         }
 

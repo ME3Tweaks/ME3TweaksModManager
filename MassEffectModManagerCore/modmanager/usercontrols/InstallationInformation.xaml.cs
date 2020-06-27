@@ -433,6 +433,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 notifyRestoredCallback);
             SFARBeingRestored = false;
 
+            SelectedTarget.PopulateASIInfo();
+
             if (SelectedTarget != null && !SelectedTarget.TextureModded)
             {
                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BasegameSourceIdentifier");
@@ -661,11 +663,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenALOTInstaller_Click(object sender, RequestNavigateEventArgs e)
         {
-            foreach (var installationTarget in InstallationTargets)
-            {
-                SelectedTarget.ModifiedBasegameFilesView.Filter = null;
-                installationTarget.DumpModifiedFilesFromMemory(); //will prevent memory leak
-            }
             ClosePanel(new DataEventArgs(@"ALOTInstaller"));
         }
 
@@ -689,6 +686,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+        }
+
+        private void OpenASIManager_Click(object sender, RequestNavigateEventArgs e)
+        {
+            ClosePanel(new DataEventArgs(@"ASIManager"));
         }
     }
 }

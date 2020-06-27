@@ -390,10 +390,10 @@
             <TabItem Header="Other"
                 Margin="0"
                 Padding="0">
-                <DockPanel
+                <StackPanel
                     Height="300"
                     Margin="-8">
-                    <TextBlock Margin="4,4,4,0" Text="Extra dlls found" DockPanel.Dock="Top" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Margin="4,4,4,0" Text="Extra dlls found" FontSize="14" FontWeight="Bold"/>
                     <ItemsControl
                         ItemsSource="{Binding ExtraFiles}"
                         HorizontalContentAlignment="Stretch"
@@ -434,10 +434,11 @@
                                             Grid.Row="0"
                                             Grid.Column="0"
                                             FontSize="12"
-                                            Text="{Binding FileName}"
+                                            Text="{Binding DisplayName}"
                                             VerticalAlignment="Center"
                                             HorizontalAlignment="Stretch"
-                                            Background="Transparent" />
+                                            Background="Transparent" 
+                                            Margin="8,0,0,0"/>
                                         <Button
                                             Grid.Row="0"
                                             Grid.RowSpan="2"
@@ -464,8 +465,19 @@
                                 <VirtualizingStackPanel />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
-                    </ItemsControl>                
-                </DockPanel>
+                    </ItemsControl>
+                    <TextBlock Text="Installed ASIs" FontSize="14" FontWeight="Bold" Margin="4,0,0,0"/>
+                    <TextBlock Text="{Binding NumASIModsInstalledText}" Margin="8,0,0,0"/>
+                    <TextBlock
+                        ToolTip="Click to open ASI Manager"  Margin="8,0,0,0">
+                        <Hyperlink
+                                RequestNavigate="OpenASIManager_Click"
+                                NavigateUri="internal://trigger">
+                        <TextBlock
+                            Text="Manage ASIs with ASI Manager" />
+                    </Hyperlink>
+                        </TextBlock>
+                </StackPanel>
             </TabItem>
         </TabControl>
         <DockPanel>
