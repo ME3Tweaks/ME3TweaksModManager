@@ -306,4 +306,16 @@
       <downloadlink>https://me3tweaks.com/mods/asi/me2/AceSlammer-ME2-v1.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="19" game="3" hidden="0">
+    <asimod>
+      <name>SeqAct_Log Enabler</name>
+      <installedname>SeqAct_Log-Enabler</installedname>
+      <author>SirCxyrtyx</author>
+      <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
+      <version>1</version>
+      <hash>cf9c833fb87870cd45b2e3a91fa4f692</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/v1.0-SeqActLogEnabler/SeqActLogEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SeqActLogEnabler/SeqActLogEnabler-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
