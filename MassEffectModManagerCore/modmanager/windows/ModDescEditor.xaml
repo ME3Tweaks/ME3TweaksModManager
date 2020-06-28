@@ -7,6 +7,7 @@
         xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
         xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
         mc:Ignorable="d"
+        ContentRendered="ModDescEditor_OnContentRendered"
         Title="moddesc.ini Editor" Height="450" Width="800">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>

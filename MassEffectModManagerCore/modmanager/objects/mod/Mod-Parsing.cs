@@ -32,32 +32,67 @@ namespace MassEffectModManagerCore.modmanager
             ME3
         }
 
+        /// <summary>
+        /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
+        /// </summary>
         public const string DefaultWebsite = @"http://example.com"; //this is required to prevent exceptions when binding the navigateuri
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// The numerical ID for a mod on the respective game's NexusMods page. This is automatically parsed from the ModWebsite if this is not explicitly set and the ModWebsite attribute is a nexusmods url.
+        /// </summary>
         public int NexusModID { get; set; }
-
-        // Constants
-
-        //Mod variables
+        /// <summary>
+        /// Indicates if this is a valid mod or not.
+        /// </summary>
         public bool ValidMod { get; private set; }
+        /// <summary>
+        /// List of installation jobs (aka Task Headers)
+        /// </summary>
         public List<ModJob> InstallationJobs = new List<ModJob>();
-
-        //private List<ModJob> jobs;
-
+        /// <summary>
+        /// Mapping of Custom DLC names to their human-readable versions.
+        /// </summary>
         public Dictionary<string, string> HumanReadableCustomDLCNames = new Dictionary<string, string>();
+        /// <summary>
+        /// What game this mod can install to.
+        /// </summary>
         public MEGame Game { get; set; }
+        /// <summary>
+        /// The mod's name.
+        /// </summary>
         public string ModName { get; set; }
+        /// <summary>
+        /// Developer of the mod
+        /// </summary>
         public string ModDeveloper { get; set; }
+        /// <summary>
+        /// The description for the mod, as written in moddesc.ini
+        /// </summary>
         public string ModDescription { get; set; }
+        /// <summary>
+        /// The ID for updating on ModMaker. This value will be 0 if none is set.
+        /// </summary>
         public int ModModMakerID { get; set; }
+        /// <summary>
+        /// Indicates this is an 'unofficial' mod that was imported from the game's DLC directory.
+        /// </summary>
         public bool IsUnofficial { get; set; }
         /// <summary>
         /// This variable is only set if IsInArchive is true
         /// </summary>
         public long SizeRequiredtoExtract { get; set; }
+        /// <summary>
+        /// Used with DLC imported from the game directory, this is used to track what version of MM imported the DLC, which may be used in the future check for things like texture tags.
+        /// </summary>
         public int ImportedByBuild { get; set; }
+        /// <summary>
+        /// List of files that will always be deleted locally when servicing an update on a client. This has mostly been deprecated for new mods.
+        /// </summary>
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
+        /// <summary>
+        /// The server folder that this mod will be published to when using the ME3Tweaks Updater Service
+        /// </summary>
         public string UpdaterServiceServerFolder { get; set; }
         public string UpdaterServiceServerFolderShortname
         {
@@ -99,6 +134,9 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+        /// <summary>
+        /// The actual description string shown on the right hand panel of Mod Manager's main window
+        /// </summary>
         public string DisplayedModDescription
         {
             get
@@ -387,6 +425,21 @@ namespace MassEffectModManagerCore.modmanager
                 return; //Won't set valid
             }
 
+            // This is loaded early so the website value can be parsed if something else fails. 
+            // This is used in failedmodspanel
+            ModWebsite = iniData[@"ModInfo"][@"modsite"] ?? DefaultWebsite;
+            if (string.IsNullOrWhiteSpace(ModWebsite)) ModWebsite = DefaultWebsite;
+
+            //test url scheme
+            Uri uriResult;
+            if (!(Uri.TryCreate(ModWebsite, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
+            {
+                Log.Error($@"Invalid url for mod {ModName}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {ModWebsite}");
+                LoadFailedReason = $"Invalid url for mod {ModName}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {ModWebsite}";
+                ModWebsite = DefaultWebsite; //Reset so we don't try to open invalid url
+                return; //Won't set valid
+            }
+
             ModDescription = Utilities.ConvertBrToNewline(iniData[@"ModInfo"][@"moddesc"]);
             if (string.IsNullOrWhiteSpace(ModDescription))
             {
@@ -412,9 +465,6 @@ namespace MassEffectModManagerCore.modmanager
 
             Version.TryParse(ModVersionString, out var parsedValue);
             ParsedModVersion = parsedValue;
-
-            ModWebsite = iniData[@"ModInfo"][@"modsite"] ?? DefaultWebsite;
-            if (string.IsNullOrEmpty(ModWebsite)) ModWebsite = DefaultWebsite;
 
             //updates
             int.TryParse(iniData[@"ModInfo"][@"modid"], out int modmakerId);

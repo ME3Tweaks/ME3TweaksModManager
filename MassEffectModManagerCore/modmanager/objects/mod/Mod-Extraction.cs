@@ -98,6 +98,7 @@ namespace MassEffectModManagerCore.modmanager
             using (archiveFile)
             {
                 var fileIndicesToExtract = new List<int>();
+                var filePathsToExtractTESTONLY = new List<string>();
                 var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archiveFile);
                 if (isExe)
                 {
@@ -113,6 +114,7 @@ namespace MassEffectModManagerCore.modmanager
                         {
                             Log.Information(@"Adding file to extraction list: " + info.FileName);
                             fileIndicesToExtract.Add(info.Index);
+                            filePathsToExtractTESTONLY.Add(relativedName);
                         }
                     }
                 }
@@ -324,8 +326,9 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 else
                 {
-                    //test run mode
-                    if (fileIndicesToExtract.Count != referencedFiles.Count)
+                    // test run mode
+                    // exes can have duplicate filenames but different indexes so we must check for those here.
+                    if (fileIndicesToExtract.Count != referencedFiles.Count && filePathsToExtractTESTONLY.Distinct().ToList().Count != referencedFiles.Count)
                     {
                         throw new Exception(@"The amount of referenced files does not match the amount of files that are going to be extracted!");
                     }

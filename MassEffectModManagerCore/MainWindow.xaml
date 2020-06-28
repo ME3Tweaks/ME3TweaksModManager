@@ -129,8 +129,9 @@
                         RenderOptions.BitmapScalingMode="HighQuality" />
                 </MenuItem.Icon>
                 <MenuItem
-                    Header="{DynamicResource string_Metadataeditor}"
-                    IsEnabled="False" />
+                    Header="{DynamicResource string_Moddesceditor}"
+                    Command="{Binding ModdescEditorCommand}"
+                    Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 <MenuItem
                     Header="{DynamicResource string_openModdesciniFile}"
                     Command="{Binding OpenModDescCommand}">
@@ -1005,10 +1006,6 @@
                     <MenuItem
                         Header="{DynamicResource string_reloadSelectedMod}"
                         Click="ReloadSelectedMod_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="Open Moddesc Editor for modd"
-                        Click="OpenModDescEditor_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem
                         Header="{DynamicResource string_debugPrintAllReferencedFiles}"

@@ -32,11 +32,30 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public Mod SelectedMod { get; set; }
         public ICommand RestoreSelectedModCommand { get; set; }
         public ICommand DebugReloadCommand { get; set; }
+        public ICommand DeleteModCommand { get; set; }
+        public ICommand VisitWebsiteCommand { get; set; }
         private void LoadCommands()
         {
             RestoreSelectedModCommand = new GenericCommand(CloseToRestoreMod, CanRestoreMod);
             DebugReloadCommand = new GenericCommand(DebugReloadMod, CanDebugReload);
+            DeleteModCommand = new GenericCommand(DeleteMod, () => SelectedMod != null);
+            VisitWebsiteCommand = new GenericCommand(VisitWebsite, CanVisitWebsite);
         }
+
+        private void VisitWebsite()
+        {
+            Utilities.OpenWebpage(SelectedMod.ModWebsite);
+        }
+
+        private void DeleteMod()
+        {
+            if (mainwindow.DeleteModFromLibrary(SelectedMod))
+            {
+                FailedMods.Remove(SelectedMod);
+            }
+        }
+
+        private bool CanVisitWebsite() => SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite;
 
         private void DebugReloadMod()
         {

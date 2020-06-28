@@ -50,7 +50,7 @@
     <system:String x:Key="string_RestoremodfromME3Tweaks">Restore mod from ME3Tweaks.com</system:String>
     <system:String x:Key="string_Installcustomkeybindsintothismod">Install custom keybinds into this mod</system:String>
     <system:String x:Key="string_Developeroptions">Developer options</system:String>
-    <system:String x:Key="string_Metadataeditor">Metadata editor</system:String>
+    <system:String x:Key="string_Moddesceditor">Moddesc.ini editor</system:String>
     <system:String x:Key="string_Deploymodto7zfilefordistribution">Deploy mod to 7z file for distribution</system:String>
     <system:String x:Key="string_Prepareforupdaterservice">Upload to ME3Tweaks Updater Service</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Submit mod information to ME3Tweaks</system:String>
@@ -535,7 +535,7 @@
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
-    <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load. Select each mod to see why.</system:String>
+    <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load from the mod library. Select a mod to see why.</system:String>
     <system:String x:Key="string_failedMods">Failed mods</system:String>
     <system:String x:Key="string_failureInformation">Failure information</system:String>
     <system:String x:Key="string_debugReload">Debug reload</system:String>

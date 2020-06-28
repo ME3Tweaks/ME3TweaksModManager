@@ -16,7 +16,9 @@
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0" >
             <Button MinWidth="70" Content="{DynamicResource string_debugReload}" Margin="5,0,0,0" Command="{Binding DebugReloadCommand}" Padding="7,4" Visibility="{x:Static mm:App.IsDebugVisibility}"/>
-            <Button MinWidth="70" Content="{DynamicResource string_restoreFromME3Tweaks}" Margin="5,0,0,0" Command="{Binding RestoreSelectedModCommand}" Padding="7,4"/>
+            <Button MinWidth="70" Content="Delete from library" Margin="5,0,0,0" Command="{Binding DeleteModCommand}" Padding="7,4"/>
+            <Button MinWidth="70" Content="Visit website" Margin="5,0,0,0" Command="{Binding VisitWebsiteCommand}" Padding="7,4"/>
+            <Button MinWidth="70" Content="{DynamicResource string_restoreFromME3Tweaks}" Margin="5,0,0,0" Command="{Binding RestoreSelectedModCommand}" Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Self}, Converter={StaticResource BoolToVisibilityConverter}}" Padding="7,4"/>
             <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Click="Close_Clicked" Padding="7,4"/>
         </StackPanel>
         <Grid>
@@ -39,7 +41,8 @@
             </Grid.RowDefinitions>
             <!-- Header Panel -->
 
-            <TextBlock Text="{DynamicResource string_theFollowingModsFailedToLoad}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" />
+            <TextBlock Text="Failed mods" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="20" TextAlignment="Center" />
+            <TextBlock Text="{DynamicResource string_theFollowingModsFailedToLoad}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" TextAlignment="Center"  />
             <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,5"/>
             <DockPanel Grid.Row="5" Grid.Column="1">
                 <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_failedMods}" FontWeight="Bold"/>

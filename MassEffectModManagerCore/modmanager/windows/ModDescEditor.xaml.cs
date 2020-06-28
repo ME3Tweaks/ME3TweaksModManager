@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MassEffectModManagerCore.modmanager.localizations;
+using Microsoft.WindowsAPICodePack.Shell.Interop;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -31,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             customdlc_alternateDlcEditor_control.EditingMod = EditingMod;
             customdlc_alternateFileEditor_control.EditingMod = EditingMod;
             customdlc_alternateFileEditor_control.Job = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -48,6 +51,11 @@ namespace MassEffectModManagerCore.modmanager.windows
             Mod m = new Mod(moddesc, EditingMod.ModPath, null);
 
             Clipboard.SetText(moddesc);
+        }
+
+        private void ModDescEditor_OnContentRendered(object? sender, EventArgs e)
+        {
+            M3L.ShowDialog(this, "This tool is in development and may or may not work. Use at your own risk!", "Under development", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }

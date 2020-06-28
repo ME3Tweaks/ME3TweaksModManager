@@ -341,7 +341,7 @@ namespace MassEffectModManagerCore
                 }
             };
         }
-
+        public ICommand ModdescEditorCommand { get; set; }
         public ICommand LaunchEGMSettingsCommand { get; set; }
         public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
@@ -393,7 +393,7 @@ namespace MassEffectModManagerCore
             BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
             RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
             DeployModCommand = new GenericCommand(ShowDeploymentPane, CanShowDeploymentPane);
-            DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibrary, CanDeleteModFromLibrary);
+            DeleteModFromLibraryCommand = new GenericCommand(DeleteModFromLibraryWrapper, CanDeleteModFromLibrary);
             ImportArchiveCommand = new GenericCommand(OpenArchiveSelectionDialog, CanOpenArchiveSelectionDialog);
             SubmitTelemetryForModCommand = new GenericCommand(SubmitTelemetryForMod, CanSubmitTelemetryForMod);
             SelectedModCheckForUpdatesCommand = new GenericCommand(CheckSelectedModForUpdate, SelectedModIsME3TweaksUpdatable);
@@ -419,8 +419,18 @@ namespace MassEffectModManagerCore
             LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
             CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
-            CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x=>x.Game == Mod.MEGame.ME3));
+            CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3));
+            ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
+        }
 
+        private bool CanOpenModdescEditor() => SelectedMod != null && Settings.DeveloperMode && Settings.BetaMode;
+
+        private void OpenModDescEditor()
+        {
+            if (SelectedMod != null)
+            {
+                new ModDescEditor(SelectedMod).Show();
+            }
         }
 
         private void OpenKeybindsInjector()
@@ -866,15 +876,28 @@ namespace MassEffectModManagerCore
 
         private bool CanDeleteModFromLibrary() => SelectedMod != null && !ContentCheckInProgress;
 
-        private void DeleteModFromLibrary()
+        private void DeleteModFromLibraryWrapper()
         {
-            var confirmationResult = M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogDeleteSelectedModFromLibrary, SelectedMod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            DeleteModFromLibrary(SelectedMod);
+        }
+
+        public bool DeleteModFromLibrary(Mod selectedMod)
+        {
+            var confirmationResult = M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogDeleteSelectedModFromLibrary, selectedMod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (confirmationResult == MessageBoxResult.Yes)
             {
-                Log.Information(@"Deleting mod from library: " + SelectedMod.ModPath);
-                Utilities.DeleteFilesAndFoldersRecursively(SelectedMod.ModPath);
-                LoadMods();
+                Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
+                if (Utilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
+                {
+                    AllLoadedMods.Remove(selectedMod);
+                    VisibleFilteredMods.Remove(selectedMod);
+                    FailedMods.Remove(selectedMod); //make sure to remove it from this in case it's failed mods panel calling this.
+                    return true;
+                }
+
+                //LoadMods();
             }
+            return false;
         }
 
         private void ShowDeploymentPane()
@@ -1883,7 +1906,7 @@ namespace MassEffectModManagerCore
                     Log.Error(@"Current boot target for ME3 is invalid: " + failureReason);
                 }
             }
-            
+
             if (ME2Directory.gamePath != null && Directory.Exists(ME2Directory.gamePath))
             {
                 var target = new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath, true);
@@ -3268,14 +3291,6 @@ namespace MassEffectModManagerCore
                 }
             };
             ShowBusyControl(previewPanel);
-        }
-
-        private void OpenModDescEditor_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedMod != null)
-            {
-                new ModDescEditor(SelectedMod).Show();
-            }
         }
     }
 }
