@@ -90,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var requiredDLC = calculateNumberOfTasks(xmlDoc);
                 //Check Required DLC
                 List<string> missingDlc = new List<string>();
-                var dlcFolderPath = Path.Combine(Utilities.GetGameBackupPath(MEGame.ME3), @"BioGame", @"DLC");
+                var dlcFolderPath = Path.Combine(BackupService.GetGameBackupPath(MEGame.ME3), @"BioGame", @"DLC");
                 foreach (var reqDlc in requiredDLC)
                 {
                     if (reqDlc == @"DLC_TestPatch") continue; //don't do this one
@@ -134,7 +134,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private SortedSet<string> calculateNumberOfTasks(XDocument xmlDoc)
         {
             SortedSet<string> requiredDLCFolders = new SortedSet<string>();
-            var backupDir = Utilities.GetGameBackupPath(MEGame.ME3, true);
+            var backupDir = BackupService.GetGameBackupPath(MEGame.ME3, true);
 
             var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
             DLCFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
@@ -325,7 +325,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
                 allmixins.AddRange(dynamicmixindata.Select(MixinHandler.ReadDynamicMixin));
 
-                var backupDir = Utilities.GetGameBackupPath(MEGame.ME3, true);
+                var backupDir = BackupService.GetGameBackupPath(MEGame.ME3, true);
                 if (backupDir != null)
                 {
                     var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
@@ -475,7 +475,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             string coalescedFilename = null;
             if (chunkName == @"BASEGAME")
             {
-                var coalPath = Path.Combine(Utilities.GetGameBackupPath(MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                var coalPath = Path.Combine(BackupService.GetGameBackupPath(MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
                 coalescedFilename = @"Coalesced.bin";
                 if (File.Exists(coalPath))
                 {

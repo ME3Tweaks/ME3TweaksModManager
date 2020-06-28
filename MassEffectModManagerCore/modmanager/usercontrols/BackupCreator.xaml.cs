@@ -121,7 +121,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     // Point to existing game installation
-                    Log.Information(@"BeginBackup() with IsCustomOption. Prompting user to select executable of link target");
+                    Log.Information(@"BeginBackup() with IsCustomOption.");
+                    var linkWarning = M3L.ShowDialog(window,
+                        "The game copy you link to will not be available for modding. Ensure this is a backup copy of the game and not your main installation, or you will be unable to mod your game.",
+                        "Link warning", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                    if (linkWarning == MessageBoxResult.Cancel)
+                    {
+                        Log.Information(@"User aborted linking due to dialog");
+                        return;
+                    }
+
+                    Log.Information(@"Prompting user to select executable of link target");
                     var gameexe = Utilities.PromptForGameExecutable(new[] { Game });
                     if (gameexe == null) { return; }
                     targetToBackup = new GameTarget(Game, Utilities.GetGamePathFromExe(Game, gameexe), false, true);
@@ -159,6 +169,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Information(@"Starting the backup thread. Checking path: " + targetToBackup.TargetPath);
                     BackupInProgress = true;
+                    bool end = false;
+
+
+
+                    if (end) return;
+
+
                     List<string> nonVanillaFiles = new List<string>();
 
                     void nonVanillaFileFoundCallback(string filepath)
@@ -201,7 +218,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     List<string> installedDLC = VanillaDatabaseService.GetInstalledOfficialDLC(targetToBackup);
                     List<string> allOfficialDLC = MEDirectories.OfficialDLC(targetToBackup.Game);
 
-                    bool end = false;
                     if (installedDLC.Count() < allOfficialDLC.Count())
                     {
                         var dlcList = string.Join("\n - ", allOfficialDLC.Except(installedDLC).Select(x => $@"{MEDirectories.OfficialDLCNames(targetToBackup.Game)[x]} ({x})")); //do not localize
@@ -270,6 +286,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
+
                             Log.Information(@"Linking existing backup at " + targetToBackup.TargetPath);
                             backupPath = targetToBackup.TargetPath;
                             // Linking existing backup
@@ -581,9 +598,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void ResetBackupStatus()
             {
-                BackupLocation = Utilities.GetGameBackupPath(Game);
-                BackupStatus = BackupLocation != null ? M3L.GetString(M3L.string_backedUp) : M3L.GetString(M3L.string_notBackedUp);
-                BackupStatusLine2 = BackupLocation;
+                BackupLocation = BackupService.GetGameBackupPath(Game);
+                BackupService.RefreshBackupStatus(window, Game);
+                BackupStatus = BackupService.GetBackupStatus(Game);
+                BackupStatusLine2 = BackupLocation ?? BackupService.GetBackupStatusTooltip(Game);
             }
 
             public string GameIconSource { get; }

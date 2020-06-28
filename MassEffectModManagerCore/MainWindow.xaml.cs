@@ -419,7 +419,7 @@ namespace MassEffectModManagerCore
             LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
             CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
-            CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded);
+            CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x=>x.Game == Mod.MEGame.ME3));
 
         }
 
@@ -954,8 +954,8 @@ namespace MassEffectModManagerCore
 
         private void ShowBackupPane()
         {
-            var backupRestoreManager = new BackupCreator(InstallationTargets.ToList(), SelectedGameTarget, this);
-            backupRestoreManager.Close += (a, b) =>
+            var backupCreator = new BackupCreator(InstallationTargets.ToList(), SelectedGameTarget, this);
+            backupCreator.Close += (a, b) =>
             {
                 ReleaseBusyControl();
                 if (b.Data is string result)
@@ -966,7 +966,7 @@ namespace MassEffectModManagerCore
                     }
                 }
             };
-            ShowBusyControl(backupRestoreManager);
+            ShowBusyControl(backupCreator);
         }
 
         private void ShowRestorePane()
@@ -1360,7 +1360,27 @@ namespace MassEffectModManagerCore
 
         private bool CanApplyMod()
         {
-            return SelectedMod != null && SelectedGameTarget != null && SelectedGameTarget.Game == SelectedMod.Game;
+            if (SelectedMod == null)
+            {
+                ApplyModButtonText = "Select mod";
+                return false;
+            }
+
+            if (SelectedGameTarget == null)
+            {
+                ApplyModButtonText = "No target";
+                return false;
+
+            }
+
+            if (SelectedGameTarget.Game != SelectedMod.Game)
+            {
+                ApplyModButtonText = "Cannot install to this game";
+                return false;
+            }
+
+            ApplyModButtonText = M3L.GetString(M3L.string_applyMod);
+            return true;
         }
 
         /// <summary>
@@ -1863,7 +1883,7 @@ namespace MassEffectModManagerCore
                     Log.Error(@"Current boot target for ME3 is invalid: " + failureReason);
                 }
             }
-
+            
             if (ME2Directory.gamePath != null && Directory.Exists(ME2Directory.gamePath))
             {
                 var target = new GameTarget(Mod.MEGame.ME2, ME2Directory.gamePath, true);
@@ -1909,7 +1929,7 @@ namespace MassEffectModManagerCore
                 int count = InstallationTargets.Count;
                 InstallationTargets.AddRange(otherTargetsFileME1);
                 InstallationTargets.AddRange(otherTargetsFileME2);
-                InstallationTargets.AddRange(otherTargetsFileME3);
+                // InstallationTargets.AddRange(otherTargetsFileME3);
                 var distinct = InstallationTargets.Distinct().ToList();
                 InstallationTargets.ReplaceAll(distinct);
                 if (InstallationTargets.Count > count)
@@ -1939,6 +1959,7 @@ namespace MassEffectModManagerCore
                 }
             }
 
+            BackupService.SetInstallStatuses(InstallationTargets);
             RepopulatingTargets = false;
         }
 
@@ -2347,9 +2368,9 @@ namespace MassEffectModManagerCore
                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
                 nbw.DoWork += (a, b) =>
                 {
-                    var me1CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME1) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME1, false) != null;
-                    var me2CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME2) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME2, false) != null;
-                    var me3CheckRequired = Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null && Utilities.GetGameBackupPath(Mod.MEGame.ME3, false) != null;
+                    var me1CheckRequired = BackupService.GetGameBackupPath(Mod.MEGame.ME1) == null && BackupService.GetGameBackupPath(Mod.MEGame.ME1, false) != null;
+                    var me2CheckRequired = BackupService.GetGameBackupPath(Mod.MEGame.ME2) == null && BackupService.GetGameBackupPath(Mod.MEGame.ME2, false) != null;
+                    var me3CheckRequired = BackupService.GetGameBackupPath(Mod.MEGame.ME3) == null && BackupService.GetGameBackupPath(Mod.MEGame.ME3, false) != null;
 
                     if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
                     {

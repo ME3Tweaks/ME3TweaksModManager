@@ -336,11 +336,11 @@ namespace MassEffectModManagerCore
 
                 Log.Information("The following backup paths are listed in the registry:");
                 Log.Information("Mass Effect ======");
-                Log.Information(Utilities.GetGameBackupPath(Mod.MEGame.ME1, true, true));
+                Log.Information(BackupService.GetGameBackupPath(Mod.MEGame.ME1, true, true));
                 Log.Information("Mass Effect 2 ====");
-                Log.Information(Utilities.GetGameBackupPath(Mod.MEGame.ME2, true, true));
+                Log.Information(BackupService.GetGameBackupPath(Mod.MEGame.ME2, true, true));
                 Log.Information("Mass Effect 3 ====");
-                Log.Information(Utilities.GetGameBackupPath(Mod.MEGame.ME3, true, true));
+                Log.Information(BackupService.GetGameBackupPath(Mod.MEGame.ME3, true, true));
 
                 Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 //Build 104 changed location of settings from AppData to ProgramData.

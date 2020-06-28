@@ -846,7 +846,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="Custom Keybinds Injector"
+                        Header="Custom Keybinds Injector (ME3)"
                         Command="{Binding CustomKeybindsInjectorCommand}"
                         ToolTip="Installs Custom Keybinds of your design into the game">
                         <MenuItem.Icon>
@@ -1208,7 +1208,7 @@
                         <Button
                             MinWidth="70"
                             Padding="10,7"
-                            Content="{DynamicResource string_applyMod}"
+                            Content="{Binding ApplyModButtonText}"
                             Command="{Binding ApplyModCommand}"
                             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
                             ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}" />
@@ -1328,8 +1328,8 @@
                 </Grid>
                 <Separator
                     Grid.Row="4"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="6"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="5"
                     Margin="0,5" />
                 <DockPanel
                     Grid.Row="5"

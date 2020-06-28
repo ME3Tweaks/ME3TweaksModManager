@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             modsWithUpdates.ForEach(x =>
             {
                 x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
-                if (x.mod.ModModMakerID > 0 && Utilities.GetGameBackupPath(x.mod.Game) == null)
+                if (x.mod.ModModMakerID > 0 && BackupService.GetGameBackupPath(x.mod.Game) == null)
                 {
                     x.DownloadButtonText = M3L.GetString(M3L.string_requiresBackup);
                 }
@@ -56,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (obj is OnlineContent.ModUpdateInfo ui)
             {
-                if (ui.mod.ModModMakerID > 0 && Utilities.GetGameBackupPath(ui.mod.Game) == null)
+                if (ui.mod.ModModMakerID > 0 && BackupService.GetGameBackupPath(ui.mod.Game) == null)
                 {
                     return false;
                 }

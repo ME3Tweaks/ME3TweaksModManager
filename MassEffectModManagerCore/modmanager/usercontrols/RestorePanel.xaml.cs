@@ -83,6 +83,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool RefreshTargets;
 
             private Mod.MEGame Game;
+
+            public bool CanOpenDropdown => !RestoreInProgress && BackupLocation != null;
+
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
             private MainWindow window;
 
@@ -400,9 +403,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void ResetRestoreStatus()
             {
-                BackupLocation = Utilities.GetGameBackupPath(Game);
-                BackupStatus = BackupLocation != null ? M3L.GetString(M3L.string_backedUp) : M3L.GetString(M3L.string_notBackedUp);
-                BackupStatusLine2 = BackupLocation;
+                BackupLocation = BackupService.GetGameBackupPath(Game);
+                BackupService.RefreshBackupStatus(window, Game);
+                BackupStatus = BackupService.GetBackupStatus(Game);
+                //BackupLocation != null ? M3L.GetString(M3L.string_backedUp) : M3L.GetString(M3L.string_notBackedUp);
+                BackupStatusLine2 = BackupLocation ?? BackupService.GetBackupStatusTooltip(Game);
             }
 
             public string GameIconSource { get; }

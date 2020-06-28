@@ -32,7 +32,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class InstallationInformation : MMBusyPanelBase
     {
-        public string ALOTStatusString { get; set; }
         public GameTarget SelectedTarget { get; set; }
         public GameTarget PreviousTarget { get; set; }
         public string BackupLocationString { get; set; }
@@ -434,6 +433,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SFARBeingRestored = false;
 
             SelectedTarget.PopulateASIInfo();
+            SelectedTarget.PopulateBinkInfo();
 
             if (SelectedTarget != null && !SelectedTarget.TextureModded)
             {
@@ -464,7 +464,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedTarget != null)
             {
                 PopulateUI();
-                var backupLoc = Utilities.GetGameBackupPath(SelectedTarget.Game);
+                var backupLoc = BackupService.GetGameBackupPath(SelectedTarget.Game);
                 if (backupLoc != null)
                 {
                     BackupLocationString = M3L.GetString(M3L.string_interp_backupAtX, backupLoc);

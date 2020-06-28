@@ -83,7 +83,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BrowseForModmakerFileCommand = new GenericCommand(BrowseForLocalFile, CanBrowseForLocalFile);
         }
 
-        private bool CanBrowseForLocalFile() => !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
+        private bool CanBrowseForLocalFile() => !CompileInProgress && BackupService.GetGameBackupPath(Mod.MEGame.ME3) != null;
 
         private void BrowseForLocalFile()
         {
@@ -297,7 +297,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentTaskMaximum = obj;
         }
 
-        private bool CanStartCompiler() => (LocalFileOption ? File.Exists(LocalFilePath) : int.TryParse(ModMakerCode, out var _)) && !CompileInProgress && Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null;
+        private bool CanStartCompiler() => (LocalFileOption ? File.Exists(LocalFilePath) : int.TryParse(ModMakerCode, out var _)) && !CompileInProgress && BackupService.GetGameBackupPath(Mod.MEGame.ME3) != null;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -310,7 +310,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             CanInjectKeybinds = File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
-            if (Utilities.GetGameBackupPath(Mod.MEGame.ME3) == null)
+            if (BackupService.GetGameBackupPath(Mod.MEGame.ME3) == null)
             {
                 M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
             }

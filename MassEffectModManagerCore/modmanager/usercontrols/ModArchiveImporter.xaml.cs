@@ -936,7 +936,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //This will have to pass some sort of validation code later.
             return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
-                   && !TaskRunning && !CompressPackages;
+                   && !TaskRunning && !CompressPackages && mainwindow.InstallationTargets.Any(x=>x.Game == cm.Game);
         }
 
         private void InstallCompressedMod()

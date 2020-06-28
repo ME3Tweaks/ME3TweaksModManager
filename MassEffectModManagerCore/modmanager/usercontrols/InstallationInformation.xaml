@@ -394,6 +394,7 @@
                     Height="300"
                     Margin="-8">
                     <TextBlock Margin="4,4,4,0" Text="Extra dlls found" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Text="No extra dlls were found" Visibility="{Binding ExtraFiles.Any, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="8,0"/>
                     <ItemsControl
                         ItemsSource="{Binding ExtraFiles}"
                         HorizontalContentAlignment="Stretch"
@@ -473,10 +474,12 @@
                         <Hyperlink
                                 RequestNavigate="OpenASIManager_Click"
                                 NavigateUri="internal://trigger">
-                        <TextBlock
-                            Text="Manage ASIs with ASI Manager" />
-                    </Hyperlink>
-                        </TextBlock>
+                            <TextBlock
+                                Text="Manage ASIs with ASI Manager" />
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Text="Binkw32 DLC Bypass" FontSize="14" FontWeight="Bold" Margin="4,0,0,0"/>
+                    <TextBlock Text="{Binding Binkw32StatusText}" Margin="8,0,0,0"/>
                 </StackPanel>
             </TabItem>
         </TabControl>

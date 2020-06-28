@@ -127,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3KeybindsInstaller");
             nbw.DoWork += (await, b) =>
             {
-                var coalPath = Path.Combine(Utilities.GetGameBackupPath(Mod.MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                var coalPath = Path.Combine(BackupService.GetGameBackupPath(Mod.MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
@@ -149,7 +149,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreKeybinds()
         {
-            return Utilities.GetGameBackupPath(Mod.MEGame.ME3) != null && SelectedME3Target != null && !KeybindsInstallingME3;
+            return BackupService.GetGameBackupPath(Mod.MEGame.ME3) != null && SelectedME3Target != null && !KeybindsInstallingME3;
         }
 
         private bool CanClose() => !KeybindsInstallingME3 && !KeybindsInstallingME2 && !KeybindsInstallingME1;

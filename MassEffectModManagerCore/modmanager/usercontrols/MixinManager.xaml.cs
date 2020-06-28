@@ -54,7 +54,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MixinHandler.LoadME3TweaksPackage();
             AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x => x.PatchName));
 
-            var backupPath = Utilities.GetGameBackupPath(Mod.MEGame.ME3);
+            var backupPath = BackupService.GetGameBackupPath(Mod.MEGame.ME3);
             if (backupPath != null)
             {
                 var dlcPath = MEDirectories.DLCPath(backupPath, Mod.MEGame.ME3);

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.objects;
@@ -26,7 +27,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LoadDatabaseFor(Mod.MEGame game, bool isMe1PL = false)
         {
-            string assetPrefix = "MassEffectModManagerCore.modmanager.gamemd5.me";
+            string assetPrefix = @"MassEffectModManagerCore.modmanager.gamemd5.me";
             switch (game)
             {
                 case Mod.MEGame.ME1:
@@ -51,28 +52,28 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static DLCPackage FetchVanillaSFAR(string dlcName, GameTarget target = null)
         {
-            var backupPath = Utilities.GetGameBackupPath(Mod.MEGame.ME3);
+            var backupPath = BackupService.GetGameBackupPath(Mod.MEGame.ME3);
             if (backupPath == null && target == null) return null; //can't fetch
 
             string sfar;
-            if (dlcName == "DLC_TestPatch") //might need changed
+            if (dlcName == @"DLC_TestPatch") //might need changed
             {
                 //testpatch
                 string biogame = backupPath == null ? MEDirectories.BioGamePath(target) : MEDirectories.BioGamePath(backupPath);
-                sfar = Path.Combine(biogame, "Patches", "PCConsole", "Patch_001.sfar");
+                sfar = Path.Combine(biogame, @"Patches", @"PCConsole", @"Patch_001.sfar");
             }
             else
             {
                 //main dlc
                 string dlcDir = backupPath == null ? MEDirectories.DLCPath(target) : MEDirectories.DLCPath(backupPath, Mod.MEGame.ME3);
-                sfar = Path.Combine(dlcDir, dlcName, "CookedPCConsole", "Default.sfar");
+                sfar = Path.Combine(dlcDir, dlcName, @"CookedPCConsole", @"Default.sfar");
             }
 
             if (File.Exists(sfar))
             {
                 if (target != null && !IsFileVanilla(target, sfar, false))
                 {
-                    Log.Error("SFAR is not vanilla: " + sfar);
+                    Log.Error(@"SFAR is not vanilla: " + sfar);
                     return null; //Not vanilla!
                 }
 
@@ -80,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
             else
             {
-                Log.Error($"SFAR does not exist for requested file fetch: {sfar}");
+                Log.Error($@"SFAR does not exist for requested file fetch: {sfar}");
             }
             return null;
         }
@@ -101,12 +102,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var dlcEntry = dlc.FindFileEntry(filename);
                 if (dlcEntry >= 0)
                 {
-                    Log.Information($"Extracting file to memory from {dlcName} SFAR: {filename}");
+                    Log.Information($@"Extracting file to memory from {dlcName} SFAR: {filename}");
                     return dlc.DecompressEntry(dlcEntry);
                 }
                 else
                 {
-                    Log.Error($"Could not find file entry in {dlcName} SFAR: {filename}");
+                    Log.Error($@"Could not find file entry in {dlcName} SFAR: {filename}");
                 }
             }
             return null;
@@ -114,9 +115,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         private static void ParseDatabase(MemoryStream stream, Dictionary<string, List<(int size, string md5)>> targetDictionary)
         {
-            if (stream.ReadStringASCII(4) != "MD5T")
+            if (stream.ReadStringASCII(4) != @"MD5T")
             {
-                throw new Exception("Header of MD5 table doesn't match expected value!");
+                throw new Exception(@"Header of MD5 table doesn't match expected value!");
             }
 
             //Decompress
@@ -127,7 +128,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             var decompressedBuffer = SevenZipHelper.LZMA.Decompress(compressedBuffer, (uint)decompressedSize);
             if (decompressedBuffer.Length != decompressedSize)
             {
-                throw new Exception("Vanilla database failed to decompress");
+                throw new Exception(@"Vanilla database failed to decompress");
             }
 
             //Read
@@ -158,8 +159,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     //Debug.WriteLine(c2.ToString("x1"));
 
                     //Reverse order
-                    sb.Append(c2.ToString("x1"));
-                    sb.Append(c1.ToString("x1"));
+                    sb.Append(c2.ToString(@"x1"));
+                    sb.Append(c1.ToString(@"x1"));
                     //Debug.WriteLine(sb.ToString());
                 }
 
@@ -183,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         internal static MemoryStream FetchBasegameFile(Mod.MEGame game, string filename)
         {
-            var backupPath = Utilities.GetGameBackupPath(game);
+            var backupPath = BackupService.GetGameBackupPath(game);
             if (backupPath == null/* && target == null*/) return null; //can't fetch
 
             string cookedPath = MEDirectories.CookedPath(game, backupPath);
@@ -199,7 +200,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 else
                 {
-                    Log.Error($"Could not find basegame file in backup for {game}: {file}");
+                    Log.Error($@"Could not find basegame file in backup for {game}: {file}");
                 }
             }
             else
@@ -214,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 else
                 {
                     //ambiguous or file not found
-                    Log.Error($"Could not find basegame file (or found multiple) in backup for {game}: {filename}");
+                    Log.Error($@"Could not find basegame file (or found multiple) in backup for {game}: {filename}");
 
                 }
             }
@@ -230,8 +231,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         internal static MemoryStream FetchME1ME2DLCFile(Mod.MEGame game, string dlcfoldername, string filename)
         {
-            if (game == Mod.MEGame.ME3) throw new Exception("Cannot call this method with game = ME3");
-            var backupPath = Utilities.GetGameBackupPath(game);
+            if (game == Mod.MEGame.ME3) throw new Exception(@"Cannot call this method with game = ME3");
+            var backupPath = BackupService.GetGameBackupPath(game);
             if (backupPath == null/* && target == null*/) return null; //can't fetch
 
             string dlcPath = MEDirectories.DLCPath(game);
@@ -246,7 +247,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             else
             {
                 //ambiguous or file not found
-                Log.Error($"Could not find {filename} DLC file (or found multiple) in backup for {game}: {filename}");
+                Log.Error($@"Could not find {filename} DLC file (or found multiple) in backup for {game}: {filename}");
             }
 
             return null;
@@ -286,7 +287,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
-        private static readonly string[] BasegameTFCs = { "CharTextures", "Movies", "Textures", "Lighting" };
+        private static readonly string[] BasegameTFCs = { @"CharTextures", @"Movies", @"Textures", @"Lighting" };
         internal static bool IsBasegameTFCName(string tfcName, Mod.MEGame game)
         {
             if (BasegameTFCs.Contains(tfcName)) return true;
@@ -294,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             var dlcs = MEDirectories.OfficialDLC(game);
             foreach (var dlc in dlcs)
             {
-                string dlcTfcName = "Textures_" + dlc;
+                string dlcTfcName = @"Textures_" + dlc;
                 if (dlcTfcName == tfcName)
                 {
                     return true;
@@ -323,18 +324,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     vanillaDB = ME3VanillaDatabase;
                     break;
                 default:
-                    throw new Exception("Cannot vanilla check against game that is not ME1/ME2/ME3");
+                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
             }
             if (Directory.Exists(target.TargetPath))
             {
 
-                foreach (string file in Directory.EnumerateFiles(target.TargetPath, "*", SearchOption.AllDirectories))
+                foreach (string file in Directory.EnumerateFiles(target.TargetPath, @"*", SearchOption.AllDirectories))
                 {
                     var shortname = file.Substring(target.TargetPath.Length + 1);
                     if (vanillaDB.TryGetValue(shortname, out var fileInfo))
                     {
                         var localFileInfo = new FileInfo(file);
-                        bool sfar = Path.GetExtension(file) == ".sfar";
+                        bool sfar = Path.GetExtension(file) == @".sfar";
                         bool correctSize = fileInfo.Any(x => x.size == localFileInfo.Length);
                         if (correctSize && !sfar) continue; //OK
                         if (sfar && correctSize)
@@ -383,13 +384,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             if (target.Game != Mod.MEGame.ME3) return true; //No consistency check except for ME3
             bool allConsistent = true;
-            var unpackedFileExtensions = new List<string>() { ".pcc", ".tlk", ".bin", ".dlc" };
+            var unpackedFileExtensions = new List<string>() { @".pcc", @".tlk", @".bin", @".dlc" };
             var dlcDir = MEDirectories.DLCPath(target);
             var dlcFolders = MEDirectories.GetInstalledDLC(target).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x)).Select(x => Path.Combine(dlcDir, x)).ToList();
             foreach (var dlcFolder in dlcFolders)
             {
-                string unpackedDir = Path.Combine(dlcFolder, "CookedPCConsole");
-                string sfar = Path.Combine(unpackedDir, "Default.sfar");
+                string unpackedDir = Path.Combine(dlcFolder, @"CookedPCConsole");
+                string sfar = Path.Combine(unpackedDir, @"Default.sfar");
                 if (File.Exists(sfar))
                 {
                     FileInfo fi = new FileInfo(sfar);
@@ -433,7 +434,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     vanillaDB = ME3VanillaDatabase;
                     break;
                 default:
-                    throw new Exception("Cannot vanilla check against game that is not ME1/ME2/ME3");
+                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
             }
             if (vanillaDB.TryGetValue(filepath, out var info))
             {
@@ -463,7 +464,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     SUPPORTED_HASHES_ME3.TryGetValue(md5, out var me3result);
                     return (md5, me3result);
                 default:
-                    throw new Exception("Cannot vanilla check against game that is not ME1/ME2/ME3");
+                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
             }
 
         }
@@ -505,8 +506,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
         internal static void CheckAndTagBackup(Mod.MEGame game)
         {
             Log.Information("Validating backup for " + Utilities.GetGameName(game));
-            var targetPath = Utilities.GetGameBackupPath(game, false);
+            var targetPath = BackupService.GetGameBackupPath(game, false);
             Log.Information("Backup location: " + targetPath);
+            BackupService.SetStatus(game, "Checking backup", "Please wait");
+            BackupService.SetActivity(game, true);
+            BackupService.SetIcon(game, FontAwesomeIcon.Spinner);
             GameTarget target = new GameTarget(game, targetPath, false);
             var validationFailedReason = target.ValidateTarget();
             if (target.IsValid)
@@ -531,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         Log.Error(@"Detected an inconsistent DLC, likely due to an unofficial copy of the game");
                     }
                 }
-                Log.Information("Validating backup...");
+                Log.Information(@"Validating backup...");
 
                 VanillaDatabaseService.LoadDatabaseFor(game, target.IsPolishME1);
                 bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback);
@@ -542,33 +546,37 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     //Backup is OK
                     //Tag
-                    File.Create(Path.Combine(targetPath, "cmm_vanilla")).Close();
-                    Log.Information("Wrote cmm_vanilla to validated backup");
+                    File.WriteAllText(Path.Combine(targetPath, @"cmm_vanilla"), App.AppVersionHR);
+                    Log.Information(@"Wrote cmm_vanilla to validated backup");
+                    BackupService.SetBackedUp(game, true);
                 }
             }
             else
             {
-                Log.Information("Backup target is invalid. This backup cannot not be used. Reason: " + validationFailedReason);
+                Log.Information(@"Backup target is invalid. This backup cannot not be used. Reason: " + validationFailedReason);
             }
+            BackupService.RefreshBackupStatus(null, game);
+            BackupService.SetActivity(game, false);
+            BackupService.ResetIcon(game);
         }
 
         private static Dictionary<Mod.MEGame, List<string>> threeWayMergeMap = new Dictionary<Mod.MEGame, List<string>>()
         {
             { Mod.MEGame.ME1, new List<string>()
                 {
-                    "",
-                    ""
+                    @"BIOC_Base.u",
+                    @""
                 }
             },{ Mod.MEGame.ME2, new List<string>()
                 {
-                    "SFXGame.pcc",
-                    "Engine.pcc"
+                    @"SFXGame.pcc",
+                    @"Engine.pcc"
                 }
             },
             { Mod.MEGame.ME3, new List<string>()
                 {
-                    "SFXGame.pcc",
-                    "Engine.pcc"
+                    @"SFXGame.pcc",
+                    @"Engine.pcc"
                 }
             }
         };

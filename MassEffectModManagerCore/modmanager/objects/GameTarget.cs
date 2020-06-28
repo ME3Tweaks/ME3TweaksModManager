@@ -546,7 +546,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"RestoreSFARThread");
                     nbw.DoWork += (a, b) =>
                     {
-                        var backupFile = Path.Combine(Utilities.GetGameBackupPath(target.Game), FilePath);
+                        var backupFile = Path.Combine(BackupService.GetGameBackupPath(target.Game), FilePath);
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
                         Restoring = true;
                         Log.Information($@"Restoring SFAR from backup: {backupFile} {targetFile}");
@@ -610,7 +610,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (Restoring) return false;
                 if (OtherSFARBeingRestored) return false;
                 if (checkedForBackupFile) return canRestoreSfar;
-                var backupPath = Utilities.GetGameBackupPath(target.Game);
+                var backupPath = BackupService.GetGameBackupPath(target.Game);
                 canRestoreSfar = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
                 checkedForBackupFile = true;
                 return canRestoreSfar;
@@ -700,7 +700,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (restore.HasValue && restore.Value && internalCanRestoreFile(batchRestore))
                 {
                     //Todo: Background thread this maybe?
-                    var backupPath = Utilities.GetGameBackupPath(target.Game);
+                    var backupPath = BackupService.GetGameBackupPath(target.Game);
                     var backupFile = Path.Combine(backupPath, FilePath);
                     var targetFile = Path.Combine(target.TargetPath, FilePath);
                     try
@@ -737,7 +737,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 if (Restoring && !batchMode) return false;
                 if (checkedForBackupFile) return canRestoreFile;
-                var backupPath = Utilities.GetGameBackupPath(target.Game);
+                var backupPath = BackupService.GetGameBackupPath(target.Game);
                 canRestoreFile = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
                 checkedForBackupFile = true;
                 return canRestoreFile;
@@ -920,6 +920,19 @@ namespace MassEffectModManagerCore.modmanager.objects
             else
             {
                 NumASIModsInstalledText = "This installation has no ASI mods installed";
+            }
+        }
+
+        public string Binkw32StatusText { get; private set; }
+        public void PopulateBinkInfo()
+        {
+            if (Game != Mod.MEGame.ME1)
+            {
+                Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? "Bypass installed. ASI and DLC mods will be able to load" : "Bypass not installed. ASI and DLC mods will be unable to load";
+            }
+            else
+            {
+                Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? "Bypass installed. ASI mods will be able to load" : "Bypass not installed. ASI mods will be unable to load";
             }
         }
     }

@@ -193,7 +193,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadME1FilesList()
         {
             var me1files = new List<BackupFile>();
-            var bup = Utilities.GetGameBackupPath(Mod.MEGame.ME1);
+            var bup = BackupService.GetGameBackupPath(Mod.MEGame.ME1);
             if (bup != null)
             {
                 var target = new GameTarget(Mod.MEGame.ME1, bup, false);
@@ -234,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             var me2files = new List<BackupFile>();
 
-            var bup = Utilities.GetGameBackupPath(Mod.MEGame.ME2);
+            var bup = BackupService.GetGameBackupPath(Mod.MEGame.ME2);
             if (bup != null)
             {
                 var target = new GameTarget(Mod.MEGame.ME2, bup, false);
@@ -326,7 +326,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadME3FilesList()
         {
             var me3files = new List<BackupFile>();
-            var bup = Utilities.GetGameBackupPath(Mod.MEGame.ME3);
+            var bup = BackupService.GetGameBackupPath(Mod.MEGame.ME3);
             if (bup != null)
             {
                 var target = new GameTarget(Mod.MEGame.ME3, bup, false);

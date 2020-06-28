@@ -26,6 +26,8 @@ namespace MassEffectModManagerCore.ui
 
         #endregion INotifyPropertyChanged
 
+        public bool Any => this.Any();
+
         /// <summary> 
         /// Adds the elements of the specified collection to the end of the ObservableCollection(Of T). 
         /// </summary> 
@@ -37,6 +39,7 @@ namespace MassEffectModManagerCore.ui
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             if (oldcount != Count)
             {
+                OnPropertyChanged(nameof(Any));
                 OnPropertyChanged(nameof(Count));
             }
         }
@@ -55,6 +58,7 @@ namespace MassEffectModManagerCore.ui
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             if (oldcount != Count)
             {
+                OnPropertyChanged(nameof(Any));
                 OnPropertyChanged(nameof(Count));
             }
         }
@@ -69,6 +73,7 @@ namespace MassEffectModManagerCore.ui
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             if (oldcount != Count)
             {
+                OnPropertyChanged(nameof(Any));
                 OnPropertyChanged(nameof(Count));
             }
 
@@ -94,6 +99,7 @@ namespace MassEffectModManagerCore.ui
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             if (oldcount != Count)
             {
+                OnPropertyChanged(nameof(Any));
                 OnPropertyChanged(nameof(Count));
             }
         }
@@ -165,7 +171,7 @@ namespace MassEffectModManagerCore.ui
         /// </summary>
         public void RaiseBindableCountChanged()
         {
-            OnPropertyChanged("BindableCount");
+            OnPropertyChanged(nameof(BindableCount));
         }
 
         #endregion // Sorting
@@ -175,7 +181,11 @@ namespace MassEffectModManagerCore.ui
         /// </summary> 
         public ObservableCollectionExtended() : base()
         {
-            CollectionChanged += (a, b) => { BindableCount = Count; };
+            CollectionChanged += (a, b) =>
+            {
+                BindableCount = Count;
+                OnPropertyChanged(nameof(Any));
+            };
         }
 
         /// <summary> 
@@ -186,7 +196,11 @@ namespace MassEffectModManagerCore.ui
         public ObservableCollectionExtended(IEnumerable<T> collection)
             : base(collection)
         {
-            CollectionChanged += (a, b) => { BindableCount = Count; };
+            CollectionChanged += (a, b) =>
+            {
+                BindableCount = Count;
+                OnPropertyChanged(nameof(Any));
+            };
         }
     }
 }

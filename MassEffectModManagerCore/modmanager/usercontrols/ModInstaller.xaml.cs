@@ -106,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             var hasAnyGameModificationJobs = ModBeingInstalled.InstallationJobs.Any(x => x.Header != ModJob.JobHeader.CUSTOMDLC && x.Header != ModJob.JobHeader.BALANCE_CHANGES);
             if (!hasAnyGameModificationJobs) return true; //Backup not required for DLC-only mods. Or balance change jobs
-            var hasBackup = Utilities.GetGameBackupPath(ModBeingInstalled.Game);
+            var hasBackup = BackupService.GetGameBackupPath(ModBeingInstalled.Game);
             if (hasBackup == null)
             {
                 var installAnyways = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, Utilities.GetGameName(ModBeingInstalled.Game), ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
