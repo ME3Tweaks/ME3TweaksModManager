@@ -72,7 +72,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION,
             INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER,
             INSTALL_FAILED_EXCEPTION_FILE_COPY,
-            INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER
+            INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER,
+            INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3
         }
 
         public string Action { get; set; }
@@ -148,6 +149,58 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Information(@"<<<<<<< Exiting modinstaller");
 
                 return;
+            }
+
+            //Check compat pack for me3
+            if (ModBeingInstalled.Game == MEGame.ME3 && ModBeingInstalled.ME3ControllerCompatBuiltAgainst.Any())
+            {
+                var installedDlcMods = VanillaDatabaseService.GetInstalledDLCMods(gameTarget);
+                installedDlcMods.Remove(@"DLC_MOD_" + GUICompatibilityGenerator.UI_MOD_NAME); //do not check that existing compat pack is installed
+                var missingCompatDlcs = ModBeingInstalled.ME3ControllerCompatBuiltAgainst.Except(installedDlcMods);
+                var addedAfterCompatDlcs = installedDlcMods.Except(ModBeingInstalled.ME3ControllerCompatBuiltAgainst);
+
+                if (missingCompatDlcs.Any() || addedAfterCompatDlcs.Any())
+                {
+                    var errorLines = new List<string>();
+                    Log.Error(@"This compatibility pack was built against a different DLC configuration and is not valid for this set of DLC mods.");
+                    errorLines.Add("This compatibility pack was not built for this configuration of the game and cannot be installed.");
+
+                    if (missingCompatDlcs.Any())
+                    {
+                        errorLines.Add("");
+                        Log.Error(@" > The following DLCs were removed after generating GUI compat pack: " + string.Join(", ", missingCompatDlcs));
+                        errorLines.Add("The following DLC mods were removed after the compatibility pack was generated:");
+                        foreach (var v in missingCompatDlcs)
+                        {
+                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(v, ModBeingInstalled.Game);
+                            var line = $@" - {v}";
+                            if (tpmi != null) line += $" ({tpmi.modname})";
+                            errorLines.Add(line);
+                        }
+                    }
+                    if (addedAfterCompatDlcs.Any())
+                    {
+                        errorLines.Add("");
+                        Log.Error(@" > The following DLCs were added after generating GUI compat pack: " + string.Join(", ", addedAfterCompatDlcs));
+                        errorLines.Add("The following DLC mods were added after the compatibility pack was generated:");
+                        foreach (var v in addedAfterCompatDlcs)
+                        {
+                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(v, ModBeingInstalled.Game);
+                            var line = $@" - {v}";
+                            if (tpmi != null) line += $" ({tpmi.modname})";
+                            errorLines.Add(line);
+                        }
+                    }
+                    errorLines.Add("");
+                    errorLines.Add("A new compatibility pack must be generated from the tools menu.");
+
+                    //logs handled in precheck
+                    e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3, errorLines);
+                    Log.Information(@"<<<<<<< Exiting modinstaller");
+
+                    return;
+                }
+
             }
 
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
@@ -591,6 +644,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var metacmm = Path.Combine(addedDLCFolder, @"_metacmm.txt");
                 ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
                 string contents = $"{assignedDLCName ?? ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}"; //Do not localize
+
+                if (ModBeingInstalled.ME3ControllerCompatBuiltAgainst.Any())
+                {
+                    // This is a compat pack
+                    contents += $"\n{MetaCMM.ControllerCompatMetaPrefix}{string.Join(';', ModBeingInstalled.ME3ControllerCompatBuiltAgainst)}"; //do not localize
+                }
+
                 File.WriteAllText(metacmm, contents);
             }
 
@@ -1043,6 +1103,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 message += "This mod should be reinstalled.";
                             }
                             M3L.ShowDialog(window, message, "Error installing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                        case ModInstallCompletedStatus.INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3:
+                            M3L.ShowDialog(window, string.Join('\n', items), "Invalid compatibility pack", MessageBoxButton.OK, MessageBoxImage.Error);
                             break;
                     }
                 }

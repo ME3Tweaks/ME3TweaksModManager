@@ -21,6 +21,8 @@ using static MassEffectModManagerCore.modmanager.windows.StarterKitGeneratorWind
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using IniParser;
+using IniParser.Model;
 using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -153,6 +155,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return null;
         }
 
+        private Mod finalGeneratedMod;
         private void StartGuiCompatibilityScanner()
         {
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"GUICompatibilityScanner");
@@ -261,9 +264,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             Log.Information(@"A GUI compatibility patch is required for this game configuration");
                             b.Result = GUICompatibilityThreadResult.REQUIRED;
-                            var generatedMod = GenerateCompatibilityPackForFiles(nonUIinstalledDLCMods, filesToBePatched.Keys.ToList(), libraryArchive);
+                            finalGeneratedMod = GenerateCompatibilityPackForFiles(nonUIinstalledDLCMods, filesToBePatched.Keys.ToList(), libraryArchive);
                             b.Result = GUICompatibilityThreadResult.GENERATED_PACK;
-                            Application.Current.Dispatcher.Invoke(delegate { ((MainWindow)window).LoadMods(generatedMod); }); //reload to this mod
+                            Application.Current.Dispatcher.Invoke(delegate { mainwindow.LoadMods(finalGeneratedMod); }); //reload to this mod
                             return;
                         }
                     }
@@ -286,11 +289,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (b.Result is GUICompatibilityThreadResult gctr)
                 {
                     Analytics.TrackEvent(@"Generated a UI compatibility pack", new Dictionary<string, string>() { { @"Result", gctr.ToString() } });
-                    OnClosing(DataEventArgs.Empty);
                     if (gctr == GUICompatibilityThreadResult.NOT_REQUIRED)
                     {
                         M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialogNoCompatPackRequired), M3L.GetString(M3L.string_noCompatPackRequired), MessageBoxButton.OK);
                     }
+                    OnClosing(new DataEventArgs(finalGeneratedMod));
                 }
                 else
                 {
@@ -441,6 +444,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     throw new Exception($@"Error: {Path.GetFileName(file)} doesn't contain GUI exports! This shouldn't have been possible.");
                 }
             }
+
+            // Write builtagainst for metacmm.
+            IniData iniData = new FileIniDataParser().ReadFile(generatedMod.ModDescPath);
+            var builtAgainst = VanillaDatabaseService.GetInstalledDLCMods(target);
+            builtAgainst.Remove(@"DLC_MOD_" + UI_MOD_NAME);
+            iniData[@"ControllerCompat"][@"builtagainst"] = string.Join(';', builtAgainst);
+            File.WriteAllText(generatedMod.ModDescPath, iniData.ToString());
 
             return generatedMod;
         }

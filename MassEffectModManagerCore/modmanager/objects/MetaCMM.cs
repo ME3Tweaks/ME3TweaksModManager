@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.ui;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -12,10 +14,12 @@ namespace MassEffectModManagerCore.modmanager.objects
     /// </summary>
     public class MetaCMM
     {
+        public static readonly string ControllerCompatMetaPrefix = @"[ME3CONTROLLERCOMPATLIST]";
         public string ModName { get; set; }
         public string Version { get; set; }
         public string InstalledBy { get; set; }
         public string InstallerInstanceGUID { get; set; }
+        public ObservableCollectionExtended<string> ME3ControllerModCompatBuiltAgainst { get; } = new ObservableCollectionExtended<string>();
 
         public MetaCMM(string metaFile)
         {
@@ -38,11 +42,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                         InstallerInstanceGUID = line;
                         break;
                     default:
-                        //Log.Error($@"Unsupported line number in _metacmm.txt: {i}");
+                        if (line.StartsWith(ControllerCompatMetaPrefix))
+                        {
+                            var parsedline = line.Substring(ControllerCompatMetaPrefix.Length);
+                            ME3ControllerModCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(parsedline));
+                        }
                         break;
                 }
                 i++;
             }
+
+
+
         }
     }
 }

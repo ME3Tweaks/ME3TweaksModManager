@@ -807,8 +807,31 @@ namespace MassEffectModManagerCore
 
         private void RunCompatGenerator()
         {
+            if (SelectedGameTarget.TextureModded)
+            {
+                Log.Error(@"Cannot build compat pack against game that is already texture modded. Aborting GUICompatGenerator");
+                M3L.ShowDialog(this, "A GUI compatibility pack cannot be generated against a game target that has been texture modded.", "Cannot generate compatibility pack", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             var guiCompatibilityGenerator = new GUICompatibilityGenerator(SelectedGameTarget);
-            guiCompatibilityGenerator.Close += (a, b) => { ReleaseBusyControl(); };
+            guiCompatibilityGenerator.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is Mod m)
+                {
+                    // Mod was generated
+                    if (SelectedGameTarget.Game == Mod.MEGame.ME3 && !SelectedGameTarget.TextureModded)
+                    {
+                        var install = M3L.ShowDialog(this, "Install the compatibility pack now?", "Compatibility pack generated", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+                        if (install)
+                        {
+                            Log.Information(@"Installing generated GUI compatibility pack");
+                            ApplyMod(m);
+                        }
+                    }
+                }
+            };
             ShowBusyControl(guiCompatibilityGenerator);
         }
 

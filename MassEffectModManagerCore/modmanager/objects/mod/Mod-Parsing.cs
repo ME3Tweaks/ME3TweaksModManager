@@ -90,6 +90,13 @@ namespace MassEffectModManagerCore.modmanager
         /// List of files that will always be deleted locally when servicing an update on a client. This has mostly been deprecated for new mods.
         /// </summary>
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
+
+        /// <summary>
+        /// List of DLC folder names the controller compatibilty pack was built against. This list is passed through to Metacmm and will be checked on install to prevent improper installation
+        /// </summary>
+        public ObservableCollectionExtended<string> ME3ControllerCompatBuiltAgainst { get; } = new ObservableCollectionExtended<string>();
+
+        
         /// <summary>
         /// The server folder that this mod will be published to when using the ME3Tweaks Updater Service
         /// </summary>
@@ -1432,6 +1439,12 @@ namespace MassEffectModManagerCore.modmanager
 
             //What tool to launch post-install
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
+
+            // Non-public descriptors
+            if (!string.IsNullOrEmpty(iniData[@"ControllerCompat"]["builtagainst"]))
+            {
+                ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"]["builtagainst"]));
+            }
 
 
             //Thread.Sleep(500);
