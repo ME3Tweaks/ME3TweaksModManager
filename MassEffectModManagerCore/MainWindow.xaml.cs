@@ -341,6 +341,7 @@ namespace MassEffectModManagerCore
                 }
             };
         }
+        public ICommand OriginInGameOverlayDisablerCommand { get; set; }
         public ICommand ModdescEditorCommand { get; set; }
         public ICommand LaunchEGMSettingsCommand { get; set; }
         public ICommand OfficialDLCTogglerCommand { get; set; }
@@ -421,6 +422,14 @@ namespace MassEffectModManagerCore
             CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3));
             ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
+            OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => ModsLoaded && InstallationTargets.Any());
+        }
+
+        private void OpenOIGDisabler()
+        {
+            var oigDisabler = new OIGODisabler();
+            oigDisabler.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(oigDisabler);
         }
 
         private bool CanOpenModdescEditor() => SelectedMod != null && Settings.DeveloperMode && Settings.BetaMode;

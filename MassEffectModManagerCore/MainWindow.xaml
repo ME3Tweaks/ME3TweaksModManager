@@ -861,6 +861,20 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
+                        Header="Origin in-game overlay disabler"
+                        Command="{Binding OriginInGameOverlayDisablerCommand}"
+                        ToolTip="Installs a file that forcibly disables Origin in-game overlay">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Ban"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
                         Header="{DynamicResource string_Additionalmoddingtools}"
                         Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem
