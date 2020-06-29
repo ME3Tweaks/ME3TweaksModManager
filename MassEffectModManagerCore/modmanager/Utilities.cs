@@ -1887,5 +1887,10 @@ namespace MassEffectModManagerCore
         {
             return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "tutorialservice")).FullName;
         }
+
+        public static string GetOriginOverlayDisableFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "d3d9.dll");
+        }
     }
 }

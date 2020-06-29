@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
@@ -87,7 +88,7 @@ namespace MassEffectModManagerCore.GameDirectories
             gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Path", null);
         }
 
-        public static Dictionary<string, string> OfficialDLCNames = new Dictionary<string, string>
+        public static Dictionary<string, string> OfficialDLCNames = new CaseInsensitiveDictionary<string>
         {
             ["DLC_CER_02"] = "Aegis Pack",
             ["DLC_CER_Arc"] = "Arc Projector",

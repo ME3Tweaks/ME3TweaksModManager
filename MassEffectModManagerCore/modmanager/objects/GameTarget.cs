@@ -292,11 +292,15 @@ namespace MassEffectModManagerCore.modmanager.objects
             List<string> modifiedFiles = new List<string>();
             void failedCallback(string file)
             {
-                //todo: Filter out SFARs?
                 if (file.EndsWith(@".sfar"))
                 {
                     modifiedSfars.Add(file);
                     return;
+                }
+
+                if (file == getALOTMarkerFilePath())
+                {
+                    return; //Do not report this file as modified or user will desync game state with texture state
                 }
                 modifiedFiles.Add(file);
             }
@@ -496,7 +500,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         IsSPSFAR = true;
                     }
 
-                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(dlcFoldername), out var name);
+                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(dlcFoldername),out var name);
                     UIString = name;
                     if (Unpacked)
                     {
@@ -615,6 +619,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var backupPath = BackupService.GetGameBackupPath(target.Game);
                 canRestoreSfar = backupPath != null && File.Exists(Path.Combine(backupPath, FilePath));
                 checkedForBackupFile = true;
+                if (!canRestoreSfar)
+                {
+                    RestoreButtonContent = M3L.GetString(M3L.string_noBackup);
+                }
                 return canRestoreSfar;
             }
 

@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
@@ -88,7 +89,7 @@ namespace MassEffectModManagerCore.GameDirectories
             gamePath = (string)Microsoft.Win32.Registry.GetValue(keyName, "Install Dir", null);
         }
 
-        public static Dictionary<string, string> OfficialDLCNames = new Dictionary<string, string>
+        public static Dictionary<string, string> OfficialDLCNames = new CaseInsensitiveDictionary<string>()
         {
             ["DLC_HEN_PR"] = "From Ashes",
             ["DLC_OnlinePassHidCE"] = "Collectors Edition Content",

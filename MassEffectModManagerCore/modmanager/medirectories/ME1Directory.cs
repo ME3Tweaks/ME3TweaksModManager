@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.GameDirectories
@@ -86,7 +87,7 @@ namespace MassEffectModManagerCore.GameDirectories
         public static string ExecutablePath(string gameRoot) => Path.Combine(gameRoot, "Binaries", "MassEffect.exe");
 
 
-        public static Dictionary<string, string> OfficialDLCNames = new Dictionary<string, string>
+        public static Dictionary<string, string> OfficialDLCNames = new CaseInsensitiveDictionary<string>
         {
             ["DLC_UNC"] = "Bring Down the Sky",
             ["DLC_Vegas"] = "Pinnacle Station"

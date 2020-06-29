@@ -604,7 +604,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         /// <summary>
-        /// Downloads from a URL to memory. This is a blocking call and should be done on a background thread.
+        /// Downloads from a URL to memory. This is a blocking call and must be done on a background thread.
         /// </summary>
         /// <param name="url">URL to download from</param>
         /// <param name="progressCallback">Progress information clalback</param>

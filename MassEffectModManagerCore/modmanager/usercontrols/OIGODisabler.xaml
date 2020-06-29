@@ -10,7 +10,7 @@
              Width="500">
     <StackPanel>
         <TextBlock Text="Origin in-game overlay disabler" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
-        <TextBlock Text="Origin in-game overlay is known to cause significant performance loss in the Mass Effect games. While it can be turned off in the Origin settings, this setting does not work for the Steam version of Mass Effect 3. You can install a proxy d3d9.dll that will disable overlay.&#10;Using other d3d9 proxies, such as Reshade, will also disable the overlay." TextWrapping="Wrap"/>
+        <TextBlock Text="Origin in-game overlay is known to cause significant performance loss in the Mass Effect games. While it can be turned off in the Origin settings, this setting does not work for the Steam version of Mass Effect 3. You can install a proxy d3d9.dll that will disable forcibly disable the overlay per game target.&#10;&#10;Using other d3d9 proxies, such as Reshade, will also disable the overlay." TextWrapping="Wrap"/>
         <ItemsControl ItemsSource="{Binding Games}">
             <ItemsControl.ItemContainerStyle>
                 <Style>
@@ -35,10 +35,10 @@
                         <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource, FallbackValue=/images/gameicons/ME3_48.ico}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
                         <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle, FallbackValue=ME3}"/>
                         <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding D3D9Status, FallbackValue=Not installed}"/>
-                        <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Name="InstallationTargetsME3_ComboBox" ItemsSource="{Binding AvailableBackupSources}" 
-                                  SelectedItem="{Binding BackupSourceTarget}" HorizontalContentAlignment="Stretch" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
-                                  ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
-                        <Button Content="{Binding DisablerButtonText}" Padding="3,0" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Command="{Binding BackupButtonCommand}"  Grid.Row="3" Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                        <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" 
+                                  HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
+                                  ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding Targets.Any}" Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <Button Content="{Binding DisablerButtonText}" Padding="3,0" Command="{Binding ToggleDisablerCommand}"  Grid.Row="3" Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"  Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
