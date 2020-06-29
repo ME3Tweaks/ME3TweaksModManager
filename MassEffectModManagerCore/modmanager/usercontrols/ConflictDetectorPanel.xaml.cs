@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Input;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 
@@ -18,6 +20,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public GameTarget SelectedTarget { get; set; }
         public ConflictDetectorPanel()
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"Custom DLC Conflict Detector Panel", new WeakReference(this));
             DataContext = this;
             LoadCommands();
             InitializeComponent();

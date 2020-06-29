@@ -8,6 +8,7 @@ using System.Threading;
 
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
@@ -24,11 +25,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string StaticFilesBaseURL_ME3Tweaks = "https://me3tweaks.com/modmanager/tools/staticfiles/";
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
         private const string BasegameFileIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
+        private const string BasegameFileIdentificationServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/basegamefileidentificationservice.json";
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
         private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice";
         private const string ModMakerTopModsEndpoint = "https://me3tweaks.com/modmaker/api/topmods";
+
+        private const string TutorialServiceURL = "https://me3tweaks.com/modmanager/services/tutorialservice";
+        private const string TutorialServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/tutorialservice.json";
+
 
         public static readonly string ModmakerModsEndpoint = "https://me3tweaks.com/modmaker/download.php?id=";
 
@@ -73,6 +79,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> FetchBasegameFileIdentificationServiceManifest(bool overrideThrottling = false)
         {
+            Log.Information("Fetching basegame file identification manifest");
+
+            //read cached first.
             string cached = null;
             if (File.Exists(Utilities.GetBasegameIdentificationCacheFile()))
             {
@@ -84,7 +93,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -100,36 +109,39 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             if (!File.Exists(Utilities.GetBasegameIdentificationCacheFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
             {
-                try
+                var urls = new[] { BasegameFileIdentificationServiceURL, BasegameFileIdentificationServiceBackupURL };
+                foreach (var staticurl in urls)
                 {
-                    using var wc = new ShortTimeoutWebClient();
+                    Uri myUri = new Uri(staticurl);
+                    string host = myUri.Host;
+                    try
+                    {
+                        using var wc = new ShortTimeoutWebClient();
 
-                    string json = wc.DownloadStringAwareOfEncoding(BasegameFileIdentificationServiceURL);
-                    File.WriteAllText(Utilities.GetBasegameIdentificationCacheFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(json);
+                        string json = wc.DownloadStringAwareOfEncoding(staticurl);
+                        File.WriteAllText(Utilities.GetBasegameIdentificationCacheFile(), json);
+                        return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(json);
+                    }
+                    catch (Exception e)
+                    {
+                        //Unable to fetch latest help.
+                        Log.Error($"Error fetching online basegame file identification service from endpoint {host}: {e.Message}");
+                    }
                 }
-                catch (Exception e)
-                {
-                    //Unable to fetch latest help.
-                    Log.Error("Error fetching online basegame file identification service: " + e.Message);
 
-                    if (cached != null)
+                if (cached == null)
+                {
+                    Log.Error("Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
+                    Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> d = new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
                     {
-                        Log.Warning("Using cached basegame file identification service  file instead");
-                    }
-                    else
-                    {
-                        Log.Error("Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
-                        Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> d = new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
-                        {
-                            ["ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                            ["ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                            ["ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
-                        };
-                        return d;
-                    }
+                        ["ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                        ["ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                        ["ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
+                    };
+                    return d;
                 }
             }
+            Log.Information("Using cached BGFIS instead");
 
             try
             {
@@ -159,8 +171,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(false);
-                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    string log = LogCollector.CollectLatestLog(true);
+                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -281,8 +293,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(false);
-                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    string log = LogCollector.CollectLatestLog(true);
+                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -332,7 +344,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
+        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling)
         {
             string cached = null;
             if (File.Exists(Utilities.GetThirdPartyImportingCachedFile()))
@@ -344,8 +356,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(false);
-                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    string log = LogCollector.CollectLatestLog(true);
+                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -392,6 +404,40 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 Log.Error("Unable to parse cached importing service file: " + e.Message);
                 return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
+            }
+        }
+
+        /// <summary>
+        /// Touches up any existing tutorial assets or downloads missing ones.
+        /// </summary>
+        public static void TouchupTutorial()
+        {
+            var fileRootPath = Utilities.GetTutorialServiceCache();
+            foreach (var step in App.TutorialService)
+            {
+                var imagePath = Path.Combine(fileRootPath, step.imagename);
+                bool download = !File.Exists(imagePath) || Utilities.CalculateMD5(imagePath) != step.imagemd5;
+                if (download)
+                {
+                    foreach (var endpoint in StaticFilesBaseEndpoints)
+                    {
+                        Uri myUri = new Uri(endpoint);
+                        string host = myUri.Host;
+
+                        var fullurl = endpoint + "tutorial/" + step.imagename;
+                        Log.Information($"Downloading {step.imagename} from endpoint {host}");
+                        var downloadedImage = OnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
+                        if (downloadedImage.errorMessage == null)
+                        {
+                            downloadedImage.result.WriteToFile(imagePath);
+                            break;
+                        }
+                        else
+                        {
+                            Log.Error($@"Unable to download {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
+                        }
+                    }
+                }
             }
         }
 
@@ -541,8 +587,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 lock (args.UserState)
                 {
-                        //releases blocked thread
-                        Monitor.Pulse(args.UserState);
+                    //releases blocked thread
+                    Monitor.Pulse(args.UserState);
                 }
             };
             var syncObject = new Object();
@@ -585,13 +631,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             responseStream = null;
                             downloadError = $"Hash of downloaded item ({url}) does not match expected hash. Expected: {hash}, got: {md5}"; //needs localized
-                            }
+                        }
                     }
                 }
                 lock (args.UserState)
                 {
-                        //releases blocked thread
-                        Monitor.Pulse(args.UserState);
+                    //releases blocked thread
+                    Monitor.Pulse(args.UserState);
                 }
             };
             var syncObject = new Object();
@@ -625,6 +671,76 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             public string UIRevisionString => M3L.GetString(M3L.string_interp_revisionX, revision);
             public string UICodeString => M3L.GetString(M3L.string_interp_codeX, mod_id);
+        }
+
+        public static List<IntroTutorial.TutorialStep> FetchTutorialManifest(bool overrideThrottling = false)
+        {
+            Log.Information("Fetching tutorial manifest");
+            string cached = null;
+            // Read cached first.
+            if (File.Exists(Utilities.GetTutorialServiceCacheFile()))
+            {
+                try
+                {
+                    cached = File.ReadAllText(Utilities.GetTutorialServiceCacheFile());
+                }
+                catch (Exception e)
+                {
+                    var attachments = new List<ErrorAttachmentLog>();
+                    string log = LogCollector.CollectLatestLog(true);
+                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    {
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                    }
+                    Crashes.TrackError(e, new Dictionary<string, string>()
+                    {
+                        {"Error type", "Error reading cached online content" },
+                        {"Service", "Tutorial Service" },
+                        {"Message", e.Message }
+                    }, attachments.ToArray());
+                }
+            }
+
+            if (!File.Exists(Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            {
+                string[] urls = new[] { TutorialServiceURL, TutorialServiceBackupURL };
+                foreach (var staticurl in urls)
+                {
+                    Uri myUri = new Uri(staticurl);
+                    string host = myUri.Host;
+
+                    try
+                    {
+                        using var wc = new ShortTimeoutWebClient();
+                        string json = wc.DownloadStringAwareOfEncoding(staticurl);
+                        File.WriteAllText(Utilities.GetTutorialServiceCacheFile(), json);
+                        return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(json);
+                    }
+                    catch (Exception e)
+                    {
+                        //Unable to fetch latest help.
+                        Log.Error($"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
+                    }
+                }
+
+                if (cached == null)
+                {
+                    Log.Error("Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
+                    return new List<IntroTutorial.TutorialStep>();
+                }
+            }
+
+            Log.Warning("Using cached tutorial service file instead");
+
+            try
+            {
+                return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(cached);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to parse cached importing service file: " + e.Message);
+                return new List<IntroTutorial.TutorialStep>();
+            }
         }
     }
 }

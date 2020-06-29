@@ -13,8 +13,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -36,6 +38,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         public BatchModQueueEditor(List<Mod> allMods, Window owner = null, BatchLibraryInstallQueue queueToEdit = null)
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Queue Editor", new WeakReference(this));
             Owner = owner;
             DataContext = this;
             this.allMods = allMods;
@@ -186,6 +189,12 @@ namespace MassEffectModManagerCore.modmanager.windows
             var savePath = getSaveName(GroupName);
             File.WriteAllText(savePath, sb.ToString());
             SavedPath = savePath;
+            Analytics.TrackEvent("Saved Batch Group", new Dictionary<string, string>()
+            {
+                {"Group name", GroupName},
+                {"Group size", ModsInGroup.Count.ToString()},
+                {"Game", SelectedGame.ToString()}
+            });
             Close();
             //OnClosing(new DataEventArgs(savePath));
         }

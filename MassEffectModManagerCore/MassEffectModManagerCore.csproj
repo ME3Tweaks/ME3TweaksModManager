@@ -50,16 +50,6 @@
     <None Remove="images\gameicons\ME2_48.ico" />
     <None Remove="images\gameicons\ME3_48.ico" />
     <None Remove="images\gameicons\Unknown_48.ico" />
-    <None Remove="images\introtutorial\backupmenu.png" />
-    <None Remove="images\introtutorial\helpmenu.png" />
-    <None Remove="images\introtutorial\installation_information.png" />
-    <None Remove="images\introtutorial\modlibrary.png" />
-    <None Remove="images\introtutorial\modmanagement.png" />
-    <None Remove="images\introtutorial\modutils.png" />
-    <None Remove="images\introtutorial\optionsmenu.png" />
-    <None Remove="images\introtutorial\startpage.png" />
-    <None Remove="images\introtutorial\target_description.png" />
-    <None Remove="images\introtutorial\toolsmenu.png" />
     <None Remove="images\lighttheme.png" />
     <None Remove="images\loadingspinner.png" />
     <None Remove="images\me3tweaks.png" />
@@ -122,16 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\dvd.png" />
-    <Resource Include="images\introtutorial\backupmenu.png" />
-    <Resource Include="images\introtutorial\helpmenu.png" />
-    <Resource Include="images\introtutorial\installation_information.png" />
-    <Resource Include="images\introtutorial\modlibrary.png" />
-    <Resource Include="images\introtutorial\modmanagement.png" />
-    <Resource Include="images\introtutorial\modutils.png" />
-    <Resource Include="images\introtutorial\optionsmenu.png" />
-    <Resource Include="images\introtutorial\startpage.png" />
-    <Resource Include="images\introtutorial\target_description.png" />
-    <Resource Include="images\introtutorial\toolsmenu.png" />
     <Resource Include="images\steam.png" />
     <Resource Include="images\terminal.png" />
   </ItemGroup>

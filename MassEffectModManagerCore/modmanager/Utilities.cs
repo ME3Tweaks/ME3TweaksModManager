@@ -1877,5 +1877,15 @@ namespace MassEffectModManagerCore
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "keybindsoverride")).FullName;
         }
+
+        internal static string GetTutorialServiceCacheFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
+        }
+
+        public static string GetTutorialServiceCache()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "tutorialservice")).FullName;
+        }
     }
 }

@@ -1972,9 +1972,8 @@ namespace MassEffectModManagerCore
             }
 
             // TODO: Read and import java version configuration
-
+            Log.Information(@"Loading cached targets");
             var currentTargets = InstallationTargets.ToList();
-
             var otherTargetsFileME1 = Utilities.GetCachedTargets(Mod.MEGame.ME1, currentTargets);
             var otherTargetsFileME2 = Utilities.GetCachedTargets(Mod.MEGame.ME2, currentTargets);
             var otherTargetsFileME3 = Utilities.GetCachedTargets(Mod.MEGame.ME3, currentTargets);
@@ -1984,7 +1983,7 @@ namespace MassEffectModManagerCore
                 int count = InstallationTargets.Count;
                 InstallationTargets.AddRange(otherTargetsFileME1);
                 InstallationTargets.AddRange(otherTargetsFileME2);
-                // InstallationTargets.AddRange(otherTargetsFileME3);
+                InstallationTargets.AddRange(otherTargetsFileME3);
                 var distinct = InstallationTargets.Distinct().ToList();
                 InstallationTargets.ReplaceAll(distinct);
                 if (InstallationTargets.Count > count)
@@ -2347,7 +2346,11 @@ namespace MassEffectModManagerCore
                 {
                     Log.Error(@"Failed to load tips service: " + e.Message);
                 }
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", "Checking tutorial assets", "Checked tutorial assets");
+                App.TutorialService = OnlineContent.FetchTutorialManifest(!firstStartupCheck);
+                OnlineContent.TouchupTutorial();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 if (firstStartupCheck)

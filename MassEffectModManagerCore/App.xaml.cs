@@ -544,6 +544,7 @@ namespace MassEffectModManagerCore
 
         public static string ExecutableLocation { get; private set; }
         public static Dictionary<string, string> OnlineManifest { get; internal set; }
+        public static List<IntroTutorial.TutorialStep> TutorialService { get; set; } = new List<IntroTutorial.TutorialStep>(); //in case it takes long time to load
 
         /// <summary>
         /// Called when an unhandled exception occurs. This method can only be invoked after startup has completed. 

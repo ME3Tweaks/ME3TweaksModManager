@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Pathoschild.FluentNexus.Models;
@@ -24,6 +25,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public OIGODisabler()
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"Origin in-game overlay disabler panel", new WeakReference(this));
+
             DataContext = this;
             InitializeComponent();
         }

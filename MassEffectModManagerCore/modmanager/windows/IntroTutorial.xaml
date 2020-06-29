@@ -48,7 +48,7 @@
         <Grid>
             <Grid.Background>
                 <ImageBrush
-                    ImageSource="{Binding CurrentStep.ImagePath}" />
+                    ImageSource="{Binding CurrentStep.UIImagePath}" />
             </Grid.Background>
             <Grid.RowDefinitions>
                 <RowDefinition
@@ -96,10 +96,10 @@
             </Grid.ColumnDefinitions>
             <TextBlock
                 Foreground="Black"
-                Grid.Row="{Binding CurrentStep.RowIndex}"
-                Grid.Column="{Binding CurrentStep.ColumnIndex}"
-                Grid.RowSpan="{Binding CurrentStep.RowSpan}"
-                Grid.ColumnSpan="{Binding CurrentStep.ColumnSpan}"
+                Grid.Row="{Binding CurrentStep.rowindex}"
+                Grid.Column="{Binding CurrentStep.columnindex}"
+                Grid.RowSpan="{Binding CurrentStep.rowspan}"
+                Grid.ColumnSpan="{Binding CurrentStep.columnspan}"
                 Text="{Binding CurrentStep.UIString}"
                 TextWrapping="Wrap"
                 FontSize="20"

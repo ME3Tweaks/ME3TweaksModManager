@@ -14,8 +14,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.windows;
+using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -30,6 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<GameTarget> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTarget>();
         public BatchModLibrary()
         {
+            MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", new WeakReference(this));
             DataContext = this;
             LoadCommands();
             InitializeComponent();
@@ -63,8 +66,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void InstallGroup()
         {
-            //throw new NotImplementedException();
             SelectedBatchQueue.Target = SelectedGameTarget;
+            Analytics.TrackEvent("Installing Batch Group", new Dictionary<string, string>()
+            {
+                {"Group name", SelectedBatchQueue.QueueName},
+                {"Group size", SelectedBatchQueue.ModsToInstall.Count.ToString()},
+                {"Game", SelectedBatchQueue.Game.ToString()}
+            });
             OnClosing(new DataEventArgs(SelectedBatchQueue));
         }
 
