@@ -344,7 +344,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling)
+        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
             string cached = null;
             if (File.Exists(Utilities.GetThirdPartyImportingCachedFile()))
