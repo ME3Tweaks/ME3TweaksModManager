@@ -159,6 +159,14 @@ namespace MassEffectModManagerCore.modmanager
 
                     #endregion
                 }
+                else if (job.Header == ModJob.JobHeader.LOCALIZATION)
+                {
+                    #region Installation: LOCALIZATION
+                    var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
+                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
+                    buildInstallationQueue(job, installationMapping, false);
+                    #endregion
+                }
                 else if (job.Header == ModJob.JobHeader.BASEGAME || job.Header == ModJob.JobHeader.BALANCE_CHANGES || job.Header == ModJob.JobHeader.ME1_CONFIG)
                 {
                     #region Installation: BASEGAME, BALANCE CHANGES, ME1 CONFIG
@@ -167,7 +175,7 @@ namespace MassEffectModManagerCore.modmanager
                     buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
-                else if (Game == MEGame.ME3 && ModJob.ME3SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
+                else if (Game == MEGame.ME3 && ModJob.ME3SupportedNonCustomDLCJobHeaders.Contains(job.Header) ) //previous else if will catch BASEGAME
                 {
                     #region Installation: DLC Unpacked and SFAR (ME3 ONLY)
 

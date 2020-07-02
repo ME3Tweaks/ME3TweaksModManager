@@ -257,6 +257,7 @@ namespace MassEffectModManagerCore.GameDirectories
             if (header == ModJob.JobHeader.ME1_CONFIG) return true; //Don't check
             if (header == ModJob.JobHeader.BASEGAME) return true; //Don't check basegame
             if (header == ModJob.JobHeader.CUSTOMDLC) return true; //Don't check custom dlc
+            if (header == ModJob.JobHeader.LOCALIZATION) return true; //Don't check localization
 
             if (header == ModJob.JobHeader.TESTPATCH)
             {
@@ -433,6 +434,20 @@ namespace MassEffectModManagerCore.GameDirectories
                     throw new ArgumentOutOfRangeException(nameof(game), game, null);
             }
             throw new NotImplementedException();
+        }
+
+        public static string CookedName(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                case Mod.MEGame.ME2:
+                    return "CookedPC";
+                case Mod.MEGame.ME3:
+                    return "CookedPCConsole";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(game), game, null);
+            }
         }
     }
 }
