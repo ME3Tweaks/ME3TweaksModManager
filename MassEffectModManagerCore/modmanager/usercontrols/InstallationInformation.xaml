@@ -246,7 +246,7 @@
                                             Grid.Row="0"
                                             Grid.RowSpan="2"
                                             Grid.Column="1"
-                                            Content="{Binding RestoreButtonText, FallbackValue=No backup}"
+                                            Content="{Binding RestoreButtonText}"
                                             HorizontalAlignment="Right"
                                             Padding="5,2"
                                             Command="{Binding RestoreCommand}" />

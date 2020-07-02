@@ -1574,7 +1574,7 @@
                     <DockPanel
                         DockPanel.Dock="Top">
                         <Button
-                            Content="{Binding CurrentModEndorsementStatus, FallbackValue=Endorse mod}"
+                            Content="{Binding CurrentModEndorsementStatus}"
                             DockPanel.Dock="Right"
                             Visibility="{Binding SelectedMod, Converter={StaticResource NullHiddenConverter}}"
                             Command="{Binding EndorseSelectedModCommand}"

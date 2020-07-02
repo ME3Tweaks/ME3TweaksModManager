@@ -53,7 +53,7 @@
                             <TextBlock Text="{Binding MountPriority}" Grid.Row="6" Grid.Column="1" />
                             <TextBlock Text="{Binding MountFlagHR}" Grid.Row="7" Grid.Column="1" />
                             <TextBlock Text="{Binding ModuleNumber}" Grid.Row="8" Grid.Column="1" />
-                            <Button Grid.Column="1" Grid.Row="9" HorizontalAlignment="Right" Content="{Binding SubmitText, FallbackValue=Submit to ME3Tweaks}" Command="{Binding SubmitCommand}" Margin="0,4,0,2" />
+                            <Button Grid.Column="1" Grid.Row="9" HorizontalAlignment="Right" Content="{Binding SubmitText}" Command="{Binding SubmitCommand}" Margin="0,4,0,2" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

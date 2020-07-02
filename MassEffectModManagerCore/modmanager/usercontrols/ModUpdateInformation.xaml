@@ -86,7 +86,7 @@
                                     HorizontalAlignment="Right"
                                     Padding="4" />
                                 <TextBlock
-                                    Text="{Binding RemainingDataToDownload, FallbackValue=32MB}"
+                                    Text="{Binding RemainingDataToDownload}"
                                     TextAlignment="Center"
                                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                             </StackPanel>

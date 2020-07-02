@@ -13,7 +13,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
     <StackPanel>
-        <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Header, FallbackValue=Prepare mod for distribution}" TextAlignment="Center"/>
+        <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Header}" TextAlignment="Center"/>
         <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" HorizontalAlignment="Center"/>
         <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}" HorizontalAlignment="Center"/>
 

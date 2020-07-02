@@ -32,9 +32,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource, FallbackValue=/images/gameicons/ME3_48.ico}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
-                        <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle, FallbackValue=ME3}"/>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding D3D9Status, FallbackValue=Not installed}"/>
+                        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle}"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding D3D9Status}"/>
                         <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" 
                                   HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
                                   ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding Targets.Any}" Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}"/>
