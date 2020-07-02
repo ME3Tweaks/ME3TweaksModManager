@@ -20,8 +20,8 @@
             BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
     <Window.TaskbarItemInfo>
-        <TaskbarItemInfo x:Name="TaskBarItemInfoHandler">
-        </TaskbarItemInfo>
+        <TaskbarItemInfo
+            x:Name="TaskBarItemInfoHandler"></TaskbarItemInfo>
     </Window.TaskbarItemInfo>
     <Window.Resources>
         <Style
@@ -131,7 +131,7 @@
                 <MenuItem
                     Header="{DynamicResource string_Moddesceditor}"
                     Command="{Binding ModdescEditorCommand}"
-                    Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <MenuItem
                     Header="{DynamicResource string_openModdesciniFile}"
                     Command="{Binding OpenModDescCommand}">
@@ -422,11 +422,11 @@
                             IsCheckable="True" />
                         <MenuItem
                             Name="ModMakerKeybindsInjection_MenuItem"
-                            Header="Auto inject custom keybinds into ModMaker mods"
+                            Header="{DynamicResource string_autoInjectCustomKeybindsIntoModMakerMods}"
                             StaysOpenOnClick="True"
                             Click="ChangeSetting_Clicked"
                             IsChecked="{Binding Path=(modmanager:Settings.ModMakerAutoInjectCustomKeybindsOption)}"
-                            ToolTip="Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu"
+                            ToolTip="{DynamicResource string_tooltip_autoInjectCustomKeybinds}"
                             IsCheckable="True" />
                         <MenuItem
                             Header="{DynamicResource string_Logging}"
@@ -847,9 +847,9 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="Custom Keybinds Injector (ME3)"
+                        Header="{DynamicResource string_customKeybindsInjectorMenuItem}"
                         Command="{Binding CustomKeybindsInjectorCommand}"
-                        ToolTip="Installs Custom Keybinds of your design into the game">
+                        ToolTip="{DynamicResource string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -861,9 +861,9 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="Origin in-game overlay disabler"
+                        Header="{DynamicResource string_originIngameOverlayDisabler}"
                         Command="{Binding OriginInGameOverlayDisablerCommand}"
-                        ToolTip="Installs a file that forcibly disables Origin in-game overlay">
+                        ToolTip="{DynamicResource string_tooltip_oigDisabler}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -1087,7 +1087,7 @@
                         Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem
                         Header="{DynamicResource string_debug_showIntroTutorial}"
-                        Click="ShowIntroTutorial_Click" >
+                        Click="ShowIntroTutorial_Click">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -1096,8 +1096,8 @@
                                 Height="16"
                                 Width="16" />
                         </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem
+                    </MenuItem>
+                    <MenuItem
                         Header="{Binding EndorseM3String}"
                         Command="{Binding EndorseM3OnNexusCommand}"
                         ToolTip="{DynamicResource string_tooltip_endorseM3OnNexus}">
@@ -1315,8 +1315,7 @@
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                         ToolTip="{DynamicResource string_tooltip_currentTarget}"
                         ItemTemplate="{StaticResource TargetSelectorTemplate}"
-                        ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
-                        />
+                        ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
                     <Button
                         Content="{DynamicResource string_addTarget}"
                         Command="{Binding AddTargetCommand}"
@@ -1635,11 +1634,6 @@
                 <Setter
                     Property="Visibility"
                     Value="Collapsed" />
-                <!--<Setter Property="Maximum" Value="{Binding BusyProgressBarMaximum}"/>
-                <Setter Property="Value" Value="{Binding BusyProgressBarValue}"/>
-                <Setter Property="IsIndeterminate" Value="{Binding BusyProgressBarIndeterminate}"/>
-                <Setter Property="Height" Value="14"/>
-                <Setter Property="Margin" Value="5,0,5,5"/>-->
             </Style>
         </xctk:BusyIndicator.ProgressBarStyle>
         <xctk:BusyIndicator.OverlayStyle>

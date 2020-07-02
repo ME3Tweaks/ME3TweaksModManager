@@ -308,7 +308,28 @@
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
 
-    <!-- Global Styles -->
+    <system:String  x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Auto inject custom keybinds into ModMaker mods</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectCustomKeybinds">Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu</system:String>
+    <system:String  x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
+    <system:String  x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installs Custom Keybinds of your design into the game</system:String>
+    <system:String  x:Key="string_originIngameOverlayDisabler">Origin in-game overlay disabler</system:String>
+    <system:String  x:Key="string_tooltip_oigDisabler">Installs a file that forcibly disables Origin in-game overlay</system:String>
+    <system:String x:Key="string_dialog_cantMakeCompatPackTextureModInstalled">A GUI compatibility pack cannot be generated against a game target that has been texture modded.</system:String>
+    <system:String x:Key="string_cannotGenerateCompatibilityPack">Cannot generate compatibility pack</system:String>
+    <system:String x:Key="string_installTheCompatibilityPackNowQuestion">Install the compatibility pack now?</system:String>
+    <system:String x:Key="string_compatibilityPackGenerated">Compatibility pack generated</system:String>
+    <system:String x:Key="string_selectMod">Select mod</system:String>
+    <!-- When no mod is selected -->
+    <system:String x:Key="string_noTarget">No target</system:String>
+    <!-- When there is no targets at all -->
+    <system:String x:Key="string_cannotInstallToThisGame">Cannot install to this game</system:String>
+    <!-- When a target for another game than the selected mod -->
+    <system:String x:Key="string_checkingTutorialAssets">Checking tutorial assets</system:String>
+    <system:String x:Key="string_checkedTutorialAssets">Checked tutorial assets</system:String>
+
+
+
+<!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
     <!-- Mod Installer Panel -->

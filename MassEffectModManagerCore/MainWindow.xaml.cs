@@ -819,7 +819,7 @@ namespace MassEffectModManagerCore
             if (SelectedGameTarget.TextureModded)
             {
                 Log.Error(@"Cannot build compat pack against game that is already texture modded. Aborting GUICompatGenerator");
-                M3L.ShowDialog(this, "A GUI compatibility pack cannot be generated against a game target that has been texture modded.", "Cannot generate compatibility pack", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_cantMakeCompatPackTextureModInstalled), M3L.GetString(M3L.string_cannotGenerateCompatibilityPack), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -832,7 +832,7 @@ namespace MassEffectModManagerCore
                     // Mod was generated
                     if (SelectedGameTarget.Game == Mod.MEGame.ME3 && !SelectedGameTarget.TextureModded)
                     {
-                        var install = M3L.ShowDialog(this, "Install the compatibility pack now?", "Compatibility pack generated", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+                        var install = M3L.ShowDialog(this, M3L.GetString(M3L.string_installTheCompatibilityPackNowQuestion), M3L.GetString(M3L.string_compatibilityPackGenerated), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
                         if (install)
                         {
                             Log.Information(@"Installing generated GUI compatibility pack");
@@ -1417,20 +1417,20 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod == null)
             {
-                ApplyModButtonText = "Select mod";
+                ApplyModButtonText = M3L.GetString(M3L.string_selectMod);
                 return false;
             }
 
             if (SelectedGameTarget == null)
             {
-                ApplyModButtonText = "No target";
+                ApplyModButtonText = M3L.GetString(M3L.string_noTarget);
                 return false;
 
             }
 
             if (SelectedGameTarget.Game != SelectedMod.Game)
             {
-                ApplyModButtonText = "Cannot install to this game";
+                ApplyModButtonText = M3L.GetString(M3L.string_cannotInstallToThisGame);
                 return false;
             }
 
@@ -2348,7 +2348,7 @@ namespace MassEffectModManagerCore
                 }
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", "Checking tutorial assets", "Checked tutorial assets");
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
                 App.TutorialService = OnlineContent.FetchTutorialManifest(!firstStartupCheck);
                 OnlineContent.TouchupTutorial();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
