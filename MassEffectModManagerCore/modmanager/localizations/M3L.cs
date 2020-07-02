@@ -1250,5 +1250,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_backupNotVanilla = "string_backupNotVanilla";
 		public static readonly string string_interp_backupStatusNotVanilla = "string_interp_backupStatusNotVanilla";
 		public static readonly string string_gameNotInstalledHasItBeenRunOnce = "string_gameNotInstalledHasItBeenRunOnce";
+		public static readonly string string_mEMVanillaDatabaseViewer = "string_mEMVanillaDatabaseViewer";
+		public static readonly string string_viewInformationInTheVanillaDatabaseUsedForBackupVerification = "string_viewInformationInTheVanillaDatabaseUsedForBackupVerification";
 	}
 }

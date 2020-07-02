@@ -599,8 +599,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var sizes = "";
                 foreach (var v in RequiredSpecificFiles)
                 {
-                    if (paths != "") paths += ";";
-                    if (sizes != "") sizes += ";";
+                    if (paths != @"") paths += @";";
+                    if (sizes != @"") sizes += @";";
                     paths += v.Key; // should we check for spaces? Can game files support spaces?
                     sizes += v.Value;
                 }

@@ -189,11 +189,11 @@ namespace MassEffectModManagerCore.modmanager.windows
             var savePath = getSaveName(GroupName);
             File.WriteAllText(savePath, sb.ToString());
             SavedPath = savePath;
-            Analytics.TrackEvent("Saved Batch Group", new Dictionary<string, string>()
+            Analytics.TrackEvent(@"Saved Batch Group", new Dictionary<string, string>()
             {
-                {"Group name", GroupName},
-                {"Group size", ModsInGroup.Count.ToString()},
-                {"Game", SelectedGame.ToString()}
+                {@"Group name", GroupName},
+                {@"Group size", ModsInGroup.Count.ToString()},
+                {@"Game", SelectedGame.ToString()}
             });
             Close();
             //OnClosing(new DataEventArgs(savePath));

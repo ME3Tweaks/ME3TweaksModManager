@@ -67,11 +67,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InstallGroup()
         {
             SelectedBatchQueue.Target = SelectedGameTarget;
-            Analytics.TrackEvent("Installing Batch Group", new Dictionary<string, string>()
+            Analytics.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
-                {"Group name", SelectedBatchQueue.QueueName},
-                {"Group size", SelectedBatchQueue.ModsToInstall.Count.ToString()},
-                {"Game", SelectedBatchQueue.Game.ToString()}
+                {@"Group name", SelectedBatchQueue.QueueName},
+                {@"Group size", SelectedBatchQueue.ModsToInstall.Count.ToString()},
+                {@"Game", SelectedBatchQueue.Game.ToString()}
             });
             OnClosing(new DataEventArgs(SelectedBatchQueue));
         }

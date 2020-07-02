@@ -261,7 +261,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         [Localizable(true)]
         public static bool UpdateMod(ModUpdateInfo updateInfo, string stagingDirectory, Action<string> errorMessageCallback)
         {
-            Log.Information("Updating mod: " + updateInfo.mod.ModName + " from " + updateInfo.LocalizedLocalVersionString + " to " + updateInfo.LocalizedServerVersionString);
+            Log.Information(@"Updating mod: " + updateInfo.mod.ModName + @" from " + updateInfo.LocalizedLocalVersionString + @" to " + updateInfo.LocalizedServerVersionString);
             string modPath = updateInfo.mod.ModPath;
             string serverRoot = UpdateStorageRoot + updateInfo.serverfolder + '/';
             bool cancelDownloading = false;

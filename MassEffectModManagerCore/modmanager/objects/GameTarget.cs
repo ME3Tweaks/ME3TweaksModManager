@@ -129,7 +129,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        if (GameSource.Contains("Origin") && Game == Mod.MEGame.ME3)
+                        if (GameSource.Contains(@"Origin") && Game == Mod.MEGame.ME3)
                         {
                             // Check for steam
                             if (Directory.Exists(Path.Combine(TargetPath, @"__overlay")))
@@ -675,6 +675,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
 
             public string ModificationSource { get; set; }
+
             /// <summary>
             /// Uses the basegame file DB to attempt to determine the source mod of this file. This method should be run on a background thread.
             /// </summary>
@@ -687,9 +688,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var info = BasegameFileIdentificationService.GetBasegameFileSource(target, fullpath);
                     if (info != null)
                     {
-                        Debug.WriteLine("Source " + info.source);
                         ModificationSource = info.source;
                     }
+                    // TODO: MAKE LOCAL DB??
 #if DEBUG
                     else
                     {
