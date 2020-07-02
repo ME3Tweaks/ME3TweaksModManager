@@ -1531,7 +1531,7 @@ namespace MassEffectModManagerCore.modmanager
             // Non-public descriptors
             if (!string.IsNullOrEmpty(iniData[@"ControllerCompat"][@"builtagainst"]))
             {
-                ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"][M3L.GetString(M3L.string_builtagainst)]));
+                ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"][@"builtagainst"]));
             }
 
 
