@@ -12,7 +12,7 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
  - [moddesc.ini: Official DLC and Basegame Headers](officialdlc_and_basegame.md)
  - [moddesc.ini: CUSTOMDLC Header (DLC mods)](customdlc.md)
  - [moddesc.ini: Automatic and alternative mod installations using alternates](alternates.md)
- - [moddesc.ini: Localization mods][localizations.md)
+ - [moddesc.ini: Localization mods](localizations.md)
 
 
 ## Why use M3? Why not just use a zip or an exe installer?
