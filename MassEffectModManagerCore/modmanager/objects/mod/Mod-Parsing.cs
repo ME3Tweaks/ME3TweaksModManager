@@ -196,7 +196,7 @@ namespace MassEffectModManagerCore.modmanager
                     var nameStr = RequiredDLC.First(); //Localization jobs, if valid, will always have something here.
                     var tpmi = ThirdPartyServices.GetThirdPartyModInfo(nameStr, Game);
                     if (tpmi != null) nameStr += $@" ({tpmi.modname})";
-                    sb.AppendLine($"Adds the following localizations to {nameStr}:");
+                    sb.AppendLine(M3L.GetString(M3L.string_interp_addsTheFollowingLocalizationsToX, nameStr));
                     foreach (var l in localizationJob.FilesToInstall)
                     {
                         var langCode = l.Key.Substring(l.Key.Length - 7, 3);
@@ -457,7 +457,7 @@ namespace MassEffectModManagerCore.modmanager
             if (!(Uri.TryCreate(ModWebsite, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
             {
                 Log.Error($@"Invalid url for mod {ModName}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {ModWebsite}");
-                LoadFailedReason = $"Invalid url for mod {ModName}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {ModWebsite}";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidUrlScheme, ModName, ModWebsite);
                 ModWebsite = DefaultWebsite; //Reset so we don't try to open invalid url
                 return; //Won't set valid
             }
@@ -1253,14 +1253,14 @@ namespace MassEffectModManagerCore.modmanager
                     Log.Error(
                         @"Cannot have LOCALIZATION task with other tasks. LOCALIZATION jobs must be on their own.");
                     LoadFailedReason =
-                        "This mod specifies a LOCALIZATION task along with other task headers. A mod with a LOCALIZATION task may only contain a LOCALIZATION task and cannot be combined with others.";
+                        M3L.GetString(M3L.string_interp_validation_modparsing_cannotCombineLocalizationTask);
                     return;
                 }
                 var destDlc = iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"dlcname"];
                 if (string.IsNullOrWhiteSpace(destDlc))
                 {
                     Log.Error(@"LOCALIZATION header requires 'dlcname' descriptor that the localization file will target.");
-                    LoadFailedReason = "The LOCALIZATION task for this mod is missing the 'dlcname' descriptor, which is used to determine the target of this localization mod.";
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_missingDlcNameDesriptor);
                     return;
                 }
 
@@ -1269,7 +1269,7 @@ namespace MassEffectModManagerCore.modmanager
                     Log.Error(
                         $@"The destdlc descriptor under LOCALIZATION must start with DLC_ and not be an official DLC for the game. Invalid value: {destDlc}");
                     LoadFailedReason =
-                        $"The destdlc descriptor under LOCALIZATION must start with DLC_ and not be an official DLC for the game. Invalid value: {destDlc}";
+                        M3L.GetString(M3L.string_interp_validation_modparsing_invalidDlcNameLocalization, destDlc);
                     return;
                 }
 
@@ -1283,7 +1283,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (!FilesystemInterposer.FileExists(filePath, Archive))
                     {
                         Log.Error($@"A referenced localization file could not be found: {f}");
-                        LoadFailedReason = $"A referenced localization file could not be found: {f}";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound, f);
                         return;
                     }
 
@@ -1291,14 +1291,14 @@ namespace MassEffectModManagerCore.modmanager
                     if (!fname.EndsWith(@".tlk"))
                     {
                         Log.Error($@"Referenced localization file is not a .tlk: {f}. LOCALIATION tasks only allow installation of .tlk files.");
-                        LoadFailedReason = $"A referenced localization file is not a .tlk file: {f}. LOCALIZATION tasks only allow installation of .tlk files.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFileType, f);
                         return;
                     }
 
                     if (!fname.StartsWith(destDlc + @"_"))
                     {
                         Log.Error($@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.");
-                        LoadFailedReason = $@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
                         return;
                     }
 
@@ -1306,7 +1306,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (failurereason != null)
                     {
                         Log.Error($@"Error occured while adding file for LOCALIZATION job: {failurereason}");
-                        LoadFailedReason = $@"Error occured while adding file for LOCALIZATION job: {failurereason}";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX, failurereason);
                         return;
                     }
                 }
@@ -1529,9 +1529,9 @@ namespace MassEffectModManagerCore.modmanager
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
 
             // Non-public descriptors
-            if (!string.IsNullOrEmpty(iniData[@"ControllerCompat"]["builtagainst"]))
+            if (!string.IsNullOrEmpty(iniData[@"ControllerCompat"][@"builtagainst"]))
             {
-                ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"]["builtagainst"]));
+                ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"][M3L.GetString(M3L.string_builtagainst)]));
             }
 
 

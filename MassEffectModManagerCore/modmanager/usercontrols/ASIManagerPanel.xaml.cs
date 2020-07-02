@@ -192,7 +192,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     void exceptionCallback(Exception e)
                     {
-                        M3L.ShowDialog(mainwindow, $"An error occured deleting the ASI: {e.Message}", "Error deleting ASI", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccuredDeletingTheASI, e.Message), M3L.GetString(M3L.string_errorDeletingASI), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     Games.First(x => x.Game == asi.Game).DeleteASI(asi, exceptionCallback); //UI doesn't allow you to install on top of an already installed ASI that is up to date. So we delete ith ere.
                     InstallInProgress = false;

@@ -391,6 +391,17 @@
     <!-- 0=error message -->
     <system:String x:Key="string_errorInstallingMod">Error installing mod</system:String>
 
+    <system:String x:Key="string_dialog_incorrectCompatMod1">This compatibility pack was not built for this configuration of the game and cannot be installed.</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod2_dlcRemoved">The following DLC mods were removed after the compatibility pack was generated:</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod2_dlcAdded">The following DLC mods were added after the compatibility pack was generated:</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod3">A new compatibility pack must be generated from the Mod Management menu.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_unableToFullyDeleteExistingModDirectory">Unable to fully delete existing mod directory:\n{0}\n\nReason:\n{1}\n\nThe folder may have been partially deleted.</system:String>
+    <!-- 0={Directory} 1={Exception message} -->
+    <system:String x:Key="string_interp_thisModShouldBeReinstalled">This mod ({0}) should be reinstalled.</system:String>
+    <!-- 0={Mod name} -->
+    <system:String x:Key="string_thisModShouldBeReinstalled">This mod should be reinstalled.</system:String>
+    <system:String x:Key="string_invalidCompatibilityPack">Invalid compatibility pack</system:String>
+
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
@@ -492,6 +503,16 @@
     <!-- 0=filepath -->
     <system:String x:Key="string_noMiscellaneousIssuesDetected">No miscellaneous issues detected</system:String>
     <system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Deployment checks found some miscellaneous issues that should be fixed before deployment</system:String>
+    <system:String x:Key="string_interp_error_textureTaggedFileFound">{0} has the texture modded marker tagged on it. This file cannot be distributed in a mod. Mod files cannot be used if they have been modified with Mass Effect Modder or ALOT Installer - use Package Editor in ME3Explorer to replace textures for mods that use package files. Distributing mods with ALOT markers on the files will lead to the mod being blacklisted in ALOT Installer and Mass Effect Modder.</system:String>
+    <!-- 0={Filepath} -->
+    <system:String x:Key="string_deploymentBlocked">Deployment blocked</system:String>
+    <system:String x:Key="string_error_foundUnofficialDescriptor">The moddesc.ini for this mod is marked with the 'unofficial' descriptor, which means this mod was previously imported. Unofficially imported mods only import the data and not the alternates and other important information. This descriptor must be removed before deployment.</system:String>
+    <system:String x:Key="string_error_foundImportedByDesriptor">The moddesc.ini for this mod is marked with the 'importedbybuild' descriptor. This descriptor only is used for mods that were imported using the Third Party Importing Service - as this mod is being deployed, it is considered official, and thus this descriptor must be removed before deployment.</system:String>
+    <system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} uses TFC name {2}. This TFC name is used when replacing textures with the outdated ME3Explorer texturing tools and is a common source of broken textures. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.</system:String>
+    <!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
+    <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} uses TFC name {2}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.</system:String>
+    <!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
+    <system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Deployment blocked until above items are fixed</system:String>
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
@@ -537,8 +558,10 @@
     <!-- 0=Game name (Mass Effect, Mass Effect 3, etc)-->
     <system:String x:Key="string_locationNotAllowedForBackup">Location not allowed for backup</system:String>
     <system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Your user account doesn't have write permissions to the selected destination directory. Choose a different directory.</system:String>
+    <system:String x:Key="string_dialog_linkTargetWontBeModdable">The game copy you link to will not be available for modding. Ensure this is a backup copy of the game and not your main installation, or you will be unable to mod your game.</system:String>
+    <system:String x:Key="string_linkWarning">Link warning</system:String>
 
-    <!-- External tool launcher-->
+<!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Downloading {0}</system:String>
     <system:String x:Key="string_interp_extractingX">Extracting {0}</system:String>
     <system:String x:Key="string_checkingForUpdates">Checking for updates</system:String>
@@ -559,6 +582,8 @@
     <system:String x:Key="string_failureInformation">Failure information</system:String>
     <system:String x:Key="string_debugReload">Debug reload</system:String>
     <!-- This is only seen in debug builds, but localize it anyways. -->
+    <system:String  x:Key="string_deleteFromLibrary">Delete from library</system:String>
+    <system:String  x:Key="string_visitWebsite">Visit website</system:String>
 
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
@@ -652,6 +677,13 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_enableDLC">Enables this DLC mod to load in the game</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_deleteDLC">Remove this DLC mod from the game.&#10;Hold SHIFT to bypass the confirmation dialog (if there are no warnings)</system:String>
     <system:String  x:Key="string_tooltip_openTargetInExplorer">Opens this game target directory in File Explorer</system:String>
+    <system:String  x:Key="string_other">Other</system:String>
+    <system:String  x:Key="string_extraDllsFound">Extra dlls found</system:String>
+    <system:String  x:Key="string_noExtraDllsWereFound">No extra dlls were found</system:String>
+    <system:String  x:Key="string_installedASIs">Installed ASIs</system:String>
+    <system:String  x:Key="string_tooltip_clickToOpenASIManager">Click to open ASI Manager</system:String>
+    <system:String  x:Key="string_manageASIsWithASIManager">Manage ASIs with ASI Manager</system:String>
+    <system:String  x:Key="string_binkw32DLCBypass">Binkw32 DLC Bypass</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -940,6 +972,13 @@
     <system:String x:Key="string_restored">Restored</system:String>
     <system:String x:Key="string_restore">Restore</system:String>
     <system:String x:Key="string_restoring">Restoring</system:String>
+    <system:String x:Key="string_interp_asiStatus">This installation has {0} ASI mod(s) installed</system:String>
+    <!-- 0={installedASIs.Count} -->
+    <system:String x:Key="string_thisInstallationHasNoASIModsInstalled">This installation has no ASI mods installed</system:String>
+    <system:String x:Key="string_bypassInstalledASIAndDLCModsWillBeAbleToLoad">Bypass installed. ASI and DLC mods will be able to load</system:String>
+    <system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Bypass not installed. ASI and DLC mods will be unable to load</system:String>
+    <system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Bypass installed. ASI mods will be able to load</system:String>
+    <system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Bypass not installed. ASI mods will be unable to load</system:String>
 
     <!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {0} does not exist but is specified by the job.</system:String>
@@ -973,10 +1012,12 @@
     <!-- 0 = filename -->
     <system:String x:Key="string_interp_vPatchingIntoAlternate">VPatching into alternate: {0}</system:String>
     <!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
+    <system:String x:Key="string_interp_theArchiveFileArchivePathIsNoLongerAvailable">The archive file {0} is no longer available.</system:String>
+    <!-- 0={archivePath} -->
 
     <!-- Mod-Parsing -->
     <system:String x:Key="string_interp_modparsing_modVersion">Mod version: {0}</system:String>
-    <!-- requires manual setup -->
+    <!-- 0 = version number -->
     <system:String x:Key="string_interp_modparsing_modDeveloper">Mod developer: {0}</system:String>
     <!-- 0 = name-->
     <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker code: {0}</system:String>
@@ -1090,6 +1131,22 @@
     <!-- 0=fullpath -->
     <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Error using gamedirectorystructure option: No files were found to install in the specified path for job: {0}, path: {1}</system:String>
     <!-- 0 = job/header name, 1 = filepath -->
+    <system:String x:Key="string_interp_addsTheFollowingLocalizationsToX">Adds the following localizations to {0}:</system:String>
+    <!-- 0={Mod Name} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidUrlScheme">Invalid url for mod {0}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {1}</system:String>
+    <!-- 0={ModName} 1={ModWebsite} -->
+    <system:String x:Key="string_interp_validation_modparsing_cannotCombineLocalizationTask">This mod specifies a LOCALIZATION task along with other task headers. A mod with a LOCALIZATION task may only contain a LOCALIZATION task and cannot be combined with others.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_missingDlcNameDesriptor">The LOCALIZATION task for this mod is missing the 'dlcname' descriptor, which is used to determine the target of this localization mod.</system:String>
+    <system:String x:Key="string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound">A referenced localization file could not be found: {0}</system:String>
+    <!-- 0={Referenced Filepath} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFileType">A referenced localization file is not a .tlk file: {0}. LOCALIZATION tasks only allow installation of .tlk files.</system:String>
+    <!-- 0={Referenced Filepath} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidDlcNameLocalization">The 'dlcname' descriptor under LOCALIZATION must start with DLC_ and not be an official DLC for the game. Invalid value: {0}</system:String>
+    <!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFilename">Referenced localization file has incorrect name: {0}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.</system:String>
+    <!-- 0={Incorrect filename} -->
+    <system:String x:Key="string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX">Error occured while adding file for LOCALIZATION job: {0}</system:String>
+    <!-- 0={failurereason} -->
 
     <!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hello!</system:String>
@@ -1125,6 +1182,9 @@
     <system:String x:Key="string_installingEllipse">Installing...</system:String>
     <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">View source code for this ASI mod</system:String>
     <system:String x:Key="string_viewSourceCode">View source code</system:String>
+    <system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">An error occured deleting the ASI: {0}</system:String>
+    <!-- 0={Error Message} -->
+    <system:String x:Key="string_errorDeletingASI">Error deleting ASI</system:String>
 
     <!-- Starter Kit Window-->
     <system:String x:Key="string_newDLCModInformation">New DLC mod information</system:String>
@@ -1237,6 +1297,8 @@
     <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Adds Mixins to ensure proper Controller Mod functionality, such as proper camera turning, if the mod modifies the same files as one of the Controller mods.&#10;Do not select this if you do not use a Controller Support mod. When using this option, install this mod AFTER installing a Controller Support mod</system:String>
     <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Add Controller Support Mixins, if necessary</system:String>
     <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Use a local ModMaker xml file instead</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectKeybinds">Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu</system:String>
+    <system:String  x:Key="string_injectCustomKeybindsIfAvailable">Inject custom keybinds (if available)</system:String>
 
     <!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
@@ -1360,6 +1422,9 @@
     <system:String x:Key="string_interp_cannotReadME3Keybinds">The keybindings for the selected Mass Effect 3 target could not be loaded: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_errorReadingKeybinds">Error reading keybinds</system:String>
+    <system:String x:Key="string_interp_cannotOpenMassEffect2CoalescediniMessage">Cannot open Mass Effect 2 Coalesced.ini: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorReadingCoalescedini">Error reading Coalesced.ini</system:String>
 
     <!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Updater Service</system:String>
@@ -1498,8 +1563,11 @@
     <!-- 0=mount priority number -->
     <system:String x:Key="string_interp_XModsSuperceded">{0} mod(s) superceded</system:String>
     <!-- 0=amount of mods that have been superceded -->
+    <system:String x:Key="string_dialog_cannotImportModTextureMarkersFound">This mod contains files that have been marked as being part of a texture modded installation. Mods that have been modified by a texture mod cannot be imported.</system:String>
+    <system:String x:Key="string_cannotImportMod">Cannot import mod</system:String>
 
-    <!-- ME3CMM Migration -->
+
+<!-- ME3CMM Migration -->
     <system:String x:Key="string_migratingMods">Migrating mods</system:String>
     <system:String x:Key="string_migratingSettings">Migrating settings</system:String>
     <system:String x:Key="string_interp_migratingModsXoFY">Migrating mods [{0}/{1}]</system:String>
@@ -1564,4 +1632,31 @@
     <system:String x:Key="string_collectingME1ApplicationLogs">Collecting ME1 application logs</system:String>
     <system:String x:Key="string_collectingEventLogs">Collecting event logs</system:String>
     <system:String x:Key="string_collectingME3SessionLog">Collecting ME3 session log</system:String>
+
+    <!-- Origin in-game overlay disabler-->
+    <system:String x:Key="string_overlayDisablerInstalled">Overlay disabler installed</system:String>
+    <system:String x:Key="string_uninstallDisabler">Uninstall disabler</system:String>
+    <system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Other d3d9.dll installed, overlay disabled</system:String>
+    <system:String x:Key="string_cannotUninstallOtherD3d9File">Cannot uninstall other d3d9 file</system:String>
+    <system:String x:Key="string_overlayDisablerNotInstalled">Overlay disabler not installed</system:String>
+    <system:String x:Key="string_installDisabler">Install disabler</system:String>
+    <system:String x:Key="string_noTargetSelected">No target selected</system:String>
+    <system:String x:Key="string_noOriginBasedGameTargets">No Origin based game targets</system:String>
+    <system:String x:Key="string_origin">Origin</system:String>
+    <system:String xml:space="preserve" x:Key="string_oigPanelHeader">Origin in-game overlay is known to cause significant performance loss in the Mass Effect games. While it can be turned off in the Origin settings, this setting does not work for the Steam version of Mass Effect 3. You can install a proxy d3d9.dll that will disable forcibly disable the overlay per game target.&#10;&#10;Using other d3d9 proxies, such as Reshade, will also disable the overlay.</system:String>
+
+    <!-- Moddescini Editor-->
+    <system:String x:Key="string_toolUnderDevelopment">This tool is in development and may or may not work. Use at your own risk!</system:String>
+    <system:String x:Key="string_underDevelopment">Under development</system:String>
+
+    <!-- Keybinds Injector -->
+    <system:String  x:Key="string_customKeybindsInjector">Custom Keybinds Injector</system:String>
+    <system:String  x:Key="string_injectCustomKeybindsIntoYourGameWithThisTool">Inject custom keybinds into your game with this tool.</system:String>
+    <system:String  x:Key="string_openKeybindsDirectory">Open keybinds directory</system:String>
+    <system:String  x:Key="string_keybindsAreDefinedPerInstallation">Keybinds are defined per installation</system:String>
+    <system:String  x:Key="string_selectWhichKeybindsToInstall">Select which keybinds to install:</system:String>
+    <system:String  x:Key="string_resetKeybinds">Reset Keybinds</system:String>
+    <system:String  x:Key="string_installKeybinds">Install Keybinds</system:String>
+
+
 </ResourceDictionary>

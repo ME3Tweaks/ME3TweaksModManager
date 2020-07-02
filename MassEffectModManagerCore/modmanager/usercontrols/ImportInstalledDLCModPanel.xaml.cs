@@ -148,7 +148,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Found a file marked as texture modded: {file}. These files cannot be imported into mod manager");
                     Application.Current.Dispatcher.Invoke(delegate
                     {
-                        M3L.ShowDialog(window, "This mod contains files that have been marked as being part of a texture modded installation. Mods that have been modified by a texture mod cannot be imported.", "Cannot import mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_cannotImportModTextureMarkersFound), M3L.GetString(M3L.string_cannotImportMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     });
                     return;
                 }

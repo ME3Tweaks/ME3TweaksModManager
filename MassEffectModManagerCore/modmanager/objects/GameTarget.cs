@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -26,10 +25,6 @@ namespace MassEffectModManagerCore.modmanager.objects
     public class GameTarget : IEqualityComparer<GameTarget>, INotifyPropertyChanged
     {
         public const uint MEMI_TAG = 0x494D454D;
-
-        private static readonly Color ME1BackgroundColor = Color.FromArgb(80, 181, 181, 181);
-        private static readonly Color ME2BackgroundColor = Color.FromArgb(80, 255, 176, 171);
-        private static readonly Color ME3BackgroundColor = Color.FromArgb(80, 196, 24, 24);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -52,25 +47,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
         public bool Supported => GameSource != null;
         public bool IsPolishME1 { get; private set; }
-        public Brush BackgroundColor
-        {
-            get
-            {
-                if (RegistryActive)
-                {
-                    switch (Game)
-                    {
-                        case Mod.MEGame.ME1:
-                            return new SolidColorBrush(ME1BackgroundColor);
-                        case Mod.MEGame.ME2:
-                            return new SolidColorBrush(ME2BackgroundColor);
-                        case Mod.MEGame.ME3:
-                            return new SolidColorBrush(ME3BackgroundColor);
-                    }
-                }
-                return null;
-            }
-        }
 
         /// <summary>
         /// Determines if this gametarget can be chosen in dropdowns
@@ -500,7 +476,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         IsSPSFAR = true;
                     }
 
-                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(dlcFoldername),out var name);
+                    ME3Directory.OfficialDLCNames.TryGetValue(Path.GetFileName(dlcFoldername), out var name);
                     UIString = name;
                     if (Unpacked)
                     {
@@ -926,11 +902,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             var installedASIs = asi.GetInstalledASIMods();
             if (installedASIs.Any())
             {
-                NumASIModsInstalledText = $"This installation has {installedASIs.Count} ASI mod(s) installed";
+                NumASIModsInstalledText = M3L.GetString(M3L.string_interp_asiStatus, installedASIs.Count);
             }
             else
             {
-                NumASIModsInstalledText = "This installation has no ASI mods installed";
+                NumASIModsInstalledText = M3L.GetString(M3L.string_thisInstallationHasNoASIModsInstalled);
             }
         }
 
@@ -939,11 +915,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (Game != Mod.MEGame.ME1)
             {
-                Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? "Bypass installed. ASI and DLC mods will be able to load" : "Bypass not installed. ASI and DLC mods will be unable to load";
+                Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIAndDLCModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad);
             }
             else
             {
-                Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? "Bypass installed. ASI mods will be able to load" : "Bypass not installed. ASI mods will be unable to load";
+                Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIModsWillBeUnableToLoad);
             }
         }
     }

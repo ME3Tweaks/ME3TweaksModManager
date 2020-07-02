@@ -123,8 +123,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     // Point to existing game installation
                     Log.Information(@"BeginBackup() with IsCustomOption.");
                     var linkWarning = M3L.ShowDialog(window,
-                        "The game copy you link to will not be available for modding. Ensure this is a backup copy of the game and not your main installation, or you will be unable to mod your game.",
-                        "Link warning", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                        M3L.GetString(M3L.string_dialog_linkTargetWontBeModdable), M3L.GetString(M3L.string_linkWarning), MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                     if (linkWarning == MessageBoxResult.Cancel)
                     {
                         Log.Information(@"User aborted linking due to dialog");

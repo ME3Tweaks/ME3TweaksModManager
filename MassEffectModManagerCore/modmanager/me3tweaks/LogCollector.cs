@@ -1102,7 +1102,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     {
                                         updateProgressCallback?.Invoke(progress);
                                     }
-                                    updateStatusCallback?.Invoke($"Performing full textures check {param}%");
+                                    updateStatusCallback?.Invoke(M3L.GetString(M3L.string_interp_performingFullTexturesCheckX, param));
                                     break;
                                 case @"PROCESSING_FILE":
                                     //Don't think there's anything to do with this right now

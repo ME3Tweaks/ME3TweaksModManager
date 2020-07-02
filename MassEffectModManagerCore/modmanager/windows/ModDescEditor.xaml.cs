@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void ModDescEditor_OnContentRendered(object? sender, EventArgs e)
         {
-            M3L.ShowDialog(this, "This tool is in development and may or may not work. Use at your own risk!", "Under development", MessageBoxButton.OK, MessageBoxImage.Warning);
+            M3L.ShowDialog(this, M3L.GetString(M3L.string_toolUnderDevelopment), M3L.GetString(M3L.string_underDevelopment), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }
