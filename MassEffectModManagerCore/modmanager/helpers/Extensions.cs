@@ -168,7 +168,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static string ReadStringFromStream(this Stream stream, bool HasLengthWritten = false)
         {
             if (stream == null || !stream.CanRead)
-                throw new IOException("Stream cannot be read.");
+                throw new IOException(@"Stream cannot be read.");
             List<char> enumerable = new List<char>();
             if (HasLengthWritten)
             {
@@ -207,12 +207,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 offset = dest.Count + offset;
                 if (offset < 0)
                 {
-                    throw new IndexOutOfRangeException("Attempt to write before the beginning of the array.");
+                    throw new IndexOutOfRangeException(@"Attempt to write before the beginning of the array.");
                 }
             }
             if (offset + source.Count > dest.Count)
             {
-                throw new IndexOutOfRangeException("Attempt to write past the end of the array.");
+                throw new IndexOutOfRangeException(@"Attempt to write past the end of the array.");
             }
             for (int i = 0; i < source.Count; i++)
             {
@@ -298,15 +298,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <summary>
         /// Returns true if <paramref name="path"/> starts with the path <paramref name="baseDirPath"/>.
         /// The comparison is case-insensitive, handles / and \ slashes as folder separators and
-        /// only matches if the base dir folder name is matched exactly ("c:\foobar\file.txt" is not a sub path of "c:\foo").
+        /// only matches if the base dir folder name is matched exactly (@"c:\foobar\file.txt" is not a sub path of "c:\foo").
         /// </summary>
         public static bool IsSubPathOf(this string path, string baseDirPath)
         {
             string normalizedPath = Path.GetFullPath(path.Replace('/', '\\')
-                .WithEnding("\\"));
+                .WithEnding(@"\\"));
 
             string normalizedBaseDirPath = Path.GetFullPath(baseDirPath.Replace('/', '\\')
-                .WithEnding("\\"));
+                .WithEnding(@"\\"));
 
             return normalizedPath.StartsWith(normalizedBaseDirPath, StringComparison.OrdinalIgnoreCase);
         }
@@ -315,7 +315,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// Returns <paramref name="str"/> with the minimal concatenation of <paramref name="ending"/> (starting from end) that
         /// results in satisfying .EndsWith(ending).
         /// </summary>
-        /// <example>"hel".WithEnding("llo") returns "hello", which is the result of "hel" + "lo".</example>
+        /// <example>"hel".WithEnding(@"llo") returns "hello", which is the result of "hel" + "lo".</example>
         public static string WithEnding(this string str, string ending)
         {
             if (str == null)
@@ -344,11 +344,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(@"value");
             }
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length", length, "Length is less than zero");
+                throw new ArgumentOutOfRangeException(@"length", length, @"Length is less than zero");
             }
 
             return (length < value.Length) ? value.Substring(value.Length - length) : value;
@@ -520,7 +520,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             StringBuilder stringBuilder = new StringBuilder(str);
             foreach (char invalidPathingChar in Extensions.InvalidPathingChars)
-                stringBuilder.Replace(invalidPathingChar.ToString() ?? "", "");
+                stringBuilder.Replace(invalidPathingChar.ToString() ?? "", ""); //do not localize
             return stringBuilder.ToString();
         }
 
@@ -541,7 +541,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get parent directory: " + ex.Message);
+                Debug.WriteLine(@"Failed to get parent directory: " + ex.Message);
             }
             return path;
         }
@@ -689,7 +689,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         //        element.BeginAnimation(dp, (AnimationTimeline)anim);
         //    }
         //    else
-        //        throw new Exception("To object value passed is of the wrong Type. Given: " + (object)To.GetType() + "  Expected: " + (object)dp.PropertyType);
+        //        throw new Exception(@"To object value passed is of the wrong Type. Given: " + (object)To.GetType() + "  Expected: " + (object)dp.PropertyType);
         //}
 
         ///// <summary>
@@ -803,29 +803,29 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static bool RepresentsPackageFilePath(this string path)
         {
             string extension = Path.GetExtension(path);
-            if (extension.Equals(".pcc", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".sfm", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".u", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".upk", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".pcc", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".sfm", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".u", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".upk", StringComparison.InvariantCultureIgnoreCase)) return true;
             return false;
         }
 
         public static bool RepresentsFileArchive(this string path)
         {
             string extension = Path.GetExtension(path);
-            if (extension.Equals(".rar", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".7z", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".zip", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".rar", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".7z", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".zip", StringComparison.InvariantCultureIgnoreCase)) return true;
             return false;
         }
 
         public static bool RepresentsExtractableItem(this string path)
         {
             string extension = Path.GetExtension(path);
-            if (extension.Equals(".rar", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".7z", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".zip", StringComparison.InvariantCultureIgnoreCase)) return true;
-            if (extension.Equals(".exe", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".rar", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".7z", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".zip", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".exe", StringComparison.InvariantCultureIgnoreCase)) return true;
             return false;
         }
 

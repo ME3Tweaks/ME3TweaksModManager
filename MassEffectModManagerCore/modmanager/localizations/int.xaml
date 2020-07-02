@@ -1512,5 +1512,14 @@
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Exception occured while compiling TLK file: {0}</system:String>
     <!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
 
-
+    <!--  Backup Service -->
+    <system:String x:Key="string_interp_backupStatusStoredAt">Backup stored at {0}</system:String>
+    <system:String x:Key="string_gameHasNotBeenBackedUp">Game has not been backed up</system:String>
+    <system:String x:Key="string_backupUnavailable">Backup unavailable</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_backupStatusNotAccessible">Backup stored at {0}\nBackup path is not accessible, was it renamed or moved?</system:String>
+    <!-- 0={Backup Path} -->
+    <system:String x:Key="string_backupNotVanilla">Backup not vanilla</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_backupStatusNotVanilla">Backup stored at {0}\nBackup is not vanilla and will not be used</system:String>
+    <!-- 0={Backup Path} -->
+    <system:String x:Key="string_gameNotInstalledHasItBeenRunOnce">Game does not appear to be installed, or is not yet a moddable target in Mod Manager.&#10;If game is from Steam, ensure it has been run at least once</system:String>
 </ResourceDictionary>

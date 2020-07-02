@@ -35,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             var buffer = new byte[count];
             if (stream.Read(buffer, 0, count) != count)
-                throw new Exception("Stream read error!");
+                throw new Exception(@"Stream read error!");
             return buffer;
         }
 
@@ -126,7 +126,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static void WriteStringASCIINull(this Stream stream, string str)
         {
-            stream.WriteStringASCII(str + "\0");
+            stream.WriteStringASCII(str + '\0');
         }
 
         public static void WriteStringUnicode(this Stream stream, string str)
@@ -141,7 +141,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static void WriteStringUnicodeNull(this Stream stream, string str)
         {
-            stream.WriteStringUnicode(str + "\0");
+            stream.WriteStringUnicode(str + '\0');
         }
 
         public static void WriteValueGuid(this Stream stream, Guid value)

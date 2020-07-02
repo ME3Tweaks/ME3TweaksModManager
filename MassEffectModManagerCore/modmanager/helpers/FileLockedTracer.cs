@@ -46,7 +46,7 @@ static public class FileLockedTracer
         public bool bRestartable;
     }
 
-    [DllImport("rstrtmgr.dll", CharSet = CharSet.Unicode)]
+    [DllImport(@"rstrtmgr.dll", CharSet = CharSet.Unicode)]
     static extern int RmRegisterResources(uint pSessionHandle,
                                           UInt32 nFiles,
                                           string[] rgsFilenames,
@@ -55,13 +55,13 @@ static public class FileLockedTracer
                                           UInt32 nServices,
                                           string[] rgsServiceNames);
 
-    [DllImport("rstrtmgr.dll", CharSet = CharSet.Auto)]
+    [DllImport(@"rstrtmgr.dll", CharSet = CharSet.Auto)]
     static extern int RmStartSession(out uint pSessionHandle, int dwSessionFlags, string strSessionKey);
 
-    [DllImport("rstrtmgr.dll")]
+    [DllImport(@"rstrtmgr.dll")]
     static extern int RmEndSession(uint pSessionHandle);
 
-    [DllImport("rstrtmgr.dll")]
+    [DllImport(@"rstrtmgr.dll")]
     static extern int RmGetList(uint dwSessionHandle,
                                 out uint pnProcInfoNeeded,
                                 ref uint pnProcInfo,
@@ -85,7 +85,7 @@ static public class FileLockedTracer
         List<Process> processes = new List<Process>();
 
         int res = RmStartSession(out handle, 0, key);
-        if (res != 0) throw new Exception("Could not begin restart session.  Unable to determine file locker.");
+        if (res != 0) throw new Exception(@"Could not begin restart session.  Unable to determine file locker.");
 
         try
         {
@@ -98,7 +98,7 @@ static public class FileLockedTracer
 
             res = RmRegisterResources(handle, (uint)resources.Length, resources, 0, null, 0, null);
 
-            if (res != 0) throw new Exception("Could not register resource.");
+            if (res != 0) throw new Exception(@"Could not register resource.");
 
             //Note: there's a race condition here -- the first call to RmGetList() returns
             //      the total number of process. However, when we call RmGetList() again to get
@@ -129,9 +129,9 @@ static public class FileLockedTracer
                         catch (ArgumentException) { }
                     }
                 }
-                else throw new Exception("Could not list processes locking resource.");
+                else throw new Exception(@"Could not list processes locking resource.");
             }
-            else if (res != 0) throw new Exception("Could not list processes locking resource. Failed to get size of result.");
+            else if (res != 0) throw new Exception(@"Could not list processes locking resource. Failed to get size of result.");
         }
         finally
         {

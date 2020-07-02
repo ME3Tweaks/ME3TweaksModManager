@@ -120,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_RestoremodfromME3Tweaks = "string_RestoremodfromME3Tweaks";
 		public static readonly string string_Installcustomkeybindsintothismod = "string_Installcustomkeybindsintothismod";
 		public static readonly string string_Developeroptions = "string_Developeroptions";
-		public static readonly string string_Metadataeditor = "string_Metadataeditor";
+		public static readonly string string_Moddesceditor = "string_Moddesceditor";
 		public static readonly string string_Deploymodto7zfilefordistribution = "string_Deploymodto7zfilefordistribution";
 		public static readonly string string_Prepareforupdaterservice = "string_Prepareforupdaterservice";
 		public static readonly string string_SubmitmodinformationtoME3Tweaks = "string_SubmitmodinformationtoME3Tweaks";
@@ -1242,5 +1242,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_skipTutorial = "string_skipTutorial";
 		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster = "string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster";
 		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp = "string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp";
+		public static readonly string string_interp_backupStatusStoredAt = "string_interp_backupStatusStoredAt";
+		public static readonly string string_gameHasNotBeenBackedUp = "string_gameHasNotBeenBackedUp";
+		public static readonly string string_backupUnavailable = "string_backupUnavailable";
+		public static readonly string string_interp_backupStatusNotAccessible = "string_interp_backupStatusNotAccessible";
+		public static readonly string string_backupNotVanilla = "string_backupNotVanilla";
+		public static readonly string string_interp_backupStatusNotVanilla = "string_interp_backupStatusNotVanilla";
+		public static readonly string string_gameNotInstalledHasItBeenRunOnce = "string_gameNotInstalledHasItBeenRunOnce";
 	}
 }

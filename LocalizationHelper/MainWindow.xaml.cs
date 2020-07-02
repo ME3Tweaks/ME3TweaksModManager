@@ -633,7 +633,8 @@ namespace LocalizationHelper
             {
                 Path.Combine(M3folder, "modmanager", "usercontrols"),
                 Path.Combine(M3folder, "modmanager", "objects"),
-                Path.Combine(M3folder, "modmanager", "windows")
+                Path.Combine(M3folder, "modmanager", "windows"),
+                Path.Combine(M3folder, "modmanager", "helpers"),
             };
 
             int i = 0;

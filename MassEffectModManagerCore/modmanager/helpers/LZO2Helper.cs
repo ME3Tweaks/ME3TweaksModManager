@@ -35,10 +35,10 @@ namespace LZO2Helper
 {
     static public class LZO2
     {
-        [DllImport("lzo2wrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"lzo2wrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int LZODecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
-        [DllImport("lzo2wrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"lzo2wrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int LZOCompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
         static public uint Decompress(byte[] src, uint srcLen, byte[] dst)

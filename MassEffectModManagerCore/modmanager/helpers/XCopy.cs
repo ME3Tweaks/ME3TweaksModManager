@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         #region PInvoke
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport(@"kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CopyFileEx(string lpExistingFileName, string lpNewFileName, CopyProgressRoutine lpProgressRoutine, IntPtr lpData, ref Int32 pbCancel, CopyFileFlags dwCopyFlags);
 

@@ -36,10 +36,10 @@ namespace ZlibHelper
 {
     static public class Zlib
     {
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZlibDecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZlibCompress(int compressionLevel, [In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
         static public uint Decompress(byte[] src, uint srcLen, byte[] dst)
@@ -71,28 +71,28 @@ namespace ZlibHelper
 
     public class Zip
     {
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr ZipOpenFromMem([In] byte[] srcBuf, ulong srcLen, ref ulong numEntries, int tpf);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr ZipOpenFromFile([In] byte[] path, ref ulong numEntries, int tpf);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipGetCurrentFileInfo(IntPtr handle, [Out] byte[] fileName, ulong sizeOfFileName, ref ulong dstLen);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipGoToFirstFile(IntPtr handle);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipGoToNextFile(IntPtr handle);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipLocateFile(IntPtr handle, [In] byte[] filename);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipReadCurrentFile(IntPtr handle, [Out] byte[] dstBuf, ulong dstLen, [In] byte[] password);
 
-        [DllImport("zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"zlibwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int ZipClose(IntPtr handle);
 
         static public IntPtr Open(byte[] srcBuf, ref ulong numEntries, int tpf)

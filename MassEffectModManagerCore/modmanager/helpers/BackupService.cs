@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using FontAwesome.WPF;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Octokit;
@@ -146,18 +147,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (game == Mod.MEGame.ME1 || game == Mod.MEGame.Unknown)
                 {
                     RefreshBackupStatus(Mod.MEGame.ME1, window == null || window.InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1),
-                        ME1BackedUp, (string msg) => ME1BackupStatus = msg, (string msg) => ME1BackupStatusTooltip = msg);
+                        ME1BackedUp, msg => ME1BackupStatus = msg, msg => ME1BackupStatusTooltip = msg);
                 }
 
                 if (game == Mod.MEGame.ME2 || game == Mod.MEGame.Unknown)
                 {
                     RefreshBackupStatus(Mod.MEGame.ME2, window == null || window.InstallationTargets.Any(x => x.Game == Mod.MEGame.ME2),
-                        ME2BackedUp, (string msg) => ME2BackupStatus = msg, (string msg) => ME2BackupStatusTooltip = msg);
+                        ME2BackedUp, msg => ME2BackupStatus = msg, msg => ME2BackupStatusTooltip = msg);
                 }
                 if (game == Mod.MEGame.ME3 || game == Mod.MEGame.Unknown)
                 {
                     RefreshBackupStatus(Mod.MEGame.ME3, window == null || window.InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3), ME3BackedUp,
-                        (string msg) => ME3BackupStatus = msg, (string msg) => ME3BackupStatusTooltip = msg);
+                        msg => ME3BackupStatus = msg, msg => ME3BackupStatusTooltip = msg);
                 }
             });
         }
@@ -169,34 +170,34 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var bPath = GetGameBackupPath(game, forceReturnPath: true);
                 if (backedUp)
                 {
-                    setStatus("Backed up");
-                    setStatusToolTip($"Backup stored at {bPath}");
+                    setStatus(M3L.GetString(M3L.string_backedUp));
+                    setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusStoredAt, bPath));
                 }
                 else if (bPath == null)
                 {
 
-                    setStatus("Not backed up");
-                    setStatusToolTip("Game has not been backed up");
+                    setStatus(M3L.GetString(M3L.string_notBackedUp));
+                    setStatusToolTip(M3L.GetString(M3L.string_gameHasNotBeenBackedUp));
                 }
                 else if (!Directory.Exists(bPath))
                 {
-                    setStatus("Backup unavailable");
-                    setStatusToolTip($"Backup stored at {bPath}\nBackup path is not accessible, was it renamed or moved?");
+                    setStatus(M3L.GetString(M3L.string_backupUnavailable));
+                    setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusNotAccessible, bPath));
                 }
                 else
                 {
                     var nonVanillaPath = GetGameBackupPath(game, forceCmmVanilla: false);
                     if (nonVanillaPath != null)
                     {
-                        setStatus("Backup not vanilla");
-                        setStatusToolTip($"Backup stored at {nonVanillaPath}\nBackup is not vanilla and will not be used");
+                        setStatus(M3L.GetString(M3L.string_backupNotVanilla));
+                        setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusNotVanilla, nonVanillaPath));
                     }
                 }
             }
             else
             {
-                setStatus("Not installed");
-                setStatusToolTip("Game does not appear to be installed, or is not yet a moddable target in Mod Manager.&#10;If game from Steam, ensure it has been run at least once");
+                setStatus(M3L.GetString(M3L.string_notInstalled));
+                setStatusToolTip(M3L.GetString(M3L.string_gameNotInstalledHasItBeenRunOnce));
             }
         }
 
@@ -341,14 +342,14 @@ namespace MassEffectModManagerCore.modmanager.helpers
             switch (game)
             {
                 case Mod.MEGame.ME1:
-                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, "ME1VanillaBackupLocation");
+                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, @"ME1VanillaBackupLocation");
                     break;
                 case Mod.MEGame.ME2:
-                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, "ME2VanillaBackupLocation");
+                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, @"ME2VanillaBackupLocation");
                     break;
                 case Mod.MEGame.ME3:
                     //Check for backup via registry - Use Mod Manager's game backup key to find backup.
-                    path = Utilities.GetRegistrySettingString(App.REGISTRY_KEY_ME3CMM, "VanillaCopyLocation");
+                    path = Utilities.GetRegistrySettingString(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation");
                     break;
                 default:
                     return null;
@@ -358,7 +359,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (logReturnedPath)
             {
-                Log.Information(" >> Backup path lookup in registry for " + game + " returned: " + path);
+                Log.Information($@" >> Backup path lookup in registry for {game} returned: {path}");
             }
 
             if (path == null || !Directory.Exists(path))
