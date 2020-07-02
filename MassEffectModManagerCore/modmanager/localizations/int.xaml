@@ -1512,6 +1512,9 @@
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Exception occured while compiling TLK file: {0}</system:String>
     <!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
 
+    <!-- Vanilla Database Service -->
+    <system:String x:Key="string_checkingBackup">Checking backup</system:String>
+
     <!--  Backup Service -->
     <system:String x:Key="string_interp_backupStatusStoredAt">Backup stored at {0}</system:String>
     <system:String x:Key="string_gameHasNotBeenBackedUp">Game has not been backed up</system:String>

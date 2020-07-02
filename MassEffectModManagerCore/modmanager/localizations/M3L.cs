@@ -1242,6 +1242,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_skipTutorial = "string_skipTutorial";
 		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster = "string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster";
 		public static readonly string string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp = "string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp";
+		public static readonly string string_checkingBackup = "string_checkingBackup";
 		public static readonly string string_interp_backupStatusStoredAt = "string_interp_backupStatusStoredAt";
 		public static readonly string string_gameHasNotBeenBackedUp = "string_gameHasNotBeenBackedUp";
 		public static readonly string string_backupUnavailable = "string_backupUnavailable";

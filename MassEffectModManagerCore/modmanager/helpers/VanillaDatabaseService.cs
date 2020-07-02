@@ -8,6 +8,7 @@ using System.Text;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Unreal;
 using Serilog;
@@ -18,7 +19,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// <summary>
     /// Class for querying information about game and fetching vanilla files.
     /// </summary>
-    [Localizable(false)]
     public class VanillaDatabaseService
     {
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME1VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
@@ -508,7 +508,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             Log.Information(@"Validating backup for " + Utilities.GetGameName(game));
             var targetPath = BackupService.GetGameBackupPath(game, false);
             Log.Information(@"Backup location: " + targetPath);
-            BackupService.SetStatus(game, "Checking backup", "Please wait");
+            BackupService.SetStatus(game, M3L.GetString(M3L.string_checkingBackup), M3L.GetString(M3L.string_pleaseWait));
             BackupService.SetActivity(game, true);
             BackupService.SetIcon(game, FontAwesomeIcon.Spinner);
             GameTarget target = new GameTarget(game, targetPath, false);
