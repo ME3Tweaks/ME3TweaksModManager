@@ -6,7 +6,7 @@ ME3Tweaks Mod Manager, starting with Build 108/Version 6.1, support installation
 
 ![Localization Example](images/documentation_localizations.png)
 
-Localization mods must be standalone mods. You cannot combine a LOCALIZATION task header with any other task headers that install things.
+Localization mods must be standalone mods, and are defined under the **\[LOCALIZATION\]** task header. You cannot combine a LOCALIZATION task header with any other task headers that install things.
 
 | Descriptor name | Purpose | Required | Supported Moddesc versions |
 |-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------------------------|
@@ -31,5 +31,6 @@ modsite = https://www.nexusmods.com/masseffect3/mods/844
 [LOCALIZATION]
 dlcname = DLC_MOD_EGM_Ark
 files = DLC_MOD_EGM_Ark_ITA.tlk
-
 ```
+
+The **dlcname** descriptor will be added a dependency for mod installation, since the file will be installed to that DLC.
