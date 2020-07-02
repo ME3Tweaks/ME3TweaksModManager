@@ -69,7 +69,7 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
-        public const double HighestSupportedModDesc = 6.0;
+        public const double HighestSupportedModDesc = 6.1;
 
         //Windows 8.1 Update 1
         public static readonly Version MIN_SUPPORTED_OS = new Version("6.3.9600");
@@ -134,13 +134,13 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
-            ExecutableLocation = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false);
             SetDllDirectory(Utilities.GetDllDirectory());
 
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location));
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             try
@@ -402,16 +402,12 @@ namespace MassEffectModManagerCore
                 Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
 
                 Log.Information("Initializing package handlers");
-
                 MEPackageHandler.Initialize();
 
                 Log.Information("Ensuring default ASI assets are present");
                 ASIManagerPanel.ExtractDefaultASIResources();
 
-
                 collectHardwareInfo();
-
-
 
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
                 Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
