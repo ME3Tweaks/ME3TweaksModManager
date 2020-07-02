@@ -1244,7 +1244,8 @@ namespace MassEffectModManagerCore.modmanager
             #endregion
 
             #region LOCALIZATION MODS (6.1+) (ME2/3 ONLY)
-            var localizationFilesStr = iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"files"];
+
+            var localizationFilesStr = (Game >= MEGame.ME2 && ModDescTargetVersion >= 6.1) ? iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"files"] : null;
             if (localizationFilesStr != null)
             {
                 if (InstallationJobs.Any())
