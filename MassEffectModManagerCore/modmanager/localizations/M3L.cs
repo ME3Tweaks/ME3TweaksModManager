@@ -1267,5 +1267,17 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_gameNotInstalledHasItBeenRunOnce = "string_gameNotInstalledHasItBeenRunOnce";
 		public static readonly string string_mEMVanillaDatabaseViewer = "string_mEMVanillaDatabaseViewer";
 		public static readonly string string_viewInformationInTheVanillaDatabaseUsedForBackupVerification = "string_viewInformationInTheVanillaDatabaseUsedForBackupVerification";
+		public static readonly string string_preparingToCollectDiagnosticInfo = "string_preparingToCollectDiagnosticInfo";
+		public static readonly string string_interp_preparingMEMNoGUIX = "string_interp_preparingMEMNoGUIX";
+		public static readonly string string_collectingGameInformation = "string_collectingGameInformation";
+		public static readonly string string_collectingSystemInformation = "string_collectingSystemInformation";
+		public static readonly string string_collectingDLCInformation = "string_collectingDLCInformation";
+		public static readonly string string_collectingTFCFileInformation = "string_collectingTFCFileInformation";
+		public static readonly string string_checkingTextureMapGameConsistency = "string_checkingTextureMapGameConsistency";
+		public static readonly string string_interp_performingFullTexturesCheckX = "string_interp_performingFullTexturesCheckX";
+		public static readonly string string_collectingASIFileInformation = "string_collectingASIFileInformation";
+		public static readonly string string_collectingME1ApplicationLogs = "string_collectingME1ApplicationLogs";
+		public static readonly string string_collectingEventLogs = "string_collectingEventLogs";
+		public static readonly string string_collectingME3SessionLog = "string_collectingME3SessionLog";
 	}
 }

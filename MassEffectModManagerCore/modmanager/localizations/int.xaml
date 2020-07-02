@@ -327,9 +327,7 @@
     <system:String x:Key="string_checkingTutorialAssets">Checking tutorial assets</system:String>
     <system:String x:Key="string_checkedTutorialAssets">Checked tutorial assets</system:String>
 
-
-
-<!-- Global Styles -->
+    <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
     <!-- Mod Installer Panel -->
@@ -1551,5 +1549,19 @@
     <system:String  x:Key="string_mEMVanillaDatabaseViewer">MEM Vanilla Database Viewer</system:String>
     <system:String  x:Key="string_viewInformationInTheVanillaDatabaseUsedForBackupVerification">View information in the vanilla database used for backup verification</system:String>
 
-
+    <!-- Log Collector -->
+    <system:String x:Key="string_preparingToCollectDiagnosticInfo">Preparing to collect diagnostic info</system:String>
+    <system:String x:Key="string_interp_preparingMEMNoGUIX">Preparing MEM No GUI {0}%</system:String>
+    <!-- 0={Percent} -->
+    <system:String x:Key="string_collectingGameInformation">Collecting game information</system:String>
+    <system:String x:Key="string_collectingSystemInformation">Collecting system information</system:String>
+    <system:String x:Key="string_collectingDLCInformation">Collecting DLC information</system:String>
+    <system:String x:Key="string_collectingTFCFileInformation">Collecting TFC file information</system:String>
+    <system:String x:Key="string_checkingTextureMapGameConsistency">Checking texture map &lt;-&gt; game consistency</system:String>
+    <system:String x:Key="string_interp_performingFullTexturesCheckX">Performing full textures check {0}%</system:String>
+    <!-- 0={Percent} -->
+    <system:String x:Key="string_collectingASIFileInformation">Collecting ASI file information</system:String>
+    <system:String x:Key="string_collectingME1ApplicationLogs">Collecting ME1 application logs</system:String>
+    <system:String x:Key="string_collectingEventLogs">Collecting event logs</system:String>
+    <system:String x:Key="string_collectingME3SessionLog">Collecting ME3 session log</system:String>
 </ResourceDictionary>

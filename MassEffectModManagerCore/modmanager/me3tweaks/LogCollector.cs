@@ -1,6 +1,4 @@
-﻿
-
-using Serilog;
+﻿using Serilog;
 using Serilog.Sinks.RollingFile.Extension;
 using System;
 using System.Collections.Generic;
@@ -239,7 +237,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, bool textureCheck, Action<string> updateStatusCallback = null, Action<int> updateProgressCallback = null, Action<TaskbarItemProgressState> updateTaskbarState = null)
         {
-            updateStatusCallback?.Invoke("Preparing to collect diagnostic info");
+            updateStatusCallback?.Invoke(M3L.GetString(M3L.string_preparingToCollectDiagnosticInfo));
             updateTaskbarState?.Invoke(TaskbarItemProgressState.Indeterminate);
 
             #region MEM No Gui Fetch
@@ -285,7 +283,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
             void currentTaskCallback(string s) => updateStatusCallback?.Invoke(s);
-            void setPercentDone(int pd) => updateStatusCallback?.Invoke($"Preparing MEM No GUI {pd}%");
+            void setPercentDone(int pd) => updateStatusCallback?.Invoke(M3L.GetString(M3L.string_interp_preparingMEMNoGUIX, pd));
 
             #endregion
             // Ensure MEM NOGUI
@@ -302,7 +300,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #endregion
 
             #region Diagnostic setup and diag header
-            updateStatusCallback?.Invoke("Collecting game information");
+            updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingGameInformation));
             var diagStringBuilder = new StringBuilder();
 
             void addDiagLine(string message = "", Severity sev = Severity.INFO)
@@ -411,7 +409,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 #region Game Information
 
-                updateStatusCallback?.Invoke("Collecting game information");
+                updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingGameInformation));
                 addDiagLine(@"Basic game information", Severity.DIAGSECTION);
                 addDiagLine($@"Game is installed at {gamePath}");
 
@@ -546,7 +544,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #region System Information
 
-                updateStatusCallback?.Invoke("Collecting system information");
+                updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingSystemInformation));
 
                 addDiagLine(@"System information", Severity.DIAGSECTION);
                 OperatingSystem os = Environment.OSVersion;
@@ -735,17 +733,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     exitcode = null;
                     var blacklistedMods = new List<string>();
                     runMassEffectModderNoGuiIPC(@"Detect Blacklisted Mods", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
-                      {
-                          switch (command)
-                          {
-                              case @"ERROR":
-                                  blacklistedMods.Add(param);
-                                  break;
-                              default:
-                                  Debug.WriteLine(@"oof?");
-                                  break;
-                          }
-                      });
+                    {
+                        switch (command)
+                        {
+                            case @"ERROR":
+                                blacklistedMods.Add(param);
+                                break;
+                            default:
+                                Debug.WriteLine(@"oof?");
+                                break;
+                        }
+                    });
                     lock (memFinishedLock)
                     {
                         Monitor.Wait(memFinishedLock);
@@ -777,7 +775,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #region Installed DLCs
 
                 //Get DLCs
-                updateStatusCallback?.Invoke("Collecting DLC information");
+                updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingDLCInformation));
 
                 var installedDLCs = MEDirectories.GetMetaMappedInstalledDLC(selectedDiagnosticTarget);
 
@@ -850,7 +848,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 if (selectedDiagnosticTarget.Game > Mod.MEGame.ME1)
                 {
-                    updateStatusCallback?.Invoke("Collecting TFC file information");
+                    updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingTFCFileInformation));
 
                     addDiagLine(@"Texture File Cache (TFC) files", Severity.DIAGSECTION);
                     addDiagLine(@"The following TFC files are present in the game directory.");
@@ -887,7 +885,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         if (textureMapFileExists)
                         {
                             // check for replaced files (file size changes)
-                            updateStatusCallback?.Invoke("Checking texture map <-> game consistency");
+                            updateStatusCallback?.Invoke(M3L.GetString(M3L.string_checkingTextureMapGameConsistency));
                             List<string> removedFiles = new List<string>();
                             List<string> addedFiles = new List<string>();
                             List<string> replacedFiles = new List<string>();
@@ -1076,8 +1074,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     //FULL CHECK
                     if (textureCheck)
                     {
-                        var value = 0;
-                        updateStatusCallback?.Invoke($"Performing full textures check {value}%"); //done this way to save a string in localization
+                        var param = 0;
+                        updateStatusCallback?.Invoke(M3L.GetString(M3L.string_interp_performingFullTexturesCheckX, param)); //done this way to save a string in localization
                         addDiagLine(@"Full Textures Check", Severity.DIAGSECTION);
                         args = $@"--check-game-data-textures --gameid {gameID} --ipc";
                         exitcode = null;
@@ -1089,55 +1087,55 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         updateTaskbarState?.Invoke(TaskbarItemProgressState.Normal);
 
                         runMassEffectModderNoGuiIPC(@"Full textures check", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
-                         {
-                             switch (command)
-                             {
-                                 case @"ERROR_MIPMAPS_NOT_REMOVED":
-                                     if (selectedDiagnosticTarget.TextureModded)
-                                     {
-                                         //only matters when game is texture modded
-                                         emptyMipsNotRemoved.Add(param);
-                                     }
-                                     break;
-                                 case @"TASK_PROGRESS":
-                                     if (int.TryParse(param, out var progress))
-                                     {
-                                         updateProgressCallback?.Invoke(progress);
-                                     }
-                                     updateStatusCallback?.Invoke($"Performing full textures check {param}%");
-                                     break;
-                                 case @"PROCESSING_FILE":
-                                     //Don't think there's anything to do with this right now
-                                     break;
-                                 case @"ERROR_REFERENCED_TFC_NOT_FOUND":
-                                     //badTFCReferences.Add(param);
-                                     lastMissingTFC = param;
-                                     break;
-                                 case @"ERROR_TEXTURE_SCAN_DIAGNOSTIC":
-                                     if (lastMissingTFC != null)
-                                     {
-                                         if (lastMissingTFC.StartsWith(@"Textures_"))
-                                         {
-                                             var foldername = Path.GetFileNameWithoutExtension(lastMissingTFC).Substring(@"Textures_".Length);
-                                             if (MEDirectories.OfficialDLC(selectedDiagnosticTarget.Game)
-                                                 .Contains(foldername))
-                                             {
-                                                 break; //dlc is packed still
-                                             }
-                                         }
-                                         badTFCReferences.Add(lastMissingTFC + @", " + param);
-                                     }
-                                     else
-                                     {
-                                         scanErrors.Add(param);
-                                     }
-                                     lastMissingTFC = null; //reset
-                                     break;
-                                 default:
-                                     Debug.WriteLine($@"{command} {param}");
-                                     break;
-                             }
-                         });
+                        {
+                            switch (command)
+                            {
+                                case @"ERROR_MIPMAPS_NOT_REMOVED":
+                                    if (selectedDiagnosticTarget.TextureModded)
+                                    {
+                                        //only matters when game is texture modded
+                                        emptyMipsNotRemoved.Add(param);
+                                    }
+                                    break;
+                                case @"TASK_PROGRESS":
+                                    if (int.TryParse(param, out var progress))
+                                    {
+                                        updateProgressCallback?.Invoke(progress);
+                                    }
+                                    updateStatusCallback?.Invoke($"Performing full textures check {param}%");
+                                    break;
+                                case @"PROCESSING_FILE":
+                                    //Don't think there's anything to do with this right now
+                                    break;
+                                case @"ERROR_REFERENCED_TFC_NOT_FOUND":
+                                    //badTFCReferences.Add(param);
+                                    lastMissingTFC = param;
+                                    break;
+                                case @"ERROR_TEXTURE_SCAN_DIAGNOSTIC":
+                                    if (lastMissingTFC != null)
+                                    {
+                                        if (lastMissingTFC.StartsWith(@"Textures_"))
+                                        {
+                                            var foldername = Path.GetFileNameWithoutExtension(lastMissingTFC).Substring(@"Textures_".Length);
+                                            if (MEDirectories.OfficialDLC(selectedDiagnosticTarget.Game)
+                                                .Contains(foldername))
+                                            {
+                                                break; //dlc is packed still
+                                            }
+                                        }
+                                        badTFCReferences.Add(lastMissingTFC + @", " + param);
+                                    }
+                                    else
+                                    {
+                                        scanErrors.Add(param);
+                                    }
+                                    lastMissingTFC = null; //reset
+                                    break;
+                                default:
+                                    Debug.WriteLine($@"{command} {param}");
+                                    break;
+                            }
+                        });
                         lock (memFinishedLock)
                         {
                             Monitor.Wait(memFinishedLock);
@@ -1228,18 +1226,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     args = $@"--print-lods --gameid {gameID} --ipc";
                     var lods = new Dictionary<string, string>();
                     runMassEffectModderNoGuiIPC(@"MEM - Fetch LODS", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
-                     {
-                         switch (command)
-                         {
-                             case @"LODLINE":
-                                 var lodSplit = param.Split(@"=");
-                                 lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
-                                 break;
-                             default:
-                                 Debug.WriteLine(@"oof?");
-                                 break;
-                         }
-                     });
+                    {
+                        switch (command)
+                        {
+                            case @"LODLINE":
+                                var lodSplit = param.Split(@"=");
+                                lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
+                                break;
+                            default:
+                                Debug.WriteLine(@"oof?");
+                                break;
+                        }
+                    });
                     lock (memFinishedLock)
                     {
                         Monitor.Wait(memFinishedLock);
@@ -1262,7 +1260,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #region ASI mods
 
-                updateStatusCallback?.Invoke("Collecting ASI file information");
+                updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingASIFileInformation));
 
                 string asidir = MEDirectories.ASIPath(selectedDiagnosticTarget);
                 addDiagLine(@"Installed ASI mods", Severity.DIAGSECTION);
@@ -1343,7 +1341,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 //ME1: LOGS
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
                 {
-                    updateStatusCallback?.Invoke("Collecting ME1 application logs");
+                    updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingME1ApplicationLogs));
 
                     //GET LOGS
                     string logsdir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"BioWare\Mass Effect\Logs");
@@ -1397,7 +1395,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #region Event logs for crashes
 
                 //EVENT LOGS
-                updateStatusCallback?.Invoke("Collecting event logs");
+                updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingEventLogs));
                 StringBuilder crashLogs = new StringBuilder();
                 var sevenDaysAgo = DateTime.Now.AddDays(-3);
 
@@ -1429,7 +1427,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
                 {
-                    updateStatusCallback?.Invoke("Collecting ME3 session log");
+                    updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingME3SessionLog));
                     string me3logfilepath = Path.Combine(Directory.GetParent(MEDirectories.ExecutablePath(selectedDiagnosticTarget)).FullName, @"me3log.txt");
                     if (File.Exists(me3logfilepath))
                     {
