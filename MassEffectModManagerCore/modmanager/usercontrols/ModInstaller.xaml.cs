@@ -163,36 +163,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     var errorLines = new List<string>();
                     Log.Error(@"This compatibility pack was built against a different DLC configuration and is not valid for this set of DLC mods.");
-                    errorLines.Add("This compatibility pack was not built for this configuration of the game and cannot be installed.");
+                    errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod1));
 
                     if (missingCompatDlcs.Any())
                     {
                         errorLines.Add("");
-                        Log.Error(@" > The following DLCs were removed after generating GUI compat pack: " + string.Join(", ", missingCompatDlcs));
-                        errorLines.Add("The following DLC mods were removed after the compatibility pack was generated:");
+                        Log.Error(@" > The following DLCs were removed after generating GUI compat pack: " + string.Join(@", ", missingCompatDlcs));
+                        errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod2_dlcRemoved));
                         foreach (var v in missingCompatDlcs)
                         {
                             var tpmi = ThirdPartyServices.GetThirdPartyModInfo(v, ModBeingInstalled.Game);
                             var line = $@" - {v}";
-                            if (tpmi != null) line += $" ({tpmi.modname})";
+                            if (tpmi != null) line += $@" ({tpmi.modname})";
                             errorLines.Add(line);
                         }
                     }
                     if (addedAfterCompatDlcs.Any())
                     {
                         errorLines.Add("");
-                        Log.Error(@" > The following DLCs were added after generating GUI compat pack: " + string.Join(", ", addedAfterCompatDlcs));
-                        errorLines.Add("The following DLC mods were added after the compatibility pack was generated:");
+                        Log.Error(@" > The following DLCs were added after generating GUI compat pack: " + string.Join(@", ", addedAfterCompatDlcs));
+                        errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod2_dlcAdded));
                         foreach (var v in addedAfterCompatDlcs)
                         {
                             var tpmi = ThirdPartyServices.GetThirdPartyModInfo(v, ModBeingInstalled.Game);
                             var line = $@" - {v}";
-                            if (tpmi != null) line += $" ({tpmi.modname})";
+                            if (tpmi != null) line += $@" ({tpmi.modname})";
                             errorLines.Add(line);
                         }
                     }
                     errorLines.Add("");
-                    errorLines.Add("A new compatibility pack must be generated from the tools menu.");
+                    errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod3));
 
                     //logs handled in precheck
                     e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3, errorLines);
@@ -1092,20 +1092,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:
                             // Will only be one item in this list
                             var tpmi = ThirdPartyServices.GetThirdPartyModInfo(Path.GetFileName(items[0]), ModBeingInstalled.Game);
-                            string message = $"Unable to fully delete existing mod directory:\n{items[0]}\n\nReason:\n{items[1]}\n\nThe folder may have been partially deleted.";
+                            string message = M3L.GetString(M3L.string_interp_unableToFullyDeleteExistingModDirectory, items[0], items[1]);
                             message += @" "; //this is here for localization tool
                             if (tpmi != null)
                             {
-                                message += $"This mod ({tpmi.modname}) should be reinstalled.";
+                                message += M3L.GetString(M3L.string_interp_thisModShouldBeReinstalled, tpmi.modname);
                             }
                             else
                             {
-                                message += "This mod should be reinstalled.";
+                                message += M3L.GetString(M3L.string_thisModShouldBeReinstalled);
                             }
-                            M3L.ShowDialog(window, message, "Error installing mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(window, message, M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                             break;
                         case ModInstallCompletedStatus.INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3:
-                            M3L.ShowDialog(window, string.Join('\n', items), "Invalid compatibility pack", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(window, string.Join('\n', items), M3L.GetString(M3L.string_invalidCompatibilityPack), MessageBoxButton.OK, MessageBoxImage.Error);
                             break;
                     }
                 }

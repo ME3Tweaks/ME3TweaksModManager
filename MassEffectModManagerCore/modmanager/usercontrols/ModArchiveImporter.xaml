@@ -15,7 +15,7 @@
         <TextBlock
             DockPanel.Dock="Top"
             FontSize="14"
-            Text="{Binding ScanningFile, FallbackValue=Placeholder.7z}"
+            Text="{Binding ScanningFile}"
             TextAlignment="Center" />
         <DockPanel
             DockPanel.Dock="Bottom">

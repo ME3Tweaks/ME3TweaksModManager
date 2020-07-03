@@ -31,7 +31,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static string BuildCommaSeparatedSplitValueList(Dictionary<string, string> keys)
         {
-            string str = "(";
+            string str = @"(";
             bool first = true;
             foreach (var kp in keys)
             {
@@ -41,20 +41,20 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 else
                 {
-                    str += ",";
+                    str += @",";
                 }
                 str += kp.Key;
-                str += "=";
-                if (!kp.Value.Contains(" "))
+                str += @"=";
+                if (!kp.Value.Contains(@" "))
                 {
                     str += kp.Value;
                 }
                 else
                 {
-                    str += $"\"{kp.Value}\"";
+                    str += $"\"{kp.Value}\""; //do not localize
                 }
             }
-            return str + ")";
+            return str + @")";
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')
             {
-                throw new Exception("GetCommaSplitValues() can only deal with items encapsulated in a single ( ) set. The current set has at least two, e.g. ((value)).");
+                throw new Exception(@"GetCommaSplitValues() can only deal with items encapsulated in a single ( ) set. The current set has at least two, e.g. ((value)).");
             }
             inputString = inputString.Trim('(', ')');
 
@@ -89,7 +89,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     case ')':
                         if (openParenthesisCount <= 0)
                         {
-                            throw new Exception("ASSERT ERROR: StringStructParser cannot handle closing ) without an opening (. at position " + i);
+                            throw new Exception(@"ASSERT ERROR: StringStructParser cannot handle closing ) without an opening (. at position " + i);
                         }
                         //closingParenthesisPos = i;
                         openParenthesisCount--;
@@ -120,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         {
                             //New property
                             {
-                                if (lastEqualsPos < propNameStartPos) throw new Exception("ASSERT ERROR: Error parsing string struct: equals cannot come before property name start. Value: " + inputString);
+                                if (lastEqualsPos < propNameStartPos) throw new Exception(@"ASSERT ERROR: Error parsing string struct: equals cannot come before property name start. Value: " + inputString);
                                 string propertyName = inputString.Substring(propNameStartPos, lastEqualsPos - propNameStartPos).Trim();
                                 string value = "";
                                 if (openingQuotePos >= 0)
@@ -203,8 +203,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         {
                             if (parenthesisStack.Count == 0)
                             {
-                                Log.Error("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
-                                throw new Exception("Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
+                                Log.Error(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
+                                throw new Exception(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i); //should this be localized?
                             }
 
                             var popped = parenthesisStack.Pop();
@@ -227,8 +227,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
             if (parenthesisStack.Count > 0)
             {
-                Log.Error("Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
-                throw new Exception("Unclosed opening parenthesis encountered while parsing parenthesis split list");
+                Log.Error(@"Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
+                throw new Exception(@"Unclosed opening parenthesis encountered while parsing parenthesis split list"); //should this be localized?
             }
             return splits;
         }

@@ -84,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error("Error setting ME3 keybinds: " + b.Error.Message);
+                    Log.Error(@"Error setting ME3 keybinds: " + b.Error.Message);
                 }
                 KeybindsInstallingME3 = false;
                 CommandManager.InvalidateRequerySuggested();
@@ -139,7 +139,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error("Error resetting ME3 keybinds: " + b.Error.Message);
+                    Log.Error(@"Error resetting ME3 keybinds: " + b.Error.Message);
                 }
                 KeybindsInstallingME3 = false;
                 CommandManager.InvalidateRequerySuggested();
@@ -192,9 +192,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public static string GetDefaultKeybindsOverride(Mod.MEGame game)
         {
             var path = Utilities.GetKeybindsOverrideFolder();
-            if (game == Mod.MEGame.ME1) return Path.Combine(path, "me1-bioinput.ini");
-            if (game == Mod.MEGame.ME2) return Path.Combine(path, "me2-bioinput.ini");
-            if (game == Mod.MEGame.ME3) return Path.Combine(path, "me3-bioinput.xml");
+            if (game == Mod.MEGame.ME1) return Path.Combine(path, @"me1-bioinput.ini");
+            if (game == Mod.MEGame.ME2) return Path.Combine(path, @"me2-bioinput.ini");
+            if (game == Mod.MEGame.ME3) return Path.Combine(path, @"me3-bioinput.xml");
             return null;
         }
     }

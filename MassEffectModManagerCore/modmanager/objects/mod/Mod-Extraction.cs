@@ -89,7 +89,7 @@ namespace MassEffectModManagerCore.modmanager
             if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
             if (!File.Exists(archivePath))
             {
-                throw new Exception($"The archive file {archivePath} is no longer available.");
+                throw new Exception(M3L.GetString(M3L.string_interp_theArchiveFileArchivePathIsNoLongerAvailable, archivePath));
             }
             compressPackages &= Game >= MEGame.ME2;
             var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);

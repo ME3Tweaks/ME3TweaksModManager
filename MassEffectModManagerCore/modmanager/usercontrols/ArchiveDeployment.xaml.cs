@@ -42,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public Mod ModBeingDeployed { get; }
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
-        public string DeployButtonText { get; set; } = "Please wait";
+        public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
         public ArchiveDeployment(Mod mod)
         {
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
@@ -159,25 +159,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.HasALOTMarker(p))
                 {
-                    item.Errors.Add($"{p} has the texture modded marker tagged on it. This file cannot be distributed in a mod. Mod files cannot be used if they have been modified with Mass Effect Modder or ALOT Installer - use Package Editor in ME3Explorer to replace textures for mods that use package files. Distributing mods with ALOT markers on the files will lead to the mod being blacklisted in ALOT Installer and Mass Effect Modder.");
+                    item.Errors.Add(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                     blocking = true;
-                    DeployButtonText = "Deployment blocked";
+                    DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
                 }
             }
 
             //Check moddesc.ini for things that shouldn't be present - unofficial
             if (ModBeingDeployed.IsUnofficial)
             {
-                item.Errors.Add("The moddesc.ini for this mod is marked with the 'unofficial' descriptor, which means this mod was previously imported. Unofficially imported mods only import the data and not the alternates and other important information. This descriptor must be removed before deployment.");
+                item.Errors.Add(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
                 blocking = true;
             }
 
             //Check moddesc.ini for things that shouldn't be present - importedby
             if (ModBeingDeployed.ImportedByBuild > 0)
             {
-                item.Errors.Add("The moddesc.ini for this mod is marked with the 'importedbybuild' descriptor. This descriptor only is used for mods that were imported using the Third Party Importing Service - as this mod is being deployed, it is considered official, and thus this descriptor must be removed before deployment.");
+                item.Errors.Add(M3L.GetString(M3L.string_error_foundImportedByDesriptor));
                 blocking = true;
-                DeployButtonText = "Deployment blocked";
+                DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
             }
 
             //end setup
@@ -630,7 +630,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add($"{texture.FileRef.FilePath} {texture.GetInstancedFullPath} uses TFC name {cache.Value.Name}. This TFC name is used when replacing textures with the outdated ME3Explorer texturing tools and is a common source of broken textures. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.");
+                                    errors.Add(M3L.GetString(M3L.string_interp_error_foundCustTexturesTFCRef, texture.FileRef.FilePath, texture.GetInstancedFullPath, cache.Value.Name));
                                 }
                                 else if (cache.Value.Name.Contains(@"TexturesMEM"))
                                 {
@@ -640,8 +640,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
                                     item.DeploymentBlocking = true;
-                                    DeployButtonText = "Deployment blocked";
-                                    errors.Add($"{texture.FileRef.FilePath} {texture.GetInstancedFullPath} uses TFC name {cache.Value.Name}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.");
+                                    DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
+                                    errors.Add(M3L.GetString(M3L.string_interp_error_foundTexturesMEMTFCRef, texture.FileRef.FilePath, texture.GetInstancedFullPath, cache.Value.Name));
 
                                 }
                             }
@@ -923,7 +923,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressIndeterminate = false;
                 if (DeploymentChecklistItems.Any(x => x.DeploymentBlocking))
                 {
-                    OperationText = "Deployment blocked until above items are fixed";
+                    OperationText = M3L.GetString(M3L.string_deploymentBlockedUntilAboveItemsAreFixed);
                 }
                 else
                 {

@@ -19,7 +19,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             var nameConflicts = vanillaToModifiedDelta.NameDeltas.Keys.Intersect(vanillaToTargetDelta.NameDeltas.Keys).ToList();
             var importConflicts = vanillaToModifiedDelta.ImportDeltas.Keys.Intersect(vanillaToTargetDelta.ImportDeltas.Keys).ToList();
             var exportConflicts = vanillaToModifiedDelta.ExportDeltas.Keys.Intersect(vanillaToTargetDelta.ExportDeltas.Keys).ToList();
-            Log.Information($"[{loggingPrefix}] Performing three way merge pre-check");
+            Log.Information($@"[{loggingPrefix}] Performing three way merge pre-check");
             //Name deltas
 
             if (nameConflicts.Count > 0)
@@ -71,12 +71,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (nameDelta.Key >= targetPackage.NameCount)
                 {
                     //add it
-                    Log.Information($"[{loggingPrefix}] Adding name {nameDelta.Value}");
+                    Log.Information($@"[{loggingPrefix}] Adding name {nameDelta.Value}");
                     targetPackage.addName(nameDelta.Value);
                 }
                 else
                 {
-                    Log.Information($"[{loggingPrefix}] Updating name index {nameDelta.Key} to {nameDelta.Value}");
+                    Log.Information($@"[{loggingPrefix}] Updating name index {nameDelta.Key} to {nameDelta.Value}");
                     targetPackage.replaceName(nameDelta.Key, nameDelta.Value);
                 }
             }
@@ -86,14 +86,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (exportDelta.Key >= targetPackage.ExportCount)
                 {
                     //add it
-                    Log.Information($"[{loggingPrefix}] Adding export {exportDelta.Value.GetInstancedFullPath}");
-
+                    Log.Information($@"[{loggingPrefix}] Adding export {exportDelta.Value.GetInstancedFullPath}");
                     targetPackage.addExport(exportDelta.Value); //not sure if this is possible
                 }
                 else
                 {
                     //gonna need this reviewed, not entirely sure this is OK to do
-                    Log.Information($"[{loggingPrefix}] Updating export {exportDelta.Value.GetInstancedFullPath}");
+                    Log.Information($@"[{loggingPrefix}] Updating export {exportDelta.Value.GetInstancedFullPath}");
 
                     targetPackage.Exports[exportDelta.Key].Data = exportDelta.Value.Data;
                     targetPackage.Exports[exportDelta.Key].Header = exportDelta.Value.Header;
@@ -105,13 +104,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (importDelta.Key >= targetPackage.ImportCount)
                 {
                     //add it
-                    Log.Information($"[{loggingPrefix}] Adding import {importDelta.Value.GetInstancedFullPath}");
+                    Log.Information($@"[{loggingPrefix}] Adding import {importDelta.Value.GetInstancedFullPath}");
 
                     targetPackage.addImport(importDelta.Value); //not sure if this is possible
                 }
                 else
                 {
-                    Log.Information($"[{loggingPrefix}] Updating import {importDelta.Value.GetInstancedFullPath}");
+                    Log.Information($@"[{loggingPrefix}] Updating import {importDelta.Value.GetInstancedFullPath}");
 
                     //gonna need this reviewed, not entirely sure this is OK to do
                     //targetPackage.Imports[importDelta.Key].Data = importDelta.Value.Data;
@@ -119,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
             }
 
-            Log.Information($"[{loggingPrefix}] Finished three way merge");
+            Log.Information($@"[{loggingPrefix}] Finished three way merge");
             return true;
         }
 

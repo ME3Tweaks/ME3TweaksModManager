@@ -1,49 +1,99 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.OIGODisabler"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             Width="500">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:MMBusyPanelBase
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.OIGODisabler" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Width="500">
     <StackPanel>
-        <TextBlock Text="Origin in-game overlay disabler" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5"/>
-        <TextBlock Text="Origin in-game overlay is known to cause significant performance loss in the Mass Effect games. While it can be turned off in the Origin settings, this setting does not work for the Steam version of Mass Effect 3. You can install a proxy d3d9.dll that will disable forcibly disable the overlay per game target.&#10;&#10;Using other d3d9 proxies, such as Reshade, will also disable the overlay." TextWrapping="Wrap"/>
-        <ItemsControl ItemsSource="{Binding Games}">
+        <TextBlock
+            Text="{DynamicResource string_originIngameOverlayDisabler}"
+            FontSize="24"
+            FontWeight="Bold"
+            TextAlignment="Center"
+            Margin="0,5" />
+        <TextBlock
+            Text="{DynamicResource string_oigPanelHeader}"
+            TextWrapping="Wrap" />
+        <ItemsControl
+            ItemsSource="{Binding Games}">
             <ItemsControl.ItemContainerStyle>
                 <Style>
-                    <Setter Property="FrameworkElement.DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                    <Setter
+                        Property="FrameworkElement.DataContext"
+                        Value="{Binding RelativeSource={RelativeSource Self}}" />
                 </Style>
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="0,5,5,5">
+                    <Grid
+                        Margin="0,5,5,5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="54"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition
+                                Width="54" />
+                            <ColumnDefinition
+                                Width="1*" />
+                            <ColumnDefinition
+                                Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition
+                                Height="Auto" />
+                            <RowDefinition
+                                Height="Auto" />
+                            <RowDefinition
+                                Height="Auto" />
+                            <RowDefinition
+                                Height="Auto" />
+                            <RowDefinition
+                                Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource, FallbackValue=/images/gameicons/ME3_48.ico}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
-                        <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle, FallbackValue=ME3}"/>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding D3D9Status, FallbackValue=Not installed}"/>
-                        <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" 
-                                  HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" 
-                                  ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding Targets.Any}" Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                        <Button Content="{Binding DisablerButtonText}" Padding="3,0" Command="{Binding ToggleDisablerCommand}"  Grid.Row="3" Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"  Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <Image
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Grid.RowSpan="3"
+                            Source="{Binding GameIconSource}"
+                            Width="48"
+                            VerticalAlignment="Top"
+                            Height="48"
+                            HorizontalAlignment="Left" />
+                        <TextBlock
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            FontWeight="Bold"
+                            Text="{Binding GameTitle}" />
+                        <TextBlock
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Text="{Binding D3D9Status}" />
+                        <ComboBox
+                            Grid.Column="0"
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            ItemsSource="{Binding Targets}"
+                            SelectedItem="{Binding SelectedTarget}"
+                            HorizontalContentAlignment="Stretch"
+                            ItemTemplate="{StaticResource TargetSelectorTemplate}"
+                            ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
+                            IsEnabled="{Binding Targets.Any}"
+                            Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <Button
+                            Content="{Binding DisablerButtonText}"
+                            Padding="3,0"
+                            Command="{Binding ToggleDisablerCommand}"
+                            Grid.Row="3"
+                            Grid.Column="2"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                            Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
-        <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin ="0,5,0,0"/>
+        <Button
+            Content="{DynamicResource string_close}"
+            Command="{Binding CloseCommand}"
+            HorizontalAlignment="Right"
+            Padding="7,5"
+            Margin="0,5,0,0" />
     </StackPanel>
 </local:MMBusyPanelBase>

@@ -73,7 +73,9 @@ namespace MassEffectModManagerCore.modmanager
             GROUNDSIDE,
             GENESIS2,
             COLLECTORS_EDITION,
-            TESTPATCH
+            TESTPATCH,
+
+            LOCALIZATION //For ME2/3 Localization TLKs
         }
 
         /// <summary>

@@ -11,7 +11,7 @@
                        d:DesignHeight="200" d:DesignWidth="300">
     <StackPanel VerticalAlignment="Center">
         <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" Margin="10" />
-        <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
+        <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%'}" Visibility="{Binding PercentVisibility}"/>
         <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding ActionText}" TextWrapping="Wrap" TextAlignment="Center"/>
     </StackPanel>
 </local:MMBusyPanelBase>

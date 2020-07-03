@@ -239,14 +239,14 @@
                                             Text="{Binding ModificationSource}"
                                             VerticalAlignment="Center"
                                             HorizontalAlignment="Stretch"
-                                            Background="Transparent" 
+                                            Background="Transparent"
                                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}"
-                                            Visibility="{Binding ModificationSource, Converter={StaticResource NullVisibilityConverter}}"/>
+                                            Visibility="{Binding ModificationSource, Converter={StaticResource NullVisibilityConverter}}" />
                                         <Button
                                             Grid.Row="0"
                                             Grid.RowSpan="2"
                                             Grid.Column="1"
-                                            Content="{Binding RestoreButtonText, FallbackValue=No backup}"
+                                            Content="{Binding RestoreButtonText}"
                                             HorizontalAlignment="Right"
                                             Padding="5,2"
                                             Command="{Binding RestoreCommand}" />
@@ -387,14 +387,22 @@
                     </ItemsControl>
                 </DockPanel>
             </TabItem>
-            <TabItem Header="Other"
+            <TabItem
+                Header="{DynamicResource string_other}"
                 Margin="0"
                 Padding="0">
                 <StackPanel
                     Height="300"
                     Margin="-8">
-                    <TextBlock Margin="4,4,4,0" Text="Extra dlls found" FontSize="14" FontWeight="Bold"/>
-                    <TextBlock Text="No extra dlls were found" Visibility="{Binding ExtraFiles.Any, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="8,0"/>
+                    <TextBlock
+                        Margin="4,4,4,0"
+                        Text="{DynamicResource string_extraDllsFound}"
+                        FontSize="14"
+                        FontWeight="Bold" />
+                    <TextBlock
+                        Text="{DynamicResource string_noExtraDllsWereFound}"
+                        Visibility="{Binding ExtraFiles.Any, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+                        Margin="8,0" />
                     <ItemsControl
                         ItemsSource="{Binding ExtraFiles}"
                         HorizontalContentAlignment="Stretch"
@@ -438,8 +446,8 @@
                                             Text="{Binding DisplayName}"
                                             VerticalAlignment="Center"
                                             HorizontalAlignment="Stretch"
-                                            Background="Transparent" 
-                                            Margin="8,0,0,0"/>
+                                            Background="Transparent"
+                                            Margin="8,0,0,0" />
                                         <Button
                                             Grid.Row="0"
                                             Grid.RowSpan="2"
@@ -467,19 +475,32 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-                    <TextBlock Text="Installed ASIs" FontSize="14" FontWeight="Bold" Margin="4,0,0,0"/>
-                    <TextBlock Text="{Binding NumASIModsInstalledText}" Margin="8,0,0,0"/>
                     <TextBlock
-                        ToolTip="Click to open ASI Manager"  Margin="8,0,0,0">
-                        <Hyperlink
-                                RequestNavigate="OpenASIManager_Click"
-                                NavigateUri="internal://trigger">
-                            <TextBlock
-                                Text="Manage ASIs with ASI Manager" />
-                        </Hyperlink>
-                    </TextBlock>
-                    <TextBlock Text="Binkw32 DLC Bypass" FontSize="14" FontWeight="Bold" Margin="4,0,0,0"/>
-                    <TextBlock Text="{Binding Binkw32StatusText}" Margin="8,0,0,0"/>
+                        Text="{DynamicResource string_installedASIs}"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Margin="4,0,0,0" />
+                    <TextBlock
+                        Text="{Binding NumASIModsInstalledText}"
+                        Margin="8,0,0,0" />
+                    <TextBlock
+                        ToolTip="{DynamicResource string_tooltip_clickToOpenASIManager}"
+                        Margin="8,0,0,0">
+            <Hyperlink
+                            RequestNavigate="OpenASIManager_Click"
+                            NavigateUri="internal://trigger">
+              <TextBlock
+                                Text="{DynamicResource string_manageASIsWithASIManager}" />
+            </Hyperlink>
+          </TextBlock>
+                    <TextBlock
+                        Text="{DynamicResource string_binkw32DLCBypass}"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Margin="4,0,0,0" />
+                    <TextBlock
+                        Text="{Binding Binkw32StatusText}"
+                        Margin="8,0,0,0" />
                 </StackPanel>
             </TabItem>
         </TabControl>

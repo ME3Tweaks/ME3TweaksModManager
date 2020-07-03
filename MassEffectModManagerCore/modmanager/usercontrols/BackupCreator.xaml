@@ -40,10 +40,10 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource, FallbackValue=/images/gameicons/ME3_48.ico}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
-                        <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle, FallbackValue=ME3}"/>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus, FallbackValue=Not backed up}"/>
-                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding BackupStatusLine2, FallbackValue=Z:\\Nothing}"/>
+                        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding GameIconSource}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle}"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus}"/>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding BackupStatusLine2}"/>
                         <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" Name="InstallationTargetsME3_ComboBox" ItemsSource="{Binding AvailableBackupSources}" 
                                   SelectedItem="{Binding BackupSourceTarget}" HorizontalContentAlignment="Stretch" Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
                                   ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>

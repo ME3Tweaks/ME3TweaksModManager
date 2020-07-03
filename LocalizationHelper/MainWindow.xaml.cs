@@ -53,6 +53,7 @@ namespace LocalizationHelper
             var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
             var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
             var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
+            var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
 
             List<string> files = new List<string>();
             files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
@@ -61,6 +62,7 @@ namespace LocalizationHelper
             files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+            files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
 
             //these files are not localized
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
@@ -631,7 +633,8 @@ namespace LocalizationHelper
             {
                 Path.Combine(M3folder, "modmanager", "usercontrols"),
                 Path.Combine(M3folder, "modmanager", "objects"),
-                Path.Combine(M3folder, "modmanager", "windows")
+                Path.Combine(M3folder, "modmanager", "windows"),
+                Path.Combine(M3folder, "modmanager", "helpers"),
             };
 
             int i = 0;

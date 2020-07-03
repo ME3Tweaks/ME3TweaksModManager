@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using AuthenticodeExaminer;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
@@ -101,8 +102,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     outStr = outStr.Substring(0, outStr.IndexOf(','));
                                     if (outStr == @"Michael Perez") //My signing cert name
                                     {
-                                        D3D9Status = "Overlay disabler installed";
-                                        DisablerButtonText = "Uninstall disabler";
+                                        D3D9Status = M3L.GetString(M3L.string_overlayDisablerInstalled);
+                                        DisablerButtonText = M3L.GetString(M3L.string_uninstallDisabler);
                                         DisablerButtonEnabled = true;
                                         return;
                                     }
@@ -113,28 +114,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
 
-                        D3D9Status = "Other d3d9.dll installed, overlay disabled";
-                        DisablerButtonText = "Cannot uninstall other d3d9 file";
+                        D3D9Status = M3L.GetString(M3L.string_otherD3d9dllInstalledOverlayDisabled);
+                        DisablerButtonText = M3L.GetString(M3L.string_cannotUninstallOtherD3d9File);
                         DisablerButtonEnabled = false;
                         return;
                     }
 
                     DisablerButtonEnabled = true;
-                    D3D9Status = "Overlay disabler not installed";
-                    DisablerButtonText = "Install disabler";
+                    D3D9Status = M3L.GetString(M3L.string_overlayDisablerNotInstalled);
+                    DisablerButtonText = M3L.GetString(M3L.string_installDisabler);
                 }
                 else
                 {
                     DisablerButtonEnabled = false;
-                    DisablerButtonText = "Install disabler";
+                    DisablerButtonText = M3L.GetString(M3L.string_installDisabler);
 
                     if (Targets.Any())
                     {
-                        D3D9Status = "No target selected";
+                        D3D9Status = M3L.GetString(M3L.string_noTargetSelected);
                     }
                     else
                     {
-                        D3D9Status = "No Origin based game targets";
+                        D3D9Status = M3L.GetString(M3L.string_noOriginBasedGameTargets);
                     }
                 }
             }
@@ -256,9 +257,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            Games.Add(new OIGGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains("Origin"))));
-            Games.Add(new OIGGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains("Origin"))));
-            Games.Add(new OIGGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains("Origin"))));
+            Games.Add(new OIGGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(M3L.GetString(M3L.string_origin)))));
+            Games.Add(new OIGGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(M3L.GetString(M3L.string_origin)))));
+            Games.Add(new OIGGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(M3L.GetString(M3L.string_origin)))));
         }
     }
 }

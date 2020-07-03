@@ -8,6 +8,7 @@ using System.Text;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3Explorer.Unreal;
 using Serilog;
@@ -18,7 +19,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// <summary>
     /// Class for querying information about game and fetching vanilla files.
     /// </summary>
-    [Localizable(false)]
     public class VanillaDatabaseService
     {
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME1VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
@@ -32,17 +32,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 case Mod.MEGame.ME1:
                     ME1VanillaDatabase.Clear();
-                    var me1stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}1{(isMe1PL ? "pl" : "")}.bin");
+                    var me1stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}1{(isMe1PL ? @"pl" : @"")}.bin"); //do not localize
                     ParseDatabase(me1stream, ME1VanillaDatabase);
                     return ME1VanillaDatabase;
                 case Mod.MEGame.ME2:
                     if (ME2VanillaDatabase.Count > 0) return ME2VanillaDatabase;
-                    var me2stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}2.bin");
+                    var me2stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}2.bin");
                     ParseDatabase(me2stream, ME2VanillaDatabase);
                     return ME2VanillaDatabase;
                 case Mod.MEGame.ME3:
                     if (ME3VanillaDatabase.Count > 0) return ME3VanillaDatabase;
-                    var me3stream = Utilities.ExtractInternalFileToStream($"{assetPrefix}3.bin");
+                    var me3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}3.bin");
                     ParseDatabase(me3stream, ME3VanillaDatabase);
                     return ME3VanillaDatabase;
             }
@@ -471,32 +471,32 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         private static Dictionary<string, string> SUPPORTED_HASHES_ME1 = new Dictionary<string, string>
         {
-            ["647b93621389709cab8d268379bd4c47"] = "Steam",
-            ["78ac3d9b4aad1989dae74505ea65aa6c"] = "Steam, MEM patched",
-            ["2390143503635f3c4cfaed0afe0b8c71"] = "Origin, MEM patched",
-            ["ff1f894fa1c2dbf4d4b9f0de85c166e5"] = "Origin",
-            ["73b76699d4e245c92110a93c54980b78"] = "DVD",
-            ["298c30a399d0959e5e997a9d64b42548"] = "DVD, Polish",
-            ["9a89527800722ec308c01a421bfeb478"] = "DVD, Polish, MEM Patched",
-            ["8bba14d838d9c95e10d8ceeb5c958976"] = "Origin - German"
+            [@"647b93621389709cab8d268379bd4c47"] = @"Steam",
+            [@"78ac3d9b4aad1989dae74505ea65aa6c"] = @"Steam, MEM patched",
+            [@"2390143503635f3c4cfaed0afe0b8c71"] = @"Origin, MEM patched",
+            [@"ff1f894fa1c2dbf4d4b9f0de85c166e5"] = @"Origin",
+            [@"73b76699d4e245c92110a93c54980b78"] = @"DVD",
+            [@"298c30a399d0959e5e997a9d64b42548"] = @"DVD, Polish",
+            [@"9a89527800722ec308c01a421bfeb478"] = @"DVD, Polish, MEM Patched",
+            [@"8bba14d838d9c95e10d8ceeb5c958976"] = @"Origin - German"
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_ME2 = new Dictionary<string, string>
         {
-            ["73827026bc9629562c4a3f61a752541c"] = "Origin, ME2Game/MassEffect2 swapped",
-            ["32fb31b80804040996ed78d14110b54b"] = "Origin",
-            ["229173ca9057baeb4fd9f0fb2e569051"] = "Origin - ME2Game",
-            ["16f214ce81ba228347bce7b93fb0f37a"] = "Origin",
-            ["73b76699d4e245c92110a93c54980b78"] = "Steam",
-            ["e26f142d44057628efd086c605623dcf"] = "DVD - Alternate",
-            ["b1d9c44be87acac610dfa9947e114096"] = "DVD"
+            [@"73827026bc9629562c4a3f61a752541c"] = @"Origin, ME2Game/MassEffect2 swapped",
+            [@"32fb31b80804040996ed78d14110b54b"] = @"Origin",
+            [@"229173ca9057baeb4fd9f0fb2e569051"] = @"Origin - ME2Game",
+            [@"16f214ce81ba228347bce7b93fb0f37a"] = @"Origin",
+            [@"73b76699d4e245c92110a93c54980b78"] = @"Steam",
+            [@"e26f142d44057628efd086c605623dcf"] = @"DVD - Alternate",
+            [@"b1d9c44be87acac610dfa9947e114096"] = @"DVD"
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_ME3 = new Dictionary<string, string>
         {
-            ["1d09c01c94f01b305f8c25bb56ce9ab4"] = "Origin",
-            ["90d51c84b278b273e41fbe75682c132e"] = "Origin - Alternate",
-            ["70dc87862da9010aad1acd7d0c2c857b"] = "Origin - Russian",
+            [@"1d09c01c94f01b305f8c25bb56ce9ab4"] = @"Origin",
+            [@"90d51c84b278b273e41fbe75682c132e"] = @"Origin - Alternate",
+            [@"70dc87862da9010aad1acd7d0c2c857b"] = @"Origin - Russian",
         };
 
         /// <summary>
@@ -505,10 +505,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="game"></param>
         internal static void CheckAndTagBackup(Mod.MEGame game)
         {
-            Log.Information("Validating backup for " + Utilities.GetGameName(game));
+            Log.Information(@"Validating backup for " + Utilities.GetGameName(game));
             var targetPath = BackupService.GetGameBackupPath(game, false);
-            Log.Information("Backup location: " + targetPath);
-            BackupService.SetStatus(game, "Checking backup", "Please wait");
+            Log.Information(@"Backup location: " + targetPath);
+            BackupService.SetStatus(game, M3L.GetString(M3L.string_checkingBackup), M3L.GetString(M3L.string_pleaseWait));
             BackupService.SetActivity(game, true);
             BackupService.SetIcon(game, FontAwesomeIcon.Spinner);
             GameTarget target = new GameTarget(game, targetPath, false);
@@ -582,7 +582,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         };
 
         /// <summary>
-        /// Returrns the list of files that can potentially be three way merged
+        /// Returns the list of files that can potentially be three way merged
         /// </summary>
         /// <returns></returns>
         internal static object GetThreeWayMergeFiles(GameTarget gameTarget, (Dictionary<ModJob, (Dictionary<string, Mod.InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, Mod.InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues)
@@ -597,7 +597,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     var fname = Path.GetFileName(f.Value.FilePath);
                     if (IsThreeWayMergeEligible(gameTarget.Game, fname))
                     {
-                        Debug.WriteLine("TWM ELIG");
+                        Debug.WriteLine(@"TWM ELIG");
                     }
                 }
 

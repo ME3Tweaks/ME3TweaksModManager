@@ -49,7 +49,7 @@ namespace AmaroK86.MassEffect3.ZlibBlock
                 Buffer.BlockCopy(buffer, offset, src, 0, copyBytes);
                 byte[] dst = Zlib.Compress(src);
                 if (dst.Length == 0)
-                    throw new Exception("Zlib compression failed!");
+                    throw new Exception(@"Zlib compression failed!");
 
                 dataBlock.Write(dst);
                 offset += dst.Length;
@@ -114,7 +114,7 @@ namespace AmaroK86.MassEffect3.ZlibBlock
                 uint magicStream = buffStream.ReadUInt32();
                 if (magicStream != magic)
                 {
-                    throw new InvalidDataException("found an invalid zlib block");
+                    throw new InvalidDataException(@"found an invalid zlib block");
                 }
 
                 uint buffMaxSegmentSize = buffStream.ReadUInt32();
@@ -144,7 +144,7 @@ namespace AmaroK86.MassEffect3.ZlibBlock
                     byte[] src = buffStream.ReadToBuffer(comprSegm);
                     byte[] dst = new byte[uncomprSegm];
                     if (Zlib.Decompress(src, (uint)src.Length, dst) != uncomprSegm)
-                        throw new Exception("Zlib decompression failed!");
+                        throw new Exception(@"Zlib decompression failed!");
 
                     Buffer.BlockCopy(dst, 0, outputBuffer, buffOff, uncomprSegm);
 

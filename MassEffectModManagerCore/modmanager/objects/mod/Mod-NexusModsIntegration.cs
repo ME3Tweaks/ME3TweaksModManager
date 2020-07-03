@@ -76,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager
         public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
         {
             if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("ModSpecificEndorsement");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModSpecificEndorsement");
             nbw.DoWork += (a, b) =>
             {
                 var client = NexusModsUtilities.GetClient();

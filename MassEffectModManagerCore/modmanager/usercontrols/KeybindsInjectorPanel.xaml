@@ -1,56 +1,122 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.KeybindsInjectorPanel"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:fa="http://schemas.fontawesome.io/icons/"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             mc:Ignorable="d" 
-             Width="400"  d:DesignWidth="800">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:MMBusyPanelBase
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.KeybindsInjectorPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    mc:Ignorable="d"
+    Width="400"
+    d:DesignWidth="800">
     <DockPanel>
-        <TextBlock Text="Custom Keybinds Injector" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
-        <TextBlock Text="Inject custom keybinds into your game with this tool." TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
-
-        <DockPanel Dock="Bottom">
-            <Button Content="Open keybinds directory" HorizontalAlignment="Right" Padding="7,4" Command="{Binding OpenKeybindsDirectoryCommand}" />
-            <Button Content="{DynamicResource string_close}" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
+        <TextBlock
+            Text="{DynamicResource string_customKeybindsInjector}"
+            FontSize="20"
+            FontWeight="Bold"
+            TextAlignment="Center"
+            DockPanel.Dock="Top" />
+        <TextBlock
+            Text="{DynamicResource string_injectCustomKeybindsIntoYourGameWithThisTool}"
+            TextWrapping="Wrap"
+            TextAlignment="Center"
+            DockPanel.Dock="Top" />
+        <DockPanel
+            Dock="Bottom">
+            <Button
+                Content="{DynamicResource string_openKeybindsDirectory}"
+                HorizontalAlignment="Right"
+                Padding="7,4"
+                Command="{Binding OpenKeybindsDirectoryCommand}" />
+            <Button
+                Content="{DynamicResource string_close}"
+                HorizontalAlignment="Right"
+                Padding="7,4"
+                Command="{Binding CloseCommand}" />
         </DockPanel>
-
         <StackPanel>
-            <Grid Margin="0,5,5,5">
+            <Grid
+                Margin="0,5,5,5">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="54" />
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition
+                        Width="54" />
+                    <ColumnDefinition
+                        Width="1*" />
+                    <ColumnDefinition
+                        Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
                 </Grid.RowDefinitions>
-                <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="/images/gameicons/ME3_48.ico" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
-                <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="5">
-                    <TextBlock FontWeight="Bold" Text="Mass Effect 3" />
-                    <TextBlock Text="Keybinds are defined per installation" />
-                    <ComboBox ItemsSource="{Binding ME3Targets}" SelectedItem="{Binding SelectedME3Target}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding UIEnabled}" />
-                    <TextBlock Text="Select which keybinds to install:" Margin="0,10,0,0"/>
-                    <ComboBox ItemsSource="{Binding ME3Keybinds}" SelectedItem="{Binding SelectedME3Keybinds}" HorizontalContentAlignment="Stretch" />
-
+                <Image
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Source="/images/gameicons/ME3_48.ico"
+                    Width="48"
+                    VerticalAlignment="Top"
+                    Height="48"
+                    HorizontalAlignment="Left" />
+                <StackPanel
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Grid.RowSpan="5">
+                    <TextBlock
+                        FontWeight="Bold"
+                        Text="Mass Effect 3" />
+                    <TextBlock
+                        Text="{DynamicResource string_keybindsAreDefinedPerInstallation}" />
+                    <ComboBox
+                        ItemsSource="{Binding ME3Targets}"
+                        SelectedItem="{Binding SelectedME3Target}"
+                        HorizontalContentAlignment="Stretch"
+                        ItemTemplate="{StaticResource TargetSelectorTemplate}"
+                        ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
+                        IsEnabled="{Binding UIEnabled}" />
+                    <TextBlock
+                        Text="{DynamicResource string_selectWhichKeybindsToInstall}"
+                        Margin="0,10,0,0" />
+                    <ComboBox
+                        ItemsSource="{Binding ME3Keybinds}"
+                        SelectedItem="{Binding SelectedME3Keybinds}"
+                        HorizontalContentAlignment="Stretch" />
                 </StackPanel>
-                
-                <DockPanel Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME3Target, Converter={StaticResource NullVisibilityConverter}}">
-                    <Button Content="Reset Keybinds" Command="{Binding ResetKeybindsME3Command}" DockPanel.Dock="Left"/>
-                    <!--<Button Content="Fix Talon Merc" Margin="3,0" Command="{Binding FixTalonMercME3Keybinds}" />--> <!-- This might be implemented later, not sure -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" VerticalAlignment="Center" Margin="0,0,5,0"  Width="16" Height="16" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Visibility="{Binding KeybindsInstallingME3, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                        <Button Content="Install Keybinds" Command="{Binding InstallSelectedKeybindsME3Command}" HorizontalAlignment="Right"/>
+                <DockPanel
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Visibility="{Binding SelectedME3Target, Converter={StaticResource NullVisibilityConverter}}">
+                    <Button
+                        Content="{DynamicResource string_resetKeybinds}"
+                        Command="{Binding ResetKeybindsME3Command}"
+                        DockPanel.Dock="Left" />
+                    <!--<Button Content="Fix Talon Merc" Margin="3,0" Command="{Binding FixTalonMercME3Keybinds}" />-->
+                    <!-- This might be implemented later, not sure -->
+                    <StackPanel
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                        <fa:ImageAwesome
+                            Icon="Spinner"
+                            Spin="True"
+                            SpinDuration="1"
+                            VerticalAlignment="Center"
+                            Margin="0,0,5,0"
+                            Width="16"
+                            Height="16"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                            Visibility="{Binding KeybindsInstallingME3, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <Button
+                            Content="{DynamicResource string_installKeybinds}"
+                            Command="{Binding InstallSelectedKeybindsME3Command}"
+                            HorizontalAlignment="Right" />
                     </StackPanel>
                 </DockPanel>
             </Grid>
-         </StackPanel>
-
+        </StackPanel>
     </DockPanel>
 </local:MMBusyPanelBase>

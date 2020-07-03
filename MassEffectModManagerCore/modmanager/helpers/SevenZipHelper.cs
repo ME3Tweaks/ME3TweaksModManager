@@ -33,10 +33,10 @@ namespace SevenZipHelper
     [Localizable(false)]
     public static class LZMA
     {
-        [DllImport("sevenzipwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"sevenzipwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int SevenZipDecompress([In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
-        [DllImport("sevenzipwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"sevenzipwrapper.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         private static extern int SevenZipCompress(int compressionLevel, [In] byte[] srcBuf, uint srcLen, [Out] byte[] dstBuf, ref uint dstLen);
 
 
@@ -110,7 +110,7 @@ namespace SevenZipHelper
             }
             else
             {
-                Debug.WriteLine("Cannot decompress LZMA array: Length is not positive or -1 (" + len + ")! This is not an LZMA array");
+                Debug.WriteLine(@"Cannot decompress LZMA array: Length is not positive or -1 (" + len + @")! This is not an LZMA array");
                 return null; //Not LZMA!
             }
         }
@@ -136,7 +136,7 @@ namespace SevenZipHelper
             }
             else
             {
-                Debug.WriteLine("LZMA Stream to decompess has wrong length: " + len);
+                Debug.WriteLine(@"LZMA Stream to decompess has wrong length: " + len);
             }
         }
     }

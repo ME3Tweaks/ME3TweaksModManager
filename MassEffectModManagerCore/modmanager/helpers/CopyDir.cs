@@ -19,7 +19,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (total == -1)
             {
                 //calculate number of files
-                total = Directory.GetFiles(source.FullName, "*.*", SearchOption.AllDirectories).Length;
+                total = Directory.GetFiles(source.FullName, @"*.*", SearchOption.AllDirectories).Length;
                 totalItemsToCopyCallback?.Invoke(total);
             }
 
@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Error copying file: " + fi + " -> " + Path.Combine(target.FullName, fi.Name) + ": " + e.Message);
+                        Log.Error(@"Error copying file: " + fi + @" -> " + Path.Combine(target.FullName, fi.Name) + @": " + e.Message);
                         throw e;
                     }
                 }

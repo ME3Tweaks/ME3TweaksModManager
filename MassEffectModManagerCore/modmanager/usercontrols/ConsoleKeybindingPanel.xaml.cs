@@ -493,9 +493,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, $"Cannot open Mass Effect 2 Coalesced.ini: {e.Message}", "Error reading Coalesced.ini", MessageBoxButton.OK, MessageBoxImage.Error); });
-                ME2MiniConsoleKeyText = "Error reading Coalesced.ini";
-                ME2MiniConsoleKeyText = "Error reading Coalesced.ini";
+                Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotOpenMassEffect2CoalescediniMessage, e.Message), M3L.GetString(M3L.string_errorReadingCoalescedini), MessageBoxButton.OK, MessageBoxImage.Error); });
+                ME2MiniConsoleKeyText = M3L.GetString(M3L.string_errorReadingCoalescedini);
+                ME2MiniConsoleKeyText = M3L.GetString(M3L.string_errorReadingCoalescedini);
                 return;
             }
 

@@ -103,9 +103,9 @@
 
         <StackPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center">
             <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10"/>
-            <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%', FallbackValue=55%}" Visibility="{Binding PercentVisibility}"/>
-            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action, FallbackValue=ActionPlaceholder}" TextWrapping="Wrap" TextAlignment="Center"/>
-            <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding ModBeingInstalled.ModName, FallbackValue=ModBeingInstalledPlaceholder}" TextWrapping="Wrap" TextAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%'}" Visibility="{Binding PercentVisibility}"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action}" TextWrapping="Wrap" TextAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" FontSize="14" FontWeight="Light" Text="{Binding ModBeingInstalled.ModName}" TextWrapping="Wrap" TextAlignment="Center"/>
         </StackPanel>
     </StackPanel>
 </local:MMBusyPanelBase>

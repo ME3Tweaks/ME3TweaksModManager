@@ -68,18 +68,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to fetch startup manifest from endpoint {host}: {e.Message}");
+                    Log.Error($@"Unable to fetch startup manifest from endpoint {host}: {e.Message}");
                 }
             }
 
-            Log.Error("Failed to fetch startup manifest.");
+            Log.Error(@"Failed to fetch startup manifest.");
             return new Dictionary<string, string>();
         }
 
 
         public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> FetchBasegameFileIdentificationServiceManifest(bool overrideThrottling = false)
         {
-            Log.Information("Fetching basegame file identification manifest");
+            Log.Information(@"Fetching basegame file identification manifest");
 
             //read cached first.
             string cached = null;
@@ -95,13 +95,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string log = LogCollector.CollectLatestLog(true);
                     if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }
                     Crashes.TrackError(e, new Dictionary<string, string>()
                     {
-                        {"Error type", "Error reading cached online content" },
-                        {"Service", "Basegame File Identification Service" },
-                        {"Message", e.Message }
+                        {@"Error type", @"Error reading cached online content" },
+                        {@"Service", @"Basegame File Identification Service" },
+                        {@"Message", e.Message }
                     }, attachments.ToArray());
                 }
             }
@@ -675,7 +675,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static List<IntroTutorial.TutorialStep> FetchTutorialManifest(bool overrideThrottling = false)
         {
-            Log.Information("Fetching tutorial manifest");
+            Log.Information(@"Fetching tutorial manifest");
             string cached = null;
             // Read cached first.
             if (File.Exists(Utilities.GetTutorialServiceCacheFile()))
@@ -690,13 +690,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string log = LogCollector.CollectLatestLog(true);
                     if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }
                     Crashes.TrackError(e, new Dictionary<string, string>()
                     {
-                        {"Error type", "Error reading cached online content" },
-                        {"Service", "Tutorial Service" },
-                        {"Message", e.Message }
+                        {@"Error type", @"Error reading cached online content" },
+                        {@"Service", @"Tutorial Service" },
+                        {@"Message", e.Message }
                     }, attachments.ToArray());
                 }
             }
@@ -719,18 +719,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     catch (Exception e)
                     {
                         //Unable to fetch latest help.
-                        Log.Error($"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
+                        Log.Error($@"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
                     }
                 }
 
                 if (cached == null)
                 {
-                    Log.Error("Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
+                    Log.Error(@"Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
                     return new List<IntroTutorial.TutorialStep>();
                 }
             }
 
-            Log.Warning("Using cached tutorial service file instead");
+            Log.Warning(@"Using cached tutorial service file instead");
 
             try
             {
@@ -738,7 +738,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Unable to parse cached importing service file: " + e.Message);
+                Log.Error(@"Unable to parse cached importing service file: " + e.Message);
                 return new List<IntroTutorial.TutorialStep>();
             }
         }
