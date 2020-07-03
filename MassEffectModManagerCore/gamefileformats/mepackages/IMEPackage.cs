@@ -95,6 +95,7 @@ namespace ME3Explorer.Packages
             properties.TryGetValue(name, out propInfo) || (UnrealObjectInfo.GetClassOrStructInfo(game, baseClass)?.TryGetPropInfo(name, game, out propInfo) ?? false);
     }
 
+
     public interface IMEPackage
     {
         EPackageFlags Flags { get; }

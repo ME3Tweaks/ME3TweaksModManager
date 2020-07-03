@@ -102,12 +102,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var dlcEntry = dlc.FindFileEntry(filename);
                 if (dlcEntry >= 0)
                 {
-                    Log.Information($@"Extracting file to memory from {dlcName} SFAR: {filename}");
+                    //Log.Information($@"Extracting file to memory from {dlcName} SFAR: {filename}");
                     return dlc.DecompressEntry(dlcEntry);
                 }
                 else
                 {
-                    Log.Error($@"Could not find file entry in {dlcName} SFAR: {filename}");
+                    //Log.Error($@"Could not find file entry in {dlcName} SFAR: {filename}");
                 }
             }
             return null;
@@ -200,7 +200,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 else
                 {
-                    Log.Error($@"Could not find basegame file in backup for {game}: {file}");
+                    //Log.Error($@"Could not find basegame file in backup for {game}: {file}");
                 }
             }
             else

@@ -63,7 +63,7 @@ namespace MassEffectModManagerCore.gamefileformats
             }
         }
 
-        TLKHeader Header;
+        public TLKHeader Header;
         public List<TalkFileME1.TLKStringRef> StringRefs;
         public string name;
         public string path;

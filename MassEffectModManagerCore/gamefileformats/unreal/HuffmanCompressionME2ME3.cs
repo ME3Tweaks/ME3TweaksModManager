@@ -96,25 +96,25 @@ namespace ME3Explorer
             /* preparing data and entries for writing to file
              * entries list consists of pairs <String ID, Offset> */
             List<BitArray> binaryData = new List<BitArray>();
-            Dictionary<int, int> entries1 = new Dictionary<int, int>();
-            Dictionary<int, int> entries2 = new Dictionary<int, int>();
+            Dictionary<int, int> maleStrings = new Dictionary<int, int>();
+            Dictionary<int, int> femaleStrings = new Dictionary<int, int>();
             int offset = 0;
 
             foreach (var entry in _inputData)
             {
                 if (entry.StringID < 0)
                 {
-                    if (!entries1.ContainsKey(entry.StringID))
-                        entries1.Add(entry.StringID, Convert.ToInt32(entry.data));
+                    if (!maleStrings.ContainsKey(entry.StringID))
+                        maleStrings.Add(entry.StringID, Convert.ToInt32(entry.data));
                     else
-                        entries2.Add(entry.StringID, Convert.ToInt32(entry.data));
+                        femaleStrings.Add(entry.StringID, Convert.ToInt32(entry.data));
                     continue;
                 }
 
-                if (!entries1.ContainsKey(entry.StringID))
-                    entries1.Add(entry.StringID, offset);
+                if (!maleStrings.ContainsKey(entry.StringID))
+                    maleStrings.Add(entry.StringID, offset);
                 else
-                    entries2.Add(entry.StringID, offset);
+                    femaleStrings.Add(entry.StringID, offset);
 
                 /* for every character in a string, put it's binary code into data array */
                 foreach (char c in entry.data)
@@ -128,8 +128,8 @@ namespace ME3Explorer
             int magic = 7040084;
             int ver = 3;
             int min_ver = 2;
-            int entry1Count = entries1.Count;
-            int entry2Count = entries2.Count;
+            int entry1Count = maleStrings.Count;
+            int entry2Count = femaleStrings.Count;
             int treeNodeCount = treeBuffer.Count() / 2;
             int dataLength = offset / 8;
             if (offset % 8 > 0)
@@ -147,12 +147,12 @@ namespace ME3Explorer
             bw.Write(dataLength);
 
             /* writing entries */
-            foreach (var entry in entries1)
+            foreach (var entry in maleStrings)
             {
                 bw.Write(entry.Key);
                 bw.Write(entry.Value);
             }
-            foreach (var entry in entries2)
+            foreach (var entry in femaleStrings)
             {
                 bw.Write(entry.Key);
                 bw.Write(entry.Value);

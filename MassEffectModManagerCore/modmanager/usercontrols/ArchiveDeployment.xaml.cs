@@ -260,6 +260,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         TalkFileME2ME3 tf = new TalkFileME2ME3();
                         tf.LoadTlkData(tlkLangPath);
                         tlkMappings[language.filecode] = tf.StringRefs;
+
+                        //Check string order
+                        var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
+                        var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
+                        if (!malestringRefsInRightOrder)
+                        {
+                            //Some TLK string will not work
+                            errors.Add($"The list of male strings in {language.filecode} are not in ascending order. TLK strings must be in ascending order - if a StringID is out of order, parsing of the rest of the file will stop.");
+                        }
+                        if (!femalestringRefsInRightOrder)
+                        {
+                            //Some TLK string will not work
+                            errors.Add($"The list of female strings in {language.filecode} are not in ascending order. TLK strings must be in ascending order - if a StringID is out of order, parsing of the rest of the file will stop.");
+                        }
                     }
                     else
                     {
@@ -608,7 +622,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
                                     }
                                 }
-                                
+
                                 if (cache.Value.Name.Contains(@"CustTextures"))
                                 {
                                     // ME3Explorer 3.0 or below Texplorer

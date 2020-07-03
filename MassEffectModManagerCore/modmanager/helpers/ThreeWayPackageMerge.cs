@@ -123,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return true;
         }
 
-        private class PackageDelta
+        public class PackageDelta
         {
             public Dictionary<int, string> NameDeltas = new Dictionary<int, string>();
             public Dictionary<int, ImportEntry> ImportDeltas = new Dictionary<int, ImportEntry>();
