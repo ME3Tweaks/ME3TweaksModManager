@@ -38,6 +38,33 @@ namespace MassEffectModManagerCore.modmanager.helpers
         }
 
         /// <summary>
+        /// Checks if a list is ascending basded on the given comparison function.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="compareTo"></param>
+        /// <returns></returns>
+        public static bool IsAscending<T>(this IEnumerable<T> self, Func<T, T, int> compareTo)
+        {
+            var list = self as IList<T> ?? self.ToList();
+            if (list.Count < 2)
+            {
+                return true;
+            }
+            T a = list[0];
+            for (int i = 1; i < list.Count; i++)
+            {
+                T b = list[i];
+                if (compareTo(a, b) > 0)
+                {
+                    return false;
+                }
+                a = b;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Extracts a sub array from another array with a specified number of elements.
         /// </summary>
         /// <typeparam name="T">Content of array.</typeparam>

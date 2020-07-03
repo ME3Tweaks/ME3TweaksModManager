@@ -26,6 +26,7 @@ namespace ME3Explorer.Packages
         unused = 1 << 5,
     }
 
+    [DebuggerDisplay("MEPackage - {FilePath}, {FileSourceForDebugging}")]
     public sealed class MEPackage : UnrealPackageFile, IMEPackage
     {
         public Mod.MEGame Game { get; private set; } //can only be ME1, ME2, or ME3. UDK is a seperate class
