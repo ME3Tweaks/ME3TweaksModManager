@@ -724,6 +724,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
                     }
+                    else
+                    {
+                        Analytics.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
+                        {
+                            { @"Mod name" , $@"{ModBeingDeployed.ModName} {ModBeingDeployed.ParsedModVersion}"}
+                        });
+                    }
                     DeploymentInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
                 };

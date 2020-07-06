@@ -47,6 +47,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
             this.gameTarget = gameTarget;
+            gameTarget.ReloadGameTarget(false); //Reload so we can have consistent state with ALOT on disk
             Action = M3L.GetString(M3L.string_preparingToInstall);
             InitializeComponent();
         }

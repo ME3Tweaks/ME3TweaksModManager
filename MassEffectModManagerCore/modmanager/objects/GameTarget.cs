@@ -67,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             ReloadGameTarget();
         }
 
-        public void ReloadGameTarget(bool lodUpdate = true)
+        public void ReloadGameTarget(bool lodUpdateAndLogging = true)
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
@@ -93,15 +93,15 @@ namespace MassEffectModManagerCore.modmanager.objects
                         MEUITMVersion = 0;
                     }
 
-
-                    Log.Information(@"Getting game source for target " + TargetPath);
+                    CLog.Information(@"Getting game source for target " + TargetPath, lodUpdateAndLogging);
                     var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
 
                     GameSource = hashCheckResult.result;
                     ExecutableHash = hashCheckResult.hash;
                     if (GameSource == null)
                     {
-                        Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash);
+                        CLog.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash, lodUpdateAndLogging);
+
                     }
                     else
                     {
@@ -113,16 +113,16 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 GameSource += @" (Steam version)";
                             }
                         }
-                        Log.Information(@"Source: " + GameSource);
+                        CLog.Information(@"Source: " + GameSource, lodUpdateAndLogging);
                     }
 
                     IsPolishME1 = Game == Mod.MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
                     if (IsPolishME1)
                     {
-                        Log.Information(@"ME1 Polish Edition detected");
+                        CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
                     }
 
-                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded && lodUpdate)
+                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded && lodUpdateAndLogging)
                     {
                         UpdateLODs();
                     }
@@ -130,6 +130,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 else
                 {
                     Log.Error($@"Target is invalid: {TargetPath} does not exist (or is not accessible)");
+                    IsValid = false; //set to false if target becomes invalid
                 }
             }
         }
@@ -899,7 +900,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public void PopulateASIInfo()
         {
             var asi = new ASIManagerPanel.ASIGame(this);
-            var installedASIs = asi.GetInstalledASIMods();
+            var installedASIs = asi.GetInstalledASIMods(Game);
             if (installedASIs.Any())
             {
                 NumASIModsInstalledText = M3L.GetString(M3L.string_interp_asiStatus, installedASIs.Count);

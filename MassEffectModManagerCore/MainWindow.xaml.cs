@@ -2478,6 +2478,20 @@ namespace MassEffectModManagerCore
 
         private void debugMethod()
         {
+            var suf = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME3\Grand Unified Controller Support\DLC_MOD_ControllerSupport\CookedPCConsole\Startup_MOD_ControllerSupport_INT.pcc");
+            var combinedRef = suf.getUExport(83);
+            var refedObjects = combinedRef.GetProperty<ArrayProperty<ObjectProperty>>("ReferencedObjects");
+            refedObjects.Clear();
+            foreach (var e in suf.Exports)
+            {
+                if (e.ClassName != "Package" && e.ClassName != "ObjectReferencer")
+                {
+                    refedObjects.Add(new ObjectProperty(e.UIndex));
+                }
+            }
+            combinedRef.WriteProperty(refedObjects);
+            suf.save();
+
             /*var preLangPath = @"X:\m3modlibrary\ME3\SP Controller Support\DLC_CON_XBX\CookedPCConsole\DLC_CON_XBX_";
             TalkFileME2ME3 intF = new TalkFileME2ME3();
             intF.LoadTlkData(preLangPath + "INT.tlk");
