@@ -268,6 +268,10 @@ namespace MassEffectModManagerCore.modmanager
                             {
                                 var package = compressionQueue.Take();
                                 //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
+                                FileInfo fileInfo = new FileInfo(package);
+                                var created = fileInfo.CreationTime; //File Creation
+                                var lastmodified = fileInfo.LastWriteTime;//File Modification
+                                
                                 var p = MEPackageHandler.OpenMEPackage(package);
                                 //Check if any compressed textures.
                                 bool shouldNotCompress = false;
@@ -283,6 +287,8 @@ namespace MassEffectModManagerCore.modmanager
                                     compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
                                     Log.Information(@"Compressing package: " + package);
                                     p.save(true);
+                                    File.SetCreationTime(package,created);
+                                    File.SetLastWriteTime(package, lastmodified);
                                 }
                                 else
                                 {
