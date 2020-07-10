@@ -506,6 +506,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             var basegameFilesInstalled = new List<string>();
+            void FileInstalledIntoSFARCallback(Dictionary<string, InstallSourceFile> sfarMapping, string targetPath)
+            {
+                numdone++;
+                targetPath = targetPath.Replace("/", "\\").TrimStart('\\');
+                var fileMapping = sfarMapping.FirstOrDefault(x => x.Key == targetPath);
+                CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Value.FilePath} -> (SFAR) {targetPath}", Settings.LogModInstallation);
+                //Debug.WriteLine(@"Installed: " + target);
+                Action = M3L.GetString(M3L.string_installing);
+                var now = DateTime.Now;
+                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
+                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+                {
+                    //Don't update UI too often. Once per second is enough.
+                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
+                    lastPercentUpdateTime = now;
+                }
+            }
             void FileInstalledCallback(string targetPath)
             {
                 numdone++;
@@ -658,7 +675,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Stage: SFAR Installation
             foreach (var sfarJob in installationQueues.sfarJobs)
             {
-                InstallIntoSFAR(sfarJob, ModBeingInstalled, FileInstalledCallback, ModBeingInstalled.IsInArchive ? sfarStagingDirectory : null);
+                InstallIntoSFAR(sfarJob, ModBeingInstalled, FileInstalledIntoSFARCallback, ModBeingInstalled.IsInArchive ? sfarStagingDirectory : null);
             }
 
             //Main installation step has completed
@@ -903,19 +920,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> fileMapping) sfarJob, Mod mod, Action<string> FileInstalledCallback = null, string ForcedSourcePath = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> fileMapping) sfarJob, Mod mod, Action<Dictionary<string, InstallSourceFile>, string> FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
             int numfiles = sfarJob.fileMapping.Count;
-            //Todo: Check all newfiles exist
-            //foreach (string str in diskFiles)
-            //{
-            //    if (!File.Exists(str))
-            //    {
-            //        Console.WriteLine("Source file on disk doesn't exist: " + str);
-            //        EndProgram(1);
-            //    }
-            //}
 
             //Open SFAR
             Log.Information($@"Installing {sfarJob.fileMapping.Count} files into {sfarJob.sfarPath}");
@@ -944,7 +952,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     dlc.AddFileQuick(sourcePath, entryPath);
                     CLog.Information(@"Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
                 }
-                FileInstalledCallback?.Invoke(entryPath);
+                FileInstalledCallback?.Invoke(sfarJob.fileMapping, entryPath);
             }
 
             return true;
