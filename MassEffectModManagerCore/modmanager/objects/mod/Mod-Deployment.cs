@@ -92,11 +92,11 @@ namespace MassEffectModManagerCore.modmanager
                                 //Should this be different from above AltFile?
                                 if (IsInArchive)
                                 {
-                                    references.Add(relPath);
+                                    references.Add(relPath.Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0))); //substring so its relative to the path of the mod in the archive
                                 }
                                 else
                                 {
-                                    references.Add(relPath.Substring(ModPath.Length + 1));
+                                    references.Add(relPath.Substring(ModPath.Length + 1)); //chop off the root path of the moddesc.ini
                                 }
                             }
                         }
