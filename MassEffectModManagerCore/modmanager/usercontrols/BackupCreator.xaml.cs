@@ -170,11 +170,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     BackupInProgress = true;
                     bool end = false;
 
-
-
-                    if (end) return;
-
-
                     List<string> nonVanillaFiles = new List<string>();
 
                     void nonVanillaFileFoundCallback(string filepath)
