@@ -236,7 +236,7 @@ namespace MassEffectModManagerCore
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
-                    typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
+                    typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
 
 
                 Log.Information("===========================================================================");

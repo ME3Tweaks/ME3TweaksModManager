@@ -15,6 +15,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shell;
 using ByteSizeLib;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
@@ -718,15 +719,38 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModDeploymentThread");
                 nbw.DoWork += Deployment_BackgroundThread;
+                nbw.WorkerReportsProgress = true;
+                nbw.ProgressChanged += (a, b) =>
+                {
+                    if (b.UserState is double d)
+                    {
+                        mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
+                    }
+                    else if (b.UserState is TaskbarItemProgressState tbs)
+                    {
+                        mainwindow.TaskBarItemInfoHandler.ProgressState = tbs;
+                    }
+                };
                 nbw.RunWorkerCompleted += (a, b) =>
                 {
+                    mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
+
                     if (b.Error != null)
                     {
                         Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
                     }
+                    else
+                    {
+                        Analytics.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
+                        {
+                            { @"Mod name" , $@"{ModBeingDeployed.ModName} {ModBeingDeployed.ParsedModVersion}"}
+                        });
+                    }
                     DeploymentInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
                 };
+                mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
+                mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
                 nbw.RunWorkerAsync(d.FileName);
                 DeploymentInProgress = true;
             }
@@ -734,8 +758,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void Deployment_BackgroundThread(object sender, DoWorkEventArgs e)
         {
+            NamedBackgroundWorker worker = (NamedBackgroundWorker)sender;
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
-
             string archivePath = e.Argument as string;
             //Key is in-archive path, value is on disk path
             var archiveMapping = new Dictionary<string, string>();
@@ -800,7 +824,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
                 {
                     //Don't update UI too often. Once per second is enough.
-                    string percent = (ProgressValue * 100.0 / ProgressMax).ToString(@"0.00");
+                    var progValue = ProgressValue * 100.0 / ProgressMax;
+                    string percent = progValue.ToString(@"0.00");
+                    worker.ReportProgress(0, progValue / 100.0);
+
                     OperationText = $@"[{currentDeploymentStep}] {M3L.GetString(M3L.string_deploymentInProgress)} {percent}%";
                     lastPercentUpdateTime = now;
                 }
@@ -915,6 +942,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                mainwindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+                mainwindow.TaskbarItemInfo.ProgressValue = 0;
                 if (b.Error != null)
                 {
                     Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
@@ -932,6 +961,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 CommandManager.InvalidateRequerySuggested();
             };
+            mainwindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
+
             nbw.RunWorkerAsync();
         }
 

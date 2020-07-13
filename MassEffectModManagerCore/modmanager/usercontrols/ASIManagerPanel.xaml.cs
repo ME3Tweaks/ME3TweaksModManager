@@ -207,11 +207,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedASIObject == null) return false;
             if (SelectedASIObject is ASIMod am)
             {
-                return Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false;
+                return !Utilities.IsGameRunning(am.Game) && (Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false);
             }
             if (SelectedASIObject is InstalledASIMod iam)
             {
-                return Games.FirstOrDefault(x => x.Game == iam.Game)?.GameTargets.Any() ?? false;
+                return !Utilities.IsGameRunning(iam.Game) && (Games.FirstOrDefault(x => x.Game == iam.Game)?.GameTargets.Any() ?? false);
             }
             return false;
         }
@@ -615,7 +615,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         a.InstalledInfo = null;
                     }
                 }
-                InstalledASIs = GetInstalledASIMods();
+                InstalledASIs = GetInstalledASIMods(Game);
                 MapInstalledASIs();
                 //UpdateSelectionTexts(SelectedASI);
             }

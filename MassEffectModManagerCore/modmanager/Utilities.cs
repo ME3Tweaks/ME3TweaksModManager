@@ -1695,7 +1695,7 @@ namespace MassEffectModManagerCore
         private static List<IniEntry> ME1HighResLODs = new List<IniEntry>()
         {
             //ME1 lods have bug where they use MinLodSize
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_World=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
@@ -1742,7 +1742,7 @@ namespace MassEffectModManagerCore
         private static List<IniEntry> ME2HighResLODs = new List<IniEntry>()
         {
             //under GamerSettings.ini [SystemSettings]
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
@@ -1790,7 +1790,7 @@ namespace MassEffectModManagerCore
         private static List<IniEntry> ME3HighResLODs = new List<IniEntry>()
         {
             //under GamerSettings.ini [SystemSettings]
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_WorldSpecular=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
             new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
