@@ -43,6 +43,16 @@
       <sourcecode>https://github.com/Mgamerz/Misc-Stuff/tree/master/ME3MPSDKTEST</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/OriginMPStatus-v2.asi</downloadlink>
     </asimod>
+    <asimod>
+      <name>Origin MP Status</name>
+      <installedname>OriginMPStatus</installedname>
+      <author>Mgamerz</author>
+      <description>Enables Mass Effect 3 to report your Map/Faction/Difficulty and current wave in Origin to show other players your current multiplayer match progress.</description>
+      <version>3</version>
+      <hash>70f1cc4d96c91e65a63d25244d01deec</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/OriginMPStatus</sourcecode>
+      <downloadlink>https://me3tweaks.com/mods/asi/OriginMPStatus-v3.asi</downloadlink>
+    </asimod>
   </updategroup>
   <updategroup groupid="2" game="3" hidden="0">
     <asimod>
