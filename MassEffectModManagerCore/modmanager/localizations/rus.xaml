@@ -50,7 +50,7 @@
     <system:String x:Key="string_RestoremodfromME3Tweaks">Восстановить мод с ME3Tweaks.com</system:String>
     <system:String x:Key="string_Installcustomkeybindsintothismod">Установить пользовательские привязки клавиш в данный мод</system:String>
     <system:String x:Key="string_Developeroptions">Настройки для разработчиков</system:String>
-    <system:String x:Key="string_Metadataeditor">Редактор метаданных</system:String>
+    <system:String x:Key="string_Moddesceditor">Редактор Moddesc.ini</system:String>
     <system:String x:Key="string_Deploymodto7zfilefordistribution">Сконвертировать мод в 7z для выпуска</system:String>
     <system:String x:Key="string_Prepareforupdaterservice">Подготовить мод для Updater Service</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Отправить информацию по моду на ME3Tweaks</system:String>
@@ -273,7 +273,7 @@
     <system:String x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Отккрывает информационную страницу ME3Tweaks Donations</system:String>
     <system:String x:Key="string_tooltip_modLibrary" xml:space="preserve">Моды, импортированные в библиотеку Mod Manager.&#10;Это список не отражает установленные моды; для просмотра установленных модов нажмите кнопку Настройка Игры</system:String>
     <system:String x:Key="string_rcwModsCannotBeDeployed">Невозможно сконвертировать файлы .me2mod посредством Mod Manager</system:String>
-    <system:String x:Key="string_rcwModsCannotBeDeployedDescription">RCW-моды (.me2mod) не могут быть сконвертированы в Mod Manager. Можно выкладывать непосредственно файлы RCW .me2mod и после импортировать их в Mod Manager.</system:String>
+    <system:String x:Key="string_rcwModsCannotBeDeployedDescription">RCW-моды (.me2mod) не могут быть сконвертированы в Mod Manager. Можно распространять непосредственно файлы RCW .me2mod и после импортировать их в Mod Manager.</system:String>
     <system:String x:Key="string_cannotDeployMe2modFiles">Невозможно сконвертировать файлы .me2mod</system:String>
     <system:String x:Key="string_decompilingCoalescedFile">Декомпиляция файла Coalesced</system:String>
     <system:String x:Key="string_decompiledCoalescedFile">Файл Coalesced декомпилирован</system:String>
@@ -285,7 +285,7 @@
     <system:String x:Key="string_decompiledTLKFile">Файл TLK декомпилирован</system:String>
     <system:String x:Key="string_tooltip_me1ASILoader">Включает загрузку ASI-модов, что позволяет переопределить загрузку DLC-модов</system:String>
     <system:String x:Key="string_tooltip_me23ASILoader">Позволяет использовать модифицированные DLC, включает консоль, включает поддержку ASI-модов</system:String>
-    <system:String x:Key="string_debug_showIntroTutorial">Показать Знакомство с Программой</system:String>
+    <system:String x:Key="string_debug_showIntroTutorial">Показать Обучение Программе</system:String>
     <system:String x:Key="string_dialog_multiUserProgramDataWindowsRestrictions">Windows ограничила доступ к директории данных программы ME3Tweaks Mod Manager для текущей учетной записи. Нажмите ОК для разрешения доступа к данной папке, чтобы гарантировать корректную работу функций программы.</system:String>
     <system:String x:Key="string_grantingWritePermissions">Разрешение доступа на запись</system:String>
     <system:String x:Key="string_dialog_programWillNotRunCorrectly">Программа может работать некорректно без доступа к папкам настроек и кэша.</system:String>
@@ -307,6 +307,24 @@
     <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Проверяет обновления для модов, поддерживающих обновления</system:String>
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+    <system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Автоинтеграция пользовательских привязок клавиш в моды ModMaker</system:String>
+    <system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Автоматическая интеграция пользовательского файла BioInput.xml (при наличии) в директорию keybindsoveride.&#10;Определите привязки через Custom Keybinds Injector в меню Инструменты</system:String>
+    <system:String x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
+    <system:String x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Устанавливает пользовательские привязки клавиш в вашу конфигурацию игры</system:String>
+    <system:String x:Key="string_originIngameOverlayDisabler">Выключатель внутриигрового оверлея Origin</system:String>
+    <system:String x:Key="string_tooltip_oigDisabler">Устанавливает файл, принудительно отключающий внутриигровой оверлей Origin</system:String>
+    <system:String x:Key="string_dialog_cantMakeCompatPackTextureModInstalled">Пакет совместимости GUI не может быть сгенерирован для игры, содержащей модифицированные текстуры.</system:String>
+    <system:String x:Key="string_cannotGenerateCompatibilityPack">Невозможно сгенерировать пакет совместимости</system:String>
+    <system:String x:Key="string_installTheCompatibilityPackNowQuestion">Установить пакет совместимости сейчас?</system:String>
+    <system:String x:Key="string_compatibilityPackGenerated">Пакет совместимости сгенерирован</system:String>
+    <system:String x:Key="string_selectMod">Выберите мод</system:String>
+	<!-- When no mod is selected -->
+    <system:String x:Key="string_noTarget">Игры отсутствуют</system:String>
+	<!-- When there is no targets at all -->
+    <system:String x:Key="string_cannotInstallToThisGame">Невозможно установить в данную игру</system:String>
+	<!-- When a target for another game than the selected mod -->
+    <system:String x:Key="string_checkingTutorialAssets">Проверка ресурсов обучения</system:String>
+    <system:String x:Key="string_checkedTutorialAssets">Ресурсы обучения проверены</system:String>
 
 	<!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">Эта игра содержит модифицированные текстуры</system:String>
@@ -371,6 +389,16 @@
     <system:String x:Key="string_interp_dialog_errorCopyingFilesToTarget" xml:space="preserve">Возникла ошибка при копировании файлов мода в игру:\n\n{0}Мод может быть установлен частично.</system:String>
 	<!-- 0=error message -->
     <system:String x:Key="string_errorInstallingMod">Ошибка установки мода.</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod1">Пакет совместимости не подходит для данной конфигурации игры и не может быть установлен.</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod2_dlcRemoved">Следующие DLC-моды были удалены после генерации пакета совместимости:</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod2_dlcAdded">Следующие DLC-моды были добавлены после генерации пакета совместимости:</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod3">Требуется сгенерировать новый пакет совместимости из меню Управление Модами</system:String>
+    <system:String x:Key="string_interp_unableToFullyDeleteExistingModDirectory" xml:space="preserve">Невозможно полностью удалить директорию существующего мода: \n{0}\n\nПричина:\n{1}\n\nПапка могла быть удалена частично.</system:String>
+	<!-- 0={Directory} 1={Exception message} -->
+    <system:String x:Key="string_interp_thisModShouldBeReinstalled">Данный мод ({0}) требуется переустановить.</system:String>
+	<!-- 0={Mod name} -->
+    <system:String x:Key="string_thisModShouldBeReinstalled">Данный мод требуется переустановить.</system:String>
+    <system:String x:Key="string_invalidCompatibilityPack">Недопустимый пакет совместимости</system:String>
 
 	<!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Добро пожаловать в ME3Tweaks Mod Manager</system:String>
@@ -398,8 +426,8 @@
     <system:String x:Key="string_multiThreadedCompression">Многопоточное сжатие</system:String>
     <system:String x:Key="string_deploy">Сконвертировать в .7z</system:String>
     <system:String x:Key="string_deploymentChecklist">Чек-лист конвертации</system:String>
-    <system:String x:Key="string_prepareModForDistribution">Подготовка мода для выпуска</system:String>
-    <system:String x:Key="string_compressiongModForDistribution">Сжатие мода для выпуска</system:String>
+    <system:String x:Key="string_prepareModForDistribution">Подготовка мода для распространения</system:String>
+    <system:String x:Key="string_compressiongModForDistribution">Сжатие мода для распространения</system:String>
     <system:String x:Key="string_verifyModVersion">Проверка корректности версии мода</system:String>
     <system:String x:Key="string_recommendedVersionFormatNotFollowed">Не соблюден рекомендуемый формат версии ({0})</system:String>
 	<!-- 0 = X.X or X.X[.X[.X]] (literal string) -->
@@ -473,6 +501,16 @@
 	<!-- 0=filepath -->
     <system:String x:Key="string_noMiscellaneousIssuesDetected">Прочих проблем не обнаружено</system:String>
     <system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Проверки конвертации выявили некоторые прочие проблемы, которые должы быть исправлены перед конвертацией</system:String>
+    <system:String x:Key="string_interp_error_textureTaggedFileFound">{0} помечен как содержащий модифицированные текстуры. Данный файл не может распространяться внутри мода. Файлы модов не могут быть использованы, если они были модифицированы посредством Mass Effect Modder или ALOT Installer - используйте Package Editor в ME3Explorer для замены текстур в модах, использующих пакетные файлы. Распростанение модов с метками ALOT на файлах приведет к включению модов в черный список ALOT Installer и Mass Effect Modder.</system:String>
+	<!-- 0={Filepath} -->
+    <system:String x:Key="string_deploymentBlocked">Конвертация заблокирована.</system:String>
+    <system:String x:Key="string_error_foundUnofficialDescriptor">Файл moddesc.ini для данного мода помечен дескриптором 'unofficial', означающим, что данный мод был ранее импортирован. Неофициально импортированные моды импортируют только данные, но не изменения и другую важную информацию. Данный дескриптор должен быть удален перед конвертацией.</system:String>
+    <system:String x:Key="string_error_foundImportedByDesriptor">Файл moddesc.ini для данного мода помечен дескиптором 'importedbybild'. Такой дескриптор используется только для модов, импортированных через Third Party Importing Service - как только мод сконвертирован, он считается официальным, и поэтому данный дескриптор должен быть удален перед конвертацией.</system:String>
+    <system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} использует имя TFC {2}. Данное имя TFC используется при замене текстур посредством устаревших инструментов ME3Explorer и является частой причиной поломки текстур. Сократите ваше имя TFC до нового, используя TFC Compactor Tool в ME3Explorer.</system:String>
+	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
+    <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} использует имя TFC {2}. Данное имя TFC используется MEM при установке текстур и не может быть использовано при конвертации, иначе возникнут конфликты. Сократите ваше имя TFC до нового, используя TFC Compactor Tool в ME3Explorer.</system:String>
+	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
+    <system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Конвертация заблокирована до устранения вышеуказанных проблем</system:String>
 
 	<!-- Backup Creator -->
     <system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Mass Effect Randomizer и ALOT Installer.</system:String>
@@ -517,6 +555,8 @@
     <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Директория Documents/BioWare/{0} (и ее подуровни) не может быть использована для сохранения архива, поскольку игра загружает из нее файлы. Пожалуйста, выберите другую директорию.</system:String>
 	<!-- 0=Game name (Mass Effect, Mass Effect 3, etc) -->
     <system:String x:Key="string_locationNotAllowedForBackup">Недопустимое место для архива</system:String>
+    <system:String x:Key="string_dialog_linkTargetWontBeModdable">Копия игры, к которой вы привязываетесь, не будет доступной для моддинга. Удостоверьтесь, что это архивная копия игры, а не ваша основная установка, иначе вы не сможете модифицировать вашу игру.</system:String>
+    <system:String x:Key="string_linkWarning">Предупреждение о привязке</system:String>
 
 	<!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
@@ -534,11 +574,13 @@
 
 	<!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Восстановить с ME3Tweaks</system:String>
-    <system:String x:Key="string_theFollowingModsFailedToLoad">Не удалось загрузить следующие моды. Выберите каждый по отдельности, чтобы узнать причину.</system:String>
+    <system:String x:Key="string_theFollowingModsFailedToLoad">Не удалось загрузить следующие моды из библиотеки. Выберите мод, чтобы узнать причину.</system:String>
     <system:String x:Key="string_failedMods">Проблемные моды</system:String>
     <system:String x:Key="string_failureInformation">Информация о проблеме</system:String>
     <system:String x:Key="string_debugReload">Перезагрузка отладки</system:String>
 	<!-- This is only seen in debug builds, but localize it anyways. -->
+    <system:String x:Key="string_deleteFromLibrary">Удалить из библиотеки</system:String>
+    <system:String x:Key="string_visitWebsite">Посетить веб-сайт</system:String>
 
 	<!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Подготовка к сканированию игры</system:String>
@@ -624,7 +666,7 @@
     <system:String x:Key="string_removeTargetFromM3">Убрать из списка игр</system:String>
     <system:String x:Key="string_openInExplorer">Открыть в Проводнике</system:String>
     <system:String x:Key="string_clickToOpenALOTInstaller">Нажмите для открытия ALOT Installer</system:String>
-    <system:String x:Key="string_manageTexturesWithALOTInstaller">Управлять текстурами через ALOT Installer</system:String>
+    <system:String x:Key="string_manageTexturesWithALOTInstaller">Управление текстурами через ALOT Installer</system:String>
     <system:String x:Key="string_enable">Включить</system:String>
     <system:String x:Key="string_disable">Отлючить</system:String>
     <system:String x:Key="string_disabled">Отключено</system:String>
@@ -632,6 +674,13 @@
     <system:String x:Key="string_tooltip_enableDLC" xml:space="preserve">Включает загрузку данного DLC-мода в игре</system:String>
     <system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">Удаляет данный DLC-мод из игры.&#10;Зажмите SHIFT для пропуска диалога подтверждения (если нет предупреждений)</system:String>
     <system:String x:Key="string_tooltip_openTargetInExplorer">Открывает директорию данной игры в Проводнике</system:String>
+    <system:String x:Key="string_other">Другое</system:String>
+    <system:String x:Key="string_extraDllsFound">Обнаружены лишние dll</system:String>
+    <system:String x:Key="string_noExtraDllsWereFound">Лишних dll не обнаружено</system:String>
+    <system:String x:Key="string_installedASIs">Установленные ASI</system:String>
+    <system:String x:Key="string_tooltip_clickToOpenASIManager">Нажмите для открытия ASI Manager</system:String>
+    <system:String x:Key="string_manageASIsWithASIManager">Управление ASI через ASI Manager</system:String>
+    <system:String x:Key="string_binkw32DLCBypass">Binkw32 DLC Байпас</system:String>
 
 	<!-- Log uploader -->
     <system:String x:Key="string_selectALogToView">Выберите лог для анализа с помощью сервиса просмотра логов</system:String>
@@ -644,14 +693,14 @@
     <system:String x:Key="string_logUploadFailed">Ошибка отправки лога</system:String>
     <system:String x:Key="string_logsAndDiagnostics">Логи и Диагностика</system:String>
     <system:String x:Key="string_uploadToLogViewer">Отправить в Просмотр логов</system:String>
-    <system:String x:Key="string_selectWhatDataToCollect">Выбрать данные для сбора</system:String>
+    <system:String x:Key="string_selectWhatDataToCollect">Выбрать данные для сбора.</system:String>
     <system:String x:Key="string_modManagerApplicationLog">Лог программы Mod Manager</system:String>
-    <system:String x:Key="string_applicationLogDescription">Лог программы содержит информацию о работе сессии Mod Manager и может быть использован ME3Tweaks для отладки приложения</system:String>
+    <system:String x:Key="string_applicationLogDescription">Лог программы содержит информацию о работе сессии Mod Manager и может быть использован ME3Tweaks для отладки приложения. Если вы пытаетесь определить причину произошедшего в Mod Manager, выберите лог программы.</system:String>
     <system:String x:Key="string_gameDiagnostic">Диагностика игры</system:String>
-    <system:String x:Key="string_gameDiagnosticDescription">Диагностика игры собирает игровую информацию, включая данные о статусе ALOT, установленных DLC, версии игры, логах падений (если есть) и прочее. Если у вас возникают проблемы в игре, пожалуйста выберите соответствующую игру.</system:String>
+    <system:String x:Key="string_gameDiagnosticDescription">Диагностика игры собирает информацию по выбранной игре, включая данные о статусе ALOT, установленных DLC, версии игры, логах падений (если есть), проблемах с тектурами и прочее. Если у вас возникают проблемы в игре, пожалуйста выберите её.</system:String>
     <system:String x:Key="string_tooltip_checkAllTexturesInGameDescription" xml:space="preserve">Выбор данной опции проверяет все текстуры в игре.&#10;Проверка текстур может занять несколько минут.</system:String>
     <system:String x:Key="string_fullTexturesCheck">Полная проверка текстур</system:String>
-    <system:String x:Key="string_diagShareTheLink">Поделитесь конечной ссылкой на ваш лог/диагностика с вашим адресатом.</system:String>
+    <system:String x:Key="string_diagShareTheLink">Поделитесь конечной ссылкой на ваш лог/диагностику с вашим получателем. Если вы не уверены, какие опции выбрать, просто выберите по одной из каждой группы.</system:String>
     <system:String x:Key="string_selectAnApplicationLog">Выберите лог программы</system:String>
     <system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Выберите игру для диагностики</system:String>
     <system:String x:Key="string_compressingForUpload">Сжатие для загрузки</system:String>
@@ -920,6 +969,13 @@
     <system:String x:Key="string_restored">Восстановлено</system:String>
     <system:String x:Key="string_restore">Восстановить</system:String>
     <system:String x:Key="string_restoring">Восстановление</system:String>
+    <system:String x:Key="string_interp_asiStatus">Всего ASI-модов, установленых в данной игре: {0}</system:String>
+	<!-- 0={installedASIs.Count} -->
+    <system:String x:Key="string_thisInstallationHasNoASIModsInstalled">В данной игре нет установленных ASI-модов</system:String>
+    <system:String x:Key="string_bypassInstalledASIAndDLCModsWillBeAbleToLoad">Байпас установлен. ASI и DLC-моды смогут быть загружены</system:String>
+    <system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Байпас не установлен. ASI и DLC-моды не смогут быть загружены</system:String>
+    <system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Байпас установлен. ASI-моды смогут быть загружены</system:String>
+    <system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Байпас не установлен. ASI-моды не смогут быть загружены</system:String>
 
 	<!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Не удалось добавить файл для замены при настройке мода: {0} не существует, но указан в задании.</system:String>
@@ -953,10 +1009,12 @@
 	<!-- 0 = filename -->
     <system:String x:Key="string_interp_vPatchingIntoAlternate">Обработка VPatch: {0}</system:String>
 	<!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
+    <system:String x:Key="string_interp_theArchiveFileArchivePathIsNoLongerAvailable">Файл архива {0} более недоступен.</system:String>
+	<!-- 0={archivePath} -->
 
 	<!-- Mod-Parsing -->
     <system:String x:Key="string_interp_modparsing_modVersion">Версия мода: {0}</system:String>
-	<!-- requires manual setup -->
+	<!-- 0 = version number -->
     <system:String x:Key="string_interp_modparsing_modDeveloper">Разработчик мода: {0}</system:String>
 	<!-- 0 = name -->
     <system:String x:Key="string_interp_modparsing_modMakerCode">Код ModMaker: {0}</system:String>
@@ -1070,6 +1128,22 @@
 	<!-- 0=fullpath -->
     <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Ошибка использования опции gameredirectorystructure: Не найдены файлы для установки по указанному пути для задания: {0}, путь: {1}</system:String>
 	<!-- 0 = job/header name, 1 = filepath -->
+    <system:String x:Key="string_interp_addsTheFollowingLocalizationsToX">Добавляет следующие локализации в {0}:</system:String>
+	<!-- 0={Mod Name} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidUrlScheme">Недопустимый URL для мода {0}: URL должен иметь тип http:// или https:// и быть корректно сформированным. Недопустимое значение: {1}</system:String>
+	<!-- 0={ModName} 1={ModWebsite} -->
+    <system:String x:Key="string_interp_validation_modparsing_cannotCombineLocalizationTask">В данном моде указано задание LOCALIZATION вместе с иными заголовками заданий. Мод с заданием LOCALIZATION может содержать только данное задание, которое не может быть объединено с другими.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_missingDlcNameDesriptor">В задании LOCALIZATION для данного мода пропущен дескриптор 'dlcname', используемый для определении целевой игры данного мода локализации.</system:String>
+    <system:String x:Key="string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound">Файл локализации по указанному пути не найден: [0}</system:String>
+	<!-- 0={Referenced Filepath} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFileType">Файл локализации по указанному пути не является файлом .tlk: [0} Задания LOCALIZATION позволяют установку только файлов .tlk.</system:String>
+	<!-- 0={Referenced Filepath} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidDlcNameLocalization">Дескриктор 'dlcname' в задании LOCALIZATION должен начинаться с DLC_ и не являться официальным DLC игры. Недопустимое значение: {0}</system:String>
+	<!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFilename">Имя указанного файла локализации некорректно: {0}. Имена файлов локализации должны начинаться с имени DLC, затем нижнее подчеркивание и трехбуквенный код языка.</system:String>
+	<!-- 0={Incorrect filename} -->
+    <system:String x:Key="string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX">Возникла ошибка при добавлении файла для задания LOCALIZATION: {0}</system:String>
+	<!-- 0={failurereason} -->
 
 	<!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Здравствуйте!</system:String>
@@ -1105,6 +1179,9 @@
     <system:String x:Key="string_installingEllipse">Установка...</system:String>
     <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">Посмотреть исходный код данного ASI-мода</system:String>
     <system:String x:Key="string_viewSourceCode">Посмотреть исходный код</system:String>
+    <system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">Возникла ошибка при удалении ASI: {0}</system:String>
+	<!-- 0={Error Message} -->
+    <system:String x:Key="string_errorDeletingASI">Ошибка удаления ASI</system:String>
 
 	<!-- Starter Kit Window -->
     <system:String x:Key="string_newDLCModInformation">Информация о новом DLC-моде</system:String>
@@ -1145,7 +1222,7 @@
     <system:String x:Key="string_undesirableMountFlag">Нежелательный флаг загрузки</system:String>
     <system:String x:Key="string_interp_dialogWillDeleteExistingMod" xml:space="preserve">Создание данного мода удалит существующую директорию в библиотеке модов:\n{0}\n\nПродолжить?</system:String>
 	<!-- 0 = directory -->
-    <system:String x:Key="string_dialogErrorDeletingExistingMod">Возникла ошибка при удалении директории мода. Вероятно папка или файл внутри нее заняты внешним процессом. Подробности можно узнать в логах Mod Manager</system:String>
+    <system:String x:Key="string_dialogErrorDeletingExistingMod">Возникла ошибка при удалении директории существующего мода. Вероятно папка или файл внутри нее заняты внешним процессом. Подробности можно узнать в логах Mod Manager</system:String>
     <system:String x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory" xml:space="preserve">Возникла ошибка при удалении директории мода:\n{0}</system:String>
 	<!-- 0 = error message -->
     <system:String x:Key="string_generatingMod">Создание мода</system:String>
@@ -1217,6 +1294,8 @@
     <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Добавляет Mixins для гарантии надлежащей работы функционала Controller Mod, такого как корректная работа поворота камеры, если мод изменяет одинаковые файлы с другими модами контроллера.&#10;Не выбирайте этот пункт, если вы не используете мод Controller Support. При использовании данной опции, устанавливайте данный мод ПОСЛЕ установки мода Controller Support.</system:String>
     <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Добавить Controller Support Mixins, если необходимо</system:String>
     <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Использовать локальный файл ModMaker xml</system:String>
+    <system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Автоматическая интеграция пользовательского файла BioInput.xml (при наличии) в директорию keybindsoveride.&#10;Определите привязки через Custom Keybinds Injector в меню Инструменты</system:String>
+    <system:String x:Key="string_injectCustomKeybindsIfAvailable">Интегрировать пользовательские привязки клавиш (при наличии)</system:String>
 
 	<!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Ревизия {0}</system:String>
@@ -1340,6 +1419,9 @@
     <system:String x:Key="string_interp_cannotReadME3Keybinds">Невозможно загрузить привязки клавиш для выбранной установки Mass Effect 3: {0}</system:String>
 	<!-- 0 = error message -->
     <system:String x:Key="string_errorReadingKeybinds">Ошибка чтения привязки клавиш</system:String>
+    <system:String x:Key="string_interp_cannotOpenMassEffect2CoalescediniMessage">Невозможно открыть Mass Effect 3 Coalesced.ini: {0}</system:String>
+	<!-- 0={Error message} -->
+    <system:String x:Key="string_errorReadingCoalescedini">Ошибка чтения Coalesced.ini</system:String>
 
 	<!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Updater Service</system:String>
@@ -1404,7 +1486,7 @@
     <system:String x:Key="string_selectMixinsToCompile">Выбор Mixins для компиляции</system:String>
     <system:String x:Key="string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup">Архив ME3 не обнаружен. Mixins не могут быть использованы без архива.</system:String>
 	<!-- appears in bottom left of mixin library if ME3 backup cannot be found -->
-    <system:String x:Key="string_interp_dialogCreatingNewModWithExistingName" xml:space="preserve">Создание мода с аналогичным именем '{0}' удалит существующую директорию мода в библиотеке модов:\n{1}\n\nПродолжить?</system:String>
+    <system:String x:Key="string_interp_dialogCreatingNewModWithExistingName" xml:space="preserve">Создание мода с аналогичным именем '{0}' удалит директорию существующего мода в библиотеке модов:\n{1}\n\nПродолжить?</system:String>
 	<!-- 0=NewModName 1=modpath -->
     <system:String x:Key="string_compilingMixins">Компиляция Mixins...</system:String>
     <system:String x:Key="string_interp_errorApplyingMixinsForFile">Ошибка применения Mixins {{0}} для файла {1}: {2}</system:String>
@@ -1460,7 +1542,7 @@
     <system:String x:Key="string_interp_insufficientDiskSpaceToImport" xml:space="preserve">Недостаточно места на {0} для импорта данного мода.\n\nТребуется места: {0}Доступно места: {2}</system:String>
 	<!-- 0=Path to library 1=size of mod dir 2=free space on library drive -->
     <system:String x:Key="string_insufficientFreeDiskSpace">Недостаточно места на диске</system:String>
-    <system:String x:Key="string_interp_dialog_importingWillDeleteExistingMod" xml:space="preserve">В указанном месте мод уже присутствует:\n{0}\nИмпорт данного мода с текущим именем удалит и заменит мод в библиотеке. Если это не предполагается, пожалуйста, выберите другое имя.\n\nУдалить существующий мод и импортировать установленный?</system:String>
+    <system:String x:Key="string_interp_dialog_importingWillDeleteExistingMod" xml:space="preserve">В указанном месте мод уже существует:\n{0}\nИмпорт данного мода с текущим именем удалит и заменит мод в библиотеке. Если это не предполагается, пожалуйста, выберите другое имя.\n\nУдалить существующий мод и импортировать установленный?</system:String>
 	<!-- 0=existing mod directory path -->
     <system:String x:Key="string_sameNamedModInLibrary">Мод c одинаковым именем в библиотеке</system:String>
     <system:String x:Key="string_interp_couldNotDeleteExistingModDirectory">Невозможно удалить директорию существующего мода: {0}</system:String>
@@ -1477,6 +1559,8 @@
 	<!-- 0=mount priority number -->
     <system:String x:Key="string_interp_XModsSuperceded">Модов замещено: {0}</system:String>
 	<!-- 0=amount of mods that have been superceded -->
+    <system:String x:Key="string_dialog_cannotImportModTextureMarkersFound">Данный мод содержит файлы, отмеченные как часть установки с модифицированными текстурами. Моды, подвергнутые модификациям текстур посредством других модов, не могут быть импортированы.</system:String>
+    <system:String x:Key="string_cannotImportMod">Невозможно импортировать мод</system:String>
 
 	<!-- ME3CMM Migration -->
     <system:String x:Key="string_migratingMods">Миграция модов</system:String>
@@ -1509,4 +1593,63 @@
 	<!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Возникло исключение при компиляции файла TLK {0}: {1}</system:String>
 	<!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
+
+	<!-- Vanilla Database Service -->
+    <system:String x:Key="string_checkingBackup">Проверка архива</system:String>
+
+	<!-- Backup Service -->
+    <system:String x:Key="string_interp_backupStatusStoredAt">Архив по адресу {0}</system:String>
+    <system:String x:Key="string_gameHasNotBeenBackedUp">Игра не заархивирована</system:String>
+    <system:String x:Key="string_backupUnavailable">Архив недоступен</system:String>
+    <system:String x:Key="string_interp_backupStatusNotAccessible" xml:space="preserve">Архив по адресу {0}\nАрхивный путь недоступен, возможно он был переименован или перемещен?</system:String>
+	<!-- 0={Backup Path} -->
+    <system:String x:Key="string_backupNotVanilla">Архив не содержит оригинал игры</system:String>
+    <system:String x:Key="string_interp_backupStatusNotVanilla" xml:space="preserve">Архив по адресу {0}\n Архив не содержит оригинал игры и не будет использован</system:String>
+	<!-- 0={Backup Path} -->
+    <system:String x:Key="string_gameNotInstalledHasItBeenRunOnce">Игра не установлена или пока не доступна для моддинга в Mod Manager.&#10;Если игра из Steam, ее нужно сперва запустить хотя бы раз.</system:String>
+
+	<!-- MEM Vanilla DB Viewer -->
+    <system:String x:Key="string_mEMVanillaDatabaseViewer">MEM Vanilla Database Viewer</system:String>
+    <system:String x:Key="string_viewInformationInTheVanillaDatabaseUsedForBackupVerification">Просмотр информации из базы данных оригиналов игр для верификации архивов</system:String>
+
+	<!-- Log Collector -->
+    <system:String x:Key="string_preparingToCollectDiagnosticInfo">Подготовка к сбору данных диагностики</system:String>
+    <system:String x:Key="string_interp_preparingMEMNoGUIX">Подготовка MEM No GUI {0}%</system:String>
+	<!-- 0={Percent} -->
+    <system:String x:Key="string_collectingGameInformation">Сбор игровых данных</system:String>
+    <system:String x:Key="string_collectingSystemInformation">Сбор системных данных</system:String>
+    <system:String x:Key="string_collectingDLCInformation">Сбор данных DLC</system:String>
+    <system:String x:Key="string_collectingTFCFileInformation">Сбор данных TFC</system:String>
+    <system:String x:Key="string_checkingTextureMapGameConsistency">Проверка текстурных карт &lt;-&gt; целостности игры</system:String>
+    <system:String x:Key="string_interp_performingFullTexturesCheckX">Выполнение полной проверки текстур {0}%</system:String>
+	<!-- 0={Percent} -->
+    <system:String x:Key="string_collectingASIFileInformation">Сбор данных ASI</system:String>
+    <system:String x:Key="string_collectingME1ApplicationLogs">Сбор логов ME1</system:String>
+    <system:String x:Key="string_collectingEventLogs">Сбор логов событий</system:String>
+    <system:String x:Key="string_collectingME3SessionLog">Сбор лога сессии ME3</system:String>
+
+	<!-- Origin in-game overlay disabler -->
+    <system:String x:Key="string_overlayDisablerInstalled">Выключатель оверлея установлен</system:String>
+    <system:String x:Key="string_uninstallDisabler">Удалить выключатель</system:String>
+    <system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Установлен другой d3d9.dll, оверлей отключен</system:String>
+    <system:String x:Key="string_cannotUninstallOtherD3d9File">Невозможно удалить другой файл d3d9</system:String>
+    <system:String x:Key="string_overlayDisablerNotInstalled">Выключатель оверлея не установлен</system:String>
+    <system:String x:Key="string_installDisabler">Установить выключатель</system:String>
+    <system:String x:Key="string_noTargetSelected">Целевая игра не выбрана</system:String>
+    <system:String x:Key="string_noOriginBasedGameTargets">Целевые игры Origin отсутствуют</system:String>
+    <system:String x:Key="string_origin">Origin</system:String>
+    <system:String x:Key="string_oigPanelHeader" xml:space="preserve">Внутриигровой оверлей Origin является известной причиной значительной потери производительности в играх Mass Effect. Хотя он может быть отключен в настройках Origin, это не работает для Steam-версии Mass Effect 3. Вы можете установить d3d9-прокси, принудительно отключающий оверлей в целевой игре.&#10;&#10;Использование других d3d9-прокси, таких как Reshade, также отключит оверлей.</system:String>
+
+	<!-- Moddescini Editor -->
+    <system:String x:Key="string_toolUnderDevelopment">Данный инструмент находится в разработке и может работать нестабильно. Используйте на свой страх и риск!</system:String>
+    <system:String x:Key="string_underDevelopment">В разработке</system:String>
+
+	<!-- Keybinds Injector -->
+    <system:String x:Key="string_customKeybindsInjector">Custom Keybinds Injector</system:String>
+    <system:String x:Key="string_injectCustomKeybindsIntoYourGameWithThisTool">Интегрируйте пользовательские привязки клавиш в вашу игру с помощью данного инструмента.</system:String>
+    <system:String x:Key="string_openKeybindsDirectory">Открыть директорию привязок клавиш</system:String>
+    <system:String x:Key="string_keybindsAreDefinedPerInstallation">Привязки клавиш назначаются для каждой инсталляции</system:String>
+    <system:String x:Key="string_selectWhichKeybindsToInstall">Выберите привязки клавиш для установки:</system:String>
+    <system:String x:Key="string_resetKeybinds">Сбросить Привязки Клавиш</system:String>
+    <system:String x:Key="string_installKeybinds">Установить Привязки Клавиш</system:String>
 </ResourceDictionary>
