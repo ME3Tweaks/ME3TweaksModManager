@@ -74,6 +74,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         break;
                 }
                 SelectedTarget = Targets.FirstOrDefault();
+                if (SelectedTarget == null)
+                {
+                    D3D9Status = M3L.GetString(M3L.string_noOriginBasedTargetsInstalledForThisGame);
+                }
             }
 
             public event PropertyChangedEventHandler PropertyChanged;
@@ -199,7 +203,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                                 }
                                                 catch (Exception e)
                                                 {
-
+                                                    Log.Error(@"Cannot install/cache disabler: " + e.Message);
                                                 }
                                             }
                                         }
@@ -257,9 +261,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            Games.Add(new OIGGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(M3L.GetString(M3L.string_origin)))));
-            Games.Add(new OIGGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(M3L.GetString(M3L.string_origin)))));
-            Games.Add(new OIGGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(M3L.GetString(M3L.string_origin)))));
+            Games.Add(new OIGGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
+            Games.Add(new OIGGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
+            Games.Add(new OIGGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
         }
     }
 }

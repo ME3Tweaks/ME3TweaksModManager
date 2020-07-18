@@ -67,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             ReloadGameTarget();
         }
 
-        public void ReloadGameTarget(bool lodUpdateAndLogging = true)
+        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false)
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
@@ -122,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
                     }
 
-                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded && lodUpdateAndLogging)
+                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded && (lodUpdateAndLogging || forceLodUpdate))
                     {
                         UpdateLODs();
                     }
