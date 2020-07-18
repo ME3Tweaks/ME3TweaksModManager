@@ -1644,6 +1644,7 @@
     <system:String x:Key="string_noOriginBasedGameTargets">No Origin based game targets</system:String>
     <system:String x:Key="string_origin">Origin</system:String>
     <system:String xml:space="preserve" x:Key="string_oigPanelHeader">Origin in-game overlay is known to cause significant performance loss in the Mass Effect games. While it can be turned off in the Origin settings, this setting does not work for the Steam version of Mass Effect 3. You can install a proxy d3d9.dll that will disable forcibly disable the overlay per game target.&#10;&#10;Using other d3d9 proxies, such as Reshade, will also disable the overlay.</system:String>
+    <system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">No Origin-based targets are installed for this game</system:String>
 
     <!-- Moddescini Editor-->
     <system:String x:Key="string_toolUnderDevelopment">This tool is in development and may or may not work. Use at your own risk!</system:String>

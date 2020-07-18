@@ -1339,6 +1339,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_noOriginBasedGameTargets = "string_noOriginBasedGameTargets";
 		public static readonly string string_origin = "string_origin";
 		public static readonly string string_oigPanelHeader = "string_oigPanelHeader";
+		public static readonly string string_noOriginBasedTargetsInstalledForThisGame = "string_noOriginBasedTargetsInstalledForThisGame";
 		public static readonly string string_toolUnderDevelopment = "string_toolUnderDevelopment";
 		public static readonly string string_underDevelopment = "string_underDevelopment";
 		public static readonly string string_customKeybindsInjector = "string_customKeybindsInjector";
