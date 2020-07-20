@@ -40,6 +40,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             OP_NOINSTALL,
             OP_INSTALL,
             OP_APPLY_MULTILISTFILES,
+            OP_NOINSTALL_MULTILISTFILES,
             OP_NOTHING //Used for alt groups
         }
 
@@ -80,6 +81,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (Operation == AltFileOperation.INVALID_OPERATION) return false;
             if (Operation == AltFileOperation.OP_NOINSTALL) return false;
+            if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES) return false;
             if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES) return true;
             return AltFile != null;
         }
@@ -97,7 +99,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
         public bool ValidAlternate;
         public string LoadFailedReason;
-        public string MultiMappingFile;
         public string ApplicableAutoText { get; }
         public string NotApplicableAutoText { get; }
         public override bool UIIsSelectable
@@ -230,7 +231,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{id}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{multilistid}";
                             return;
                         }
                     }
@@ -241,6 +242,58 @@ namespace MassEffectModManagerCore.modmanager.objects
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
+                }
+                else if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES)
+                {
+                    if (modForValidating.ModDescTargetVersion < 6.1)
+                    {
+                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.";
+                        return;
+                    }
+
+                    if (properties.TryGetValue(@"MultiListTargetPath", out var rootpath))
+                    {
+                        MultiListTargetPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.";
+                        return;
+                    }
+
+                    if (properties.TryGetValue(@"MultiListTargetPath", out var targetpath))
+                    {
+                        MultiListTargetPath = targetpath.TrimStart('\\', '/').Replace('/', '\\');
+                    }
+
+                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out multilistid))
+                    {
+                        if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
+                        {
+                            MultiListSourceFiles = ml;
+                        }
+                        else
+                        {
+                            Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
+                            ValidAlternate = false;
+                            var id = @"multilist" + multilistid;
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{multilistid}";
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.";
+                        return;
+                    }
+                    // There's no way to verify files not being installed cause they can change at runtime
+                    // Just have to trust developer on it
                 }
                 else
                 {

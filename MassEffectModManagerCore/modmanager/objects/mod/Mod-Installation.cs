@@ -36,7 +36,8 @@ namespace MassEffectModManagerCore.modmanager
             foreach (var job in InstallationJobs)
             {
                 Log.Information($@"Preprocessing installation job: {job.Header}");
-                var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING).ToList();
+                var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
+                && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
                 var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
@@ -59,7 +60,6 @@ namespace MassEffectModManagerCore.modmanager
                         var target = Path.Combine(gameDLCPath, mapping.Value);
 
                         //get list of all normal files we will install
-                        //var allSourceDirFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories).Select(x => x.Substring(ModPath.Length)).ToList();
                         var allSourceDirFiles = FilesystemInterposer.DirectoryGetFiles(source, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
                         unpackedJobInstallationMapping[job].dlcFoldersBeingInstalled.Add(target);
                         //loop over every file 
@@ -69,7 +69,6 @@ namespace MassEffectModManagerCore.modmanager
                             bool altApplied = false;
                             foreach (var altFile in alternateFiles)
                             {
-                                //todo: Support wildcards if OP_NOINSTALL
                                 if (altFile.ModFile.Equals(sourceFile, StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     //Alt applies to this file
@@ -152,11 +151,24 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
 
-                        //Log.Information($"Copying CustomDLC to target: {source} -> {target}");
-                        //CopyDir.CopyFiles_ProgressBar(installatnionMapping, FileInstalledCallback);
-                        //Log.Information($"Installed CustomDLC {mapping.Value}");
-                    }
+                        // Process altfile removal of multilist, since it should be done last
+                        var fileRemoveAltFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES);
+                        foreach (var altFile in fileRemoveAltFiles)
+                        {
+                            foreach (var multifile in altFile.MultiListSourceFiles)
+                            {
+                                CLog.Information($@"Attempting to remove multilist file {multifile} from install (from {altFile.MultiListTargetPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL_MULTILISTFILES", Settings.LogModInstallation);
+                                string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
 
+                                var targetPath = altFile.MultiListTargetPath + '\\' + multifile;
+                                if (installationMapping.Remove(targetPath))
+                                {
+                                    CLog.Information($@" > Removed multilist file {targetPath} from installation",
+                                    Settings.LogModInstallation);
+                                }
+                            }
+                        }
+                    }
                     #endregion
                 }
                 else if (job.Header == ModJob.JobHeader.LOCALIZATION)
@@ -175,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager
                     buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
-                else if (Game == MEGame.ME3 && ModJob.ME3SupportedNonCustomDLCJobHeaders.Contains(job.Header) ) //previous else if will catch BASEGAME
+                else if (Game == MEGame.ME3 && ModJob.ME3SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
                 {
                     #region Installation: DLC Unpacked and SFAR (ME3 ONLY)
 
@@ -250,6 +262,7 @@ namespace MassEffectModManagerCore.modmanager
                     Debug.WriteLine(@"Checking alt conditions for application: " + altFile.FriendlyName);
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOTHING) continue; //skip nothing
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES) continue; //do not apply in the main loop.
+                    if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES) continue; //do not apply in the main loop.
 
                     if (altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -309,7 +322,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
 
                 if (altApplied) continue; //no further processing for file
-                //installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
+                                          //installationMapping[sourceFile] = sourceFile; //Nothing different, just add to installation list
 
 
                 installationMapping[destFile] = new InstallSourceFile(sourceFile);
@@ -334,7 +347,7 @@ namespace MassEffectModManagerCore.modmanager
                         AltApplied = true,
                         IsFullRelativeFilePath = true
                     }; //use alternate file as key instead
-                    //}
+                       //}
 
                     //not sure if there should be an else case here.
                     //else
@@ -345,6 +358,29 @@ namespace MassEffectModManagerCore.modmanager
                     //        IsFullRelativeFilePath = true
                     //    }; //use alternate file as key instead
                     //}
+                }
+            }
+
+            // Remove multilist noinstall files
+            foreach (var altFile in job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES))
+            {
+                foreach (var multifile in altFile.MultiListSourceFiles)
+                {
+                    CLog.Information(
+                        $@"Attempting to remove multilist file {multifile} from install (from {altFile.MultiListRootPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL_MULTILISTFILES",
+                        Settings.LogModInstallation);
+                    string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
+
+                    var targetPath = altFile.MultiListTargetPath + '\\' + multifile;
+                    if (installationMapping.Remove(targetPath))
+                    {
+                        CLog.Information($" > Removed multilist file {targetPath} from installation",
+                        Settings.LogModInstallation);
+                    }
+                    else
+                    {
+                        Log.Warning($@"Failed to remove multilist file from installation queue as specified by altfile: {targetPath}, path not present in installation files");
+                    }
                 }
             }
         }
@@ -427,7 +463,5 @@ namespace MassEffectModManagerCore.modmanager
                 FilePath = path;
             }
         }
-
-
     }
 }
