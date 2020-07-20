@@ -1087,7 +1087,7 @@
                         Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem
                         Header="{DynamicResource string_debug_showIntroTutorial}"
-                        Click="ShowIntroTutorial_Click">
+                        Command="{Binding OpenTutorialCommand}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
