@@ -374,7 +374,7 @@ namespace MassEffectModManagerCore.modmanager
                     var targetPath = altFile.MultiListTargetPath + '\\' + multifile;
                     if (installationMapping.Remove(targetPath))
                     {
-                        CLog.Information($" > Removed multilist file {targetPath} from installation",
+                        CLog.Information($@" > Removed multilist file {targetPath} from installation",
                         Settings.LogModInstallation);
                     }
                     else

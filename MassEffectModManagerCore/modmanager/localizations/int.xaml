@@ -957,6 +957,12 @@
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
     <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.</system:String>
+    <!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_altfile_multilistNIMissingMultiListTargetPath">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.</system:String>
+    <!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
+    <!-- 0={FriendlyName} -->
 
     <!-- GameTarget -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>

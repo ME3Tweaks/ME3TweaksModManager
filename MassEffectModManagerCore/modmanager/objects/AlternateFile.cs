@@ -249,7 +249,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61, FriendlyName);
                         return;
                     }
 
@@ -261,7 +261,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistNIMissingMultiListTargetPath, FriendlyName);
                         return;
                     }
 
@@ -289,7 +289,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNINotIntegerOrMissing, FriendlyName);
                         return;
                     }
                     // There's no way to verify files not being installed cause they can change at runtime
