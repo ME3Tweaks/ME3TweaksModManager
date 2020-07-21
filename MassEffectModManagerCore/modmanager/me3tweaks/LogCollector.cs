@@ -513,31 +513,43 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         addDiagLine(@"binkw32 ASI bypass is not installed. DLC mods, ASI mods, and modified DLC will not load", Severity.WARN);
                     }
 
-                    var exeDir = Path.GetDirectoryName(exePath);
-                    var d3d9file = Path.Combine(exeDir, @"d3d9.dll");
-                    if (File.Exists(d3d9file))
+                    selectedDiagnosticTarget.PopulateExtras();
+                    if (selectedDiagnosticTarget.ExtraFiles.Any())
                     {
-                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(d3d9file);
-                        string d3d9message = @"Product name on dll not set";
-                        if (!string.IsNullOrEmpty(fvi.ProductName))
+                        addDiagLine(@"Additional dll files found in game executable directory:", Severity.WARN);
+                        foreach (var extra in selectedDiagnosticTarget.ExtraFiles)
                         {
-                            d3d9message = fvi.ProductName;
+                            addDiagLine(@" > " + extra.DisplayName);
                         }
-
-                        addDiagLine(@"d3d9.dll exists - " + d3d9message, Severity.WARN);
                     }
 
-                    var fpscounter = Path.Combine(exeDir, @"fpscounter\fpscounter.dll");
-                    if (File.Exists(fpscounter))
-                    {
-                        addDiagLine(@"fpscounter.dll exists - FPS Counter plugin detected, may cause stability issues. If using to fix AMD lighting issues, consider the Black Blobs Fix mod instead", Severity.WARN);
-                    }
+                    // Get extra dlls
 
-                    var dinput8 = Path.Combine(exeDir, @"dinput8.dll");
-                    if (File.Exists(dinput8))
-                    {
-                        addDiagLine(@"dinput8.dll exists - a dll is hooking the process, may cause stability issues", Severity.WARN);
-                    }
+
+                    //var d3d9file = Path.Combine(exeDir, @"d3d9.dll");
+                    //if (File.Exists(d3d9file))
+                    //{
+                    //    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(d3d9file);
+                    //    string d3d9message = @"Product name on dll not set";
+                    //    if (!string.IsNullOrEmpty(fvi.ProductName))
+                    //    {
+                    //        d3d9message = fvi.ProductName;
+                    //    }
+
+                    //    addDiagLine(@"d3d9.dll exists - " + d3d9message, Severity.WARN);
+                    //}
+
+                    //var fpscounter = Path.Combine(exeDir, @"fpscounter\fpscounter.dll");
+                    //if (File.Exists(fpscounter))
+                    //{
+                    //    addDiagLine(@"fpscounter.dll exists - FPS Counter plugin detected, may cause stability issues. If using to fix AMD lighting issues, consider the Black Blobs Fix mod instead", Severity.WARN);
+                    //}
+
+                    //var dinput8 = Path.Combine(exeDir, @"dinput8.dll");
+                    //if (File.Exists(dinput8))
+                    //{
+                    //    addDiagLine(@"dinput8.dll exists - a dll is hooking the process, may cause stability issues", Severity.WARN);
+                    //}
                 }
 
                 #endregion
