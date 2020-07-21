@@ -2377,7 +2377,9 @@ namespace MassEffectModManagerCore
                     ME2UnrealObjectInfo.loadfromJSON();
                     Log.Information(@"Loading ME1ObjectInfo");
                     ME1UnrealObjectInfo.loadfromJSON();
-                    debugMethod();
+#if DEBUG
+                    //debugMethod();
+#endif
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 #if DEBUG
