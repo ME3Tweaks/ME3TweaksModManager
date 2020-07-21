@@ -584,7 +584,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         }
                         else
                         {
-                            strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, skOption.ModDLCFolderName));
+                            strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, @"DLC_MOD_" + skOption.ModDLCFolderName));
                         }
 
                         strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 2, 2, lang.langcode));
