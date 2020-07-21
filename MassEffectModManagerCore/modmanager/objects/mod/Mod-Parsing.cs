@@ -1024,6 +1024,20 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
+                    //MultiLists: Mod Manager 6.0
+                    //Must be parsed before Alternates as they can access these lists
+                    if (ModDescTargetVersion >= 6.0)
+                    {
+                        int i = 1;
+                        while (true)
+                        {
+                            var multilist = iniData[@"CUSTOMDLC"][@"multilist" + i];
+                            if (multilist == null) break; //no more to parse
+                            customDLCjob.MultiLists[i] = multilist.Split(';');
+                            i++;
+                        }
+                    }
+
                     //Altfiles: Mod Manager 4.2
                     string altfilesStr = (ModDescTargetVersion >= 4.2) ? iniData[@"CUSTOMDLC"][@"altfiles"] : null;
                     if (!string.IsNullOrEmpty(altfilesStr))
@@ -1051,21 +1065,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    //MultiLists: Mod Manager 6.0
-                    //Must be parsed before AltDLC as AltDLC can access these lists.
-                    if (ModDescTargetVersion >= 6.0)
-                    {
-                        int i = 1;
-                        while (true)
-                        {
-                            var multilist = iniData[@"CUSTOMDLC"][@"multilist" + i];
-                            if (multilist == null) break; //no more to parse
-                            customDLCjob.MultiLists[i] = multilist.Split(';');
-                            i++;
-                        }
-                    }
-
-
+                    
                     //AltDLC: Mod Manager 4.4
                     if (!string.IsNullOrEmpty(altdlcstr))
                     {

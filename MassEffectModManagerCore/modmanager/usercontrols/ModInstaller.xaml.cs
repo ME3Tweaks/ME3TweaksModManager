@@ -1038,7 +1038,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
             if (e.Error != null)
             {
-                Log.Error(@"An error occured during mod installation.\n" + App.FlattenException(e.Error));
+                Log.Error(@"An error occured during mod installation.");
+                Log.Error(App.FlattenException(e.Error));
                 telemetryResult = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
                 M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_errorOccuredDuringInstallation, App.FlattenException(e.Error)), M3L.GetString(M3L.string_error));
             }

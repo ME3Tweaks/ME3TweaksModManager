@@ -344,6 +344,7 @@ namespace MassEffectModManagerCore
                 }
             };
         }
+        public ICommand OpenTutorialCommand { get; set; }
         public ICommand OriginInGameOverlayDisablerCommand { get; set; }
         public ICommand ModdescEditorCommand { get; set; }
         public ICommand LaunchEGMSettingsCommand { get; set; }
@@ -426,6 +427,12 @@ namespace MassEffectModManagerCore
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3));
             ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
             OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => ModsLoaded && InstallationTargets.Any());
+            OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null);
+        }
+
+        private void OpenTutorial()
+        {
+            new IntroTutorial().Show();
         }
 
         private void OpenOIGDisabler()
@@ -1624,7 +1631,11 @@ namespace MassEffectModManagerCore
                 {
                     LoadMods();
                 }
-                new IntroTutorial().Show();
+                // if user speeds through, this might not be available yet. oh well
+                if (App.TutorialService != null)
+                {
+                    new IntroTutorial().Show();
+                }
             };
             ShowBusyControl(previewPanel);
         }
@@ -2328,6 +2339,11 @@ namespace MassEffectModManagerCore
 
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
+                App.TutorialService = OnlineContent.FetchTutorialManifest(!firstStartupCheck);
+                OnlineContent.TouchupTutorial();
+                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
                 var helpItemsLoading = OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !firstStartupCheck);
                 bw.ReportProgress(0, helpItemsLoading);
@@ -2351,10 +2367,6 @@ namespace MassEffectModManagerCore
                 }
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
-                App.TutorialService = OnlineContent.FetchTutorialManifest(!firstStartupCheck);
-                OnlineContent.TouchupTutorial();
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 if (firstStartupCheck)
                 {
@@ -3668,11 +3680,6 @@ namespace MassEffectModManagerCore
         private void Donations_Click(object sender, RoutedEventArgs e)
         {
             Utilities.OpenWebpage(@"https://me3tweaks.com/donations");
-        }
-
-        private void ShowIntroTutorial_Click(object sender, RoutedEventArgs e)
-        {
-            new IntroTutorial().Show();
         }
 
         private void MEMVanillaDBViewer_Click(object sender, RoutedEventArgs e)
