@@ -440,6 +440,8 @@ namespace MassEffectModManagerCore
                         }
                     }
 
+                    data[@"BetaMode"] = Settings.BetaMode.ToString();
+
                     if (Settings.EnableTelemetry)
                     {
                         Analytics.TrackEvent(@"Hardware Info", data);
