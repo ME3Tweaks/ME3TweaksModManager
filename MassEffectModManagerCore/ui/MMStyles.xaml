@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:MassEffectModManagerCore.ui"
                     xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager.objects"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
@@ -27,6 +28,10 @@
         </DockPanel>
     </DataTemplate>
     <Style x:Key="TargetSelectorContainerStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+    </Style>
+    <Style x:Key="TargetSelectorContainerAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentComboBoxItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
     </Style>
