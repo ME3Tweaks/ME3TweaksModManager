@@ -38,16 +38,29 @@ namespace MassEffectModManagerCore.gamefileformats
         }
 
         [DebuggerDisplay("TLKStringRef {StringID} {Data}")]
-        public class TLKStringRef : INotifyPropertyChanged, IEquatable<TLKStringRef>
+        public class TLKStringRef : ME3Explorer.NotifyPropertyChangedBase, IEquatable<TLKStringRef>, IComparable
         {
-            public event PropertyChangedEventHandler PropertyChanged;
+            private int _stringID;
+            private string _data;
+            private int _flags;
+            private int _index;
 
-            public int StringID { get; set; }
-            public string Data { get; set; }
-            public int Flags { get; set; }
-            public int Index { get; set; }
-            public int BitOffset { get => Flags; set => Flags = value; } //use same variable to save memory as flags is not used in me2/3, but bitoffset is.
-
+            public int StringID { get => _stringID; set => SetProperty(ref _stringID, value); }
+            public string Data { get => _data; set => SetProperty(ref _data, value); }
+            public int Flags { get => _flags; set => SetProperty(ref _flags, value); }
+            public int Index { get => _index; set => SetProperty(ref _index, value); }
+            public int BitOffset { get => _flags; set => SetProperty(ref _flags, value); } //use same variable to save memory as flags is not used in me2/3, but bitoffset is.
+            public int CalculatedStringID
+            {
+                get
+                {
+                    if (BitOffset < 0)
+                    {
+                        return -(Int32.MinValue - StringID);
+                    }
+                    return StringID;
+                }
+            }
             /// <summary>
             /// This is used by huffman compression
             /// </summary>
@@ -81,17 +94,22 @@ namespace MassEffectModManagerCore.gamefileformats
                 }
             }
 
-            public TLKStringRef(int id, int flags, string data)
+            public TLKStringRef(int id, int flags, string data, int index = -1)
             {
                 StringID = id;
                 Flags = flags;
                 Data = data;
-                Index = -1;
+                Index = index;
             }
 
             public bool Equals(TLKStringRef other)
             {
                 return StringID == other.StringID && ASCIIData == other.ASCIIData && Flags == other.Flags /*&& Index == other.Index*/;
+            }
+            public int CompareTo(object obj)
+            {
+                TLKStringRef entry = (TLKStringRef)obj;
+                return Index.CompareTo(entry.Index);
             }
         }
         #endregion

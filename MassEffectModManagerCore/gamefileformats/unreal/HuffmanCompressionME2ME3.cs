@@ -6,37 +6,38 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using static MassEffectModManagerCore.gamefileformats.TalkFileME1;
 
 namespace ME3Explorer
 {
     class HuffmanCompressionME2ME3
     {
         private Version _inputFileVersion = null;
-        private List<TLKEntry> _inputData = new List<TLKEntry>();
+        private List<TLKStringRef> _inputData = new List<TLKStringRef>();
         private Dictionary<char, int> frequencyCount = new Dictionary<char, int>();
         private List<HuffmanNode> _huffmanTree = new List<HuffmanNode>();
         private Dictionary<char, BitArray> _huffmanCodes = new Dictionary<char, BitArray>();
 
-        [DebuggerDisplay("TLKEntry {StringID} {data}")]
-        public class TLKEntry : IComparable
-        {
-            public int StringID;
-            public int position;
-            public string data;
+        //[DebuggerDisplay("TLKEntry {StringID} {data}")]
+        //public class TLKEntry : IComparable
+        //{
+        //    public int StringID;
+        //    public int position;
+        //    public string data;
 
-            public TLKEntry(int StringID, int position, string data)
-            {
-                this.StringID = StringID;
-                this.position = position;
-                this.data = data;
-            }
+        //    public TLKEntry(int StringID, int position, string data)
+        //    {
+        //        this.StringID = StringID;
+        //        this.position = position;
+        //        this.data = data;
+        //    }
 
-            public int CompareTo(object obj)
-            {
-                TLKEntry entry = (TLKEntry)obj;
-                return position.CompareTo(entry.position);
-            }
-        }
+        //    public int CompareTo(object obj)
+        //    {
+        //        TLKEntry entry = (TLKEntry)obj;
+        //        return position.CompareTo(entry.position);
+        //    }
+        //}
 
         private class HuffmanNode
         {
@@ -82,16 +83,17 @@ namespace ME3Explorer
         /// </remarks>
         /// </summary>
         /// <param name="fileName"></param>
-        public void SaveToTlkFile(string fileName, List<TLKEntry> stringRefs = null)
+        public static void SaveToTlkFile(string fileName, List<TLKStringRef> stringRefs = null)
         {
+            HuffmanCompressionME2ME3 hc = new HuffmanCompressionME2ME3();
             File.Delete(fileName);
             if (stringRefs != null)
             {
-                _inputData = stringRefs.OrderBy(x => x.StringID).ToList();
-                PrepareHuffmanCoding();
+                hc._inputData = stringRefs.OrderBy(x => x.CalculatedStringID).ToList();
+                hc.PrepareHuffmanCoding();
             }
             /* converts Huffmann Tree to binary form */
-            List<int> treeBuffer = ConvertHuffmanTreeToBuffer();
+            List<int> treeBuffer = hc.ConvertHuffmanTreeToBuffer();
 
             /* preparing data and entries for writing to file
              * entries list consists of pairs <String ID, Offset> */
@@ -100,14 +102,14 @@ namespace ME3Explorer
             Dictionary<int, int> femaleStrings = new Dictionary<int, int>();
             int offset = 0;
 
-            foreach (var entry in _inputData)
+            foreach (var entry in hc._inputData)
             {
                 if (entry.StringID < 0)
                 {
                     if (!maleStrings.ContainsKey(entry.StringID))
-                        maleStrings.Add(entry.StringID, Convert.ToInt32(entry.data));
+                        maleStrings.Add(entry.StringID, Convert.ToInt32(entry.ASCIIData));
                     else
-                        femaleStrings.Add(entry.StringID, Convert.ToInt32(entry.data));
+                        femaleStrings.Add(entry.StringID, Convert.ToInt32(entry.ASCIIData));
                     continue;
                 }
 
@@ -117,10 +119,10 @@ namespace ME3Explorer
                     femaleStrings.Add(entry.StringID, offset);
 
                 /* for every character in a string, put it's binary code into data array */
-                foreach (char c in entry.data)
+                foreach (char c in entry.ASCIIData)
                 {
-                    binaryData.Add(_huffmanCodes[c]);
-                    offset += _huffmanCodes[c].Count;
+                    binaryData.Add(hc._huffmanCodes[c]);
+                    offset += hc._huffmanCodes[c].Count;
                 }
             }
 
@@ -176,26 +178,26 @@ namespace ME3Explorer
         /// </summary>
         /// <param name="outfile"></param>
         /// <param name="stringRefs"></param>
-        internal static void SaveToTlkFile(string outfile, List<TalkFileME1.TLKStringRef> stringRefs)
-        {
-            HuffmanCompressionME2ME3 huff = new HuffmanCompressionME2ME3();
+        //internal static void SaveToTlkFile(string outfile, List<TalkFileME1.TLKStringRef> stringRefs)
+        //{
+        //    HuffmanCompressionME2ME3 huff = new HuffmanCompressionME2ME3();
 
-            //load data
-            int position = 0;
-            foreach (var sref in stringRefs)
-            {
-                var data = sref.Data == null ? null : sref.Data.Replace("\r\n", "\n");
-                /* every string should be NULL-terminated */
-                if (sref.StringID >= 0)
-                    data += '\0';
-                /* only add debug info if we are in debug mode and StringID is positive AND it's localizable */
-                huff._inputData.Add(new TLKEntry(sref.StringID, position, data));
-                position++;
-            }
-            huff._inputData.Sort();
-            huff.PrepareHuffmanCoding();
-            huff.SaveToTlkFile(outfile);
-        }
+        //    //load data
+        //    int position = 0;
+        //    foreach (var sref in stringRefs)
+        //    {
+        //        var data = sref.Data == null ? null : sref.Data.Replace("\r\n", "\n");
+        //        /* every string should be NULL-terminated */
+        //        if (sref.StringID >= 0)
+        //            data += '\0';
+        //        /* only add debug info if we are in debug mode and StringID is positive AND it's localizable */
+        //        huff._inputData.Add(new TLKEntry(sref.StringID, position, data));
+        //        position++;
+        //    }
+        //    huff._inputData.Sort();
+        //    huff.PrepareHuffmanCoding();
+        //    huff.SaveToTlkFile(outfile);
+        //}
 
         /// <summary>
         /// Loads data from XML file into memory
@@ -237,9 +239,9 @@ namespace ME3Explorer
                             data += '\0';
                         /* only add debug info if we are in debug mode and StringID is positive AND it's localizable */
                         if (id >= 0 && debugVersion && (id & 0x8000000) != 0x8000000)
-                            _inputData.Add(new TLKEntry(id, position, "(#" + id + ") " + data));
+                            _inputData.Add(new TLKStringRef(id, position, "(#" + id + ") " + data));
                         else
-                            _inputData.Add(new TLKEntry(id, position, data));
+                            _inputData.Add(new TLKStringRef(id, position, data));
                         position++;
                     }
                 }
@@ -269,9 +271,9 @@ namespace ME3Explorer
                             data += '\0';
                         /* only add debug info if we are in debug mode and StringID is positive AND it's localizable */
                         if (id >= 0 && debugVersion && (id & 0x8000000) != 0x8000000)
-                            _inputData.Add(new TLKEntry(id, position, "(#" + id + ") " + data));
+                            _inputData.Add(new TLKStringRef(id, position, "(#" + id + ") " + data));
                         else
-                            _inputData.Add(new TLKEntry(id, position, data));
+                            _inputData.Add(new TLKStringRef(id, position, data));
                     }
                 }
             }
@@ -290,7 +292,7 @@ namespace ME3Explorer
             {
                 if (entry.StringID < 0)
                     continue;
-                foreach (char c in entry.data)
+                foreach (char c in entry.ASCIIData)
                 {
                     if (!frequencyCount.ContainsKey(c))
                         frequencyCount.Add(c, 0);
@@ -303,9 +305,6 @@ namespace ME3Explorer
 
             BuildHuffmanTree();
             BuildCodingArray();
-
-            // DebugTools.LoadHuffmanTree(_huffmanCodes);
-            // DebugTools.PrintLookupTable();
         }
 
         /// <summary>

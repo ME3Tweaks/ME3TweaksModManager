@@ -33,23 +33,6 @@ namespace MassEffectModManagerCore.gamefileformats
             }
         };
 
-        //public struct TLKStringRef
-        //{
-        //    public int StringID;
-        //    public int BitOffset;
-
-        //    public string Data;
-        //    public int StartOfString;
-        //    public int position;
-
-        //    public TLKStringRef(BinaryReader r)
-        //        : this()
-        //    {
-        //        StringID = r.ReadInt32();
-        //        BitOffset = r.ReadInt32();
-        //    }
-        //}
-
         public struct HuffmanNode
         {
             public int LeftNodeID;
