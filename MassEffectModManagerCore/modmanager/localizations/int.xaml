@@ -678,8 +678,8 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_deleteDLC">Remove this DLC mod from the game.&#10;Hold SHIFT to bypass the confirmation dialog (if there are no warnings)</system:String>
     <system:String  x:Key="string_tooltip_openTargetInExplorer">Opens this game target directory in File Explorer</system:String>
     <system:String  x:Key="string_other">Other</system:String>
-    <system:String  x:Key="string_extraDllsFound">Extra dlls found</system:String>
-    <system:String  x:Key="string_noExtraDllsWereFound">No extra dlls were found</system:String>
+    <system:String  x:Key="string_extraDllsFound">Additional dlls</system:String>
+    <system:String  x:Key="string_noExtraDllsWereFound">No additional dlls were found</system:String>
     <system:String  x:Key="string_installedASIs">Installed ASIs</system:String>
     <system:String  x:Key="string_tooltip_clickToOpenASIManager">Click to open ASI Manager</system:String>
     <system:String  x:Key="string_manageASIsWithASIManager">Manage ASIs with ASI Manager</system:String>

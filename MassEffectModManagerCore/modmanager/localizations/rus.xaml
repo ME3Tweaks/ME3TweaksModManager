@@ -5,7 +5,7 @@
     <system:String x:Key="string_AvailableMods">Библиотека Модов</system:String>
     <system:String x:Key="string_Language">Язык</system:String>
     <system:String x:Key="string_Actions">Действия</system:String>
-    <system:String x:Key="string_CreateaME3modonModMaker">Создать мод ME3 на ModMaker</system:String>
+    <system:String x:Key="string_CreateaME3modonModMaker">Создать мод ME3 в ModMaker</system:String>
     <system:String x:Key="string_OpenME3Tweaks">Открыть ME3Tweaks.com</system:String>
     <system:String x:Key="string_OpensME3Tweaks">Открывает ME3Tweaks.com</system:String>
     <system:String x:Key="string_OpenMemoryAnalyzer">Открыть Memory Analyzer</system:String>
@@ -33,7 +33,7 @@
     <system:String x:Key="string_ImportmodfromArchive">Импортировать мод из .7z/.rar/.zip/.exe/.me2mod</system:String>
     <system:String x:Key="string_ImportModFromArchiveTooltip" xml:space="preserve">Открывает файловый браузер для выбора модов в формате архивов, исполняемых файлов и файлов .me2mod для ME2 Mod Manager от RCW.&#10;Вы можете перетаскивать файлы в окно программы для ускорения импорта.</system:String>
     <system:String x:Key="string_ImportalreadyinstalledCustomDLCmod">Импортировать установленный Custom DLC-мод</system:String>
-    <system:String x:Key="string_DownloadModMakermod">Скачать мод для ModMaker</system:String>
+    <system:String x:Key="string_DownloadModMakermod">Скачать мод ModMaker</system:String>
     <system:String x:Key="string_ASIModManager">ASI Mod Manager</system:String>
     <system:String x:Key="string_ASIManagerTooltip">Управление модами ASI. Только для продвинутых пользователей.</system:String>
     <system:String x:Key="string_CustomDLCConflictDetector">Сustom DLC Conflict Detector</system:String>
@@ -229,7 +229,7 @@
     <system:String x:Key="string_tooltip_logModMakerCompiler">Логирование детальной информации работы ModMaker compiler</system:String>
     <system:String x:Key="string_tooltip_logModInstaller">Логирование детальной информации об установке</system:String>
     <system:String x:Key="string_tooltip_importAnAlreadyinstalledDLCMod">Импортировать уже установленный DLC-мод в Mod Manager</system:String>
-    <system:String x:Key="string_tooltip_downloadME3TweaksMod">Скачать и скомпилировать моды, созданные через ME3Tweaks ModMaker</system:String>
+    <system:String x:Key="string_tooltip_downloadME3TweaksMod">Скачать и скомпилировать моды, созданные в ME3Tweaks ModMaker</system:String>
     <system:String x:Key="string_tooltip_createME3TweaksModMakerMod">Создание модов геймплея с помощью простого, хорошо задокументированного веб-приложения</system:String>
     <system:String x:Key="string_tooltip_batchModInstaller">Создать и установить группу модов единовременно</system:String>
     <system:String x:Key="string_tooltip_mixinLibrary">Содержит библиотеку готовых патчей</system:String>
@@ -285,7 +285,7 @@
     <system:String x:Key="string_decompiledTLKFile">Файл TLK декомпилирован</system:String>
     <system:String x:Key="string_tooltip_me1ASILoader">Включает загрузку ASI-модов, что позволяет переопределить загрузку DLC-модов</system:String>
     <system:String x:Key="string_tooltip_me23ASILoader">Позволяет использовать модифицированные DLC, включает консоль, включает поддержку ASI-модов</system:String>
-    <system:String x:Key="string_debug_showIntroTutorial">Показать Обучение Программе</system:String>
+    <system:String x:Key="string_debug_showIntroTutorial">Пройти Краткое Обучение</system:String>
     <system:String x:Key="string_dialog_multiUserProgramDataWindowsRestrictions">Windows ограничила доступ к директории данных программы ME3Tweaks Mod Manager для текущей учетной записи. Нажмите ОК для разрешения доступа к данной папке, чтобы гарантировать корректную работу функций программы.</system:String>
     <system:String x:Key="string_grantingWritePermissions">Разрешение доступа на запись</system:String>
     <system:String x:Key="string_dialog_programWillNotRunCorrectly">Программа может работать некорректно без доступа к папкам настроек и кэша.</system:String>
@@ -780,7 +780,7 @@
     <system:String x:Key="string_compiling">Компиляция</system:String>
     <system:String x:Key="string_downloadingDelta">Скачивание дельты</system:String>
     <system:String x:Key="string_decompressingDelta">Распаковка дельты</system:String>
-    <system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
+    <system:String x:Key="string_interp_modMakerCodeX">Код ModMaker {0}</system:String>
 	<!-- 0= modmaker code # -->
     <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager обнаружил обновления для следующих модов в библиотеке.</system:String>
     <system:String x:Key="string_tooltip_poweredByME3TweaksUpdaterService">Моды, размещенные в ME3Tweaks Updater Service могут обновляться напрямую через Mod Manager.</system:String>
@@ -952,8 +952,14 @@
 	<!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altfile_multilistMissingFileInMultiList">Alternate File ({0}) Multilist ID не является частью задания: {1}</system:String>
 	<!-- 0=FriendlyName -->
-    <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">В Alternate File ({0}) определена операция OP_APPLY_MULTILISTFILES, но атрибут MultiListId не указан или не может быть обработан как целое значение.</system:String>
+    <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">В Alternate File ({0}) определена операция OP_APPLY_MULTILISTFILES, но атрибут MultiListId не указан или не может быть обработан как целочисленное значение.</system:String>
 	<!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61">В Alternate File ({0}) определена операция OP_NONINSTALL_MULTILISTFILES, но данная функция поддерживается только в moddesc версии 6.1 или выше.</system:String>
+	<!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_altfile_multilistNIMissingMultiListTargetPath">В Alternate File ({0}) определена операция OP_APPLY_MULTILISTFILES, но не указан требуемый параметр MultiListRootPath.</system:String>
+	<!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">В Alternate File ({0}) определена операция OP_APPLY_MULTILISTFILES, но атрибут MultiListId не указан или не может быть обработан как целочисленное значение.</system:String>
+	<!-- 0={FriendlyName} -->
 
 	<!-- GameTarget -->
     <system:String x:Key="string_interp_ui_alotInstalledVersion" xml:space="preserve">A Lot Of Textures (ALOT) установлен\nВерсия {0}</system:String>
@@ -1043,7 +1049,7 @@
 	<!-- 0 = moddesc.ini file path -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomoddev">В файле moddesc.ini file по адресу {0} не задано значение moddev. Это значение обязательно.</system:String>
 	<!-- 0 = moddesc.ini file path -->
-    <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">В данном моде одновренно назначены коды обновления для Updater Service и ModMaker. Такая конфигурация недопустима.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">В данном моде одновренно назначены код обновления Updater Service и код ModMaker. Такая конфигурация недопустима.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">В данном моде для дескриптора ModInfo 'game' указан неизвестный Game ID. Допустимыми значениями являются ME1, ME2 or ME3. Указанное значение: {0}</system:String>
 	<!-- provided game value from moddesc -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12">Данный мод предназначен для {0}. Номер целевой версии moddesc - {1}, однако поддержка ME1 или ME2 начинается только с версии 6.0.</system:String>
@@ -1272,13 +1278,13 @@
     <system:String x:Key="string_finalizingMod">Финализация мода</system:String>
 
 	<!-- ModMaker Panel -->
-    <system:String x:Key="string_enterModMakerModCodeOrSelectFromTheTopMods">Войти в ModMaker Code или выбрать из популярных модов</system:String>
+    <system:String x:Key="string_enterModMakerModCodeOrSelectFromTheTopMods">Ввести код мода ModMaker или выбрать из популярных модов</system:String>
     <system:String x:Key="string_downloadingModDeltaFromME3Tweaks">Загрузка дельты мода с ME3Tweaks</system:String>
     <system:String x:Key="string_dialog_me3tweaksModMakerRequiresBackup">ME3Tweaks Modmaker требует наличия архива Mass Effect 3 для работы. Архив оригинальной игры не обнаружен.</system:String>
     <system:String x:Key="string_noBackupAvailable">Нет доступных архивов</system:String>
     <system:String x:Key="string_description_modmakerOnlineModCreationTool">ME3Tweaks ModMaker - это онлайн-инструмент создания модов для Mass Effect 3. Вы можете создавать моды с помощью простого point-and-click интерфейса, позволяющего настраивать тысячи задокументированных переменных геймплея и скриптов.</system:String>
     <system:String x:Key="string_openME3TweaksModMaker">Открыть ME3Tweaks ModMaker</system:String>
-    <system:String x:Key="string_modMakerCode">ModMaker Code</system:String>
+    <system:String x:Key="string_modMakerCode">Код ModMaker</system:String>
     <system:String x:Key="string_download">Скачать</system:String>
 	<!-- as in download mod -->
     <system:String x:Key="string_overallProgress">Общий прогресс</system:String>
@@ -1286,14 +1292,14 @@
 	<!-- 0 = bulleted list of DLC names -->
     <system:String x:Key="string_dlcMissing">DLC отсутствует</system:String>
     <system:String x:Key="string_downloadAborted">Загрузка прервана</system:String>
-    <system:String x:Key="string_compile">Компиляция...</system:String>
-    <system:String x:Key="string_selectAModMakerXmlFile">Выберите файлModMaker .xml</system:String>
+    <system:String x:Key="string_compile">Компиляция</system:String>
+    <system:String x:Key="string_selectAModMakerXmlFile">Выберите файл ModMaker XML</system:String>
     <system:String x:Key="string_useLocalFileInstead">Использовать локальный файл</system:String>
-    <system:String x:Key="string_selectModMakerModXmlFile">Выберите файл .xml мода ModMaker</system:String>
+    <system:String x:Key="string_selectModMakerModXmlFile">Выберите файл XML мода ModMaker</system:String>
     <system:String x:Key="string_modMakerXMLFiles">Файлы ModMaker XML</system:String>
     <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Добавляет Mixins для гарантии надлежащей работы функционала Controller Mod, такого как корректная работа поворота камеры, если мод изменяет одинаковые файлы с другими модами контроллера.&#10;Не выбирайте этот пункт, если вы не используете мод Controller Support. При использовании данной опции, устанавливайте данный мод ПОСЛЕ установки мода Controller Support.</system:String>
     <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Добавить Controller Support Mixins, если необходимо</system:String>
-    <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Использовать локальный файл ModMaker xml</system:String>
+    <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Использовать локальный файл ModMaker XML</system:String>
     <system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Автоматическая интеграция пользовательского файла BioInput.xml (при наличии) в директорию keybindsoveride.&#10;Определите привязки через Custom Keybinds Injector в меню Инструменты</system:String>
     <system:String x:Key="string_injectCustomKeybindsIfAvailable">Интегрировать пользовательские привязки клавиш (при наличии)</system:String>
 
@@ -1311,7 +1317,7 @@
     <system:String x:Key="string_applying">Применение</system:String>
     <system:String x:Key="string_interp_compressingModForUpdaterServicePercent">Сжатие мода для Updater Service: {0}%</system:String>
 	<!-- 0=Math.Round(totalDone * 100.0 / totalAmountToCompress) -->
-    <system:String x:Key="string_interp_ModmakerCodeX">ModMaker Code {0}</system:String>
+    <system:String x:Key="string_interp_ModmakerCodeX">Код ModMaker {0}</system:String>
 	<!-- 0=ModMakerId -->
     <system:String x:Key="string_interp_updatedDateX">Обновлено {0}</system:String>
 	<!-- 0=updatedTime -->

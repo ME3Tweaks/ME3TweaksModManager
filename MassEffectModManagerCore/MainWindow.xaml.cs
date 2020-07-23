@@ -427,7 +427,7 @@ namespace MassEffectModManagerCore
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3));
             ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
             OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => ModsLoaded && InstallationTargets.Any());
-            OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null);
+            OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
         }
 
         private void OpenTutorial()
@@ -1632,7 +1632,7 @@ namespace MassEffectModManagerCore
                     LoadMods();
                 }
                 // if user speeds through, this might not be available yet. oh well
-                if (App.TutorialService != null)
+                if (App.TutorialService != null && App.TutorialService.Any())
                 {
                     new IntroTutorial().Show();
                 }
@@ -2031,11 +2031,10 @@ namespace MassEffectModManagerCore
             RepopulatingTargets = false;
         }
 
-        private async void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public async void OnSelectedModChanged()
         {
-            if (e.AddedItems.Count > 0)
+            if (SelectedMod != null)
             {
-                SelectedMod = (Mod)e.AddedItems[0];
                 SetWebsitePanelVisibility(SelectedMod.ModWebsite != Mod.DefaultWebsite);
                 var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == SelectedMod.Game);
                 if (installTarget != null)
@@ -2097,7 +2096,6 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                SelectedMod = null;
                 VisitWebsiteText = "";
                 SetWebsitePanelVisibility(false);
                 CurrentDescriptionText = DefaultDescriptionText;
@@ -2379,7 +2377,9 @@ namespace MassEffectModManagerCore
                     ME2UnrealObjectInfo.loadfromJSON();
                     Log.Information(@"Loading ME1ObjectInfo");
                     ME1UnrealObjectInfo.loadfromJSON();
+#if DEBUG
                     //debugMethod();
+#endif
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
 #if DEBUG
@@ -2490,8 +2490,8 @@ namespace MassEffectModManagerCore
 
         private void debugMethod()
         {
-            var suf = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME3\Grand Unified Controller Support\DLC_MOD_ControllerSupport\CookedPCConsole\Startup_MOD_ControllerSupport_INT.pcc");
-            var combinedRef = suf.getUExport(83);
+            var suf = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME3\Interface Scaling Mod\DLC_MOD_InterfaceScaling\CookedPCConsole\Startup_MOD_InterfaceScaling_INT.pcc");
+            var combinedRef = suf.getUExport(1);
             var refedObjects = combinedRef.GetProperty<ArrayProperty<ObjectProperty>>("ReferencedObjects");
             refedObjects.Clear();
             foreach (var e in suf.Exports)
@@ -2535,57 +2535,57 @@ namespace MassEffectModManagerCore
                 {814588, 814589}, //Place bet
                 {339252, 333755}, //grenade launcher
                 {339280, 288593}, //storm through the fire
-{339293,335129}, // Hold [XBoxB_Btn_RB] to access your Power Wheel
-{339297,335129}, // Hold [XBoxB_Btn_RB] to access your Power Wheel
-{339300,335129}, // Hold [XBoxB_Btn_RB] to access your Power Wheel and use Overload on the crates
-{339317,242463}, // Use [XBoxB_Btn_DPadL] and [XBoxB_Btn_DPadR] to send your squadmates to waypoints
-{341338,369315}, // [XBoxB_Btn_B] to melee attack
-{341341,278984}, // [XBoxB_Btn_LT] to aim weapon
-{341345, 562480}, // [XBoxB_Btn_X] Switch to another weapon
-{343066, 343065}, // Press [XBoxB_Btn_A] to recover something on the ground.
-{344120, 343145}, // Command squadmates to attack enemies and use powers by using [XBoxB_Btn_DPadL] o
-{344125, 337426}, // Hold [XBoxB_Btn_X] to switch back to your previous weapon.
-{344126, 343157}, // When you're in cover, climb low obstacles by pressing [XBoxB_Btn_LSUp] + [XBoxB_
-{344127, 343180}, // When the [XBoxB_Btn_LT] symbol is displayed in a conversation, [XBoxB_Btn_LT] to
-{344129,343164}, // In trouble? Use [XBoxB_Btn_LB] to bring up Weapon Wheel and find nearby cover.
-{344130, 343159}, // When the [XBoxB_Btn_RT] symbol is displayed in a conversation, [XBoxB_Btn_RT] to
-{344131, 554257}, // To command your squadmates to approach a target, move them into place using [XBo
-{344135, 343206}, // Replaying a section? Jump through cut scenes and skip lines in a conversation by
-{344136, 343209}, // While you're in low cover, vault over it by holding [XBoxB_Btn_LSUp] and pressin
-//{345715,}, // Move [XBox_Btn_LS] and press [XBoxB_Btn_A] to select target-code segment.
-//{345731,}, // Press [XBoxB_Btn_A] to select code segments that match the target code-segmentda
-{346001, 345998}, // [XBoxB_Btn_B] Press to Show Map
-{349413, 345718}, // Hold [XBoxB_Btn_LT] to scan
-//{351464,}, // Hold [XBoxB_Btn_A] to storm through the fire.
-{554255, 554256}, // Hold [XBoxB_Btn_LB] to swap to the sniper rifle
-{554274, 554268}, // Hold [XBoxB_Btn_B] to melee from cover
-{555170, 670436}, // Hold [XBoxB_Btn_LB] to switch weapons
-{555174,335129}, // Hold [XBoxB_Btn_RB] to display power wheel
-{558663,558662}, // Press [XBoxB_Btn_X] to swap to heavy pistol
-{558665,558664}, // Press [XBoxB_Btn_X] to swap to assault rifle
-{563797, 563795}, // Press [XBoxB_Btn_LSDown] to exit turret and [XBoxB_Btn_RT] to fire
-//{571131,}, // To sneak-melee an enemy walk behind it and press and hold [XBoxB_Btn_B]
-//{571132,}, // To sneak-melee an enemy walk behind it and press and hold [XBoxB_Btn_B]
-{675841,552664}, // Hold [XBoxB_Btn_LSUp] and press [XBoxB_Btn_A] to climb up from cover
-{675852,675851}, // Hold [XBoxB_Btn_LT] to pop up from cover and click [XBoxB_Btn_RT] to fire
-{705046, 562480}, // Press [XBoxB_Btn_X] to swap weapons
-{705561,705037}, // Press [XBoxB_Btn_DPadD] to use a medi-gel to revive yourself
-{705562,705038}, // Press [XBoxB_Btn_DPadL] to spend an ammo pack to resupply your ammo
-{718564,670181}, // Double-tap [XBoxB_Btn_A] while walking toward low cover to quick climb
-{720736,720734}, // Press [XBoxB_Btn_B] to exit turret
-{721051,719733}, // The Mission Computer is the in-game menu. To access the Mission Computer, press 
-{722042,724653}, // Select (Connect), or press [UI_XBoxB_Btn_Y] if your game hasn't connected to the
-{722220,722219}, // $719812Press [XBoxB_Btn_R3] to access the map while playing.
-{722326,722327}, // To dodge attacks and projectiles or to get out of cover quickly, move and press 
-{722328,722329}, // To perform a basic melee attack, press [XBoxB_Btn_B] while standing close to an 
-{722331,722330}, // Switch to the previous weapon held by pressing [XBoxB_Btn_X].
-{722373,722381}, // Point your targeting reticle and press [XBoxB_Btn_DPadL] or [XBoxB_Btn_DPadR] to
-{722375,722381}, // Point the targeting reticle at an enemy and press [XBoxB_Btn_DPadL] or [XBoxB_Bt
-{722398,722397}, // $7223961. Move against cover and press [XBoxB_Btn_A].2. Roll forward into cover 
-{722405,722406}, // Vault over low cover by holding [XBoxB_Btn_LSUp] and pressing [XBoxB_Btn_A].Alte
-{722585,722586}, // Fly between systems in Galaxy View with [UI_XBoxB_Btn_LS]. Select your destinati
-{722622,722623}, // $722621Press [XBoxB_Btn_LT] to use the Normandy's scanner, but be wary of alerti
-{724748,724568} // Press [XBoxB_Btn_R3] to show Udina's location on the map
+        {339293,335129}, // Hold [XBoxB_Btn_RB] to access your Power Wheel
+        {339297,335129}, // Hold [XBoxB_Btn_RB] to access your Power Wheel
+        {339300,335129}, // Hold [XBoxB_Btn_RB] to access your Power Wheel and use Overload on the crates
+        {339317,242463}, // Use [XBoxB_Btn_DPadL] and [XBoxB_Btn_DPadR] to send your squadmates to waypoints
+        {341338,369315}, // [XBoxB_Btn_B] to melee attack
+        {341341,278984}, // [XBoxB_Btn_LT] to aim weapon
+        {341345, 562480}, // [XBoxB_Btn_X] Switch to another weapon
+        {343066, 343065}, // Press [XBoxB_Btn_A] to recover something on the ground.
+        {344120, 343145}, // Command squadmates to attack enemies and use powers by using [XBoxB_Btn_DPadL] o
+        {344125, 337426}, // Hold [XBoxB_Btn_X] to switch back to your previous weapon.
+        {344126, 343157}, // When you're in cover, climb low obstacles by pressing [XBoxB_Btn_LSUp] + [XBoxB_
+        {344127, 343180}, // When the [XBoxB_Btn_LT] symbol is displayed in a conversation, [XBoxB_Btn_LT] to
+        {344129,343164}, // In trouble? Use [XBoxB_Btn_LB] to bring up Weapon Wheel and find nearby cover.
+        {344130, 343159}, // When the [XBoxB_Btn_RT] symbol is displayed in a conversation, [XBoxB_Btn_RT] to
+        {344131, 554257}, // To command your squadmates to approach a target, move them into place using [XBo
+        {344135, 343206}, // Replaying a section? Jump through cut scenes and skip lines in a conversation by
+        {344136, 343209}, // While you're in low cover, vault over it by holding [XBoxB_Btn_LSUp] and pressin
+        //{345715,}, // Move [XBox_Btn_LS] and press [XBoxB_Btn_A] to select target-code segment.
+        //{345731,}, // Press [XBoxB_Btn_A] to select code segments that match the target code-segmentda
+        {346001, 345998}, // [XBoxB_Btn_B] Press to Show Map
+        {349413, 345718}, // Hold [XBoxB_Btn_LT] to scan
+        //{351464,}, // Hold [XBoxB_Btn_A] to storm through the fire.
+        {554255, 554256}, // Hold [XBoxB_Btn_LB] to swap to the sniper rifle
+        {554274, 554268}, // Hold [XBoxB_Btn_B] to melee from cover
+        {555170, 670436}, // Hold [XBoxB_Btn_LB] to switch weapons
+        {555174,335129}, // Hold [XBoxB_Btn_RB] to display power wheel
+        {558663,558662}, // Press [XBoxB_Btn_X] to swap to heavy pistol
+        {558665,558664}, // Press [XBoxB_Btn_X] to swap to assault rifle
+        {563797, 563795}, // Press [XBoxB_Btn_LSDown] to exit turret and [XBoxB_Btn_RT] to fire
+        //{571131,}, // To sneak-melee an enemy walk behind it and press and hold [XBoxB_Btn_B]
+        //{571132,}, // To sneak-melee an enemy walk behind it and press and hold [XBoxB_Btn_B]
+        {675841,552664}, // Hold [XBoxB_Btn_LSUp] and press [XBoxB_Btn_A] to climb up from cover
+        {675852,675851}, // Hold [XBoxB_Btn_LT] to pop up from cover and click [XBoxB_Btn_RT] to fire
+        {705046, 562480}, // Press [XBoxB_Btn_X] to swap weapons
+        {705561,705037}, // Press [XBoxB_Btn_DPadD] to use a medi-gel to revive yourself
+        {705562,705038}, // Press [XBoxB_Btn_DPadL] to spend an ammo pack to resupply your ammo
+        {718564,670181}, // Double-tap [XBoxB_Btn_A] while walking toward low cover to quick climb
+        {720736,720734}, // Press [XBoxB_Btn_B] to exit turret
+        {721051,719733}, // The Mission Computer is the in-game menu. To access the Mission Computer, press 
+        {722042,724653}, // Select (Connect), or press [UI_XBoxB_Btn_Y] if your game hasn't connected to the
+        {722220,722219}, // $719812Press [XBoxB_Btn_R3] to access the map while playing.
+        {722326,722327}, // To dodge attacks and projectiles or to get out of cover quickly, move and press 
+        {722328,722329}, // To perform a basic melee attack, press [XBoxB_Btn_B] while standing close to an 
+        {722331,722330}, // Switch to the previous weapon held by pressing [XBoxB_Btn_X].
+        {722373,722381}, // Point your targeting reticle and press [XBoxB_Btn_DPadL] or [XBoxB_Btn_DPadR] to
+        {722375,722381}, // Point the targeting reticle at an enemy and press [XBoxB_Btn_DPadL] or [XBoxB_Bt
+        {722398,722397}, // $7223961. Move against cover and press [XBoxB_Btn_A].2. Roll forward into cover 
+        {722405,722406}, // Vault over low cover by holding [XBoxB_Btn_LSUp] and pressing [XBoxB_Btn_A].Alte
+        {722585,722586}, // Fly between systems in Galaxy View with [UI_XBoxB_Btn_LS]. Select your destinati
+        {722622,722623}, // $722621Press [XBoxB_Btn_LT] to use the Normandy's scanner, but be wary of alerti
+        {724748,724568} // Press [XBoxB_Btn_R3] to show Udina's location on the map
 
             };
 
@@ -3549,6 +3549,14 @@ namespace MassEffectModManagerCore
             catch (Exception e)
             {
                 Log.Error(@"Could not set localized dynamic help: " + e.Message);
+            }
+
+            if (SelectedMod != null)
+            {
+                // This will force strings to update
+                var sm = SelectedMod;
+                SelectedMod = null;
+                SelectedMod = sm;
             }
 
             if (!startup)

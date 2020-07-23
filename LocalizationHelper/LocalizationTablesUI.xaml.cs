@@ -635,7 +635,7 @@ namespace LocalizationHelper
                 foreach (var str in cat.LocalizedStringsForSection)
                 {
                     if (str.GetString(lang) == null) continue; //don't even bother
-                    string line = $"    <system:String x:Key=\"{str.key}\"";
+                    string line = $"\t<system:String x:Key=\"{str.key}\"";
                     if (str.preservewhitespace)
                     {
                         line += " xml:space=\"preserve\"";

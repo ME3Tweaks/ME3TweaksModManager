@@ -87,7 +87,7 @@
                 SelectedItem="{Binding SelectedDiagnosticTarget}"
                 ToolTip="{DynamicResource string_tooltip_currentTarget}"
                 ItemTemplate="{StaticResource TargetSelectorTemplate}"
-                ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
+                ItemContainerStyle="{StaticResource TargetSelectorContainerAccentStyle}"
                 IsEnabled="{Binding UploadingLog, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
             <!--  Visibility="{Binding SelectedDiagnosticTarget.TextureModded, Converter={StaticResource BoolToVisibilityConverter}}" -->
             <CheckBox

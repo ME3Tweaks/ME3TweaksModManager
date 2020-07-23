@@ -92,6 +92,12 @@ namespace MassEffectModManagerCore.modmanager.windows
                         break;
                 }
 
+                if (string.IsNullOrWhiteSpace(tutorialStep.UIString))
+                {
+                    // failover to int
+                    tutorialStep.UIString = tutorialStep.lang_int;
+                }
+
                 tutorialStep.UIString = tutorialStep.UIString.Replace(@"\n", "\n"); //do not localize
                 tutorialStep.UIImagePath = Path.Combine(Utilities.GetTutorialServiceCache(), tutorialStep.imagename);
             }

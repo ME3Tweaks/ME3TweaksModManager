@@ -37,6 +37,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
+        public bool ForceTrue
+        {
+            get => true;
+            set
+            {
+
+            }
+        }
+
 
         private void InitLogUploaderUI()
         {
@@ -109,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 void updateProgressCallback(int progress)
                 {
-                    nbw.ReportProgress(0,progress / 100.0);
+                    nbw.ReportProgress(0, progress / 100.0);
                 }
 
                 void updateTaskbarProgressStateCallback(TaskbarItemProgressState state)
@@ -237,6 +246,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 e.Handled = true;
                 OnClosing(DataEventArgs.Empty);
+            }
+
+            if (e.Key == Key.Space)
+            {
+                Debugger.Break();
             }
         }
 
