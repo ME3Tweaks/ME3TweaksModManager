@@ -427,7 +427,7 @@ namespace MassEffectModManagerCore
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3));
             ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
             OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => ModsLoaded && InstallationTargets.Any());
-            OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null);
+            OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
         }
 
         private void OpenTutorial()
@@ -1632,7 +1632,7 @@ namespace MassEffectModManagerCore
                     LoadMods();
                 }
                 // if user speeds through, this might not be available yet. oh well
-                if (App.TutorialService != null)
+                if (App.TutorialService != null && App.TutorialService.Any())
                 {
                     new IntroTutorial().Show();
                 }
