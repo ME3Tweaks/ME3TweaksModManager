@@ -576,29 +576,29 @@ namespace MassEffectModManagerCore.modmanager.windows
                     var languages = skOption.ModGame == Mod.MEGame.ME2 ? me2languages : me3languages;
                     foreach (var lang in languages)
                     {
-                        List<HuffmanCompressionME2ME3.TLKEntry> strs = new List<HuffmanCompressionME2ME3.TLKEntry>();
-                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
+                        List<TalkFileME1.TLKStringRef> strs = new List<TalkFileME1.TLKStringRef>();
+                        strs.Add(new TalkFileME1.TLKStringRef(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
                         if (skOption.ModGame == Mod.MEGame.ME2)
                         {
-                            strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, @"DLC_" + skOption.ModModuleNumber));
+                            strs.Add(new TalkFileME1.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_" + skOption.ModModuleNumber));
                         }
                         else
                         {
-                            strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 1, 1, @"DLC_MOD_" + skOption.ModDLCFolderName));
+                            strs.Add(new TalkFileME1.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_MOD_" + skOption.ModDLCFolderName));
                         }
 
-                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 2, 2, lang.langcode));
-                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 3, 3, @"Male"));
-                        strs.Add(new HuffmanCompressionME2ME3.TLKEntry(skOption.ModInternalTLKID + 3, 4, @"Female"));
+                        strs.Add(new TalkFileME1.TLKStringRef(skOption.ModInternalTLKID + 2, 2, lang.langcode));
+                        strs.Add(new TalkFileME1.TLKStringRef(skOption.ModInternalTLKID + 3, 3, @"Male"));
+                        strs.Add(new TalkFileME1.TLKStringRef(skOption.ModInternalTLKID + 3, 4, @"Female"));
 
                         foreach (var str in strs)
                         {
-                            str.data += '\0';
+                            str.Data += '\0';
                         }
 
                         var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
-                        Log.Information(@"Saving TLK file: " + tlk);
-                        new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strs);
+                        Log.Information(@"Saving TLK file: " + tlk); 
+                        HuffmanCompressionME2ME3.SaveToTlkFile(tlk, strs);
                     }
                 }
 

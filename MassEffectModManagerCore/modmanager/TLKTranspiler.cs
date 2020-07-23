@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
 
@@ -23,7 +24,7 @@ namespace MassEffectModManagerCore.modmanager
                 var includes = rootElement.Descendants(@"Include");
                 var tlkname = rootElement.Attribute(@"source").Value;
                 var rootDir = Directory.GetParent(manifestFile);
-                List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
+                List<TalkFileME1.TLKStringRef> strings = new List<TalkFileME1.TLKStringRef>();
 
                 foreach (var i in includes)
                 {
@@ -40,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager
                             var id = int.Parse(substr.Attribute(@"id").Value);
                             var data = substr.Value;
                             if (id > 0) data += '\0';
-                            strings.Add(new HuffmanCompressionME2ME3.TLKEntry(id, position, data));
+                            strings.Add(new TalkFileME1.TLKStringRef(id, position, data));
                             position++;
                         }
                     }
@@ -54,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 var tlk = Path.Combine(rootDir.FullName, tlkname);
                 Log.Information(@"Saving TLK file: " + tlk);
-                new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
+                HuffmanCompressionME2ME3.SaveToTlkFile(tlk, strings);
                 Log.Information(@"Saved TLK file: " + tlk);
             }
             catch (Exception e)
@@ -74,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager
         public static void CompileTLKME3Explorer(string xmlfile, XElement rootElement, Action<string> exceptionCompilingCallback)
         {
             var rootDir = Directory.GetParent(xmlfile);
-            List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
+            List<TalkFileME1.TLKStringRef> strings = new List<TalkFileME1.TLKStringRef>();
 
             var substrings = rootElement.Descendants(@"String");
             var position = 0;
@@ -83,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager
                 var id = int.Parse(substr.Attribute(@"id").Value);
                 var data = substr.Value;
                 if (id > 0) data += '\0';
-                strings.Add(new HuffmanCompressionME2ME3.TLKEntry(id, position, data));
+                strings.Add(new TalkFileME1.TLKStringRef(id, position, data));
                 position++;
             }
 
@@ -91,7 +92,7 @@ namespace MassEffectModManagerCore.modmanager
             Log.Information(@"Saving TLK file: " + tlk);
             try
             {
-                new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
+                HuffmanCompressionME2ME3.SaveToTlkFile(tlk, strings);
                 Log.Information(@"Saved TLK file: " + tlk);
             }
             catch (Exception e)
@@ -107,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager
             //Thread.Sleep(5000);
             var tlkname = Path.GetFileNameWithoutExtension(filename) + @".tlk";
             var rootDir = Directory.GetParent(filename);
-            List<HuffmanCompressionME2ME3.TLKEntry> strings = new List<HuffmanCompressionME2ME3.TLKEntry>();
+            List<TalkFileME1.TLKStringRef> strings = new List<TalkFileME1.TLKStringRef>();
 
             var substrings = rootElement.Descendants(@"String");
             var position = 0;
@@ -116,7 +117,7 @@ namespace MassEffectModManagerCore.modmanager
                 var id = int.Parse(substr.Attribute(@"id").Value);
                 var data = substr.Value;
                 if (id > 0) data += '\0';
-                strings.Add(new HuffmanCompressionME2ME3.TLKEntry(id, position, data));
+                strings.Add(new TalkFileME1.TLKStringRef(id, position, data));
                 position++;
             }
 
@@ -124,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager
             Log.Information(@"Saving TLK file: " + tlk);
             try
             {
-                new HuffmanCompressionME2ME3().SaveToTlkFile(tlk, strings);
+                HuffmanCompressionME2ME3.SaveToTlkFile(tlk, strings);
                 Log.Information(@"Saved TLK file: " + tlk);
             }
             catch (Exception e)
