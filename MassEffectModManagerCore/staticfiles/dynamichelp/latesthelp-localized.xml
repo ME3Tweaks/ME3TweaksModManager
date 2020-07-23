@@ -2,7 +2,7 @@
 <localizations>
   <helpmenu lang="int">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services" />
-    <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Chat server for finding other players of Mass Effect 3 MP and Mass Effect Andromeda MP" />
+    <helpitem title="N7 Squad multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Chat server for finding other players of Mass Effect 3 multiplayer" />
     <list title="Get Mods">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="ME3Tweaks Curated Mod List" url="https://me3tweaks.com/mods" tooltip="Browse mods curated by ME3Tweaks" />
