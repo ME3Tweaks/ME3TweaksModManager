@@ -808,7 +808,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Warning(@"User has declined uploading the delta. We will not change anything on the server.");
                     CancelOperations = true;
-
+                    AbortUpload();
+                    return UploadModResult.ABORTED_BY_USER;
                 }
 
                 CurrentActionText = M3L.GetString(M3L.string_validatingModOnServer);
