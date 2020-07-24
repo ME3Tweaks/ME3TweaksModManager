@@ -108,6 +108,7 @@
     <None Remove="staticfiles\objectinfos\ME1ObjectInfo.json" />
     <None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
     <None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
+    <None Remove="updater\ME3CMM.exe" />
     <None Remove="updater\ME3TweaksUpdater.exe" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@
     <EmbeddedResource Include="staticfiles\objectinfos\ME1ObjectInfo.json" />
     <EmbeddedResource Include="staticfiles\objectinfos\ME2ObjectInfo.json" />
     <EmbeddedResource Include="staticfiles\objectinfos\ME3ObjectInfo.json" />
+    <EmbeddedResource Include="updater\ME3CMM.exe" />
     <EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
   </ItemGroup>
 
