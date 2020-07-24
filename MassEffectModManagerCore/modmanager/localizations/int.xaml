@@ -1139,7 +1139,7 @@
     <!-- 0 = job/header name, 1 = filepath -->
     <system:String x:Key="string_interp_addsTheFollowingLocalizationsToX">Adds the following localizations to {0}:</system:String>
     <!-- 0={Mod Name} -->
-    <system:String x:Key="string_interp_validation_modparsing_invalidUrlScheme">Invalid url for mod {0}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_invalidUrlScheme">Invalid URL for mod {0}: URL must be of type http:// or https:// and be a valid formed URL. Invalid value: {1}</system:String>
     <!-- 0={ModName} 1={ModWebsite} -->
     <system:String x:Key="string_interp_validation_modparsing_cannotCombineLocalizationTask">This mod specifies a LOCALIZATION task along with other task headers. A mod with a LOCALIZATION task may only contain a LOCALIZATION task and cannot be combined with others.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_missingDlcNameDesriptor">The LOCALIZATION task for this mod is missing the 'dlcname' descriptor, which is used to determine the target of this localization mod.</system:String>
