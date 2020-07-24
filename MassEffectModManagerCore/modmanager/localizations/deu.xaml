@@ -50,7 +50,7 @@
     <system:String x:Key="string_RestoremodfromME3Tweaks">Mod von ME3Tweaks.com wiederherstellen</system:String>
     <system:String x:Key="string_Installcustomkeybindsintothismod">Installiere benutzerdefinierte Tastaturbelegungen in diesen Mod</system:String>
     <system:String x:Key="string_Developeroptions">Entwickler-Optionen</system:String>
-    <system:String x:Key="string_Metadataeditor">Metadata Editor</system:String>
+    <system:String x:Key="string_Moddesceditor">Moddesc.ini-Editor</system:String>
     <system:String x:Key="string_Deploymodto7zfilefordistribution">Exportiere Mod als 7z Archiv zur Veröffentlichung</system:String>
     <system:String x:Key="string_Prepareforupdaterservice">Zum ME3Tweaks-Aktualisierungsdienst hochladen</system:String>
     <system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Mod-Infos an ME3Tweaks.com senden</system:String>
@@ -306,7 +306,25 @@
     <system:String x:Key="string_checkModsForUpdates">Mods auf Aktualisierungen überprüfen</system:String>
     <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Sucht nach Aktualisierungen für Mods, die Suche nach Aktualisierungen unterstützen</system:String>
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Anzeige</system:String>
-    <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+    <system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Personalisierte Tastenbelegung automatisch auf ModMaker Mods anwenden</system:String>
+    <system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Automatisch eine benutzerdefinierte BioInput.xml-Datei injizieren, sofern diese im keybindsoverride Ordner vorhanden ist.&#10;Definiere eigene Tastenbelegungen im Custom Keybinds Injector im Werkzeuge-Menü</system:String>
+    <system:String x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
+    <system:String x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installiert benutzerdefinierte Tastenbelegungen die du festlegst im Spiel</system:String>
+    <system:String x:Key="string_originIngameOverlayDisabler">Origin im Spiel abschalten</system:String>
+    <system:String x:Key="string_tooltip_oigDisabler">Installiert eine Datei, die das Abschalten von Origin im Spiel erzwingt</system:String>
+    <system:String x:Key="string_dialog_cantMakeCompatPackTextureModInstalled">Ein GUI-Kompatibilitätspack kann nicht für Spiele generiert werden, bei denen Texturen modifiziert wurden.</system:String>
+    <system:String x:Key="string_cannotGenerateCompatibilityPack">Kann kein Kompatibilitätspack generieren</system:String>
+    <system:String x:Key="string_installTheCompatibilityPackNowQuestion">Kompatibilitätspack jetzt installieren?</system:String>
+    <system:String x:Key="string_compatibilityPackGenerated">Kompatibilitätspack generiert</system:String>
+    <system:String x:Key="string_selectMod">Mod wählen</system:String>
+	<!-- When no mod is selected -->
+    <system:String x:Key="string_noTarget">Kein Ziel</system:String>
+	<!-- When there is no targets at all -->
+    <system:String x:Key="string_cannotInstallToThisGame">Kann nicht in dieses Spiel installiert werden</system:String>
+	<!-- When a target for another game than the selected mod -->
+    <system:String x:Key="string_checkingTutorialAssets">Tutorial-Dateien werden überprüft</system:String>
+    <system:String x:Key="string_checkedTutorialAssets">Tutorial-Dateien wurden überprüft</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">Diese Zielinstallation enthält modifizierte Texturen</system:String>
@@ -371,6 +389,16 @@
     <system:String x:Key="string_interp_dialog_errorCopyingFilesToTarget" xml:space="preserve">Beim Kopieren der Mod-Dateien zum Ziel ist ein Fehler aufgetreten:\n\n{0}\n\nDer Mod ist möglicherweise unvollständig installiert.</system:String>
     <!-- 0=error message -->
     <system:String x:Key="string_errorInstallingMod">Fehler bei der Modinstallation</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod1">Dieses Kompatibilitätspack wurde nicht für diese Spielkonfiguration erstellt und kann nicht installiert werden.</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod2_dlcRemoved">Die folgenden DLC-Mods wurden entfernt, nachdem das Kompatibilitätspack generiert wurde:</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod2_dlcAdded">Die folgenden DLC-Mods wurden hinzugefügt, nachdem das Kompatibilitätspack generiert wurde:</system:String>
+    <system:String x:Key="string_dialog_incorrectCompatMod3">Ein neues Kompatibilitätspack muss über das Mod-Verwaltungsmenü generiert werden.</system:String>
+    <system:String x:Key="string_interp_unableToFullyDeleteExistingModDirectory" xml:space="preserve">Das existierende Mod-Verzeichnis kann nicht vollständig gelöscht werden:\n{0}\n\nGrund:\n{1}\n\nDer Order wurde möglicherweise teilweise gelöscht.</system:String>
+	<!-- 0={Directory} 1={Exception message} -->
+    <system:String x:Key="string_interp_thisModShouldBeReinstalled">Dieser Mod ({0}) sollte neu installiert werden.</system:String>
+	<!-- 0={Mod name} -->
+    <system:String x:Key="string_thisModShouldBeReinstalled">Dieser Mod sollte neu installiert werden.</system:String>
+    <system:String x:Key="string_invalidCompatibilityPack">Ungültiges Kompatibilitätspack</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Willkommen beim ME3Tweaks Mod Manager</system:String>
@@ -473,6 +501,16 @@
     <!-- 0=filepath -->
     <system:String x:Key="string_noMiscellaneousIssuesDetected">Keine sonstigen Probleme wurden gefunden</system:String>
     <system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Überprüfungen haben einige sonstige Probleme gefunden, die vor der Veröffentlichung behoben werden sollten</system:String>
+    <system:String x:Key="string_interp_error_textureTaggedFileFound">{0} ist als modifizierte Textur markiert. Diese Datei kann nicht in einem Mod veröffentlicht werden. Mod-Dateien können nicht benutzt werden, wenn sie mit Mass Effect Modder oder ALOT Installer modifiziert wurden - benutze Package Editor in ME3Explorer um Texturen für Mods, die Paketdateien benutzen, zu ersetzen. Veröffentlichung von Mods mit ALOT-Markierungen in den Dateien führt dazu, dass der Mod ALOT Installer und Mass Effect Modder blockiert.</system:String>
+	<!-- 0={Filepath} -->
+    <system:String x:Key="string_deploymentBlocked">Veröffentlichung blockiert</system:String>
+    <system:String x:Key="string_error_foundUnofficialDescriptor">Die moddesc.ini für diesen Mod ist mit dem 'unofficial'-descriptor markiert, das heißt der Mod wurde bereits einmal importiert. Inoffiziell importierte Mods importieren nur die Daten und nicht die Alternativen oder andere wichtige Informationen. Dieser descriptor muss vor der Veröffentlichung entfernt werden.</system:String>
+    <system:String x:Key="string_error_foundImportedByDesriptor">Die moddesc.ini für diesen Mod ist mit dem 'importedbybuild'-descriptor markiert. Dieser descriptor wird nur für Mods benutzt, die mit dem Drittanbieter-Import-Dienst importiert wurden - da dieser Mod veröffentlicht wird, wird er als offiziell angesehen und daher muss diser descriptor vor der Veröffentlichung entfernt werden.</system:String>
+    <system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} benutzt TFC-Name [2}. Dieser TFC-Name wird benutzt, wenn Texturen mit den veralteten ME3Explorer Texturwerkzeugen ersetzt werden und ist eine häufige Quelle für Texturfehler. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
+	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
+    <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} benutzt TFC-Name [2}. Dieser TFC-Name wird von MEM bei der Installation von Texturen benutzt und kann nicht bei der Veröffentlichung benutzt werden, damit es nicht zu Konflikten kommt. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
+	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
+    <system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Die Veröffentlichung ist blockiert solange die oben genannten Probleme gelöst sind</system:String>
 
     <!-- Backup Creator -->
     <system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer und ALOT Installer.</system:String>
@@ -518,6 +556,8 @@
     <!-- 0=Game name (Mass Effect, Mass Effect 3, etc) -->
     <system:String x:Key="string_locationNotAllowedForBackup">Ordner nicht für Backup zulässig</system:String>
     <system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Dein Benutzerkonto hat keinen Schreibzugriff auf das gewählte Zielverzeichnis. Wähle ein anderes Verzeichnis.</system:String>
+    <system:String x:Key="string_dialog_linkTargetWontBeModdable">Die Spielinstallation, die du verknüpfst, wird nicht zum Modden verfügbar sein. Stelle sicher, dass es sich um eine Backup-Kopie des Spiels handelt, und nicht deine Hauptinstallation, sonst wirst du dein Spiel nicht modifizieren können.</system:String>
+    <system:String x:Key="string_linkWarning">Verknüpfungswarnung</system:String>
 
     <!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
@@ -535,11 +575,13 @@
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Von ME3Tweaks wiederherstellen</system:String>
-    <system:String x:Key="string_theFollowingModsFailedToLoad">Die folgenden Mods konnten nicht geladen werden. Klicke die Mods an um den Grund dafür zu finden.</system:String>
+    <system:String x:Key="string_theFollowingModsFailedToLoad">Die folgenden Mods konnten nicht aus der Bibliothek geladen werden. Klicke die Mods an um den Grund dafür zu finden.</system:String>
     <system:String x:Key="string_failedMods">Fehlgeschlagene Mods</system:String>
     <system:String x:Key="string_failureInformation">Fehlerinformationen</system:String>
     <system:String x:Key="string_debugReload">Debug neu laden</system:String>
-    <!-- This is only seen in debug builds, but localize it anyways. -->
+	<!-- This is only seen in debug builds, but localize it anyways. -->
+    <system:String x:Key="string_deleteFromLibrary">Aus der Bibliothek entfernen</system:String>
+    <system:String x:Key="string_visitWebsite">Website aufrufen</system:String>
 
     <!-- GUI Compatibility Generator -->
     <system:String x:Key="string_preparingToScanGame">Überprüfung des Spiels wird vorbereitet</system:String>
@@ -633,6 +675,13 @@
     <system:String x:Key="string_tooltip_enableDLC" xml:space="preserve">Aktiviert das Laden dieses DLC-Mods im Spiel.</system:String>
     <system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">Entfernt diesen DLC-Mod aus dem Spiel.&#10;Halte SHIFT gedrückt, um den Bestätigungsdialog zu überspringen (falls es keine Warnungen gibt)</system:String>
     <system:String x:Key="string_tooltip_openTargetInExplorer">Öffnet den Ordner dieses Installationsziels im Datei-Explorer</system:String>
+    <system:String x:Key="string_other">Andere</system:String>
+    <system:String x:Key="string_extraDllsFound">Zusätzliche dll-Dateien gefunden</system:String>
+    <system:String x:Key="string_noExtraDllsWereFound">Keine zusätzlichen dll-Dateien gefunden</system:String>
+    <system:String x:Key="string_installedASIs">Installierte ASIs</system:String>
+    <system:String x:Key="string_tooltip_clickToOpenASIManager">Klicke, um den ASI-Manager zu öffnen</system:String>
+    <system:String x:Key="string_manageASIsWithASIManager">ASIs mit dem ASI-Manager verwalten</system:String>
+    <system:String x:Key="string_binkw32DLCBypass">Binkw32 DLC-Umgehung</system:String>
 
     <!-- Log uploader -->
     <system:String x:Key="string_selectALogToView">Wähle das anzuzeigende Ereignisprotokoll</system:String>
@@ -645,14 +694,14 @@
     <system:String x:Key="string_logUploadFailed">Hochladen des Ereignisprotokolls fehlgeschlagen</system:String>
     <system:String x:Key="string_logsAndDiagnostics">Ereignisprotokolle und Fehlerbehebung</system:String>
     <system:String x:Key="string_uploadToLogViewer">Hochladen zum Ereignisprotokollanzeigedienst</system:String>
-    <system:String x:Key="string_selectWhatDataToCollect">Wähle die zu sammelnden Daten</system:String>
+    <system:String x:Key="string_selectWhatDataToCollect">Wähle die zu sammelnden Daten.</system:String>
     <system:String x:Key="string_modManagerApplicationLog">Mod Manager Anwendungsereignisprotokoll</system:String>
-    <system:String x:Key="string_applicationLogDescription">Das Anwendungsereignisprotokoll enthält detaillierte Informationen über eine Mod Manager-Sitzung und kann von ME3Tweaks benutzt werden, um Fehler zu beheben.</system:String>
+    <system:String x:Key="string_applicationLogDescription">Das Anwendungsereignisprotokoll enthält detaillierte Informationen über eine Mod Manager-Sitzung und kann von ME3Tweaks benutzt werden, um Fehler zu beheben. Wenn du versuchst herauszufinden, warum etwas in Mod Manager passiert ist, wähle ein Anwendungsereignisprotokoll.</system:String>
     <system:String x:Key="string_gameDiagnostic">Spiel-Diagnose</system:String>
-    <system:String x:Key="string_gameDiagnosticDescription">Eine Spiel-Diagnose sammelt Daten über eine Installation, darunter ALOT-Status, installierte DLCs, Spielversion, Absturzberichte (falls vorhanden), und mehr. Wenn du ein Problem im Spiel hast, wähle das Spiel bei dem es auftritt.</system:String>
+    <system:String x:Key="string_gameDiagnosticDescription">Eine Spiel-Diagnose sammelt Daten über eine Installation, darunter ALOT-Status, installierte DLCs, Spielversion, Absturzberichte (falls vorhanden), Texturprobleme und mehr. Wenn du ein Problem im Spiel hast, wähle das Spiel bei dem es auftritt.</system:String>
     <system:String x:Key="string_tooltip_checkAllTexturesInGameDescription" xml:space="preserve">Wähle diese Option, um alle Texturen im Spiel zu prüfen.&#10;Die Texturenüberprüfung kann einige Minuten dauern</system:String>
     <system:String x:Key="string_fullTexturesCheck">Komplette Texturenüberprüfung</system:String>
-    <system:String x:Key="string_diagShareTheLink">Teile den Link mit dem Empfänger deiner Ereignisprotokolle/Diagnose.</system:String>
+    <system:String x:Key="string_diagShareTheLink">Teile den Link mit dem Empfänger deiner Ereignisprotokolle/Diagnose. Wenn du nicht sicher bist, welche Optionen du wählen sollst, wähle einfach eine von beiden.</system:String>
     <system:String x:Key="string_selectAnApplicationLog">Wähle ein Anwendungsereignisprotokoll</system:String>
     <system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Wähle eine Zielinstallation, für die Diagnosedaten gesammelt werden sollen</system:String>
     <system:String x:Key="string_compressingForUpload">Wird zum Hochladen komprimiert</system:String>
@@ -706,7 +755,7 @@
     <system:String x:Key="string_importCompleted">Import abgeschlossen</system:String>
     <system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Diese Datei ist nicht in der Textur-Bibliothek. Wird in die Textur-Bibliothek verschoben</system:String>
     <system:String x:Key="string_movingALOTFileToTextureLibraryPleaseWait">ALOT-Datei wird in die Textur-Bibliothek verschoben, bitte warten...</system:String>
-    <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Dieser Mod kann aus einem der folgenden Gründe nicht von Mod Manager importiert oder installiert werden:\n - Installation dieses Mods ist zu komplex\n - Installation dieses Mods benötigt zusätzliche Werkezeuge, die manuell vom Benutzer eingestellt werden müssen\n - Mod steht auf der schwarzen Liste, da er bekannt dafür ist, Spiele zu zerstören.\n\nDieser Mod muss manuell installiert werden.</system:String>
+    <system:String x:Key="string_modCannotBeImportedDueToOneOfTheFollowingReasons" xml:space="preserve">Dieser Mod kann aus einem der folgenden Gründe nicht von Mod Manager importiert oder installiert werden:\n - Installation dieses Mods ist zu komplex\n - Installation dieses Mods benötigt zusätzliche Werkezeuge, die manuell vom Benutzer eingestellt werden müssen\n - Mod steht auf der Sperrliste, da er bekannt dafür ist, Spiele zu zerstören.\n\nDieser Mod muss manuell installiert werden.</system:String>
     <system:String x:Key="string_interp_anErrorOccuredExtractingTheArchiveX">Beim Entpacken der Archivdatei ist ein Fehler aufgetreten: {0}</system:String>
     <!-- 0=Exception message -->
     <system:String x:Key="string_errorExtractingArchive">Fehler beim Entpacken einer Archivdatei</system:String>
@@ -918,8 +967,15 @@
     <system:String x:Key="string_restored">Wiederhergestellt</system:String>
     <system:String x:Key="string_restore">Wiederherstellen</system:String>
     <system:String x:Key="string_restoring">Wird wiederhergestellt</system:String>
+    <system:String x:Key="string_interp_asiStatus">In dieser Installation sind {0} ASI-Mod(s) installiert</system:String>
+	<!-- 0={installedASIs.Count} -->
+    <system:String x:Key="string_thisInstallationHasNoASIModsInstalled">In dieser Installation sind keine ASI-Mods installiert</system:String>
+    <system:String x:Key="string_bypassInstalledASIAndDLCModsWillBeAbleToLoad">Umgehung installiert. ASI- und DLC-Mods können geladen werden</system:String>
+    <system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Umgehung nicht installiert. ASI- und DLC-Mods können nicht geladen werden</system:String>
+    <system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Umgehung installiert. ASI-Mods können geladen werden</system:String>
+    <system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Umgehung nicht installiert. ASI-Mods können nicht geladen werden</system:String>
 
-    <!-- ModJob -->
+	<!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Ersatzdatei konnte nicht zu mod job hinzugefügt werden: {0} existiert nicht, wird jedoch vom job angegeben.</system:String>
     <!-- 0 = source file path in moddesc -->
     <system:String x:Key="string_validation_modjob_exeFilesNotAllowed">.exe-Dateien sind in Mod Manager-Mods nicht erlaubt.</system:String>
@@ -948,15 +1004,17 @@
     <system:String x:Key="string_interp_compressingX">{0} wird komprimiert</system:String>
     <!-- 0 = filename -->
     <system:String x:Key="string_interp_compressedX">{0} wurde komprimiert</system:String>
-    <!-- 0 = filename -->
+	<!-- 0 = filename -->
     <system:String x:Key="string_interp_vPatchingIntoAlternate">VPatche zu Alternative: {0}</system:String>
-    <!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
+	<!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
+    <system:String x:Key="string_interp_theArchiveFileArchivePathIsNoLongerAvailable">Die Archivdatei {0} ist nicht mehr verfügbar.</system:String>
+	<!-- 0={archivePath} -->
 
     <!-- Mod-Parsing -->
     <system:String x:Key="string_interp_modparsing_modVersion">Mod-Version: {0}</system:String>
-    <!-- requires manual setup -->
+	<!-- 0 = version number -->
     <system:String x:Key="string_interp_modparsing_modDeveloper">Mod-Entwickler: {0}</system:String>
-    <!-- 0 = name-->
+	<!-- 0 = name -->
     <system:String x:Key="string_interp_modparsing_modMakerCode">ModMaker-Code: {0}</system:String>
     <!-- 0 = number-->
     <system:String x:Key="string_interp_modparsing_updateCode">Update-Code: {0}</system:String>
