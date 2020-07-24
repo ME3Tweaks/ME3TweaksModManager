@@ -1108,11 +1108,11 @@
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFilesValue">UPDATES header additionaldeploymentfiles enthält einen Dateipfad ({0}) mit .., \\ oder /, was nicht erlaubt ist.</system:String>
     <!-- 0 = filepath -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_updatesSpecifiesMissingAdditionalDeploymentFiles">UPDATES header additionaldeploymentfiles enthält eine Datei, die nicht im Mod-Ordner existiert: {0}</system:String>
-    <!-- 0 = filepath -->
+	<!-- 0 = filepath -->
     <system:String x:Key="string_validation_modparsing_loadfailed_modDoesNothing">Keine Installations-jobs angegeben. Dieser Mod tut nichts.</system:String>
     <system:String x:Key="string_validation_modparsing_loadfailed_cmm1CoalFileMissing">Dies ist ein veralteter Mod (cmmver 1.0). Diese moddesc-Version benötigt eine Coalesced.bin-Datei im selben Ordner wie die moddesc.ini-Datei, doch keine wurde gefunden.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing">Dieser mod gibt einen modcoal descriptor für cmmver 2.0 an, doch die lokale Coalesced-Datei existiert nicht: {0}</system:String>
-    <!-- 0 = filepath -->
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing">Dieser Mod gibt einen modcoal descriptor für cmmver 2.0 an, doch die lokale Coalesced-Datei existiert nicht: {0}</system:String>
+	<!-- 0 = filepath -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod">Ein Fehler ist aufgetreten beim Erstellen des basegame jobs für veralteten 1.0 Mod: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_loadFailed">Laden fehlgeschlagen</system:String>
@@ -1123,11 +1123,27 @@
     <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">{0} gibt keinen ModInfo game descriptor an, welcher jedoch ab ModDesc Version 6 benötigt wird.</system:String>
     <!-- 0=ModName -->
     <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">Dieser Mod enthält eine Datei, die auf der schwarzen Liste steht: {0}. Diese Datei muss aus dem Mod-Ordner oder von der schwarzen Liste in moddesc.ini entfernt werden, damit dieser Mod geladen werden kann.</system:String>
-    <!-- 0=fullpath -->
+	<!-- 0=fullpath -->
     <system:String x:Key="string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles">Fehler in der gamedirectorystructure-Option: Im angegebenen Pfand wurden keine zu installierenden Dateien gefunden: {0}, Pfad: {1}</system:String>
-    <!-- 0 = job/header name, 1 = filepath -->
+	<!-- 0 = job/header name, 1 = filepath -->
+    <system:String x:Key="string_interp_addsTheFollowingLocalizationsToX">Fügt {0} die folgenden Lokalisierungen hinzu:</system:String>
+	<!-- 0={Mod Name} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidUrlScheme">Ungültige URL für Mod {0}: URL muss mit http:// oder https:// beginnen und ein gültiges Format haben. Ungültiger Wert: {1}</system:String>
+	<!-- 0={ModName} 1={ModWebsite} -->
+    <system:String x:Key="string_interp_validation_modparsing_cannotCombineLocalizationTask">Dieser Mod gibt einen LOCALIZATION task neben weiteren anderen task headern an. Ein Mod mit LOCALIZATION task darf nur einen LOCALIZATION task enhalten und kann nicht mit anderen tasks kombiniert werden.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_missingDlcNameDesriptor">Dem LOCALIZATION task für diesen Mod fehlt der 'dlcname' descriptor, der benötigt wird, um das Ziel dieses Lokalisierungsmods festzulegen.</system:String>
+    <system:String x:Key="string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound">Eine referenzierte Lokalisierungsdatei konnte nicht gefunden werden: {0}</system:String>
+	<!-- 0={Referenced Filepath} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFileType">Eine referenzierte Lokalisierungsdatei ist keine .tlk-Datei: {0}. LOCALIZATION tasks erlauben nur die Installation von .tlk-Dateien.</system:String>
+	<!-- 0={Referenced Filepath} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidDlcNameLocalization">Der 'dlcname' descriptor unter LOCALIZATION muss mit DLC_ beginnen und darf kein offizielles DLC für das Spiel sein. Ungültiger Wert: {0}</system:String>
+	<!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFilename">Die referenzierte Lokalisierungsdatei hat einen falschen Namen: {0}. Lokalisierungsdateienamen müssen mit dem Namen des DLCs beginnen, gefolgt von einem Unterstrich und dann dem dreibuchstabigen Sprachcode.</system:String>
+	<!-- 0={Incorrect filename} -->
+    <system:String x:Key="string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX">Ein Fehler ist aufgetreten beim hinzufügen der Datei zum LOCALISATION job: {0}</system:String>
+	<!-- 0={failurereason} -->
 
-    <!-- About Panel -->
+	<!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hallo!</system:String>
     <system:String x:Key="string_tooltip_softwareDevelopedWithLoveByME3Tweaks">Software mit Liebe entwickelt von ME3Tweaks</system:String>
     <system:String x:Key="string_libraries">Libraries</system:String>
@@ -1161,8 +1177,11 @@
     <system:String x:Key="string_installingEllipse">Wird installiert...</system:String>
     <system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">Quellcode dieses ASI-Mods anzeigen</system:String>
     <system:String x:Key="string_viewSourceCode">Quellcode anzeigen</system:String>
+    <system:String x:Key="string_interp_anErrorOccuredDeletingTheASI">Beim Löschen des ASI ist ein Fehler aufgetreten: {0}</system:String>
+	<!-- 0={Error Message} -->
+    <system:String x:Key="string_errorDeletingASI">Fehler beim Löschen von ASI</system:String>
 
-    <!-- Starter Kit Window -->
+	<!-- Starter Kit Window -->
     <system:String x:Key="string_newDLCModInformation">Info für neuen DLC-Mod</system:String>
     <system:String x:Key="string_modName">Mod-Name</system:String>
     <system:String x:Key="string_modDeveloper">Mod-Entwickler</system:String>
@@ -1273,8 +1292,10 @@
     <system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Fügt Mixins hinzu, um die korrekte Funktionalität des Controller Mods zu gewährleisten, zum Beispiel richtige Drehung der Kamera, wenn der Mod die selben Dateien modifiziert wie ein Controller Mods.&#10;Wähle dies nicht aus, wenn du keinen Controller Support Mod verwendest. Wenn du diese Option benutzt, dann installiere diesen Mod NACHDEM du einen Controller Support Mod installiert hast.</system:String>
     <system:String x:Key="string_addControllerSupportMixinsIfNecessary">Controller Support Mixins hinzufügen, falls nötig</system:String>
     <system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Stattdessen eine lokale ModMaker xml-Datei verwenden</system:String>
+    <system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Automatisch eine benutzerdefinierte BioInput.xml-Datei injizieren, sofern diese im keybindsoverride Ordner vorhanden ist.&#10;Definiere eigene Tastenbelegungen im Custom Keybinds Injector im Werkzeuge-Menü</system:String>
+    <system:String x:Key="string_injectCustomKeybindsIfAvailable">Benutzerdefinierte Tastenbelegung injizieren (sofern vorhanden)</system:String>
 
-    <!-- Online Content -->
+	<!-- Online Content -->
     <system:String x:Key="string_interp_revisionX">Revision {0}</system:String>
     <!-- 0= ModMaker Mod Revision -->
     <system:String x:Key="string_interp_codeX">Code {0}</system:String>
@@ -1394,10 +1415,13 @@
     <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Mass Effect 2 Konsolen-Tastenbelegung kann pro Spiel festgelegt werden.</system:String>
     <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Mass Effect 3 Konsolen-Tastenbelegung kann pro Spiel festgelegt werden.</system:String>
     <system:String x:Key="string_interp_cannotReadME3Keybinds">Die Tastenbelegung für das gewählte Mass Effect 3-Ziel konnte nicht geladen werden: {0}</system:String>
-    <!-- 0 = error message -->
+	<!-- 0 = error message -->
     <system:String x:Key="string_errorReadingKeybinds">Fehler beim Lesen der Tastenbelegung</system:String>
+    <system:String x:Key="string_interp_cannotOpenMassEffect2CoalescediniMessage">Mass Effect 2 Coalesced.ini kann nicht geöffnet werden: {0}</system:String>
+	<!-- 0={Error message} -->
+    <system:String x:Key="string_errorReadingCoalescedini">Fehler beim Lesen von Coalesced.ini</system:String>
 
-    <!-- Updater Service Panel -->
+	<!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Aktualisierungsdienst</system:String>
     <system:String x:Key="string_setChangelog">Änderungsprotokoll eingeben</system:String>
     <system:String x:Key="string_updaterServiceSettings">Aktualisierungsdienst-Einstellungen</system:String>
@@ -1530,11 +1554,13 @@
     <system:String x:Key="string_conflictDetector">Kollisionserkennung</system:String>
     <system:String x:Key="string_conflictDetectorDescription">Wenn Dateien mit gleichem Namen in mehreren DLCs enthalten sind, benutzt das Spiel die Datei mit der höchsten Einhängungspriorität. Die Kollisionserkennung zeigt dir Konflikte zwischen Dateien deiner DLC-Mods. Dieses Werkzeug ist NUR FÜR ENTWICKLER, versuche nicht die Ergebnisse zu interpretieren, wenn du nicht weißt wie die Spieldateien funktionieren!</system:String>
     <system:String x:Key="string_interp_mountPriorityX">Einhängungspriorität {0}</system:String>
-    <!-- 0=mount priority number -->
+	<!-- 0=mount priority number -->
     <system:String x:Key="string_interp_XModsSuperceded">{0} Mod(s) überschrieben</system:String>
-    <!-- 0=amount of mods that have been superceded -->
+	<!-- 0=amount of mods that have been superceded -->
+    <system:String x:Key="string_dialog_cannotImportModTextureMarkersFound">Dieser Mod enthält Dateien, die als Teil einer Installation mit modifizierten Texturen markiert wurden. Mods die von Texturmods verändert wurden, können nicht importiert werden.</system:String>
+    <system:String x:Key="string_cannotImportMod">Mod kann nicht importiert werden</system:String>
 
-    <!-- ME3CMM Migration -->
+	<!-- ME3CMM Migration -->
     <system:String x:Key="string_migratingMods">Mods werden migriert</system:String>
     <system:String x:Key="string_migratingSettings">Migrationseinstellungen</system:String>
     <system:String x:Key="string_interp_migratingModsXoFY">Mods werden migriert [{0}/{1}]</system:String>
@@ -1562,7 +1588,67 @@
 
     <!-- TLK Transpiler -->
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Beim Kompilieren der TLK subfile {0} ist ein Fehler aufgetreten: {1}</system:String>
-    <!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
+	<!-- 0=sub file 1=exception message. This method uses multiple files so it lists what file failed -->
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp">Beim Kompilieren der TLK-Datei ist ein Fehler aufgetreten: {0}</system:String>
-    <!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
+	<!-- 0=exception message. This method is single file so there's no point showing what file failed to compile -->
+
+	<!-- Vanilla Database Service -->
+    <system:String x:Key="string_checkingBackup">Backup wird überprüft</system:String>
+
+	<!-- Backup Service -->
+    <system:String x:Key="string_interp_backupStatusStoredAt">Backup gespeichert in {0}</system:String>
+    <system:String x:Key="string_gameHasNotBeenBackedUp">Kein Backup dieses Spiels wurde erstellt</system:String>
+    <system:String x:Key="string_backupUnavailable">Backup nicht verfügbar</system:String>
+    <system:String x:Key="string_interp_backupStatusNotAccessible" xml:space="preserve">Backup gespeichert in {0}\nAuf Backup-Pfad kann nicht zugegriffen werden, wurde der Ordner umbenannt oder verschoben?</system:String>
+	<!-- 0={Backup Path} -->
+    <system:String x:Key="string_backupNotVanilla">Backup ist nicht vanilla</system:String>
+    <system:String x:Key="string_interp_backupStatusNotVanilla" xml:space="preserve">Backup gespeichert in {0}\nBackup ist nicht vanilla und wird nicht benutzt</system:String>
+	<!-- 0={Backup Path} -->
+    <system:String x:Key="string_gameNotInstalledHasItBeenRunOnce">Das Spiel scheint nicht installiert zu sein, oder ist noch kein modifizierbares Ziel in Mod Manager.&#10;Falls das Spiel von Steam ist, starte es mindestens ein Mal</system:String>
+
+	<!-- MEM Vanilla DB Viewer -->
+    <system:String x:Key="string_mEMVanillaDatabaseViewer">MEM Vanilla DB Anzeige</system:String>
+    <system:String x:Key="string_viewInformationInTheVanillaDatabaseUsedForBackupVerification">Lasse dir Informationen aus der vanilla Datenbank anzeigen, die für Backupverifikation benutzt wird</system:String>
+
+	<!-- Log Collector -->
+    <system:String x:Key="string_preparingToCollectDiagnosticInfo">Sammeln von Diagnoseinformationen wird vorbereitet</system:String>
+    <system:String x:Key="string_interp_preparingMEMNoGUIX">MEM No GUI wird vorbereitet {0}%</system:String>
+	<!-- 0={Percent} -->
+    <system:String x:Key="string_collectingGameInformation">Spielinformationen werden gesammelt</system:String>
+    <system:String x:Key="string_collectingSystemInformation">Systeminformationen werden gesammelt</system:String>
+    <system:String x:Key="string_collectingDLCInformation">DLC-Informationen werden gesammelt</system:String>
+    <system:String x:Key="string_collectingTFCFileInformation">TFC-Dateiinformationen werden gesammelt</system:String>
+    <system:String x:Key="string_checkingTextureMapGameConsistency">Texture map &lt;-&gt; Spiel Übereinstimmung wird überprüft</system:String>
+    <system:String x:Key="string_interp_performingFullTexturesCheckX">Vollständige Texturüberprüfung wird ausgeführt</system:String>
+	<!-- 0={Percent} -->
+    <system:String x:Key="string_collectingASIFileInformation">ASI-Dateiinformationen werden gesammelt</system:String>
+    <system:String x:Key="string_collectingME1ApplicationLogs">ME1 Anwendungsereignisprotokolle werden gesammelt</system:String>
+    <system:String x:Key="string_collectingEventLogs">Ereignisprotokolle werden gesammelt</system:String>
+    <system:String x:Key="string_collectingME3SessionLog">ME3 Sitzungsereignisprotokoll wird gesammelt</system:String>
+
+	<!-- Origin in-game overlay disabler -->
+    <system:String x:Key="string_overlayDisablerInstalled">Erzwungene Abschaltung von Origin im Spiel installiert</system:String>
+    <system:String x:Key="string_uninstallDisabler">Erzwungene Abschaltung von Origin im Spiel deinstallieren</system:String>
+    <system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Andere d3d9.dll ist installiert, Origin im Spiel ist deaktiviert</system:String>
+    <system:String x:Key="string_cannotUninstallOtherD3d9File">Andere d3d9-Datei kann nicht deinstalliert werden</system:String>
+    <system:String x:Key="string_overlayDisablerNotInstalled">Erzwungene Abschaltung von Origin im Spiel nicht installiert</system:String>
+    <system:String x:Key="string_installDisabler">Erzwungene Abschaltung von Origin im Spiel installieren</system:String>
+    <system:String x:Key="string_noTargetSelected">Kein Ziel gewählt</system:String>
+    <system:String x:Key="string_noOriginBasedGameTargets">Keine Origin-basierten Spielinstallationsziele</system:String>
+    <system:String x:Key="string_origin">Origin</system:String>
+    <system:String x:Key="string_oigPanelHeader" xml:space="preserve">Origin im Spiel ist dafür bekannt, wesentliche Leistungseinbußen in den Mass Effect-Spielen zu verursachen. Während es zwar in den Origin-Einstellungen abgeschaltet werden kann, funktioniert diese Einstellung nicht für die Steam-Version von Mass Effect 3. Du kannst eine überschreibende d3d9.dll installieren, die die Abschaltung Origin im Spiel erzwingt.&#10;&10;Überschreiben mit anderen d3d9.dll, wie z.B. mit Reshade, deaktiviert Origin im Spiel ebenfalls.</system:String>
+    <system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Keine Origin-basierten Installationsziele sind für dieses Spiel vorhanden</system:String>
+
+	<!-- Moddescini Editor -->
+    <system:String x:Key="string_toolUnderDevelopment">Dieses Werkzeug ist in der Entwicklung und könnte oder könnte nicht funktionieren. Benutzung auf eigene Gefahr!</system:String>
+    <system:String x:Key="string_underDevelopment">In Entwicklung</system:String>
+
+	<!-- Keybinds Injector -->
+    <system:String x:Key="string_customKeybindsInjector">Custom Keybinds Injector</system:String>
+    <system:String x:Key="string_injectCustomKeybindsIntoYourGameWithThisTool">Injiziere benutzerdefinierte Tastenbelegungen mit diesem Werkzeug in dein Spiel.</system:String>
+    <system:String x:Key="string_openKeybindsDirectory">Tastaturbelegungsordner öffnen</system:String>
+    <system:String x:Key="string_keybindsAreDefinedPerInstallation">Tastaturbelegungen sind pro Installation definiert</system:String>
+    <system:String x:Key="string_selectWhichKeybindsToInstall">Wähle, welche Tastaturbelegung installiert werden soll:</system:String>
+    <system:String x:Key="string_resetKeybinds">Tastaturbelegung zurücksetzen</system:String>
+    <system:String x:Key="string_installKeybinds">Tastaturbelegung installieren</system:String>
 </ResourceDictionary>
