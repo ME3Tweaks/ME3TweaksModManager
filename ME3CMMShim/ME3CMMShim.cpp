@@ -11,7 +11,7 @@ bool isFileExist(char fileName[]) {
 	return errno != ENOENT;
 }
 
-int main()
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
 	char selfdir[MAX_PATH] = { 0 };
 	GetModuleFileNameA(NULL, selfdir, MAX_PATH);
@@ -19,8 +19,31 @@ int main()
 	PathAppendA(selfdir, "ME3TweaksModManager.exe");
 	if (isFileExist(selfdir))
 	{
-		system(selfdir);
+		STARTUPINFOA si;
+		PROCESS_INFORMATION pi;
+
+		// set the size of the structures
+		ZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+		ZeroMemory(&pi, sizeof(pi));
+
+		// start the program up
+		CreateProcessA
+		(
+			selfdir,   // the path
+			NULL,                // Command line
+			NULL,                   // Process handle not inheritable
+			NULL,                   // Thread handle not inheritable
+			FALSE,                  // Set handle inheritance to FALSE
+			CREATE_NEW_CONSOLE,     // Opens file in a separate console
+			NULL,           // Use parent's environment block
+			NULL,           // Use parent's starting directory 
+			&si,            // Pointer to STARTUPINFO structure
+			&pi           // Pointer to PROCESS_INFORMATION structure
+		);
+		return 0;
 	}
+	return 1;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

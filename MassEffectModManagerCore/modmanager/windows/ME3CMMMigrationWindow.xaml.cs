@@ -102,7 +102,6 @@ namespace MassEffectModManagerCore.modmanager.windows
                                     }
 
                                     Log.Information($@"Migrated {modDirToMove}");
-                                    //Thread.Sleep(200);
                                 }
                                 else
                                 {
@@ -299,7 +298,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                     switch (name.ToLower())
                                     {
                                         case @"deployed mods":
-                                        case @"external tools": // Created by M3 at this point
+                                        case @"externaltools": // Created by M3 at this point
                                         case @"patch_001_extracted":
                                             continue;
                                         default:
@@ -331,7 +330,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             }
 
                             // Install redirect to ensure user shortcuts continue to work
-                            var me3cmmPath = Path.Combine(exeDir, @"ME3CMM");
+                            var me3cmmPath = Path.Combine(exeDir, @"ME3CMM.exe");
                             Log.Information(@"Writing redirector to " + me3cmmPath);
                             Utilities.ExtractInternalFile("MassEffectModManagerCore.updater.ME3CMM.exe", me3cmmPath, true);
 
