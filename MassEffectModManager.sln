@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IniFileParser", "IniFilePar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalizationHelper", "LocalizationHelper\LocalizationHelper.csproj", "{57F86ADA-7636-4757-9434-85CB57A3D450}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ME3CMMShim", "ME3CMMShim\ME3CMMShim.vcxproj", "{EE6EA9EC-4000-4E22-A6DD-DD087BECADE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -84,6 +86,10 @@ Global
 		{57F86ADA-7636-4757-9434-85CB57A3D450}.Debug|x64.Build.0 = Debug|x64
 		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|x64.ActiveCfg = Release|x64
 		{57F86ADA-7636-4757-9434-85CB57A3D450}.Release|x64.Build.0 = Release|x64
+		{EE6EA9EC-4000-4E22-A6DD-DD087BECADE1}.Debug|x64.ActiveCfg = Debug|x64
+		{EE6EA9EC-4000-4E22-A6DD-DD087BECADE1}.Debug|x64.Build.0 = Debug|x64
+		{EE6EA9EC-4000-4E22-A6DD-DD087BECADE1}.Release|x64.ActiveCfg = Release|x64
+		{EE6EA9EC-4000-4E22-A6DD-DD087BECADE1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

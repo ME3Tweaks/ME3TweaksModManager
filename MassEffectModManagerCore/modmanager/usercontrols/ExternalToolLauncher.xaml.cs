@@ -102,7 +102,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Log.Information(@"Downloading file: " + url);
             var extension = Path.GetExtension(url);
-            string downloadPath = temppath + toolName + extension;
+            string downloadPath = Path.Combine(temppath, toolName + extension);
 
             downloadClient.DownloadFileCompleted += (a, b) =>
             {
@@ -164,7 +164,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
 
             var extension = Path.GetExtension(asset.BrowserDownloadUrl);
-            string downloadPath = temppath + toolName + extension;
+            string downloadPath = Path.Combine(temppath, toolName + extension);
 
             downloadClient.DownloadFileCompleted += (a, b) =>
             {
