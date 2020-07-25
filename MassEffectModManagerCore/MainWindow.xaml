@@ -399,6 +399,16 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem
+                                Name="LanguageBRA_MenuItem"
+                                Header="Português"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
+                                <MenuItem.Icon>
+                                    <Image
+                                        Source="/modmanager/localizations/icons/portuguese.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem
                                 Name="LanguageRUS_MenuItem"
                                 Header="Pусский"
                                 Click="ChangeLanguage_Clicked"

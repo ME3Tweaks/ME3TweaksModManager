@@ -116,6 +116,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ChangeLanguage(string lang)
         {
             mainwindow.SetLanguage(lang, false);
+            SetAuthorized(IsAuthorized);
             Settings.Save();
         }
 
@@ -159,6 +160,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
+        private string AuthorizedToNexusUsername; //for localization
+
         public string AuthorizeToNexusText { get; set; } = M3L.GetString(M3L.string_authenticateToNexusMods);
 
         //this is copied from NexusModsLogin.xaml.cs cause I'm too lazy to make it shared code for what will likely never change
@@ -193,6 +196,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             mainwindow.NexusUserID = authInfo.UserID;
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();
+                            AuthorizedToNexusUsername = authInfo.Name;
                             Analytics.TrackEvent(@"Authenticated to NexusMods");
                         }
                         else
@@ -253,6 +257,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ActiveIcon = FontAwesomeIcon.CheckCircle;
             }
             AuthorizeToNexusText = authenticatedString;
+        }
+
+        private void ChangeLang_BRA_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage(@"bra");
         }
     }
 }

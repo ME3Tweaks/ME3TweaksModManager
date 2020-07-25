@@ -3501,6 +3501,10 @@ namespace MassEffectModManagerCore
             {
                 lang = @"deu";
             }
+            else if (sender == LanguageBRA_MenuItem)
+            {
+                lang = @"bra";
+            }
             //else if (sender == LanguageESN_MenuItem)
             //{
             //    lang = @"esn";

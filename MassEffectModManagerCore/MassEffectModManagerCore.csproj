@@ -81,6 +81,7 @@
     <None Remove="modmanager\localizations\icons\german.png" />
     <None Remove="modmanager\localizations\icons\languageselector.png" />
     <None Remove="modmanager\localizations\icons\polish.png" />
+    <None Remove="modmanager\localizations\icons\portuguese.png" />
     <None Remove="modmanager\localizations\icons\russian.png" />
     <None Remove="modmanager\localizations\icons\spanish.png" />
     <None Remove="modmanager\me3tweaks\LiveIni.bin" />
@@ -219,6 +220,7 @@
     <Resource Include="modmanager\localizations\icons\german.png" />
     <Resource Include="modmanager\localizations\icons\languageselector.png" />
     <Resource Include="modmanager\localizations\icons\polish.png" />
+    <Resource Include="modmanager\localizations\icons\portuguese.png" />
     <Resource Include="modmanager\localizations\icons\russian.png" />
     <Resource Include="modmanager\localizations\icons\spanish.png" />
     <Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
