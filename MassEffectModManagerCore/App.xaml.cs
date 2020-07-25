@@ -23,6 +23,7 @@ using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using AuthenticodeExaminer;
 using MassEffectModManagerCore.modmanager.windows;
+using Microsoft.AppCenter; // do not remove
 
 namespace MassEffectModManagerCore
 {
