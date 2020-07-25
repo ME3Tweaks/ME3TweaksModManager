@@ -43,6 +43,7 @@ namespace LocalizationHelper
         public bool ShowPolish { get; set; }
         public bool ShowFrench { get; set; }
         public bool ShowSpanish { get; set; }
+        public bool ShowPortuguese { get; set; }
         public ObservableCollectionExtended<string> LocalizationBranches { get; } = new ObservableCollectionExtended<string>();
         public ObservableCollectionExtended<LocalizedString> LocalizedTips { get; } = new ObservableCollectionExtended<LocalizedString>();
         public string SelectedBranch { get; set; }
@@ -243,6 +244,9 @@ namespace LocalizationHelper
                             case "esn":
                                 ls.ESN = jsonObj["esn"][i];
                                 break;
+                            case "bra":
+                                ls.BRA = jsonObj["bra"][i];
+                                break;
                         }
                     }
                     locTips.Add(ls);
@@ -268,40 +272,7 @@ namespace LocalizationHelper
                         dynamicHelpLocalizations[lang] = langxml.ToString();
                     }
                 }
-                /*
-                var langs = LocalizedString.Languages.Where(x => x != "int");
-                var locTips = new List<LocalizedString>();
-                for (int i = 0; i < jsonObj["int"].Count; i++)
-                {
-                    LocalizedString ls = new LocalizedString()
-                    {
-                        INT = jsonObj["int"][i]
-                    };
-                    foreach (var lang in langs)
-                    {
-                        if (jsonObj[lang].Count <= i) continue; //skip
-                        switch (lang)
-                        {
-                            case "rus":
-                                ls.RUS = jsonObj["rus"][i];
-                                break;
-                            case "deu":
-                                ls.DEU = jsonObj["deu"][i];
-                                break;
-                            case "pol":
-                                ls.POL = jsonObj["pol"][i];
-                                break;
-                            case "fra":
-                                ls.FRA = jsonObj["fra"][i];
-                                break;
-                            case "esn":
-                                ls.ESN = jsonObj["esn"][i];
-                                break;
-                        }
-                    }
-                    locTips.Add(ls);
-                }
-                */
+
                 System.Windows.Application.Current.Dispatcher.Invoke(delegate
                 {
                     intViewer.Text = intxml.ToString();
@@ -395,6 +366,9 @@ namespace LocalizationHelper
                                 case "esn":
                                     ls.ESN = lineInfo.text;
                                     break;
+                                case "bra":
+                                    ls.BRA = lineInfo.text;
+                                    break;
                             }
                         }
                     }
@@ -444,6 +418,7 @@ namespace LocalizationHelper
             if (ShowPolish) lang = "pol";
             if (ShowFrench) lang = "fra";
             if (ShowSpanish) lang = "esn";
+            if (ShowPortuguese) lang = "bra";
 
             XDocument doc = new XDocument();
             var localizations = new XElement("localizations");
@@ -490,6 +465,7 @@ namespace LocalizationHelper
             if (ShowPolish) lang = "pol";
             if (ShowFrench) lang = "fra";
             if (ShowSpanish) lang = "esn";
+            if (ShowPortuguese) lang = "bra";
             localizedEditor.Text = "";
             if (dynamicHelpLocalizations.TryGetValue(lang, out var text))
             {
@@ -505,6 +481,7 @@ namespace LocalizationHelper
             if (ShowPolish) lang = "pol";
             if (ShowFrench) lang = "fra";
             if (ShowSpanish) lang = "esn";
+            if (ShowPortuguese) lang = "bra";
 
             SaveFileDialog saveFileDialog = new SaveFileDialog()
             {
@@ -534,6 +511,7 @@ namespace LocalizationHelper
             if (ShowPolish) lang = "pol";
             if (ShowFrench) lang = "fra";
             if (ShowSpanish) lang = "esn";
+            if (ShowPortuguese) lang = "bra";
 
             var sb = CreateXamlDocument();
             Clipboard.SetText(sb);
@@ -579,6 +557,9 @@ namespace LocalizationHelper
                             case "esn":
                                 ls.ESN = null;
                                 break;
+                            case "bra":
+                                ls.BRA = null;
+                                break;
                         }
                     }
                 }
@@ -600,6 +581,7 @@ namespace LocalizationHelper
             if (ShowPolish) numChecked++;
             if (ShowFrench) numChecked++;
             if (ShowSpanish) numChecked++;
+            if (ShowPortuguese) numChecked++;
             if (numChecked == 1) return true;
             return false;
         }
@@ -612,6 +594,7 @@ namespace LocalizationHelper
             if (ShowPolish) lang = "pol";
             if (ShowFrench) lang = "fra";
             if (ShowSpanish) lang = "esn";
+            if (ShowPortuguese) lang = "bra";
 
             StringBuilder sb = new StringBuilder();
             //Add header
@@ -662,6 +645,7 @@ namespace LocalizationHelper
             if (ShowPolish) lang = "pol";
             if (ShowFrench) lang = "fra";
             if (ShowSpanish) lang = "esn";
+            if (ShowPortuguese) lang = "bra";
 
             var sb = CreateXamlDocument();
 
@@ -694,7 +678,7 @@ namespace LocalizationHelper
 
         public class LocalizedString : INotifyPropertyChanged
         {
-            public static string[] Languages = { "int", "deu", "rus", "pol", "fra", "esn" };
+            public static string[] Languages = { "int", "deu", "rus", "pol", "fra", "esn", "bra" };
             public string key { get; set; }
             public bool preservewhitespace { get; set; }
             public string notes { get; set; }
@@ -705,6 +689,7 @@ namespace LocalizationHelper
             public string POL { get; set; }
             public string FRA { get; set; }
             public string ESN { get; set; }
+            public string BRA { get; set; } //brazilian portuguese
             public bool ChangedFromPrevious { get; set; }
 
             public string GetString(string lang)
@@ -724,6 +709,8 @@ namespace LocalizationHelper
                         return FRA;
                     case "esn":
                         return ESN;
+                    case "bra":
+                        return BRA;
                     default:
                         throw new NotImplementedException("Language not supported by this tool: " + lang);
                 }
@@ -836,6 +823,15 @@ namespace LocalizationHelper
                         break;
                     }
 
+                    //Spanish
+                    if (ShowPortuguese && ls.BRA != null && ls.BRA.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //found
+                        found = true;
+                        itemToHighlight = ls;
+                        catToHighlight = cat;
+                        break;
+                    }
                 }
                 if (found)
                 {

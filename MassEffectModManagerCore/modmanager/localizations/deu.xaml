@@ -1636,7 +1636,7 @@
     <system:String x:Key="string_noTargetSelected">Kein Ziel gewählt</system:String>
     <system:String x:Key="string_noOriginBasedGameTargets">Keine Origin-basierten Spielinstallationsziele</system:String>
     <system:String x:Key="string_origin">Origin</system:String>
-    <system:String x:Key="string_oigPanelHeader" xml:space="preserve">Origin im Spiel ist dafür bekannt, wesentliche Leistungseinbußen in den Mass Effect-Spielen zu verursachen. Während es zwar in den Origin-Einstellungen abgeschaltet werden kann, funktioniert diese Einstellung nicht für die Steam-Version von Mass Effect 3. Du kannst eine überschreibende d3d9.dll installieren, die die Abschaltung Origin im Spiel erzwingt.&#10;&10;Überschreiben mit anderen d3d9.dll, wie z.B. mit Reshade, deaktiviert Origin im Spiel ebenfalls.</system:String>
+    <system:String x:Key="string_oigPanelHeader" xml:space="preserve">Origin im Spiel ist dafür bekannt, wesentliche Leistungseinbußen in den Mass Effect-Spielen zu verursachen. Während es zwar in den Origin-Einstellungen abgeschaltet werden kann, funktioniert diese Einstellung nicht für die Steam-Version von Mass Effect 3. Du kannst eine überschreibende d3d9.dll installieren, die die Abschaltung Origin im Spiel erzwingt.&#10;&#10;Überschreiben mit anderen d3d9.dll, wie z.B. mit Reshade, deaktiviert Origin im Spiel ebenfalls.</system:String>
     <system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Keine Origin-basierten Installationsziele sind für dieses Spiel vorhanden</system:String>
 
 	<!-- Moddescini Editor -->
