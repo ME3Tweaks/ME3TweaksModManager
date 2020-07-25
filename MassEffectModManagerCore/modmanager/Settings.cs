@@ -342,10 +342,11 @@ namespace MassEffectModManagerCore.modmanager
         {
             try
             {
-                if (!File.Exists(SettingsPath))
-                {
-                    File.Create(SettingsPath).Close();
-                }
+                // ... why?
+                //if (!File.Exists(SettingsPath))
+                //{
+                //    File.Create(SettingsPath).Close();
+                //}
 
                 var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
                 SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);

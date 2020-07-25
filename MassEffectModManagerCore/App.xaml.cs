@@ -1,5 +1,4 @@
 ﻿using Serilog;
-using Serilog.Sinks.RollingFile.Extension;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +11,6 @@ using System.Windows;
 using CommandLine;
 using System.Windows.Controls;
 using System.Diagnostics;
-using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using System.Runtime.InteropServices;
@@ -21,14 +19,10 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
 using System.Management;
-using System.Windows.Documents;
-using System.Xml.Linq;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using AuthenticodeExaminer;
 using MassEffectModManagerCore.modmanager.windows;
-using SevenZip;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace MassEffectModManagerCore
 {
@@ -83,52 +77,6 @@ namespace MassEffectModManagerCore
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern bool SetDllDirectory(string lpPathName);
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-
-#if !DEBUG
-
-            if (APIKeys.HasAppCenterKey)
-            {
-                Crashes.GetErrorAttachments = (ErrorReport report) =>
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    // Attach some text.
-                    string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + report.StackTrace;
-                    Log.Fatal(errorMessage);
-                    string log = LogCollector.CollectLatestLog(false);
-                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
-                    }
-                    else
-                    {
-                        //Compress log
-                        var compressedLog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, "crashlog.txt.lzma", "application/x-lzma"));
-                    }
-
-                    // Attach binary data.
-                    //var fakeImage = System.Text.Encoding.Default.GetBytes("Fake image");
-                    //ErrorAttachmentLog binaryLog = ErrorAttachmentLog.AttachmentWithBinary(fakeImage, "ic_launcher.jpeg", "image/jpeg");
-
-                    return attachments;
-                };
-                AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
-            }
-#else
-            if (!APIKeys.HasAppCenterKey)
-            {
-                Debug.WriteLine(" >>> This build is missing an API key for AppCenter!");
-            }
-            else
-            {
-                Debug.WriteLine("This build has an API key for AppCenter");
-            }
-#endif
-        }
-
         public static string BuildDate;
         public static bool IsSigned;
 
@@ -143,6 +91,9 @@ namespace MassEffectModManagerCore
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+            var settingsExist = File.Exists(Settings.SettingsPath); //for init language
+
             try
             {
                 string exeFolder = Directory.GetParent(ExecutableLocation).ToString();
@@ -186,32 +137,6 @@ namespace MassEffectModManagerCore
                             Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
                             return;
                         }
-
-                        //if (parsedCommandLineArgs.Value.UpdateDest != null)
-                        //{
-                        //    if (File.Exists(parsedCommandLineArgs.Value.UpdateDest))
-                        //    {
-                        //        updateDestinationPath = parsedCommandLineArgs.Value.UpdateDest;
-                        //    }
-
-                        //    //if (parsedCommandLineArgs.Value.BootingNewUpdate)
-                        //    //{
-                        //    //    Thread.Sleep(1000); //Delay boot to ensure update executable finishes
-                        //    //    try
-                        //    //    {
-                        //    //        string updateFile = Path.Combine(exeFolder, "ME3TweaksModManager-Update.exe");
-                        //    //        if (File.Exists(updateFile))
-                        //    //        {
-                        //    //            File.Delete(updateFile);
-                        //    //            Log.Information("Deleted staged update");
-                        //    //        }
-                        //    //    }
-                        //    //    catch (Exception e)
-                        //    //    {
-                        //    //        Log.Warning("Unable to delete staged update: " + e.ToString());
-                        //    //    }
-                        //    //}
-                        //}
 
                         if (parsedCommandLineArgs.Value.UpdateFromBuild != 0)
                         {
@@ -268,52 +193,7 @@ namespace MassEffectModManagerCore
 
                 #region Update mode boot
 
-                /*
-                if (updateDestinationPath != null)
-                {
-                    Log.Information(" >> In update mode. Update destination: " + updateDestinationPath);
-                    int i = 0;
-                    while (i < 8)
-                    {
 
-                        i++;
-                        try
-                        {
-                            Log.Information($"Applying update: {ExecutableLocation} -> {updateDestinationPath}");
-                            File.Copy(ExecutableLocation, updateDestinationPath, true);
-                            Log.Information("Update applied, restarting...");
-                            break;
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error("Error applying update: " + e.Message);
-                            if (i < 8)
-                            {
-                                Thread.Sleep(1000);
-                                Log.Warning("Attempt #" + (i + 1));
-                            }
-                            else
-                            {
-                                Log.Fatal("Unable to apply update after 8 attempts. We are giving up.");
-                                MessageBox.Show("Update was unable to apply. See the application log for more information. If this continues to happen please come to the ME3Tweaks discord, or download a new copy from GitHub.");
-                                Environment.Exit(1);
-                            }
-                        }
-                    }
-                    ProcessStartInfo psi = new ProcessStartInfo(updateDestinationPath);
-                    psi.WorkingDirectory = Directory.GetParent(updateDestinationPath).FullName;
-                    psi.Arguments = "--completing-update";
-                    if (App.UpdatedFrom > 0)
-                    {
-                        psi.Arguments += " --update-from " + App.UpdatedFrom;
-                    }
-                    Log.Information($"Booting new update: {updateDestinationPath} {psi.Arguments}");
-
-                    Process.Start(psi);
-                            Application.Current.Shutdown();
-                    Current.Shutdown();
-                    
-                }*/
 
                 #endregion
 
@@ -342,7 +222,6 @@ namespace MassEffectModManagerCore
                 Log.Information("Mass Effect 3 ====");
                 Log.Information(BackupService.GetGameBackupPath(Mod.MEGame.ME3, true, true));
 
-                Log.Information("Standardized ME3Tweaks startup has completed. Now beginning Mod Manager startup");
                 //Build 104 changed location of settings from AppData to ProgramData.
                 if (!AppDataExistedAtBoot)
                 {
@@ -373,14 +252,15 @@ namespace MassEffectModManagerCore
 
 
                 Log.Information("Loading settings");
-                var settingsExist = File.Exists(Settings.SettingsPath);
                 Settings.Load();
 
                 if (!Settings.EnableTelemetry)
                 {
                     Log.Warning("Telemetry is disabled :(");
-                    Analytics.SetEnabledAsync(false);
-                    Crashes.SetEnabledAsync(false);
+                }
+                else
+                {
+                    InitAppCenter();
                 }
 
                 if (Settings.Language != "int" && SupportedLanguages.Contains(Settings.Language))
@@ -394,6 +274,7 @@ namespace MassEffectModManagerCore
                     if (currentCultureLang.StartsWith("de")) InitialLanguage = Settings.Language = "deu";
                     if (currentCultureLang.StartsWith("ru")) InitialLanguage = Settings.Language = "rus";
                     if (currentCultureLang.StartsWith("pl")) InitialLanguage = Settings.Language = "pol";
+                    if (currentCultureLang.StartsWith("pt")) InitialLanguage = Settings.Language = "bra";
                     Analytics.TrackEvent("Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
                     Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
@@ -410,7 +291,7 @@ namespace MassEffectModManagerCore
                 collectHardwareInfo();
 
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
-                Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner and is corrupting the process.");
+                Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner, and is corrupting the process.");
                 POST_STARTUP = true; //this could be earlier but i'm not sure when crash handler actually is used, doesn't seem to be after setting it...
             }
             catch (Exception e)
@@ -418,6 +299,51 @@ namespace MassEffectModManagerCore
                 OnFatalCrash(e);
                 throw;
             }
+        }
+
+        private void InitAppCenter()
+        {
+
+#if !DEBUG
+
+            if (APIKeys.HasAppCenterKey)
+            {
+                Crashes.GetErrorAttachments = (ErrorReport report) =>
+                {
+                    var attachments = new List<ErrorAttachmentLog>();
+                    // Attach some text.
+                    string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + report.StackTrace;
+                    Log.Fatal(errorMessage);
+                    string log = LogCollector.CollectLatestLog(false);
+                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    {
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
+                    }
+                    else
+                    {
+                        //Compress log
+                        var compressedLog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, "crashlog.txt.lzma", "application/x-lzma"));
+                    }
+
+                    // Attach binary data.
+                    //var fakeImage = System.Text.Encoding.Default.GetBytes("Fake image");
+                    //ErrorAttachmentLog binaryLog = ErrorAttachmentLog.AttachmentWithBinary(fakeImage, "ic_launcher.jpeg", "image/jpeg");
+
+                    return attachments;
+                };
+                AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
+            }
+#else
+            if (!APIKeys.HasAppCenterKey)
+            {
+                Debug.WriteLine(" >>> This build is missing an API key for AppCenter!");
+            }
+            else
+            {
+                Debug.WriteLine("This build has an API key for AppCenter");
+            }
+#endif
         }
 
         private void collectHardwareInfo()
@@ -457,7 +383,7 @@ namespace MassEffectModManagerCore
 
         public static bool IsRunningOnAMD;
 
-        public static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra" };
+        public static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra", "bra", "esn" };
         public static Dictionary<string, string> ServerManifest { get; set; }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
@@ -519,7 +445,7 @@ namespace MassEffectModManagerCore
                 string version = AppVersion;
 #if DEBUG
                 version += " DEBUG";
-#else
+#elif PRERELEASE
                  //version += " PRERELEASE";
 #endif
                 return $"{version}, Build {BuildNumber}";
@@ -533,7 +459,7 @@ namespace MassEffectModManagerCore
                 string version = AppVersion;
 #if DEBUG
                 version += " DEBUG";
-#else
+#elif PRERELEASE
                  //version += " PRERELEASE";
 #endif
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
@@ -569,19 +495,6 @@ namespace MassEffectModManagerCore
             {
                 Log.Fatal("ME3Tweaks Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
             }
-        }
-
-        /// <summary>
-        /// Performs the upgrade migration from Mass Effect 3 Mod MAnager to ME3Tweaks Mod Manager, transitioning settings and mods.
-        /// </summary>
-        public static void UpgradeFromME3CMM()
-        {
-            /*
-             * Process:
-             *  1. Migrate settings
-             *  2. Migrate the mods folder into a subdirectory named ME3
-             *  3. 
-             */
         }
 
         /// <summary>
