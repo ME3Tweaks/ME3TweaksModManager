@@ -516,8 +516,8 @@
     <system:String x:Key="string_backupsAreShared">Backups são usados por várias ferramentas incluindo o Randomizador Mass Effect e o Instalador ALOT.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups devem ser criados a partir de uma instalação nova, sem modificações. Backups modificados não são suportados.</system:String>
     <system:String x:Key="string_backUp">Back up</system:String>
-    <system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">Backups são usados para restaurar seus arquivos do seu jogo e são um passo importante no processo de modificação. Para desvincular um backup, mova ou exclua a pasta de backup. Para restaurar a partir de um backup, use a opção Restaurar no menu Backup &amp; Restaurar, clique em Gerenciar destino na janela principal.&#10;&#10.Backups também são usados como fonte de arquivos para certas operações. Alguns recursos avançados precisam de um backup já que um arquivo não modificado deve estar disponível.</system:String>
-    <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Impossível realizar backup enquanto {0 estiver sendo executado.</system:String>
+    <system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">Backups são usados para restaurar seus arquivos do seu jogo e são um passo importante no processo de modificação. Para desvincular um backup, mova ou exclua a pasta de backup. Para restaurar a partir de um backup, use a opção Restaurar no menu Backup &amp; Restaurar, clique em Gerenciar destino na janela principal.&#10;&#10;.Backups também são usados como fonte de arquivos para certas operações. Alguns recursos avançados precisam de um backup já que um arquivo não modificado deve estar disponível.</system:String>
+    <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Impossível realizar backup enquanto {0} estiver sendo executado.</system:String>
 	<!-- 0 = game name -->
     <system:String x:Key="string_validatingBackupSource">Validando fonte do backup</system:String>
     <system:String x:Key="string_waitingForUserInput">Aguardando input do usuário</system:String>
