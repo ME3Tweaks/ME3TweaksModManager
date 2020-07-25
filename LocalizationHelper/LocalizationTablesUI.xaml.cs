@@ -38,6 +38,7 @@ namespace LocalizationHelper
             LoadLocalizations();
         }
 
+        public string PleaseWaitString { get; set; } = "Please wait, starting up";
         public bool ShowGerman { get; set; }
         public bool ShowRussian { get; set; }
         public bool ShowPolish { get; set; }
@@ -46,6 +47,7 @@ namespace LocalizationHelper
         public bool ShowPortuguese { get; set; }
         public ObservableCollectionExtended<string> LocalizationBranches { get; } = new ObservableCollectionExtended<string>();
         public ObservableCollectionExtended<LocalizedString> LocalizedTips { get; } = new ObservableCollectionExtended<LocalizedString>();
+        public ObservableCollectionExtended<LocalizedString> LocalizedTutorialService { get; } = new ObservableCollectionExtended<LocalizedString>();
         public string SelectedBranch { get; set; }
         private void LoadLocalizations(string branch = null)
         {
@@ -54,6 +56,7 @@ namespace LocalizationHelper
             {
                 if (!LocalizationBranches.Any())
                 {
+                    PleaseWaitString = "Fetching remote localization branches";
                     var ghclient = new GitHubClient(new ProductHeaderValue(@"ME3TweaksModManager"));
                     try
                     {
@@ -93,6 +96,8 @@ namespace LocalizationHelper
                 WebClient client = new WebClient();
                 foreach (var lang in LocalizedString.Languages)
                 {
+                    PleaseWaitString = $"Fetching {branch} {lang}";
+
                     var url = endpoint + lang + ".xaml";
                     var dict = client.DownloadStringAwareOfEncoding(url);
                     dictionaries[lang] = dict;
@@ -100,11 +105,15 @@ namespace LocalizationHelper
 
                 if (oldBuildBranch != null)
                 {
+                    PleaseWaitString = $"Fetching {oldBuildBranch} int";
+
                     endpoint = $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{oldBuildBranch}/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
                     var url = endpoint + "int.xaml";
                     var dict = client.DownloadStringAwareOfEncoding(url);
                     dictionaries["int-prev"] = dict;
                 }
+
+                PleaseWaitString = $"Parsing main strings";
 
                 Dictionary<string, string> oldStuff = new Dictionary<string, string>();
                 if (dictionaries.TryGetValue("int-prev", out var oldStrXml))
@@ -181,7 +190,7 @@ namespace LocalizationHelper
                     {
                         var oldValue = new XText(oldString).ToString();
                         var newValue = new XText(lineInfo.text).ToString();
-                        XDocument newV = XDocument.Parse("<text>"+lineInfo.text+"</text>");
+                        XDocument newV = XDocument.Parse("<text>" + lineInfo.text + "</text>");
                         if (oldString != newV.Root.Value)
                         {
                             if (ls.key == "string_modEndorsed") Debugger.Break();
@@ -211,9 +220,11 @@ namespace LocalizationHelper
                 y.Result = categories;
 
                 //TIPS SERVICE
+                PleaseWaitString = $"Fetching Tips Service";
+
                 string tipsEndpoint = "https://me3tweaks.com/modmanager/services/tipsservice";
                 string contents;
-                using var wc = new System.Net.WebClient();
+                var wc = new System.Net.WebClient();
                 var tipsJson = wc.DownloadString(tipsEndpoint);
                 var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(tipsJson);
                 var langs = LocalizedString.Languages.Where(x => x != "int");
@@ -257,6 +268,8 @@ namespace LocalizationHelper
                 });
 
                 //DYNAMIC HELP
+                PleaseWaitString = $"Fetching Dynamic Help";
+
                 endpoint = $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/staticfiles/dynamichelp/latesthelp-localized.xml";
                 var dynamicHelpXml = wc.DownloadString(endpoint);
                 XDocument doc = XDocument.Parse(dynamicHelpXml);
@@ -273,10 +286,55 @@ namespace LocalizationHelper
                     }
                 }
 
+                // TUTORIAL SERVICE
+                PleaseWaitString = $"Fetching Tutorial Service";
+
+                string tutorialEndpoint = "https://me3tweaks.com/modmanager/services/tutorialservice";
+                wc.Dispose();
+                wc = new System.Net.WebClient();
+                var tutorialJson = wc.DownloadString(tutorialEndpoint);
+                var TSjsonObj = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(tutorialJson);
+                langs = LocalizedString.Languages.Where(x => x != "int");
+                var locTutorial = new List<LocalizedString>();
+                for (int i = 0; i < TSjsonObj.Count; i++)
+                {
+                    LocalizedString ls = new LocalizedString()
+                    {
+                        INT = TSjsonObj[i]["lang_int"]
+                    };
+                    foreach (var lang in langs)
+                    {
+                        switch (lang)
+                        {
+                            case "rus":
+                                ls.RUS = TSjsonObj[i]["lang_rus"];
+                                break;
+                            case "deu":
+                                ls.DEU = TSjsonObj[i]["lang_deu"];
+                                break;
+                            case "pol":
+                                ls.POL = TSjsonObj[i]["lang_pol"];
+                                break;
+                            case "fra":
+                                ls.FRA = TSjsonObj[i]["lang_fra"];
+                                break;
+                            case "esn":
+                                ls.ESN = TSjsonObj[i]["lang_esn"];
+                                break;
+                            case "bra":
+                                ls.BRA = TSjsonObj[i]["lang_bra"];
+                                break;
+                        }
+                    }
+                    locTutorial.Add(ls);
+                }
+
+                PleaseWaitString = "";
+
                 System.Windows.Application.Current.Dispatcher.Invoke(delegate
                 {
+                    LocalizedTutorialService.ReplaceAll(locTutorial);
                     intViewer.Text = intxml.ToString();
-                    LocalizedTips.ReplaceAll(locTips);
                 });
             };
             bw.RunWorkerCompleted += (a, b) =>
@@ -400,12 +458,14 @@ namespace LocalizationHelper
         public ICommand SaveTipsLocalizationCommand { get; set; }
         public ICommand LoadLocalizedHelpMenuCommand { get; set; }
         public ICommand SaveLocalizedHelpMenuCommand { get; set; }
+        public ICommand SaveTutorialLocalizationCommand { get; set; }
         private void LoadCommands()
         {
             SaveLocalizationCommand = new GenericCommand(SaveLocalization, CanSaveLocalization);
             CopyLocalizationCommand = new GenericCommand(CopyLocalization, CanSaveLocalization);
             LoadLocalizationCommand = new GenericCommand(LoadLocalization, CanSaveLocalization);
             SaveTipsLocalizationCommand = new GenericCommand(SaveTipsLocalization, CanSaveLocalization);
+            SaveTutorialLocalizationCommand = new GenericCommand(SaveTutorialLocalization, CanSaveLocalization);
             LoadLocalizedHelpMenuCommand = new GenericCommand(LoadLocalizedHelpMenu, CanSaveLocalization);
             SaveLocalizedHelpMenuCommand = new GenericCommand(SaveLocalizedHelpMenu, CanSaveLocalization);
         }
@@ -453,7 +513,7 @@ namespace LocalizationHelper
             if (saveFileDialog.ShowDialog() == true)
             {
                 File.WriteAllText(saveFileDialog.FileName, doc.ToString());
-                MessageBox.Show("Saved. Upload this file to github at MassEffectModManagerCore/staticfiles/dynamichelp/latesthelp-localized.xml and create a pull request.");
+                MessageBox.Show("Saved. Upload this file to github at MassEffectModManagerCore/staticfiles/dynamichelp/latesthelp-localized.xml on your localization's fork (on the localization branch) and create a pull request against the latest localization branch.");
             }
         }
 
@@ -470,6 +530,38 @@ namespace LocalizationHelper
             if (dynamicHelpLocalizations.TryGetValue(lang, out var text))
             {
                 localizedEditor.Text = text;
+            }
+        }
+
+        private void SaveTutorialLocalization()
+        {
+            string lang = null;
+            if (ShowGerman) lang = "deu";
+            if (ShowRussian) lang = "rus";
+            if (ShowPolish) lang = "pol";
+            if (ShowFrench) lang = "fra";
+            if (ShowSpanish) lang = "esn";
+            if (ShowPortuguese) lang = "bra";
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            {
+                Title = "Save tutorial localization file",
+                Filter = "Text files|*.txt",
+                FileName = $"localizedtutorial_{lang}.txt"
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                var sb = new StringBuilder();
+                for (int i = 0; i < LocalizedTutorialService.Count; i++)
+                {
+                    var str = LocalizedTutorialService[i].GetString(lang);
+                    if (string.IsNullOrWhiteSpace(str)) str = "NULL";
+                    sb.AppendLine(str.Replace("\r\n", "\\n").Replace("\n", "\\n"));
+                    sb.AppendLine(); //add space between lines
+
+                }
+                File.WriteAllText(saveFileDialog.FileName, sb.ToString());
+                MessageBox.Show("Saved. Send this file to Mgamerz to upload into the ME3Tweaks tutorial service database.");
             }
         }
 
@@ -496,7 +588,8 @@ namespace LocalizationHelper
                 {
                     var str = LocalizedTips[i].GetString(lang);
                     if (string.IsNullOrWhiteSpace(str)) str = "NULL";
-                    sb.AppendLine(str);
+                    sb.AppendLine(str.Replace("\r\n", "\\n").Replace("\n", "\\n"));
+                    sb.AppendLine(); //add space between lines
                 }
                 File.WriteAllText(saveFileDialog.FileName, sb.ToString());
                 MessageBox.Show("Saved. Send this file to Mgamerz to upload into the ME3Tweaks tips database.");
@@ -586,6 +679,7 @@ namespace LocalizationHelper
             return false;
         }
 
+        private string[] FullySupportLangs = { "deu", "rus", "pol", "bra" };
         private string CreateXamlDocument()
         {
             string lang = null;
@@ -595,6 +689,29 @@ namespace LocalizationHelper
             if (ShowFrench) lang = "fra";
             if (ShowSpanish) lang = "esn";
             if (ShowPortuguese) lang = "bra";
+
+            // Check interpolations
+            foreach (var cat in LocalizationCategories)
+            {
+                foreach (var str in cat.LocalizedStringsForSection)
+                {
+                    var lstr = str.GetString(lang);
+                    if (!string.IsNullOrEmpty(lstr))
+                    {
+                        var checkRes = checkInterpolations(lstr);
+                        if (!checkRes.ok)
+                        {
+                            MessageBox.Show($"Error in localized string:\nCategory: {cat.CategoryName}\nString ID: {str.key}\n\nError: {checkRes.failurereason}");
+                        }
+                    }
+#if DEBUG
+                    else if (FullySupportLangs.Contains(lang) && lstr == null)
+                    {
+                        Debug.WriteLine($"{lang} is missing string {str.key}");
+                    }
+#endif
+                }
+            }
 
             StringBuilder sb = new StringBuilder();
             //Add header
@@ -635,6 +752,50 @@ namespace LocalizationHelper
             sb.AppendLine("</ResourceDictionary>");
             return sb.ToString();
 
+        }
+
+        private (bool ok, string failurereason) checkInterpolations(string lstr)
+        {
+            // Check for { and } with items in them that are not 0-9.
+            int i = -1; //will index to 1 on start
+            int openBracePos = -1;
+            while (i < lstr.Length - 1)
+            {
+                i++;
+                if (lstr[i] == '{')
+                {
+                    if (openBracePos != -1)
+                    {
+                        return (false, "Unclosed opening {");
+                    }
+
+                    openBracePos = i;
+                    continue;
+                }
+
+                if (lstr[i] == '}')
+                {
+                    if (openBracePos == -1)
+                    {
+                        return (false, "Found closing }, however no matching opening {");
+                    }
+
+                    var contentsOfInterp = lstr.Substring(openBracePos + 1, i - openBracePos - 1);
+                    if (!int.TryParse(contentsOfInterp, out var _))
+                    {
+                        return (false, $"Contents of interpolated item must be integer, found '{contentsOfInterp}'");
+                    }
+                    openBracePos = -1;
+
+                    continue;
+                }
+            }
+
+            if (openBracePos != -1)
+            {
+                return (false, "Unclosed opening {");
+            }
+            return (true, null);
         }
 
         private void SaveLocalization()
