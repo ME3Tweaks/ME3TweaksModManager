@@ -549,7 +549,7 @@
     <system:String x:Key="string_linkBackupToAnExistingGameCopy">Привязать архив к существующей копии игры</system:String>
     <system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">Данная установка игры не может быть привязана в качестве архива поскольку она уже в списке доступных целевых игр. Для привязки данной установки в качестве архива, сначала удалите целевую игру в панели Информация об Установке, доступной по кнопке 'Настройка Игры'</system:String>
     <system:String x:Key="string_cannotLinkGameCopy">Невозможно привязать копию игры</system:String>
-    <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">Выбранная инсталляция не может быть привязана к архиву из-за ошибок валидации: [0}</system:String>
+    <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">Выбранная инсталляция не может быть привязана к архиву из-за ошибок валидации: {0}</system:String>
 	<!-- 0=Validation failure reason -->
     <system:String x:Key="string_invalidGameCopy">Недопустимая копия игры</system:String>
     <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Директория Documents/BioWare/{0} (и ее подуровни) не может быть использована для сохранения архива, поскольку игра загружает из нее файлы. Пожалуйста, выберите другую директорию.</system:String>
@@ -1128,7 +1128,7 @@
 	<!-- 0=Error message -->
     <system:String x:Key="string_interp_validation_modparsing_cannotLoadBuildTooOld">Данный мод предназначен для работы с версией Mod Manager {0} или выше. Текущая версия: {1}.</system:String>
 	<!-- 0=minBuild 1=App.BuildNumber -->
-    <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">В {0] не настроен дескриптор ModInfo 'game', который требуется для всех модов, работающих с ModDesc 6 и выше.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_missingModInfoGameDescriptor">В {0} не настроен дескриптор ModInfo 'game', который требуется для всех модов, работающих с ModDesc 6 и выше.</system:String>
 	<!-- 0=ModName -->
     <system:String x:Key="string_interp_validation_modparsing_blacklistedfileFound">Данный мод содержит запрещенный файл: {0}. Файл должен быть удален из папки мода или черного списка в moddesc.ini, чтобы мод мог быть загружен.</system:String>
 	<!-- 0=fullpath -->
@@ -1140,9 +1140,9 @@
 	<!-- 0={ModName} 1={ModWebsite} -->
     <system:String x:Key="string_interp_validation_modparsing_cannotCombineLocalizationTask">В данном моде указано задание LOCALIZATION вместе с иными заголовками заданий. Мод с заданием LOCALIZATION может содержать только данное задание, которое не может быть объединено с другими.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_missingDlcNameDesriptor">В задании LOCALIZATION для данного мода пропущен дескриптор 'dlcname', используемый для определении целевой игры данного мода локализации.</system:String>
-    <system:String x:Key="string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound">Файл локализации по указанному пути не найден: [0}</system:String>
+    <system:String x:Key="string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound">Файл локализации по указанному пути не найден: {0}</system:String>
 	<!-- 0={Referenced Filepath} -->
-    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFileType">Файл локализации по указанному пути не является файлом .tlk: [0} Задания LOCALIZATION позволяют установку только файлов .tlk.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_invalidLocalizationFileType">Файл локализации по указанному пути не является файлом .tlk: {0} Задания LOCALIZATION позволяют установку только файлов .tlk.</system:String>
 	<!-- 0={Referenced Filepath} -->
     <system:String x:Key="string_interp_validation_modparsing_invalidDlcNameLocalization">Дескриктор 'dlcname' в задании LOCALIZATION должен начинаться с DLC_ и не являться официальным DLC игры. Недопустимое значение: {0}</system:String>
 	<!-- 0={DLC folder name} -->
@@ -1495,7 +1495,7 @@
     <system:String x:Key="string_interp_dialogCreatingNewModWithExistingName" xml:space="preserve">Создание мода с аналогичным именем '{0}' удалит директорию существующего мода в библиотеке модов:\n{1}\n\nПродолжить?</system:String>
 	<!-- 0=NewModName 1=modpath -->
     <system:String x:Key="string_compilingMixins">Компиляция Mixins...</system:String>
-    <system:String x:Key="string_interp_errorApplyingMixinsForFile">Ошибка применения Mixins {{0}} для файла {1}: {2}</system:String>
+    <system:String x:Key="string_interp_errorApplyingMixinsForFile">Ошибка применения Mixins {0} для файла {1}: {2}</system:String>
 	<!-- 0=List of mixins that targeted the file 1=Target file 2=Error message | This appears in a list -->
     <system:String x:Key="string_compiledFromTheFollowingMixins">Скомпилировано из следующих Mixins:</system:String>
     <system:String x:Key="string_failedToApplyAllMixins">Не удалось применить все Mixins</system:String>
