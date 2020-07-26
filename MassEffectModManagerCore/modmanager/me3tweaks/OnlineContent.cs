@@ -429,7 +429,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         var downloadedImage = OnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
                         if (downloadedImage.errorMessage == null)
                         {
-                            downloadedImage.result.WriteToFile(imagePath);
+                            try
+                            {
+                                downloadedImage.result.WriteToFile(imagePath);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error($@"Error writing tutorial image {imagePath}: {e.Message}");
+                            }
+
                             break;
                         }
                         else

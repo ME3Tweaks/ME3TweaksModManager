@@ -884,16 +884,24 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public void PopulateExtras()
         {
-            var exeDir = MEDirectories.ExecutableDirectory(this);
-            var dlls = Directory.GetFiles(exeDir, @"*.dll").Select(x => Path.GetFileName(x));
-            var expectedDlls = MEDirectories.VanillaDlls(this.Game);
-            var extraDlls = dlls.Except(expectedDlls, StringComparer.InvariantCultureIgnoreCase);
-
-            void notifyExtraFileDeleted(InstalledExtraFile ief)
+            try
             {
-                ExtraFiles.Remove(ief);
+                var exeDir = MEDirectories.ExecutableDirectory(this);
+                var dlls = Directory.GetFiles(exeDir, @"*.dll").Select(x => Path.GetFileName(x));
+                var expectedDlls = MEDirectories.VanillaDlls(this.Game);
+                var extraDlls = dlls.Except(expectedDlls, StringComparer.InvariantCultureIgnoreCase);
+
+                void notifyExtraFileDeleted(InstalledExtraFile ief)
+                {
+                    ExtraFiles.Remove(ief);
+                }
+
+                ExtraFiles.ReplaceAll(extraDlls.Select(x => new InstalledExtraFile(Path.Combine(exeDir, x), InstalledExtraFile.EFileType.DLL, Game, notifyExtraFileDeleted)));
             }
-            ExtraFiles.ReplaceAll(extraDlls.Select(x => new InstalledExtraFile(Path.Combine(exeDir, x), InstalledExtraFile.EFileType.DLL, Game, notifyExtraFileDeleted)));
+            catch (Exception e)
+            {
+                Log.Error($"Error populating extras for target {TargetPath}: " + e.Message);
+            }
         }
 
         public string NumASIModsInstalledText { get; private set; }

@@ -973,33 +973,41 @@ namespace MassEffectModManagerCore
             var binkPath = GetBinkw32File(target);
             Log.Information($"Installing Binkw32 bypass for {target.Game} to {binkPath}");
 
-            if (target.Game == Mod.MEGame.ME1)
+            try
             {
-                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
-            }
-            else if (target.Game == Mod.MEGame.ME2)
-            {
-                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
+                if (target.Game == Mod.MEGame.ME1)
+                {
+                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
+                }
+                else if (target.Game == Mod.MEGame.ME2)
+                {
+                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
 
+                }
+                else if (target.Game == Mod.MEGame.ME3)
+                {
+                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
+                }
+                else
+                {
+                    Log.Error("Unknown game for gametarget (InstallBinkBypass)");
+                    return false;
+                }
+
+                Log.Information($"Installed Binkw32 bypass for {target.Game}");
+                return true;
             }
-            else if (target.Game == Mod.MEGame.ME3)
+            catch (Exception e)
             {
-                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
-            }
-            else
-            {
-                Log.Error("Unknown game for gametarget (InstallBinkBypass)");
+                Log.Error(@"Error installing binkw32 bypass files: " + e.Message);
                 return false;
             }
-
-            Log.Information($"Installed Binkw32 bypass for {target.Game}");
-            return true;
         }
 
         /// <summary>

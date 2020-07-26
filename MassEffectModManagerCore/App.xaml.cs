@@ -349,14 +349,13 @@ namespace MassEffectModManagerCore
 
         private void collectHardwareInfo()
         {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker("HardwareInventory");
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"HardwareInventory");
             nbw.DoWork += (a, b) =>
             {
                 var data = new Dictionary<string, string>();
                 try
                 {
                     ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
-
                     foreach (ManagementObject moProcessor in mosProcessor.Get())
                     {
                         // For seeing AMD vs Intel (for ME1 lighting)
@@ -368,6 +367,7 @@ namespace MassEffectModManagerCore
                     }
 
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
+                    data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
 
                     if (Settings.EnableTelemetry)
                     {

@@ -1604,6 +1604,17 @@ namespace MassEffectModManagerCore
                 Log.Error(@"This operating system is not supported.");
                 M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList), M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            else
+            {
+                // Only show if OS is supported
+                var lastCrash = Crashes.GetLastSessionCrashReportAsync().Result;
+                if (Settings.DeveloperMode && lastCrash != null && lastCrash.StackTrace != null)
+                {
+                    // Show messagebox?
+                }
+            }
+
+
 
             if (!Settings.ShowedPreviewPanel)
             {

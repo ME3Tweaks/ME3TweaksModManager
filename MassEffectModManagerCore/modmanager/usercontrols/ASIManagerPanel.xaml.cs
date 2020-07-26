@@ -628,24 +628,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public List<InstalledASIMod> GetInstalledASIMods(Mod.MEGame game = Mod.MEGame.Unknown)
             {
                 List<InstalledASIMod> results = new List<InstalledASIMod>();
-                if (SelectedTarget != null)
+                try
                 {
-                    string asiDirectory = MEDirectories.ASIPath(SelectedTarget);
-                    string gameDirectory = ME1Directory.gamePath;
-                    if (asiDirectory != null && Directory.Exists(gameDirectory))
+                    if (SelectedTarget != null)
                     {
-                        if (!Directory.Exists(asiDirectory))
+                        string asiDirectory = MEDirectories.ASIPath(SelectedTarget);
+                        string gameDirectory = ME1Directory.gamePath;
+                        if (asiDirectory != null && Directory.Exists(gameDirectory))
                         {
-                            Directory.CreateDirectory(asiDirectory);
-                            return results; //It won't have anything in it if we are creating it
-                        }
-                        var asiFiles = Directory.GetFiles(asiDirectory, @"*.asi");
-                        foreach (var asiFile in asiFiles)
-                        {
-                            results.Add(new InstalledASIMod(asiFile, game));
+                            if (!Directory.Exists(asiDirectory))
+                            {
+                                Directory.CreateDirectory(asiDirectory);
+                                return results; //It won't have anything in it if we are creating it
+                            }
+
+                            var asiFiles = Directory.GetFiles(asiDirectory, @"*.asi");
+                            foreach (var asiFile in asiFiles)
+                            {
+                                results.Add(new InstalledASIMod(asiFile, game));
+                            }
                         }
                     }
                 }
+                catch (Exception e)
+                {
+                    Log.Error(@"Error fetching list of installed ASIs: " + e.Message);
+                }
+
                 return results;
             }
 
