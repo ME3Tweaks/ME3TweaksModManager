@@ -510,7 +510,7 @@
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
 	<system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird von MEM bei der Installation von Texturen benutzt und kann nicht bei der Veröffentlichung benutzt werden, damit es nicht zu Konflikten kommt. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
-	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Die Veröffentlichung ist blockiert solange die oben genannten Probleme gelöst sind</system:String>
+	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Die Veröffentlichung ist blockiert bis die oben genannten Probleme gelöst sind</system:String>
 
     <!-- Backup Creator -->
     <system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer und ALOT Installer.</system:String>
