@@ -503,14 +503,14 @@
     <system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Überprüfungen haben einige sonstige Probleme gefunden, die vor der Veröffentlichung behoben werden sollten</system:String>
     <system:String x:Key="string_interp_error_textureTaggedFileFound">{0} ist als modifizierte Textur markiert. Diese Datei kann nicht in einem Mod veröffentlicht werden. Mod-Dateien können nicht benutzt werden, wenn sie mit Mass Effect Modder oder ALOT Installer modifiziert wurden - benutze Package Editor in ME3Explorer um Texturen für Mods, die Paketdateien benutzen, zu ersetzen. Veröffentlichung von Mods mit ALOT-Markierungen in den Dateien führt dazu, dass der Mod ALOT Installer und Mass Effect Modder blockiert.</system:String>
 	<!-- 0={Filepath} -->
-    <system:String x:Key="string_deploymentBlocked">Veröffentlichung blockiert</system:String>
-    <system:String x:Key="string_error_foundUnofficialDescriptor">Die moddesc.ini für diesen Mod ist mit dem 'unofficial'-descriptor markiert, das heißt der Mod wurde bereits einmal importiert. Inoffiziell importierte Mods importieren nur die Daten und nicht die Alternativen oder andere wichtige Informationen. Dieser descriptor muss vor der Veröffentlichung entfernt werden.</system:String>
-    <system:String x:Key="string_error_foundImportedByDesriptor">Die moddesc.ini für diesen Mod ist mit dem 'importedbybuild'-descriptor markiert. Dieser descriptor wird nur für Mods benutzt, die mit dem Drittanbieter-Import-Dienst importiert wurden - da dieser Mod veröffentlicht wird, wird er als offiziell angesehen und daher muss diser descriptor vor der Veröffentlichung entfernt werden.</system:String>
-    <system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird benutzt, wenn Texturen mit den veralteten ME3Explorer Texturwerkzeugen ersetzt werden und ist eine häufige Quelle für Texturfehler. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
+	<system:String x:Key="string_deploymentBlocked">Veröffentlichung blockiert</system:String>
+	<system:String x:Key="string_error_foundUnofficialDescriptor">Die moddesc.ini für diesen Mod ist mit dem 'unofficial'-descriptor markiert, das heißt der Mod wurde bereits einmal importiert. Inoffiziell importierte Mods importieren nur die Daten und nicht die Alternativen oder andere wichtige Informationen. Dieser descriptor muss vor der Veröffentlichung entfernt werden.</system:String>
+	<system:String x:Key="string_error_foundImportedByDesriptor">Die moddesc.ini für diesen Mod ist mit dem 'importedbybuild'-descriptor markiert. Dieser descriptor wird nur für Mods benutzt, die mit dem Drittanbieter-Import-Dienst importiert wurden - da dieser Mod veröffentlicht wird, wird er als offiziell angesehen und daher muss diser descriptor vor der Veröffentlichung entfernt werden.</system:String>
+	<system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird benutzt, wenn Texturen mit den veralteten ME3Explorer Texturwerkzeugen ersetzt werden und ist eine häufige Quelle für Texturfehler. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
-    <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird von MEM bei der Installation von Texturen benutzt und kann nicht bei der Veröffentlichung benutzt werden, damit es nicht zu Konflikten kommt. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
+	<system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird von MEM bei der Installation von Texturen benutzt und kann nicht bei der Veröffentlichung benutzt werden, damit es nicht zu Konflikten kommt. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
-    <system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Die Veröffentlichung ist blockiert solange die oben genannten Probleme gelöst sind</system:String>
+	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Die Veröffentlichung ist blockiert solange die oben genannten Probleme gelöst sind</system:String>
 
     <!-- Backup Creator -->
     <system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer und ALOT Installer.</system:String>
@@ -781,11 +781,14 @@
     <system:String x:Key="string_compiling">Kompiliere</system:String>
     <system:String x:Key="string_downloadingDelta">Delta-Aktualisierung wird heruntergeladen</system:String>
     <system:String x:Key="string_decompressingDelta">Delta-Aktualisierung wird dekomprimiert</system:String>
-    <system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
-    <!-- 0= modmaker code # -->
-    <system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager hat Aktualisierungen für die folgenden Mods in deiner Bibliothek gefunden.</system:String>
+	<system:String x:Key="string_interp_modMakerCodeX">ModMaker Code {0}</system:String>
+	<!-- 0= modmaker code # -->
+	<system:String x:Key="string_modManagerDetectedModUpdates">Mod Manager hat Aktualisierungen für die folgenden Mods in deiner Bibliothek gefunden.</system:String>
+	<system:String x:Key="string_tooltip_poweredByME3TweaksUpdaterService">Vom ME3Tweaks-Aktualisierungsdienst bereitgestellte Mods können direkt in Mod Manager aktualisiert werden.</system:String>
+	<system:String x:Key="string_poweredByME3TweaksUpdaterService">Powered by ME3Tweaks-Aktualisierungsdienst</system:String>
+	<system:String x:Key="string_requiresBackup">Backup benötigt</system:String>
 
-    <!-- Program updater -->
+	<!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">Eine Aktualisierung für ME3Tweaks Mod Manager ist verfügbar.</system:String>
     <system:String x:Key="string_downloadingUpdate">Aktualisierung wird heruntergeladen</system:String>
     <system:String x:Key="string_preparingToApplyUpdate">Installation der Aktualisierung wird vorbereitet</system:String>
@@ -949,11 +952,17 @@
     <system:String x:Key="string_interp_altfile_multilistMissingMultiListTargetPath">Alternate File ({0}) gibt die Operation OP_APPLY_MULTILISTFILES an, doch die benötigte Angabe MultiListTargetPath fehlt.</system:String>
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altfile_multilistMissingFileInMultiList">Alternate File ({0}) Multilist ID existiert nicht in der Aufgabe:</system:String>
-    <!-- 0=FriendlyName -->
-    <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Alternate File ({0}) gibt die Operation OP_APPLY_MULTILISTFILES an, doch das MultiListId-Attribut fehlt oder konnte nicht als Integer geparst werden.</system:String>
-    <!-- 0=FriendlyName -->
+	<!-- 0=FriendlyName -->
+	<system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Alternate File ({0}) gibt die Operation OP_APPLY_MULTILISTFILES an, doch das MultiListId-Attribut fehlt oder konnte nicht als Integer geparst werden.</system:String>
+	<!-- 0=FriendlyName -->
+	<system:String x:Key="string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61">Alternate File ({0}) gibt die Operation OP_NOINSTALL_MULTILISTFILES an, doch diese Funktion setzt mindestens moddesc-Version 6.1 voraus.</system:String>
+	<!-- 0={FriendlyName} -->
+	<system:String x:Key="string_interp_altfile_multilistNIMissingMultiListTargetPath">Alternate File ({0}) gibt die Operation OP_NOINSTALL_MULTILISTFILES an, doch die benötigte Angabe MultiListRootPath fehlt.</system:String>
+	<!-- 0={FriendlyName} -->
+	<system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Alternate File ({0}) gibt die Operation OP_NOINSTALL_MULTILISTFILES an, doch das Attribut MultiListId fehlt, oder konnte nicht als ganze Zahl eingelesen werden.</system:String>
+	<!-- 0={FriendlyName} -->
 
-    <!-- GameTarget -->
+	<!-- GameTarget -->
     <system:String x:Key="string_interp_ui_alotInstalledVersion" xml:space="preserve">A Lot Of Textures (ALOT) ist installiert\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->
     <system:String x:Key="string_ui_alotNotInstalled" xml:space="preserve">A Lot Of Textures (ALOT)\nNicht installiert</system:String>
@@ -1633,11 +1642,11 @@
     <system:String x:Key="string_cannotUninstallOtherD3d9File">Andere d3d9-Datei kann nicht deinstalliert werden</system:String>
     <system:String x:Key="string_overlayDisablerNotInstalled">Erzwungene Abschaltung von Origin im Spiel nicht installiert</system:String>
     <system:String x:Key="string_installDisabler">Erzwungene Abschaltung von Origin im Spiel installieren</system:String>
-    <system:String x:Key="string_noTargetSelected">Kein Ziel gewählt</system:String>
-    <system:String x:Key="string_noOriginBasedGameTargets">Keine Origin-basierten Spielinstallationsziele</system:String>
-    <system:String x:Key="string_origin">Origin</system:String>
-    <system:String x:Key="string_oigPanelHeader" xml:space="preserve">Origin im Spiel ist dafür bekannt, wesentliche Leistungseinbußen in den Mass Effect-Spielen zu verursachen. Während es zwar in den Origin-Einstellungen abgeschaltet werden kann, funktioniert diese Einstellung nicht für die Steam-Version von Mass Effect 3. Du kannst eine überschreibende d3d9.dll installieren, die die Abschaltung Origin im Spiel erzwingt.&#10;&#10;Überschreiben mit anderen d3d9.dll, wie z.B. mit Reshade, deaktiviert Origin im Spiel ebenfalls.</system:String>
-    <system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Keine Origin-basierten Installationsziele sind für dieses Spiel vorhanden</system:String>
+	<system:String x:Key="string_noTargetSelected">Kein Ziel gewählt</system:String>
+	<system:String x:Key="string_noOriginBasedGameTargets">Keine Origin-basierten Spielinstallationsziele</system:String>
+	<system:String x:Key="string_origin">Origin</system:String>
+	<system:String x:Key="string_oigPanelHeader" xml:space="preserve">Origin im Spiel ist dafür bekannt, wesentliche Leistungseinbußen in den Mass Effect-Spielen zu verursachen. Während es zwar in den Origin-Einstellungen abgeschaltet werden kann, funktioniert diese Einstellung nicht für die Steam-Version von Mass Effect 3. Du kannst eine überschreibende d3d9.dll installieren, die die Abschaltung Origin im Spiel erzwingt.&#10;&#10;Überschreiben mit anderen d3d9.dll, wie z.B. mit Reshade, deaktiviert Origin im Spiel ebenfalls.</system:String>
+	<system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Keine Origin-basierten Installationsziele sind für dieses Spiel vorhanden</system:String>
 
 	<!-- Moddescini Editor -->
     <system:String x:Key="string_toolUnderDevelopment">Dieses Werkzeug ist in der Entwicklung und könnte oder könnte nicht funktionieren. Benutzung auf eigene Gefahr!</system:String>
