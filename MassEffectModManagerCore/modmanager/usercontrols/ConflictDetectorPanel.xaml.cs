@@ -83,6 +83,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //};
                 }
             }
+            Supercedances.Sort(x=>x.Filename);
         }
 
         public override void OnPanelVisible()
