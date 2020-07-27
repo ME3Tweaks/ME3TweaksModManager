@@ -421,7 +421,14 @@ namespace MassEffectModManagerCore
             BackupFileFetcherCommand = new GenericCommand(OpenBackupFileFetcher);
             ConflictDetectorCommand = new GenericCommand(OpenConflictDetector);
             OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
-            LaunchEGMSettingsCommand = new GenericCommand(() => LaunchExternalTool(ExternalToolLauncher.EGMSettings), CanLaunchEGMSettings);
+            LaunchEGMSettingsCommand = new GenericCommand(() =>
+            {
+                var target = GetCurrentTarget(Mod.MEGame.ME3);
+                if (target != null)
+                {
+                    LaunchExternalTool(ExternalToolLauncher.EGMSettings, target.TargetPath);
+                }
+            }, CanLaunchEGMSettings);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
             CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3));
@@ -1506,7 +1513,15 @@ namespace MassEffectModManagerCore
                         if (ExternalToolLauncher.IsSupportedToolID(mod.PostInstallToolLaunch))
                         {
                             Log.Information(@"Launching post-install tool as specified by mod: " + mod.PostInstallToolLaunch);
-                            LaunchExternalTool(mod.PostInstallToolLaunch);
+                            if (mod.PostInstallToolLaunch == @"EGMSettings")
+                            {
+                                LaunchExternalTool(mod.PostInstallToolLaunch, SelectedGameTarget.TargetPath);
+                            }
+                            else
+                            {
+                                // no args
+                                LaunchExternalTool(mod.PostInstallToolLaunch);
+                            }
                         }
                     }
                 };
