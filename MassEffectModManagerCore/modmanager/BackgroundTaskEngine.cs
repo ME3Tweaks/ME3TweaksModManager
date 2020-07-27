@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MassEffectModManagerCore.modmanager
@@ -17,6 +18,10 @@ namespace MassEffectModManagerCore.modmanager
         private int nextJobID = 1;
         private static object lockSubmitJob = new object();
         private static object lockReleaseJob = new object();
+
+
+        public ConcurrentDictionary<int, BackgroundTask> getJobs() => backgroundJobs;
+
 
         public BackgroundTaskEngine(Action<string> updateTextDelegate, Action showIndicatorDelegate, Action hideIndicatorDelegate)
         {
@@ -54,19 +59,20 @@ namespace MassEffectModManagerCore.modmanager
                 if (backgroundJobs.TryRemove(task.jobID, out BackgroundTask t))
                 {
                     Log.Information("Completed a background task: " + t.taskName);
-                    if (backgroundJobs.Count <= 0)
+                    if (!backgroundJobs.Any())
                     {
                         hideIndicatorDelegate();
                         if (task.finishedUiText != null)
                         {
+                            Debug.WriteLine("222222222 Updating text delegate<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                             updateTextDelegate(task.finishedUiText);
                         }
-
-                        else
-                        {
-                            backgroundJobs.First().Value.active = true;
-                            updateTextDelegate(backgroundJobs.First().Value.uiText);
-                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine(@"ffffff0-0---------------------------------------------------------------");
+                        backgroundJobs.First().Value.active = true;
+                        updateTextDelegate(backgroundJobs.First().Value.uiText);
                     }
                 }
             }
