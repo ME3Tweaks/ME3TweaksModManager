@@ -805,10 +805,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //how can this be?
                     Log.Error(@"ASI is null for ApplyASI()!");
+                    return false;
                 }
-                if (SelectedTarget.TargetPath == null)
+                if (SelectedTarget == null)
                 {
-                    Log.Error(@"Selected Target is null for ApplyASI()!");
+                    Log.Error(@"SelectedTarget is null for ApplyASI()!");
+                    return false; //prevent crash
                 }
                 Log.Information($@"Installing {asi.Name} v{asi.Version} to target {SelectedTarget.TargetPath}");
                 //Check if this is actually installed or not (or outdated)
