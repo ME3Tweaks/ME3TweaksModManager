@@ -22,6 +22,7 @@ using System.Management;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using AuthenticodeExaminer;
+using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter; // do not remove
 
@@ -287,7 +288,7 @@ namespace MassEffectModManagerCore
                 MEPackageHandler.Initialize();
 
                 Log.Information("Ensuring default ASI assets are present");
-                ASIManagerPanel.ExtractDefaultASIResources();
+                ASIManager.ExtractDefaultASIResources();
 
                 collectHardwareInfo();
 

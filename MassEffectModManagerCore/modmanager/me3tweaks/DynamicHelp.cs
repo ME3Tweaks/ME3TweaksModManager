@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
 
-            if (!localHelpExists || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            if (!localHelpExists || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 foreach (var staticendpoint in StaticFilesBaseEndpoints)
                 {

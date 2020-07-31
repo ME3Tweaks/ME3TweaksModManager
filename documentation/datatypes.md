@@ -5,7 +5,7 @@ There are several data types you will need to know about for moddesc.ini files.
 Mod Manager mods are defined by their moddesc.ini files which are located in the mod folder. The folder, mod files and this moddesc.ini file make a Mod Manager mod. The moddesc.ini format has 2 key terms: **Headers** and **Descriptors**. 
 
 #### Headers
-Headers are items encased in square brackets like [ModManager] or [CUSTOMDLC]. They do not contain spaces. Headers are case sensitive.
+Headers are items encased in square brackets like `[ModManager]` and `[CUSTOMDLC]`. They do not contain spaces. Headers are case sensitive.
 ```
 [ModInfo]
 ...
@@ -36,7 +36,7 @@ Some descriptors use structs, which are modeled after how BioWare's Coalesced.in
 structexample=(Key1=Value1,Key2="Value 2")
 ```
 
-Any value that contains a space MUST be quoted. All key/value pairs must be separated by a comma. Text inside of "quotes" will not trigger the special characters , ) or (. You cannot include the " symbol in your strings as this is a reserved character for parsing. If you want to simulator "quoting" something, use 'single quotes'.
+Any value that contains a space MUST be quoted. All key/value pairs must be separated by a comma. Text inside of "quotes" will not trigger the special characters , ) or (. You cannot include the " symbol in your strings as this is a reserved character for parsing. If you want to simulate "quoting" something, use 'single quotes'.
 
 ### Struct lists
 Some descriptors use a list of structs. Lists are formed by an opening and closing parenthesis, with each struct separated by a comma. **This is an additional set of parenthesis! Structs have their own enclosing parenthesis.** However, a one item struct list does not have to be surrounded by an additional set of parenthesis. You can choose to leave them on or off for one item lists.
@@ -55,10 +55,8 @@ Some descriptors take a list of strings. These are values separated by a `;`.
 outdatedcustomdlc=DLC_MOD_OldMod1;DLC_MOD_OldMod2;DLC_MOD_OldMod3
 ```
 
-Note that these are separators, not end delimiters. You should only have them between elements.
-
 ### Comments
-Comments are lines that being with `;`. They are essentially ignored. Not that if a line is setup like requireddlc=DLC_MOD_EGM;DLC_MOD_EGM_Squad, this is not a comment. Only ; at the start of a line is considered a comment.
+Comments are lines that being with `;`. They are essentially ignored. Note that if a line is setup like requireddlc=DLC_MOD_EGM;DLC_MOD_EGM_Squad, this is not a comment. Only ; at the start of a line is considered a comment. You cannot put a ; on the end of another line for comments, if you wish to add comments, you should ensure they are on their own lines.
 
 ### Value types
 Some descriptors use value types (sometimes called data types). They are pretty much the same across sane programming langauges.

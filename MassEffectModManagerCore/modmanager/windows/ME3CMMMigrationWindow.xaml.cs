@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             nbw.DoWork += (a, b) =>
             {
                 bool cleanup = false;
-                bool migrated = false;
+                bool migrated = true;
                 Log.Information(@">>>> ME3CMMMigration Thread");
                 Log.Information(@"Validate ME3CMM folders and files");
                 var exeDir = Utilities.GetMMExecutableDirectory();
@@ -270,7 +270,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         if (Directory.Exists(overrideDir))
                         {
                             Log.Information(@"Migrating override");
-                            var filesInKBDir = Directory.EnumerateFiles(modGroupsDir, @"*.xml").ToList();
+                            var filesInKBDir = Directory.EnumerateFiles(overrideDir, @"*.xml").ToList();
                             foreach (var file in filesInKBDir)
                             {
                                 var keybindDir = Path.Combine(Utilities.GetKeybindsOverrideFolder(), @"me3-" + Path.GetFileName(file));
@@ -300,6 +300,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                         case @"deployed mods":
                                         case @"externaltools": // Created by M3 at this point
                                         case @"patch_001_extracted":
+                                        case @"pccdumps": //guess these might be useful
                                             continue;
                                         default:
                                             try

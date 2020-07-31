@@ -146,7 +146,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (total != -1)
                             {
-                                var suffix = $@"{(done * 100.0 / total).ToString(@"0")}%"; //do not localize
+                                var suffix = $@" {(done * 100.0 / total).ToString(@"0")}%"; //do not localize
                                 DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks) + suffix;
                             }
                             else
@@ -177,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //failed to download LZMA.
                         var download = OnlineContent.DownloadToMemory(normalEndpoint, (done, total) =>
                         {
-                            var suffix = $"{(done * 100.0 / total).ToString(@"0")}%"; //do not localize
+                            var suffix = $" {(done * 100.0 / total).ToString(@"0")}%"; //do not localize
                             DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks) + suffix;
                         });
                         if (download.errorMessage == null)
