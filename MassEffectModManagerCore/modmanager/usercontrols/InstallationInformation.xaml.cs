@@ -285,168 +285,224 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         private void PopulateUI()
         {
-            bool deleteConfirmationCallback(InstalledDLCMod mod)
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += (a, b) =>
             {
-                if (Utilities.IsGameRunning(SelectedTarget.Game))
+                bool deleteConfirmationCallback(InstalledDLCMod mod)
                 {
-                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
-                }
-                if (SelectedTarget.TextureModded)
-                {
-                    var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_deletingXwhileAlotInstalledUnsupported, mod.ModName), M3L.GetString(M3L.string_deletingWillPutAlotInUnsupportedConfig), MessageBoxButton.YesNo, MessageBoxImage.Error);
-                    return res == MessageBoxResult.Yes;
-                }
-                return M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_removeXFromTheGameInstallationQuestion, mod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
-            }
-
-            void notifyDeleted()
-            {
-                PopulateUI();
-            }
-
-            SelectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDeleted);
-            SelectedTarget.PopulateExtras();
-            bool restoreBasegamefileConfirmationCallback(string filepath)
-            {
-                if (Utilities.IsGameRunning(SelectedTarget.Game))
-                {
-                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
-                }
-                if (SelectedTarget.TextureModded && filepath.RepresentsPackageFilePath())
-                {
-                    if (!Settings.DeveloperMode)
+                    if (Utilities.IsGameRunning(SelectedTarget.Game))
                     {
-                        M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXWhileAlotInstalledIsNotAllowed, Path.GetFileName(filepath)), M3L.GetString(M3L.string_cannotRestorePackageFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(Window.GetWindow(this),
+                            M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning,
+                                Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning),
+                            MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
-                    else
+
+                    if (SelectedTarget.TextureModded)
                     {
-                        var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode, Path.GetFileName(filepath)), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var res = M3L.ShowDialog(Window.GetWindow(this),
+                            M3L.GetString(M3L.string_interp_deletingXwhileAlotInstalledUnsupported, mod.ModName),
+                            M3L.GetString(M3L.string_deletingWillPutAlotInUnsupportedConfig), MessageBoxButton.YesNo,
+                            MessageBoxImage.Error);
                         return res == MessageBoxResult.Yes;
-
                     }
-                }
-                bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
-                if (!holdingShift.Value) holdingShift = null;
-                return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
-            }
 
-            bool restoreSfarConfirmationCallback(string sfarPath)
-            {
-                if (Utilities.IsGameRunning(SelectedTarget.Game))
-                {
-                    M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
+                    return M3L.ShowDialog(Window.GetWindow(this),
+                        M3L.GetString(M3L.string_interp_removeXFromTheGameInstallationQuestion, mod.ModName),
+                        M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 }
 
-                if (SelectedTarget.TextureModded)
+                void notifyDeleted()
                 {
-                    if (!Settings.DeveloperMode)
+                    PopulateUI();
+                }
+
+                SelectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDeleted);
+                SelectedTarget.PopulateExtras();
+
+                bool restoreBasegamefileConfirmationCallback(string filepath)
+                {
+                    if (Utilities.IsGameRunning(SelectedTarget.Game))
                     {
-                        M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked), M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(Window.GetWindow(this),
+                            M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,
+                                Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning),
+                            MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
-                    else
-                    {
-                        var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        return res == MessageBoxResult.Yes;
 
+                    if (SelectedTarget.TextureModded && filepath.RepresentsPackageFilePath())
+                    {
+                        if (!Settings.DeveloperMode)
+                        {
+                            M3L.ShowDialog(Window.GetWindow(this),
+                                M3L.GetString(M3L.string_interp_restoringXWhileAlotInstalledIsNotAllowed,
+                                    Path.GetFileName(filepath)), M3L.GetString(M3L.string_cannotRestorePackageFiles),
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                            return false;
+                        }
+                        else
+                        {
+                            var res = M3L.ShowDialog(Window.GetWindow(this),
+                                M3L.GetString(M3L.string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode,
+                                    Path.GetFileName(filepath)),
+                                M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo,
+                                MessageBoxImage.Warning);
+                            return res == MessageBoxResult.Yes;
+
+                        }
+                    }
+
+                    bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                    if (!holdingShift.Value) holdingShift = null;
+                    return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this),
+                        M3L.GetString(M3L.string_interp_restoreXquestion, Path.GetFileName(filepath)),
+                        M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                }
+
+                bool restoreSfarConfirmationCallback(string sfarPath)
+                {
+                    if (Utilities.IsGameRunning(SelectedTarget.Game))
+                    {
+                        M3L.ShowDialog(Window.GetWindow(this),
+                            M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,
+                                Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning),
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+
+                    if (SelectedTarget.TextureModded)
+                    {
+                        if (!Settings.DeveloperMode)
+                        {
+                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotBlocked),
+                                M3L.GetString(M3L.string_cannotRestoreSfarFiles), MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                            return false;
+                        }
+                        else
+                        {
+                            var res = M3L.ShowDialog(Window.GetWindow(this),
+                                M3L.GetString(M3L.string_restoringSfarsAlotDevMode),
+                                M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo,
+                                MessageBoxImage.Warning);
+                            return res == MessageBoxResult.Yes;
+
+                        }
+                    }
+
+                    //Todo: warn of unpacked file deletion
+                    bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+                    if (!holdingShift.Value) holdingShift = null;
+                    return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this),
+                        M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath),
+                        M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                }
+
+                void notifyStartingSfarRestoreCallback()
+                {
+                    SFARBeingRestored = true;
+                }
+
+                void notifyStartingBasegameFileRestoreCallback()
+                {
+                    BasegameFilesBeingRestored = true;
+                }
+
+                void notifyRestoredCallback(object itemRestored)
+                {
+                    if (itemRestored is GameTarget.ModifiedFileObject mf)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            SelectedTarget.ModifiedBasegameFiles.Remove(mf);
+                        });
+                        bool resetBasegameFilesBeingRestored = SelectedTarget.ModifiedBasegameFiles.Count == 0;
+                        if (!resetBasegameFilesBeingRestored)
+                        {
+                            resetBasegameFilesBeingRestored =
+                                !SelectedTarget.ModifiedBasegameFiles.Any(x => x.Restoring);
+                        }
+
+                        if (resetBasegameFilesBeingRestored)
+                        {
+                            BasegameFilesBeingRestored = false;
+                        }
+                    }
+                    else if (itemRestored is GameTarget.SFARObject ms)
+                    {
+                        if (!ms.IsModified)
+                        {
+                            SelectedTarget.ModifiedSFARFiles.Remove(ms);
+                        }
+
+                        bool resetSfarsBeingRestored = SelectedTarget.ModifiedSFARFiles.Count == 0;
+                        if (!resetSfarsBeingRestored)
+                        {
+                            resetSfarsBeingRestored = !SelectedTarget.ModifiedSFARFiles.Any(x => x.Restoring);
+                        }
+
+                        if (resetSfarsBeingRestored)
+                        {
+                            SFARBeingRestored = false;
+                        }
+                    }
+                    else if (itemRestored == null)
+                    {
+                        //restore failed.
+                        bool resetSfarsBeingRestored = SelectedTarget.ModifiedSFARFiles.Count == 0;
+                        if (!resetSfarsBeingRestored)
+                        {
+                            resetSfarsBeingRestored = !SelectedTarget.ModifiedSFARFiles.Any(x => x.Restoring);
+                        }
+
+                        if (resetSfarsBeingRestored)
+                        {
+                            SFARBeingRestored = false;
+                        }
+
+                        bool resetBasegameFilesBeingRestored = SelectedTarget.ModifiedBasegameFiles.Count == 0;
+                        if (!resetBasegameFilesBeingRestored)
+                        {
+                            resetBasegameFilesBeingRestored =
+                                !SelectedTarget.ModifiedBasegameFiles.Any(x => x.Restoring);
+                        }
+
+                        if (resetBasegameFilesBeingRestored)
+                        {
+                            BasegameFilesBeingRestored = false;
+                        }
                     }
                 }
-                //Todo: warn of unpacked file deletion
-                bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
-                if (!holdingShift.Value) holdingShift = null;
-                return holdingShift ?? M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_restoreXquestion, sfarPath), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
-            }
 
-            void notifyStartingSfarRestoreCallback()
-            {
-                SFARBeingRestored = true;
-            }
+                SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
+                    restoreSfarConfirmationCallback,
+                    notifyStartingSfarRestoreCallback,
+                    notifyStartingBasegameFileRestoreCallback,
+                    notifyRestoredCallback);
+                SFARBeingRestored = false;
 
-            void notifyStartingBasegameFileRestoreCallback()
-            {
-                BasegameFilesBeingRestored = true;
-            }
+                SelectedTarget.PopulateASIInfo();
+                SelectedTarget.PopulateBinkInfo();
 
-            void notifyRestoredCallback(object itemRestored)
-            {
-                if (itemRestored is GameTarget.ModifiedFileObject mf)
+                if (SelectedTarget != null && !SelectedTarget.TextureModded)
                 {
-                    Application.Current.Dispatcher.Invoke(delegate { SelectedTarget.ModifiedBasegameFiles.Remove(mf); });
-                    bool resetBasegameFilesBeingRestored = SelectedTarget.ModifiedBasegameFiles.Count == 0;
-                    if (!resetBasegameFilesBeingRestored)
+                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BasegameSourceIdentifier");
+                    nbw.DoWork += (a, b) =>
                     {
-                        resetBasegameFilesBeingRestored = !SelectedTarget.ModifiedBasegameFiles.Any(x => x.Restoring);
-                    }
-                    if (resetBasegameFilesBeingRestored)
-                    {
-                        BasegameFilesBeingRestored = false;
-                    }
+                        foreach (var v in SelectedTarget.ModifiedBasegameFiles)
+                        {
+                            v.DetermineSource();
+                        }
+                    };
+                    nbw.RunWorkerAsync();
                 }
-                else if (itemRestored is GameTarget.SFARObject ms)
-                {
-                    if (!ms.IsModified)
-                    {
-                        SelectedTarget.ModifiedSFARFiles.Remove(ms);
-                    }
-                    bool resetSfarsBeingRestored = SelectedTarget.ModifiedSFARFiles.Count == 0;
-                    if (!resetSfarsBeingRestored)
-                    {
-                        resetSfarsBeingRestored = !SelectedTarget.ModifiedSFARFiles.Any(x => x.Restoring);
-                    }
-                    if (resetSfarsBeingRestored)
-                    {
-                        SFARBeingRestored = false;
-                    }
-                }
-                else if (itemRestored == null)
-                {
-                    //restore failed.
-                    bool resetSfarsBeingRestored = SelectedTarget.ModifiedSFARFiles.Count == 0;
-                    if (!resetSfarsBeingRestored)
-                    {
-                        resetSfarsBeingRestored = !SelectedTarget.ModifiedSFARFiles.Any(x => x.Restoring);
-                    }
-                    if (resetSfarsBeingRestored)
-                    {
-                        SFARBeingRestored = false;
-                    }
-                    bool resetBasegameFilesBeingRestored = SelectedTarget.ModifiedBasegameFiles.Count == 0;
-                    if (!resetBasegameFilesBeingRestored)
-                    {
-                        resetBasegameFilesBeingRestored = !SelectedTarget.ModifiedBasegameFiles.Any(x => x.Restoring);
-                    }
-                    if (resetBasegameFilesBeingRestored)
-                    {
-                        BasegameFilesBeingRestored = false;
-                    }
-                }
-            }
-            SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
-                restoreSfarConfirmationCallback,
-                notifyStartingSfarRestoreCallback,
-                notifyStartingBasegameFileRestoreCallback,
-                notifyRestoredCallback);
-            SFARBeingRestored = false;
-
-            SelectedTarget.PopulateASIInfo();
-            SelectedTarget.PopulateBinkInfo();
-
-            if (SelectedTarget != null && !SelectedTarget.TextureModded)
-            {
-                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BasegameSourceIdentifier");
-                nbw.DoWork += (a, b) =>
-                {
-                    foreach (var v in SelectedTarget.ModifiedBasegameFiles)
-                    {
-                        v.DetermineSource();
-                    }
-                };
-                nbw.RunWorkerAsync();
-            }
+            };
+            bw.RunWorkerAsync();
         }
 
         public void OnSelectedTargetChanged()
