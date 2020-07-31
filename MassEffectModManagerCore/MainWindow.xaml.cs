@@ -1774,7 +1774,7 @@ namespace MassEffectModManagerCore
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
-                bool canCheckForModUpdates = Utilities.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
+                bool canCheckForModUpdates = OnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 Log.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory());
@@ -2432,7 +2432,7 @@ namespace MassEffectModManagerCore
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                 }
 
-                if (Utilities.CanFetchContentThrottleCheck())
+                if (OnlineContent.CanFetchContentThrottleCheck())
                 {
                     Settings.LastContentCheck = DateTime.Now;
                     Settings.Save();

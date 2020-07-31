@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using MassEffectModManagerCore;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -717,10 +718,11 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
         }
 
+        // Todo move to ASIManager.cs
         internal static void InstallASIByGroupID(GameTarget gameTarget, string nameForLogging, int updateGroup)
         {
-            var asigame = new ASIManagerPanel.ASIGame(gameTarget);
-            ASIManagerPanel.LoadManifest(false, new List<ASIManagerPanel.ASIGame>(new[] { asigame }));
+            var asigame = new ASIGame(gameTarget);
+            ASIManager.LoadManifest(false, new List<ASIGame>(new[] { asigame }));
             var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == updateGroup); //DLC mod enabler is group 16
             if (dlcModEnabler != null)
             {
@@ -758,13 +760,6 @@ namespace MassEffectModManagerCore
         internal static string GetBasegameIdentificationCacheFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "basegamefileidentificationservice.json");
-        }
-
-        internal static bool CanFetchContentThrottleCheck()
-        {
-            var lastContentCheck = Settings.LastContentCheck;
-            var timeNow = DateTime.Now;
-            return (timeNow - lastContentCheck).TotalDays > 1;
         }
 
         internal static string GetThirdPartyIdentificationCachedFile()

@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -907,7 +908,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string NumASIModsInstalledText { get; private set; }
         public void PopulateASIInfo()
         {
-            var asi = new ASIManagerPanel.ASIGame(this);
+            var asi = new ASIGame(this);
             var installedASIs = asi.GetInstalledASIMods(Game);
             if (installedASIs.Any())
             {
