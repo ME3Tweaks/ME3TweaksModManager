@@ -399,6 +399,8 @@
 	<!-- 0={Mod name} -->
 	<system:String x:Key="string_thisModShouldBeReinstalled">Данный мод требуется переустановить.</system:String>
 	<system:String x:Key="string_invalidCompatibilityPack">Недопустимый пакет совместимости</system:String>
+	<system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">Возникла ошибка при создании очереди установки: {0}</system:String>
+	<!-- 0={Exception message} -->
 
 	<!-- Welcome panel -->
 	<system:String x:Key="string_previewPanelTitle">Добро пожаловать в ME3Tweaks Mod Manager</system:String>
