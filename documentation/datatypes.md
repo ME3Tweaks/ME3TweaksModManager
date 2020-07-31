@@ -5,7 +5,7 @@ There are several data types you will need to know about for moddesc.ini files.
 Mod Manager mods are defined by their moddesc.ini files which are located in the mod folder. The folder, mod files and this moddesc.ini file make a Mod Manager mod. The moddesc.ini format has 2 key terms: **Headers** and **Descriptors**. 
 
 #### Headers
-Headers are items encased in square brackets like [ModManager] or [CUSTOMDLC]. They do not contain spaces. Headers are case sensitive.
+Headers are items encased in square brackets like `[ModManager]` and `[CUSTOMDLC]`. They do not contain spaces. Headers are case sensitive.
 ```
 [ModInfo]
 ...
