@@ -74,7 +74,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER,
             INSTALL_FAILED_EXCEPTION_FILE_COPY,
             INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER,
-            INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3
+            INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3,
+            INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES
         }
 
         public string Action { get; set; }
@@ -217,8 +218,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Prepare queues
             Log.Information(@"Building installation queues");
             (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
-                List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues =
-                ModBeingInstalled.GetInstallationQueues(gameTarget);
+                List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues = default;
+            try
+            {
+                installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(@"Error building installation queues: " + App.FlattenException(ex));
+                Log.Information(@"<<<<<<< Exiting modinstaller");
+                e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES, ex.Message);
+                return;
+            }
 
             var readOnlyTargets = ModBeingInstalled.GetAllRelativeReadonlyTargets(me1ConfigReadOnlyOption.IsSelected);
 
@@ -1116,6 +1127,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             break;
                         case ModInstallCompletedStatus.INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3:
                             M3L.ShowDialog(window, string.Join('\n', items), M3L.GetString(M3L.string_invalidCompatibilityPack), MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                        case ModInstallCompletedStatus.INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES:
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_errorOccuredBuildingInstallationQueues, items[0]), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                             break;
                     }
                 }

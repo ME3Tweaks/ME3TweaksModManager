@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             nbw.DoWork += (a, b) =>
             {
                 bool cleanup = false;
-                bool migrated = false;
+                bool migrated = true;
                 Log.Information(@">>>> ME3CMMMigration Thread");
                 Log.Information(@"Validate ME3CMM folders and files");
                 var exeDir = Utilities.GetMMExecutableDirectory();
