@@ -36,7 +36,7 @@ Some descriptors use structs, which are modeled after how BioWare's Coalesced.in
 structexample=(Key1=Value1,Key2="Value 2")
 ```
 
-Any value that contains a space MUST be quoted. All key/value pairs must be separated by a comma. Text inside of "quotes" will not trigger the special characters , ) or (. You cannot include the " symbol in your strings as this is a reserved character for parsing. If you want to simulator "quoting" something, use 'single quotes'.
+Any value that contains a space MUST be quoted. All key/value pairs must be separated by a comma. Text inside of "quotes" will not trigger the special characters , ) or (. You cannot include the " symbol in your strings as this is a reserved character for parsing. If you want to simulate "quoting" something, use 'single quotes'.
 
 ### Struct lists
 Some descriptors use a list of structs. Lists are formed by an opening and closing parenthesis, with each struct separated by a comma. **This is an additional set of parenthesis! Structs have their own enclosing parenthesis.** However, a one item struct list does not have to be surrounded by an additional set of parenthesis. You can choose to leave them on or off for one item lists.
