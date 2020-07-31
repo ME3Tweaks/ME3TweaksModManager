@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Data;
 
 namespace MassEffectModManagerCore.ui
 {
@@ -26,6 +27,9 @@ namespace MassEffectModManagerCore.ui
 
         #endregion INotifyPropertyChanged
 
+        /// <summary>
+        /// For UI binding 
+        /// </summary>
         public bool Any => this.Any();
 
         /// <summary> 
@@ -176,6 +180,7 @@ namespace MassEffectModManagerCore.ui
 
         #endregion // Sorting
 
+        private object _syncLock = new object();
         /// <summary> 
         /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class. 
         /// </summary> 
@@ -186,6 +191,8 @@ namespace MassEffectModManagerCore.ui
                 BindableCount = Count;
                 OnPropertyChanged(nameof(Any));
             };
+            BindingOperations.EnableCollectionSynchronization(this, _syncLock);
+
         }
 
         /// <summary> 
