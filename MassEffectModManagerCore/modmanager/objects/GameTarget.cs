@@ -900,7 +900,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             catch (Exception e)
             {
-                Log.Error($"Error populating extras for target {TargetPath}: " + e.Message);
+                Log.Error($@"Error populating extras for target {TargetPath}: " + e.Message);
             }
         }
 
