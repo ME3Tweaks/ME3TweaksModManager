@@ -55,7 +55,7 @@ Some descriptors take a list of strings. These are values separated by a `;`.
 outdatedcustomdlc=DLC_MOD_OldMod1;DLC_MOD_OldMod2;DLC_MOD_OldMod3
 ```
 
-Note that these are separators, not end delimiters. You should only have them between elements.
+Note that these are separators, not end delimiters (which you may have seen in other ini files as 'comments'). You should only have them between elements.
 
 ### Comments
 Comments are lines that being with `;`. They are essentially ignored. Not that if a line is setup like requireddlc=DLC_MOD_EGM;DLC_MOD_EGM_Squad, this is not a comment. Only ; at the start of a line is considered a comment.
