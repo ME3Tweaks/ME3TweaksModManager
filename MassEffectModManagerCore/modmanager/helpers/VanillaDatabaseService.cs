@@ -380,11 +380,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return MEDirectories.GetInstalledDLC(target, includeDisabled).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase)).ToList();
         }
 
+        public static readonly string[] UnpackedFileExtensions = { @".pcc", @".tlk", @".bin", @".dlc" };
+
         internal static bool ValidateTargetDLCConsistency(GameTarget target, Action<string> inconsistentDLCCallback = null)
         {
             if (target.Game != Mod.MEGame.ME3) return true; //No consistency check except for ME3
             bool allConsistent = true;
-            var unpackedFileExtensions = new List<string>() { @".pcc", @".tlk", @".bin", @".dlc" };
             var dlcDir = MEDirectories.DLCPath(target);
             var dlcFolders = MEDirectories.GetInstalledDLC(target).Where(x => MEDirectories.OfficialDLC(target.Game).Contains(x)).Select(x => Path.Combine(dlcDir, x)).ToList();
             foreach (var dlcFolder in dlcFolders)
@@ -399,7 +400,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     {
                         //Packed
                         var filesInSfarDir = Directory.EnumerateFiles(unpackedDir).ToList();
-                        if (filesInSfarDir.Any(d => unpackedFileExtensions.Contains(Path.GetExtension(d.ToLower()))))
+                        if (filesInSfarDir.Any(d => 
+                            !Path.GetFileName(d).Equals("PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase) && //pcconsoletoc will be produced for all folders even with autotoc asi even if its not needed
+                                                    UnpackedFileExtensions.Contains(Path.GetExtension(d.ToLower()))))
                         {
                             inconsistentDLCCallback?.Invoke(dlcFolder);
                             allConsistent = false;

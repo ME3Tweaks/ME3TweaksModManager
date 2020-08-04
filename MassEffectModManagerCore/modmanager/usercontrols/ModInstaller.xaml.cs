@@ -734,9 +734,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (gameTarget.Supported)
                 {
-                    Log.Information(@"Installing AutoTOC, ME3Logger-Truncating");
-                    Utilities.InstallASIByGroupID(gameTarget, @"AutoTOCASI", 9);
-                    Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 8);
+                    // Log.Information(@"Installing AutoTOC, ME3Logger-Truncating");
+                    // Todo: Renable when ASI Manager is refactored.
+                    //Utilities.InstallASIByGroupID(gameTarget, @"AutoTOCASI", 9);
+                    //Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 8);
 
                 }
 
