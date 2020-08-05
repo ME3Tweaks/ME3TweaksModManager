@@ -738,9 +738,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     // Todo: Renable when ASI Manager is refactored.
                     //Utilities.InstallASIByGroupID(gameTarget, @"AutoTOCASI", 9);
                     //Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 8);
-
                 }
-
             }
 
             if (sfarStagingDirectory != null)
