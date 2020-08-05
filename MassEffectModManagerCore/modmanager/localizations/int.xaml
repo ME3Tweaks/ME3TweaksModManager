@@ -390,7 +390,6 @@
     <system:String xml:space="preserve" x:Key="string_interp_dialog_errorCopyingFilesToTarget">An error occured copying the mod files to the target:\n\n{0}\n\nThe mod may be partially installed.</system:String>
     <!-- 0=error message -->
     <system:String x:Key="string_errorInstallingMod">Error installing mod</system:String>
-
     <system:String x:Key="string_dialog_incorrectCompatMod1">This compatibility pack was not built for this configuration of the game and cannot be installed.</system:String>
     <system:String x:Key="string_dialog_incorrectCompatMod2_dlcRemoved">The following DLC mods were removed after the compatibility pack was generated:</system:String>
     <system:String x:Key="string_dialog_incorrectCompatMod2_dlcAdded">The following DLC mods were added after the compatibility pack was generated:</system:String>
@@ -401,6 +400,8 @@
     <!-- 0={Mod name} -->
     <system:String x:Key="string_thisModShouldBeReinstalled">This mod should be reinstalled.</system:String>
     <system:String x:Key="string_invalidCompatibilityPack">Invalid compatibility pack</system:String>
+    <system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">An error occurred building installation queues: {0}</system:String>
+    <!-- 0={Exception message} -->
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>

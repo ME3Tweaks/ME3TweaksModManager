@@ -34,6 +34,8 @@ In M3, the parser for a moddesc.ini file is more strict than it was for ME3CMM. 
 
 ME3CMM sometimes allowed these mods to still load as the code to parse various items was not as robust as it is in M3. If you want your mod to work in both ME3CMM and M3, test to ensure it loads in both and not just one or the other.
 
+The most common issue I have seen with the new parser not accepting older mods is in the `moddesc` attribute. In the older ME3CMM mod parser, you could use newlines, which would give the appearance of it being correct in the moddesc, however ME3CMM would not actually display anything not on the line for `moddesc`, as invalid lines in the ini file were ignored. In M3, these lines are no longer ignored and will cause the ini to fail to parse, which will result in an invalid mod.
+
 ## Version Targeting
 ME3Tweaks Mod Manager is fully backwards compatible with mods targeting older versions of moddesc, but upgrading a mod's moddesc version without upgrading the contents of the file may not work properly as different moddesc versions are parsed differently. 
 

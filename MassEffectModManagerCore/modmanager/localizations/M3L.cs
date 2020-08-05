@@ -437,6 +437,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_thisModShouldBeReinstalled = "string_interp_thisModShouldBeReinstalled";
 		public static readonly string string_thisModShouldBeReinstalled = "string_thisModShouldBeReinstalled";
 		public static readonly string string_invalidCompatibilityPack = "string_invalidCompatibilityPack";
+		public static readonly string string_interp_errorOccuredBuildingInstallationQueues = "string_interp_errorOccuredBuildingInstallationQueues";
 		public static readonly string string_previewPanelTitle = "string_previewPanelTitle";
 		public static readonly string string_selectYourLanguage = "string_selectYourLanguage";
 		public static readonly string string_howToChangeLanguage = "string_howToChangeLanguage";

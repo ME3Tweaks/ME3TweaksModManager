@@ -47,6 +47,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             StaticFilesBaseURL_ME3Tweaks
         };
 
+        /// <summary>
+        /// Checks if we can perform an online content fetch. This value is updated when manually checking for content updates, and on automatic 1-day intervals (if no previous manual check has occurred)
+        /// </summary>
+        /// <returns></returns>
+        internal static bool CanFetchContentThrottleCheck()
+        {
+            var lastContentCheck = Settings.LastContentCheck;
+            var timeNow = DateTime.Now;
+            return (timeNow - lastContentCheck).TotalDays > 1;
+        }
+
         public static Dictionary<string, string> FetchOnlineStartupManifest(bool betamode)
         {
             string[] ulrs = new[] { StartupManifestURL, StartupManifestBackupURL };
@@ -107,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
 
-            if (!File.Exists(Utilities.GetBasegameIdentificationCacheFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            if (!File.Exists(Utilities.GetBasegameIdentificationCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 var urls = new[] { BasegameFileIdentificationServiceURL, BasegameFileIdentificationServiceBackupURL };
                 foreach (var staticurl in urls)
@@ -186,7 +197,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
 
-            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
@@ -307,7 +318,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(Utilities.GetTipsServiceFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            if (!File.Exists(Utilities.GetTipsServiceFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
@@ -370,7 +381,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
@@ -709,7 +720,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || Utilities.CanFetchContentThrottleCheck())
+            if (!File.Exists(Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 string[] urls = new[] { TutorialServiceURL, TutorialServiceBackupURL };
                 foreach (var staticurl in urls)

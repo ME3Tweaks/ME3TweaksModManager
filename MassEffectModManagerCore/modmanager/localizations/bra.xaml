@@ -399,8 +399,6 @@
 	<!-- 0={Mod name} -->
 	<system:String x:Key="string_thisModShouldBeReinstalled">Este Mod deve ser reinstalado.</system:String>
 	<system:String x:Key="string_invalidCompatibilityPack">Pacote de compatibilidade inválido</system:String>
-	<system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">Ocorreu um erro ao formar as filas de instação: {0}</system:String>
-	<!-- 0={Exception message} -->
 
 	<!-- Welcome panel -->
 	<system:String x:Key="string_previewPanelTitle">Bem vindo ao Gerenciador de Mods ME3Tweaks</system:String>

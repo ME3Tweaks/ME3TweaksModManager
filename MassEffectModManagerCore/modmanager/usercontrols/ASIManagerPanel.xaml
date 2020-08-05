@@ -7,10 +7,11 @@
                        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
                        xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI" 
-                       xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" 
+                       xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                       xmlns:asi="clr-namespace:MassEffectModManagerCore.modmanager.asi"
                        mc:Ignorable="d" Height="500" Width="730">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type local:ASIManagerPanel+ASIMod}">
+        <DataTemplate DataType="{x:Type asi:ASIMod}">
             <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
                 <Grid Margin="3" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
@@ -28,7 +29,7 @@
                 </Grid>
             </Border>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type local:ASIManagerPanel+InstalledASIMod}">
+        <DataTemplate DataType="{x:Type asi:InstalledASIMod}">
             <Grid Margin="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
