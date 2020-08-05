@@ -23,6 +23,7 @@
     <AssemblyName>ME3TweaksModManager</AssemblyName>
     <Version>6.1.1.109</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+	<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
