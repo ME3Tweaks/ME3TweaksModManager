@@ -86,14 +86,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string ModAuthor { get; set; }
             public string ModSite { get; set; }
             public Mod.MEGame Game { get; set; }
-
             public int MountPriority { get; set; }
             public int ModMountTLK1 { get; set; }
             public int MountFlag { get; set; }
             public string ModuleNumber { get; set; } = @"N/A";
             public string MountFlagHR { get; set; }
-
-
+            
             public ICommand SubmitCommand { get; set; }
 
             public TelemetryPackage()
@@ -173,7 +171,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 TelemetryMod.ModDeveloper,
                 TelemetryMod.ModWebsite,
                 TelemetryMod);
-
         }
 
         public static TelemetryPackage GetTelemetryPackageForDLC(Mod.MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, Mod telemetryMod)

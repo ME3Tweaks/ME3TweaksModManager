@@ -289,6 +289,12 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
 
+            List<string> inconsistentDLC = new List<string>();
+            VanillaDatabaseService.ValidateTargetDLCConsistency(this, x => inconsistentDLC.Add(x));
+
+            modifiedSfars.AddRange(inconsistentDLC.Select(x => Path.Combine(x, "CookedPCConsole", "Default.sfar")));
+            modifiedSfars = modifiedSfars.Distinct().ToList(); //filter out if modified + inconsistent
+
             ModifiedSFARFiles.AddRange(modifiedSfars.Select(file => new SFARObject(file, this, restoreSfarConfirmationCallback, notifySFARRestoringCallback, notifyRestoredCallback)));
             ModifiedBasegameFiles.AddRange(modifiedFiles.Select(file => new ModifiedFileObject(file.Substring(TargetPath.Length + 1), this,
                 restoreBasegamefileConfirmationCallback,
@@ -490,11 +496,16 @@ namespace MassEffectModManagerCore.modmanager.objects
                         UIString += @" - " + M3L.GetString(M3L.string_unpacked);
                     }
 
-                    var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
-                    // not TOC is due to bug in autotoc
-                    if (unpackedFiles.Any(x =>
-                        Path.GetExtension(x) == @".bin" &&
-                        Path.GetFileNameWithoutExtension(x) != @"PCConsoleTOC") && !Unpacked) Inconsistent = true;
+                    if (!Unpacked)
+                    {
+                        var filesInSfarDir = Directory.EnumerateFiles(DLCDirectory, "*.*", SearchOption.AllDirectories).ToList();
+                        if (filesInSfarDir.Any(d =>
+                            !Path.GetFileName(d).Equals("PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase) && //pcconsoletoc will be produced for all folders even with autotoc asi even if its not needed
+                            VanillaDatabaseService.UnpackedFileExtensions.Contains(Path.GetExtension(d.ToLower()))))
+                        {
+                            Inconsistent = true;
+                        }
+                    }
                 }
 
                 RestoreCommand = new GenericCommand(RestoreSFARWrapper, CanRestoreSFAR);
@@ -538,13 +549,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var backupFile = Path.Combine(BackupService.GetGameBackupPath(target.Game), FilePath);
                         var targetFile = Path.Combine(target.TargetPath, FilePath);
                         Restoring = true;
-                        Log.Information($@"Restoring SFAR from backup: {backupFile} {targetFile}");
-                        XCopy.Copy(backupFile, targetFile, true, true,
-                            (o, pce) =>
-                            {
-                                RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent,
-                                    pce.ProgressPercentage.ToString());
-                            });
+
                         var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
                         RestoreButtonContent = M3L.GetString(M3L.string_cleaningUp);
                         foreach (var file in unpackedFiles)
@@ -554,6 +559,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 Log.Information(@"Deleting unpacked file: " + file);
                                 File.Delete(file);
                             }
+                        }
+
+                        // Check if we actually need to restore SFAR
+                        if (!VanillaDatabaseService.IsFileVanilla(target, targetFile, false))
+                        {
+                            Log.Information($@"Restoring SFAR from backup: {backupFile} -> {targetFile}");
+                            XCopy.Copy(backupFile, targetFile, true, true,
+                                (o, pce) =>
+                                {
+                                    RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent,
+                                        pce.ProgressPercentage.ToString());
+                                });
                         }
 
                         Utilities.DeleteEmptySubdirectories(DLCDirectory);
@@ -921,7 +938,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             catch (Exception e)
             {
-                Log.Error($"Error populating extras for target {TargetPath}: " + e.Message);
+                Log.Error($@"Error populating extras for target {TargetPath}: " + e.Message);
             }
         }
 
