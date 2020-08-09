@@ -14,8 +14,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         public int MEUITMVER;
         public int ALOT_INSTALLER_VERSION_USED;
         public int MEM_VERSION_USED;
+        public int markerOffsetStart { get; private set; }
 
-        public ALOTVersionInfo(short ALOTVersion, byte ALOTUpdaterVersion, byte ALOTHotfixVersion, int MEUITMVersion, short memVersionUsed, short alotInstallerVersionUsed)
+        public ALOTVersionInfo(short ALOTVersion, byte ALOTUpdaterVersion, byte ALOTHotfixVersion, int MEUITMVersion, short memVersionUsed, short alotInstallerVersionUsed, int markerOffsetStart)
         {
             this.ALOTVER = ALOTVersion;
             this.ALOTUPDATEVER = ALOTUpdaterVersion;
@@ -23,9 +24,9 @@ namespace MassEffectModManagerCore.modmanager.objects
             this.MEUITMVER = MEUITMVersion;
             this.MEM_VERSION_USED = memVersionUsed;
             this.ALOT_INSTALLER_VERSION_USED = alotInstallerVersionUsed;
+            this.markerOffsetStart = markerOffsetStart;
         }
 
-        //Todo: Maybe support MEUITM. 
         public override string ToString()
         {
             if (ALOTVER == 0 && ALOTUPDATEVER == 0 && MEUITMVER == 0)
