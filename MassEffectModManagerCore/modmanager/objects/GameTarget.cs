@@ -205,13 +205,17 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (memi == MEMI_TAG)
                     {
-                        //ALOT has been installed
-                        fs.Position = endPos - 8;
+                        //Texture stuff has been installed
+                        fs.Position = endPos - 8; // -4 from MEMI
                         short installerVersionUsed = fs.ReadInt16();
                         short memVersionUsed = fs.ReadInt16();
                         fs.Position -= 4; //roll back so we can read this whole thing as 4 bytes
+
+                        // -4 from MEMI
+
+                        // Check bytes before MEMI are not original end. This is what we did pre ALOT 5, just write MEMI with no info
                         int preMemi4Bytes = fs.ReadInt32();
-                        int perGameFinal4Bytes = -20;
+                        int perGameFinal4Bytes = -20; //just some value
                         switch (Game)
                         {
                             case Mod.MEGame.ME1:
@@ -227,6 +231,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                         if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format
                         {
+                            // Read bytes
                             fs.Position = endPos - 16;
                             int MEUITMVER = fs.ReadInt32();
                             short ALOTVER = fs.ReadInt16();
@@ -806,7 +811,6 @@ namespace MassEffectModManagerCore.modmanager.objects
                 using (FileStream fs = new FileStream(markerPath, System.IO.FileMode.Open, FileAccess.ReadWrite))
                 {
                     fs.SeekEnd();
-                    fs.Position -= 4;
                     fs.WriteUInt32(1234); //erase memi tag
                 }
                 Log.Information(@"Changed MEMI Tag for game to 1234.");
