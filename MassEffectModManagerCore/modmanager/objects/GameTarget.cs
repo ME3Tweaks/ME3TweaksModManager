@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using MassEffectModManagerCore.GameDirectories;
@@ -181,7 +182,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool TextureModded { get; private set; }
 
-        public ALOTVersionInfo GetInstalledALOTInfo()
+        public ALOTVersionInfo GetInstalledALOTInfo(int startPos = -1)
         {
             string gamePath = getALOTMarkerFilePath();
             if (gamePath != null && File.Exists(gamePath))
@@ -189,20 +190,32 @@ namespace MassEffectModManagerCore.modmanager.objects
                 try
                 {
                     using FileStream fs = new FileStream(gamePath, System.IO.FileMode.Open, FileAccess.Read);
-                    fs.SeekEnd();
+                    if (startPos == -1)
+                    {
+                        fs.SeekEnd();
+                    }
+                    else
+                    {
+                        fs.Seek(startPos, SeekOrigin.Begin);
+                    }
+
                     long endPos = fs.Position;
                     fs.Position = endPos - 4;
                     uint memi = fs.ReadUInt32();
 
                     if (memi == MEMI_TAG)
                     {
-                        //ALOT has been installed
-                        fs.Position = endPos - 8;
+                        //Texture stuff has been installed
+                        fs.Position = endPos - 8; // -4 from MEMI
                         short installerVersionUsed = fs.ReadInt16();
                         short memVersionUsed = fs.ReadInt16();
                         fs.Position -= 4; //roll back so we can read this whole thing as 4 bytes
+
+                        // -4 from MEMI
+
+                        // Check bytes before MEMI are not original end. This is what we did pre ALOT 5, just write MEMI with no info
                         int preMemi4Bytes = fs.ReadInt32();
-                        int perGameFinal4Bytes = -20;
+                        int perGameFinal4Bytes = -20; //just some value
                         switch (Game)
                         {
                             case Mod.MEGame.ME1:
@@ -218,20 +231,17 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                         if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format
                         {
-                            fs.Position = endPos - 12;
+                            // Read bytes
+                            fs.Position = endPos - 16;
+                            int MEUITMVER = fs.ReadInt32();
                             short ALOTVER = fs.ReadInt16();
                             byte ALOTUPDATEVER = (byte)fs.ReadByte();
                             byte ALOTHOTFIXVER = (byte)fs.ReadByte();
-
-                            //unused for now
-                            fs.Position = endPos - 16;
-                            int MEUITMVER = fs.ReadInt32();
-
-                            return new ALOTVersionInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, installerVersionUsed, memVersionUsed);
+                            return new ALOTVersionInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, installerVersionUsed, memVersionUsed, (int)endPos - 16);
                         }
                         else
                         {
-                            return new ALOTVersionInfo(0, 0, 0, 0, 0, 0); //MEMI tag but no info we know of
+                            return new ALOTVersionInfo(0, 0, 0, 0, 0, 0, -1); //MEMI tag but no info we know of
                         }
                     }
                 }
@@ -750,6 +760,21 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
+        //Todo: Check this actually works
+        public List<ALOTVersionInfo> GetALOTInstallationHistory()
+        {
+            var alotInfos = new List<ALOTVersionInfo>();
+            int startPos = -1;
+            while (GetInstalledALOTInfo(startPos) != null)
+            {
+                var info = GetInstalledALOTInfo(startPos);
+                alotInfos.Add(info);
+                startPos = info.markerOffsetStart;
+            }
+
+            return alotInfos;
+        }
+
         internal void StampDebugALOTInfo()
         {
 #if DEBUG
@@ -763,11 +788,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                     fs.WriteUInt16(0); //major
                     fs.WriteByte(0); //minor
                     fs.WriteByte(0); //hotfix
-                                     //fs.WriteByte(0); //unused
-                    fs.WriteInt32(100); //installer version
+                    fs.WriteInt16(649); //installer version
+                    fs.WriteInt16(420); //MEM version
                     fs.WriteUInt32(MEMI_TAG);
                 }
-                Log.Information(@"Stamped ALOT for game. Installer 100, v 6.8, MEUITM 4");
+                Log.Information(@"Debug stamped ALOT info marker");
             }
             catch (Exception e)
             {
@@ -786,7 +811,6 @@ namespace MassEffectModManagerCore.modmanager.objects
                 using (FileStream fs = new FileStream(markerPath, System.IO.FileMode.Open, FileAccess.ReadWrite))
                 {
                     fs.SeekEnd();
-                    fs.Position -= 4;
                     fs.WriteUInt32(1234); //erase memi tag
                 }
                 Log.Information(@"Changed MEMI Tag for game to 1234.");
