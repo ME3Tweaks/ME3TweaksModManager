@@ -237,6 +237,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, bool textureCheck, Action<string> updateStatusCallback = null, Action<int> updateProgressCallback = null, Action<TaskbarItemProgressState> updateTaskbarState = null)
         {
+            Log.Information($@"Collecting diagnostics for target {selectedDiagnosticTarget.TargetPath}");
             updateStatusCallback?.Invoke(M3L.GetString(M3L.string_preparingToCollectDiagnosticInfo));
             updateTaskbarState?.Invoke(TaskbarItemProgressState.Indeterminate);
 
@@ -298,6 +299,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
             #endregion
+            Log.Information(@"Completed MEM fetch task");
 
             #region Diagnostic setup and diag header
             updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingGameInformation));
@@ -358,6 +360,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             string gamePath = selectedDiagnosticTarget.TargetPath;
             var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
+            Log.Information(@"Beginning to build diagnostic output");
 
             addDiagLine(gameID, Severity.GAMEID);
             addDiagLine($@"{App.AppVersionHR} Game Diagnostic");
@@ -408,6 +411,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             try
             {
                 #region Game Information
+                Log.Information(@"Collecting basic game information");
 
                 updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingGameInformation));
                 addDiagLine(@"Basic game information", Severity.DIAGSECTION);
@@ -442,7 +446,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         addDiagLine(@"Installed on disk type: " + type);
                     }
                 }
-
+                Log.Information(@"Reloading target for most up to date information");
                 selectedDiagnosticTarget.ReloadGameTarget(false); //reload vars
                 ALOTVersionInfo avi = selectedDiagnosticTarget.GetInstalledALOTInfo();
 
@@ -475,6 +479,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
 
                     //Executable signatures
+                    Log.Information(@"Checking executable signature");
+
                     var info = new FileInspector(exePath);
                     var certOK = info.Validate();
                     if (certOK == SignatureCheckResult.NoSignature)
@@ -555,6 +561,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #endregion
 
                 #region System Information
+                Log.Information(@"Collecting system information");
 
                 updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingSystemInformation));
 
@@ -581,16 +588,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine(@"Version " + osBuildVersion, os.Version < App.MIN_SUPPORTED_OS ? Severity.ERROR : Severity.INFO);
 
                 addDiagLine();
+                Log.Information(@"Collecting memory information");
+
                 addDiagLine(@"System Memory", Severity.BOLD);
                 var computerInfo = new ComputerInfo();
                 long ramInBytes = (long)computerInfo.TotalPhysicalMemory;
                 addDiagLine(@"Total memory available: " + ByteSize.FromBytes(ramInBytes).GibiBytes.ToString(@"#.##") + @"GB");
                 addDiagLine(@"Processors", Severity.BOLD);
+                Log.Information(@"Collecting processor information");
+
                 addDiagLine(GetProcessorInformationForDiag());
                 if (ramInBytes == 0)
                 {
                     addDiagLine(@"Unable to get the read amount of physically installed ram. This may be a sign of impending hardware failure in the SMBIOS", Severity.WARN);
                 }
+
+                Log.Information(@"Collecting video card information");
 
                 ManagementObjectSearcher objvide = new ManagementObjectSearcher(@"select * from Win32_VideoController");
                 int vidCardIndex = 1;
@@ -645,6 +658,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #endregion
 
                 #region Texture mod information
+                Log.Information(@"Collecting game information: Texture mod info");
+
                 updateStatusCallback?.Invoke(@"Getting texture mod installation info");
 
                 addDiagLine(@"Texture mod information", Severity.DIAGSECTION);
@@ -680,6 +695,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
 
                 #region Basegame file changes
+                Log.Information(@"Collecting basegame file changes information");
 
                 addDiagLine(@"Basegame changes", Severity.DIAGSECTION);
 
@@ -730,6 +746,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #endregion
 
                 #region Blacklisted mods check
+                Log.Information(@"Checking for mods that are known to cause problems in the scene");
 
                 void memExceptionOccured(string operation, string line)
                 {
@@ -785,6 +802,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #endregion
 
                 #region Installed DLCs
+                Log.Information(@"Collecting installed DLC");
 
                 //Get DLCs
                 updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingDLCInformation));
@@ -829,6 +847,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     addDiagLine(dlctext, officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase) ? Severity.OFFICIALDLC : Severity.DLC);
                 }
+                Log.Information(@"Collecting supercedance list");
 
                 var supercedanceList = MEDirectories.GetFileSupercedances(selectedDiagnosticTarget).Where(x => x.Value.Count > 1).ToList();
                 if (supercedanceList.Any())
@@ -887,6 +906,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (hasMEM)
                 {
                     #region Files added or removed after texture install
+                    Log.Information(@"Finding files that have been added/replaced/removed after textures were installed");
 
                     args = $@"--check-game-data-mismatch --gameid {gameID} --ipc";
                     if (selectedDiagnosticTarget.TextureModded)
@@ -1086,6 +1106,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     //FULL CHECK
                     if (textureCheck)
                     {
+                        Log.Information(@"Performing full texture check");
                         var param = 0;
                         updateStatusCallback?.Invoke(M3L.GetString(M3L.string_interp_performingFullTexturesCheckX, param)); //done this way to save a string in localization
                         addDiagLine(@"Full Textures Check", Severity.DIAGSECTION);
@@ -1191,6 +1212,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                         else
                         {
+                            // Is this right?? We skipped check. We can't just print this
                             addDiagLine(@"Texture check did not find any texture issues in this installation");
                         }
 
@@ -1233,6 +1255,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
 
                     #region Texture LODs
+                    Log.Information(@"Collecting texture LODs");
 
                     updateStatusCallback?.Invoke(@"Collecting LOD settings");
                     args = $@"--print-lods --gameid {gameID} --ipc";
@@ -1261,6 +1284,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 else
                 {
+                    Log.Warning(@"MEM not available. Multiple collections were skipped");
+
                     addDiagLine(@"Texture checks skipped", Severity.DIAGSECTION);
                     addDiagLine(@"Mass Effect Modder No Gui was not available for use when this diagnostic was run.", Severity.WARN);
                     addDiagLine(@"The following checks were skipped:", Severity.WARN);
@@ -1271,6 +1296,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
 
                 #region ASI mods
+                Log.Information(@"Collecting ASI mod information");
 
                 updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingASIFileInformation));
 
@@ -1306,6 +1332,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 //TOC SIZE CHECK
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
                 {
+                    Log.Information(@"Collecting ME3 TOC information");
+
                     updateStatusCallback?.Invoke(@"Collecting TOC file information");
 
                     addDiagLine(@"File Table of Contents (TOC) size check", Severity.DIAGSECTION);
@@ -1317,6 +1345,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string markerfile = MEDirectories.ALOTMarkerPath(selectedDiagnosticTarget);
                     foreach (string toc in tocs)
                     {
+                        Log.Information($@"Checking TOC file {toc}");
+
                         TOCBinFile tbf = new TOCBinFile(toc);
                         foreach (TOCBinFile.Entry ent in tbf.Entries)
                         {
@@ -1353,6 +1383,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 //ME1: LOGS
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
                 {
+                    Log.Information(@"Collecting ME1 crash logs");
+
                     updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingME1ApplicationLogs));
 
                     //GET LOGS
@@ -1407,6 +1439,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #region Event logs for crashes
 
                 //EVENT LOGS
+                Log.Information(@"Collecting event logs");
                 updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingEventLogs));
                 StringBuilder crashLogs = new StringBuilder();
                 var sevenDaysAgo = DateTime.Now.AddDays(-3);
@@ -1439,6 +1472,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 if (selectedDiagnosticTarget.Game == Mod.MEGame.ME3)
                 {
+                    Log.Information(@"Collecting ME3 session log");
                     updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingME3SessionLog));
                     string me3logfilepath = Path.Combine(Directory.GetParent(MEDirectories.ExecutablePath(selectedDiagnosticTarget)).FullName, @"me3log.txt");
                     if (File.Exists(me3logfilepath))
@@ -1463,7 +1497,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception ex)
             {
-                addDiagLine(@"Exception occured while running diagnostic.", Severity.ERROR);
+                addDiagLine(@"Exception occurred while running diagnostic.", Severity.ERROR);
                 addDiagLine(App.FlattenException(ex), Severity.ERROR);
                 return diagStringBuilder.ToString();
             }
