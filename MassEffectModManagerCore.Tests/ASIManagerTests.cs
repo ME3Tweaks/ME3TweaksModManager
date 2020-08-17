@@ -27,7 +27,6 @@ namespace MassEffectModManagerCore.Tests
             foreach (var game in games)
             {
                 var root = GlobalTest.GetTestGameFoldersDirectory(game);
-                Console.WriteLine(@"TargetTesting: Game directories folder for ME1: " + root);
                 var normal = Path.Combine(root, "normal");
                 GameTarget gt = new GameTarget(game, normal, true, false);
 
