@@ -64,13 +64,11 @@ namespace MassEffectModManagerCore.modmanager
                         hideIndicatorDelegate();
                         if (task.finishedUiText != null)
                         {
-                            Debug.WriteLine("222222222 Updating text delegate<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                             updateTextDelegate(task.finishedUiText);
                         }
                     }
                     else
                     {
-                        Debug.WriteLine(@"ffffff0-0---------------------------------------------------------------");
                         backgroundJobs.First().Value.active = true;
                         updateTextDelegate(backgroundJobs.First().Value.uiText);
                     }

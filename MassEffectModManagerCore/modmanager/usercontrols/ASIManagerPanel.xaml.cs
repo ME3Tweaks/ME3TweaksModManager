@@ -15,38 +15,11 @@ using MassEffectModManagerCore.modmanager.localizations;
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
-    /// Template selector
-    /// </summary>
-    public class ASIManagerDataTemplateSelector : DataTemplateSelector
-    {
-        public override DataTemplate SelectTemplate(object item, System.Windows.DependencyObject container)
-        {
-            string resourceName = null;
-            if (item is ASIMod am)
-            {
-                resourceName = "DataTemplateQueuedJob";
-
-            }
-            else if (item is InstalledASIMod iam)
-            {
-                resourceName = "DataTemplateQueuedJob";
-            }
-            else
-            {
-                throw new InvalidOperationException($"There is no corresponding list box template for {item}");
-            }
-
-            var element = container as FrameworkElement;
-            return element.FindResource(resourceName) as DataTemplate;
-        }
-    }
-
-    /// <summary>
     /// Interaction logic for ASIManager.xaml
     /// </summary>
     public partial class ASIManagerPanel : MMBusyPanelBase
     {
-        
+
         public int SelectedTabIndex { get; set; }
         private object SelectedASIObject { get; set; }
         public string SelectedASIDescription { get; set; }
@@ -115,33 +88,46 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedASIObject is InstalledASIMod instASI)
             {
                 //Unknown ASI
-                instASI.Uninstall();
-                RefreshASIStates();
+                if (instASI is KnownInstalledASIMod kam && kam.Outdated)
+                {
+                    internalInstallASI(kam.AssociatedManifestItem.OwningMod.LatestVersion);
+                }
+                else
+                {
+                    instASI.Uninstall();
+                    RefreshASIStates(instASI.Game);
+                }
+
             }
             else if (SelectedASIObject is ASIMod asi)
             {
-                InstallInProgress = true;
-                var target = Games.First(x => x.Game == asi.Game);
-                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ASIInstallWorker");
-                nbw.DoWork += (a, b) =>
-                {
-                    b.Result = ASIManager.InstallASIToTarget(asi, target.SelectedTarget);
-                };
-                nbw.RunWorkerCompleted += (a, b) =>
-                {
-                    InstallInProgress = false;
-                    if (b.Error != null)
-                    {
-                        Log.Error($@"Exception installing ASI: {b.Error.Message}");
-                        M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccuredDeletingTheASI, b.Error.Message), M3L.GetString(M3L.string_errorDeletingASI), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    RefreshASIStates();
-                    UpdateSelectionTexts(SelectedASIObject);
-                    CommandManager.InvalidateRequerySuggested();
-                };
-                InstallInProgress = true;
-                nbw.RunWorkerAsync();
+                internalInstallASI(asi.LatestVersion);
             }
+        }
+
+        private void internalInstallASI(ASIModVersion asi)
+        {
+            InstallInProgress = true;
+            var target = Games.First(x => x.Game == asi.Game);
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ASIInstallWorker");
+            nbw.DoWork += (a, b) =>
+            {
+                b.Result = ASIManager.InstallASIToTarget(asi, target.SelectedTarget);
+            };
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
+                InstallInProgress = false;
+                if (b.Error != null)
+                {
+                    Log.Error($@"Exception installing ASI: {b.Error.Message}");
+                    M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccuredDeletingTheASI, b.Error.Message), M3L.GetString(M3L.string_errorDeletingASI), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                RefreshASIStates(asi.Game);
+                UpdateSelectionTexts(SelectedASIObject);
+                CommandManager.InvalidateRequerySuggested();
+            };
+            InstallInProgress = true;
+            nbw.RunWorkerAsync();
         }
 
         private bool CanInstallASI()
@@ -160,17 +146,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return false;
         }
 
-        private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod;
+        private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod || SelectedASIObject is KnownInstalledASIMod;
 
-        private void RefreshASIStates()
+        private void RefreshASIStates(Mod.MEGame gameToRefresh = Mod.MEGame.Unknown)
         {
             foreach (var game in Games)
             {
-                game.RefreshASIStates();
+                if (gameToRefresh == Mod.MEGame.Unknown || gameToRefresh == game.Game)
+                    game.RefreshASIStates();
             }
         }
-
-
 
         private void ASIManagerLists_SelectedChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -188,11 +173,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void UpdateSelectionTexts(object v)
         {
-            if (v is ASIModVersion asiMod)
+            if (v is ASIMod asiMod)
             {
-                SelectedASIDescription = asiMod.Description;
-                SelectedASIName = asiMod.Name;
-                string subtext = M3L.GetString(M3L.string_interp_byXVersionY, asiMod.Author, asiMod.Version);
+                SelectedASIDescription = asiMod.LatestVersion.Description;
+                SelectedASIName = asiMod.LatestVersion.Name;
+                string subtext = M3L.GetString(M3L.string_interp_byXVersionY, asiMod.LatestVersion.Author, asiMod.LatestVersion.Version);
                 subtext += Environment.NewLine;
                 //if (asiMod.UIOnly_Outdated)
                 //{
@@ -209,12 +194,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     subtext += M3L.GetString(M3L.string_notInstalled);
                     InstallButtonText = M3L.GetString(M3L.string_installASI);
-
                 }
 
                 SelectedASISubtext = subtext;
             }
-            else if (v is InstalledASIMod nonManifestAsiMod)
+            else if (v is KnownInstalledASIMod kaim)
+            {
+                SelectedASIDescription = kaim.AssociatedManifestItem.Description;
+                SelectedASIName = kaim.AssociatedManifestItem.Name;
+                string subtext = M3L.GetString(M3L.string_interp_byXVersionY, kaim.AssociatedManifestItem.Author, kaim.AssociatedManifestItem.Version);
+                subtext += Environment.NewLine;
+                if (kaim.Outdated)
+                {
+                    subtext += M3L.GetString(M3L.string_installedOutdated);
+                    InstallButtonText = M3L.GetString(M3L.string_updateASI);
+                }
+                else
+                {
+                    subtext += M3L.GetString(M3L.string_installedUpToDate);
+                    InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
+                }
+                SelectedASISubtext = subtext;
+            }
+            else if (v is UnknownInstalledASIMod nonManifestAsiMod)
             {
                 SelectedASIDescription = M3L.GetString(M3L.string_unknownASIDescription);
                 SelectedASIName = nonManifestAsiMod.UnmappedFilename;

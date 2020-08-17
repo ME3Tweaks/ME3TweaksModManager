@@ -87,11 +87,31 @@ namespace MassEffectModManagerCore.modmanager.asi
             {
                 var selectedObject = SelectedASI;
                 var installedASIs = SelectedTarget.GetInstalledASIs();
-                var installedASIMods = installedASIs.Where(x => x.AssociatedManifestItem != null)
-                    .Select(x => x.AssociatedManifestItem.OwningMod).ToList();
-                var notInstalledASIs = ASIManager.GetASIModsByGame(SelectedTarget.Game).Except(installedASIMods);
-                DisplayedASIMods.ReplaceAll(installedASIs);
-                DisplayedASIMods.AddRange(notInstalledASIs);
+                var installedKnownASIMods = installedASIs.OfType<KnownInstalledASIMod>();
+                var installedUnknownASIMods = installedASIs.OfType<UnknownInstalledASIMod>();
+                var notInstalledASIs = ASIManager.GetASIModsByGame(SelectedTarget.Game).Except(installedKnownASIMods.Select(x => x.AssociatedManifestItem.OwningMod));
+                DisplayedASIMods.ReplaceAll(installedKnownASIMods.OrderBy(x => x.AssociatedManifestItem.Name));
+                DisplayedASIMods.AddRange(installedUnknownASIMods.OrderBy(x => x.UnmappedFilename));
+                DisplayedASIMods.AddRange(notInstalledASIs.OrderBy(x => x.LatestVersion.Name));
+
+                // Attempt to re-select the existing object
+                if (DisplayedASIMods.Contains(selectedObject))
+                {
+                    SelectedASI = selectedObject;
+                }
+                else
+                {
+                    foreach (var v in DisplayedASIMods)
+                    {
+                        if (v is KnownInstalledASIMod kim && kim.AssociatedManifestItem.OwningMod == selectedObject)
+                        {
+                            SelectedASI = v;
+                            break;
+                        }
+                    }
+                }
+
+
 
                 //Application.Current.Dispatcher.Invoke(() =>
                 //{

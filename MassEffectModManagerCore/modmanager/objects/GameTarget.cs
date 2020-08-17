@@ -990,9 +990,16 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var asiFiles = Directory.GetFiles(asiDirectory, @"*.asi");
                     foreach (var asiFile in asiFiles)
                     {
-                        var asiMod = new InstalledASIMod(asiFile, Game);
-                        installedASIs.Add(asiMod);
-                        ASIManager.MapInstalledASI(asiMod); //Map it to manifest
+                        var hash = Utilities.CalculateMD5(asiFile);
+                        var matchingManifestASI = ASIManager.GetASIVersionByHash(hash, Game);
+                        if (matchingManifestASI != null)
+                        {
+                            installedASIs.Add(new KnownInstalledASIMod(asiFile, hash, Game, matchingManifestASI));
+                        }
+                        else
+                        {
+                            installedASIs.Add(new UnknownInstalledASIMod(asiFile, hash, Game));
+                        }
                     }
                 }
             }

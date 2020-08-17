@@ -9,11 +9,10 @@
                        xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI" 
                        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                        xmlns:asi="clr-namespace:MassEffectModManagerCore.modmanager.asi"
+                       xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                        mc:Ignorable="d" Height="500" Width="730">
     <UserControl.Resources>
-        <local:ASIManagerDataTemplateSelector x:Key="ASIManagerDataTemplateSelector" />
-
-        <DataTemplate x:Key="ASIModTemplate">
+        <DataTemplate DataType="{x:Type asi:ASIMod}">
             <Grid Margin="3" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -29,8 +28,10 @@
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource string_notInstalled}"/>
             </Grid>
         </DataTemplate>
-        <DataTemplate x:Key="KnownASIModTemplate">
-            <Grid Margin="3" HorizontalAlignment="Stretch">
+        <DataTemplate DataType="{x:Type asi:KnownInstalledASIMod}">
+            <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
+
+<Grid Margin="3" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -39,21 +40,25 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=AssociatedItemInfo.Name}" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=AssociatedItemInfo.Version, StringFormat='v{0}'}" HorizontalAlignment="Right" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6" Text="{Binding Path=AssociatedItemInfo.Author}" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="bleh"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=AssociatedManifestItem.Name}" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=AssociatedManifestItem.Version, StringFormat='v{0}'}" HorizontalAlignment="Right" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6" Text="{Binding Path=AssociatedManifestItem.Author}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstallStatus}"/>
             </Grid>
+                </Border>
         </DataTemplate>
-        <DataTemplate x:Key="UnknownASIModTemplate">
-            <Grid Margin="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=UnmappedFilename}" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Opacity=".8" Text="{DynamicResource string_unknownASIMod}" />
-            </Grid>
+        <DataTemplate  DataType="{x:Type asi:UnknownInstalledASIMod}">
+            <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
+
+                <Grid Margin="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=UnmappedFilename}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Opacity=".8" Text="{DynamicResource string_unknownASIMod}" />
+                </Grid>
+            </Border>
         </DataTemplate>
         <Style x:Key="StretchNoPaddingStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -86,7 +91,7 @@
                     </Border>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="3,5">
                         <Button Margin="3,0" Padding="7,5" Content="{DynamicResource string_viewSourceCode}" Command="{Binding SourceCodeCommand}" ToolTip="{DynamicResource string_tooltip_viewSourceCodeForThisASIMod}" />
-                        <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText}" Command="{Binding InstallCommand}" ToolTip="{Binding InstallButtonToolTip}" />
+                        <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText}" Command="{Binding InstallUninstallCommand}" ToolTip="{Binding InstallButtonToolTip}" />
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Margin="0,10,0,0" Text="{Binding SelectedASIName}" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" />
@@ -122,11 +127,32 @@
                             <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right" ToolTip="{Binding LoaderButtonToolTip}" />
                             <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" TextWrapping="Wrap" />
                         </DockPanel>
-                        <ListBox Grid.Row="3" BorderThickness="1" ItemsSource="{Binding DisplayedASIMods}" 
+                        <ListBox Grid.Row="3" BorderThickness="1" 
                                  ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" 
+                                 ItemsSource="{Binding DisplayedASIMods}" 
                                  HorizontalContentAlignment="Stretch" 
-                                 SelectionChanged="ASIManagerLists_SelectedChanged" 
-                                 ItemTemplateSelector="{StaticResource ASIManagerDataTemplateSelector}"/>
+                                 SelectedItem="{Binding SelectedASI}"
+                                 SelectionChanged="ASIManagerLists_SelectedChanged">
+                            
+                            <!--<ListBox.ItemContainerStyle>
+                                <Style BasedOn="{StaticResource ListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type asi:ASIMod}" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Template" Value="{StaticResource ASIModTemplate}"/>
+                                        </MultiDataTrigger>
+                                        <DataTrigger Binding="{Binding Selected}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource {x:Static adonisUi:Brushes.AccentBrush}}"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>-->
+
+                        </ListBox>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>

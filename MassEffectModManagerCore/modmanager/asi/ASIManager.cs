@@ -142,14 +142,14 @@ namespace MassEffectModManagerCore.modmanager.asi
         }
 
         /// <summary>
-        /// Maps the AssociatedASIInfo in the InstalledASIMod object to the matching ASIModVersion from the manifest.
+        ///// Fetches the specified ASI by it's hash for the specified game
         /// </summary>
         /// <param name="asi"></param>
         /// <returns></returns>
-        public static bool MapInstalledASI(InstalledASIMod asi)
+        public static ASIModVersion GetASIVersionByHash(string hash, Mod.MEGame game)
         {
             List<ASIMod> relevantGroups = null;
-            switch (asi.Game)
+            switch (game)
             {
                 case Mod.MEGame.ME1:
                     relevantGroups = MasterME1ASIUpdateGroups;
@@ -161,15 +161,15 @@ namespace MassEffectModManagerCore.modmanager.asi
                     relevantGroups = MasterME3ASIUpdateGroups;
                     break;
                 default:
-                    return false;
+                    return null;
             }
 
             if (relevantGroups.Any())
             {
-                asi.AssociatedManifestItem = relevantGroups.FirstOrDefault(x => x.HashMatchingHash(asi.Hash))?.Versions.First(x => x.Hash == asi.Hash);
+                return relevantGroups.FirstOrDefault(x => x.HashMatchingHash(hash))?.Versions.First(x => x.Hash == hash);
             }
 
-            return asi.AssociatedManifestItem != null;
+            return null;
         }
 
         /// <summary>
@@ -219,6 +219,12 @@ namespace MassEffectModManagerCore.modmanager.asi
                             MasterME3ASIUpdateGroups.Add(v);
                             break;
                     }
+
+                    // Linq (get it?) versions to parents
+                    foreach (var m in v.Versions)
+                    {
+                        m.OwningMod = v;
+                    }
                 }
 
                 reloadOnError = false;
@@ -265,8 +271,7 @@ namespace MassEffectModManagerCore.modmanager.asi
             string finalPath = Path.Combine(destinationDirectory, destinationFilename);
 
             // Delete existing ASIs from the same group to ensure we don't install the same mod
-            var existingSameGroupMods = target.GetInstalledASIs().Where(x =>
-                    x.AssociatedManifestItem != null && x.AssociatedManifestItem.OwningMod == asi.OwningMod).ToList();
+            var existingSameGroupMods = target.GetInstalledASIs().Where(x => x is KnownInstalledASIMod kiam && kiam.AssociatedManifestItem.OwningMod == asi.OwningMod).ToList();
             bool hasExistingVersionOfModInstalled = false;
             if (existingSameGroupMods.Any())
             {
