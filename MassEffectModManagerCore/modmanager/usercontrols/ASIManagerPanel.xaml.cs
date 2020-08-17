@@ -27,14 +27,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string SelectedASIName { get; set; }
         public bool InstallInProgress { get; set; }
         public string InstallButtonText { get; set; }
-
-        public bool ME1TabEnabled { get; set; }
-        public bool ME2TabEnabled { get; set; }
-        public bool ME3TabEnabled { get; set; }
         private GameTarget preselectedTarget;
-        public string InstallLoaderText { get; set; }
-
-
         public ObservableCollectionExtended<ASIGame> Games { get; } = new ObservableCollectionExtended<ASIGame>();
 
 

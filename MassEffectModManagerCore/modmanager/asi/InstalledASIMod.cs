@@ -31,10 +31,19 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// <summary>
         /// Deletes the backing file for this ASI
         /// </summary>
-        public void Uninstall()
+        public bool Uninstall()
         {
             Log.Information($@"Deleting installed ASI: {InstalledPath}");
-            File.Delete(InstalledPath);
+            try
+            {
+                File.Delete(InstalledPath);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Error uninstalling ASI {InstalledPath}: {e.Message}");
+                return false;
+            }
         }
     }
 

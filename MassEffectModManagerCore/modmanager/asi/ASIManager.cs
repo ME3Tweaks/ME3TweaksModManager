@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -256,10 +257,12 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// </summary>
         /// <param name="modVersion"></param>
         /// <param name="target"></param>
+        /// <param name="forceSource">Null to let application choose the source, true to force online, false to force local cache. This parameter is used for testing</param>
         /// <returns></returns>
-        public static bool InstallASIToTarget(ASIModVersion asi, GameTarget target)
+        public static bool InstallASIToTarget(ASIModVersion asi, GameTarget target, bool? forceSource = null)
         {
             if (asi.Game != target.Game) throw new Exception($@"ASI {asi.Name} cannot be installed to game {target.Game}");
+            Log.Information($@"Processing ASI installation request: {asi.Name} v{asi.Version} -> {target.TargetPath}");
             string destinationFilename = $@"{asi.InstalledPrefix}-v{asi.Version}.asi";
             string cachedPath = Path.Combine(CachedASIsFolder, destinationFilename);
             string destinationDirectory = MEDirectories.ASIPath(target);
@@ -271,30 +274,40 @@ namespace MassEffectModManagerCore.modmanager.asi
             string finalPath = Path.Combine(destinationDirectory, destinationFilename);
 
             // Delete existing ASIs from the same group to ensure we don't install the same mod
-            var existingSameGroupMods = target.GetInstalledASIs().Where(x => x is KnownInstalledASIMod kiam && kiam.AssociatedManifestItem.OwningMod == asi.OwningMod).ToList();
+            var existingSameGroupMods = target.GetInstalledASIs().OfType<KnownInstalledASIMod>().Where(x => x.AssociatedManifestItem.OwningMod == asi.OwningMod).ToList();
             bool hasExistingVersionOfModInstalled = false;
             if (existingSameGroupMods.Any())
             {
                 foreach (var v in existingSameGroupMods)
                 {
-                    if (v.Hash == asi.Hash)
+                    if (v.Hash == asi.Hash && !forceSource.HasValue && !hasExistingVersionOfModInstalled) //If we are forcing a source, we should always install. Delete duplicates past the first one
                     {
+                        Log.Information($@"{v.AssociatedManifestItem.Name} is already installed. We will not remove the existing correct installed ASI for this install request");
                         hasExistingVersionOfModInstalled = true;
                         continue; //Don't delete this one. We are already installed. There is no reason to install it again.
                     }
                     Log.Information($@"Deleting existing ASI from same group: {v.InstalledPath}");
-                    File.Delete(v.InstalledPath);
+                    v.Uninstall();
                 }
             }
 
-            if (hasExistingVersionOfModInstalled)
+            if (hasExistingVersionOfModInstalled && !forceSource.HasValue) //Let app decide
             {
                 return true; // This asi was "Installed" (because it was already installed).
             }
 
             // Install the ASI
+            if (forceSource == null || forceSource.Value == false)
+            {
+                Debug.WriteLine("Hit me");
+            }
             string md5;
-            if (File.Exists(cachedPath))
+            bool useLocal = forceSource.HasValue && !forceSource.Value; // false (forceLocal)
+            if (!useLocal && !forceSource.HasValue)
+            {
+                useLocal = File.Exists(cachedPath);
+            }
+            if (useLocal)
             {
                 //Check hash first
                 md5 = Utilities.CalculateMD5(cachedPath);
@@ -310,38 +323,46 @@ namespace MassEffectModManagerCore.modmanager.asi
                     return true;
                 }
             }
-            WebRequest request = WebRequest.Create(asi.DownloadLink);
-            Log.Information(@"Fetching remote ASI from server");
 
-            using WebResponse response = request.GetResponse();
-            var memoryStream = new MemoryStream();
-            response.GetResponseStream().CopyTo(memoryStream);
-            //MD5 check on file for security
-            md5 = Utilities.CalculateMD5(memoryStream);
-            if (md5 != asi.Hash)
+            if (!forceSource.HasValue || forceSource.Value)
             {
-                //ERROR!
-                Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
-                return false;
+                WebRequest request = WebRequest.Create(asi.DownloadLink);
+                Log.Information(@"Fetching remote ASI from server");
+
+                using WebResponse response = request.GetResponse();
+                var memoryStream = new MemoryStream();
+                response.GetResponseStream().CopyTo(memoryStream);
+                //MD5 check on file for security
+                md5 = Utilities.CalculateMD5(memoryStream);
+                if (md5 != asi.Hash)
+                {
+                    //ERROR!
+                    Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
+                    return false;
+                }
+
+                Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
+                memoryStream.WriteToFile(finalPath);
+                Log.Information(@"ASI successfully installed.");
+                Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
+                {
+                    {@"Filename", Path.GetFileNameWithoutExtension(finalPath)}
+                });
+
+                //Cache ASI
+                if (!Directory.Exists(CachedASIsFolder))
+                {
+                    Log.Information(@"Creating cached ASIs folder");
+                    Directory.CreateDirectory(CachedASIsFolder);
+                }
+
+                Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
+                memoryStream.WriteToFile(cachedPath);
+                return true;
             }
 
-            Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
-            memoryStream.WriteToFile(finalPath);
-            Log.Information(@"ASI successfully installed.");
-            Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
-                        {
-                            { @"Filename", Path.GetFileNameWithoutExtension(finalPath)}
-                        });
-
-            //Cache ASI
-            if (!Directory.Exists(CachedASIsFolder))
-            {
-                Log.Information(@"Creating cached ASIs folder");
-                Directory.CreateDirectory(CachedASIsFolder);
-            }
-            Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
-            memoryStream.WriteToFile(cachedPath);
-            return true;
+            // We could not install the ASI
+            return false;
         }
 
         /// <summary>
