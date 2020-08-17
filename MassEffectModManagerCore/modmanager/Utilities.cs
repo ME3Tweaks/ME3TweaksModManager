@@ -718,40 +718,6 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
         }
 
-        // Todo move to ASIManager.cs
-        internal static void InstallASIByGroupID(GameTarget gameTarget, string nameForLogging, int updateGroup)
-        {
-            var asigame = new ASIGame(gameTarget);
-            ASIManager.LoadManifest(false, new List<ASIGame>(new[] { asigame }));
-            var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == updateGroup); //DLC mod enabler is group 16
-            if (dlcModEnabler != null)
-            {
-                Log.Information($"Installing {nameForLogging} ASI");
-                var asiLockObject = new object();
-
-                void asiInstalled()
-                {
-                    lock (asiLockObject)
-                    {
-                        Monitor.Pulse(asiLockObject);
-                    }
-                }
-
-                var asiNotInstalledAlready = asigame.ApplyASI(dlcModEnabler.GetLatestVersion(), asiInstalled);
-                if (asiNotInstalledAlready)
-                {
-                    lock (asiLockObject)
-                    {
-                        Monitor.Wait(asiLockObject, 3500); //3.5 seconds max time.
-                    }
-                }
-            }
-            else
-            {
-                Log.Error($"Could not install {nameForLogging} ASI!!");
-            }
-        }
-
         internal static string GetThirdPartyImportingCachedFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyimportingservice.json");

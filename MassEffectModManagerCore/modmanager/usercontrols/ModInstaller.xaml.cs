@@ -11,6 +11,7 @@ using ByteSizeLib;
 using Flurl.Http;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats.sfar;
+using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -718,7 +719,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (ModBeingInstalled.Game == Mod.MEGame.ME1)
             {
                 Log.Information(@"Installing supporting ASI files");
-                Utilities.InstallASIByGroupID(gameTarget, @"DLC Mod Enabler", 16); //16 = DLC Mod Enabler
+                ASIManager.InstallASIToTargetByGroupID(16, @"DLC Mod Enabler", gameTarget); //16 = DLC Mod Enabler
             }
             else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
             {
@@ -729,7 +730,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
                     Log.Information(@"Installing supporting ASI files - balance changes replacer");
-                    Utilities.InstallASIByGroupID(gameTarget, @"Balance Changes Replacer", 5);
+                    ASIManager.InstallASIToTargetByGroupID(5, @"Balance Changes Replacer", gameTarget);
                 }
 
                 if (gameTarget.Supported)

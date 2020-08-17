@@ -1,57 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 using System.Text;
-using System.Windows.Media;
-using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.usercontrols;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {
     /// <summary>
-    /// Object containing information about a single version of an ASI mod in the ASI mod manifest
+    /// Represents a single group of ASI mods across versions. This is used to help prevent installation of duplicate ASIs even if the names differ
     /// </summary>
-    public class ASIMod : INotifyPropertyChanged
+    public class ASIMod
     {
-        private static Brush installedBrush = new SolidColorBrush(Color.FromArgb(0x33, 0, 0xFF, 0));
-        private static Brush outdatedBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0));
-        public string DownloadLink { get; internal set; }
-        public string SourceCodeLink { get; internal set; }
-        
         /// <summary>
-        /// MD5 of the ASI
+        /// Versions of this ASI
         /// </summary>
-        public string Hash { get; internal set; }
-        public string Version { get; internal set; }
-        public string Author { get; internal set; }
-        public string InstalledPrefix { get; internal set; }
-        public string Name { get; internal set; }
-        public Mod.MEGame Game { get; set; }
-        public string Description { get; internal set; }
+        public List<ASIModVersion> Versions { get; internal set; }
+        /// <summary>
+        /// The unique ID of the ASI
+        /// </summary>
+        public int UpdateGroupId { get; internal set; }
+        /// <summary>
+        /// The game this ASI is applicable to
+        /// </summary>
+        public Mod.MEGame Game { get; internal set; }
+        /// <summary>
+        /// If this ASI is not to be shown in a UI, but exists to help catalog and identify if it is installed
+        /// </summary>
+        public bool IsHidden { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// Gets the latest version of the ASI
+        /// </summary>
+        /// <returns></returns>
+        public ASIModVersion LatestVersion => Versions.MaxBy(x => x.Version);
 
-        public bool UIOnly_Installed { get; set; }
-        public bool UIOnly_Outdated { get; set; }
-        public string InstallStatus => UIOnly_Outdated ? M3L.GetString(M3L.string_outdatedVersionInstalled) : (UIOnly_Installed ? M3L.GetString(M3L.string_installed) : "");
-        public InstalledASIMod InstalledInfo { get; set; }
-
-        public Brush BackgroundColor
+        /// <summary>
+        /// If any of the versions of this ASI match the given hash
+        /// </summary>
+        /// <param name="asiHash"></param>
+        /// <returns></returns>
+        public bool HashMatchingHash(string asiHash)
         {
-            get
-            {
-                if (UIOnly_Outdated)
-                {
-                    return outdatedBrush;
-                }
-                else if (UIOnly_Installed)
-                {
-                    return installedBrush;
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return Versions.FirstOrDefault(x => x.Hash == asiHash) != null;
         }
     }
 }

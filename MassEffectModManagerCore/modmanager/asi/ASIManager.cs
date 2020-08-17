@@ -8,8 +8,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Xml.Linq;
+using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.asi
@@ -25,38 +29,38 @@ namespace MassEffectModManagerCore.modmanager.asi
         public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, @"manifest.xml");
         public static readonly string StagedManifestLocation = Path.Combine(CachedASIsFolder, @"manifest_staged.xml");
 
+        public static List<ASIMod> MasterME1ASIUpdateGroups = new List<ASIMod>();
+        public static List<ASIMod> MasterME2ASIUpdateGroups = new List<ASIMod>();
+        public static List<ASIMod> MasterME3ASIUpdateGroups = new List<ASIMod>();
 
-        public static void LoadManifest(bool async, List<ASIGame> games, Action<object> selectionStateUpdateCallback = null)
+        /// <summary>
+        /// Loads the ASI manifest. This should only be done at startup or when the online manifest is refreshed. ForceLocal only works if there is local ASI manifest present
+        /// </summary>
+        public static void LoadManifest(bool forceLocal = false)
         {
-            Log.Information(@"Loading ASI manager manifest. Async mode: " + async);
-
-            if (async)
+            Log.Information(@"Loading ASI Manager manifest");
+            try
             {
-                BackgroundWorker bw = new BackgroundWorker();
-                bw.DoWork += (a, b) =>
-                {
-                    internalLoadManifest(games, selectionStateUpdateCallback);
-                };
-                bw.RunWorkerAsync();
+                internalLoadManifest(forceLocal);
             }
-            else
+            catch (Exception e)
             {
-                internalLoadManifest(games, selectionStateUpdateCallback);
+                Log.Error($@"Error loading ASI manifest: {e.Message}");
             }
         }
 
-        private static void internalLoadManifest(List<ASIGame> games, Action<object> selectionStateUpdateCallback = null, bool forceLocal = false)
+        private static void internalLoadManifest(bool forceLocal = false)
         {
             if (forceLocal && File.Exists(ManifestLocation) || !OnlineContent.CanFetchContentThrottleCheck())
             {
-                LoadManifestFromDisk(ManifestLocation, games, false, selectionStateUpdateCallback);
+                LoadManifestFromDisk(ManifestLocation);
                 return;
             }
 
-            using WebClient wc = new WebClient();
-            var onlineManifest = forceLocal ? null : OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
+            var onlineManifest = forceLocal && File.Exists(ManifestLocation) ? null : OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
             if (onlineManifest != null) //this cannot be triggered if forceLocal is true
             {
+                onlineManifest = onlineManifest.Trim();
                 try
                 {
                     File.WriteAllText(StagedManifestLocation, onlineManifest);
@@ -68,18 +72,18 @@ namespace MassEffectModManagerCore.modmanager.asi
 
                 try
                 {
-                    ParseManifest(onlineManifest, games, true, selectionStateUpdateCallback);
+                    ParseManifest(onlineManifest, true);
                 }
                 catch (Exception e)
                 {
                     Log.Error(@"Error parsing online manifest: " + e.Message);
-                    internalLoadManifest(games, selectionStateUpdateCallback, true); //force local load instead
+                    internalLoadManifest(true); //force local load instead
                 }
             }
             else if (File.Exists(ManifestLocation))
             {
                 Log.Information(@"Loading ASI local manifest");
-                LoadManifestFromDisk(ManifestLocation, games, false, selectionStateUpdateCallback);
+                LoadManifestFromDisk(ManifestLocation, false);
             }
             else
             {
@@ -89,9 +93,11 @@ namespace MassEffectModManagerCore.modmanager.asi
             }
         }
 
+        /// <summary>
+        /// Extracts the default ASI assets from this assembly so there is a default set of cached assets that are alway required for proper program functionality
+        /// </summary>
         public static void ExtractDefaultASIResources()
         {
-            var outpath = CachedASIsFolder;
             string[] defaultResources = { @"BalanceChangesReplacer-v3.0.asi", @"ME1-DLC-ModEnabler-v1.0.asi", @"ME3Logger_truncating-v1.0.asi", @"manifest.xml" };
             foreach (var file in defaultResources)
             {
@@ -110,9 +116,9 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// <param name="games"></param>
         /// <param name="isStaged">If file is staged for copying the cached location</param>
         /// <param name="selectionStateUpdateCallback"></param>
-        private static void LoadManifestFromDisk(string manifestPath, List<ASIGame> games, bool isStaged = false, Action<object> selectionStateUpdateCallback = null)
+        private static void LoadManifestFromDisk(string manifestPath, bool isStaged = false)
         {
-            ParseManifest(File.ReadAllText(manifestPath), games, isStaged, selectionStateUpdateCallback);
+            ParseManifest(File.ReadAllText(manifestPath), isStaged);
         }
 
         /// <summary>
@@ -136,53 +142,86 @@ namespace MassEffectModManagerCore.modmanager.asi
         }
 
         /// <summary>
+        /// Maps the AssociatedASIInfo in the InstalledASIMod object to the matching ASIModVersion from the manifest.
+        /// </summary>
+        /// <param name="asi"></param>
+        /// <returns></returns>
+        public static bool MapInstalledASI(InstalledASIMod asi)
+        {
+            List<ASIMod> relevantGroups = null;
+            switch (asi.Game)
+            {
+                case Mod.MEGame.ME1:
+                    relevantGroups = MasterME1ASIUpdateGroups;
+                    break;
+                case Mod.MEGame.ME2:
+                    relevantGroups = MasterME2ASIUpdateGroups;
+                    break;
+                case Mod.MEGame.ME3:
+                    relevantGroups = MasterME3ASIUpdateGroups;
+                    break;
+                default:
+                    return false;
+            }
+
+            if (relevantGroups.Any())
+            {
+                asi.AssociatedManifestItem = relevantGroups.FirstOrDefault(x => x.HashMatchingHash(asi.Hash))?.Versions.First(x => x.Hash == asi.Hash);
+            }
+
+            return asi.AssociatedManifestItem != null;
+        }
+
+        /// <summary>
         /// Parses a string (xml) into an ASI manifest.
         /// </summary>
-        /// <param name="manifestString"></param>
-        /// <param name="games"></param>
-        /// <param name="isStaged"></param>
-        /// <param name="selectionStateUpdateCallback"></param>
-        private static void ParseManifest(string manifestString, List<ASIGame> games, bool isStaged = false, Action<object> selectionStateUpdateCallback = null)
+        private static void ParseManifest(string xmlText, bool isStaged = false)
         {
+            bool reloadOnError = true;
             try
             {
-                XElement rootElement = XElement.Parse(manifestString);
+                MasterME1ASIUpdateGroups.Clear();
+                MasterME2ASIUpdateGroups.Clear();
+                MasterME3ASIUpdateGroups.Clear();
+                XElement rootElement = XElement.Parse(xmlText);
 
                 //I Love Linq
-                var ASIModUpdateGroups = (from e in rootElement.Elements(@"updategroup")
-                                          select new ASIModUpdateGroup
-                                          {
-                                              UpdateGroupId = (int)e.Attribute(@"groupid"),
-                                              Game = intToGame((int)e.Attribute(@"game")),
-                                              IsHidden = e.Attribute(@"hidden") != null && (bool)e.Attribute(@"hidden"),
-                                              ASIModVersions = e.Elements(@"asimod").Select(z => new ASIMod
-                                              {
-                                                  Name = (string)z.Element(@"name"),
-                                                  InstalledPrefix = (string)z.Element(@"installedname"),
-                                                  Author = (string)z.Element(@"author"),
-                                                  Version = (string)z.Element(@"version"),
-                                                  Description = (string)z.Element(@"description"),
-                                                  Hash = (string)z.Element(@"hash"),
-                                                  SourceCodeLink = (string)z.Element(@"sourcecode"),
-                                                  DownloadLink = (string)z.Element(@"downloadlink"),
-                                                  Game = intToGame((int)e.Attribute(@"game")) // use e element to pull from outer group
-                                              }).ToList()
-                                          }).ToList();
-
-                //Must run on UI thread
-                Application.Current.Dispatcher.Invoke(() =>
+                var updateGroups = (from e in rootElement.Elements(@"updategroup")
+                                    select new ASIMod
+                                    {
+                                        UpdateGroupId = (int)e.Attribute(@"groupid"),
+                                        Game = intToGame((int)e.Attribute(@"game")),
+                                        IsHidden = e.Attribute(@"hidden") != null && (bool)e.Attribute(@"hidden"),
+                                        Versions = e.Elements(@"asimod").Select(z => new ASIModVersion
+                                        {
+                                            Name = (string)z.Element(@"name"),
+                                            InstalledPrefix = (string)z.Element(@"installedname"),
+                                            Author = (string)z.Element(@"author"),
+                                            Version = (string)z.Element(@"version"),
+                                            Description = (string)z.Element(@"description"),
+                                            Hash = (string)z.Element(@"hash"),
+                                            SourceCodeLink = (string)z.Element(@"sourcecode"),
+                                            DownloadLink = (string)z.Element(@"downloadlink"),
+                                            Game = intToGame((int)e.Attribute(@"game")) // use e element to pull from outer group
+                                        }).ToList()
+                                    }).ToList();
+                foreach (var v in updateGroups)
                 {
-                    foreach (var g in games)
+                    switch (v.Game)
                     {
-                        g.SetUpdateGroups(ASIModUpdateGroups);
+                        case Mod.MEGame.ME1:
+                            MasterME1ASIUpdateGroups.Add(v);
+                            break;
+                        case Mod.MEGame.ME2:
+                            MasterME2ASIUpdateGroups.Add(v);
+                            break;
+                        case Mod.MEGame.ME3:
+                            MasterME3ASIUpdateGroups.Add(v);
+                            break;
                     }
+                }
 
-                    foreach (var game in games)
-                    {
-                        game.RefreshASIStates();
-                    }
-                    selectionStateUpdateCallback?.Invoke(null);
-                });
+                reloadOnError = false;
                 if (isStaged)
                 {
                     File.Copy(StagedManifestLocation, ManifestLocation, true); //this will make sure cached manifest is parsable.
@@ -190,20 +229,192 @@ namespace MassEffectModManagerCore.modmanager.asi
             }
             catch (Exception e)
             {
-                if (isStaged && File.Exists(ManifestLocation))
+                if (isStaged && File.Exists(ManifestLocation) && reloadOnError)
                 {
                     //try cached instead
-                    LoadManifestFromDisk(ManifestLocation, games, false);
+                    LoadManifestFromDisk(ManifestLocation, false);
                     return;
                 }
-
-                foreach (var game in games)
+                if (!reloadOnError)
                 {
-                    game.RefreshASIStates();
+                    return; //Don't rethrow exception as we did load the manifest still
                 }
+
                 throw new Exception(@"Error parsing the ASI Manifest: " + e.Message);
             }
 
+        }
+
+        /// <summary>
+        /// Installs the specific version of an ASI to the specified target
+        /// </summary>
+        /// <param name="modVersion"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool InstallASIToTarget(ASIModVersion asi, GameTarget target)
+        {
+            if (asi.Game != target.Game) throw new Exception($@"ASI {asi.Name} cannot be installed to game {target.Game}");
+            string destinationFilename = $@"{asi.InstalledPrefix}-v{asi.Version}.asi";
+            string cachedPath = Path.Combine(CachedASIsFolder, destinationFilename);
+            string destinationDirectory = MEDirectories.ASIPath(target);
+            if (!Directory.Exists(destinationDirectory))
+            {
+                Log.Information(@"Creating ASI directory in game: " + destinationDirectory);
+                Directory.CreateDirectory(destinationDirectory);
+            }
+            string finalPath = Path.Combine(destinationDirectory, destinationFilename);
+
+            // Delete existing ASIs from the same group to ensure we don't install the same mod
+            var existingSameGroupMods = target.GetInstalledASIs().Where(x =>
+                    x.AssociatedManifestItem != null && x.AssociatedManifestItem.OwningMod == asi.OwningMod).ToList();
+            bool hasExistingVersionOfModInstalled = false;
+            if (existingSameGroupMods.Any())
+            {
+                foreach (var v in existingSameGroupMods)
+                {
+                    if (v.Hash == asi.Hash)
+                    {
+                        hasExistingVersionOfModInstalled = true;
+                        continue; //Don't delete this one. We are already installed. There is no reason to install it again.
+                    }
+                    Log.Information($@"Deleting existing ASI from same group: {v.InstalledPath}");
+                    File.Delete(v.InstalledPath);
+                }
+            }
+
+            if (hasExistingVersionOfModInstalled)
+            {
+                return true; // This asi was "Installed" (because it was already installed).
+            }
+
+            // Install the ASI
+            string md5;
+            if (File.Exists(cachedPath))
+            {
+                //Check hash first
+                md5 = Utilities.CalculateMD5(cachedPath);
+                if (md5 == asi.Hash)
+                {
+                    Log.Information($@"Copying ASI from cached library to destination: {cachedPath} -> {finalPath}");
+
+                    File.Copy(cachedPath, finalPath, true);
+                    Log.Information($@"Installed ASI to {finalPath}");
+                    Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>() {
+                                { @"Filename", Path.GetFileNameWithoutExtension(finalPath)}
+                            });
+                    return true;
+                }
+            }
+            WebRequest request = WebRequest.Create(asi.DownloadLink);
+            Log.Information(@"Fetching remote ASI from server");
+
+            using WebResponse response = request.GetResponse();
+            var memoryStream = new MemoryStream();
+            response.GetResponseStream().CopyTo(memoryStream);
+            //MD5 check on file for security
+            md5 = Utilities.CalculateMD5(memoryStream);
+            if (md5 != asi.Hash)
+            {
+                //ERROR!
+                Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
+                return false;
+            }
+
+            Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
+            memoryStream.WriteToFile(finalPath);
+            Log.Information(@"ASI successfully installed.");
+            Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
+                        {
+                            { @"Filename", Path.GetFileNameWithoutExtension(finalPath)}
+                        });
+
+            //Cache ASI
+            if (!Directory.Exists(CachedASIsFolder))
+            {
+                Log.Information(@"Creating cached ASIs folder");
+                Directory.CreateDirectory(CachedASIsFolder);
+            }
+            Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
+            memoryStream.WriteToFile(cachedPath);
+            return true;
+        }
+
+        /// <summary>
+        /// Installs the latest version of an ASI to the specified target. If there is an existing version installed, it is updated
+        /// </summary>
+        /// <param name="mod"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool InstallASIToTarget(ASIMod mod, GameTarget target)
+        {
+            return InstallASIToTarget(mod.LatestVersion, target);
+        }
+
+        /// <summary>
+        /// Installs the latest version of the specified ASI (by update group ID) to the target
+        /// </summary>
+        /// <param name="updateGroup"></param>
+        /// <param name="nameForLogging"></param>
+        /// <param name="gameTarget"></param>
+        public static bool InstallASIToTargetByGroupID(int updateGroup, string nameForLogging, GameTarget gameTarget)
+        {
+            var group = GetASIModsByGame(gameTarget.Game).FirstOrDefault(x => x.UpdateGroupId == updateGroup);
+            if (group == null)
+            {
+                // Cannot find ASI!
+                Log.Error($@"Cannot find ASI with update group ID {updateGroup} for game {gameTarget.Game}");
+                return false;
+            }
+
+            return InstallASIToTarget(group, gameTarget);
+            //var asigame = new ASIGame(gameTarget);
+            //var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == updateGroup); //DLC mod enabler is group 16
+            //if (dlcModEnabler != null)
+            //{
+            //    Log.Information($"Installing {nameForLogging} ASI");
+            //    var asiLockObject = new object();
+
+            //    void asiInstalled()
+            //    {
+            //        lock (asiLockObject)
+            //        {
+            //            Monitor.Pulse(asiLockObject);
+            //        }
+            //    }
+
+            //    var asiNotInstalledAlready = asigame.ApplyASI(dlcModEnabler.GetLatestVersion(), asiInstalled);
+            //    if (asiNotInstalledAlready)
+            //    {
+            //        lock (asiLockObject)
+            //        {
+            //            Monitor.Wait(asiLockObject, 3500); //3.5 seconds max time.
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    Log.Error($"Could not install {nameForLogging} ASI!!");
+            //}
+        }
+
+        /// <summary>
+        /// Gets the list of ASI mods by game from the manifest
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static List<ASIMod> GetASIModsByGame(Mod.MEGame game)
+        {
+            switch (game)
+            {
+                case Mod.MEGame.ME1:
+                    return MasterME1ASIUpdateGroups;
+                case Mod.MEGame.ME2:
+                    return MasterME2ASIUpdateGroups;
+                case Mod.MEGame.ME3:
+                    return MasterME3ASIUpdateGroups;
+                default:
+                    return null;
+            }
         }
     }
 }

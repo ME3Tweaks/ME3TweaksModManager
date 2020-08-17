@@ -567,7 +567,7 @@
                     </MenuItem>
                     <MenuItem
                         Header="{DynamicResource string_ASIModManager}"
-                        Click="ASIModManager_Click"
+                        Command="{Binding OpenASIManagerCommand}"
                         ToolTip="{DynamicResource string_ASIManagerTooltip}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome

@@ -949,8 +949,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string NumASIModsInstalledText { get; private set; }
         public void PopulateASIInfo()
         {
-            var asi = new ASIGame(this);
-            var installedASIs = asi.GetInstalledASIMods(Game);
+            var installedASIs = GetInstalledASIs();
             if (installedASIs.Any())
             {
                 NumASIModsInstalledText = M3L.GetString(M3L.string_interp_asiStatus, installedASIs.Count);
@@ -972,6 +971,37 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIModsWillBeUnableToLoad);
             }
+        }
+
+        public List<InstalledASIMod> GetInstalledASIs()
+        {
+            List<InstalledASIMod> installedASIs = new List<InstalledASIMod>();
+            try
+            {
+                string asiDirectory = MEDirectories.ASIPath(this);
+                if (asiDirectory != null && Directory.Exists(TargetPath))
+                {
+                    if (!Directory.Exists(asiDirectory))
+                    {
+                        Directory.CreateDirectory(asiDirectory); //Create it, but we don't need it
+                        return installedASIs; //It won't have anything in it if we are creating it
+                    }
+
+                    var asiFiles = Directory.GetFiles(asiDirectory, @"*.asi");
+                    foreach (var asiFile in asiFiles)
+                    {
+                        var asiMod = new InstalledASIMod(asiFile, Game);
+                        installedASIs.Add(asiMod);
+                        ASIManager.MapInstalledASI(asiMod); //Map it to manifest
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"Error fetching list of installed ASIs: " + e.Message);
+            }
+
+            return installedASIs;
         }
     }
 }

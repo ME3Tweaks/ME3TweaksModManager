@@ -26,6 +26,7 @@ using MassEffect3.Coalesce.Xml;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -344,6 +345,7 @@ namespace MassEffectModManagerCore
                 }
             };
         }
+        public ICommand OpenASIManagerCommand { get; set; }
         public ICommand OpenTutorialCommand { get; set; }
         public ICommand OriginInGameOverlayDisablerCommand { get; set; }
         public ICommand ModdescEditorCommand { get; set; }
@@ -435,6 +437,7 @@ namespace MassEffectModManagerCore
             ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
             OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => ModsLoaded && InstallationTargets.Any());
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
+            OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
         }
 
         private void OpenTutorial()
@@ -1837,7 +1840,7 @@ namespace MassEffectModManagerCore
             {
                 if (b.Error != null)
                 {
-                    Log.Error(@"Exception occured in ModLoader thread: " + b.Error.Message);
+                    Log.Error(@"Exception occurred in ModLoader thread: " + b.Error.Message);
                 }
                 IsLoadingMods = false;
                 if (b.Result is Mod m)
@@ -2377,6 +2380,7 @@ namespace MassEffectModManagerCore
                 App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!firstStartupCheck);
                 App.BasegameFileIdentificationService = OnlineContent.FetchBasegameFileIdentificationServiceManifest(!firstStartupCheck);
                 App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
+                ASIManager.LoadManifest(!OnlineContent.CanFetchContentThrottleCheck());
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
@@ -2975,7 +2979,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void ASIModManager_Click(object sender, RoutedEventArgs e)
+        private void OpenASIManager()
         {
             Analytics.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
             {

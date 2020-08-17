@@ -1,41 +1,54 @@
-﻿using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
+﻿using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Xml.Linq;
 using MassEffectModManagerCore.modmanager.asi;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
+    /// <summary>
+    /// Template selector
+    /// </summary>
+    public class ASIManagerDataTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, System.Windows.DependencyObject container)
+        {
+            string resourceName = null;
+            if (item is ASIMod am)
+            {
+                resourceName = "DataTemplateQueuedJob";
+
+            }
+            else if (item is InstalledASIMod iam)
+            {
+                resourceName = "DataTemplateQueuedJob";
+            }
+            else
+            {
+                throw new InvalidOperationException($"There is no corresponding list box template for {item}");
+            }
+
+            var element = container as FrameworkElement;
+            return element.FindResource(resourceName) as DataTemplate;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for ASIManager.xaml
     /// </summary>
     public partial class ASIManagerPanel : MMBusyPanelBase
     {
+        
         public int SelectedTabIndex { get; set; }
-
-        private object SelectedASIObject;
+        private object SelectedASIObject { get; set; }
         public string SelectedASIDescription { get; set; }
         public string SelectedASISubtext { get; set; }
         public string SelectedASIName { get; set; }
@@ -71,13 +84,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        public ICommand InstallCommand { get; private set; }
+        public ICommand InstallUninstallCommand { get; private set; }
         public ICommand SourceCodeCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
 
         private void LoadCommands()
         {
-            InstallCommand = new GenericCommand(InstallUninstallASI, CanInstallASI);
+            InstallUninstallCommand = new GenericCommand(InstallUninstallASI, CanInstallASI);
             SourceCodeCommand = new GenericCommand(ViewSourceCode, ManifestASIIsSelected);
             CloseCommand = new GenericCommand(ClosePanel, CanClosePanel);
         }
@@ -91,44 +104,43 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ViewSourceCode()
         {
-            if (SelectedASIObject is ASIMod asi)
+            if (SelectedASIObject is ASIModVersion asi)
             {
                 Utilities.OpenWebpage(asi.SourceCodeLink);
             }
         }
-
-
 
         private void InstallUninstallASI()
         {
             if (SelectedASIObject is InstalledASIMod instASI)
             {
                 //Unknown ASI
-                File.Delete(instASI.InstalledPath);
+                instASI.Uninstall();
                 RefreshASIStates();
             }
             else if (SelectedASIObject is ASIMod asi)
             {
                 InstallInProgress = true;
-                var alreadyInstalledAndUpToDate = Games.First(x => x.Game == asi.Game).ApplyASI(asi, () =>
+                var target = Games.First(x => x.Game == asi.Game);
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ASIInstallWorker");
+                nbw.DoWork += (a, b) =>
+                {
+                    b.Result = ASIManager.InstallASIToTarget(asi, target.SelectedTarget);
+                };
+                nbw.RunWorkerCompleted += (a, b) =>
                 {
                     InstallInProgress = false;
+                    if (b.Error != null)
+                    {
+                        Log.Error($@"Exception installing ASI: {b.Error.Message}");
+                        M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccuredDeletingTheASI, b.Error.Message), M3L.GetString(M3L.string_errorDeletingASI), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                     RefreshASIStates();
                     UpdateSelectionTexts(SelectedASIObject);
                     CommandManager.InvalidateRequerySuggested();
-                });
-                if (!alreadyInstalledAndUpToDate)
-                {
-                    void exceptionCallback(Exception e)
-                    {
-                        M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccuredDeletingTheASI, e.Message), M3L.GetString(M3L.string_errorDeletingASI), MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-
-                    Games.First(x => x.Game == asi.Game).DeleteASI(asi, exceptionCallback); //UI doesn't allow you to install on top of an already installed ASI that is up to date. So we delete ith ere.
-                    InstallInProgress = false;
-                    RefreshASIStates();
-                    UpdateSelectionTexts(SelectedASIObject);
-                }
+                };
+                InstallInProgress = true;
+                nbw.RunWorkerAsync();
             }
         }
 
@@ -150,8 +162,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod;
 
-
-
         private void RefreshASIStates()
         {
             foreach (var game in Games)
@@ -160,7 +170,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-       
+
 
         private void ASIManagerLists_SelectedChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -178,24 +188,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void UpdateSelectionTexts(object v)
         {
-            if (v is ASIMod asiMod)
+            if (v is ASIModVersion asiMod)
             {
                 SelectedASIDescription = asiMod.Description;
                 SelectedASIName = asiMod.Name;
                 string subtext = M3L.GetString(M3L.string_interp_byXVersionY, asiMod.Author, asiMod.Version);
                 subtext += Environment.NewLine;
-                if (asiMod.UIOnly_Outdated)
-                {
-                    subtext += M3L.GetString(M3L.string_installedOutdated);
-                    InstallButtonText = M3L.GetString(M3L.string_updateASI);
-                }
-                else if (asiMod.UIOnly_Installed)
-                {
-                    subtext += M3L.GetString(M3L.string_installedUpToDate);
-                    InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
+                //if (asiMod.UIOnly_Outdated)
+                //{
+                //    subtext += M3L.GetString(M3L.string_installedOutdated);
+                //    InstallButtonText = M3L.GetString(M3L.string_updateASI);
+                //}
+                //else if (asiMod.UIOnly_Installed)
+                //{
+                //    subtext += M3L.GetString(M3L.string_installedUpToDate);
+                //    InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
 
-                }
-                else
+                //}
+                //else
                 {
                     subtext += M3L.GetString(M3L.string_notInstalled);
                     InstallButtonText = M3L.GetString(M3L.string_installASI);
@@ -207,7 +217,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else if (v is InstalledASIMod nonManifestAsiMod)
             {
                 SelectedASIDescription = M3L.GetString(M3L.string_unknownASIDescription);
-                SelectedASIName = nonManifestAsiMod.Filename;
+                SelectedASIName = nonManifestAsiMod.UnmappedFilename;
                 SelectedASISubtext = M3L.GetString(M3L.string_SSINotPresentInManifest);
                 InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
             }
@@ -236,7 +246,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             //This has to be done here as mainwindow will not be available until this is called
-            Mod.MEGame[] gameEnum = new[] {Mod.MEGame.ME1, Mod.MEGame.ME2, Mod.MEGame.ME3};
+            Mod.MEGame[] gameEnum = new[] { Mod.MEGame.ME1, Mod.MEGame.ME2, Mod.MEGame.ME3 };
             int index = 0;
             foreach (var game in gameEnum)
             {
@@ -257,8 +267,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 index++;
             }
 
-            //Technically this could load earlier, but it's not really worth the effort for the miniscule time saved
-            ASIManager.LoadManifest(true, Games.ToList(), UpdateSelectionTexts);
             UpdateSelectionTexts(null);
         }
 
