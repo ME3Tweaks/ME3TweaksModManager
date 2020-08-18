@@ -134,7 +134,7 @@
       <downloadlink>https://me3tweaks.com/mods/asi/ME3ParallelProcessUnlocker-v1.asi</downloadlink>
     </asimod>
   </updategroup>
-  <updategroup groupid="8" game="3" hidden="0">
+  <updategroup groupid="8" game="3" hidden="1">
     <asimod>
       <name>ME3 Logger</name>
       <installedname>ME3Logger</installedname>
