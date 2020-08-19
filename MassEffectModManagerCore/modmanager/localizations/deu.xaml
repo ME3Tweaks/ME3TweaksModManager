@@ -399,6 +399,8 @@
 	<!-- 0={Mod name} -->
     <system:String x:Key="string_thisModShouldBeReinstalled">Dieser Mod sollte neu installiert werden.</system:String>
     <system:String x:Key="string_invalidCompatibilityPack">Ungültiges Kompatibilitätspack</system:String>
+    <system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">Beim Erstellen der Installationswarteschlangen ist ein Fehler aufgetreten: {0}</system:String>
+	<!-- 0={Exception message} -->
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Willkommen beim ME3Tweaks Mod Manager</system:String>
