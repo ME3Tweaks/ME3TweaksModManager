@@ -320,7 +320,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 try
                                 {
                                     if (file.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
-                                    if (file.StartsWith(dlcFolderpath))
+                                    if (file.StartsWith(dlcFolderpath, StringComparison.InvariantCultureIgnoreCase))
                                     {
                                         //It's a DLC!
                                         string dlcname = file.Substring(dlcSubStringLen);
