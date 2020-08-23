@@ -707,6 +707,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanClose() => !DeploymentInProgress;
 
+        /// <summary>
+        /// File extensnions that will be stored uncompressed in archive as they already have well compressed data and may be of a large size
+        /// (which increases the solid block size)
+        /// </summary>
+        private static string[] NoCompressExtensions = new[] {@".tfc", @".bik"};
         private void StartDeployment()
         {
             SaveFileDialog d = new SaveFileDialog
@@ -834,10 +839,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Debug.WriteLine(ProgressValue + "/" + ProgressMax);
             };
             compressor.FileCompressionStarted += (a, b) => { Debug.WriteLine(b.FileName); };
-            compressor.CompressFileDictionary(archiveMapping, archivePath);
+
+            // Pass 1: Compressed items and empty folders
+            // Includes package files and other basic file types
+            // Does not include AFC, TFC, or .BIK
+            currentDeploymentStep = "Compressed mod items";
+
+            var compressItems = archiveMapping.Where(x=> x.Value == null || !NoCompressExtensions.Contains(Path.GetExtension(x.Value))).ToDictionary(p => p.Key, p => p.Value);
+            compressor.CompressFileDictionary(compressItems, archivePath);
             compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
             compressor.CompressionMode = CompressionMode.Append;
             compressor.CompressionLevel = CompressionLevel.None;
+
+            // Pass 2: Uncompressed items that are not moddesc.ini
+            currentDeploymentStep = "Noncompressed mod items";
+            var nocompressItems = archiveMapping.Where(x => x.Value != null && NoCompressExtensions.Contains(Path.GetExtension(x.Key))).ToDictionary(p => p.Key, p => p.Value);
+            compressor.CompressFileDictionary(nocompressItems, archivePath);
+
+            // Pass 3: Moddesc.ini
+            // Appends at end of archive
             currentDeploymentStep = @"moddesc.ini";
             compressor.CompressFiles(archivePath, new string[]
             {
