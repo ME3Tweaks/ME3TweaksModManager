@@ -124,9 +124,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                         CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
                     }
 
-                    if (RegistryActive && Settings.AutoUpdateLODs && oldTMOption != TextureModded && (lodUpdateAndLogging || forceLodUpdate))
+                    if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) && oldTMOption != TextureModded && (lodUpdateAndLogging || forceLodUpdate))
                     {
-                        UpdateLODs();
+                        UpdateLODs(Settings.AutoUpdateLODs2K);
                     }
                 }
                 else
@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public void UpdateLODs(bool me12k = false)
+        public void UpdateLODs(bool twoK)
         {
             if (!TextureModded)
             {
@@ -150,23 +150,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (MEUITMInstalled)
                     {
                         //detect soft shadows/meuitm
-                        var branchingPCFCommon = Path.Combine(TargetPath, @"Engine", @"Shaders", @"BranchingPCFCommon.usf");
+                        var branchingPCFCommon =
+                            Path.Combine(TargetPath, @"Engine", @"Shaders", @"BranchingPCFCommon.usf");
                         if (File.Exists(branchingPCFCommon))
                         {
                             var md5 = Utilities.CalculateMD5(branchingPCFCommon);
-                            Utilities.SetLODs(this, true, me12k, md5 == @"10db76cb98c21d3e90d4f0ffed55d424");
+                            Utilities.SetLODs(this, true, twoK, md5 == @"10db76cb98c21d3e90d4f0ffed55d424");
                             return;
                         }
                     }
-
-                    //set default HQ lod
-                    Utilities.SetLODs(this, true, me12k, false);
                 }
-                else
-                {
-                    //me2/3
-                    Utilities.SetLODs(this, true, false, false);
-                }
+                //me2/3
+                Utilities.SetLODs(this, true, twoK, false);
             }
         }
 

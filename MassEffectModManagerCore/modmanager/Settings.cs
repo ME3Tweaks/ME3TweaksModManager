@@ -138,15 +138,39 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _darkTheme, value);
         }
 
-        private static bool _autoUpdateLods = true;
-        public static bool AutoUpdateLODs
+        private static bool _autoUpdateLods4K = true;
+        public static bool AutoUpdateLODs4K
         {
-            get => _autoUpdateLods;
-            set => SetProperty(ref _autoUpdateLods, value);
+            get => _autoUpdateLods4K;
+            set
+            {
+                SetProperty(ref _autoUpdateLods4K, value);
+                if (!changingLODSetting && value)
+                {
+                    changingLODSetting = true;
+                    AutoUpdateLODs2K = false;
+                    changingLODSetting = false;
+                }
+            }
         }
 
+        private static bool _autoUpdateLods2K = true;
+        public static bool AutoUpdateLODs2K
+        {
+            get => _autoUpdateLods2K;
+            set
+            {
+                SetProperty(ref _autoUpdateLods2K, value);
+                if (!changingLODSetting && value)
+                {
+                    changingLODSetting = true;
+                    AutoUpdateLODs4K = false;
+                    changingLODSetting = false;
+                }
+            }
+        }
 
-
+        private static bool changingLODSetting;
 
         private static string _modLibraryPath;
         public static string ModLibraryPath
@@ -200,7 +224,8 @@ namespace MassEffectModManagerCore.modmanager
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
-            AutoUpdateLODs = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", true);
+            AutoUpdateLODs2K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", false);
+            AutoUpdateLODs4K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", true);
             WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
@@ -364,7 +389,8 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
                 SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
-                SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs", AutoUpdateLODs);
+                SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", AutoUpdateLODs4K);
+                SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

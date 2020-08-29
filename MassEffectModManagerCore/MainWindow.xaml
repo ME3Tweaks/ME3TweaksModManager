@@ -322,13 +322,22 @@
                             ToolTip="{DynamicResource string_EnableDeveloperOrientedFeatures}"
                             IsCheckable="True" />
                         <MenuItem
-                            Name="AutoLods_MenuItem"
+                            Name="AutoLods2K_MenuItem"
                             Visibility="Visible"
-                            Header="{DynamicResource string_autoUpdateLODs}"
+                            Header="{DynamicResource string_autoUpdateLODs2K}"
                             StaysOpenOnClick="True"
                             Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs)}"
-                            ToolTip="{DynamicResource string_tooltip_autoLods}"
+                            IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs2K)}"
+                            ToolTip="{DynamicResource string_tooltip_autoLods2K}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="AutoLods4K_MenuItem"
+                            Visibility="Visible"
+                            Header="{DynamicResource string_autoUpdateLODs4K}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs4K)}"
+                            ToolTip="{DynamicResource string_tooltip_autoLods4K}"
                             IsCheckable="True" />
                         <MenuItem
                             Name="DarkMode_MenuItem"

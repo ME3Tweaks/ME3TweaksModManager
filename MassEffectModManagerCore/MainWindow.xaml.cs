@@ -1115,9 +1115,9 @@ namespace MassEffectModManagerCore
                 .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
             try
             {
-                if (Settings.AutoUpdateLODs)
+                if (Settings.AutoUpdateLODs4K || Settings.AutoUpdateLODs2K)
                 {
-                    SelectedGameTarget.UpdateLODs();
+                    SelectedGameTarget.UpdateLODs(Settings.AutoUpdateLODs2K);
                 }
                 Utilities.RunProcess(MEDirectories.ExecutablePath(SelectedGameTarget), (string)null, false, true);
             }
@@ -3007,10 +3007,9 @@ namespace MassEffectModManagerCore
                         if (hresult == -3) return; //do nothing.
                         if (hresult == 0)
                         {
-
                             //rescan
                             PopulateTargets(SelectedGameTarget);
-                            SelectedGameTarget.UpdateLODs();
+                            SelectedGameTarget.UpdateLODs(Settings.AutoUpdateLODs2K);
                         }
 
                         Analytics.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()

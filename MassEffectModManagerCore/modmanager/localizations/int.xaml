@@ -264,8 +264,10 @@
     <system:String x:Key="string_interp_visitSelectedModWebSite">Visit {0}'s web site</system:String>
     <!-- 0=SelectedMod.ModName -->
     <system:String  x:Key="string_openModdesciniFile">Open moddesc.ini file</system:String>
-    <system:String  x:Key="string_autoUpdateLODs">Auto update LODs</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager</system:String>
+    <system:String  x:Key="string_autoUpdateLODs2K">Auto update LODs (2K, good quality)</system:String>
+    <system:String  x:Key="string_autoUpdateLODs4K">Auto update LODs (4K, best quality)</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods2K">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager.&#10;&#10;This is the 'good' quality setting. This setting will provide a modest improvement over default textures when paired with a high quality texture mod such as ALOT.&#10;The 2K option uses less memory and will provide better game stability when used with large mods</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods4K">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager.&#10;&#10;This is the 'best' quality setting. This setting will provide the best quality textures when paired with a high quality texture mod such as ALOT</system:String>
     <system:String  x:Key="string_egmSettings">EGM Settings</system:String>
     <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
     <system:String  x:Key="string_tooltip_egmSettings">Allows you to configure settings for Expanded Galaxy Mod</system:String>
