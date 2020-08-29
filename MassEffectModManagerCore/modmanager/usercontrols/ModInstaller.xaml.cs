@@ -552,7 +552,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 //BASEGAME FILE TELEMETRY
-                if (Settings.EnableTelemetry)
+                if (Settings.EnableTelemetry && ModBeingInstalled.ModModMakerID == 0)
                 {
                     // ME3 is SFAR DLC so we don't track those. Track if it path has 'DLC' directory and the path of file being installed contains an official DLC directory in it
                     // There is probably better way to do this
