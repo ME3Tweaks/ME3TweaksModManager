@@ -527,23 +527,41 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 //Check space
-                Utilities.GetDiskFreeSpaceEx(backupPath, out var freeBytes, out var totalBytes,
-                    out var totalFreeBytes);
-                var requiredSpace =
-                    Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1; //10% buffer
-                Log.Information($@"Backup space check. Backup size: {ByteSize.FromBytes(requiredSpace)}, free space: {ByteSize.FromBytes(freeBytes)}");
-                if (freeBytes < requiredSpace)
+                if (!targetToBackup.IsCustomOption)
                 {
-                    //Not enough space.
-                    Log.Error(
-                        $@"Not enough disk space to create backup at {backupPath}. Required space: {ByteSize.FromBytes(requiredSpace)} Free space: {ByteSize.FromBytes(freeBytes)}");
-                    M3L.ShowDialog(window,
-                        M3L.GetString(M3L.string_dialogInsufficientDiskSpace,
-                            Path.GetPathRoot(backupPath), ByteSize.FromBytes(freeBytes).ToString(),
-                            ByteSize.FromBytes(requiredSpace).ToString()),
-                        M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
+                    Utilities.GetDiskFreeSpaceEx(backupPath, out var freeBytes, out var totalBytes,
+                        out var totalFreeBytes);
+                    var requiredSpace =
+                        Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1; //10% buffer
+                    Log.Information(
+                        $@"Backup space check. Backup size: {ByteSize.FromBytes(requiredSpace)}, free space: {ByteSize.FromBytes(freeBytes)}");
+                    if (freeBytes < requiredSpace)
+                    {
+                        //Not enough space.
+                        Log.Error(
+                            $@"Not enough disk space to create backup at {backupPath}. Required space: {ByteSize.FromBytes(requiredSpace)} Free space: {ByteSize.FromBytes(freeBytes)}");
+                        M3L.ShowDialog(window,
+                            M3L.GetString(M3L.string_dialogInsufficientDiskSpace,
+                                Path.GetPathRoot(backupPath), ByteSize.FromBytes(freeBytes).ToString(),
+                                ByteSize.FromBytes(requiredSpace).ToString()),
+                            M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return false;
+                    }
+
+                    //Check writable
+                    var writable = Utilities.IsDirectoryWritable(backupPath);
+                    if (!writable)
+                    {
+                        //Not enough space.
+                        Log.Error(
+                            $@"Backup destination selected is not writable.");
+                        M3L.ShowDialog(window,
+                            M3L.GetString(M3L.string_dialog_userAccountDoesntHaveWritePermissionsBackup),
+                            M3L.GetString(M3L.string_cannotCreateBackup), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return false;
+                    }
                 }
 
                 //Check it is not subdirectory of the game (we might want to check its not subdir of a target)
@@ -562,20 +580,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return false;
                     }
                 }
-
-                //Check writable
-                var writable = Utilities.IsDirectoryWritable(backupPath);
-                if (!writable)
-                {
-                    //Not enough space.
-                    Log.Error(
-                        $@"Backup destination selected is not writable.");
-                    M3L.ShowDialog(window,
-                        M3L.GetString(M3L.string_dialog_userAccountDoesntHaveWritePermissionsBackup),
-                        M3L.GetString(M3L.string_cannotCreateBackup), MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
+                
                 return true;
             }
 
