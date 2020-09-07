@@ -264,8 +264,10 @@
 	<system:String x:Key="string_interp_visitSelectedModWebSite">Посетить сайт {0}</system:String>
 	<!-- 0=SelectedMod.ModName -->
 	<system:String x:Key="string_openModdesciniFile">Открыть файл moddesc.ini</system:String>
-	<system:String x:Key="string_autoUpdateLODs">Автообновление LOD</system:String>
-	<system:String x:Key="string_tooltip_autoLods" xml:space="preserve">Автоматически обновляет настройки уровня детализации текстур при восстановлении и запуске игры.&#10;Это обеспечит корректные настройки текстур для любой запускаемой игры при условии её запуска из Mod Manager</system:String>
+	<system:String x:Key="string_autoUpdateLODs2K">Автообновление LOD (2K, хорошее качество)</system:String>
+	<system:String x:Key="string_autoUpdateLODs4K">Автообновление LOD (4K, лучшее качество)</system:String>
+	<system:String x:Key="string_tooltip_autoLods2K" xml:space="preserve">Автоматически обновляет настройки уровня детализации текстур (LOD) при восстановлении и запуске игры.&#10;Это обеспечит корректные настройки текстур для любой целевой игры, если она запускается из Mod Manager.&#10;&#10;Данная настройка устанавливает 'хорошее' качество. Это даст средний уровень улучшения относительно настроек по умолчанию при совмещении с модом текстур высокого разрешения, например ALOT.&#10;Опция 2K использует меньше памяти и повышает стабильность игры при использовании больших модов</system:String>
+	<system:String x:Key="string_tooltip_autoLods4K" xml:space="preserve">Автоматически обновляет настройки уровня детализации текстур (LOD) при восстановлении и запуске игры.&#10;Это обеспечит корректные настройки текстур для любой целевой игры, если она запускается из Mod Manager.&#10;&#10;Данная настройка устанавливает 'лучшее' качество. Это даст наибольший уровень улучшения относительно настроек по умолчанию при совмещении с модом текстур высокого разрешения, например ALOT</system:String>
 	<system:String x:Key="string_egmSettings">Настройки EGM</system:String>
 	<!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
 	<system:String x:Key="string_tooltip_egmSettings">Позволяет настроить Expanded Galaxy Mod</system:String>
