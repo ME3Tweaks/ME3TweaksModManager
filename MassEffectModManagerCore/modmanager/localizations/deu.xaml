@@ -264,8 +264,10 @@
     <system:String x:Key="string_interp_visitSelectedModWebSite">Besuche die Website von {0}</system:String>
     <!-- 0=SelectedMod.ModName -->
     <system:String x:Key="string_openModdesciniFile">moddesc.ini-Datei öffnen</system:String>
-    <system:String x:Key="string_autoUpdateLODs">LODs automatisch aktualisieren</system:String>
-    <system:String x:Key="string_tooltip_autoLods" xml:space="preserve">Aktualisiert beim wiederherstellen und starten des Spiels die Texturdetaileinstellungen (LOD) automatisch.&#10;Dadurch wird sichergestellt, dass, egal welche Zielinstallation du startest, die richtigen Textureinstellungen verwendet werden, solange es mit Mod Manager gestartet wird</system:String>
+	<system:String x:Key="string_autoUpdateLODs2K">LODs automatisch aktualisieren (2K, gute Qualität)</system:String>
+	<system:String x:Key="string_autoUpdateLODs4K">LODs automatisch aktualisieren (4K, beste Qualität)</system:String>
+	<system:String x:Key="string_tooltip_autoLods2K" xml:space="preserve">Aktualisiert automatisch die Texturdetailgradeinstellungen (LOD) beim Wiederherstellen und Starten des Spiels.&#10;Dies stellt sicher, dass die richtigen Textureinstellungen eingestellt sind, egal welches Installationsziel du startest, solange es von Mod Manager gestartet wird.&#10;&#10;Dies ist die Einstellung 'gute Qualität'. Diese Einstellung stellt eine kleine Verbesserung gegenüber Standardtexturen dar, wenn sie mit einem Texturqualitätsmod wie ALOT kombiniert wird.&#10;Die 2K-Option braucht weniger Arbeitsspeicher und bietet höhere Spielstabilität, wenn andere große Mods benutzt werden</system:String>
+	<system:String x:Key="string_tooltip_autoLods4K" xml:space="preserve">Aktualisiert automatisch die Texturdetailgradeinstellungen (LOD) beim Wiederherstellen und Starten des Spiels.&#10;Dies stellt sicher, dass die richtigen Textureinstellungen eingestellt sind, egal welches Installationsziel du startest, solange es von Mod Manager gestartet wird.&#10;&#10;Dies ist die Einstellung 'beste Qualität'. Diese Einstellung benutzt die hochwertigsten Texturen, wenn sie mit einem Texturqualitätsmod wie ALOT kombiniert wird.</system:String>
     <system:String x:Key="string_egmSettings">EGM-Einstellungen</system:String>
     <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
     <system:String x:Key="string_tooltip_egmSettings">Hier kannst du Einstellungen für Expanded Galaxy Mod treffen</system:String>
