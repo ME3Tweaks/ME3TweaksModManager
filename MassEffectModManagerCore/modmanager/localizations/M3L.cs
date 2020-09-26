@@ -330,8 +330,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_manageNexusModsIntegration = "string_tooltip_manageNexusModsIntegration";
 		public static readonly string string_interp_visitSelectedModWebSite = "string_interp_visitSelectedModWebSite";
 		public static readonly string string_openModdesciniFile = "string_openModdesciniFile";
-		public static readonly string string_autoUpdateLODs = "string_autoUpdateLODs";
-		public static readonly string string_tooltip_autoLods = "string_tooltip_autoLods";
+		public static readonly string string_autoUpdateLODs2K = "string_autoUpdateLODs2K";
+		public static readonly string string_autoUpdateLODs4K = "string_autoUpdateLODs4K";
+		public static readonly string string_tooltip_autoLods2K = "string_tooltip_autoLods2K";
+		public static readonly string string_tooltip_autoLods4K = "string_tooltip_autoLods4K";
 		public static readonly string string_egmSettings = "string_egmSettings";
 		public static readonly string string_tooltip_egmSettings = "string_tooltip_egmSettings";
 		public static readonly string string_donations = "string_donations";
@@ -383,6 +385,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_cannotInstallToThisGame = "string_cannotInstallToThisGame";
 		public static readonly string string_checkingTutorialAssets = "string_checkingTutorialAssets";
 		public static readonly string string_checkedTutorialAssets = "string_checkedTutorialAssets";
+		public static readonly string string_updatingLocalization = "string_updatingLocalization";
+		public static readonly string string_updatedLocalization = "string_updatedLocalization";
+		public static readonly string string_errorUpdatingLocalization = "string_errorUpdatingLocalization";
 		public static readonly string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";

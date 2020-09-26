@@ -168,7 +168,7 @@ namespace MassEffectModManagerCore
             //Change language if not INT
             if (App.InitialLanguage != @"int")
             {
-                SetLanguage(App.InitialLanguage, true);
+                SetApplicationLanguage(App.InitialLanguage, true);
             }
 
             CheckProgramDataWritable();
@@ -2348,6 +2348,25 @@ namespace MassEffectModManagerCore
                         }
 
                         backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+                        var hasUpdatedLocalization = OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
+                        if (hasUpdatedLocalization.HasValue && hasUpdatedLocalization.Value)
+                        {
+                            bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LocalizationUpdate",
+                                M3L.GetString(M3L.string_updatingLocalization),
+                                M3L.GetString(M3L.string_updatedLocalization));
+                            try
+                            {
+                                SetApplicationLanguage(App.CurrentLanguage, false); //Force update of localization
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(@"Error updating/setting localizatio: " + e.Message);
+                                bgTask.finishedUiText = M3L.GetString(M3L.string_errorUpdatingLocalization);
+                            }
+
+                            backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                        }
                     }
                     else
                     {
@@ -2520,19 +2539,19 @@ namespace MassEffectModManagerCore
 
         private void debugMethod()
         {
-            var suf = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME3\Interface Scaling Mod\DLC_MOD_InterfaceScaling\CookedPCConsole\Startup_MOD_InterfaceScaling_INT.pcc");
-            var combinedRef = suf.getUExport(1);
-            var refedObjects = combinedRef.GetProperty<ArrayProperty<ObjectProperty>>("ReferencedObjects");
-            refedObjects.Clear();
-            foreach (var e in suf.Exports)
-            {
-                if (e.ClassName != "Package" && e.ClassName != "ObjectReferencer")
-                {
-                    refedObjects.Add(new ObjectProperty(e.UIndex));
-                }
-            }
-            combinedRef.WriteProperty(refedObjects);
-            suf.save();
+            //var suf = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME3\Interface Scaling Mod\DLC_MOD_InterfaceScaling\CookedPCConsole\Startup_MOD_InterfaceScaling_INT.pcc");
+            //var combinedRef = suf.getUExport(1);
+            //var refedObjects = combinedRef.GetProperty<ArrayProperty<ObjectProperty>>(@"ReferencedObjects");
+            //refedObjects.Clear();
+            //foreach (var e in suf.Exports)
+            //{
+            //    if (e.ClassName != @"Package" && e.ClassName != @"ObjectReferencer")
+            //    {
+            //        refedObjects.Add(new ObjectProperty(e.UIndex));
+            //    }
+            //}
+            //combinedRef.WriteProperty(refedObjects);
+            //suf.save();
 
             /*var preLangPath = @"X:\m3modlibrary\ME3\SP Controller Support\DLC_CON_XBX\CookedPCConsole\DLC_CON_XBX_";
             TalkFileME2ME3 intF = new TalkFileME2ME3();
@@ -3546,8 +3565,7 @@ namespace MassEffectModManagerCore
             //{
             //    lang = @"cze";
             //}
-
-            SetLanguage(lang, false);
+            SetApplicationLanguage(lang, false);
         }
 
         /// <summary>
@@ -3556,53 +3574,54 @@ namespace MassEffectModManagerCore
         /// <param name="lang"></param>
         /// <param name="startup"></param>
         /// <param name="forcedDictionary"></param>
-        public void SetLanguage(string lang, bool startup, ResourceDictionary forcedDictionary = null)
+        public void SetApplicationLanguage(string lang, bool startup, ResourceDictionary forcedDictionary = null)
         {
+
             Log.Information(@"Setting language to " + lang);
-            foreach (var item in languageMenuItems)
+            Application.Current.Dispatcher.Invoke(async () =>
             {
-                item.Value.IsChecked = item.Key == lang;
-            }
 
-            //Set language.
-            var resourceDictionary = forcedDictionary ?? new ResourceDictionary
-            {
-                // Pick uri from configuration
-                Source = new Uri($@"pack://application:,,,/ME3TweaksModManager;component/modmanager/localizations/{lang}.xaml", UriKind.Absolute)
-            };
-            Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
-            App.CurrentLanguage = Settings.Language = lang;
-            SetTipsForLanguage();
-            RefreshNexusStatus(true);
-            try
-            {
-                var localizedHelpItems = OnlineContent.FetchLatestHelp(lang, true, false);
-                setDynamicHelpMenu(localizedHelpItems);
-            }
-            catch (Exception e)
-            {
-                Log.Error(@"Could not set localized dynamic help: " + e.Message);
-            }
-
-            if (SelectedMod != null)
-            {
-                // This will force strings to update
-                var sm = SelectedMod;
-                SelectedMod = null;
-                SelectedMod = sm;
-            }
-
-            if (!startup)
-            {
-                if (forcedDictionary == null)
+                foreach (var item in languageMenuItems)
                 {
-                    Settings.Save(); //save this language option
+                    item.Value.IsChecked = item.Key == lang;
                 }
-                AuthToNexusMods();
-                FailedMods.RaiseBindableCountChanged();
-                CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
-                VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
-            }
+
+                //Set language.
+                await Task.Run(() => OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup));
+
+                App.CurrentLanguage = Settings.Language = lang;
+                SetTipsForLanguage();
+                RefreshNexusStatus(true);
+                try
+                {
+                    var localizedHelpItems = OnlineContent.FetchLatestHelp(lang, true, false);
+                    setDynamicHelpMenu(localizedHelpItems);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(@"Could not set localized dynamic help: " + e.Message);
+                }
+
+                if (SelectedMod != null)
+                {
+                    // This will force strings to update
+                    var sm = SelectedMod;
+                    SelectedMod = null;
+                    SelectedMod = sm;
+                }
+
+                if (!startup)
+                {
+                    if (forcedDictionary == null)
+                    {
+                        Settings.Save(); //save this language option
+                    }
+                    AuthToNexusMods();
+                    FailedMods.RaiseBindableCountChanged();
+                    CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
+                    VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
+                }
+            });
         }
 
         private void LoadExternalLocalizationDictionary(string filepath)
@@ -3615,7 +3634,7 @@ namespace MassEffectModManagerCore
                 try
                 {
                     var extDictionary = (ResourceDictionary)XamlReader.Load(new XmlTextReader(filepath));
-                    SetLanguage(filename, false, extDictionary);
+                    SetApplicationLanguage(filename, false, extDictionary);
                 }
                 catch (Exception e)
                 {

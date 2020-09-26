@@ -18,7 +18,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     //Localizable(false) //Leave this here for localizer tool!
     partial class OnlineContent
     {
-        private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
+        private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck-testing?currentversion=" + App.BuildNumber + "&M3=true";
         private static readonly string StartupManifestBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
@@ -26,11 +26,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
         private const string BasegameFileIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
         private const string BasegameFileIdentificationServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/basegamefileidentificationservice.json";
+        
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
         private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice";
         private const string ModMakerTopModsEndpoint = "https://me3tweaks.com/modmaker/api/topmods";
+        private const string LocalizationEndpoint = "https://me3tweaks.com/modmanager/services/livelocalizationservice";
 
         private const string TutorialServiceURL = "https://me3tweaks.com/modmanager/services/tutorialservice";
         private const string TutorialServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/tutorialservice.json";
@@ -46,6 +48,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             StaticFilesBaseURL_Github,
             StaticFilesBaseURL_ME3Tweaks
         };
+
 
         /// <summary>
         /// Checks if we can perform an online content fetch. This value is updated when manually checking for content updates, and on automatic 1-day intervals (if no previous manual check has occurred)
@@ -749,7 +752,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            Log.Warning(@"Using cached tutorial service file instead");
+            Log.Information(@"Using cached tutorial service file");
 
             try
             {

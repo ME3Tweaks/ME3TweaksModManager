@@ -329,6 +329,10 @@
     <system:String x:Key="string_checkingTutorialAssets">Checking tutorial assets</system:String>
     <system:String x:Key="string_checkedTutorialAssets">Checked tutorial assets</system:String>
 
+    <system:String x:Key="string_updatingLocalization">Updating localization</system:String>
+    <system:String x:Key="string_updatedLocalization">Updated localization</system:String>
+    <system:String x:Key="string_errorUpdatingLocalization">Error updating localization</system:String>
+
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
