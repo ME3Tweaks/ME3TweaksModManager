@@ -2350,22 +2350,9 @@ namespace MassEffectModManagerCore
                         backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                         var hasUpdatedLocalization = OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
-                        if (hasUpdatedLocalization.HasValue && hasUpdatedLocalization.Value)
+                        if (hasUpdatedLocalization.HasValue)
                         {
-                            bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LocalizationUpdate",
-                                M3L.GetString(M3L.string_updatingLocalization),
-                                M3L.GetString(M3L.string_updatedLocalization));
-                            try
-                            {
-                                SetApplicationLanguage(App.CurrentLanguage, false); //Force update of localization
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error(@"Error updating/setting localizatio: " + e.Message);
-                                bgTask.finishedUiText = M3L.GetString(M3L.string_errorUpdatingLocalization);
-                            }
-
-                            backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                            SetApplicationLanguage(App.CurrentLanguage, false); //Force update of localization
                         }
                     }
                     else
