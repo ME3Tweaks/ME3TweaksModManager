@@ -111,47 +111,70 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             downloadClient.DownloadFileAsync(new Uri(url), downloadPath);
         }
 
-        public static void DownloadToolGithub(string localToolFolderName, string tool, Release latestRelease, string executable,
+        public static void DownloadToolGithub(string localToolFolderName, string tool, List<Release> releases, string executable,
             Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null, Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
+            Release latestRelease = null;
+            ReleaseAsset asset = null;
+            Uri downloadLink = null;
+            foreach (var release in releases)
+            {
+
+                currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_downloadingX, tool));
+                setPercentVisibilityCallback?.Invoke(true);
+                setPercentTaskDone?.Invoke(0);
+
+                //Get asset info
+                asset = release.Assets.FirstOrDefault();
+
+                if (Path.GetFileName(executable) == @"MassEffectModder.exe")
+                {
+                    //Requires specific asset
+                    asset = release.Assets.FirstOrDefault(x =>
+                        x.Name == @"MassEffectModder-v" + latestRelease.TagName + @".7z");
+                    if (asset == null)
+                    {
+                        Log.Warning(
+                            $@"No applicable assets in release tag {release.TagName} for MassEffectModder, skipping");
+                        return;
+                    }
+
+                    latestRelease = release;
+                    downloadLink = new Uri(asset.BrowserDownloadUrl);
+                    break;
+                }
+
+                if (Path.GetFileName(executable) == @"MassEffectModderNoGui.exe")
+                {
+                    //Requires specific asset
+                    asset = release.Assets.FirstOrDefault(x =>
+                        x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
+                    if (asset == null)
+                    {
+                        Log.Warning(
+                            $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
+                        return;
+                    }
+                    latestRelease = release;
+                    downloadLink = new Uri(asset.BrowserDownloadUrl);
+                    break;
+                }
+
+                if (asset != null)
+                {
+                    latestRelease = release;
+                    downloadLink = new Uri(asset.BrowserDownloadUrl);
+                    break;
+                }
+            }
+
+            if (latestRelease == null || downloadLink == null) return;
             Analytics.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
             {
-                {@"Tool name", Path.GetFileName(executable) },
+                {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", latestRelease.TagName}
             });
-            var toolName = tool.Replace(@" ", "");
-            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_downloadingX, tool));
-            setPercentVisibilityCallback.Invoke(true);
-            setPercentTaskDone?.Invoke(0);
-
-            //Get asset info
-            var asset = latestRelease.Assets[0];
-            var downloadLink = new Uri(asset.BrowserDownloadUrl);
-
-            if (Path.GetFileName(executable) == @"MassEffectModder.exe")
-            {
-                //Requires specific asset
-                asset = latestRelease.Assets.FirstOrDefault(x => x.Name == @"MassEffectModder-v" + latestRelease.TagName + @".7z");
-                if (asset == null)
-                {
-                    Log.Error(@"Error downloading Mass Effect Modder: Could not find asset in latest release!");
-                    return;
-                }
-                downloadLink = new Uri(asset.BrowserDownloadUrl);
-            }
-            if (Path.GetFileName(executable) == @"MassEffectModderNoGui.exe")
-            {
-                //Requires specific asset
-                asset = latestRelease.Assets.FirstOrDefault(x => x.Name == @"MassEffectModderNoGui-v" + latestRelease.TagName + @".7z");
-                if (asset == null)
-                {
-                    Log.Error(@"Error downloading Mass Effect Modder No Gui: Could not find asset in latest release!");
-                    return;
-                }
-
-                downloadLink = new Uri(asset.BrowserDownloadUrl);
-            }
 
             WebClient downloadClient = new WebClient();
 
@@ -164,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
 
             var extension = Path.GetExtension(asset.BrowserDownloadUrl);
-            string downloadPath = Path.Combine(temppath, toolName + extension);
+            string downloadPath = Path.Combine(temppath, tool.Replace(@" ", "") + extension);
 
             downloadClient.DownloadFileCompleted += (a, b) =>
             {
@@ -256,7 +279,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
 
-        public static async Task<Release> FetchLatestRelease(string tool)
+        public static async Task<List<Release>> FetchReleases(string tool)
         {
             string toolGithubOwner = null;
             string toolGithubRepoName = null;
@@ -290,7 +313,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
 
-            Log.Information($@"Checking for application updates from github ({toolGithubOwner}, {toolGithubRepoName})");
+            Log.Information($@"Getting list of releases from github from ({toolGithubOwner}/{toolGithubRepoName})");
             var client = new GitHubClient(new ProductHeaderValue(@"ME3TweaksModManager"));
             try
             {
@@ -298,9 +321,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (releases.Count > 0)
                 {
                     Log.Information(@"Parsing release information from github");
-
-                    //The release we want to check is always the latest with assets that is not a pre-release
-                    return releases.FirstOrDefault(x => !x.Prerelease && x.Assets.Count > 0);
+                    return releases.Where(x => !x.Prerelease && x.Assets.Count > 0).ToList();
                 }
             }
             catch (Exception e)
@@ -370,11 +391,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (toolIsGithubBased(tool))
             {
                 currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_checkingForUpdates));
-                var latestRelease = await FetchLatestRelease(tool);
+                var releases = await FetchReleases(tool);
 
 
                 //Failed to get release check
-                if (latestRelease == null)
+                if (releases == null)
                 {
                     if (!needsDownloading)
                     {
@@ -394,7 +415,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Got a release
                 if (needsDownloading)
                 {
-                    DownloadToolGithub(localToolFolderName, tool, latestRelease, localExecutable,
+                    DownloadToolGithub(localToolFolderName, tool, releases, localExecutable,
                         s => currentTaskUpdateCallback?.Invoke(s),
                         vis => setPercentVisibilityCallback?.Invoke(vis),
                         percent => setPercentTaskDone?.Invoke(percent),
@@ -405,33 +426,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     //Check if it need updated
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
                     bool needsUpdated = false;
-                    if (tool == MEM || tool == MEM_CMD)
+                    var latestRelease = releases.FirstOrDefault();
+                    if (latestRelease != null)
                     {
-                        //Checks based on major
-                        int releaseVer = int.Parse(latestRelease.TagName);
-                        if (releaseVer > fvi.ProductMajorPart)
+                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
+                        if (tool == MEM || tool == MEM_CMD)
                         {
-                            needsUpdated = true;
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            Version serverVersion = new Version(latestRelease.TagName);
-                            Version localVersion =
-                                new Version(
-                                    $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
-                            if (serverVersion > localVersion)
+                            //Checks based on major
+                            int releaseVer = int.Parse(latestRelease.TagName);
+                            if (releaseVer > fvi.ProductMajorPart)
                             {
                                 needsUpdated = true;
                             }
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Log.Error(@"Invalid version number on release: " + latestRelease.TagName);
+                            try
+                            {
+                                Version serverVersion = new Version(latestRelease.TagName);
+                                Version localVersion =
+                                    new Version(
+                                        $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
+                                if (serverVersion > localVersion)
+                                {
+                                    needsUpdated = true;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(@"Invalid version number on release: " + latestRelease.TagName);
+                            }
                         }
                     }
 
@@ -441,7 +466,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        DownloadToolGithub(localToolFolderName, tool, latestRelease, localExecutable,
+                        DownloadToolGithub(localToolFolderName, tool, releases, localExecutable,
                             s => currentTaskUpdateCallback?.Invoke(s),
                             vis => setPercentVisibilityCallback?.Invoke(vis),
                             percent => setPercentTaskDone?.Invoke(percent),
