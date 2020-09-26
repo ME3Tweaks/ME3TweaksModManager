@@ -956,7 +956,6 @@
     <system:String x:Key="string_interp_altfile_multilistMissingFileInMultiList">Multilist ID Alternatywnego Pliku ({0}) nie istnieje jako część zadania:</system:String>
 	<!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Alternatywny Plik ({0}) określa operację OP_APPLY_MULTILISTFILES, ale nie określa atrybutu MultiListId lub jego wartość nie mogła zostać sparsowana do liczby całkowitej.</system:String>
-<<<<<<< Updated upstream
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61">Aleternatywny Plik {0} określa operację OP_NOINSTALL_MULTILISTFILES - ta funkcja jest obsługiwana tylko w moddesc w wersji 6.1 lub wyższej.</system:String>
     <!-- 0={FriendlyName} -->
@@ -964,15 +963,7 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Aleternatywny Plik {0} określa operację OP_NOINSTALL_MULTILISTFILES, ale nie wskazuje atrybutu MultiListId lub nie mógł być on przeanalizowany jako liczba całkowita.</system:String>
     <!-- 0={FriendlyName} -->
-=======
-	<!-- 0=FriendlyName -->
-    <system:String x:Key="string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61">Aleternatywny Plik {0} określa operację OP_NOINSTALL_MULTILISTFILES - ta funkcja jest obsługiwana tylko w moddesc w wersji 6.1 lub wyższej.</system:String>
-	<!-- 0={FriendlyName} -->
-    <system:String x:Key="string_interp_altfile_multilistNIMissingMultiListTargetPath">Aleternatywny Plik {0} określa operację  OP_NOINSTALL_MULTILISTFILES, ale nie wskazuje wymaganego MultiListRoothPath.</system:String>
-	<!-- 0={FriendlyName} -->
-    <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Aleternatywny Plik {0} określa operację OP_NOINSTALL_MULTILISTFILES, ale nie wskazuje atrybutu MultiListId lub nie mógł być on przeanalizowany jako liczba całkowita.</system:String>
-	<!-- 0={FriendlyName} -->
->>>>>>> Stashed changes
+
 
 	<!-- GameTarget -->
     <system:String x:Key="string_interp_ui_alotInstalledVersion" xml:space="preserve">A Lot Of Textures (ALOT) zainstalowany\nWersja {0}</system:String>
