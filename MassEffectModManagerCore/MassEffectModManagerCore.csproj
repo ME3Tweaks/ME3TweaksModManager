@@ -10,8 +10,8 @@
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
-    <AssemblyVersion>6.1.1.109</AssemblyVersion>
-    <FileVersion>6.1.1.109</FileVersion>
+    <AssemblyVersion>6.1.2.110</AssemblyVersion>
+    <FileVersion>6.1.2.110</FileVersion>
     <Copyright>ME3Tweaks 2012 - 2020</Copyright>
     <Authors>Mgamerz</Authors>
     <PackageId>MassEffectModManagerCore</PackageId>
@@ -21,9 +21,9 @@
     <StartupObject>MassEffectModManagerCore.App</StartupObject>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
     <AssemblyName>ME3TweaksModManager</AssemblyName>
-    <Version>6.1.1.109</Version>
+    <Version>6.1.2.110</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-	<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -135,10 +135,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="modmanager\binkw32\me2\binkw32.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="bundleddlls\lzo2wrapper.dll" />
     <EmbeddedResource Include="bundleddlls\sevenzipwrapper.dll" />
     <EmbeddedResource Include="bundleddlls\zlibwrapper.dll" />
@@ -147,6 +143,7 @@
     <EmbeddedResource Include="modmanager\binkw32\me1\binkw23.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me1\binkw32.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me2\binkw23.dll" />
+    <EmbeddedResource Include="modmanager\binkw32\me2\binkw32.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me3\binkw23.dll" />
     <EmbeddedResource Include="modmanager\binkw32\me3\binkw32.dll" />
     <EmbeddedResource Include="modmanager\gamemd5\me1.bin" />
