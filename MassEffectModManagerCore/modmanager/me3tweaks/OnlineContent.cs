@@ -18,7 +18,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     //Localizable(false) //Leave this here for localizer tool!
     partial class OnlineContent
     {
-        private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck-testing?currentversion=" + App.BuildNumber + "&M3=true";
+        private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
         private static readonly string StartupManifestBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
