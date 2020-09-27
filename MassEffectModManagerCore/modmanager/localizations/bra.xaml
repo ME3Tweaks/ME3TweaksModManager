@@ -264,8 +264,10 @@
 	<system:String x:Key="string_interp_visitSelectedModWebSite">Visitar website de {0}</system:String>
 	<!-- 0=SelectedMod.ModName -->
 	<system:String x:Key="string_openModdesciniFile">Abrir arquivo moddesc.ini</system:String>
-	<system:String x:Key="string_autoUpdateLODs">Atualizar LODs automaticamente</system:String>
-	<system:String x:Key="string_tooltip_autoLods" xml:space="preserve">Automaticamente atualiza as opções de nível de detalhe da textura (LOD) ao executar ou restaurar o jogo.&#10;Isso assegura que qualquer jogo iniciado tenha as configurações de textura corretas, contanto que seja inciando pelo Gerenciador de Mods</system:String>
+	<system:String x:Key="string_autoUpdateLODs2K">Atualizar LODs automaticamente (2K, boa qualidade)</system:String>
+	<system:String x:Key="string_autoUpdateLODs4K">Atualizar LODs automaticamente (4K, melhor qualidade)</system:String>
+	<system:String x:Key="string_tooltip_autoLods2K" xml:space="preserve">Atualiza automaticamente o nível de detalhe de texturas (LOD) ao restaurar e executar o jogo.&#10;Isso assegura que qualquer destino que inicie tenha as definições de textura corretas, desde que seja iniciado à partir do Gerenciador de Mods.&#10;Esta é a definição para "boa" qualidade. Essa definição providencia uma modesta melhora nas texturas padrão quando usado em conjunto com um Mod de textura de alta qualidade como o ALOT.&#10;A opção 2K usa menos memória e promove uma melhora estabilidade para o jogo quando se usa Mods grandes</system:String>
+	<system:String x:Key="string_tooltip_autoLods4K" xml:space="preserve">Automaticamente atualiza o nível de detalhe de texturas (LOD) ao restaurar e executar o jogo.&#10;Isso assegura que qualquer destino que inicie tenha as  definições de texura corretas, desde que seja iniciado à partir do Gerenciador de Mods.&#10;Esta é a definição para a "melhor" qualidade. Esta definição providencia a melhor qualidade de textura quando usado com um Mod de textura de alta qualidade como o ALOT</system:String>
 	<system:String x:Key="string_egmSettings">Opções EGM</system:String>
 	<!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
 	<system:String x:Key="string_tooltip_egmSettings">Permite configurar as opções do Expanded Galaxy Mod</system:String>
@@ -325,6 +327,9 @@
 	<!-- When a target for another game than the selected mod -->
 	<system:String x:Key="string_checkingTutorialAssets">Verificando recursos do Tutorial</system:String>
 	<system:String x:Key="string_checkedTutorialAssets">Recursos do Tutorial verificados</system:String>
+	<system:String x:Key="string_updatingLocalization">Atualizando localização</system:String>
+	<system:String x:Key="string_updatedLocalization">Localização atualizada</system:String>
+	<system:String x:Key="string_errorUpdatingLocalization">Erro ao atualizar localização</system:String>
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Este destino recebeu Mods de textura</system:String>
