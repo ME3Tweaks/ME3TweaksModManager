@@ -494,7 +494,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BasegameSourceIdentifier");
                     nbw.DoWork += (a, b) =>
                     {
-                        foreach (var v in SelectedTarget.ModifiedBasegameFiles)
+                        foreach (var v in SelectedTarget.ModifiedBasegameFiles.ToList())
                         {
                             v.DetermineSource();
                         }
