@@ -1861,5 +1861,10 @@ namespace MassEffectModManagerCore
         {
             return Path.Combine(GetME3TweaksServicesCache(), "d3d9.dll");
         }
+
+        public static string GetCachedLocalizationFolder()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "livelocalization")).FullName;
+        }
     }
 }

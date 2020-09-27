@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.Tests
             App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService();
             App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest();
 
-            var compressedModsDirectory = Path.Combine(GlobalTest.GetTestDataDirectory(), "compressedmods");
+            var compressedModsDirectory = Path.Combine(GlobalTest.FindDirectoryInParentDirectories(GlobalTest.TESTDATA_FOLDER_NAME), "compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();
 
             void addModCallback(Mod m)

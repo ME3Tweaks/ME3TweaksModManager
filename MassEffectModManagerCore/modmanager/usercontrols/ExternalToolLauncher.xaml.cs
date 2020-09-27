@@ -118,12 +118,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Release latestRelease = null;
             ReleaseAsset asset = null;
             Uri downloadLink = null;
+            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_downloadingX, tool));
+            setPercentVisibilityCallback?.Invoke(true);
+            setPercentTaskDone?.Invoke(0);
             foreach (var release in releases)
             {
 
-                currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_downloadingX, tool));
-                setPercentVisibilityCallback?.Invoke(true);
-                setPercentTaskDone?.Invoke(0);
+                
 
                 //Get asset info
                 asset = release.Assets.FirstOrDefault();
@@ -137,7 +138,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Warning(
                             $@"No applicable assets in release tag {release.TagName} for MassEffectModder, skipping");
-                        return;
+                        continue;
                     }
 
                     latestRelease = release;
@@ -154,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Warning(
                             $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
-                        return;
+                        continue;
                     }
                     latestRelease = release;
                     downloadLink = new Uri(asset.BrowserDownloadUrl);

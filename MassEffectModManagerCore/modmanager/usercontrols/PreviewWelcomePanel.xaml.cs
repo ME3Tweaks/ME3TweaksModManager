@@ -115,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ChangeLanguage(string lang)
         {
-            mainwindow.SetLanguage(lang, false);
+            mainwindow.SetApplicationLanguage(lang, false);
             SetAuthorized(IsAuthorized);
             Settings.Save();
         }

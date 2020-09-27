@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
-
+using System.Windows;
+using System.Windows.Markup;
+using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests
@@ -15,6 +18,16 @@ namespace MassEffectModManagerCore.Tests
         {
             GlobalTest.Init();
             App app = new App(); //Pre boot
+
+            var xamlPaths = Path.Combine(GlobalTest.FindDirectoryInParentDirectories("MassEffectModManagerCore"), "modmanager", "localizations");
+            var files = Directory.GetFiles(xamlPaths, "*.xaml");
+            foreach (var filepath in files)
+            {
+                // Will throw exception if there's an error loading the file
+                Console.WriteLine($@"Loading localization file {filepath}");
+                XamlReader.Load(new XmlTextReader(filepath));
+            }
+
             //Thread thread = new Thread(() =>
             //{
             //    app.InitializeComponent();
