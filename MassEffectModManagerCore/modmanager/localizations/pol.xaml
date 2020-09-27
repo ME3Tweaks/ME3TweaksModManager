@@ -327,6 +327,9 @@
 	<!-- When a target for another game than the selected mod -->
     <system:String x:Key="string_checkingTutorialAssets">Sprawdzanie części samouczka</system:String>
     <system:String x:Key="string_checkedTutorialAssets">Części samouczka sprawdzone</system:String>
+    <system:String x:Key="string_updatingLocalization">Aktualizowanie lokalizacji</system:String>
+    <system:String x:Key="string_updatedLocalization">Lokalizacja zaktualizowana</system:String>
+    <system:String x:Key="string_errorUpdatingLocalization">Wystąpił błąd podczas aktualizacji lokalizacji</system:String>
 
 	<!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">Ścieżka ma zmodyfikowane tekstury</system:String>
@@ -963,7 +966,6 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Aleternatywny Plik {0} określa operację OP_NOINSTALL_MULTILISTFILES, ale nie wskazuje atrybutu MultiListId lub nie mógł być on przeanalizowany jako liczba całkowita.</system:String>
     <!-- 0={FriendlyName} -->
-
 
 	<!-- GameTarget -->
     <system:String x:Key="string_interp_ui_alotInstalledVersion" xml:space="preserve">A Lot Of Textures (ALOT) zainstalowany\nWersja {0}</system:String>
