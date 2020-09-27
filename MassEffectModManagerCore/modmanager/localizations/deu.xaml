@@ -267,7 +267,7 @@
 	<system:String x:Key="string_autoUpdateLODs2K">LODs automatisch aktualisieren (2K, gute Qualität)</system:String>
 	<system:String x:Key="string_autoUpdateLODs4K">LODs automatisch aktualisieren (4K, beste Qualität)</system:String>
 	<system:String x:Key="string_tooltip_autoLods2K" xml:space="preserve">Aktualisiert automatisch die Texturdetailgradeinstellungen (LOD) beim Wiederherstellen und Starten des Spiels.&#10;Dies stellt sicher, dass die richtigen Textureinstellungen eingestellt sind, egal welches Installationsziel du startest, solange es von Mod Manager gestartet wird.&#10;&#10;Dies ist die Einstellung 'gute Qualität'. Diese Einstellung stellt eine kleine Verbesserung gegenüber Standardtexturen dar, wenn sie mit einem Texturqualitätsmod wie ALOT kombiniert wird.&#10;Die 2K-Option braucht weniger Arbeitsspeicher und bietet höhere Spielstabilität, wenn andere große Mods benutzt werden</system:String>
-	<system:String x:Key="string_tooltip_autoLods4K" xml:space="preserve">Aktualisiert automatisch die Texturdetailgradeinstellungen (LOD) beim Wiederherstellen und Starten des Spiels.&#10;Dies stellt sicher, dass die richtigen Textureinstellungen eingestellt sind, egal welches Installationsziel du startest, solange es von Mod Manager gestartet wird.&#10;&#10;Dies ist die Einstellung 'beste Qualität'. Diese Einstellung benutzt die hochwertigsten Texturen, wenn sie mit einem Texturqualitätsmod wie ALOT kombiniert wird.</system:String>
+	<system:String x:Key="string_tooltip_autoLods4K" xml:space="preserve">Aktualisiert automatisch die Texturdetailgradeinstellungen (LOD) beim Wiederherstellen und Starten des Spiels.&#10;Dies stellt sicher, dass die richtigen Textureinstellungen eingestellt sind, egal welches Installationsziel du startest, solange es von Mod Manager gestartet wird.&#10;&#10;Dies ist die Einstellung 'beste Qualität'. Diese Einstellung benutzt die hochwertigsten Texturen, wenn sie mit einem Texturqualitätsmod wie ALOT kombiniert wird</system:String>
     <system:String x:Key="string_egmSettings">EGM-Einstellungen</system:String>
     <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
     <system:String x:Key="string_tooltip_egmSettings">Hier kannst du Einstellungen für Expanded Galaxy Mod treffen</system:String>
@@ -325,11 +325,14 @@
 	<!-- When there is no targets at all -->
     <system:String x:Key="string_cannotInstallToThisGame">Kann nicht in dieses Spiel installiert werden</system:String>
 	<!-- When a target for another game than the selected mod -->
-    <system:String x:Key="string_checkingTutorialAssets">Tutorial-Dateien werden überprüft</system:String>
-    <system:String x:Key="string_checkedTutorialAssets">Tutorial-Dateien wurden überprüft</system:String>
+	<system:String x:Key="string_checkingTutorialAssets">Tutorial-Dateien werden überprüft</system:String>
+	<system:String x:Key="string_checkedTutorialAssets">Tutorial-Dateien wurden überprüft</system:String>
+	<system:String x:Key="string_updatingLocalization">Lokalisierung wird aktualisiert</system:String>
+	<system:String x:Key="string_updatedLocalization">Lokalisierung wurde aktualisiert</system:String>
+	<system:String x:Key="string_errorUpdatingLocalization">Fehler beim Aktualisieren der Lokalisierung</system:String>
 
-    <!-- Global Styles -->
-    <system:String x:Key="string_thisTargetHasBeenTextureModded">Diese Zielinstallation enthält modifizierte Texturen</system:String>
+	<!-- Global Styles -->
+	<system:String x:Key="string_thisTargetHasBeenTextureModded">Diese Zielinstallation enthält modifizierte Texturen</system:String>
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Bereite Installation vor</system:String>
