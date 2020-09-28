@@ -133,7 +133,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Requires specific asset
                     asset = release.Assets.FirstOrDefault(x =>
-                        x.Name == @"MassEffectModder-v" + latestRelease.TagName + @".7z");
+                        x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
                     if (asset == null)
                     {
                         Log.Warning(
