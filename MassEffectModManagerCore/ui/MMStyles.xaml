@@ -3,7 +3,8 @@
                     xmlns:local="clr-namespace:MassEffectModManagerCore.ui"
                     xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager.objects"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
-                    xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters">
+                    xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+                    xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -16,6 +17,7 @@
     <converters:NullEnabledConverter x:Key="NullEnabledConverter" />
     <converters:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
     <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
+    <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>

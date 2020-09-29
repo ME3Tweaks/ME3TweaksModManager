@@ -19,6 +19,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
 using System.Management;
+using System.Runtime.CompilerServices;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using AuthenticodeExaminer;
@@ -386,7 +387,6 @@ namespace MassEffectModManagerCore
         public static bool IsRunningOnAMD;
 
         public static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra", "bra", "esn" };
-        public static Dictionary<string, string> ServerManifest { get; set; }
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
 
@@ -468,8 +468,44 @@ namespace MassEffectModManagerCore
             }
         }
 
+        /// <summary>
+        /// The executable location for this application
+        /// </summary>
         public static string ExecutableLocation { get; private set; }
-        public static Dictionary<string, string> OnlineManifest { get; internal set; }
+
+        #region Server Manifest
+        #region Static Property Changed
+
+        public static event PropertyChangedEventHandler StaticPropertyChanged;
+        /// <summary>
+        /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
+        /// Should be called in property setters.
+        /// </summary>
+        /// <typeparam name="T">Type of given property.</typeparam>
+        /// <param name="field">Backing field to update.</param>
+        /// <param name="value">New value of property.</param>
+        /// <param name="propertyName">Name of property.</param>
+        /// <returns>True if success, false if backing field and new value aren't compatible.</returns>
+        private static bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
+            return true;
+        }
+        #endregion
+        private static Dictionary<string, string> _serverManifest;
+        /// <summary>
+        /// The online server manifest that was fetched at boot. If null, the manifest was not fetched
+        /// </summary>
+        public static Dictionary<string, string> ServerManifest
+        {
+            get => _serverManifest;
+            set => SetProperty(ref _serverManifest, value);
+        }
+
+        #endregion
+
         public static List<IntroTutorial.TutorialStep> TutorialService { get; set; } = new List<IntroTutorial.TutorialStep>(); //in case it takes long time to load
 
         /// <summary>
