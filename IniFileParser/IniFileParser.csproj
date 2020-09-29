@@ -1,38 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <RootNamespace>IniParser</RootNamespace>
-		<AssemblyName>IniFileParser</AssemblyName>
-		<Description>A .NET, Mono and Unity3d compatible(*) library for reading/writing INI data from IO streams, file streams, and strings written in C#.
+    <AssemblyName>IniFileParser</AssemblyName>
+    <Description>
+      A .NET, Mono and Unity3d compatible(*) library for reading/writing INI data from IO streams, file streams, and strings written in C#.
 
-Also implements merging operations, both for complete ini files, sections, or even just a subset of the keys contained by the files.
+      Also implements merging operations, both for complete ini files, sections, or even just a subset of the keys contained by the files.
 
-(*) This library is 100% .NET code and does not have any dependencies on Windows API calls in order to be portable.</Description>
-		<Authors>Ricardo Amores Hernández</Authors>
-		<PackageProjectUrl>https://github.com/rickyah/ini-parser</PackageProjectUrl>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageIconUrl>https://raw.githubusercontent.com/rickyah/ini-parser/development/nuget-ini-icon.png</PackageIconUrl>
-		<Version>2.5.3-sh1</Version>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>Properties\publickey.snk</AssemblyOriginatorKeyFile>
-		<OutputType>Library</OutputType>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-		<NoWarn>$(NoWarn);0618;1591;1573</NoWarn><!-- Ignore: Use of Deprecated, Undocumented Public Members, Undocumented Parameters -->
-		<PackageTags>ini</PackageTags>
-		<PackageId>ini-parser</PackageId>
-		<Product>INI Parser</Product>
+      (*) This library is 100% .NET code and does not have any dependencies on Windows API calls in order to be portable.
+    </Description>
+    <Authors>Ricardo Amores Hernández</Authors>
+    <PackageProjectUrl>https://github.com/rickyah/ini-parser</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>2.5.3-sh1</Version>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>Properties\publickey.snk</AssemblyOriginatorKeyFile>
+    <OutputType>Library</OutputType>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);0618;1591;1573</NoWarn>
+    <!-- Ignore: Use of Deprecated, Undocumented Public Members, Undocumented Parameters -->
+    <PackageTags>ini</PackageTags>
+    <PackageId>ini-parser</PackageId>
+    <Product>INI Parser</Product>
     <PlatformTarget>x64</PlatformTarget>
     <ReleaseVersion></ReleaseVersion>
     <Platforms>x64</Platforms>
-	</PropertyGroup>
-
-	<!-- Auto-select supported target frameworks based on MSBuild version -->
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-	</PropertyGroup>
-    <!-- Only generate NuGet package for full builds -->
-    <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Full'">
-        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    </PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
 </Project>

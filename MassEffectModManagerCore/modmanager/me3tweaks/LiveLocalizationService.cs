@@ -25,9 +25,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <returns></returns>
         public static bool? HasUpdatedLocalization(string lang)
         {
-            if (App.OnlineManifest != null)
+            if (App.ServerManifest != null)
             {
-                if (App.OnlineManifest.TryGetValue($@"livelocalization-{lang}", out var livelocmd5))
+                if (App.ServerManifest.TryGetValue($@"livelocalization-{lang}", out var livelocmd5))
                 {
                     var locFile = getCachedLocalizationFile(lang);
                     if (File.Exists(locFile))
@@ -90,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         private static bool DownloadLocalization(string lang)
         {
-            var livelocmd5 = App.OnlineManifest[$@"livelocalization-{lang}"]; // this was checked previously
+            var livelocmd5 = App.ServerManifest[$@"livelocalization-{lang}"]; // this was checked previously
             var url = LocalizationEndpoint + $"?lang={lang}&build={App.BuildNumber}";
             var result = OnlineContent.DownloadToMemory(url, hash: livelocmd5);
             if (result.errorMessage == null)

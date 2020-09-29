@@ -2257,8 +2257,8 @@ namespace MassEffectModManagerCore
                     var updateCheckTask = backgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        App.OnlineManifest = OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
-                        if (int.TryParse(App.OnlineManifest[@"latest_build_number"], out var latestServerBuildNumer))
+                        OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
+                        if (App.ServerManifest != null && int.TryParse(App.ServerManifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
 
@@ -2276,7 +2276,7 @@ namespace MassEffectModManagerCore
 #if !DEBUG
                             else if (latestServerBuildNumer == App.BuildNumber)
                             {
-                                if (App.OnlineManifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
+                                if (App.ServerManifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
                                 {
                                     var localmd5 = Utilities.CalculateMD5(App.ExecutableLocation);
                                     if (localmd5 != md5)
@@ -2311,13 +2311,13 @@ namespace MassEffectModManagerCore
 
                     backgroundTaskEngine.SubmitJobCompletion(updateCheckTask);
 
-                    if (App.OnlineManifest != null)
+                    if (App.ServerManifest != null)
                     {
                         bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"MixinFetch", M3L.GetString(M3L.string_loadingMixins), M3L.GetString(M3L.string_loadedMixins));
                         try
                         {
                             //Mixins
-                            MixinHandler.ServerMixinHash = App.OnlineManifest[@"mixinpackagemd5"];
+                            MixinHandler.ServerMixinHash = App.ServerManifest[@"mixinpackagemd5"];
                             if (!MixinHandler.IsMixinPackageUpToDate())
                             {
                                 //Download new package.
@@ -2960,6 +2960,7 @@ namespace MassEffectModManagerCore
         {
             string tool = null;
             if (sender == ALOTInstaller_MenuItem) tool = ExternalToolLauncher.ALOTInstaller;
+            if (sender == ALOTInstallerV4_MenuItem) tool = ExternalToolLauncher.ALOTInstallerV4;
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == ME3ExplorerBeta_MenuItem) tool = ExternalToolLauncher.ME3Explorer_Beta;
