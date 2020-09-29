@@ -327,6 +327,9 @@
 	<!-- When a target for another game than the selected mod -->
 	<system:String x:Key="string_checkingTutorialAssets">Проверка ресурсов обучения</system:String>
 	<system:String x:Key="string_checkedTutorialAssets">Ресурсы обучения проверены</system:String>
+	<system:String x:Key="string_updatingLocalization">Обновление локализации</system:String>
+	<system:String x:Key="string_updatedLocalization">Локализация обновлена</system:String>
+	<system:String x:Key="string_errorUpdatingLocalization">Ошибка обновления локализации</system:String>
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Эта игра содержит модифицированные текстуры</system:String>
