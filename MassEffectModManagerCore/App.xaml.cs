@@ -283,7 +283,14 @@ namespace MassEffectModManagerCore
                 }
 
                 Log.Information("Deleting temp files (if any)");
-                Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+                try
+                {
+                    Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
+                }
 
                 Log.Information("Initializing package handlers");
                 MEPackageHandler.Initialize();

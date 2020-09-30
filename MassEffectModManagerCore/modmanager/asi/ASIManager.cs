@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.asi
                 MasterME1ASIUpdateGroups.Clear();
                 MasterME2ASIUpdateGroups.Clear();
                 MasterME3ASIUpdateGroups.Clear();
-                XElement rootElement = XElement.Parse(xmlText);
+                XElement rootElement = XElement.Parse(xmlText.Trim());
 
                 //I Love Linq
                 var updateGroups = (from e in rootElement.Elements(@"updategroup")
