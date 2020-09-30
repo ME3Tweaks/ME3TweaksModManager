@@ -134,10 +134,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (int.TryParse(ModMakerCode, out var code))
                 {
-                    DownloadAndModNameText = @"Downloading mod delta from ME3Tweaks";
+                    DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks);
                     var normalEndpoint = OnlineContent.ModmakerModsEndpoint + code;
                     var lzmaEndpoint = normalEndpoint + @"&method=lzma";
-
+                    Log.Information($@"Downloading modmaker mod {code}");
 
                     //Try LZMA first
                     try
