@@ -742,7 +742,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (b.Error != null)
                     {
-                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     else
                     {
@@ -966,7 +966,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 mainwindow.TaskbarItemInfo.ProgressValue = 0;
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 PrecheckCompleted = true;
                 ProgressIndeterminate = false;

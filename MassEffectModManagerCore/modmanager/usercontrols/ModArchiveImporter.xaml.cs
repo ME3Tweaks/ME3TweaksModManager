@@ -92,7 +92,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 if (CompressedMods.Count > 0)
                 {
@@ -321,7 +321,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Mod failed = new Mod(false);
                     failed.ModName = M3L.GetString(M3L.string_archiveError);
                     failed.LoadFailedReason = M3L.GetString(M3L.string_couldNotInspectArchive7zException);
-                    Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occured! It may be corrupt. The specific error was: {svae.Message}");
+                    Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occurred! It may be corrupt. The specific error was: {svae.Message}");
                     failedToLoadModeCallback?.Invoke(failed);
                     addCompressedModCallback?.Invoke(failed);
                     return;
@@ -633,7 +633,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 TaskRunning = false;
                 if (b.Result is List<Mod> modList)

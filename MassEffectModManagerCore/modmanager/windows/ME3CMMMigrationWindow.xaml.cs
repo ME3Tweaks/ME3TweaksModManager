@@ -368,7 +368,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     if (b.Error != null)
                     {
-                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     Log.Information(@"Migration has completed.");
                     M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));

@@ -255,7 +255,7 @@ namespace MassEffectModManagerCore
                     var loggedIn = await AuthToNexusMods();
                     if (loggedIn == null)
                     {
-                        Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occured while checking credentials. Setting not authorized");
+                        Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occurred while checking credentials. Setting not authorized");
                         SetNexusNotAuthorizedUI();
                     }
                 }
@@ -2455,7 +2455,7 @@ namespace MassEffectModManagerCore
             {
                 if (b.Error != null)
                 {
-                    Log.Error(@"Exception occured in NetworkFetch thread: " + b.Error.Message);
+                    Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
                 }
                 if (b.Result is int i)
                 {
@@ -3027,7 +3027,7 @@ namespace MassEffectModManagerCore
                     }
                     catch (Win32Exception ex)
                     {
-                        Log.Warning(@"Win32 exception occured updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
+                        Log.Warning(@"Win32 exception occurred updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
                     }
                 }
             }
@@ -3123,7 +3123,7 @@ namespace MassEffectModManagerCore
                                 {
                                     if (b.Error != null)
                                     {
-                                        Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                     }
                                     backgroundTaskEngine.SubmitJobCompletion(task);
                                 };
@@ -3197,7 +3197,7 @@ namespace MassEffectModManagerCore
                                     {
                                         if (b.Error != null)
                                         {
-                                            Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                            Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                         }
 
                                         if (failedToCompileCoalesced) task.finishedUiText = M3L.GetString(M3L.string_errorCompilingCoalesced);
@@ -3237,7 +3237,7 @@ namespace MassEffectModManagerCore
                                         {
                                             if (b.Error != null)
                                             {
-                                                Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                                Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                             }
                                             if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
@@ -3254,7 +3254,7 @@ namespace MassEffectModManagerCore
                                         {
                                             if (b.Error != null)
                                             {
-                                                Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                                Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                             }
                                             if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
@@ -3271,7 +3271,7 @@ namespace MassEffectModManagerCore
                                     {
                                         if (b.Error != null)
                                         {
-                                            Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                            Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                         }
                                         if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                         backgroundTaskEngine.SubmitJobCompletion(task);
@@ -3304,7 +3304,7 @@ namespace MassEffectModManagerCore
                             {
                                 if (b.Error != null)
                                 {
-                                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                 }
                                 backgroundTaskEngine.SubmitJobCompletion(task);
                             };

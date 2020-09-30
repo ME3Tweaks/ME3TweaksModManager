@@ -124,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
@@ -168,7 +168,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
@@ -242,7 +242,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();

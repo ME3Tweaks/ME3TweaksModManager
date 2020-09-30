@@ -806,7 +806,7 @@ namespace MassEffectModManagerCore.modmanager
                                             string failurereason = headerJob.AddPreparsedFileToInstall(destFile, file, this);
                                             if (failurereason != null)
                                             {
-                                                Log.Error($@"Error occured while automapping the replace files lists for {headerAsString}: {failurereason}. This is likely a bug in M3, please report it to Mgamerz");
+                                                Log.Error($@"Error occurred while automapping the replace files lists for {headerAsString}: {failurereason}. This is likely a bug in M3, please report it to Mgamerz");
                                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport, headerAsString, failurereason);
                                                 return;
                                             }
@@ -819,7 +819,7 @@ namespace MassEffectModManagerCore.modmanager
                                 }
                                 else
                                 {
-                                    Log.Error($@"Error occured while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
+                                    Log.Error($@"Error occurred while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound, headerAsString, sourceDirectory);
                                     return;
                                 }
@@ -837,7 +837,7 @@ namespace MassEffectModManagerCore.modmanager
                                 string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this);
                                 if (failurereason != null)
                                 {
-                                    Log.Error($@"Error occured while parsing the replace files lists for {headerAsString}: {failurereason}");
+                                    Log.Error($@"Error occurred while parsing the replace files lists for {headerAsString}: {failurereason}");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailureParsingLists, headerAsString, failurereason);
                                     return;
                                 }
@@ -857,7 +857,7 @@ namespace MassEffectModManagerCore.modmanager
                             string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this); //add files are layered on top
                             if (failurereason != null)
                             {
-                                Log.Error($@"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
+                                Log.Error($@"Error occurred while parsing the add files lists for {headerAsString}: {failurereason}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists, headerAsString, failurereason);
                                 return;
                             }
@@ -874,7 +874,7 @@ namespace MassEffectModManagerCore.modmanager
                             string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this); //add files are layered on top
                             if (failurereason != null)
                             {
-                                Log.Error($@"Error occured while parsing the add files lists for {headerAsString}: {failurereason}");
+                                Log.Error($@"Error occurred while parsing the add files lists for {headerAsString}: {failurereason}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists, headerAsString, failurereason);
                                 return;
                             }
@@ -890,7 +890,7 @@ namespace MassEffectModManagerCore.modmanager
                             string failurereason = headerJob.AddReadOnlyIndicatorForFile(addFilesSourceSplit[i], this);
                             if (failurereason != null)
                             {
-                                Log.Error($@"Error occured while parsing the addfilesreadonlytargtes list for {headerAsString}: {failurereason}");
+                                Log.Error($@"Error occurred while parsing the addfilesreadonlytargtes list for {headerAsString}: {failurereason}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesReadOnlyTargets, headerAsString, failurereason);
                                 return;
                             }
@@ -1141,7 +1141,7 @@ namespace MassEffectModManagerCore.modmanager
                         string failurereason = balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceFile, this);
                         if (failurereason != null)
                         {
-                            Log.Error($@"Error occured while creating BALANCE_CHANGE job: {failurereason}");
+                            Log.Error($@"Error occurred while creating BALANCE_CHANGE job: {failurereason}");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericErrorCreatingBalanceChangeJob, failurereason);
                             return;
                         }
@@ -1188,7 +1188,7 @@ namespace MassEffectModManagerCore.modmanager
                                 var failurereason = me1ConfigJob.AddFileToInstall(configFilename, configFilename, this);
                                 if (failurereason != null)
                                 {
-                                    Log.Error($@"Error occured while creating ME1_CONFIG job: {failurereason}");
+                                    Log.Error($@"Error occurred while creating ME1_CONFIG job: {failurereason}");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericErrorReadingME1ConfigJob, failurereason);
                                     return;
                                 }
@@ -1305,7 +1305,7 @@ namespace MassEffectModManagerCore.modmanager
                     var failurereason = localizationJob.AddFileToInstall($@"BIOGame/DLC/{destDlc}/{MEDirectories.CookedName(Game)}/{fname}", f, this);
                     if (failurereason != null)
                     {
-                        Log.Error($@"Error occured while adding file for LOCALIZATION job: {failurereason}");
+                        Log.Error($@"Error occurred while adding file for LOCALIZATION job: {failurereason}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX, failurereason);
                         return;
                     }
@@ -1582,7 +1582,7 @@ namespace MassEffectModManagerCore.modmanager
             string failurereason = basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", @"Coalesced.bin", this);
             if (failurereason != null)
             {
-                Log.Error($@"Error occured while creating basegame job for legacy 1.0 mod: {failurereason}");
+                Log.Error($@"Error occurred while creating basegame job for legacy 1.0 mod: {failurereason}");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod, failurereason);
                 return false;
             }

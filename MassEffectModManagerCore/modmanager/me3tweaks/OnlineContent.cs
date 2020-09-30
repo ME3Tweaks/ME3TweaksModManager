@@ -77,7 +77,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     using var wc = new ShortTimeoutWebClient();
                     string json = wc.DownloadString(fetchUrl);
                     App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                    Log.Information($@"Fetched startup manifest from endoint {host}");
+                    Log.Information($@"Fetched startup manifest from endpoint {host}");
                     return App.ServerManifest;
                 }
                 catch (Exception e)

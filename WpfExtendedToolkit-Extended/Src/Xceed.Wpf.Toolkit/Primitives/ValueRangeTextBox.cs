@@ -418,7 +418,7 @@ namespace Xceed.Wpf.Toolkit.Primitives
       }
       catch( Exception exception )
       {
-        throw new ArgumentException( "An error occured while trying to change the ValueDataType.", exception );
+        throw new ArgumentException( "An error occurred while trying to change the ValueDataType.", exception );
       }
 
       return value;

@@ -56,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 if (b.Error == null && b.Result is List<OnlineContent.ServerModMakerModInfo> topMods)
                 {
@@ -224,7 +224,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occured in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 CompileInProgress = false;
                 if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)

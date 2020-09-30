@@ -1377,7 +1377,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 if (line.Contains(@"Critical: appError called"))
                                 {
                                     crashLineNumber = currentLineNumber;
-                                    reason = @"Log file indicates crash occured";
+                                    reason = @"Log file indicates crash occurred";
                                     Log.Information(@"Found crash in ME1 log " + file.Name + @" on line " + currentLineNumber);
                                     break;
                                 }

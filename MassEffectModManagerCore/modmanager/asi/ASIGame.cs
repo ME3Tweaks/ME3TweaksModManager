@@ -276,7 +276,7 @@ namespace MassEffectModManagerCore.modmanager.asi
         //    {
         //        if (b.Error != null)
         //        {
-        //            Log.Error(@"Error occured in ASI installer thread: " + b.Error.Message);
+        //            Log.Error(@"Error occurred in ASI installer thread: " + b.Error.Message);
         //        }
         //        RefreshASIStates();
         //        operationCompletedCallback?.Invoke();

@@ -500,9 +500,9 @@
     <system:String xml:space="preserve" x:Key="string_interp_dialogImportingModWillDeleteExistingMod">Importing this mod will delete an existing mod directory in the mod library:\n{0}\n\nContinue?</system:String>
     <!-- 0 = full mod path -->
     <system:String x:Key="string_modAlreadyExists">Mod already exists</system:String>
-    <system:String x:Key="string_dialogErrorOccuredDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.</system:String>
+    <system:String x:Key="string_dialogErrorOccuredDeletingExistingMod">Error occurred while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information.</system:String>
     <system:String x:Key="string_errorDeletingExistingMod">Error deleting existing mod</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredDeletingExistingModX">Error occured while deleting existing mod directory:\n{0}</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredDeletingExistingModX">Error occurred while deleting existing mod directory:\n{0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_exeModsMustBeImportedBeforeInstall">Exe mods must be imported before install</system:String>
     <system:String x:Key="string_interp_installX">Install {0}</system:String>
@@ -517,7 +517,7 @@
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
     <system:String x:Key="string_downloadUpdate">Download update</system:String>
     <system:String x:Key="string_downloading">Downloading</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage">Error occured while updating {0}:\n{1}</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage">Error occurred while updating {0}:\n{1}</system:String>
     <!-- 0 = mod name, 1 = error message -->
     <system:String x:Key="string_interp_errorUpdatingX">Error updating {0}</system:String>
     <!-- 0 = mod name-->
@@ -564,7 +564,7 @@
     <system:String x:Key="string_dialogCouldNotCreateGameDirectoryAfterDeletion">Could not create the game directory after it was deleted due to an error. You can try to restore to a custom location to restore the game to the original location. View the logs from the help menu for more information.</system:String>
     <system:String x:Key="string_errorRestoringGame">Error restoring game</system:String>
     <system:String x:Key="string_dialogcouldNotFullyDeleteGameDirectory">Could not fully delete the game directory. It may have files or folders still open from various programs. Part of the game may have been deleted, but you can try again using the restore to custom location option after manually removing the rest of the game directory. View the logs from the help menu for more information.</system:String>
-    <system:String x:Key="string_dialogErrorOccuredDeletingGameDirectory">An error occured while deleting the game directory. View the logs from the help menu for more information.</system:String>
+    <system:String x:Key="string_dialogErrorOccuredDeletingGameDirectory">An error occurred while deleting the game directory. View the logs from the help menu for more information.</system:String>
     <system:String x:Key="string_selectNewRestoreDestination">Select new restore destination</system:String>
     <system:String x:Key="string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty">Directory is not empty. Location to restore to must be empty.</system:String>
     <system:String x:Key="string_cannotRestoreToThisLocation">Cannot restore to this location</system:String>
@@ -716,11 +716,11 @@
     <system:String x:Key="string_modparsing_configCanChangeIfOtherDLCFound">Configuration of this mod can change if any of the following DLC are present at installation time:</system:String>
     <system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Requires the following DLC to install:</system:String>
     <system:String x:Key="string_modparsing_defaultRCWDescription" xml:space="preserve">RCW mod that applies changes to ME2 Coalesced.ini.\n\nRCW mods are applied directly to the Coalesced.ini file - it is not rebuilt from a vanilla version. This means applying the mod twice may have unintended side effects as duplicate keys may be created.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Error occured parsing archive moddesc.ini {0}: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Error occurred parsing archive moddesc.ini {0}: {1}</system:String>
     <!-- 0 = moddescpath 1 = error message-->
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Error occured parsing {0}: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingModdescini">Error occurred parsing {0}: {1}</system:String>
     <!-- 0 = moddesc path, 1 = error message-->
-    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occured parsing virtualized moddesc.ini: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini">Error occurred parsing virtualized moddesc.ini: {0}</system:String>
     <!-- 0 = error message. Virtualized means it's using one we generated on the fly -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomodname">The moddesc.ini file located at {0} does not have a value set for modname. This value is required.</system:String>
     <!-- 0 = moddesc.ini file path -->
@@ -745,15 +745,15 @@
     <!-- 0 = header string in moddesc.ini-->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_headerUnsupportedOnLTModdesc3">Job header ({0}) has been specified as part of the mod, but this header is only supported when targeting ModDesc 3 or higher.</system:String>
     <!-- 0 = header string in moddesc.ini-->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport">Error occured while automapping the replace files lists for {0}: {1}. This is likely a bug in Mod Manager, please report it to Mgamerz.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport">Error occurred while automapping the replace files lists for {0}: {1}. This is likely a bug in Mod Manager, please report it to Mgamerz.</system:String>
     <!-- 0 = header string in moddesc.ini, 1 = error message -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound">Error occured while parsing the replace files lists for {0}: source directory {1} was not found and the gamedirectorystructure flag was used on this job.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound">Error occurred while parsing the replace files lists for {0}: source directory {1} was not found and the gamedirectorystructure flag was used on this job.</system:String>
     <!-- 0 = header string in moddesc.ini, 1 = folder path -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailureParsingLists">Error occured while parsing the replace files lists for {0}: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailureParsingLists">Error occurred while parsing the replace files lists for {0}: {1}</system:String>
     <!-- 0 = header string in moddesc.ini, 1 = error message -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists">Error occured while parsing the add files lists for {0}: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists">Error occurred while parsing the add files lists for {0}: {1}</system:String>
     <!-- 0 = header string in moddesc.ini, 1 = error message -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesReadOnlyTargets">Error occured while parsing the addfilesreadonlytargtes list for {0}: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesReadOnlyTargets">Error occurred while parsing the addfilesreadonlytargtes list for {0}: {1}</system:String>
     <!-- 0 = header string in moddesc.ini, 1 = error message -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_failedToParseAltfiles">Specified altfiles descriptor for header {0} did not successfully parse. Text is not empty, but no values were returned.</system:String>
     <!-- 0 = header string in moddesc.ini -->
@@ -769,12 +769,12 @@
     <system:String x:Key="string_validation_modparsing_loadfailed_altFilesListFailedToParse">Specified altfiles descriptor for header CUSTOMDLC did not successfully parse. Text is not empty, but no values were returned.</system:String>
     <system:String x:Key="string_validation_modparsing_loadfailed_mustHaveBothSourceAndDestDirs">This mod specifies only one of the two required lists for the CUSTOMDLC header. Both sourcedirs and destdirs descriptors must be set for CUSTOMDLC.</system:String>
     <system:String x:Key="string_validation_modparsing_loadfailed_balanceChangesFileNotBinFile">This mod specifies a balance changes file, but the provided file is not a .bin file.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericErrorCreatingBalanceChangeJob">Error occured while creating BALANCE_CHANGE job: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericErrorCreatingBalanceChangeJob">Error occurred while creating BALANCE_CHANGE job: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_canOnlyHaveOneBalanceChangesFile">This mod specifies that balance changes will be modified, but provides an invalid amount of files to install. BALANCE_CHANGES only supports 1 item in its newfiles descriptor, however {0} were parsed.</system:String>
     <!-- 0 = number -->
     <system:String x:Key="string_validation_modparsing_loadfailed_cannotHaveEmptyME1ConfigJob">Mod specifies ME1_CONFIG job, but the configfiles descriptor is empty or missing. Remove this header if you are not using this task.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericErrorReadingME1ConfigJob">Error occured while creating ME1_CONFIG job: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_genericErrorReadingME1ConfigJob">Error occurred while creating ME1_CONFIG job: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_unsupportedME1ConfigFileSpecified">ME1_CONFIG job's configfiles descriptor contains an unsupported config file: {0}</system:String>
     <!-- 0 = filename -->
@@ -800,7 +800,7 @@
     <system:String x:Key="string_validation_modparsing_loadfailed_cmm1CoalFileMissing">This mod is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing">This mod specifies modcoal descriptor for cmmver 2.0, but the local Coalesced file doesn't exist: {0}</system:String>
     <!-- 0 = filepath -->
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod">Error occured while creating basegame job for legacy 1.0 mod: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod">Error occurred while creating basegame job for legacy 1.0 mod: {0}</system:String>
     <!-- 0 = error message -->
 
     <!-- About Panel -->
@@ -877,8 +877,8 @@
     <system:String x:Key="string_undesirableMountFlag">Undesirable mount flag</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogWillDeleteExistingMod">Creating this mod will delete an existing directory in the mod library:\n{0}\n\nContinue?</system:String>
     <!-- 0 = directory -->
-    <system:String x:Key="string_dialogErrorDeletingExistingMod">Error occured while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory">Error occured while deleting existing mod directory:\n{0}</system:String>
+    <system:String x:Key="string_dialogErrorDeletingExistingMod">Error occurred while deleting existing mod directory. It is likely an open program has a handle to a file or folder in it. See the Mod Manager logs for more information</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory">Error occurred while deleting existing mod directory:\n{0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_generatingMod">Generating mod</system:String>
     <system:String x:Key="string_interp_valueMustBeBetween0AndX">Value must be between 0 and {0}</system:String>

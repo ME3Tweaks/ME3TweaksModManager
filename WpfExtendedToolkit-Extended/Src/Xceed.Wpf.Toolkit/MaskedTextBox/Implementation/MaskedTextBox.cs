@@ -485,7 +485,7 @@ namespace Xceed.Wpf.Toolkit
       }
       catch( Exception exception )
       {
-        throw new InvalidOperationException( "An error occured while testing the current text against the new mask.", exception );
+        throw new InvalidOperationException( "An error occurred while testing the current text against the new mask.", exception );
       }
 
       if( !valid )

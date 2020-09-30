@@ -340,7 +340,7 @@ namespace MassEffectModManagerCore
         //    {
         //        Log.Error("Error checking for write privledges. This may be a significant sign that an installed game is not in a good state.");
         //        Log.Error(App.FlattenException(e));
-        //        await this.ShowMessageAsync("Error checking write privileges", "An error occured while checking write privileges to game folders. This may be a sign that the game is in a bad state.\n\nThe error was:\n" + e.Message);
+        //        await this.ShowMessageAsync("Error checking write privileges", "An error occurred while checking write privileges to game folders. This may be a sign that the game is in a bad state.\n\nThe error was:\n" + e.Message);
         //        return false;
         //}
         //    return true;
