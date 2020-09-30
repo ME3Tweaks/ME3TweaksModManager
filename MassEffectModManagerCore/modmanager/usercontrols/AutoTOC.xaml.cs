@@ -154,13 +154,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public static void CreateUnpackedTOC(string dlcDirectory)
         {
             Log.Information(@"Creating unpacked toc for " + dlcDirectory);
-#if DEBUG
-            if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
-            {
-                Debugger.Break();
-                throw new Exception(@"ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
-            }
-#endif
+//#if DEBUG
+//            if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
+//            {
+//                Debugger.Break();
+//                throw new Exception(@"ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
+//            }
+//#endif
             var watch = System.Diagnostics.Stopwatch.StartNew();
             MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
             if (ms != null)

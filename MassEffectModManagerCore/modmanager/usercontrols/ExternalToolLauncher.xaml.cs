@@ -127,8 +127,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var release in releases)
             {
 
-
-
                 //Get asset info
                 asset = release.Assets.FirstOrDefault();
 
@@ -168,6 +166,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (asset != null)
                 {
                     latestRelease = release;
+                    Log.Information($"Using release {latestRelease.Name}");
                     downloadLink = new Uri(asset.BrowserDownloadUrl);
                     break;
                 }
@@ -381,7 +380,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             Log.Information($@"FetchAndLaunchTool() for {tool}");
             var toolName = tool.Replace(@" ", "");
-            var localToolFolderName = Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", toolName);
+            var localToolFolderName = getToolStoragePath(tool);
             var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
             bool needsDownloading = !File.Exists(localExecutable);
 
@@ -431,7 +430,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Check if it need updated
                     bool needsUpdated = false;
-                    var latestRelease = releases.FirstOrDefault();
+                    var latestRelease = releases.FirstOrDefault(x => hasApplicableAsset(tool, x));
                     if (latestRelease != null)
                     {
                         FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
@@ -530,6 +529,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             ToolsCheckedForUpdatesInThisSession.Add(tool);
+        }
+
+        private static bool hasApplicableAsset(string tool, Release release)
+        {
+            if (release.Assets.Any())
+            {
+                if (tool == MEM)
+                {
+                    return release.Assets.Any(x => x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
+                }
+                if (tool == MEM_CMD)
+                {
+                    return release.Assets.Any(x => x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
+                }
+                return true; //We don't check the others
+            }
+            return false;
+        }
+
+        private static string getToolStoragePath(string tool)
+        {
+            if (tool == MEM_CMD)
+            {
+                // Internal tool
+                return Path.Combine(Utilities.GetCachedExecutablePath());
+            }
+            return Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", tool);
         }
 
         private static Version me3tweaksToolGetLatestVersion(string tool)

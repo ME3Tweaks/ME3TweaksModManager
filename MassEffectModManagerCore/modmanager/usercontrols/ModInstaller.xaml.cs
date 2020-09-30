@@ -729,16 +729,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    Log.Information(@"Installing supporting ASI files - balance changes replacer");
                     ASIManager.InstallASIToTargetByGroupID(5, @"Balance Changes Replacer", gameTarget);
                 }
 
                 if (gameTarget.Supported)
                 {
-                    // Log.Information(@"Installing AutoTOC, ME3Logger-Truncating");
-                    // Todo: Renable when ASI Manager is refactored.
-                    //Utilities.InstallASIByGroupID(gameTarget, @"AutoTOCASI", 9);
-                    //Utilities.InstallASIByGroupID(gameTarget, @"ME3Logger-Truncating", 8);
+                    ASIManager.InstallASIToTargetByGroupID(9, "AutoTOC", gameTarget);
+                    ASIManager.InstallASIToTargetByGroupID(8, "ME3Logger-Truncating", gameTarget);
                 }
             }
 

@@ -313,12 +313,18 @@ namespace MassEffectModManagerCore
 
         /// <summary>
         /// Gets the path where the specified static executable would be. This call does not check if that file exists.
+        /// If no path is specified, it returns the cached executables directory.
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string GetCachedExecutablePath(string path)
+        public static string GetCachedExecutablePath(string path = null)
         {
-            return Path.Combine(Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "executables")).FullName, path);
+            var lpath = Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "executables")).FullName;
+            if (path != null)
+            {
+                return Path.Combine(lpath, path);
+            }
+            return lpath;
         }
 
         /// <summary>

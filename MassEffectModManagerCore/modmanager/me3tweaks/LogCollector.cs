@@ -2,38 +2,25 @@
 using Serilog.Sinks.RollingFile.Extension;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
-using System.Net;
-using System.Net.Mime;
 using System.Text;
 using System.Threading;
-using System.Windows;
 using AuthenticodeExaminer;
 using ByteSizeLib;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
-using MassEffectModManagerCore.ui;
-using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
-using Octokit;
-using SevenZip;
-using ProgressEventArgs = System.Management.ProgressEventArgs;
-using System.Threading.Tasks;
 using IniParser;
 using IniParser.Model;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using NickStrupat;
-using Polly;
-using SlavaGu.ConsoleAppLauncher;
 using System.Windows.Shell;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -191,49 +178,49 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        private static void runMassEffectModderNoGuiIPC(string operationName, string exe, string args, object lockObject, Action<string, string> exceptionOccuredCallback, Action<int?> setExitCodeCallback = null, Action<string, string> ipcCallback = null)
-        {
-            Log.Information($@"Running Mass Effect Modder No GUI w/ IPC: {exe} {args}");
-            var memProcess = new ConsoleApp(exe, args);
-            bool hasExceptionOccured = false;
-            memProcess.ConsoleOutput += (o, args2) =>
-            {
-                string str = args2.Line;
-                if (hasExceptionOccured)
-                {
-                    Log.Fatal(@"MassEffectModderNoGui.exe: " + str);
-                }
-                if (str.StartsWith(@"[IPC]", StringComparison.Ordinal))
-                {
-                    string command = str.Substring(5);
-                    int endOfCommand = command.IndexOf(' ');
-                    if (endOfCommand >= 0)
-                    {
-                        command = command.Substring(0, endOfCommand);
-                    }
+        //private static void runMassEffectModderNoGuiIPC(string operationName, string exe, string args, object lockObject, Action<string, string> exceptionOccuredCallback, Action<int?> setExitCodeCallback = null, Action<string, string> ipcCallback = null)
+        //{
+        //    Log.Information($@"Running Mass Effect Modder No GUI w/ IPC: {exe} {args}");
+        //    var memProcess = new ConsoleApp(exe, args);
+        //    bool hasExceptionOccured = false;
+        //    memProcess.ConsoleOutput += (o, args2) =>
+        //    {
+        //        string str = args2.Line;
+        //        if (hasExceptionOccured)
+        //        {
+        //            Log.Fatal(@"MassEffectModderNoGui.exe: " + str);
+        //        }
+        //        if (str.StartsWith(@"[IPC]", StringComparison.Ordinal))
+        //        {
+        //            string command = str.Substring(5);
+        //            int endOfCommand = command.IndexOf(' ');
+        //            if (endOfCommand >= 0)
+        //            {
+        //                command = command.Substring(0, endOfCommand);
+        //            }
 
-                    string param = str.Substring(endOfCommand + 5).Trim();
-                    if (command == @"EXCEPTION_OCCURRED")
-                    {
-                        hasExceptionOccured = true;
-                        exceptionOccuredCallback?.Invoke(operationName, param);
-                        return; //don't process this command further, nothing handles it.
-                    }
+        //            string param = str.Substring(endOfCommand + 5).Trim();
+        //            if (command == @"EXCEPTION_OCCURRED")
+        //            {
+        //                hasExceptionOccured = true;
+        //                exceptionOccuredCallback?.Invoke(operationName, param);
+        //                return; //don't process this command further, nothing handles it.
+        //            }
 
-                    ipcCallback?.Invoke(command, param);
-                }
-                //Debug.WriteLine(args2.Line);
-            };
-            memProcess.Exited += (a, b) =>
-            {
-                setExitCodeCallback?.Invoke(memProcess.ExitCode);
-                lock (lockObject)
-                {
-                    Monitor.Pulse(lockObject);
-                }
-            };
-            memProcess.Run();
-        }
+        //            ipcCallback?.Invoke(command, param);
+        //        }
+        //        //Debug.WriteLine(args2.Line);
+        //    };
+        //    memProcess.Exited += (a, b) =>
+        //    {
+        //        setExitCodeCallback?.Invoke(memProcess.ExitCode);
+        //        lock (lockObject)
+        //        {
+        //            Monitor.Pulse(lockObject);
+        //        }
+        //    };
+        //    memProcess.Run();
+        //}
 
         public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, bool textureCheck, Action<string> updateStatusCallback = null, Action<int> updateProgressCallback = null, Action<TaskbarItemProgressState> updateTaskbarState = null)
         {
@@ -264,16 +251,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     Monitor.Pulse(memEnsuredSignaler);
                 }
             }
+
             void readyToLaunch(string exe)
             {
                 Thread.Sleep(100); //try to stop deadlock
                 hasMEM = true;
-                mempath = exe;
+                mempath = MEMIPCHandler.MEMPATH = exe;
                 lock (memEnsuredSignaler)
                 {
                     Monitor.Pulse(memEnsuredSignaler);
                 }
             };
+
             void failedToExtractMEM(Exception e, string message, string caption)
             {
                 Thread.Sleep(100); //try to stop deadlock
@@ -371,7 +360,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #region MEM Setup
             //vars
             string args = null;
-            object memFinishedLock = new object();
             int? exitcode = null;
 
             //paths
@@ -750,33 +738,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 void memExceptionOccured(string operation, string line)
                 {
-                    addDiagLine($@"An exception occured performing operation '{operation}': {line}", Severity.ERROR);
+                    addDiagLine($@"An exception occurred performing operation '{operation}': {line}", Severity.ERROR);
                     addDiagLine(@"Check the Mod Manager application log for more information.", Severity.ERROR);
-                    addDiagLine(@"Report this to ALOT or ME3Tweaks Discord for further assistance.", Severity.ERROR);
+                    addDiagLine(@"Report this on the ME3Tweaks Discord for further assistance.", Severity.ERROR);
                 }
 
                 if (hasMEM)
                 {
                     updateStatusCallback?.Invoke(@"Checking for blacklisted mods");
                     args = $@"--detect-bad-mods --gameid {gameID} --ipc";
-                    exitcode = null;
                     var blacklistedMods = new List<string>();
-                    runMassEffectModderNoGuiIPC(@"Detect Blacklisted Mods", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
-                    {
-                        switch (command)
-                        {
-                            case @"ERROR":
-                                blacklistedMods.Add(param);
-                                break;
-                            default:
-                                Debug.WriteLine(@"oof?");
-                                break;
-                        }
-                    });
-                    lock (memFinishedLock)
-                    {
-                        Monitor.Wait(memFinishedLock);
-                    }
+                    MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
+                     {
+                         switch (command)
+                         {
+                             case @"ERROR":
+                                 blacklistedMods.Add(param);
+                                 break;
+                             default:
+                                 Debug.WriteLine(@"oof?");
+                                 break;
+                         }
+                     });
 
                     if (blacklistedMods.Any())
                     {
@@ -921,7 +904,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             List<string> removedFiles = new List<string>();
                             List<string> addedFiles = new List<string>();
                             List<string> replacedFiles = new List<string>();
-                            runMassEffectModderNoGuiIPC(@"Texture map check", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                            MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
                             {
                                 switch (command)
                                 {
@@ -944,10 +927,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         break;
                                 }
                             });
-                            lock (memFinishedLock)
-                            {
-                                Monitor.Wait(memFinishedLock);
-                            }
 
 
                             if (removedFiles.Any())
@@ -1118,8 +1097,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         string lastMissingTFC = null;
                         updateProgressCallback?.Invoke(0);
                         updateTaskbarState?.Invoke(TaskbarItemProgressState.Normal);
-
-                        runMassEffectModderNoGuiIPC(@"Full textures check", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                        MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
                         {
                             switch (command)
                             {
@@ -1169,10 +1147,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     break;
                             }
                         });
-                        lock (memFinishedLock)
-                        {
-                            Monitor.Wait(memFinishedLock);
-                        }
+
                         updateProgressCallback?.Invoke(0);
                         updateTaskbarState?.Invoke(TaskbarItemProgressState.Indeterminate);
 
@@ -1260,7 +1235,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     updateStatusCallback?.Invoke(@"Collecting LOD settings");
                     args = $@"--print-lods --gameid {gameID} --ipc";
                     var lods = new Dictionary<string, string>();
-                    runMassEffectModderNoGuiIPC(@"MEM - Fetch LODS", mempath, args, memFinishedLock, memExceptionOccured, i => exitcode = i, (string command, string param) =>
+                    MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
                     {
                         switch (command)
                         {
@@ -1273,10 +1248,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 break;
                         }
                     });
-                    lock (memFinishedLock)
-                    {
-                        Monitor.Wait(memFinishedLock);
-                    }
 
                     addLODStatusToDiag(selectedDiagnosticTarget, lods, addDiagLine);
 

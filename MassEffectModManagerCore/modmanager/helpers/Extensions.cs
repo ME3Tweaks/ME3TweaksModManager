@@ -37,6 +37,14 @@ namespace MassEffectModManagerCore.modmanager.helpers
             Extensions.InvalidPathingChars = enumerable.ToArray<char>(enumerable.Count);
         }
 
+        public static int ToGameNum(this Mod.MEGame game)
+        {
+            if (game == Mod.MEGame.ME1) return 1;
+            if (game == Mod.MEGame.ME2) return 2;
+            if (game == Mod.MEGame.ME3) return 3;
+            return 0;
+        }
+
         /// <summary>
         /// Checks if a list is ascending basded on the given comparison function.
         /// </summary>
