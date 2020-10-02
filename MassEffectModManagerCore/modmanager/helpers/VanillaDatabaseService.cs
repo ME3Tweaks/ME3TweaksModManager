@@ -336,7 +336,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     {
                         var localFileInfo = new FileInfo(file);
                         bool sfar = Path.GetExtension(file) == @".sfar";
-                        bool correctSize = fileInfo.Any(x => x.size == localFileInfo.Length);
+                        bool correctSize = false;
+                        if (sfar && localFileInfo.Length == 32)
+                        {
+                            correctSize = false; //We don't treat 32byte as "correct" for vanilla purposes.
+                        }
+                        else
+                        {
+                            correctSize = fileInfo.Any(x => x.size == localFileInfo.Length);
+                        }
                         if (correctSize && !sfar) continue; //OK
                         if (sfar && correctSize)
                         {

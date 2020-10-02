@@ -565,7 +565,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
 
                         // Check if we actually need to restore SFAR
-                        if (!VanillaDatabaseService.IsFileVanilla(target, targetFile, false))
+                        if (new FileInfo(targetFile).Length == 32 || !VanillaDatabaseService.IsFileVanilla(target, targetFile, false))
                         {
                             Log.Information($@"Restoring SFAR from backup: {backupFile} -> {targetFile}");
                             XCopy.Copy(backupFile, targetFile, true, true,
