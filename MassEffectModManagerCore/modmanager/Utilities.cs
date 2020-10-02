@@ -1311,9 +1311,9 @@ namespace MassEffectModManagerCore
         internal static bool SetLODs(GameTarget target, bool highres, bool limit2k, bool softshadows)
         {
             var game = target.Game;
-            if (game != Mod.MEGame.ME1 && (softshadows || limit2k))
+            if (game != Mod.MEGame.ME1 && softshadows)
             {
-                throw new Exception("Cannot use softshadows or limit2k parameter of SetLODs() with a game that is not ME1");
+                throw new Exception("Cannot use softshadows parameter of SetLODs() with a game that is not ME1");
             }
 
             try

@@ -124,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
                     }
 
-                    if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) && oldTMOption != TextureModded && (lodUpdateAndLogging || forceLodUpdate))
+                    if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) && oldTMOption != TextureModded && forceLodUpdate)
                     {
                         UpdateLODs(Settings.AutoUpdateLODs2K);
                     }
@@ -160,8 +160,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                     }
                 }
-                //me2/3
-                Utilities.SetLODs(this, true, twoK, false);
+                else
+                {
+                    //me2/3
+                    Utilities.SetLODs(this, true, twoK, false);
+                }
             }
         }
 
