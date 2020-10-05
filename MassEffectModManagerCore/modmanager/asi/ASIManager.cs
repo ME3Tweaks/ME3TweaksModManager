@@ -328,37 +328,43 @@ namespace MassEffectModManagerCore.modmanager.asi
             {
                 WebRequest request = WebRequest.Create(asi.DownloadLink);
                 Log.Information(@"Fetching remote ASI from server");
-
-                using WebResponse response = request.GetResponse();
-                var memoryStream = new MemoryStream();
-                response.GetResponseStream().CopyTo(memoryStream);
-                //MD5 check on file for security
-                md5 = Utilities.CalculateMD5(memoryStream);
-                if (md5 != asi.Hash)
+                try
                 {
-                    //ERROR!
-                    Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
-                    return false;
+                    using WebResponse response = request.GetResponse();
+                    var memoryStream = new MemoryStream();
+                    response.GetResponseStream().CopyTo(memoryStream);
+                    //MD5 check on file for security
+                    md5 = Utilities.CalculateMD5(memoryStream);
+                    if (md5 != asi.Hash)
+                    {
+                        //ERROR!
+                        Log.Error(@"Downloaded ASI did not match the manifest! It has the wrong hash.");
+                        return false;
+                    }
+
+                    Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
+                    memoryStream.WriteToFile(finalPath);
+                    Log.Information(@"ASI successfully installed.");
+                    Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
+                    {
+                        {@"Filename", Path.GetFileNameWithoutExtension(finalPath)}
+                    });
+
+                    //Cache ASI
+                    if (!Directory.Exists(CachedASIsFolder))
+                    {
+                        Log.Information(@"Creating cached ASIs folder");
+                        Directory.CreateDirectory(CachedASIsFolder);
+                    }
+
+                    Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
+                    memoryStream.WriteToFile(cachedPath);
+                    return true;
                 }
-
-                Log.Information(@"Fetched remote ASI from server. Installing ASI to " + finalPath);
-                memoryStream.WriteToFile(finalPath);
-                Log.Information(@"ASI successfully installed.");
-                Analytics.TrackEvent(@"Installed ASI", new Dictionary<string, string>()
+                catch (Exception e)
                 {
-                    {@"Filename", Path.GetFileNameWithoutExtension(finalPath)}
-                });
-
-                //Cache ASI
-                if (!Directory.Exists(CachedASIsFolder))
-                {
-                    Log.Information(@"Creating cached ASIs folder");
-                    Directory.CreateDirectory(CachedASIsFolder);
+                    Log.Error($@"Error downloading ASI from {asi.DownloadLink}: {e.Message}");
                 }
-
-                Log.Information(@"Caching ASI to local ASI library: " + cachedPath);
-                memoryStream.WriteToFile(cachedPath);
-                return true;
             }
 
             // We could not install the ASI
