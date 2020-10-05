@@ -144,7 +144,8 @@ namespace MassEffectModManagerCore
 
                             if (!File.Exists(updaterExe))
                             {
-                                M3L.ShowDialog(null, $@"Updater missing! The swapper executable should be located at: {updaterExe}. Please report this to ME3Tweaks.", "Error updating");
+                                // Error like this has no need being localized
+                                M3L.ShowDialog(null, $@"Updater missing! The swapper executable should be located at: {updaterExe}. Please report this to ME3Tweaks.", @"Error updating");
                             }
 
                             Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
