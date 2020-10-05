@@ -151,7 +151,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (b.UserState is double d)
                         {
-                            window.TaskBarItemInfoHandler.ProgressValue = d;
+                            TaskbarHelper.SetProgress(d);
                         }
                     };
                     nbw.DoWork += (a, b) =>
@@ -309,7 +309,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                         }
-                        window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
+                        TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
                         if (b.Result is RestoreResult result)
                         {
                             switch (result)
@@ -386,8 +386,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     RefreshTargets = true;
-                    window.TaskBarItemInfoHandler.ProgressValue = 0;
-                    window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
+                    TaskbarHelper.SetProgress(0);
+                    TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
                     nbw.RunWorkerAsync(restTarget);
                 }
             }

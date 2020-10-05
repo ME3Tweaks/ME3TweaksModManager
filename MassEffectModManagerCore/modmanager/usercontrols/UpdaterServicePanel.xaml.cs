@@ -256,11 +256,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.UserState is double d)
                 {
-                    mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
+                    TaskbarHelper.SetProgress(d);
                 }
                 else if (b.UserState is TaskbarItemProgressState tbs)
                 {
-                    mainwindow.TaskBarItemInfoHandler.ProgressState = tbs;
+                    TaskbarHelper.SetProgressState(tbs);
                 }
             };
             nbw.DoWork += (a, b) =>
@@ -274,7 +274,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
+                TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
                 Analytics.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
                 {
                     {@"Result", b.Result?.ToString() },

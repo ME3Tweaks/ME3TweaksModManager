@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.UserState is double d)
                 {
-                    mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
+                    TaskbarHelper.SetProgress(d);
                 }
             };
             nbw.DoWork += (a, b) =>
@@ -217,12 +217,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {@"Result", mui.CanUpdate ? @"Success" : @"Failed"}
                 });
 
-                mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
+                TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
             };
-            mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
-            mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
+            TaskbarHelper.SetProgress(0);
+            TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
             nbw.RunWorkerAsync();
         }
 
@@ -234,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.UserState is double d)
                 {
-                    mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
+                    TaskbarHelper.SetProgress(d);
                 }
             };
             nbw.DoWork += (a, b) =>
@@ -280,12 +280,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {@"ModName", ui.mod.ModName},
                     {@"Result", ui.CanUpdate ? @"Success" : @"Failed"}
                 });
-                mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
+                TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
             };
-            mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
-            mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
+            TaskbarHelper.SetProgress(0);
+            TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
             nbw.RunWorkerAsync();
         }
 

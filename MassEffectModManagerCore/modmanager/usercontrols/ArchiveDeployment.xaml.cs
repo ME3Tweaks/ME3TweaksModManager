@@ -711,7 +711,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// File extensnions that will be stored uncompressed in archive as they already have well compressed data and may be of a large size
         /// (which increases the solid block size)
         /// </summary>
-        private static string[] NoCompressExtensions = new[] {@".tfc", @".bik"};
+        private static string[] NoCompressExtensions = new[] { @".tfc", @".bik" };
         private void StartDeployment()
         {
             SaveFileDialog d = new SaveFileDialog
@@ -729,16 +729,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.UserState is double d)
                     {
-                        mainwindow.TaskBarItemInfoHandler.ProgressValue = d;
+                        TaskbarHelper.SetProgress(d);
                     }
                     else if (b.UserState is TaskbarItemProgressState tbs)
                     {
-                        mainwindow.TaskBarItemInfoHandler.ProgressState = tbs;
+                        TaskbarHelper.SetProgressState(tbs);
                     }
                 };
                 nbw.RunWorkerCompleted += (a, b) =>
                 {
-                    mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
+                    TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
 
                     if (b.Error != null)
                     {
@@ -754,8 +754,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     DeploymentInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
                 };
-                mainwindow.TaskBarItemInfoHandler.ProgressValue = 0;
-                mainwindow.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.Normal;
+                TaskbarHelper.SetProgress(0);
+                TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
                 nbw.RunWorkerAsync(d.FileName);
                 DeploymentInProgress = true;
             }
@@ -845,7 +845,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // Does not include AFC, TFC, or .BIK
             currentDeploymentStep = "Compressed mod items";
 
-            var compressItems = archiveMapping.Where(x=> x.Value == null || !NoCompressExtensions.Contains(Path.GetExtension(x.Value))).ToDictionary(p => p.Key, p => p.Value);
+            var compressItems = archiveMapping.Where(x => x.Value == null || !NoCompressExtensions.Contains(Path.GetExtension(x.Value))).ToDictionary(p => p.Key, p => p.Value);
             compressor.CompressFileDictionary(compressItems, archivePath);
             compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
             compressor.CompressionMode = CompressionMode.Append;

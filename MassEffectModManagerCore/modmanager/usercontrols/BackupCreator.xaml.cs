@@ -157,11 +157,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.UserState is double d)
                     {
-                        window.TaskBarItemInfoHandler.ProgressValue = d;
+                        TaskbarHelper.SetProgress(d);
                     }
                     else if (b.UserState is TaskbarItemProgressState tbs)
                     {
-                        window.TaskBarItemInfoHandler.ProgressState = tbs;
+                        TaskbarHelper.SetProgressState(tbs);
                     }
                 };
                 nbw.DoWork += (a, b) =>
@@ -482,7 +482,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
-                    window.TaskBarItemInfoHandler.ProgressState = TaskbarItemProgressState.None;
+                    TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
                     if (b.Result is (List<string> listItems, string title, string text))
                     {
                         ListDialog ld = new ListDialog(listItems, title, text, window);

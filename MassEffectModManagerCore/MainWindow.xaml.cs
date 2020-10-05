@@ -1632,6 +1632,8 @@ namespace MassEffectModManagerCore
                 }
             }
 
+            // Initialize taskbar helper service
+            TaskbarHelper.Init(this);
 
 
             if (!Settings.ShowedPreviewPanel)
