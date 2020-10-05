@@ -216,7 +216,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         var dlcList = string.Join("\n - ", allOfficialDLC.Except(installedDLC).Select(x => $@"{MEDirectories.OfficialDLCNames(targetToBackup.Game)[x]} ({x})")); //do not localize
                         dlcList = @" - " + dlcList;
-                        Log.Information(@"The following dlc will be missing in the backup if user continues: " + dlcList);
+                        Log.Information(@"The following dlc will be missing in the backup if user continues: ");
+                        Log.Information(dlcList);
 
                         Application.Current.Dispatcher.Invoke(delegate
                         {

@@ -90,9 +90,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             processDel(sourceData, patchData, outData);
                             break;
                         case JojoOpcode.OPERATION_ESC:
-                            continue; //this is not actualy an opcode. SKip it.
+                            continue; //this is not actually an opcode. Skip it.
                         default:
-                            //Debug.WriteLine("Unsupported opcode currently: " + opcode.ToString());
+                            Debug.WriteLine("Unsupported opcode currently: " + opcode.ToString());
                             break;
                     }
                 }

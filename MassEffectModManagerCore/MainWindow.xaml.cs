@@ -2275,7 +2275,7 @@ namespace MassEffectModManagerCore
                                     ShowBusyControl(updateAvailableDialog);
                                 });
                             }
-#if !DEBUG
+#if DEBUG
                             else if (latestServerBuildNumer == App.BuildNumber)
                             {
                                 if (App.ServerManifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
@@ -2288,7 +2288,7 @@ namespace MassEffectModManagerCore
                                             Log.Information(@"MD5 of local exe doesn't match server version, minor update detected.");
                                             Application.Current.Dispatcher.Invoke(delegate
                                             {
-                                                var updateAvailableDialog = new ProgramUpdateNotification();
+                                                var updateAvailableDialog = new ProgramUpdateNotification(localmd5);
                                                 updateAvailableDialog.UpdateMessage = M3L.GetString(M3L.string_interp_minorUpdateAvailableMessage, App.BuildNumber.ToString());
                                                 updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
                                                 ShowBusyControl(updateAvailableDialog);

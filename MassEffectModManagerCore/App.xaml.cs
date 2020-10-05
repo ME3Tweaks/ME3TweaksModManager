@@ -20,10 +20,12 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using AuthenticodeExaminer;
 using MassEffectModManagerCore.modmanager.asi;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter; // do not remove
 
@@ -95,6 +97,13 @@ namespace MassEffectModManagerCore
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
+            //var sourceStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
+            //var patchStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\patch");
+            //var outStream = new MemoryStream();
+
+            //JPatch.ApplyJPatch(sourceStream, patchStream, outStream);
+            //var outHash = Utilities.CalculateMD5(outStream);
+
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
 
             try
@@ -126,15 +135,16 @@ namespace MassEffectModManagerCore
                             //Update unpacked and process was run.
                             //Extract ME3TweaksUpdater.exe to ensure we have newest update executable in case we need to do update hotfixes
 
-                            var updaterExe = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(ExecutableLocation)), @"ME3TweaksUpdater.exe");
+                            var updaterExe = Path.Combine(Path.GetDirectoryName(ExecutableLocation), @"ME3TweaksUpdater.exe");
                             if (File.Exists(updaterExe))
                             {
                                 //write updated exe
                                 Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
                             }
-                            else
+
+                            if (!File.Exists(updaterExe))
                             {
-                                MessageBox.Show("Updater missing: " + updaterExe);
+                                M3L.ShowDialog(null, $@"Updater missing! The swapper executable should be located at: {updaterExe}. Please report this to ME3Tweaks.", "Error updating");
                             }
 
                             Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
@@ -183,7 +193,16 @@ namespace MassEffectModManagerCore
                 {
                     IsSigned = true;
                     BuildDate = signTime.Value.ToString(@"MMMM dd, yyyy");
-                    Log.Information("Build signed by ME3Tweaks. Build date: " + BuildDate);
+
+                    var signer = info.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
+                    if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
+                    {
+                        Log.Information(@"Build signed by ME3Tweaks. Build date: " + BuildDate);
+                    }
+                    else
+                    {
+                        Log.Warning(@"Build signed, but not by ME3Tweaks.");
+                    }
                 }
                 else
                 {
