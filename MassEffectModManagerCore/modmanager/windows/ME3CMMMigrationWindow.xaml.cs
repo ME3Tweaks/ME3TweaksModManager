@@ -284,7 +284,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         Log.Information(@"Step 2: Finished settings migration");
                         // 3. CLEANUP
-                        App.Current.Dispatcher.Invoke(delegate { cleanup = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_performMe3cmmCleanup), M3L.GetString(M3L.string_performCleanupQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes; });
+                        App.Current.Dispatcher.Invoke(delegate { cleanup = M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_performMe3cmmCleanup), M3L.GetString(M3L.string_performCleanupQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes; });
                         if (cleanup)
                         {
                             Log.Information(@"Step 3: Cleaning up");
@@ -371,7 +371,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     Log.Information(@"Migration has completed.");
-                    M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));
+                    M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));
                     Close();
                 };
             nbw.RunWorkerAsync();
