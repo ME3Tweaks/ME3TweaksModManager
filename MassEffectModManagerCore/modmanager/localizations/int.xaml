@@ -309,6 +309,8 @@
     <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Checks for updates to mods that support checking for updates</system:String>
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+    <system:String  x:Key="string_alotInstallerV4">ALOT Installer V4</system:String>
+    <!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
 
     <system:String  x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Auto inject custom keybinds into ModMaker mods</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectCustomKeybinds">Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu</system:String>
@@ -521,6 +523,20 @@
     <!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
     <system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Deployment blocked until above items are fixed</system:String>
 
+    <system:String x:Key="string_male">male</system:String>
+    <!-- This item is substituted into a string down below for gender -->
+    <system:String x:Key="string_female">female</system:String>
+    <!-- This item is substituted into a string down below for gender -->
+
+    <system:String x:Key="string_interp_error_outOfOrderTLK">The list of {0} strings in {1} are not in ascending order. TLK strings must be in ascending order - if a StringID is out of order, parsing of the rest of the file will stop.</system:String>
+    <!-- 0={gender (SEE ABOVE)} 1={language code such as INT, JPN ,etc} -->
+    <system:String x:Key="string_compressedModItems">Compressed mod items</system:String>
+    <!-- This is a 'status' text to show what's being worked on-->
+    <system:String x:Key="string_uncompressedModItems">Uncompressed mod items</system:String>
+    <!-- This is a 'status' text to show what's being worked on-->
+
+
+    
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
@@ -818,6 +834,10 @@
     <system:String x:Key="string_notNow">Not now</system:String>
     <system:String x:Key="string_viewChangelog">View changelog</system:String>
     <system:String x:Key="string_installUpdate">Install update</system:String>
+    <system:String x:Key="string_applyingPatch">Applying patch</system:String>
+    <!-- When a patch file is being applied to the existing executable to produce new executable file -->
+    <system:String x:Key="string_theDownloadedUpdateFileIsNotSignedByME3TweaksAndIsNotTrusted">The downloaded update file is not signed by ME3Tweaks and is not trusted.</system:String>
+    <!-- The downloaded file is not signed by ME3Tweaks and is therefore not trusted. This can help protect against hijack of me3tweaks.com -->
 
     <!-- Restore panel -->
     <system:String x:Key="string_restoreToCustomLocation">Restore to custom location</system:String>

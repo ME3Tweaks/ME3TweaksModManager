@@ -265,17 +265,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Check string order
                         var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
                         var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
-                        string gender = "male";
+                        string gender = M3L.GetString(M3L.string_male);
                         if (!malestringRefsInRightOrder)
                         {
                             //Some TLK string will not work
-                            errors.Add($"The list of {gender} strings in {language.filecode} are not in ascending order. TLK strings must be in ascending order - if a StringID is out of order, parsing of the rest of the file will stop.");
+                            errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
                         }
                         if (!femalestringRefsInRightOrder)
                         {
-                            gender = "female";
+                            gender = M3L.GetString(M3L.string_female);
                             //Some TLK string will not work
-                            errors.Add($"The list of {gender} strings in {language.filecode} are not in ascending order. TLK strings must be in ascending order - if a StringID is out of order, parsing of the rest of the file will stop.");
+                            errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
                         }
                     }
                     else
@@ -845,7 +845,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // Pass 1: Compressed items and empty folders
             // Includes package files and other basic file types
             // Does not include AFC, TFC, or .BIK
-            currentDeploymentStep = "Compressed mod items";
+            currentDeploymentStep = M3L.GetString(M3L.string_compressedModItems);
 
             var compressItems = archiveMapping.Where(x => x.Value == null || !NoCompressExtensions.Contains(Path.GetExtension(x.Value))).ToDictionary(p => p.Key, p => p.Value);
             compressor.CompressFileDictionary(compressItems, archivePath);
@@ -854,7 +854,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             compressor.CompressionLevel = CompressionLevel.None;
 
             // Pass 2: Uncompressed items that are not moddesc.ini
-            currentDeploymentStep = "Uncompressed mod items";
+            currentDeploymentStep = M3L.GetString(M3L.string_uncompressedModItems);
             var nocompressItems = archiveMapping.Where(x => x.Value != null && NoCompressExtensions.Contains(Path.GetExtension(x.Key))).ToDictionary(p => p.Key, p => p.Value);
             compressor.CompressFileDictionary(nocompressItems, archivePath);
 

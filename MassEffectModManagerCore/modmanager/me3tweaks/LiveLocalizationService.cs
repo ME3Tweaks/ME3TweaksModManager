@@ -91,13 +91,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private static bool DownloadLocalization(string lang)
         {
             var livelocmd5 = App.ServerManifest[$@"livelocalization-{lang}"]; // this was checked previously
-            var url = LocalizationEndpoint + $"?lang={lang}&build={App.BuildNumber}";
+            var url = LocalizationEndpoint + $@"?lang={lang}&build={App.BuildNumber}";
             var result = OnlineContent.DownloadToMemory(url, hash: livelocmd5);
             if (result.errorMessage == null)
             {
                 // OK!
                 result.result.WriteToFile(getCachedLocalizationFile(lang));
-                Log.Information($"Wrote updated cached localization file for {lang}");
+                Log.Information($@"Wrote updated cached localization file for {lang}");
                 return true;
             }
             // RIP

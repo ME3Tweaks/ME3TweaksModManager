@@ -370,6 +370,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_checkModsForUpdates = "string_checkModsForUpdates";
 		public static readonly string string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates = "string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates";
 		public static readonly string string_mEMVanillaDBViewer = "string_mEMVanillaDBViewer";
+		public static readonly string string_alotInstallerV4 = "string_alotInstallerV4";
 		public static readonly string string_autoInjectCustomKeybindsIntoModMakerMods = "string_autoInjectCustomKeybindsIntoModMakerMods";
 		public static readonly string string_tooltip_autoInjectCustomKeybinds = "string_tooltip_autoInjectCustomKeybinds";
 		public static readonly string string_customKeybindsInjectorMenuItem = "string_customKeybindsInjectorMenuItem";
@@ -536,6 +537,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_error_foundCustTexturesTFCRef = "string_interp_error_foundCustTexturesTFCRef";
 		public static readonly string string_interp_error_foundTexturesMEMTFCRef = "string_interp_error_foundTexturesMEMTFCRef";
 		public static readonly string string_deploymentBlockedUntilAboveItemsAreFixed = "string_deploymentBlockedUntilAboveItemsAreFixed";
+		public static readonly string string_male = "string_male";
+		public static readonly string string_female = "string_female";
+		public static readonly string string_interp_error_outOfOrderTLK = "string_interp_error_outOfOrderTLK";
+		public static readonly string string_compressedModItems = "string_compressedModItems";
+		public static readonly string string_uncompressedModItems = "string_uncompressedModItems";
 		public static readonly string string_backupsAreShared = "string_backupsAreShared";
 		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public static readonly string string_backUp = "string_backUp";
@@ -772,6 +778,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_notNow = "string_notNow";
 		public static readonly string string_viewChangelog = "string_viewChangelog";
 		public static readonly string string_installUpdate = "string_installUpdate";
+		public static readonly string string_applyingPatch = "string_applyingPatch";
+		public static readonly string string_theDownloadedUpdateFileIsNotSignedByME3TweaksAndIsNotTrusted = "string_theDownloadedUpdateFileIsNotSignedByME3TweaksAndIsNotTrusted";
 		public static readonly string string_restoreToCustomLocation = "string_restoreToCustomLocation";
 		public static readonly string string_interp_dialogCannotRestoreXWhileItIsRunning = "string_interp_dialogCannotRestoreXWhileItIsRunning";
 		public static readonly string string_backup = "string_backup";

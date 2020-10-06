@@ -202,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // patch stream is LZMA'd
             try
             {
-                ProgressText = "Applying patch";
+                ProgressText = M3L.GetString(M3L.string_applyingPatch);
                 ProgressIndeterminate = true;
                 patchStream = new MemoryStream(LZMA.DecompressLZMAFile(patchStream.ToArray()));
                 //using var currentBuildStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
@@ -272,7 +272,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 M3L.ShowDialog(Window.GetWindow(this),
-                                    "The downloaded update file is not signed by ME3Tweaks and is not trusted.",
+                                    M3L.GetString(M3L.string_theDownloadedUpdateFileIsNotSignedByME3TweaksAndIsNotTrusted),
                                     M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK,
                                     MessageBoxImage.Error);
                                 OnClosing(DataEventArgs.Empty);

@@ -906,7 +906,7 @@
                     </MenuItem>
 
                     <MenuItem
-                        Header="ALOT Installer V4 (TEST VERSION)"
+                        Header="{DynamicResource string_alotInstallerV4}"
                         Name="ALOTInstallerV4_MenuItem"
                         Click="LaunchExternalTool_Clicked"
                         ToolTip="{DynamicResource string_ALOTInstallerTooltip}"
