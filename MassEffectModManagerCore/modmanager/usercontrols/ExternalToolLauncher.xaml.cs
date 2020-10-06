@@ -610,7 +610,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private static string toolNameToExeName(string toolname)
         {
             if (toolname == ME3Explorer_Beta) return @"ME3Explorer.exe";
-            if (toolname == ALOTInstallerV4) return @"ALOTInstallerWPF.exe";
+            if (toolname == ALOTInstallerV4) return @"ALOTInstaller.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
