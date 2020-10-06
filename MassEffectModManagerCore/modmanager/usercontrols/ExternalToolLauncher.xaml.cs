@@ -166,7 +166,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (asset != null)
                 {
                     latestRelease = release;
-                    Log.Information($"Using release {latestRelease.Name}");
+                    Log.Information($@"Using release {latestRelease.Name}");
                     downloadLink = new Uri(asset.BrowserDownloadUrl);
                     break;
                 }

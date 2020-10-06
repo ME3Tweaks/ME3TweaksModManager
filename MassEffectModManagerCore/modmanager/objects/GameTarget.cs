@@ -295,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             List<string> inconsistentDLC = new List<string>();
             VanillaDatabaseService.ValidateTargetDLCConsistency(this, x => inconsistentDLC.Add(x));
 
-            modifiedSfars.AddRange(inconsistentDLC.Select(x => Path.Combine(x, "CookedPCConsole", "Default.sfar")));
+            modifiedSfars.AddRange(inconsistentDLC.Select(x => Path.Combine(x, @"CookedPCConsole", @"Default.sfar")));
             modifiedSfars = modifiedSfars.Distinct().ToList(); //filter out if modified + inconsistent
 
             ModifiedSFARFiles.AddRange(modifiedSfars.Select(file => new SFARObject(file, this, restoreSfarConfirmationCallback, notifySFARRestoringCallback, notifyRestoredCallback)));
@@ -501,9 +501,9 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (!Unpacked)
                     {
-                        var filesInSfarDir = Directory.EnumerateFiles(DLCDirectory, "*.*", SearchOption.AllDirectories).ToList();
+                        var filesInSfarDir = Directory.EnumerateFiles(DLCDirectory, @"*.*", SearchOption.AllDirectories).ToList();
                         if (filesInSfarDir.Any(d =>
-                            !Path.GetFileName(d).Equals("PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase) && //pcconsoletoc will be produced for all folders even with autotoc asi even if its not needed
+                            !Path.GetFileName(d).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase) && //pcconsoletoc will be produced for all folders even with autotoc asi even if its not needed
                             VanillaDatabaseService.UnpackedFileExtensions.Contains(Path.GetExtension(d.ToLower()))))
                         {
                             Inconsistent = true;

@@ -521,7 +521,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             void FileInstalledIntoSFARCallback(Dictionary<string, InstallSourceFile> sfarMapping, string targetPath)
             {
                 numdone++;
-                targetPath = targetPath.Replace("/", "\\").TrimStart('\\');
+                targetPath = targetPath.Replace('/', '\\').TrimStart('\\');
                 var fileMapping = sfarMapping.FirstOrDefault(x => x.Key == targetPath);
                 CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Value.FilePath} -> (SFAR) {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
@@ -734,8 +734,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (gameTarget.Supported)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(9, "AutoTOC", gameTarget);
-                    ASIManager.InstallASIToTargetByGroupID(8, "ME3Logger-Truncating", gameTarget);
+                    ASIManager.InstallASIToTargetByGroupID(9, @"AutoTOC", gameTarget);
+                    ASIManager.InstallASIToTargetByGroupID(8, @"ME3Logger-Truncating", gameTarget);
                 }
             }
 

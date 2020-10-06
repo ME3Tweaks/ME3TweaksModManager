@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             if (App.ServerManifest != null)
             {
-                if (App.ServerManifest.TryGetValue($"flighting_{featurename}", out var enabled) && bool.TryParse(enabled, out var enabledVal))
+                if (App.ServerManifest.TryGetValue($@"flighting_{featurename}", out var enabled) && bool.TryParse(enabled, out var enabledVal))
                 {
                     return enabledVal;
                 }

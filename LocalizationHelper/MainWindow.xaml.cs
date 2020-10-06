@@ -812,6 +812,7 @@ namespace LocalizationHelper
             if (str.Equals("Français", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Polski", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Pусский", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Português", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 

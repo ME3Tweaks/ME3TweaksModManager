@@ -208,7 +208,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         var modmakerCacheDir = Path.Combine(dataDir, @"modmaker", @"cache");
                         if (Directory.Exists(modmakerCacheDir))
                         {
-                            var modmakerXmls = Directory.GetFiles(modmakerCacheDir, "*.xml");
+                            var modmakerXmls = Directory.GetFiles(modmakerCacheDir, @"*.xml");
                             if (modmakerXmls.Any())
                             {
                                 var mmNewCacheDir = Utilities.GetModmakerDefinitionsCache();
@@ -241,7 +241,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         // Migrate DLC_AUTH_FAIL
                         var me3mmAuthFail = Path.Combine(dataDir, @"help\DLC_AUTH_FAIL.png");
-                        var targetAuthFail = Path.Combine(Utilities.GetLocalHelpResourcesDirectory(), "DLC_AUTH_FAIL.png");
+                        var targetAuthFail = Path.Combine(Utilities.GetLocalHelpResourcesDirectory(), @"DLC_AUTH_FAIL.png");
                         if (File.Exists(me3mmAuthFail) && !File.Exists(targetAuthFail))
                         {
                             Log.Information($@"Copying DLC_AUTH_FAIL help resource to ME3Tweaks Mod Manager help resources location: {me3mmAuthFail} -> {targetAuthFail}");
@@ -333,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             // Install redirect to ensure user shortcuts continue to work
                             var me3cmmPath = Path.Combine(exeDir, @"ME3CMM.exe");
                             Log.Information(@"Writing redirector to " + me3cmmPath);
-                            Utilities.ExtractInternalFile("MassEffectModManagerCore.updater.ME3CMM.exe", me3cmmPath, true);
+                            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3CMM.exe", me3cmmPath, true);
 
                         }
                         else

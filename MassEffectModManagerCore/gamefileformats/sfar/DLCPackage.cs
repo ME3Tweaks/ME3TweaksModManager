@@ -758,7 +758,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
             int archiveFileIndex = -1;
             for (int i = 0; i < Files.Length; i++)
             {
-                if (Path.GetFileName(Files[i].FileName) == "PCConsoleTOC.bin")
+                if (Path.GetFileName(Files[i].FileName) == @"PCConsoleTOC.bin")
                 {
                     archiveFileIndex = i;
                     break;
@@ -767,7 +767,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
 
             if (archiveFileIndex == -1)
             {
-                Debug.WriteLine("Couldn't find PCConsoleTOC.bin in SFAR");
+                Debug.WriteLine(@"Couldn't find PCConsoleTOC.bin in SFAR");
                 return DLCTOCUpdateResult.RESULT_ERROR_NO_TOC;
             }
 
@@ -777,7 +777,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
             {
                 if (file.FileName != UNKNOWN_FILENAME)
                 {
-                    string consoleDirFilename = file.FileName.Substring(file.FileName.IndexOf("DLC_", StringComparison.InvariantCultureIgnoreCase));
+                    string consoleDirFilename = file.FileName.Substring(file.FileName.IndexOf(@"DLC_", StringComparison.InvariantCultureIgnoreCase));
                     consoleDirFilename = consoleDirFilename.Substring(consoleDirFilename.IndexOf('/') + 1);
                     entries.Add((consoleDirFilename.Replace('/', '\\'), (int)file.UncompressedSize));
                 }
@@ -793,8 +793,8 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
             TOCBinFile toc = new TOCBinFile(tocMemoryStream);
 
             int actualTocEntries = toc.Entries.Count;
-            actualTocEntries -= toc.Entries.Count(x => x.name.EndsWith("PCConsoleTOC.txt", StringComparison.InvariantCultureIgnoreCase));
-            actualTocEntries -= toc.Entries.Count(x => x.name.EndsWith("GlobalPersistentCookerData.upk", StringComparison.InvariantCultureIgnoreCase));
+            actualTocEntries -= toc.Entries.Count(x => x.name.EndsWith(@"PCConsoleTOC.txt", StringComparison.InvariantCultureIgnoreCase));
+            actualTocEntries -= toc.Entries.Count(x => x.name.EndsWith(@"GlobalPersistentCookerData.upk", StringComparison.InvariantCultureIgnoreCase));
             if (actualTocEntries != entries.Count)
             {
                 tocNeedsUpdating = true;
@@ -804,7 +804,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
                 //Check sizes to see if all of ours match.
                 foreach (var entry in toc.Entries)
                 {
-                    if (entry.name.EndsWith("PCConsoleTOC.txt", StringComparison.InvariantCultureIgnoreCase) || entry.name.EndsWith("GlobalPersistentCookerData.upk", StringComparison.InvariantCultureIgnoreCase)) continue; //These files don't actually exist in SFARs
+                    if (entry.name.EndsWith(@"PCConsoleTOC.txt", StringComparison.InvariantCultureIgnoreCase) || entry.name.EndsWith("GlobalPersistentCookerData.upk", StringComparison.InvariantCultureIgnoreCase)) continue; //These files don't actually exist in SFARs
                     var matchingNewEntry = entries.FirstOrDefault(x => x.filepath.Equals(entry.name, StringComparison.InvariantCultureIgnoreCase));
                     if (matchingNewEntry.filepath == null)
                     {
@@ -822,7 +822,7 @@ namespace MassEffectModManagerCore.gamefileformats.sfar
             }
 
             //DEBUG TESTING!
-            if (tocNeedsUpdating || FileName.Contains("Patch_001"))
+            if (tocNeedsUpdating || FileName.Contains(@"Patch_001"))
             {
                 MemoryStream newTocStream = TOCCreator.CreateTOCForEntries(entries);
                 byte[] newmem = newTocStream.ToArray();

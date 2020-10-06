@@ -112,7 +112,7 @@ namespace ME3Explorer.Unreal
                     else
                         fs.WriteUInt16((ushort)(0x1D + entry.file.Length));
                     fs.WriteUInt16(0); //Flags
-                    if (Path.GetFileName(entry.file).ToLower() != "pcconsoletoc.bin")
+                    if (Path.GetFileName(entry.file).ToLower() != @"pcconsoletoc.bin")
                     {
                         fs.WriteInt32(entry.size); //Filesize
                     }

@@ -409,7 +409,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         //Packed
                         var filesInSfarDir = Directory.EnumerateFiles(unpackedDir).ToList();
                         if (filesInSfarDir.Any(d =>
-                            !Path.GetFileName(d).Equals("PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase) && //pcconsoletoc will be produced for all folders even with autotoc asi even if its not needed
+                            !Path.GetFileName(d).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase) && //pcconsoletoc will be produced for all folders even with autotoc asi even if its not needed
                                                     UnpackedFileExtensions.Contains(Path.GetExtension(d.ToLower()))))
                         {
                             inconsistentDLCCallback?.Invoke(dlcFolder);

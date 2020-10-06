@@ -70,9 +70,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             short version = 0;
             // If the current version doesn't support the --version --ipc, we just assume it is 0.
-            MEMIPCHandler.RunMEMIPCUntilExit("--version --ipc", ipcCallback: (command, param) =>
+            MEMIPCHandler.RunMEMIPCUntilExit(@"--version --ipc", ipcCallback: (command, param) =>
             {
-                if (command == "VERSION")
+                if (command == @"VERSION")
                 {
                     MassEffectModderNoGuiVersion = short.Parse(param);
                 }
@@ -153,14 +153,14 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 switch (command)
                 {
-                    case "CACHE_USAGE":
+                    case @"CACHE_USAGE":
                         if (DateTime.Now > (lastCacheoutput.AddSeconds(10)))
                         {
                             Log.Information($@"[AICORE] MEM cache usage: {ByteSize.FromBytes(long.Parse(parm))}");
                             lastCacheoutput = DateTime.Now;
                         }
                         break;
-                    case "EXCEPTION_OCCURRED": //An exception has occurred and MEM is going to crash
+                    case @"EXCEPTION_OCCURRED": //An exception has occurred and MEM is going to crash
                         exceptionOcurred = true;
                         ipcCallback?.Invoke(command, parm);
                         break;
@@ -188,7 +188,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         break;
                     case StandardOutputCommandEvent stdOut:
 #if DEBUG
-                        if (!stdOut.Text.StartsWith("[IPC]CACHE_USAGE"))
+                        if (!stdOut.Text.StartsWith(@"[IPC]CACHE_USAGE"))
                         {
                             Debug.WriteLine(stdOut.Text);
                         }
@@ -202,16 +202,16 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         {
                             if (exceptionOcurred)
                             {
-                                Log.Fatal($"[AICORE] {stdOut.Text}");
+                                Log.Fatal($@"[AICORE] {stdOut.Text}");
                                 memCrashLine?.Invoke(stdOut.Text);
                             }
                         }
                         break;
                     case StandardErrorCommandEvent stdErr:
-                        Debug.WriteLine("STDERR " + stdErr.Text);
+                        Debug.WriteLine(@"STDERR " + stdErr.Text);
                         if (exceptionOcurred)
                         {
-                            Log.Fatal($"[AICORE] {stdErr.Text}");
+                            Log.Fatal($@"[AICORE] {stdErr.Text}");
                         }
                         else
                         {
@@ -252,11 +252,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static bool SetGamePath(Mod.MEGame targetGame, string targetPath)
         {
             int exitcode = 0;
-            string args = $"--set-game-data-path --gameid {targetGame.ToGameNum()} --path \"{targetPath}\"";
+            string args = $"--set-game-data-path --gameid {targetGame.ToGameNum()} --path \"{targetPath}\""; //do not localize
             MEMIPCHandler.RunMEMIPCUntilExit(args, applicationExited: x => exitcode = x);
             if (exitcode != 0)
             {
-                Log.Error($"[AICORE] Non-zero MassEffectModderNoGui exit code setting game path: {exitcode}");
+                Log.Error($@"Non-zero MassEffectModderNoGui exit code setting game path: {exitcode}");
             }
             return exitcode == 0;
         }
@@ -269,15 +269,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static bool SetLODs(Mod.MEGame game, LodSetting setting)
         {
-            string args = $"--apply-lods-gfx --gameid {game.ToGameNum()}";
+            string args = $@"--apply-lods-gfx --gameid {game.ToGameNum()}";
             if (setting.HasFlag(LodSetting.SoftShadows))
             {
-                args += " --soft-shadows-mode --meuitm-mode";
+                args += @" --soft-shadows-mode --meuitm-mode";
             }
 
             if (setting.HasFlag(LodSetting.TwoK))
             {
-                args += " --limit-2k";
+                args += @" --limit-2k";
             }
             else if (setting.HasFlag(LodSetting.FourK))
             {
@@ -286,19 +286,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
             else if (setting == LodSetting.Vanilla)
             {
                 // Remove LODs
-                args = $"--remove-lods --gameid {game.ToGameNum()}";
+                args = $@"--remove-lods --gameid {game.ToGameNum()}";
             }
 
             int exitcode = -1;
             // We don't care about IPC on this
             MEMIPCHandler.RunMEMIPCUntilExit(args,
-                null,
-                (x, y) => Debug.WriteLine("hi"),
-                x => Log.Error($"[AICORE] StdError setting LODs: {x}"),
+                null,null,
+                x => Log.Error($@"StdError setting LODs: {x}"),
                 x => exitcode = x); //Change to catch exit code of non zero.        
             if (exitcode != 0)
             {
-                Log.Error($"[AICORE] MassEffectModderNoGui had error setting LODs, exited with code {exitcode}");
+                Log.Error($@"MassEffectModderNoGui had error setting LODs, exited with code {exitcode}");
                 return false;
             }
 
@@ -312,7 +311,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static List<string> GetFileListing(string file)
         {
-            string args = $"--list-archive --input \"{file}\" --ipc";
+            string args = $"--list-archive --input \"{file}\" --ipc"; //do not localize
             List<string> fileListing = new List<string>();
 
             int exitcode = -1;
@@ -320,16 +319,16 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 null,
                 (command, param) =>
                 {
-                    if (command == "FILENAME")
+                    if (command == @"FILENAME")
                     {
                         fileListing.Add(param);
                     }
                 },
-                x => Log.Error($"[AICORE] StdError getting file listing for file {file}: {x}"),
+                x => Log.Error($@"StdError getting file listing for file {file}: {x}"),
                 x => exitcode = x); //Change to catch exit code of non zero.        
             if (exitcode != 0)
             {
-                Log.Error($"[AICORE] MassEffectModderNoGui had error getting file listing of archive {file}, exit code {exitcode}");
+                Log.Error($@"MassEffectModderNoGui had error getting file listing of archive {file}, exit code {exitcode}");
             }
             return fileListing;
         }
@@ -361,7 +360,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             );
             if (exitcode != 0)
             {
-                Log.Error($"[AICORE] Error fetching LODs for {game}, exit code {exitcode}");
+                Log.Error($@"Error fetching LODs for {game}, exit code {exitcode}");
                 return null; // Error getting LODs
             }
 
@@ -398,7 +397,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 var path = Path.GetFullPath(param.Substring(spitIndex + 1, param.Length - (spitIndex + 1)));
                 switch (command)
                 {
-                    case "GAMEPATH":
+                    case @"GAMEPATH":
                         {
                             var keyname = Enum.Parse<GameDirPath>($@"ME{gameId}GamePath");
                             if (param.Length > 1)
@@ -411,7 +410,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             }
                             break;
                         }
-                    case "GAMECONFIGPATH":
+                    case @"GAMECONFIGPATH":
                         {
                             var keyname = Enum.Parse<GameDirPath>($@"ME{gameId}ConfigPath");
                             if (param.Length > 1)
