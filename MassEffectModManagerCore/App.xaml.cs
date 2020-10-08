@@ -108,7 +108,7 @@ namespace MassEffectModManagerCore
 
             try
             {
-                string exeFolder = Directory.GetParent(ExecutableLocation).ToString();
+                string exeFolder = Directory.GetParent(ExecutableLocation).FullName;
                 try
                 {
                     LogCollector.CreateLogger();
@@ -135,17 +135,14 @@ namespace MassEffectModManagerCore
                             //Update unpacked and process was run.
                             //Extract ME3TweaksUpdater.exe to ensure we have newest update executable in case we need to do update hotfixes
 
-                            var updaterExe = Path.Combine(Path.GetDirectoryName(ExecutableLocation), @"ME3TweaksUpdater.exe");
-                            if (File.Exists(updaterExe))
-                            {
-                                //write updated exe
-                                Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
-                            }
+                            var updaterExe = Path.Combine(exeFolder, @"ME3TweaksUpdater.exe");
+                            //write updated updater executable
+                            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
 
                             if (!File.Exists(updaterExe))
                             {
                                 // Error like this has no need being localized
-                                M3L.ShowDialog(null, $@"Updater missing! The swapper executable should be located at: {updaterExe}. Please report this to ME3Tweaks.", @"Error updating");
+                                Xceed.Wpf.Toolkit.MessageBox.Show(null, $@"Updater shim missing!\nThe swapper executable should have been located at:\n{updaterExe}\n\nPlease report this to ME3Tweaks.", @"Error updating", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
 
                             Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);

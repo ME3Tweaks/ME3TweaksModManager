@@ -162,7 +162,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         var tmtext = mixinobj.TargetModule;
                         var tm = ModmakerChunkNameToDLCFoldername(tmtext.ToString());
-                        Debug.WriteLine(tm);
                         if (tm != null) requiredDLCFolders.Add(tm); //null is basegame and balance changes
                         if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
                         {
@@ -185,7 +184,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var tmtext = mixin.Attribute(@"targetmodule");
                     var tm = ModmakerChunkNameToDLCFoldername(tmtext.Value);
                     if (tm != null) requiredDLCFolders.Add(tm); //null is basegame or balance changes
-                    Debug.WriteLine(tm);
                     if (tm == null || tm == @"DLC_TestPatch" || DLCFolders.Contains(tm, StringComparer.InvariantCultureIgnoreCase))
                     {
                         mixincount++;
@@ -357,7 +355,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     SetOverallValueCallback?.Invoke(numOverallDone);
                 }
 
-                ;
                 //Mixins are ready to be applied
                 Parallel.ForEach(compilingListsPerModule,
                     new ParallelOptions

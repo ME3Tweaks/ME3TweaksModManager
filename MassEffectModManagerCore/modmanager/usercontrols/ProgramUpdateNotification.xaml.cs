@@ -233,10 +233,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool ApplyUpdate(string updateDirectory, bool closeOnBadSignature = true)
         {
-            var updaterExe = Path.Combine(updateDirectory, @"ME3TweaksUpdater.exe");
-            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
+            var updateSwapperExecutable = Path.Combine(updateDirectory, @"ME3TweaksUpdater.exe");
+            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updateSwapperExecutable, true);
             var updateExecutablePath = Directory.GetFiles(updateDirectory, @"ME3TweaksModManager.exe", SearchOption.AllDirectories).FirstOrDefault();
-            if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updaterExe))
+            if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updateSwapperExecutable))
             {
                 ProgressText = M3L.GetString(M3L.string_verifyingUpdate);
                 var authenticodeInspector = new FileInspector(updateExecutablePath);
@@ -301,7 +301,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressText = M3L.GetString(M3L.string_restartingModManager);
                 Thread.Sleep(2000);
                 args = $"--update-from {App.BuildNumber} --update-source-path \"{updateExecutablePath}\" --update-dest-path \"{App.ExecutableLocation}\""; //Do not localize
-                Log.Information($@"Running updater: {updaterExe} {args}");
+                Log.Information($@"Running updater: {updateSwapperExecutable} {args}");
 
                 process = new Process();
                 // Stop the process from opening a new window
@@ -309,7 +309,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 process.StartInfo.CreateNoWindow = true;
 
                 // Setup executable and parameters
-                process.StartInfo.FileName = updaterExe;
+                process.StartInfo.FileName = updateSwapperExecutable;
                 process.StartInfo.Arguments = args;
                 process.Start();
                 Log.Information(@"Stopping Mod Manager to apply update");
