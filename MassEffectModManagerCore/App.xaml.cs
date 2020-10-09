@@ -135,7 +135,8 @@ namespace MassEffectModManagerCore
                             //Update unpacked and process was run.
                             //Extract ME3TweaksUpdater.exe to ensure we have newest update executable in case we need to do update hotfixes
 
-                            var updaterExe = Path.Combine(exeFolder, @"ME3TweaksUpdater.exe");
+                            // The swapper executable is a directory above as M3 is packaged in, as updates are shipped in a subfolder named ME3TweaksModManager
+                            var updaterExe = Path.Combine(Directory.GetParent(exeFolder).FullName, @"ME3TweaksUpdater.exe");
                             //write updated updater executable
                             Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
 
