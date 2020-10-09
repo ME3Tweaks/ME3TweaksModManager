@@ -910,7 +910,7 @@
                         Name="ALOTInstallerV4_MenuItem"
                         Click="LaunchExternalTool_Clicked"
                         ToolTip="{DynamicResource string_ALOTInstallerTooltip}"
-                        Visibility="{Binding Path=(local:App.ServerManifest), Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='alotinstallerv4'}">
+                        Visibility="{Binding Path=(local:App.ServerManifest), Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='alotinstallerv4-2'}">
                         <MenuItem.Icon>
                             <Image
                                 Source="/modmanager/toolicons/alot_32.png"
