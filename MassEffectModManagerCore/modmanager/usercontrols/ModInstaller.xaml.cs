@@ -839,15 +839,44 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     var section = me2cF.Value.Sections.FirstOrDefault(x => x.Header.Equals(rcwS.SectionName, StringComparison.InvariantCultureIgnoreCase));
                     Dictionary<string, int> keyCount = new Dictionary<string, int>();
+                    if (section == null)
+                    {
+                        Log.Error($@"RCW section is null! We didn't find {rcwS.SectionName}");
+                        Analytics.TrackEvent(@"RCW Section Null", new Dictionary<string, string>
+                        {
+                            {@"MissingSection", rcwS.SectionName},
+                            {@"InFile", rcwF.FileName}
+                        });
+                    }
                     foreach (var key in section.Entries)
                     {
-                        if (keyCount.TryGetValue(key.Key, out var existingCount))
+                        try
                         {
-                            keyCount[key.Key] = existingCount + 1;
+
+                            if (keyCount.TryGetValue(key.Key, out var existingCount))
+                            {
+                                keyCount[key.Key] = existingCount + 1;
+                            }
+                            else
+                            {
+                                keyCount[key.Key] = 1;
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            keyCount[key.Key] = 1;
+                            Crashes.TrackError(e, new Dictionary<string, string>()
+                            {
+                                {@"FailingEntry", key.RawText},
+                                {@"Failing mod", ModBeingInstalled.ModName}
+                            });
+                            Log.Fatal(@"Crash information:");
+                            Log.Warning(@"Section: " + section?.Header);
+                            Log.Warning(@"Entries: ");
+                            foreach (var k in section.Entries)
+                            {
+                                Log.Warning($@" - {k.RawText}");
+                            }
+                            throw new Exception(@"There was an exception calculating the number of keys in the Ini. This issue is being investigated, please ensure telemetry is on.", e);
                         }
                     }
 

@@ -97,13 +97,6 @@ namespace MassEffectModManagerCore
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-            //var sourceStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
-            //var patchStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\patch");
-            //var outStream = new MemoryStream();
-
-            //JPatch.ApplyJPatch(sourceStream, patchStream, outStream);
-            //var outHash = Utilities.CalculateMD5(outStream);
-
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
 
             try

@@ -424,31 +424,43 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void SetGame(Mod.MEGame game)
         {
-            Game = game;
-            if (Game == Mod.MEGame.ME1)
+            try
             {
-                DisplayedMountFlags.ReplaceAll(ME1MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values.Where(x => !x.IsOutdated));
-                ME1_RadioButton.IsChecked = true;
-            }
+                Game = game;
+                if (Game == Mod.MEGame.ME1)
+                {
+                    DisplayedMountFlags.ReplaceAll(ME1MountFlags);
+                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values
+                        .Where(x => !x.IsOutdated));
+                    ME1_RadioButton.IsChecked = true;
+                }
 
-            if (Game == Mod.MEGame.ME2)
-            {
-                DisplayedMountFlags.ReplaceAll(ME2MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values.Where(x => !x.IsOutdated));
-                ME2_RadioButton.IsChecked = true;
-            }
+                if (Game == Mod.MEGame.ME2)
+                {
+                    DisplayedMountFlags.ReplaceAll(ME2MountFlags);
+                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values
+                        .Where(x => !x.IsOutdated));
+                    ME2_RadioButton.IsChecked = true;
+                }
 
-            if (Game == Mod.MEGame.ME3)
-            {
-                DisplayedMountFlags.ReplaceAll(ME3MountFlags);
-                CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values.Where(x => !x.IsOutdated));
-                ME3_RadioButton.IsChecked = true;
+                if (Game == Mod.MEGame.ME3)
+                {
+                    DisplayedMountFlags.ReplaceAll(ME3MountFlags);
+                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values
+                        .Where(x => !x.IsOutdated));
+                    ME3_RadioButton.IsChecked = true;
+                }
+
+                CustomDLCMountsForGame.Insert(0, PreviewTPMI);
+                DisplayedMountFlags[0].Selected = true;
+                CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
+                CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
             }
-            CustomDLCMountsForGame.Insert(0, PreviewTPMI);
-            DisplayedMountFlags[0].Selected = true;
-            CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
-            CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
+            catch (Exception e)
+            {
+                // This happens, somehow, according to telemetry
+                Log.Error($@"Error setting game in StarterKit: {e.Message}");
+            }
         }
 
         public class UIMountFlag
@@ -597,7 +609,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         }
 
                         var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
-                        Log.Information(@"Saving TLK file: " + tlk); 
+                        Log.Information(@"Saving TLK file: " + tlk);
                         HuffmanCompressionME2ME3.SaveToTlkFile(tlk, strs);
                     }
                 }
