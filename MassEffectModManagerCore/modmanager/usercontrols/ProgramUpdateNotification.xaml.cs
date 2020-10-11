@@ -204,9 +204,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 ProgressText = M3L.GetString(M3L.string_applyingPatch);
                 ProgressIndeterminate = true;
+
                 patchStream = new MemoryStream(LZMA.DecompressLZMAFile(patchStream.ToArray()));
-                //using var currentBuildStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
                 using var currentBuildStream = File.OpenRead(App.ExecutableLocation);
+                //using var currentBuildStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
+
                 MemoryStream outStream = new MemoryStream();
                 JPatch.ApplyJPatch(currentBuildStream, patchStream, outStream);
                 var calculatedHash = Utilities.CalculateMD5(outStream);
@@ -214,7 +216,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"update"))
                         .FullName;
-                    outStream.WriteToFile(Path.Combine(outDirectory, @"ME3TweaksModManager.exe"));
+                    var updateFile = Path.Combine(outDirectory, @"ME3TweaksModManager.exe");
+                    outStream.WriteToFile(updateFile);
+
+                    if (App.ServerManifest.TryGetValue(@"build_timestamp", out var buildDateStr) && long.TryParse(buildDateStr, out var buildDateLong))
+                    {
+                        try
+                        {
+                            File.SetLastWriteTimeUtc(updateFile, new DateTime(buildDateLong));
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($@"Could not set executable date: {ex.Message}");
+                        }
+
+                    }
                     return outDirectory;
                 }
                 else

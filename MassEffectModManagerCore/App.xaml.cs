@@ -106,14 +106,12 @@ namespace MassEffectModManagerCore
                 {
                     LogCollector.CreateLogger();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //Unable to create logger...!
-
                 }
 
                 string[] args = Environment.GetCommandLineArgs();
-                //Parsed<Options> parsedCommandLineArgs = null;
 
                 #region Command line
 
@@ -130,6 +128,7 @@ namespace MassEffectModManagerCore
 
                             // The swapper executable is a directory above as M3 is packaged in, as updates are shipped in a subfolder named ME3TweaksModManager
                             var updaterExe = Path.Combine(Directory.GetParent(exeFolder).FullName, @"ME3TweaksUpdater.exe");
+
                             //write updated updater executable
                             Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
 
@@ -206,11 +205,6 @@ namespace MassEffectModManagerCore
 #endif
                 }
 
-                #region Update mode boot
-
-
-
-                #endregion
 
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                     new FrameworkPropertyMetadata(true));

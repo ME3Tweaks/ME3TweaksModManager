@@ -2263,8 +2263,6 @@ namespace MassEffectModManagerCore
                         if (App.ServerManifest != null && int.TryParse(App.ServerManifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
-
-                            //#endif
                             {
                                 Log.Information(@"Found update for Mod Manager: Build " + latestServerBuildNumer);
 
