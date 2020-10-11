@@ -178,13 +178,14 @@ namespace MassEffectModManagerCore
                 Log.Information("Executable location: " + ExecutableLocation);
                 Log.Information("Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
-                var info = new FileInspector(App.ExecutableLocation);
+                //var info = new FileInspector(App.ExecutableLocation);
+                var info = new FileInspector(@"C:\Users\Mgamerz\Desktop\M3\ME3TweaksModManager.exe");
                 var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
 
                 if (signTime != null)
                 {
                     IsSigned = true;
-                    BuildDate = signTime.Value.ToString(@"MMMM dd, yyyy");
+                    BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy");
 
                     var signer = info.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
                     if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
