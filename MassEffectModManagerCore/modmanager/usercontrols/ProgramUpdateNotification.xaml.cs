@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         /// Mapping of MD5 patches to destination. Value is a list of mirrors we can use, preferring github first
         /// </summary>
-        private Dictionary<string, List<(string downloadhash, string downloadLink, string timetamp)>> patchMappingMd5ToLinks = new Dictionary<string, List<(string downloadhash, string downloadLink, string timetamp)>>();
+        private Dictionary<string, List<(string downloadhash, string downloadLink, string timetamp)>> patchMappingSourceMd5ToLinks = new Dictionary<string, List<(string downloadhash, string downloadLink, string timetamp)>>();
         public string UpdateMessage { get; set; } = M3L.GetString(M3L.string_anUpdateToME3TweaksModManagerIsAvailable);
         private string ChangelogLink;
         public ProgramUpdateNotification(string localExecutableHash = null)
@@ -58,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BackupDownloadLink = App.ServerManifest[@"download_link"];
             App.ServerManifest.TryGetValue(@"changelog_link", out ChangelogLink);
 
-
+            Log.Information($@"Update available: {LatestVersion}. Prompting user");
             LoadCommands();
             InitializeComponent();
         }
@@ -88,6 +88,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartUpdate()
         {
+            Log.Information($@"Beginning update process");
+
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ProgramUpdater");
             bw.DoWork += DownloadAndApplyUpdate;
             bw.RunWorkerAsync();
@@ -98,6 +100,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             void pCallback(long done, long total)
             {
+                ProgressIndeterminate = false;
                 ProgressValue = done;
                 ProgressMax = total;
                 var hrDone = ByteSize.FromBytes(done).ToString(@"0.00");
@@ -106,25 +109,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             // PATCH UPDATE
-            if (App.ServerManifest.TryGetValue(@"build_md5", out var md5))
+            if (App.ServerManifest.TryGetValue(@"build_md5", out var destMd5))
             {
                 foreach (var item in App.ServerManifest.Where(x => x.Key.StartsWith(@"upd-") || x.Key.StartsWith(@"gh_upd-")))
                 {
-                    if (!patchMappingMd5ToLinks.TryGetValue(md5, out var patchMappingList))
-                    {
-                        patchMappingList = new List<(string downloadhash, string downloadLink, string timetamp)>();
-                        patchMappingMd5ToLinks[md5] = patchMappingList;
-                    }
-
                     var updateinfo = item.Key.Split(@"-");
-                    if (updateinfo.Length == 5)
+                    if (updateinfo.Length >= 4)
                     {
                         var sourceHash = updateinfo[1];
                         var destHash = updateinfo[2];
                         var downloadHash = updateinfo[3];
-                        var timestamp = updateinfo[4];
-                        if (destHash == md5)
+                        var timestamp = updateinfo.Length > 4 ? updateinfo[4] : @"0";
+
+                        if (localExecutableHash == sourceHash && destHash == destMd5)
                         {
+                            if (!patchMappingSourceMd5ToLinks.TryGetValue(sourceHash, out var patchMappingList))
+                            {
+                                // ^ Don't bother adding items that will never be useful ^
+                                patchMappingList = new List<(string downloadhash, string downloadLink, string timetamp)>();
+                                patchMappingSourceMd5ToLinks[sourceHash] = patchMappingList;
+                            }
+
                             if (item.Key.StartsWith(@"gh_upd-"))
                             {
                                 // Insert at front.
@@ -142,7 +147,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var localmd5 = localExecutableHash ?? Utilities.CalculateMD5(App.ExecutableLocation);
 
 
-                if (patchMappingMd5ToLinks.TryGetValue(localmd5, out var downloadInfoMirrors))
+                if (patchMappingSourceMd5ToLinks.TryGetValue(localmd5, out var downloadInfoMirrors))
                 {
                     foreach (var downloadInfo in downloadInfoMirrors)
                     {
@@ -156,7 +161,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             Log.Information(@"Download OK: Building new executable");
-                            var outPath = BuildUpdateFromPatch(patchUpdate.result, md5, downloadInfo.timetamp);
+                            var outPath = BuildUpdateFromPatch(patchUpdate.result, destMd5, downloadInfo.timetamp);
                             if (outPath != null)
                             {
                                 ApplyUpdate(outPath, true);
@@ -246,7 +251,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var updateFile = Path.Combine(outDirectory, @"ME3TweaksModManager.exe");
                     outStream.WriteToFile(updateFile);
 
-                    if (long.TryParse(fileTimestamp, out var buildDateLong))
+                    if (long.TryParse(fileTimestamp, out var buildDateLong) && buildDateLong > 0)
                     {
                         Log.Information(@"Updating timestamp on new executable to the original value");
                         try
@@ -386,6 +391,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CloseDialog()
         {
+            Log.Warning(@"Update was declined");
             OnClosing(DataEventArgs.Empty);
         }
 

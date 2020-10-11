@@ -2276,7 +2276,7 @@ namespace MassEffectModManagerCore
 #if !DEBUG
                             else if (latestServerBuildNumer == App.BuildNumber)
                             {
-                                if (App.ServerManifest.TryGetValue(@"build_md5", out var md5) && md5 != null)
+                                if (App.ServerManifest.TryGetValue(@"build_md5", out var md5) && !string.IsNullOrWhiteSpace(md5))
                                 {
                                     var localmd5 = Utilities.CalculateMD5(App.ExecutableLocation);
                                     if (localmd5 != md5)
