@@ -520,6 +520,16 @@
 	<system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} usa nome TFC {2}. Este nome TFC é usado pleo MEM ao instalar texturas e nao pode ser usado na implantação ou criará conflitos. Comprima seu TFC com um novo nome usando a ferramento Compressor TFC do ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
 	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Implantação bloqueada até que os itens acima sejam consertados</system:String>
+	<system:String x:Key="string_male">masculino</system:String>
+	<!-- This item is substituted into a string down below for gender -->
+	<system:String x:Key="string_female">feminino</system:String>
+	<!-- This item is substituted into a string down below for gender -->
+	<system:String x:Key="string_interp_error_outOfOrderTLK">A lista de {0} strings em {1} não estão em ordem ascendente. Strings TLK devem estar em orcem ascendente - se uma StringID está fora de ordem, a análise irá parar.</system:String>
+	<!-- 0={gender (SEE ABOVE)} 1={language code such as INT, JPN ,etc} -->
+	<system:String x:Key="string_compressedModItems">Itens do Mod compactados</system:String>
+	<!-- This is a 'status' text to show what's being worked on -->
+	<system:String x:Key="string_uncompressedModItems">Itens do Mod não compactados</system:String>
+	<!-- This is a 'status' text to show what's being worked on -->
 
 	<!-- Backup Creator -->
 	<system:String x:Key="string_backupsAreShared">Backups são usados por várias ferramentas incluindo o Randomizador Mass Effect e o Instalador ALOT.</system:String>
