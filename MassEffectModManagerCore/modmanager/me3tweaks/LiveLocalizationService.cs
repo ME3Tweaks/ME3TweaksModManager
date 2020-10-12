@@ -33,8 +33,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (File.Exists(locFile))
                     {
                         var md5 = Utilities.CalculateMD5(locFile);
+                        Log.Information($"Found server livelocalization. HasUpdatedLocalization({lang}) result: {md5 != livelocmd5}");
                         return md5 != livelocmd5;
                     }
+                    Log.Information($@"Server has localization for {lang}, but we don't have a localization locally stored");
                     return true; //There is online asset but we do not have it locally
                 }
             }
