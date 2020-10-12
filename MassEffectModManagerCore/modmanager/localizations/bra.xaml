@@ -309,6 +309,8 @@
 	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Verificar atualizaçõesem mods que suportam atualizações</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">Visualizador MEM Vanilla DB</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+	<system:String x:Key="string_alotInstallerV4">Instalador ALOT V4</system:String>
+	<!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
 	<system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Auto injetar teclas de atalho personalizadas aos Mods do ModMaker</system:String>
 	<system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Injeta automaticamente um arquivo BioInput.xml personalizado no diretório keybindsoverride.&#10;Define teclas personalizadas no Injetor de Teclas de atalho no menu Ferramentas</system:String>
 	<system:String x:Key="string_customKeybindsInjectorMenuItem">Injetor de teclas de atalho (ME3)</system:String>
@@ -404,6 +406,8 @@
 	<!-- 0={Mod name} -->
 	<system:String x:Key="string_thisModShouldBeReinstalled">Este Mod deve ser reinstalado.</system:String>
 	<system:String x:Key="string_invalidCompatibilityPack">Pacote de compatibilidade inválido</system:String>
+	<system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">Ocorreu um erro ao organizar as filas de instalação: {0}</system:String>
+	<!-- 0={Exception message} -->
 
 	<!-- Welcome panel -->
 	<system:String x:Key="string_previewPanelTitle">Bem vindo ao Gerenciador de Mods ME3Tweaks</system:String>
@@ -814,6 +818,10 @@
 	<system:String x:Key="string_notNow">Agora não</system:String>
 	<system:String x:Key="string_viewChangelog">Ver changelog</system:String>
 	<system:String x:Key="string_installUpdate">Instalar atualização</system:String>
+	<system:String x:Key="string_applyingPatch">Aplicando patch</system:String>
+	<!-- When a patch file is being applied to the existing executable to produce new executable file -->
+	<system:String x:Key="string_theDownloadedUpdateFileIsNotSignedByME3TweaksAndIsNotTrusted">O arquivo de atualização baixado não é assinado por ME3Tweaks e não é confiável.</system:String>
+	<!-- The downloaded file is not signed by ME3Tweaks and is therefore not trusted. This can help protect against hijack of me3tweaks.com -->
 
 	<!-- Restore panel -->
 	<system:String x:Key="string_restoreToCustomLocation">Restaurar para local personalizado</system:String>
@@ -1165,7 +1173,7 @@
 	<system:String x:Key="string_NA">N/A</system:String>
 	<system:String x:Key="string_specialThanks">Agradecimentos especiais</system:String>
 	<system:String x:Key="string_youTheEndUser">A você, o usuário, por fazer esse software valer a pena</system:String>
-	<system:String x:Key="string_license">Licensa</system:String>
+	<system:String x:Key="string_license">Licença</system:String>
 
 	<!-- ASI Manager Panel -->
 	<system:String x:Key="string_outdatedVersionInstalled">Versão desatualizada instalada</system:String>
