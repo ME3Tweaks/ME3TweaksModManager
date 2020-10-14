@@ -90,7 +90,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {@"Version", version.ToString()}
             });
             var toolName = tool.Replace(@" ", "");
-            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_downloadingX, tool));
+            currentTaskUpdateCallback?.Invoke($@"{M3L.GetString(M3L.string_interp_downloadingX, tool)} {version}");
+
             setPercentVisibilityCallback.Invoke(true);
             setPercentTaskDone?.Invoke(0);
 
@@ -178,6 +179,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", latestRelease.TagName}
             });
+            currentTaskUpdateCallback?.Invoke($@"{M3L.GetString(M3L.string_interp_downloadingX, tool)} {latestRelease.TagName}");
 
             WebClient downloadClient = new WebClient();
 
