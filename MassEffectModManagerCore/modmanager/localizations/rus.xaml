@@ -577,6 +577,13 @@
 	<system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">У вашей учетной записи отсутствуют права на запись в указанную папку. Выберите другую папку.</system:String>
 	<system:String x:Key="string_dialog_linkTargetWontBeModdable">Копия игры, к которой вы привязываетесь, не будет доступной для моддинга. Удостоверьтесь, что это архивная копия игры, а не ваша основная установка, иначе вы не сможете модифицировать вашу игру.</system:String>
 	<system:String x:Key="string_linkWarning">Предупреждение о привязке</system:String>
+	<system:String x:Key="string_leftoverTextureFilesFound">Обнаружены остаточные файлы текстур</system:String>
+	<system:String x:Key="string_dialog_foundLeftoverTextureFiles">Обнаружены лишние файлы от предыдущей установки текстур. Невозможно создать архив с остаточными файлами в директории игры. Это означает неполное удаление игры при восстановлении в оригинальное состояние.\n\nСледует полностью удалить директорию игры, установить игру заново и затем сделать архив.</system:String>
+	<system:String x:Key="string_tooltip_unlinkBackupButton">Конвертирует архив в обычную установку и снимает указатель наличия архива для средств моддинга.</system:String>
+	<system:String x:Key="string_unlinkBackup">Отвязать архив</system:String>
+	<system:String x:Key="string_dialog_unlinkingBackup" xml:space="preserve">Отвязка архива {0} приведет к потере указателя на архив для программ моддинга, включая ME3Explorer, ALOT Installer и ME3Tweaks Mod Manager. Эти программы используют архив для различных функций. Отвязка архива не производит его удаление. Вы можете привязать другой архив после отвязки текущего.\n\nПуть архива: {1}\n\nОтвязать архив {0}?</system:String>
+	<!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path 2=game name (e.g. Mass Effect) -->
+	<system:String x:Key="string_unlinkingBackup">Отвязка архива</system:String>
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
