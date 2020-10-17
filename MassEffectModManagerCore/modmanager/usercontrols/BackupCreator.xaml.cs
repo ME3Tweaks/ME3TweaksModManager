@@ -231,8 +231,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         });
                     }
 
+                    Log.Information(@"Checking for TexturesMEM TFCs");
+                    var memTextures = Directory.GetFiles(targetToBackup.TargetPath, @"TexturesMEM*.tfc", SearchOption.AllDirectories);
+
                     if (end) return;
-                    if (isVanilla && isDLCConsistent && dlcModsInstalled.Count == 0)
+                    if (isVanilla && isDLCConsistent && !dlcModsInstalled.Any() && !memTextures.Any())
                     {
                         BackupStatus = M3L.GetString(M3L.string_waitingForUserInput);
 
@@ -465,7 +468,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 M3L.GetString(M3L.string_inconsistentDLCDetectedUnofficialGame));
                         }
                     }
-                    else if (dlcModsInstalled.Count > 0)
+                    else if (dlcModsInstalled.Any())
                     {
                         Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                             {
@@ -474,6 +477,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             });
                         b.Result = (dlcModsInstalled, M3L.GetString(M3L.string_dlcModsAreInstalled),
                             M3L.GetString(M3L.string_dialogDLCModsWereDetectedCannotBackup));
+                    } else if (memTextures.Any())
+                    {
+                        Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
+                        {
+                            {@"Game", Game.ToString()},
+                            {@"Result", @"Failure, TexturesMEM files found"}
+                        });
+                        b.Result = ("Leftover texture files found",
+                            "Additional files from a previous texture installation were found. This is a sign the game directory was not fully deleted when restoring the game to vanilla. You should delete your entire game directory, install the game fresh, and then take the backup. A backup cannot be taken with leftover texture files in the game directory.");
                     }
                     EndBackup();
                 };
