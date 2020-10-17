@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.Win32;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -100,6 +101,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private void LoadCommands()
             {
                 BackupButtonCommand = new GenericCommand(BeginBackup, CanBeginBackup);
+                UnlinkBackupCommand = new GenericCommand(UnlinkBackup, CanUnlinkBackup);
+            }
+
+            private void UnlinkBackup()
+            {
+                var gbPath = BackupService.GetGameBackupPath(Game, false, false, forceReturnPath: true);
+                Log.Information($@"User is attempting to unlink backup for {Game}");
+                var message = M3L.GetString(M3L.string_dialog_unlinkingBackup, Utilities.GetGameName(Game), gbPath, Utilities.GetGameName(Game));
+                var shouldUnlink = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_unlinkingBackup), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                if (shouldUnlink)
+                {
+                    // Unlink
+                    Log.Information($@"Unlinking backup for {Game}");
+                    if (gbPath != null)
+                    {
+                        var cmmVanilla = Path.Combine(gbPath, @"cmm_vanilla");
+                        if (File.Exists(cmmVanilla))
+                        {
+                            Log.Information(@"Deleted cmm_vanilla file: " + cmmVanilla);
+                            File.Delete(cmmVanilla);
+                        }
+                    }
+                    switch (Game)
+                    {
+                        case Mod.MEGame.ME1:
+                        case Mod.MEGame.ME2:
+                            RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ALOTAddon",
+                                Game + @"VanillaBackupLocation");
+                            break;
+                        case Mod.MEGame.ME3:
+                            RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\Mass Effect 3 Mod Manager",
+                                @"VanillaCopyLocation");
+                            break;
+                    }
+                    BackupService.RefreshBackupStatus(window, Game);
+                }
+            }
+
+            private bool CanUnlinkBackup()
+            {
+                return BackupService.GetGameBackupPath(Game, false, false, true) != null;
             }
 
             private bool CanBeginBackup()
@@ -348,7 +390,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         {
                                             // Loose files in the DLC folder
                                             BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
-                                                M3L.GetString(M3L.string_basegame));
+                                            M3L.GetString(M3L.string_basegame));
                                         }
                                     }
                                     else
@@ -477,15 +519,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             });
                         b.Result = (dlcModsInstalled, M3L.GetString(M3L.string_dlcModsAreInstalled),
                             M3L.GetString(M3L.string_dialogDLCModsWereDetectedCannotBackup));
-                    } else if (memTextures.Any())
+                    }
+                    else if (memTextures.Any())
                     {
                         Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                         {
                             {@"Game", Game.ToString()},
                             {@"Result", @"Failure, TexturesMEM files found"}
                         });
-                        b.Result = ("Leftover texture files found",
-                            "Additional files from a previous texture installation were found. This is a sign the game directory was not fully deleted when restoring the game to vanilla. You should delete your entire game directory, install the game fresh, and then take the backup. A backup cannot be taken with leftover texture files in the game directory.");
+                        b.Result = (M3L.GetString(M3L.string_leftoverTextureFilesFound),
+                            M3L.GetString(M3L.string_dialog_foundLeftoverTextureFiles));
                     }
                     EndBackup();
                 };
@@ -593,7 +636,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return false;
                     }
                 }
-                
+
                 return true;
             }
 
@@ -628,6 +671,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool ProgressIndeterminate { get; set; } = true;
             public bool ProgressVisible { get; set; } = false;
             public ICommand BackupButtonCommand { get; set; }
+            public ICommand UnlinkBackupCommand { get; set; }
             public bool BackupOptionsVisible => BackupLocation == null;
             public bool BackupInProgress { get; set; }
 
