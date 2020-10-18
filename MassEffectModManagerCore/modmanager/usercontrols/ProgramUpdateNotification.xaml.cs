@@ -52,8 +52,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             this.localExecutableHash = localExecutableHash;
             DataContext = this;
-            LatestVersion = $@"{App.ServerManifest[@"latest_version_hr"]} Build {App.ServerManifest[@"latest_build_number"]}"; //Do not localize this string.
-            Changelog = GetPlainTextFromHtml(App.ServerManifest[@"release_notes"]);
+            try
+            {
+                // Latest vesrion
+                if (App.ServerManifest.TryGetValue($@"latest_version_hr-{App.CurrentLanguage}",
+                    out var localizedLatestVersion))
+                {
+                    LatestVersion = localizedLatestVersion;
+                }
+                else
+                {
+                    LatestVersion = App.ServerManifest[@"latest_version_hr"];
+                }
+
+                LatestVersion += $@" Build {App.ServerManifest[@"latest_build_number"]}"; //Do not localize this string.
+
+
+                // Release notes
+                if (App.ServerManifest.TryGetValue($@"release_notes-{App.CurrentLanguage}", out var localizedChangelog))
+                {
+                    Changelog = GetPlainTextFromHtml(localizedChangelog);
+                }
+                else
+                {
+                    Changelog = GetPlainTextFromHtml(App.ServerManifest[@"release_notes"]);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"There was an exception setting the version/changelog strings.");
+            }
+
             PrimaryDownloadLink = App.ServerManifest[@"download_link2"];
             BackupDownloadLink = App.ServerManifest[@"download_link"];
             App.ServerManifest.TryGetValue(@"changelog_link", out ChangelogLink);
