@@ -32,6 +32,7 @@ using Microsoft.Win32;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -733,14 +734,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         TaskbarHelper.SetProgress(d);
                     }
-                    else if (b.UserState is TaskbarItemProgressState tbs)
+                    else if (b.UserState is TaskbarProgressBarState tbs)
                     {
                         TaskbarHelper.SetProgressState(tbs);
                     }
                 };
                 nbw.RunWorkerCompleted += (a, b) =>
                 {
-                    TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
+                    TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
 
                     if (b.Error != null)
                     {
@@ -757,7 +758,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     CommandManager.InvalidateRequerySuggested();
                 };
                 TaskbarHelper.SetProgress(0);
-                TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
+                TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
                 nbw.RunWorkerAsync(d.FileName);
                 DeploymentInProgress = true;
             }
@@ -964,8 +965,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                mainwindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
-                mainwindow.TaskbarItemInfo.ProgressValue = 0;
+                TaskbarHelper.SetProgress(0);
+                TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 if (b.Error != null)
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
@@ -983,7 +984,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 CommandManager.InvalidateRequerySuggested();
             };
-            mainwindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
+            TaskbarHelper.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
             nbw.RunWorkerAsync();
         }

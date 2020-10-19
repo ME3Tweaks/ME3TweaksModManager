@@ -5,6 +5,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using Renci.SshNet;
 using Serilog;
 using System;
@@ -258,7 +259,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     TaskbarHelper.SetProgress(d);
                 }
-                else if (b.UserState is TaskbarItemProgressState tbs)
+                else if (b.UserState is TaskbarProgressBarState tbs)
                 {
                     TaskbarHelper.SetProgressState(tbs);
                 }
@@ -274,7 +275,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
+                TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 Analytics.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
                 {
                     {@"Result", b.Result?.ToString() },
@@ -342,12 +343,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             UPLOAD_OK
         }
 
-        private UploadModResult UploadMod(Action<double> progressCallback = null, Action<TaskbarItemProgressState> setTaskbarProgressState = null)
+        private UploadModResult UploadMod(Action<double> progressCallback = null, Action<TaskbarProgressBarState> setTaskbarProgressState = null)
         {
             #region online fetch
 
             //Fetch current production manifest for mod (it may not exist)
-            setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Indeterminate);
+            setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
             using var wc = new System.Net.WebClient();
             try
             {
@@ -382,7 +383,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (latestVersionOnServer >= mod.ParsedModVersion)
                 {
                     bool cancel = false;
-                    setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Paused);
+                    setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Paused);
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         // server is newer or same as version we are pushing
@@ -395,7 +396,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             return;
                         }
                     });
-                    setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Indeterminate);
+                    setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
                     if (cancel)
                     {
                         return UploadModResult.ABORTED_BY_USER_SAME_VERSION_UPLOADED;
@@ -424,7 +425,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bool? canceledCheckCallback() => CancelOperations;
             CurrentActionText = M3L.GetString(M3L.string_compressingModForUpdaterService);
             progressCallback?.Invoke(0);
-            setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Normal);
+            setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Normal);
             var lzmaStagingPath = OnlineContent.StageModForUploadToUpdaterService(mod, files, totalModSizeUncompressed, canceledCheckCallback, updateCurrentTextCallback, progressCallback);
 
             #endregion
@@ -435,7 +436,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return UploadModResult.ABORTED_BY_USER;
             }
 
-            setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Indeterminate);
+            setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
             #region hash mod and build server manifest
 
@@ -544,14 +545,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             rootNode.Attributes.Append(serverfolder);
 
 
-            setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Indeterminate);
+            setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
             #endregion
 
             //wait to ensure changelog is set.
 
             while (ChangelogNotYetSet)
             {
-                setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Paused);
+                setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Paused);
                 if (CancelOperations)
                 {
                     AbortUpload();
@@ -562,7 +563,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Thread.Sleep(250); //wait for changelog to be set.
             }
 
-            setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Indeterminate);
+            setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
             #region Finish building manifest
 
@@ -682,9 +683,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 text += M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationFooter);
                 bool performUpload = false;
                 Log.Information(@"Prompting user to accept server delta");
-                setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Paused);
+                setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Paused);
                 Application.Current.Dispatcher.Invoke(delegate { performUpload = M3L.ShowDialog(mainwindow, text, M3L.GetString(M3L.string_confirmChanges), MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
-                setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Indeterminate);
+                setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
                 if (performUpload)
                 {
@@ -738,7 +739,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     //Upload files
                     progressCallback?.Invoke(0);
-                    setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Normal);
+                    setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Normal);
 
                     amountToUpload = filesToUploadToServer.Sum(x => new FileInfo(Path.Combine(lzmaStagingPath, x + @".lzma")).Length);
                     foreach (var file in filesToUploadToServer)
@@ -772,7 +773,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             CurrentActionText = M3L.GetString(M3L.string_interp_uploadingFilesToServerXY, uploadedHR, totalUploadHR);
                         });
                     }
-                    setTaskbarProgressState?.Invoke(TaskbarItemProgressState.Indeterminate);
+                    setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
                     if (CancelOperations)
                     {

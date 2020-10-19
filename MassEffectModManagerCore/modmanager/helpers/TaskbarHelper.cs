@@ -1,50 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Shell;
-using Serilog;
+﻿using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
+
     /// <summary>
     /// Helper for taskbar operations. Designed so it can avoid strange issues where setting taskbar stuff crashes the app instead
     /// due to some fun bugs in wpf
     /// </summary>
     public static class TaskbarHelper
     {
-        private static bool initialized;
-        private static TaskbarItemInfo helper;
-
-        public static void Init(Window w)
+        public static void SetProgress(int currentvalue, int maxvalue)
         {
-            if (initialized) return;
             try
             {
-                helper = new TaskbarItemInfo();
-                w.TaskbarItemInfo = helper;
+                TaskbarManager.Instance?.SetProgressValue(currentvalue, maxvalue);
             }
-            catch (Exception e)
+            catch
             {
-                Log.Warning(@"Error initializing the taskbar helper. Progress in taskbar will not be displayed. Error:");
-                Log.Information(App.FlattenException(e));
-            }
-            initialized = true;
-        }
-
-        public static void SetProgress(double progress)
-        {
-            if (helper != null)
-            {
-                helper.ProgressValue = progress;
+                // Sometimes windows throws exception internally fetching progressbar and it bubbles out to here (yes, I've seen this)
             }
         }
 
-        public static void SetProgressState(TaskbarItemProgressState state)
+        /// <summary>
+        /// Sets the progress value. Value must be between 0 and 1
+        /// </summary>
+        /// <param name="progressVal"></param>
+        public static void SetProgress(double progressVal)
         {
-            if (helper != null)
+            try
             {
-                helper.ProgressState = state;
+                TaskbarManager.Instance?.SetProgressValue((int)(progressVal * 100), 100);
+            }
+            catch
+            {
+                // Sometimes windows throws exception internally fetching progressbar and it bubbles out to here (yes, I've seen this)
+            }
+        }
+
+        public static void SetProgressState(TaskbarProgressBarState state)
+        {
+            try
+            {
+                TaskbarManager.Instance?.SetProgressState(state);
+            }
+            catch
+            {
+                // Sometimes windows throws exception internally fetching progressbar and it bubbles out to here (yes, I've seen this)
             }
         }
     }

@@ -16,6 +16,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
 
 
@@ -217,12 +218,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {@"Result", mui.CanUpdate ? @"Success" : @"Failed"}
                 });
 
-                TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
+                TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
             };
             TaskbarHelper.SetProgress(0);
-            TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
+            TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
             nbw.RunWorkerAsync();
         }
 
@@ -280,12 +281,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {@"ModName", ui.mod.ModName},
                     {@"Result", ui.CanUpdate ? @"Success" : @"Failed"}
                 });
-                TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
+                TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
             };
             TaskbarHelper.SetProgress(0);
-            TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
+            TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
             nbw.RunWorkerAsync();
         }
 

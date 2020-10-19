@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -159,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         TaskbarHelper.SetProgress(d);
                     }
-                    else if (b.UserState is TaskbarItemProgressState tbs)
+                    else if (b.UserState is TaskbarProgressBarState tbs)
                     {
                         TaskbarHelper.SetProgressState(tbs);
                     }
@@ -276,7 +277,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 return;
                             }
-                            nbw.ReportProgress(0, TaskbarItemProgressState.Indeterminate);
+                            nbw.ReportProgress(0, TaskbarProgressBarState.Indeterminate);
 
                         }
                         else
@@ -386,12 +387,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 ProgressValue = 0;
                                 ProgressIndeterminate = false;
                                 ProgressMax = total;
-                                nbw.ReportProgress(0, TaskbarItemProgressState.Normal);
+                                nbw.ReportProgress(0, TaskbarProgressBarState.Normal);
                             }
 
                             BackupStatus = M3L.GetString(M3L.string_creatingBackup);
                             Log.Information($@"Backing up {targetToBackup.TargetPath} to {backupPath}");
-                            nbw.ReportProgress(0, TaskbarItemProgressState.Normal);
+                            nbw.ReportProgress(0, TaskbarProgressBarState.Normal);
                             CopyDir.CopyAll_ProgressBar(new DirectoryInfo(targetToBackup.TargetPath),
                                 new DirectoryInfo(backupPath),
                                 totalItemsToCopyCallback: totalFilesToCopyCallback,
@@ -483,7 +484,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
-                    TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
+                    TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                     if (b.Result is (List<string> listItems, string title, string text))
                     {
                         ListDialog ld = new ListDialog(listItems, title, text, window);

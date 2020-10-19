@@ -101,12 +101,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.UserState is double d)
                 {
-                    window.TaskbarItemInfo.ProgressValue = d;
+                    TaskbarHelper.SetProgress(d);
 
                 }
-                else if (b.UserState is TaskbarItemProgressState tbps)
+                else if (b.UserState is TaskbarProgressBarState tbps)
                 {
-                    window.TaskbarItemInfo.ProgressState = tbps;
+                    TaskbarHelper.SetProgressState(tbps);
                 }
             };
             nbw.DoWork += (a, b) =>
@@ -121,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     nbw.ReportProgress(0, progress / 100.0);
                 }
 
-                void updateTaskbarProgressStateCallback(TaskbarItemProgressState state)
+                void updateTaskbarProgressStateCallback(TaskbarProgressBarState state)
                 {
                     nbw.ReportProgress(-1, state);
                 }
@@ -217,7 +217,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
 
-                window.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+                TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 if (b.Result is string response)
                 {
                     if (response.StartsWith(@"http"))

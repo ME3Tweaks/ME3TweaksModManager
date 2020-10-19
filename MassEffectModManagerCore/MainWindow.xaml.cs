@@ -5,24 +5,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime;
-using System.Runtime.CompilerServices;
 using System.Security;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using System.Xml;
 using System.Xml.Linq;
 using AdonisUI;
 using MassEffect3.Coalesce;
-using MassEffect3.Coalesce.Xml;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager;
@@ -37,8 +32,6 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
-using ME3Explorer;
-using ME3Explorer.Packages;
 using ME3Explorer.Unreal;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -46,7 +39,6 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Pathoschild.FluentNexus.Models;
 using Serilog;
-using SevenZip;
 using Mod = MassEffectModManagerCore.modmanager.Mod;
 
 namespace MassEffectModManagerCore
@@ -1631,10 +1623,6 @@ namespace MassEffectModManagerCore
                     // Show messagebox?
                 }
             }
-
-            // Initialize taskbar helper service
-            TaskbarHelper.Init(this);
-
 
             if (!Settings.ShowedPreviewPanel)
             {

@@ -23,6 +23,7 @@ using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
 
 
@@ -309,7 +310,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                         }
-                        TaskbarHelper.SetProgressState(TaskbarItemProgressState.None);
+                        TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                         if (b.Result is RestoreResult result)
                         {
                             switch (result)
@@ -387,7 +388,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     RefreshTargets = true;
                     TaskbarHelper.SetProgress(0);
-                    TaskbarHelper.SetProgressState(TaskbarItemProgressState.Normal);
+                    TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
                     nbw.RunWorkerAsync(restTarget);
                 }
             }

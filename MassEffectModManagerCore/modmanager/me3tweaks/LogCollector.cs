@@ -22,6 +22,7 @@ using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using NickStrupat;
 using System.Windows.Shell;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -222,11 +223,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         //    memProcess.Run();
         //}
 
-        public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, bool textureCheck, Action<string> updateStatusCallback = null, Action<int> updateProgressCallback = null, Action<TaskbarItemProgressState> updateTaskbarState = null)
+        public static string PerformDiagnostic(GameTarget selectedDiagnosticTarget, bool textureCheck, Action<string> updateStatusCallback = null, Action<int> updateProgressCallback = null, Action<TaskbarProgressBarState> updateTaskbarState = null)
         {
             Log.Information($@"Collecting diagnostics for target {selectedDiagnosticTarget.TargetPath}");
             updateStatusCallback?.Invoke(M3L.GetString(M3L.string_preparingToCollectDiagnosticInfo));
-            updateTaskbarState?.Invoke(TaskbarItemProgressState.Indeterminate);
+            updateTaskbarState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
             #region MEM No Gui Fetch
             object memEnsuredSignaler = new object();
@@ -1096,7 +1097,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         var scanErrors = new List<string>();
                         string lastMissingTFC = null;
                         updateProgressCallback?.Invoke(0);
-                        updateTaskbarState?.Invoke(TaskbarItemProgressState.Normal);
+                        updateTaskbarState?.Invoke(TaskbarProgressBarState.Normal);
                         MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
                         {
                             switch (command)
@@ -1149,7 +1150,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         });
 
                         updateProgressCallback?.Invoke(0);
-                        updateTaskbarState?.Invoke(TaskbarItemProgressState.Indeterminate);
+                        updateTaskbarState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
 
                         if (emptyMipsNotRemoved.Any() || badTFCReferences.Any() || scanErrors.Any())
