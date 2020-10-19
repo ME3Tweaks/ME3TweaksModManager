@@ -138,6 +138,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             // PATCH UPDATE
+            localExecutableHash ??= Utilities.CalculateMD5(App.ExecutableLocation);
             if (App.ServerManifest.TryGetValue(@"build_md5", out var destMd5))
             {
                 foreach (var item in App.ServerManifest.Where(x => x.Key.StartsWith(@"upd-") || x.Key.StartsWith(@"gh_upd-")))
@@ -172,11 +173,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                //var localmd5 = localExecutableHash ?? Utilities.CalculateMD5(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
-                var localmd5 = localExecutableHash ?? Utilities.CalculateMD5(App.ExecutableLocation);
-
-
-                if (patchMappingSourceMd5ToLinks.TryGetValue(localmd5, out var downloadInfoMirrors))
+                if (patchMappingSourceMd5ToLinks.TryGetValue(localExecutableHash, out var downloadInfoMirrors))
                 {
                     foreach (var downloadInfo in downloadInfoMirrors)
                     {
