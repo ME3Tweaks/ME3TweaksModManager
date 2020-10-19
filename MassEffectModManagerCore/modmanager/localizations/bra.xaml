@@ -577,6 +577,13 @@
 	<system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Sua conta de usuário não tem permissões de alteração no diretório de destino. Escolha um diretório diferente.</system:String>
 	<system:String x:Key="string_dialog_linkTargetWontBeModdable">A cópia de jogo que você está tentando vincular não poderá ser modificada. Assegure-se de que é um backup do jogo e não sua instalação principal, ou você não conseguirá modificar seu jogo.</system:String>
 	<system:String x:Key="string_linkWarning">Aviso de vínculo</system:String>
+	<system:String x:Key="string_leftoverTextureFilesFound">Arquivos de textura sobrando encontrados</system:String>
+	<system:String x:Key="string_dialog_foundLeftoverTextureFiles">Arquivos adicionais de uma instalação de texturas prévia encontrados. Não é possível realizar um backup com arquivos de textura sobrando no diretório de jogo.  Isto é um sinal de que o diretório de jogo não foi deletado completamente ao retornar o jogo ao estado original.\n\nVocê deve deletar todo o diretório de jogo, fazer uma nova instalação e depois realizar o backup.</system:String>
+	<system:String x:Key="string_tooltip_unlinkBackupButton">Converte o backup para uma instalação normal e faz as ferramentas de Mod não considerarem haver um backup para esse jogo.</system:String>
+	<system:String x:Key="string_unlinkBackup">Desvincular backup</system:String>
+	<system:String x:Key="string_dialog_unlinkingBackup" xml:space="preserve">Desvincular seu backup para {0} fará com que programas de modificação, incluindo ME3Explorer, Instalador ALOT e o Gerenciador de Mods ME3Tweaks não possam encontrar um backup para esse jogo. Estes programas usam o backup para vários recursos. Desvincular um backup não o excluirá. Você pode vincular outro backup existente assim que desvincular este.\n\nCaminho do backup: {1}\n\nDesvincular backup para {0}?</system:String>
+	<!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path 2=game name (e.g. Mass Effect) -->
+	<system:String x:Key="string_unlinkingBackup">Desvinculando backup</system:String>
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Baixando {0}</system:String>
