@@ -580,6 +580,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_dialog_userAccountDoesntHaveWritePermissionsBackup = "string_dialog_userAccountDoesntHaveWritePermissionsBackup";
 		public static readonly string string_dialog_linkTargetWontBeModdable = "string_dialog_linkTargetWontBeModdable";
 		public static readonly string string_linkWarning = "string_linkWarning";
+		public static readonly string string_leftoverTextureFilesFound = "string_leftoverTextureFilesFound";
+		public static readonly string string_dialog_foundLeftoverTextureFiles = "string_dialog_foundLeftoverTextureFiles";
+		public static readonly string string_tooltip_unlinkBackupButton = "string_tooltip_unlinkBackupButton";
+		public static readonly string string_unlinkBackup = "string_unlinkBackup";
+		public static readonly string string_dialog_unlinkingBackup = "string_dialog_unlinkingBackup";
+		public static readonly string string_unlinkingBackup = "string_unlinkingBackup";
 		public static readonly string string_interp_downloadingX = "string_interp_downloadingX";
 		public static readonly string string_interp_extractingX = "string_interp_extractingX";
 		public static readonly string string_checkingForUpdates = "string_checkingForUpdates";

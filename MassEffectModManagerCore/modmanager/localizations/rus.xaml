@@ -12,7 +12,7 @@
 	<system:String x:Key="string_Options">Настройки</system:String>
 	<system:String x:Key="string_ModManager">Mod Manager</system:String>
 	<system:String x:Key="string_Setmodlibrarypath">Задать путь к библиотеке модов</system:String>
-	<system:String x:Key="string_Developermode">Режим разразботчика</system:String>
+	<system:String x:Key="string_Developermode">Режим разработчика</system:String>
 	<system:String x:Key="string_EnableDeveloperOrientedFeatures">Активирует дополнительные функции для разработчиков</system:String>
 	<system:String x:Key="string_Darktheme">Ночной режим</system:String>
 	<system:String x:Key="string_SwitchUItodarktheme">Переключает интерфейс на ночной режим</system:String>
@@ -51,7 +51,7 @@
 	<system:String x:Key="string_Installcustomkeybindsintothismod">Установить пользовательские привязки клавиш в данный мод</system:String>
 	<system:String x:Key="string_Developeroptions">Настройки для разработчиков</system:String>
 	<system:String x:Key="string_Moddesceditor">Редактор Moddesc.ini</system:String>
-	<system:String x:Key="string_Deploymodto7zfilefordistribution">Сконвертировать мод в 7z для выпуска</system:String>
+	<system:String x:Key="string_Deploymodto7zfilefordistribution">Конвертировать мод в 7z для выпуска</system:String>
 	<system:String x:Key="string_Prepareforupdaterservice">Подготовить мод для Updater Service</system:String>
 	<system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Отправить информацию по моду на ME3Tweaks</system:String>
 	<system:String x:Key="string_Openmodfolder">Открыть папку мода</system:String>
@@ -272,10 +272,10 @@
 	<!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
 	<system:String x:Key="string_tooltip_egmSettings">Позволяет настроить Expanded Galaxy Mod</system:String>
 	<system:String x:Key="string_donations">Пожертвования</system:String>
-	<system:String x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Отккрывает информационную страницу ME3Tweaks Donations</system:String>
+	<system:String x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Открывает информационную страницу ME3Tweaks Donations</system:String>
 	<system:String x:Key="string_tooltip_modLibrary" xml:space="preserve">Моды, импортированные в библиотеку Mod Manager.&#10;Это список не отражает установленные моды; для просмотра установленных модов нажмите кнопку Настройка Игры</system:String>
 	<system:String x:Key="string_rcwModsCannotBeDeployed">Невозможно сконвертировать файлы .me2mod посредством Mod Manager</system:String>
-	<system:String x:Key="string_rcwModsCannotBeDeployedDescription">RCW-моды (.me2mod) не могут быть сконвертированы в Mod Manager. Можно распространять непосредственно файлы RCW .me2mod и после импортировать их в Mod Manager.</system:String>
+	<system:String x:Key="string_rcwModsCannotBeDeployedDescription">Конвертация RCW-модов (.me2mod) недоступна в Mod Manager. Можно распространять непосредственно файлы RCW .me2mod и после импортировать их в Mod Manager.</system:String>
 	<system:String x:Key="string_cannotDeployMe2modFiles">Невозможно сконвертировать файлы .me2mod</system:String>
 	<system:String x:Key="string_decompilingCoalescedFile">Декомпиляция файла Coalesced</system:String>
 	<system:String x:Key="string_decompiledCoalescedFile">Файл Coalesced декомпилирован</system:String>
@@ -309,6 +309,8 @@
 	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Проверяет обновления для модов, поддерживающих обновления</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
+	<system:String x:Key="string_alotInstallerV4">ALOT Installer V4</system:String>
+	<!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
 	<system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Автоинтеграция пользовательских привязок клавиш в моды ModMaker</system:String>
 	<system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Автоматическая интеграция пользовательского файла BioInput.xml (при наличии) в директорию keybindsoveride.&#10;Определите привязки через Custom Keybinds Injector в меню Инструменты</system:String>
 	<system:String x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
@@ -364,13 +366,13 @@
 	<system:String x:Key="string_requiredContentMissing">Отсутствует требуемый контент</system:String>
 	<system:String x:Key="string_dialogRequiredContentMissing">Данный мод требует предварительной установки следующих DLC/модов:{0}</system:String>
 	<!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
-	<system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Мод был установлен, но не прошел верификацию счетчика числа установок. Вероятно, это баг в Mod Manager, сообщите о нем Mgamerz на Discord.</system:String>
+	<system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Мод был установлен, но не прошел верификацию счетчика числа установок. Вероятно, это баг в Mod Manager, сообщите о нем Mgamerz в Discord.</system:String>
 	<system:String x:Key="string_dialogInstallationBlockedByALOT">Запрещена установка модов, содержащих пакетные файлы, в игры, где установлен ALOT. Пакетные файлы должны быть установлены перед ALOT.</system:String>
 	<system:String x:Key="string_installationBlocked">Установка заблокирована</system:String>
 	<system:String x:Key="string_installationSucceededMaybe">Успешная установка, возможно</system:String>
 	<system:String x:Key="string_dialogRunGameOnceFirst">Моды, изменяющие файлы конфигурации, требуют хотя бы однократного запуска Mass Effect перед своей установкой. Это необходимо, чтобы избежать перезаписи файлов игрой при первой загрузке.</system:String>
 	<system:String x:Key="string_gameMustBeRunAtLeastOnce">Игра должна быть запущена хотя бы раз</system:String>
-	<system:String x:Key="string_ui_allAlternatesAreAutomatic">Все опции установки данного мода выбираются автоматически. Удостоверьтесь, что у вас установлены следующие сопуствующие моды/DLC (официальные или моды) перед установкой данного мода, если вы планируете их использовать.</system:String>
+	<system:String x:Key="string_ui_allAlternatesAreAutomatic">Все опции установки данного мода выбираются автоматически. Удостоверьтесь, что у вас установлены следующие сопутствующие моды/DLC (официальные или моды) перед установкой данного мода, если вы планируете их использовать.</system:String>
 	<system:String x:Key="string_ui_title_selectInstallationOptions">Выберите опции установки</system:String>
 	<system:String x:Key="string_install">Установить</system:String>
 	<system:String x:Key="string_cancel">Отмена</system:String>
@@ -431,7 +433,7 @@
 	<!-- Deployment panel -->
 	<system:String x:Key="string_tooltip_multithreadDeployment" xml:space="preserve">Многопоточное сжатие значительно быстрее однопоточного, но требует намного больше памяти.&#10;В случае мода большого размера (>600MB) рекомендуется отключить эту функцию, если у вас менее 16GB доступной памяти.</system:String>
 	<system:String x:Key="string_multiThreadedCompression">Многопоточное сжатие</system:String>
-	<system:String x:Key="string_deploy">Сконвертировать в .7z</system:String>
+	<system:String x:Key="string_deploy">Конвертировать в .7z</system:String>
 	<system:String x:Key="string_deploymentChecklist">Чек-лист конвертации</system:String>
 	<system:String x:Key="string_prepareModForDistribution">Подготовка мода для распространения</system:String>
 	<system:String x:Key="string_compressiongModForDistribution">Сжатие мода для распространения</system:String>
@@ -453,7 +455,7 @@
 	<system:String x:Key="string_languageSupportCheckDetectedFollowingIssues">Проверка языковой поддержки выявила следующие проблемы. По возможности исследуйте и исправьте их перед конвертацией.</system:String>
 	<system:String x:Key="string_languageSupportIssuesDetectedInMod">В моде обнаружены проблемы языковой поддержки</system:String>
 	<system:String x:Key="string_audioCheck">Проверка аудиофайлов</system:String>
-	<system:String x:Key="string_audioCheckDetectedErrors">Проверка выявила ошибки при попытке определить возможность использования всех задейстованных аудиофайлов конечными пользователями. По возможности исследуйте и исправьте их перед конвертацией.</system:String>
+	<system:String x:Key="string_audioCheckDetectedErrors">Проверка выявила ошибки при попытке определить возможность использования всех задействованных аудиофайлов конечными пользователями. По возможности исследуйте и исправьте их перед конвертацией.</system:String>
 	<system:String x:Key="string_audioIssuesDetectedInMod">Обнаружены проблемы с аудиофайлами в данном моде</system:String>
 	<system:String x:Key="string_texturesCheck">Проверка текстур</system:String>
 	<system:String x:Key="string_texturesCheckDetectedErrors">Проверка выявила ошибки при попытке загрузки всех текстур в мод. Исследуйте и исправьте их перед конвертацией.</system:String>
@@ -518,6 +520,16 @@
 	<system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} использует имя TFC {2}. Данное имя TFC используется MEM при установке текстур и не может быть использовано при конвертации, иначе возникнут конфликты. Сократите ваше имя TFC до нового, используя TFC Compactor Tool в ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
 	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Конвертация заблокирована до устранения вышеуказанных проблем</system:String>
+	<system:String x:Key="string_male">мужской</system:String>
+	<!-- This item is substituted into a string down below for gender -->
+	<system:String x:Key="string_female">женский</system:String>
+	<!-- This item is substituted into a string down below for gender -->
+	<system:String x:Key="string_interp_error_outOfOrderTLK">Строки в списке {0} расположены не по возрастанию. Строки в TLK должны идти по возрастанию - если StringID идет не по порядку, парсинг остального файла будет остановлен.</system:String>
+	<!-- 0={gender (SEE ABOVE)} 1={language code such as INT, JPN ,etc} -->
+	<system:String x:Key="string_compressedModItems">Сжатые компоненты мода</system:String>
+	<!-- This is a 'status' text to show what's being worked on -->
+	<system:String x:Key="string_uncompressedModItems">Несжатые компоненты мода</system:String>
+	<!-- This is a 'status' text to show what's being worked on -->
 
 	<!-- Backup Creator -->
 	<system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Mass Effect Randomizer и ALOT Installer.</system:String>
@@ -570,7 +582,7 @@
 	<system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
 	<system:String x:Key="string_interp_extractingX">Распаковка {0}</system:String>
 	<system:String x:Key="string_checkingForUpdates">Проверка обновлений</system:String>
-	<system:String x:Key="string_interp_dialogUnableToDownloadX" xml:space="preserve">Невозможно загрузить {0}.\nПожалуйста, проверьте подключение к сети и попробуйте снова.\nЕсли проблема остается, обратитесь на ME3Tweaks Discord.</system:String>
+	<system:String x:Key="string_interp_dialogUnableToDownloadX" xml:space="preserve">Невозможно загрузить {0}.\nПожалуйста, проверьте подключение к сети и попробуйте снова.\nЕсли проблема остается, обратитесь в ME3Tweaks Discord.</system:String>
 	<system:String x:Key="string_interp_failedToDownloadX">Не удалось скачать {0}</system:String>
 	<system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Ошибка загрузки и запуска инструмента: {0}</system:String>
 	<!-- 0 = error message -->
@@ -748,7 +760,7 @@
 	<system:String x:Key="string_exeModsMustBeImportedBeforeInstall">EXE-моды должны быть импортированы перед установкой</system:String>
 	<system:String x:Key="string_interp_installX">Установка {0}</system:String>
 	<!-- 0 = noun (mod name, etc) -->
-	<system:String x:Key="string_insufficientDiskSpaceToExtractSelectedMods">Недостачно места на диске для распаковки выбранных модов</system:String>
+	<system:String x:Key="string_insufficientDiskSpaceToExtractSelectedMods">Недостаточно места на диске для распаковки выбранных модов</system:String>
 	<system:String x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract" xml:space="preserve">На вашем диске недостаточно места для импорта выбранных модов в библиотеку.\nТребуется: {0}\nДоступно: {1}</system:String>
 	<!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
 	<system:String x:Key="string_insufficientDiskSpace">Недостаточно места на диске</system:String>
@@ -816,6 +828,10 @@
 	<system:String x:Key="string_notNow">Позже</system:String>
 	<system:String x:Key="string_viewChangelog">История изменений</system:String>
 	<system:String x:Key="string_installUpdate">Установить обновление</system:String>
+	<system:String x:Key="string_applyingPatch">Применение патча</system:String>
+	<!-- When a patch file is being applied to the existing executable to produce new executable file -->
+	<system:String x:Key="string_theDownloadedUpdateFileIsNotSignedByME3TweaksAndIsNotTrusted">Загруженный файл обновления не подписан ME3Tweaks и не является доверенным.</system:String>
+	<!-- The downloaded file is not signed by ME3Tweaks and is therefore not trusted. This can help protect against hijack of me3tweaks.com -->
 
 	<!-- Restore panel -->
 	<system:String x:Key="string_restoreToCustomLocation">Восстановить по указанному пути</system:String>
@@ -1224,7 +1240,7 @@
 	<system:String x:Key="string_modDescriptionIsRequired">Требуется описание мода</system:String>
 	<system:String x:Key="string_dLCFolderNameCannotBeEmpty">Имя папки DLC не может быть пустым</system:String>
 	<system:String x:Key="string_dLCFolderNameCanOnlyConsistOf">Имя папки DLC может содержать только следующие символы: A-Z a-z 0-9 and _.</system:String>
-	<system:String x:Key="string_uRLMustBeOfProtocol">URL должен быть вида http or https://</system:String>
+	<system:String x:Key="string_uRLMustBeOfProtocol">URL должен быть вида http или https://</system:String>
 	<system:String x:Key="string_valueMustBeBetween0And">Значение должно быть между 0 and {0}</system:String>
 	<!-- 0 = number -->
 	<system:String x:Key="string_internalModNameCannotBeEmpty">Внутреннее имя мода не может быть пустым.</system:String>
@@ -1261,12 +1277,12 @@
 	<!-- 0= config property key 1=error reason -->
 	<system:String x:Key="string_errorSavingProperties">Ошибка сохранения параметров</system:String>
 	<system:String x:Key="string_tooltip_attributesThatModifyTheGameEngine">Атрибуты, модифицирующие движок игры</system:String>
-	<system:String x:Key="string_tooltip_attributesThatModifyGameplay">Атрибуты, модифицируюшие геймплей</system:String>
+	<system:String x:Key="string_tooltip_attributesThatModifyGameplay">Атрибуты, модифицирующие геймплей</system:String>
 	<system:String x:Key="string_tooltip_attributesThatModifyYouAndYourParty">Атрибуты, модифицирующие игрока и отряд</system:String>
 	<system:String x:Key="string_makeSureToPressSaveToSaveYourChanges">Не забудьте нажать "Сохранить" для сохранения изменений</system:String>
 	<system:String x:Key="string_tooltip_resetsAllPropertiesThatThisToolCanModifyToDefaultValues">Вернуть все доступные для изменения параметры к значениям по умолчанию</system:String>
 	<system:String x:Key="string_resetAll">Сбросить Все</system:String>
-	<system:String x:Key="string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles">Применяет внесенные измения в файлах настроек Mass Effect</system:String>
+	<system:String x:Key="string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles">Применяет внесенные изменения в файлах настроек Mass Effect</system:String>
 	<system:String x:Key="string_save">Сохранить</system:String>
 	<system:String x:Key="string_saved">Сохранено</system:String>
 	<system:String x:Key="string_resetIniItemsExceptBasic">Значения Ini были сброшены на значения по умолчанию (кроме значений по умолчанию). Нажмите Сохранить для применения изменений.</system:String>
@@ -1274,7 +1290,7 @@
 	<!-- Mixin Handler -->
 	<system:String x:Key="string_interp_cannotApplyMultipleFinalizers" xml:space="preserve">Невозможно применить Mixins к {0}: Для данного файла определено несколько завершающих патчей. Для файла может быть определен только один завершающий Mixin, так остальные будет невозможно применить.\n\nЗавершающие патчи:</system:String>
 	<!-- 0=Filename -->
-	<system:String x:Key="string_interp_cannotApplyMixinWrongSize">{0} не может быть применен к {1}. Ожидался размер {2}, но был получен размер исходных данных {3}.</system:String>
+	<system:String x:Key="string_interp_cannotApplyMixinWrongSize">{0} не может быть применен к {1}. Ожидался размер {2}, но был получен размер исходных данных {3}</system:String>
 	<!-- 0=Mixin name 1=mixin.TargetFile 2= mixin.TargetSize 3=Required filesize. This text shows up in a list so not having period at end is OK -->
 
 	<!-- ModMaker Compiler -->
@@ -1345,7 +1361,7 @@
 	<!-- 0=PatchVersion -->
 	<system:String x:Key="string_interp_developedByX">Разработано {0}</system:String>
 	<!-- 0=PatchDeveloper -->
-	<system:String x:Key="string_mixin_finalizerDescription">Это завершающий Mixin. Заверщающие патчи Mixin изменяют размер исходного файла, и поэтому может быть применен только один завершающий Mixin. После применения данного патча Mixin, другие Mixin не смогут быть применены.</system:String>
+	<system:String x:Key="string_mixin_finalizerDescription">Это завершающий Mixin. Завершающие патчи Mixin изменяют размер исходного файла, и поэтому может быть применен только один завершающий Mixin. После применения данного патча Mixin, другие Mixin не смогут быть применены.</system:String>
 	<system:String x:Key="string_mixin_cannotApplyNoSource">Данный Mixin не может быть применен, так как целевой модуль отсутствует в архиве игры.</system:String>
 
 	<!-- Install Group Editor -->
@@ -1494,7 +1510,7 @@
 	<system:String x:Key="string_nnFilesToDeleteOffServern" xml:space="preserve">\n\nФайлы для удаления с сервера:\n -</system:String>
 	<!-- ensure you do not change any positions of the \n or the -! -->
 	<system:String x:Key="string_interp_updaterServiceDeltaConfirmationFooter" xml:space="preserve">\n\nПодтвердите изменения данного мода для применения в ME3Tweaks Updater Service.</system:String>
-	<system:String x:Key="string_confirmChanges">Подвердите изменения</system:String>
+	<system:String x:Key="string_confirmChanges">Подтвердите изменения</system:String>
 
 	<!-- Mixin Library -->
 	<system:String x:Key="string_selectMixinsToCompile">Выбор Mixins для компиляции</system:String>
@@ -1548,7 +1564,7 @@
 	<system:String x:Key="string_thisInstallationHasBeenTextureModded">В данной игре изменены текстуры</system:String>
 	<system:String x:Key="string_cannotImportModsFromTextureModdedTarget">Невозможно импортировать моды из игры с установленными текстурными модами</system:String>
 	<system:String x:Key="string_thisModHasNotBeenCatalogedByME3TweaksYet">Данный мод еще не прошел анализ на ME3Tweaks</system:String>
-	<system:String x:Key="string_pleaseEnterModInfoForTPMI">Данный мод не является частью ME3Tweaks Third Party Mod Identification Service (TPMI). Этот сервис помогает пользователям и разработчикам идентифицировать моды в Mod Manager и других инструментах. Пожалуйста, укажите следующую имформацию. Эта информация будет отправлена на ME3Tweaks для проверки перед добавлением мода в сервис TPMI.</system:String>
+	<system:String x:Key="string_pleaseEnterModInfoForTPMI">Данный мод не является частью ME3Tweaks Third Party Mod Identification Service (TPMI). Этот сервис помогает пользователям и разработчикам идентифицировать моды в Mod Manager и других инструментах. Пожалуйста, укажите следующую информацию. Эта информация будет отправлена на ME3Tweaks для проверки перед добавлением мода в сервис TPMI.</system:String>
 	<system:String x:Key="string_nameOfThisModRequired">Имя мода (обязательно)</system:String>
 	<system:String x:Key="string_modURL">URL мода</system:String>
 	<system:String x:Key="string_dialog_invalidModNameWillResolveToNothing">Невозможно использовать указанное имя мода, так как это приведет к недопустимому имени папки в файловой системе. Пожалуйста, выберите другое имя.</system:String>
@@ -1558,7 +1574,7 @@
 	<system:String x:Key="string_insufficientFreeDiskSpace">Недостаточно места на диске</system:String>
 	<system:String x:Key="string_interp_dialog_importingWillDeleteExistingMod" xml:space="preserve">В указанном месте мод уже существует:\n{0}\nИмпорт данного мода с текущим именем удалит и заменит мод в библиотеке. Если это не предполагается, пожалуйста, выберите другое имя.\n\nУдалить существующий мод и импортировать установленный?</system:String>
 	<!-- 0=existing mod directory path -->
-	<system:String x:Key="string_sameNamedModInLibrary">Мод c одинаковым именем в библиотеке</system:String>
+	<system:String x:Key="string_sameNamedModInLibrary">Мод с одинаковым именем в библиотеке</system:String>
 	<system:String x:Key="string_interp_couldNotDeleteExistingModDirectory">Невозможно удалить директорию существующего мода: {0}</system:String>
 	<!-- 0=error message -->
 	<system:String x:Key="string_errorDeletingModFolder">Ошибка удаления папки мода</system:String>

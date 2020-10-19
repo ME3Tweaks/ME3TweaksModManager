@@ -553,14 +553,19 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback);
                 bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(target, inconsistentDLCCallback: inconsistentDLCFoundCallback);
                 List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(target);
+                var memTextures = Directory.GetFiles(target.TargetPath, @"TexturesMEM*.tfc", SearchOption.AllDirectories);
 
-                if (isVanilla && isDLCConsistent && !dlcModsInstalled.Any())
+                if (isVanilla && isDLCConsistent && !dlcModsInstalled.Any() && !memTextures.Any())
                 {
                     //Backup is OK
                     //Tag
                     File.WriteAllText(Path.Combine(targetPath, @"cmm_vanilla"), App.AppVersionHR);
                     Log.Information(@"Wrote cmm_vanilla to validated backup");
                     BackupService.SetBackedUp(game, true);
+                }
+                else
+                {
+                    Log.Warning($@"Backup verification has failed for the backup at {target.TargetPath}. This backup will not be used");
                 }
             }
             else

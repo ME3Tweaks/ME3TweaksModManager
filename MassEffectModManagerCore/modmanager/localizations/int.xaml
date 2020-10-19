@@ -583,8 +583,15 @@
     <system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Your user account doesn't have write permissions to the selected destination directory. Choose a different directory.</system:String>
     <system:String x:Key="string_dialog_linkTargetWontBeModdable">The game copy you link to will not be available for modding. Ensure this is a backup copy of the game and not your main installation, or you will be unable to mod your game.</system:String>
     <system:String x:Key="string_linkWarning">Link warning</system:String>
+    <system:String x:Key="string_leftoverTextureFilesFound">Leftover texture files found</system:String>
+    <system:String x:Key="string_dialog_foundLeftoverTextureFiles">Additional files from a previous texture installation were found. A backup cannot be taken with leftover texture files in the game directory. This is a sign the game directory was not fully deleted when restoring the game to vanilla.\n\nYou should delete your entire game directory, install the game fresh, and then take the backup.</system:String>
+    <system:String  x:Key="string_tooltip_unlinkBackupButton">Converts the backup to a regular installation and makes modding tools no longer think there is a backup for this game</system:String>
+    <system:String  x:Key="string_unlinkBackup">Unlink backup</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_unlinkingBackup">Unlinking your backup for {0} will make modding programs, including ME3Explorer, ALOT Installer, and ME3Tweaks Mod Manager unable to find a backup for this game. These programs use this backup for various features. Unlinking a backup will not delete your existing backup. You can link to another existing backup once you've unlinked this one.\n\nBackup Path: {1}\n\nUnlink your backup for {0}?</system:String>
+    <!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path 2=game name (e.g. Mass Effect) -->
+    <system:String x:Key="string_unlinkingBackup">Unlinking backup</system:String>
 
-<!-- External tool launcher-->
+    <!-- External tool launcher-->
     <system:String x:Key="string_interp_downloadingX">Downloading {0}</system:String>
     <system:String x:Key="string_interp_extractingX">Extracting {0}</system:String>
     <system:String x:Key="string_checkingForUpdates">Checking for updates</system:String>

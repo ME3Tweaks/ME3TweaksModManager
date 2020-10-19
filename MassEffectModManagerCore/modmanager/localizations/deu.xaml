@@ -306,12 +306,14 @@
     <!-- 0=Exception message -->
     <system:String x:Key="string_errorReadingXmlFile">Fehler beim Lesen einer xml-Datei</system:String>
     <system:String x:Key="string_checkModsForUpdates">Mods auf Aktualisierungen überprüfen</system:String>
-    <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Sucht nach Aktualisierungen für Mods, die Suche nach Aktualisierungen unterstützen</system:String>
-    <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Anzeige</system:String>
+	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Sucht nach Aktualisierungen für Mods, die Suche nach Aktualisierungen unterstützen</system:String>
+	<system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Anzeige</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
-    <system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Personalisierte Tastenbelegung automatisch auf ModMaker Mods anwenden</system:String>
-    <system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Automatisch eine benutzerdefinierte BioInput.xml-Datei injizieren, sofern diese im keybindsoverride Ordner vorhanden ist.&#10;Definiere eigene Tastenbelegungen im Custom Keybinds Injector im Werkzeuge-Menü</system:String>
-    <system:String x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
+	<system:String x:Key="string_alotInstallerV4">ALOT Installer V4</system:String>
+	<!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
+	<system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Personalisierte Tastenbelegung automatisch auf ModMaker Mods anwenden</system:String>
+	<system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Automatisch eine benutzerdefinierte BioInput.xml-Datei injizieren, sofern diese im keybindsoverride Ordner vorhanden ist.&#10;Definiere eigene Tastenbelegungen im Custom Keybinds Injector im Werkzeuge-Menü</system:String>
+	<system:String x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
     <system:String x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installiert benutzerdefinierte Tastenbelegungen die du festlegst im Spiel</system:String>
     <system:String x:Key="string_originIngameOverlayDisabler">Origin im Spiel abschalten</system:String>
     <system:String x:Key="string_tooltip_oigDisabler">Installiert eine Datei, die das Abschalten von Origin im Spiel erzwingt</system:String>
@@ -516,9 +518,19 @@
 	<system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} benutzt TFC-Name {2}. Dieser TFC-Name wird von MEM bei der Installation von Texturen benutzt und kann nicht bei der Veröffentlichung benutzt werden, damit es nicht zu Konflikten kommt. Verdichte deine TFC zu einem neuen Namen mit dem TFC Compactor-Werkzeug von ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
 	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Die Veröffentlichung ist blockiert bis die oben genannten Probleme gelöst sind</system:String>
+	<system:String x:Key="string_male">männlicher</system:String>
+	<!-- This item is substituted into a string down below for gender -->
+	<system:String x:Key="string_female">weiblicher</system:String>
+	<!-- This item is substituted into a string down below for gender -->
+	<system:String x:Key="string_interp_error_outOfOrderTLK">Die Liste {0} Strings in {1} sind nicht aufsteigend sortiert. TLK-Strings müssen aufsteigend sortiert sein - wenn das nicht der Fall ist wird die Datei nicht vollständig geparst.</system:String>
+	<!-- 0={gender (SEE ABOVE)} 1={language code such as INT, JPN ,etc} -->
+	<system:String x:Key="string_compressedModItems">Komprimierte Modbestandteile</system:String>
+	<!-- This is a 'status' text to show what's being worked on -->
+	<system:String x:Key="string_uncompressedModItems">Unkomprimierte Modbestandteile</system:String>
+	<!-- This is a 'status' text to show what's being worked on -->
 
-    <!-- Backup Creator -->
-    <system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer und ALOT Installer.</system:String>
+	<!-- Backup Creator -->
+	<system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer und ALOT Installer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups müssen von einer frischen, unmodifizierten Installation des Spielt erstellt werden. Backups von modifizierten Installationen werden nicht unterstützt.</system:String>
     <system:String x:Key="string_backUp">Backup erstellen</system:String>
     <system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">Backups können benutzt werden um deine Installation auf den ungemoddeten Zustand zurückzusetzen und sind ein wichtiger Schritt beim Modden. Um ein Backup zu entkoppeln, verschiebe oder lösche den Ordner mit dem Backup. Um aus einem Backup wiederherzustellen, benutze den Ziel verwalten Knopf im Hauptfenster.&#10;&#10;Backups werden außerdem als Dateiquelle für bestimmte Programmfunktionen benutzt. Daher benötigen einige fortgeschrittene Optionen ein Backup als Quelle für unmodifizierte Dateien.</system:String>
@@ -811,12 +823,16 @@
     <system:String x:Key="string_releaseNotes">Versionshinweise</system:String>
     <system:String x:Key="string_updateInProgress">Aktualisierung wird durchgeführt</system:String>
     <system:String x:Key="string_modManagerWillAutomaticallyRestart">Mod Manager wird automatisch neu gestartet um die Aktualisierung zu installieren. Bitte habe ein paar Sekunden Geduld, nachdem sich das Fenster schließt.</system:String>
-    <system:String x:Key="string_notNow">Nicht jetzt</system:String>
-    <system:String x:Key="string_viewChangelog">Änderungsprotokoll</system:String>
-    <system:String x:Key="string_installUpdate">Aktualisierung installieren</system:String>
+	<system:String x:Key="string_notNow">Nicht jetzt</system:String>
+	<system:String x:Key="string_viewChangelog">Änderungsprotokoll</system:String>
+	<system:String x:Key="string_installUpdate">Aktualisierung installieren</system:String>
+	<system:String x:Key="string_applyingPatch">Patch wird angewendet</system:String>
+	<!-- When a patch file is being applied to the existing executable to produce new executable file -->
+	<system:String x:Key="string_theDownloadedUpdateFileIsNotSignedByME3TweaksAndIsNotTrusted">Die heruntergeladene Update-Datei ist nicht von ME3Tweaks signiert und nicht vertrauenswürdig.</system:String>
+	<!-- The downloaded file is not signed by ME3Tweaks and is therefore not trusted. This can help protect against hijack of me3tweaks.com -->
 
-    <!-- Restore panel -->
-    <system:String x:Key="string_restoreToCustomLocation">An einen anderen Ort wiederherstellen</system:String>
+	<!-- Restore panel -->
+	<system:String x:Key="string_restoreToCustomLocation">An einen anderen Ort wiederherstellen</system:String>
     <system:String x:Key="string_interp_dialogCannotRestoreXWhileItIsRunning">Kann {0} nicht wiederherstellen während es läuft.</system:String>
     <!-- 0 = game name-->
     <system:String x:Key="string_backup">Backup</system:String>
