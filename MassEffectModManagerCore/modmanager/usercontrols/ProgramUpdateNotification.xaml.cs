@@ -4,20 +4,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using AuthenticodeExaminer;
 using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -52,8 +43,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             this.localExecutableHash = localExecutableHash;
             DataContext = this;
-            LatestVersion = $@"{App.ServerManifest[@"latest_version_hr"]} Build {App.ServerManifest[@"latest_build_number"]}"; //Do not localize this string.
-            Changelog = GetPlainTextFromHtml(App.ServerManifest[@"release_notes"]);
+            try
+            {
+                // Latest vesrion
+                if (App.ServerManifest.TryGetValue($@"latest_version_hr-{App.CurrentLanguage}",
+                    out var localizedLatestVersion))
+                {
+                    LatestVersion = localizedLatestVersion;
+                }
+                else
+                {
+                    LatestVersion = App.ServerManifest[@"latest_version_hr"];
+                }
+
+                LatestVersion += $@" Build {App.ServerManifest[@"latest_build_number"]}"; //Do not localize this string.
+
+
+                // Release notes
+                if (App.ServerManifest.TryGetValue($@"release_notes-{App.CurrentLanguage}", out var localizedChangelog))
+                {
+                    Changelog = GetPlainTextFromHtml(localizedChangelog);
+                }
+                else
+                {
+                    Changelog = GetPlainTextFromHtml(App.ServerManifest[@"release_notes"]);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(@"There was an exception setting the version/changelog strings.");
+            }
+
             PrimaryDownloadLink = App.ServerManifest[@"download_link2"];
             BackupDownloadLink = App.ServerManifest[@"download_link"];
             App.ServerManifest.TryGetValue(@"changelog_link", out ChangelogLink);
@@ -109,6 +129,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             // PATCH UPDATE
+            localExecutableHash ??= Utilities.CalculateMD5(App.ExecutableLocation);
             if (App.ServerManifest.TryGetValue(@"build_md5", out var destMd5))
             {
                 foreach (var item in App.ServerManifest.Where(x => x.Key.StartsWith(@"upd-") || x.Key.StartsWith(@"gh_upd-")))
@@ -143,11 +164,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                //var localmd5 = localExecutableHash ?? Utilities.CalculateMD5(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
-                var localmd5 = localExecutableHash ?? Utilities.CalculateMD5(App.ExecutableLocation);
-
-
-                if (patchMappingSourceMd5ToLinks.TryGetValue(localmd5, out var downloadInfoMirrors))
+                if (patchMappingSourceMd5ToLinks.TryGetValue(localExecutableHash, out var downloadInfoMirrors))
                 {
                     foreach (var downloadInfo in downloadInfoMirrors)
                     {
