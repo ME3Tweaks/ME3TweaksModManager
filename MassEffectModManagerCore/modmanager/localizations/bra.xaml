@@ -582,7 +582,7 @@
 	<system:String x:Key="string_tooltip_unlinkBackupButton">Converte o backup para uma instalação normal e faz as ferramentas de Mod não considerarem haver um backup para esse jogo.</system:String>
 	<system:String x:Key="string_unlinkBackup">Desvincular backup</system:String>
 	<system:String x:Key="string_dialog_unlinkingBackup" xml:space="preserve">Desvincular seu backup para {0} fará com que programas de modificação, incluindo ME3Explorer, Instalador ALOT e o Gerenciador de Mods ME3Tweaks não possam encontrar um backup para esse jogo. Estes programas usam o backup para vários recursos. Desvincular um backup não o excluirá. Você pode vincular outro backup existente assim que desvincular este.\n\nCaminho do backup: {1}\n\nDesvincular backup para {0}?</system:String>
-	<!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path 2=game name (e.g. Mass Effect) -->
+	<!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path -->
 	<system:String x:Key="string_unlinkingBackup">Desvinculando backup</system:String>
 
 	<!-- External tool launcher -->
