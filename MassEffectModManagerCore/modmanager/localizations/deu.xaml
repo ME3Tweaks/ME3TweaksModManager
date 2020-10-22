@@ -580,7 +580,7 @@
 	<system:String x:Key="string_tooltip_unlinkBackupButton">Konvertiert das Backup zu einer regulären Installation und entfernt es als Backup aus den Mod-Werkzeugen</system:String>
 	<system:String x:Key="string_unlinkBackup">Backup trennen</system:String>
 	<system:String x:Key="string_dialog_unlinkingBackup" xml:space="preserve">Wenn du dein Backup von {0} trennst, ist es in Moddingprogrammen, inklusive ME3Explorer, ALOT Installer und ME3Tweaks Mod Manager, nicht länger verfügbar. Diese Programme brauchen ein Backup um verschiedene Funktionen bereitzustellen. Du kannst ein anderes Backup hinzufügen, nachdem du dieses getrennt hast.\n\nBackup-Pfad: {1}\n\nBackup von {0} trennen?</system:String>
-	<!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path 2=game name (e.g. Mass Effect) -->
+	<!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path -->
 	<system:String x:Key="string_unlinkingBackup">Backup wird getrennt</system:String>
 
 	<!-- External tool launcher -->
