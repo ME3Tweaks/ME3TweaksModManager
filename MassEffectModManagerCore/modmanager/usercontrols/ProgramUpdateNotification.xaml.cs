@@ -188,7 +188,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Warning($@"There is no patch file available to transition our hash {localmd5} to target hash {destMd5}");
+                    Log.Warning($@"There is no patch file available to transition our hash {localExecutableHash} to target hash {destMd5}");
                     Log.Information($@"We will perform a full update instead");
                 }
             }
