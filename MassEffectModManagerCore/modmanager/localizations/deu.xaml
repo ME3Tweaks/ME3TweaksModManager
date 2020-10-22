@@ -575,6 +575,13 @@
     <system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Dein Benutzerkonto hat keinen Schreibzugriff auf das gewählte Zielverzeichnis. Wähle ein anderes Verzeichnis.</system:String>
     <system:String x:Key="string_dialog_linkTargetWontBeModdable">Die Spielinstallation, die du verknüpfst, wird nicht zum Modden verfügbar sein. Stelle sicher, dass es sich um eine Backup-Kopie des Spiels handelt, und nicht deine Hauptinstallation, sonst wirst du dein Spiel nicht modifizieren können.</system:String>
     <system:String x:Key="string_linkWarning">Verknüpfungswarnung</system:String>
+	<system:String x:Key="string_leftoverTextureFilesFound">Übrig gebliebene Texturdateien gefunden</system:String>
+	<system:String x:Key="string_dialog_foundLeftoverTextureFiles">Zusätzliche Dateien von einer vorherigen Texturinstallation wurden gefunden. Es kann kein Backup erstellt werden, wenn Texturdateien im Spielverzeichnis übrig geblieben sind. Dies ist ein Zeichen, dass das Spielverzeichnis beim Wiederherstellen nicht vollständig gelöscht wurde.\n\nDu solltest das gesamte Spielverzeichnis löschen, das Spiel frisch installieren und dann ein Backup erstellen.</system:String>
+	<system:String x:Key="string_tooltip_unlinkBackupButton">Konvertiert das Backup zu einer regulären Installation und entfernt es als Backup aus den Mod-Werkzeugen</system:String>
+	<system:String x:Key="string_unlinkBackup">Backup trennen</system:String>
+	<system:String x:Key="string_dialog_unlinkingBackup" xml:space="preserve">Wenn du dein Backup von {0} trennst, ist es in Moddingprogrammen, inklusive ME3Explorer, ALOT Installer und ME3Tweaks Mod Manager, nicht länger verfügbar. Diese Programme brauchen ein Backup um verschiedene Funktionen bereitzustellen. Du kannst ein anderes Backup hinzufügen, nachdem du dieses getrennt hast.\n\nBackup-Pfad: {1}\n\nBackup von {0} trennen?</system:String>
+	<!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path 2=game name (e.g. Mass Effect) -->
+	<system:String x:Key="string_unlinkingBackup">Backup wird getrennt</system:String>
 
     <!-- External tool launcher -->
     <system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>
