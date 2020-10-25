@@ -501,6 +501,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 audioStream.Seek(audioOffset, SeekOrigin.Begin);
                                 if (audioStream.Position > audioStream.Length - 4)
                                 {
+                                    Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points inside of AFC, but the size ofi t extends beyond the end of the AFC. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The AFC is only 0x{audioStream.Length:X8} bytes long.");
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
@@ -512,6 +513,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                                 if (audioStream.ReadStringASCIINull(4) != @"RIFF")
                                 {
+                                    Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points to data that does not start with RIFF, which is the start of audio data. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
@@ -535,6 +537,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
                                     if (audioOffset >= vanillaInfo[0].size)
                                     {
+                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points beyond the end of the AFC file. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
+
                                         hasError = true;
                                         item.Icon = FontAwesomeIcon.TimesCircle;
                                         item.Foreground = Brushes.Red;
@@ -546,6 +550,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
+                                Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {wwisestream?.FileRef?.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
                                 hasError = true;
                                 item.Icon = FontAwesomeIcon.TimesCircle;
                                 item.Foreground = Brushes.Red;
@@ -618,7 +623,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
                                     catch (Exception e)
                                     {
-                                        Log.Information(@"Found broken texture: " + texture.GetInstancedFullPath);
+                                        Log.Warning(@"Found broken texture: " + texture.GetInstancedFullPath);
                                         hasError = true;
                                         item.Icon = FontAwesomeIcon.TimesCircle;
                                         item.Foreground = Brushes.Red;
@@ -638,7 +643,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 else if (cache.Value.Name.Contains(@"TexturesMEM"))
                                 {
-                                    // Textures replaced by MEM. This is not 
+                                    // Textures replaced by MEM. This is not allowed in mods as it'll immediately break
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
@@ -664,7 +669,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
                                     catch (Exception e)
                                     {
-                                        Log.Information(@"Found broken texture: " + texture.GetInstancedFullPath);
+                                        Log.Warning(@"Found broken texture: " + texture.GetInstancedFullPath);
                                         hasError = true;
                                         item.Icon = FontAwesomeIcon.TimesCircle;
                                         item.Foreground = Brushes.Red;

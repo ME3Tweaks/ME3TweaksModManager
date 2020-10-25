@@ -842,6 +842,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (extension.Equals(@".sfm", StringComparison.InvariantCultureIgnoreCase)) return true;
             if (extension.Equals(@".u", StringComparison.InvariantCultureIgnoreCase)) return true;
             if (extension.Equals(@".upk", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (extension.Equals(@".xxx", StringComparison.InvariantCultureIgnoreCase)) return true; //debug only
             return false;
         }
 
