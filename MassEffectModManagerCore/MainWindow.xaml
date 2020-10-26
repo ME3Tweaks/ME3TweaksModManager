@@ -1551,7 +1551,8 @@
               </Hyperlink>
             </TextBlock>
                     </StackPanel>
-                    <ListBox
+                    <Grid>
+                        <ListBox
                         Name="ModsList_ListBox"
                         ItemsSource="{Binding VisibleFilteredMods}"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
@@ -1562,49 +1563,51 @@
                         TextSearch.TextPath="ModName"
                         Visibility="{Binding VisibleFilteredMods.Any, Converter={StaticResource BoolToVisibilityConverter}}"
                         Tag="{Binding DataContext}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel
                                     Orientation="Horizontal"
                                     Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}">
-                                    <Image
+                                        <Image
                                         Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}"
                                         Width="16"
                                         Height="16"
                                         Margin="0,0,5,0" />
-                                    <TextBlock
+                                        <TextBlock
                                         Text="{Binding ModName}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                        <ListBox.ItemContainerStyle>
-                            <Style
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style
                                 TargetType="ListBoxItem"
                                 BasedOn="{StaticResource ListBoxItemStyle}">
-                                <Setter
+                                    <Setter
                                     Property="ContextMenu">
-                                    <Setter.Value>
-                                        <ContextMenu
+                                        <Setter.Value>
+                                            <ContextMenu
                                             ItemsSource="{StaticResource ModUtilsMenuArray}"
                                             DataContext="{x:Reference MainWindow_Ref}" />
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                    </ListBox>
-                    <Border
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                        <Border
                         BorderThickness="1"
                         BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBorderBrush}}">
-                        <DockPanel
+                            <DockPanel
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                         Visibility="{Binding VisibleFilteredMods.Any, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
-                        <StackPanel Margin="2,0">
+                                <StackPanel Margin="2,0">
 
-                        <TextBlock Text="No mods in the library!" TextWrapping="Wrap" FontWeight="Bold" DockPanel.Dock="Top"/>
-                                <TextBlock Text="Mods you import into Mod Manager will be listed here. You can import mods by dragging and dropping their downloaded archives (.7z/.rar/.zip/.exe/.me2mod) onto this window.&#10;&#10;Mods that are directly installed from the importer window will NOT be shown here, as they are installed into the game, not imported into the library. You can see what's installed by clicking 'Manage Target' in the top right of this window.&#10;&#10;Mods that are imported into the mod library are easy to reinstall, can be added to batch install queues, and more." TextWrapping="Wrap" />
-                        </StackPanel>
-                    </DockPanel>
-                    </Border>
+                                    <TextBlock Text="No mods in the library!" TextWrapping="Wrap" FontWeight="Bold" DockPanel.Dock="Top"/>
+                                    <TextBlock Text="Mods you import into Mod Manager will be listed here. You can import mods by dragging and dropping their downloaded archives (.7z/.rar/.zip/.exe/.me2mod) onto this window.&#10;&#10;Mods that are directly installed from the importer window will NOT be shown here, as they are installed into the game, not imported into the library. You can see what's installed by clicking 'Manage Target' in the top right of this window.&#10;&#10;Mods that are imported into the mod library are easy to reinstall, can be added to batch install queues, and more." TextWrapping="Wrap" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
                 </DockPanel>
                 <GridSplitter
                     Grid.Row="5"
