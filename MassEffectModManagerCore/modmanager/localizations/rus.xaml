@@ -332,6 +332,10 @@
 	<system:String x:Key="string_updatingLocalization">Обновление локализации</system:String>
 	<system:String x:Key="string_updatedLocalization">Локализация обновлена</system:String>
 	<system:String x:Key="string_errorUpdatingLocalization">Ошибка обновления локализации</system:String>
+	<system:String x:Key="string_noModsInTheLibraryHeader">В библиотеке отсутствуют моды!</system:String>
+	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
+	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Здесь будут отображаться моды, импортируемые в Mod Manager. Вы можете импортировать моды, перетаскивая их архивные файлы (.7z/.rar/.zip/.exe/.me2mod) в это окно.&#10;&#10;Моды, установленные через окно импортирования НЕ будут отображаться здесь, поскольку устанавливаются напрямую в игру, а не добавляются в библиотеку. Вы можете посмотреть, что уже установлено, нажав 'Настройка Игры' в правом верхнем углу данного окна.&#10;&#10;Моды, импортированные в библиотеку, легко переустановить, добавить в очередь установки и не только.</system:String>
+	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Эта игра содержит модифицированные текстуры</system:String>
