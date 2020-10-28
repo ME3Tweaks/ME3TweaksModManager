@@ -1205,7 +1205,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 foreach (var ad in job.AlternateDLCs)
                 {
-                    if (string.IsNullOrWhiteSpace(af.FriendlyName)) continue;
+                    if (string.IsNullOrWhiteSpace(ad.FriendlyName)) continue;
                     telemetryInfo[$@"ADLC {job.Header} {ad.FriendlyName}"] = ad.IsSelected.ToString();
                 }
             }
