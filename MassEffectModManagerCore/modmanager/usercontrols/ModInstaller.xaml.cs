@@ -1186,15 +1186,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            Analytics.TrackEvent(@"Installed a mod", new Dictionary<string, string>()
+            var telemetryInfo = new Dictionary<string, string>()
             {
-                { @"Mod name", $@"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}" },
-                { @"Installed from", ModBeingInstalled.IsInArchive ? @"Archive" : @"Library" },
-                { @"Type", ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null ? @"RCW .me2mod" : @"Standard" },
-                { @"Game", ModBeingInstalled.Game.ToString() },
-                { @"Result", telemetryResult.ToString() },
-                { @"Author", ModBeingInstalled.ModDeveloper}
-            });
+                {@"Mod name", $@"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}"},
+                {@"Installed from", ModBeingInstalled.IsInArchive ? @"Archive" : @"Library"},
+                {@"Type", ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null ? @"RCW .me2mod" : @"Standard"},
+                {@"Game", ModBeingInstalled.Game.ToString()},
+                {@"Result", telemetryResult.ToString()},
+                {@"Author", ModBeingInstalled.ModDeveloper}
+            };
+
+            foreach (var job in ModBeingInstalled.InstallationJobs)
+            {
+                foreach (var af in job.AlternateFiles)
+                {
+                    if (string.IsNullOrWhiteSpace(af.FriendlyName)) continue;
+                    telemetryInfo[$@"AF {job.Header} {af.FriendlyName}"] = af.IsSelected.ToString();
+                }
+                foreach (var ad in job.AlternateDLCs)
+                {
+                    if (string.IsNullOrWhiteSpace(af.FriendlyName)) continue;
+                    telemetryInfo[$@"ADLC {job.Header} {ad.FriendlyName}"] = ad.IsSelected.ToString();
+                }
+            }
+
+            Analytics.TrackEvent(@"Installed a mod", telemetryInfo);
             OnClosing(DataEventArgs.Empty);
         }
 
