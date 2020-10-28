@@ -1196,18 +1196,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {@"Author", ModBeingInstalled.ModDeveloper}
             };
 
+            string alternateOptionsPicked = "";
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
                 foreach (var af in job.AlternateFiles)
                 {
                     if (string.IsNullOrWhiteSpace(af.FriendlyName)) continue;
-                    telemetryInfo[$@"AF {job.Header} {af.FriendlyName}"] = af.IsSelected.ToString();
+                    if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
+                    alternateOptionsPicked += $@"{af.FriendlyName}={af.IsSelected.ToString()}";
                 }
                 foreach (var ad in job.AlternateDLCs)
                 {
                     if (string.IsNullOrWhiteSpace(ad.FriendlyName)) continue;
-                    telemetryInfo[$@"ADLC {job.Header} {ad.FriendlyName}"] = ad.IsSelected.ToString();
+                    if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
+                    alternateOptionsPicked += $@"{ad.FriendlyName}={ad.IsSelected.ToString()}";
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(alternateOptionsPicked))
+            {
+                telemetryInfo[@"Alternate Options Selected"] = alternateOptionsPicked;
             }
 
             Analytics.TrackEvent(@"Installed a mod", telemetryInfo);
