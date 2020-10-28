@@ -6,18 +6,87 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using MassEffectModManagerCore.modmanager.helpers;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     [Localizable(false)]
-    class Experiments
+    public class Experiments
     {
         class LocalizedFile
         {
             public string basename;
             public bool basenameVersionExists;
             public List<string> localizedVersions = new List<string>();
+        }
+
+        // Must be lowercase to match target xml file
+        public class extractionredirect
+        {
+            public string archivepathroot { get; set; }
+            public string relativedestinationdirectory { get; set; }
+            public string optionalrequireddlc { get; set; } // ; list
+            public string optionalrequiredfiles { get; set; } // ; list
+            public string optionalrequiredfilessizes { get; set; } // ; list
+            public string loggingname { get; set; }
+        }
+
+        private static string Serialize<T>(T dataToSerialize)
+        {
+            try
+            {
+                var stringwriter = new System.IO.StringWriter();
+                var serializer = new XmlSerializer(typeof(T));
+                serializer.Serialize(stringwriter, dataToSerialize);
+                return stringwriter.ToString();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public static string ConvertAlternatesToALOTManifestMod(string inputText)
+        {
+            var conditionalStructs = StringStructParser.GetParenthesisSplitValues(inputText);
+            var redirects = new List<extractionredirect>();
+            XElement root = new XElement("root");
+            foreach (var cstruct in conditionalStructs)
+            {
+                XElement element = new XElement("extractionredirect");
+                root.Add(element);
+                var parsed = StringStructParser.GetCommaSplitValues(cstruct);
+                var redirect = new extractionredirect();
+                if (parsed.TryGetValue("ModAltDLC", out var arp))
+                {
+                    element.SetAttributeValue("archiverootpath", arp.Replace('/', '\\'));
+                }
+                if (parsed.TryGetValue("ModDestDLC", out var rdd))
+                {
+                    element.SetAttributeValue("relativedestinationdirectory", @"BIOGame\DLC\"+rdd.Replace('/', '\\'));
+                }
+                if (parsed.TryGetValue("ConditionalDLC", out var ord))
+                {
+                    element.SetAttributeValue("optionalrequireddlc", string.Join(';', StringStructParser.GetSemicolonSplitList(ord)));
+                }
+                if (parsed.TryGetValue("RequiredFileRelativePaths", out var orf))
+                {
+                    element.SetAttributeValue("optionalrequiredfiles", string.Join(';', StringStructParser.GetSemicolonSplitList(orf).Select(x=>x.Replace('/', '\\'))));
+                }
+                if (parsed.TryGetValue("RequiredFileSizes", out var orfs))
+                {
+                    element.SetAttributeValue("optionalrequiredfilessizes", string.Join(';', StringStructParser.GetSemicolonSplitList(orfs).Select(x => long.Parse(x))));
+                }
+                if (parsed.TryGetValue("FriendlyName", out var ln))
+                {
+                    element.SetAttributeValue("loggingname", ln);
+                }
+                redirects.Add(redirect); //just for later convenience if i refactor this
+            }
+
+            return root.ToString();
         }
 
         public static void GetUniquePlatformAudio()
@@ -100,9 +169,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         private static bool isLocalizedAudio(string s)
         {
-            if (s.EndsWith("_fr")) 
+            if (s.EndsWith("_fr"))
                 return true;
-            if (s.EndsWith("_it")) 
+            if (s.EndsWith("_it"))
                 return true;
             if (s.EndsWith("_de"))
                 return true;
@@ -139,7 +208,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 bool isALocalizedFile = v.Contains("_loc_");
                 if (isALocalizedFile)
                 {
-                    basename = v.Substring(0,v.IndexOf("_loc_"));
+                    basename = v.Substring(0, v.IndexOf("_loc_"));
                     localization = v.Substring(basename.Length + "_loc_".Length);
                 }
 
