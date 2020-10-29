@@ -180,8 +180,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Executable location: " + ExecutableLocation);
                 Log.Information("Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
-                //var info = new FileInspector(App.ExecutableLocation);
-                var info = new FileInspector(@"C:\Users\Mgamerz\Desktop\M3\ME3TweaksModManager.exe");
+                var info = new FileInspector(App.ExecutableLocation);
                 var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
 
                 if (signTime != null)
@@ -204,7 +203,7 @@ namespace MassEffectModManagerCore
                     //needs localized later.
                     BuildDate = "WARNING: This build is not signed by ME3Tweaks";
 #if !DEBUG
-                    Log.Warning("This build is not signed by ME3Tweaks. This may not be an official build.");
+                    Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
 #endif
                 }
 
