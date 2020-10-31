@@ -96,7 +96,11 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public ObservableCollectionExtended<string> ME3ControllerCompatBuiltAgainst { get; } = new ObservableCollectionExtended<string>();
 
-
+        /// <summary>
+        /// If this mod can attempt to check for updates via Nexus. This being true doesn't mean it will - it requires whitelisting.
+        /// This essentially is only used to disable nexus update checks.
+        /// </summary>
+        public bool NexusUpdateCheck { get; set; } = true;
         /// <summary>
         /// The server folder that this mod will be published to when using the ME3Tweaks Updater Service
         /// </summary>
@@ -495,6 +499,12 @@ namespace MassEffectModManagerCore.modmanager
             int.TryParse(iniData[@"UPDATES"][@"updatecode"], out int modupdatecode);
             ModClassicUpdateCode = modupdatecode;
 
+            if (bool.TryParse(iniData[@"UPDATES"][@"nexusupdatecheck"], out var nexusupdatecheck))
+            {
+                // Enables/disables the mod from being able to check in with Nexus
+                NexusUpdateCheck = nexusupdatecheck;
+            }
+            
             if (ModClassicUpdateCode == 0)
             {
                 //try in old location

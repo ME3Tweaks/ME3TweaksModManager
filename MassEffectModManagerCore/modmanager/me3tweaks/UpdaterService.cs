@@ -106,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     updateFinalRequest += "classicupdatecode[]=" + mod.ModClassicUpdateCode;
                 }
-                else if (mod.NexusModID > 0)
+                else if (mod.NexusModID > 0 && mod.NexusUpdateCheck)
                 {
                     //Nexus style
                     if (first)
