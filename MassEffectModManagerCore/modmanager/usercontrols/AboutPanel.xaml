@@ -127,7 +127,7 @@
                 <TextBlock Foreground="White" Grid.Row="9" Grid.Column="0" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
                 <TextBlock Foreground="White" Grid.Row="9" Grid.Column="2" TextWrapping="Wrap" Text="Portuguese" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
                 <!--<TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="HHL" TextAlignment="Center" />-->
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3" TextAlignment="Center" />
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3&#10;Sonashii" TextAlignment="Center" />
                 <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" />
                 <TextBlock Text="{DynamicResource string_specialThanks}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="11" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.Row="12" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Kinkojiro" TextAlignment="Center" FontWeight="Bold" />
