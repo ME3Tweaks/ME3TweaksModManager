@@ -1563,28 +1563,28 @@ namespace MassEffectModManagerCore
         {
             var targetsNeedingUpdate = InstallationTargets.Where(x => x.Selectable && !x.IsTargetWritable()).ToList();
             bool me1AGEIAKeyNotWritable = false;
-            if (InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1))
-            {
-                //Check AGEIA
-                try
-                {
-                    var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\AGEIA Technologies", true);
-                    if (key != null)
-                    {
-                        key.Close();
-                    }
-                    else
-                    {
-                        Log.Information(@"ME1 AGEIA Technologies key is not present or is not writable.");
-                        me1AGEIAKeyNotWritable = true;
-                    }
-                }
-                catch (SecurityException)
-                {
-                    Log.Information(@"ME1 AGEIA Technologies key is not writable.");
-                    me1AGEIAKeyNotWritable = true;
-                }
-            }
+            //if (InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1))
+            //{
+            //    //Check AGEIA
+            //    try
+            //    {
+            //        var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\AGEIA Technologies", true);
+            //        if (key != null)
+            //        {
+            //            key.Close();
+            //        }
+            //        else
+            //        {
+            //            Log.Information(@"ME1 AGEIA Technologies key is not present or is not writable.");
+            //            me1AGEIAKeyNotWritable = true;
+            //        }
+            //    }
+            //    catch (SecurityException)
+            //    {
+            //        Log.Information(@"ME1 AGEIA Technologies key is not writable.");
+            //        me1AGEIAKeyNotWritable = true;
+            //    }
+            //}
 
             if (targetsNeedingUpdate.Count > 0 || me1AGEIAKeyNotWritable)
             {
