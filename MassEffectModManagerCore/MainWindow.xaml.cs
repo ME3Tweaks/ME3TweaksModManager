@@ -556,7 +556,7 @@ namespace MassEffectModManagerCore
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
-                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, true, modInstalled);
+                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, batchMode: true, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
                         else if (SelectedGameTarget.Game == Mod.MEGame.ME3)
@@ -1483,12 +1483,12 @@ namespace MassEffectModManagerCore
         /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
 
-        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, Action<bool> installCompletedCallback = null)
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, bool installCompressed = false, Action<bool> installCompletedCallback = null)
         {
             if (!Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget);
+                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed);
                 modInstaller.Close += (a, b) =>
                 {
 
@@ -3015,14 +3015,14 @@ namespace MassEffectModManagerCore
                     ReleaseBusyControl();
                     LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null, true);
                 }
-                else if (b.Data is Mod compressedModToInstall)
+                else if (b.Data is (Mod compressedModToInstall, bool compressed))
                 {
                     ReleaseBusyControl();
                     var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == compressedModToInstall.Game);
                     if (installTarget != null)
                     {
                         SelectedGameTarget = installTarget;
-                        ApplyMod(compressedModToInstall);
+                        ApplyMod(compressedModToInstall, installCompressed: compressed);
                     }
                     else
                     {

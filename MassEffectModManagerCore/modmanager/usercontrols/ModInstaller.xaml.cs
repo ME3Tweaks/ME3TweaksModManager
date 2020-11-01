@@ -19,6 +19,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3Explorer.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
@@ -40,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ModIsInstalling { get; set; }
         public bool AllOptionsAreAutomatic { get; private set; }
         private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
-        public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget)
+        public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget, bool installCompressed = false)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
             Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
@@ -50,11 +51,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.gameTarget = gameTarget;
             gameTarget.ReloadGameTarget(false); //Reload so we can have consistent state with ALOT on disk
             Action = M3L.GetString(M3L.string_preparingToInstall);
+            CompressInstalledPackages = installCompressed;
             InitializeComponent();
         }
 
 
         public Mod ModBeingInstalled { get; }
+        public bool CompressInstalledPackages { get; }
         private GameTarget gameTarget;
         private DateTime lastPercentUpdateTime;
         public bool InstallationCancelled;
@@ -535,6 +538,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     lastPercentUpdateTime = now;
                 }
             }
+
             void FileInstalledCallback(string targetPath)
             {
                 numdone++;
@@ -542,14 +546,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 Action = M3L.GetString(M3L.string_installing);
-                var now = DateTime.Now;
-                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
-                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
-                {
-                    //Don't update UI too often. Once per second is enough.
-                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
-                    lastPercentUpdateTime = now;
-                }
+                
 
                 //BASEGAME FILE TELEMETRY
                 if (Settings.EnableTelemetry && ModBeingInstalled.ModModMakerID == 0)
@@ -559,12 +556,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var shouldTrack = gameTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase) && targetPath.ContainsAny(MEDirectories.OfficialDLC(gameTarget.Game), StringComparison.InvariantCultureIgnoreCase);
 
                     if ((shouldTrack || !targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
-                        && targetPath.Contains(gameTarget.TargetPath)  // Must be within the game directory (no config files)
+                        && targetPath.Contains(gameTarget.TargetPath) // Must be within the game directory (no config files)
                         && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
                     {
                         //not installing to DLC
                         basegameFilesInstalled.Add(targetPath);
                     }
+                }
+
+                if (ModBeingInstalled.Game > MEGame.ME1 && CompressInstalledPackages && File.Exists(targetPath) && targetPath.RepresentsPackageFilePath())
+                {
+                    var package = MEPackageHandler.QuickOpenMEPackage(targetPath);
+                    if (!package.IsCompressed)
+                    {
+                        // Compress it
+                        // Reopen package fully
+                        Log.Information($@"Compressing installed package: {targetPath}");
+                        package = MEPackageHandler.OpenMEPackage(targetPath);
+                        package.save(true);
+                    }
+                }
+
+                var now = DateTime.Now;
+                if (numdone > numFilesToInstall) Debug.WriteLine($@"Percentage calculated is wrong. Done: {numdone} NumToDoTotal: {numFilesToInstall}");
+                if ((now - lastPercentUpdateTime).Milliseconds > PERCENT_REFRESH_COOLDOWN)
+                {
+                    //Don't update UI too often. Once per second is enough.
+                    Percent = (int)(numdone * 100.0 / numFilesToInstall);
+                    lastPercentUpdateTime = now;
                 }
             }
 
@@ -633,13 +652,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                          && fullPathMappingArchive[args.FileInfo.Index].Contains(gameTarget.TargetPath) &&
                            !Path.GetFileName(fullPathMappingArchive[args.FileInfo.Index]).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            //not installing to DLC
-                            basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
+                                //not installing to DLC
+                                basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
                         }
                     }
-                    //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
-                    //Debug.WriteLine(numdone);
-                };
+                        //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
+                        //Debug.WriteLine(numdone);
+                    };
                 try
                 {
                     ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
