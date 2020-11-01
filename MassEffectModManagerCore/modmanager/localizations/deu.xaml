@@ -332,6 +332,10 @@
 	<system:String x:Key="string_updatingLocalization">Lokalisierung wird aktualisiert</system:String>
 	<system:String x:Key="string_updatedLocalization">Lokalisierung wurde aktualisiert</system:String>
 	<system:String x:Key="string_errorUpdatingLocalization">Fehler beim Aktualisieren der Lokalisierung</system:String>
+	<system:String x:Key="string_noModsInTheLibraryHeader">Keine Mods in der Bibliothek!</system:String>
+	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
+	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Diese Liste zeigt dir alle Mods, die du in Mod Manager importiert hast. Du kannst Mods importieren, indem du die heruntergeladene Archivdatei (.7z/.rar/.zip/.exe/.me2mod) auf dieses Fenster ziehst und loslässt.&#10;&#10;Mods die direkt vom Importieren-Fenster installiert werden, werden hier nicht angezeigt, da sie direkt in das Spiel installiert werden ohne in die Bibliothek importiert zu werden. Du kannst dir die Installierten Mods anzeigen lassen indem du auf 'Ziel verwalten' oben rechts in diesem Fenster klickst.&#10;&#10;Mods in der Mod-Bibliothek können leicht nochmal oder automatisch in Gruppen installiert werden, automatisch aktualisiert werden, und mehr.</system:String>
+	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Diese Zielinstallation enthält modifizierte Texturen</system:String>
