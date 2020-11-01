@@ -956,6 +956,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {
             SelectedMod = CompressedMods_ListBox.SelectedItem as Mod;
+            if (SelectedMod != null && SelectedMod.Game > Mod.MEGame.ME1 && SelectedMod.PreferCompressed)
+            {
+                CompressPackages = true;
+            }
+
+            if (SelectedMod != null && SelectedMod.Game == Mod.MEGame.ME1)
+            {
+                CompressPackages = false;
+            }
         }
 
         public override void OnPanelVisible()

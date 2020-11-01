@@ -87,6 +87,10 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public int ImportedByBuild { get; set; }
         /// <summary>
+        /// If a mod prefers compressed packages. This auto sets the 'Compress packages' flag in the importer window
+        /// </summary>
+        public bool PreferCompressed { get; set; }
+        /// <summary>
         /// List of files that will always be deleted locally when servicing an update on a client. This has mostly been deprecated for new mods.
         /// </summary>
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
@@ -575,6 +579,13 @@ namespace MassEffectModManagerCore.modmanager
                 CLog.Information($@"Found unofficial descriptor. Marking mod as unofficial. This will block deployment of the mod until it is removed.",
                     Settings.LogModStartup);
 
+            }
+
+            if (bool.TryParse(iniData[@"ModInfo"][@"prefercompressed"], out var pCompressed))
+            {
+                CLog.Information($@"Found prefercompressed descriptor. The mod will default the compress packages flag to {pCompressed} in the mod import panel.",
+                    Settings.LogModStartup);
+                PreferCompressed = pCompressed;
             }
 
             string game = iniData[@"ModInfo"][@"game"];
