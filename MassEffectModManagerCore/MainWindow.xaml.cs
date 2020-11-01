@@ -1105,7 +1105,7 @@ namespace MassEffectModManagerCore
             {
                 arguments += $"--me2path \"{me2Target.TargetPath}\" "; //do not localize
             }
-            if (me1Target != null && me3Target.Supported)
+            if (me3Target != null && me3Target.Supported)
             {
                 arguments += $"--me3path \"{me3Target.TargetPath}\" "; //do not localize
             }
