@@ -122,9 +122,9 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <ComboBox Grid.Row="1" IsEnabled="{Binding InstallInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ItemsSource="{Binding GameTargets}" SelectedItem="{Binding SelectedTarget}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+                        <ComboBox Grid.Row="1" IsEnabled="{Binding InstallInProgress, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ASIManagerPanel}}, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ItemsSource="{Binding GameTargets}" SelectedItem="{Binding SelectedTarget}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
                         <DockPanel Grid.Row="2" Margin="0,5">
-                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right" ToolTip="{Binding LoaderButtonToolTip}" />
+                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right"/>
                             <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" TextWrapping="Wrap" />
                         </DockPanel>
                         <ListBox Grid.Row="3" BorderThickness="1" 
