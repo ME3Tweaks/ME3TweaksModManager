@@ -70,9 +70,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ViewSourceCode()
         {
-            if (SelectedASIObject is ASIModVersion asi)
+            if (SelectedASIObject is ASIMod asi)
             {
-                Utilities.OpenWebpage(asi.SourceCodeLink);
+                Utilities.OpenWebpage(asi.LatestVersion.SourceCodeLink);
+            }
+            else if (SelectedASIObject is KnownInstalledASIMod kasi && kasi.AssociatedManifestItem != null)
+            {
+                Utilities.OpenWebpage(kasi.AssociatedManifestItem.SourceCodeLink);
             }
         }
 
