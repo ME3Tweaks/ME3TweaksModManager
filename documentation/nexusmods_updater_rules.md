@@ -4,7 +4,7 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
 
 1. Your 'latest mod version' MUST always be accurate, and be a version number in the format of X.X[.X[.X]] (same as ModDesc 6 and above). If you don't use this versioning scheme, your mod will not be whitelisted.
 2. If you update your mod, the file versions should match the mod version. There are two separate versions available on Nexus.
-3. You must set your `modsite` attribute in your moddesc.ini to your nexusmods page, or set the `nexuscode` to your mod's ID for your game, which is the number in the URL of your NexusMods page.
+3. You must set your `modsite` attribute in your moddesc.ini to your nexusmods page, or set the `nexuscode` to your mod's ID for your game, which is the number in the URL of your NexusMods page. These are both under the `[ModInfo]` header. The `nexuscode` is only used if your `modsite` descriptor is not pointing to NexusMods.
 4. You must notify Mgamerz you want to participate in this service.
 
 Breaking rules 1 or 2 may lead users to get infinite update prompts, which is why this whitelist is in place. It may seem 'inconvenient' to you that you have to upload your mod again to fix the moddesc, but users do not enjoy endless update prompts and confusing out of sync version numbering because the version information on NexusMods and the local version numbers don't match. If your mod violates the rules, it will be removed from the whitelist, and it will no longer check for updates on NexusMods.
