@@ -39,6 +39,7 @@ Archive distribution in the Mass Effect Trilogy scene is the standard (for non-t
  - Uninstall entries are left in the registry that make it think it's still installed when it's actually not and will confuse end users
  - Automatically overwriting bink bypass with your own version can disable some mods because there are different variants of bink bypass that have different features
  - Most installers I have found (like MEHEM and PEOM prior to 1.5.2) pollute the game directory with additional files that serve no purpose once installation has completed
+ - Installers in the scene typically force administrative rights which completely messed up modding tools because the permissions on the installed files are set to administrator only, even if they're placed in a directory that inherits permissions for user to modify. This is often very frustrating for users and wastes lots of their time
 
 M3 mods are mods that are designed to be able to be manually installed by users - if they choose to do so, but optimally are installed through M3. M3 facilitates checks and provides features to the end user such as library management, update checks, relevant mod information, modding rule enforcement and automatic configuration of mods based on the current game state. Deployment of a mod through M3 will make the file size smaller through optimized 7z compression settings designed for the types of files we work on in the scene, as well as perform sanity checks on your mod (such as for broken textures and audio).
 
