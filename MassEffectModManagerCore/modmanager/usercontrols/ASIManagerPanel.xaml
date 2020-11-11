@@ -29,7 +29,7 @@
             </Grid>
         </DataTemplate>
         <DataTemplate DataType="{x:Type asi:KnownInstalledASIMod}">
-            <Border Background="{Binding Ba/ckgroundColor}" BorderThickness="2,1">
+            <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
                 <Grid Margin="3" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
