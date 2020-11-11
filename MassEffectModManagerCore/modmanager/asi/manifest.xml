@@ -328,4 +328,28 @@
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SeqActLogEnabler/SeqActLogEnabler-v1.0.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="20" game="2" hidden="0">
+    <asimod>
+      <name>Splash Enabler</name>
+      <installedname>SplashEnabler</installedname>
+      <author>Mgamerz</author>
+      <description>Enables the application boot splash screen for Mass Effect 2.</description>
+      <version>1</version>
+      <hash>5361b073cac08c8ebd1de4a6344452ee</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SplashEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SplashEnabler/SplashEnabler-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="21" game="3" hidden="0">
+    <asimod>
+      <name>Splash Enabler</name>
+      <installedname>SplashEnabler</installedname>
+      <author>Mgamerz</author>
+      <description>Enables the application boot splash screen for Mass Effect 3.</description>
+      <version>1</version>
+      <hash>5361b073cac08c8ebd1de4a6344452ee</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SplashEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SplashEnabler/SplashEnabler-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
