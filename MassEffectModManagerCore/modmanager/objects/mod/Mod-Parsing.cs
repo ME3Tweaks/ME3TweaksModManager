@@ -140,7 +140,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (ModClassicUpdateCode > 0) return true;
                 if (ModModMakerID > 0) return true;
-                if (NexusModID > 0) return true;
+                if (NexusModID > 0 && NexusUpdateCheck) return true;
                 return false;
             }
         }

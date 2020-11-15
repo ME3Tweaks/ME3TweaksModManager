@@ -30,22 +30,21 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type asi:KnownInstalledASIMod}">
             <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
-
-<Grid Margin="3" HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=AssociatedManifestItem.Name}" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=AssociatedManifestItem.Version, StringFormat='v{0}'}" HorizontalAlignment="Right" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6" Text="{Binding Path=AssociatedManifestItem.Author}" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstallStatus}"/>
-            </Grid>
-                </Border>
+                <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=AssociatedManifestItem.Name}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=AssociatedManifestItem.Version, StringFormat='v{0}'}" HorizontalAlignment="Right" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6" Text="{Binding Path=AssociatedManifestItem.Author}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InstallStatus}"/>
+                </Grid>
+            </Border>
         </DataTemplate>
         <DataTemplate  DataType="{x:Type asi:UnknownInstalledASIMod}">
             <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
@@ -122,9 +121,9 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <ComboBox Grid.Row="1" IsEnabled="{Binding InstallInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ItemsSource="{Binding GameTargets}" SelectedItem="{Binding SelectedTarget}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+                        <ComboBox Grid.Row="1" IsEnabled="{Binding InstallInProgress, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ASIManagerPanel}}, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ItemsSource="{Binding GameTargets}" SelectedItem="{Binding SelectedTarget}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
                         <DockPanel Grid.Row="2" Margin="0,5">
-                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right" ToolTip="{Binding LoaderButtonToolTip}" />
+                            <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right"/>
                             <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" TextWrapping="Wrap" />
                         </DockPanel>
                         <ListBox Grid.Row="3" BorderThickness="1" 
@@ -133,7 +132,7 @@
                                  HorizontalContentAlignment="Stretch" 
                                  SelectedItem="{Binding SelectedASI}"
                                  SelectionChanged="ASIManagerLists_SelectedChanged">
-                            
+
                             <!--<ListBox.ItemContainerStyle>
                                 <Style BasedOn="{StaticResource ListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

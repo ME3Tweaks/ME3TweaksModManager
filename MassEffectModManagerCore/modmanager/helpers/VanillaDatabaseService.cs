@@ -483,8 +483,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             [@"647b93621389709cab8d268379bd4c47"] = @"Steam",
             [@"78ac3d9b4aad1989dae74505ea65aa6c"] = @"Steam, MEM patched",
+            [@"5c87b24a141bc6a487a2199dec9739a0"] = @"Steam, V4 MEM patched",
             [@"fef464b4b92c19ce76add75de6732ccf"] = @"Steam, BioWare signed",
             [@"2390143503635f3c4cfaed0afe0b8c71"] = @"Origin, MEM patched",
+            [@"bfe090e76ca9f4d585e380662cf4980e"] = @"Origin, V4 MEM patched",
             [@"ff1f894fa1c2dbf4d4b9f0de85c166e5"] = @"Origin",
             [@"73b76699d4e245c92110a93c54980b78"] = @"DVD",
             [@"298c30a399d0959e5e997a9d64b42548"] = @"DVD, Polish",

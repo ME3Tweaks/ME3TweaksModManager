@@ -235,7 +235,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             short ALOTVER = fs.ReadInt16();
                             byte ALOTUPDATEVER = (byte)fs.ReadByte();
                             byte ALOTHOTFIXVER = (byte)fs.ReadByte();
-                            return new ALOTVersionInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, installerVersionUsed, memVersionUsed, (int)endPos - 16);
+                            return new ALOTVersionInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, memVersionUsed, installerVersionUsed, (int)endPos - 16);
                         }
                         else
                         {

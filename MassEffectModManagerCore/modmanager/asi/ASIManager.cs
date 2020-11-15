@@ -37,12 +37,12 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// <summary>
         /// Loads the ASI manifest. This should only be done at startup or when the online manifest is refreshed. ForceLocal only works if there is local ASI manifest present
         /// </summary>
-        public static void LoadManifest(bool forceLocal = false)
+        public static void LoadManifest(bool forceLocal = false, bool overrideThrottling = false)
         {
             Log.Information(@"Loading ASI Manager manifest");
             try
             {
-                internalLoadManifest(forceLocal);
+                internalLoadManifest(forceLocal, overrideThrottling);
             }
             catch (Exception e)
             {
@@ -50,17 +50,19 @@ namespace MassEffectModManagerCore.modmanager.asi
             }
         }
 
-        private static void internalLoadManifest(bool forceLocal = false)
+        private static void internalLoadManifest(bool forceLocal = false, bool overrideThrottling = false)
         {
-            if (forceLocal && File.Exists(ManifestLocation) || !OnlineContent.CanFetchContentThrottleCheck())
+            if (File.Exists(ManifestLocation) && (forceLocal || (!OnlineContent.CanFetchContentThrottleCheck() && !overrideThrottling))) //Force local, or we can't online check and cannot override throttle
             {
                 LoadManifestFromDisk(ManifestLocation);
                 return;
             }
 
-            var onlineManifest = forceLocal && File.Exists(ManifestLocation) ? null : OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
-            if (onlineManifest != null) //this cannot be triggered if forceLocal is true
+            var shouldNotFetch = forceLocal || (!overrideThrottling && !OnlineContent.CanFetchContentThrottleCheck()) && File.Exists(ManifestLocation);
+            if (!shouldNotFetch) //this cannot be triggered if forceLocal is true
             {
+                Log.Information(@"Fetching ASI manifest from online source");
+                var onlineManifest = OnlineContent.FetchRemoteString(@"https://me3tweaks.com/mods/asi/getmanifest?AllGames=1");
                 onlineManifest = onlineManifest.Trim();
                 try
                 {
@@ -119,6 +121,7 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// <param name="selectionStateUpdateCallback"></param>
         private static void LoadManifestFromDisk(string manifestPath, bool isStaged = false)
         {
+            Log.Information($@"Using ASI manifest from disk: {manifestPath}");
             ParseManifest(File.ReadAllText(manifestPath), isStaged);
         }
 
