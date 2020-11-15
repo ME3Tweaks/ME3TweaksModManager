@@ -525,21 +525,19 @@
     <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} uses TFC name {2}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.</system:String>
     <!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
     <system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Deployment blocked until above items are fixed</system:String>
-
     <system:String x:Key="string_male">male</system:String>
     <!-- This item is substituted into a string down below for gender -->
     <system:String x:Key="string_female">female</system:String>
     <!-- This item is substituted into a string down below for gender -->
-
     <system:String x:Key="string_interp_error_outOfOrderTLK">The list of {0} strings in {1} are not in ascending order. TLK strings must be in ascending order - if a StringID is out of order, parsing of the rest of the file will stop.</system:String>
     <!-- 0={gender (SEE ABOVE)} 1={language code such as INT, JPN ,etc} -->
     <system:String x:Key="string_compressedModItems">Compressed mod items</system:String>
     <!-- This is a 'status' text to show what's being worked on-->
     <system:String x:Key="string_uncompressedModItems">Uncompressed mod items</system:String>
     <!-- This is a 'status' text to show what's being worked on-->
+    <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it.</system:String>
+    <system:String x:Key="string_improperlyDeployedMod">Improperly deployed mod</system:String>
 
-
-    
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>

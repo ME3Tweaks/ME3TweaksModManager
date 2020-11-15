@@ -139,8 +139,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     });
                     Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
                     M3L.ShowDialog(Window.GetWindow(this),
-                        "This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it.",
-                        "Improperly deployed mod", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        M3L.GetString(M3L.string_dialog_improperlyDeployedMod),
+                        M3L.GetString(M3L.string_improperlyDeployedMod), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             };
             ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
@@ -951,7 +951,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //This will have to pass some sort of validation code later.
             return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
-                   && !TaskRunning /*&& !CompressPackages*/ && mainwindow.InstallationTargets.Any(x=>x.Game == cm.Game);
+                   && !TaskRunning /*&& !CompressPackages*/ && mainwindow.InstallationTargets.Any(x => x.Game == cm.Game);
         }
 
         private void InstallCompressedMod()
