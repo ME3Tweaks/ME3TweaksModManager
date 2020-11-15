@@ -400,7 +400,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 case Mod.MEGame.ME3:
                     validationFiles = new[]
                     {
-                        Path.Combine(TargetPath, @"Binaries", @"win32", @"MassEffect3.exe"),
+                        Path.Combine(TargetPath, @"Binaries", @"Win32", @"MassEffect3.exe"),
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures.tfc"),
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup.pcc"),
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin"),

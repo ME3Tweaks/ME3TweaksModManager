@@ -197,7 +197,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         tStream = qPackage.saveToStream(includeAdditionalPackagesToCook: true);
                                         localMd5 = Utilities.CalculateMD5(tStream);
                                         localSize = tStream.Length;
-                                       // tStream.WriteToFile(@"C:\users\mgamerz\desktop\t.pcc");
                                     }
                                 }
 

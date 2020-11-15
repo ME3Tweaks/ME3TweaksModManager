@@ -85,11 +85,13 @@
                         <TextBlock
                             Grid.Column="1"
                             Grid.Row="1"
-                            Text="{Binding BackupStatus}" />
+                            Text="{Binding BackupStatus}"
+                            TextWrapping="Wrap"/>
                         <TextBlock
                             Grid.Column="1"
                             Grid.Row="2"
-                            Text="{Binding BackupStatusLine2}" />
+                            Text="{Binding BackupStatusLine2}"
+                            TextWrapping="Wrap"/>
                         <ComboBox
                             Grid.Column="0"
                             Grid.Row="3"

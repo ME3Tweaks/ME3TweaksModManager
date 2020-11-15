@@ -949,12 +949,35 @@ namespace MassEffectModManagerCore
             if (SelectedMod.InstallationJobs.Count == 1 && SelectedMod.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null)
             {
                 Log.Error(M3L.GetString(M3L.string_rcwModsCannotBeDeployed));
-                M3L.ShowDialog(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription), M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription),
+                    M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var archiveDeploymentPane = new ArchiveDeployment(SelectedMod);
-            archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
-            ShowBusyControl(archiveDeploymentPane);
+
+            GameTarget vt = GetCurrentTarget(SelectedMod.Game);
+            if (vt == null)
+            {
+                Log.Error($@"Cannot deploy mod, no current game install for {SelectedMod.Game} is available");
+                M3L.ShowDialog(this,
+                    $"No game installation for {SelectedMod.Game} is available. Deploying a mod requires a game installation for the game so deployment can check for data in that installation that will not be accessible in another setup.",
+                    "Cannot deploy mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var bup = BackupService.GetGameBackupPath(SelectedMod.Game);
+            if (bup != null && Directory.Exists(bup))
+            {
+                var archiveDeploymentPane = new ArchiveDeployment(vt, SelectedMod);
+                archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
+                ShowBusyControl(archiveDeploymentPane);
+            }
+            else
+            {
+                Log.Error($@"Cannot deploy mod, no backup for {SelectedMod.Game} is available");
+                M3L.ShowDialog(this,
+                    $"No backup for {SelectedMod.Game} is available. Deploying a mod requires a game backup for the game the mod will install to, so the deployment checks can check against a vanilla game installation.",
+                    "Cannot deploy mod", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ShowUpdateCompletedPane()
