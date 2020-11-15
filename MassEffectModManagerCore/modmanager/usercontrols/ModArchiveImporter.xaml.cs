@@ -951,12 +951,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //This will have to pass some sort of validation code later.
             return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
-                   && !TaskRunning && !CompressPackages && mainwindow.InstallationTargets.Any(x => x.Game == cm.Game);
+                   && !TaskRunning /*&& !CompressPackages*/ && mainwindow.InstallationTargets.Any(x=>x.Game == cm.Game);
         }
 
         private void InstallCompressedMod()
         {
-            OnClosing(new DataEventArgs(CompressedMods_ListBox.SelectedItem));
+            OnClosing(new DataEventArgs((CompressedMods_ListBox.SelectedItem, CompressPackages)));
         }
 
         private void Cancel()
@@ -971,6 +971,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {
             SelectedMod = CompressedMods_ListBox.SelectedItem as Mod;
+            if (SelectedMod != null && SelectedMod.Game > Mod.MEGame.ME1 && SelectedMod.PreferCompressed)
+            {
+                CompressPackages = true;
+            }
+
+            if (SelectedMod != null && SelectedMod.Game == Mod.MEGame.ME1)
+            {
+                CompressPackages = false;
+            }
         }
 
         public override void OnPanelVisible()

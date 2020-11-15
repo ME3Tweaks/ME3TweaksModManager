@@ -556,7 +556,7 @@ namespace MassEffectModManagerCore
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
-                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, true, modInstalled);
+                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, batchMode: true, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
                         else if (SelectedGameTarget.Game == Mod.MEGame.ME3)
@@ -1029,7 +1029,7 @@ namespace MassEffectModManagerCore
                 {
                     if (result == @"ALOTInstaller")
                     {
-                        LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
+                        BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstaller);
                     }
                 }
             };
@@ -1075,7 +1075,7 @@ namespace MassEffectModManagerCore
                     }
                     if (result == @"ALOTInstaller")
                     {
-                        LaunchExternalTool(ExternalToolLauncher.ALOTInstaller);
+                        BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstaller);
                     }
 
                     if (result == @"ReloadTargets")
@@ -1085,6 +1085,31 @@ namespace MassEffectModManagerCore
                 }
             };
             ShowBusyControl(installationInformation);
+        }
+
+        /// <summary>
+        /// Boots ALOT Installer, using the specified tool name. Passes through the current active targets in M3, if they are supported.
+        /// </summary>
+        /// <param name="alotInstallerToolName"></param>
+        private void BootALOTInstallerPassthrough(string alotInstallerToolName)
+        {
+            var arguments = "";
+            var me1Target = GetCurrentTarget(Mod.MEGame.ME1);
+            var me2Target = GetCurrentTarget(Mod.MEGame.ME2);
+            var me3Target = GetCurrentTarget(Mod.MEGame.ME3);
+            if (me1Target != null && me1Target.Supported)
+            {
+                arguments += $"--me1path \"{me1Target.TargetPath}\" "; //do not localize
+            }
+            if (me2Target != null && me2Target.Supported)
+            {
+                arguments += $"--me2path \"{me2Target.TargetPath}\" "; //do not localize
+            }
+            if (me3Target != null && me3Target.Supported)
+            {
+                arguments += $"--me3path \"{me3Target.TargetPath}\" "; //do not localize
+            }
+            LaunchExternalTool(alotInstallerToolName, arguments);
         }
 
         private bool CanShowInstallInfo()
@@ -1458,12 +1483,12 @@ namespace MassEffectModManagerCore
         /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
 
-        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, Action<bool> installCompletedCallback = null)
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, bool installCompressed = false, Action<bool> installCompletedCallback = null)
         {
             if (!Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget);
+                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed);
                 modInstaller.Close += (a, b) =>
                 {
 
@@ -1538,28 +1563,28 @@ namespace MassEffectModManagerCore
         {
             var targetsNeedingUpdate = InstallationTargets.Where(x => x.Selectable && !x.IsTargetWritable()).ToList();
             bool me1AGEIAKeyNotWritable = false;
-            if (InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1))
-            {
-                //Check AGEIA
-                try
-                {
-                    var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\AGEIA Technologies", true);
-                    if (key != null)
-                    {
-                        key.Close();
-                    }
-                    else
-                    {
-                        Log.Information(@"ME1 AGEIA Technologies key is not present or is not writable.");
-                        me1AGEIAKeyNotWritable = true;
-                    }
-                }
-                catch (SecurityException)
-                {
-                    Log.Information(@"ME1 AGEIA Technologies key is not writable.");
-                    me1AGEIAKeyNotWritable = true;
-                }
-            }
+            //if (InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1))
+            //{
+            //    //Check AGEIA
+            //    try
+            //    {
+            //        var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\AGEIA Technologies", true);
+            //        if (key != null)
+            //        {
+            //            key.Close();
+            //        }
+            //        else
+            //        {
+            //            Log.Information(@"ME1 AGEIA Technologies key is not present or is not writable.");
+            //            me1AGEIAKeyNotWritable = true;
+            //        }
+            //    }
+            //    catch (SecurityException)
+            //    {
+            //        Log.Information(@"ME1 AGEIA Technologies key is not writable.");
+            //        me1AGEIAKeyNotWritable = true;
+            //    }
+            //}
 
             if (targetsNeedingUpdate.Count > 0 || me1AGEIAKeyNotWritable)
             {
@@ -2514,7 +2539,7 @@ namespace MassEffectModManagerCore
 
         private void debugMethod()
         {
-            
+
 
         }
 
@@ -2614,13 +2639,21 @@ namespace MassEffectModManagerCore
         private void LaunchExternalTool_Clicked(object sender, RoutedEventArgs e)
         {
             string tool = null;
-            if (sender == ALOTInstaller_MenuItem) tool = ExternalToolLauncher.ALOTInstaller;
-            if (sender == ALOTInstallerV4_MenuItem) tool = ExternalToolLauncher.ALOTInstallerV4;
+            if (sender == ALOTInstaller_MenuItem)
+            {
+                BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstaller);
+                return;
+            }
+            if (sender == ALOTInstallerV4_MenuItem)
+            {
+                BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstallerV4);
+                return;
+            }
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == ME3ExplorerBeta_MenuItem) tool = ExternalToolLauncher.ME3Explorer_Beta;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
-            //if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings;
+            //if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings; //EGM settings has it's own command and it not invoked through this menu
             if (tool == null) throw new Exception(@"LaunchExternalTool handler set but no relevant tool was specified! This is a bug. Please report it to Mgamerz on Discord");
             LaunchExternalTool(tool);
         }
@@ -2636,7 +2669,6 @@ namespace MassEffectModManagerCore
                 });
                 var exLauncher = new ExternalToolLauncher(tool, arguments);
                 exLauncher.Close += (a, b) => { ReleaseBusyControl(); };
-                //Todo: Update Busy UI Content
                 ShowBusyControl(exLauncher);
             }
         }
@@ -2983,14 +3015,14 @@ namespace MassEffectModManagerCore
                     ReleaseBusyControl();
                     LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null, true);
                 }
-                else if (b.Data is Mod compressedModToInstall)
+                else if (b.Data is (Mod compressedModToInstall, bool compressed))
                 {
                     ReleaseBusyControl();
                     var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == compressedModToInstall.Game);
                     if (installTarget != null)
                     {
                         SelectedGameTarget = installTarget;
-                        ApplyMod(compressedModToInstall);
+                        ApplyMod(compressedModToInstall, installCompressed: compressed);
                     }
                     else
                     {

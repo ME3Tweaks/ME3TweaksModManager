@@ -332,6 +332,10 @@
 	<system:String x:Key="string_updatingLocalization">Atualizando localização</system:String>
 	<system:String x:Key="string_updatedLocalization">Localização atualizada</system:String>
 	<system:String x:Key="string_errorUpdatingLocalization">Erro ao atualizar localização</system:String>
+	<system:String x:Key="string_noModsInTheLibraryHeader">Não há Mods na Biblioteca!</system:String>
+	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
+	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Mods importados para o Gerenciador de Mods serão listados aqui. É possível importar Mods ao arrastar e soltar os arquivos baixados (.7z/.rar/.zip/.exe/.me2mod) nesta janela.&#10;&#10;Mods instalados diretamente pela janela do importador NÃO serão exibidos aqui, já que estarão instalados no jogo, e não importados na Biblioteca. É possível verificar as instalações clicando em "Gerenciar Destino" no canto superior direito desta janela.&#10;&#10;Mods importados para a Biblioteca são fáceis de reinstalar, podem ser adicionados a filas de instalação e mais.</system:String>
+	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Este destino recebeu Mods de textura</system:String>

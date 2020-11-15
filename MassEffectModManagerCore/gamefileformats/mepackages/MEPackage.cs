@@ -81,7 +81,7 @@ namespace ME3Explorer.Packages
         private int unknown6;
         #endregion
 
-        static bool isInitialized;
+        private static bool isInitialized;
         public static Func<string, Mod.MEGame, MEPackage> Initialize()
         {
             if (isInitialized)
@@ -93,7 +93,19 @@ namespace ME3Explorer.Packages
             return (f, g) => new MEPackage(f, g);
         }
 
-        static bool isInitializedStream;
+        private static bool isInitializedQuick;
+        public static Func<string, Mod.MEGame, MEPackage> InitializeQuick()
+        {
+            if (isInitializedQuick)
+            {
+                throw new Exception(nameof(MEPackage) + " can only be initialized once");
+            }
+
+            isInitializedQuick = true;
+            return (f, g) => new MEPackage(f, g, onlyHeader: true);
+        }
+
+        private static bool isInitializedStream;
         public static Func<Stream, Mod.MEGame, MEPackage> InitializeStream()
         {
             if (isInitializedStream)
@@ -116,7 +128,7 @@ namespace ME3Explorer.Packages
                 return;
             }
 
-            ReadPackageFromStream(stream);
+            ReadPackageFromStream(stream, false);
         }
 
         /// <summary>
@@ -139,7 +151,7 @@ namespace ME3Explorer.Packages
         /// Reads a package file from a stream.
         /// </summary>
         /// <param name="stream"></param>
-        private void ReadPackageFromStream(Stream stream)
+        private void ReadPackageFromStream(Stream stream, bool onlyHeader)
         {
             #region Header
             uint magic = stream.ReadUInt32();
@@ -258,6 +270,8 @@ namespace ME3Explorer.Packages
             }
             #endregion
 
+            if (onlyHeader) return; // That's all we need to parse. 
+
             Stream inStream = stream;
             if (IsCompressed && numChunks > 0)
             {
@@ -301,7 +315,7 @@ namespace ME3Explorer.Packages
             }
         }
 
-        private MEPackage(string filePath, Mod.MEGame forceGame = Mod.MEGame.Unknown)
+        private MEPackage(string filePath, Mod.MEGame forceGame = Mod.MEGame.Unknown, bool onlyHeader = false)
         {
             FilePath = Path.GetFullPath(filePath);
 
@@ -316,7 +330,7 @@ namespace ME3Explorer.Packages
 
             using (var fs = File.OpenRead(filePath))
             {
-                ReadPackageFromStream(fs);
+                ReadPackageFromStream(fs, onlyHeader);
             }
         }
         public void save(bool compress = false)
@@ -326,7 +340,7 @@ namespace ME3Explorer.Packages
 
         public void save(string path, bool compress = false)
         {
-            bool compressed = IsCompressed;
+            bool originallyCompressed = IsCompressed;
             if (!compress || Game == Mod.MEGame.ME1) //do not compress ME1 files
             {
                 Flags &= ~EPackageFlags.Compressed;
@@ -342,7 +356,7 @@ namespace ME3Explorer.Packages
             {
                 if (CanReconstruct)
                 {
-                    saveByReconstructing(compressed, path, compressionType);
+                    saveByReconstructing(originallyCompressed, path, compressionType);
                 }
                 else
                 {
@@ -352,7 +366,7 @@ namespace ME3Explorer.Packages
             finally
             {
                 //If we're doing save as, reset compressed flag to reflect file on disk
-                if (path != FilePath && compressed)
+                if (path != FilePath && originallyCompressed)
                 {
                     Flags |= EPackageFlags.Compressed;
                 }

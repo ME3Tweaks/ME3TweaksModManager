@@ -87,6 +87,9 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
+            //var converted = Experiments.ConvertAlternatesToALOTManifestMod(File.ReadAllText(@"C:\Users\Mgame\Desktop\moddesc.ini"));
+            //Debug.WriteLine(converted);
+            //Environment.Exit(0);
             ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
@@ -177,8 +180,7 @@ namespace MassEffectModManagerCore
                 Log.Information("Executable location: " + ExecutableLocation);
                 Log.Information("Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
-                //var info = new FileInspector(App.ExecutableLocation);
-                var info = new FileInspector(@"C:\Users\Mgamerz\Desktop\M3\ME3TweaksModManager.exe");
+                var info = new FileInspector(App.ExecutableLocation);
                 var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
 
                 if (signTime != null)
@@ -201,7 +203,7 @@ namespace MassEffectModManagerCore
                     //needs localized later.
                     BuildDate = "WARNING: This build is not signed by ME3Tweaks";
 #if !DEBUG
-                    Log.Warning("This build is not signed by ME3Tweaks. This may not be an official build.");
+                    Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
 #endif
                 }
 

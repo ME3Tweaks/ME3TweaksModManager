@@ -8,6 +8,7 @@ namespace ME3Explorer.Packages
     public static class MEPackageHandler
     {
         static Func<string, Mod.MEGame, MEPackage> MEConstructorDelegate;
+        static Func<string, Mod.MEGame, MEPackage> MEConstructorQuickDelegate;
         static Func<Stream, Mod.MEGame, MEPackage> MEConstructorStreamDelegate;
         private static bool initialized;
 
@@ -17,6 +18,7 @@ namespace ME3Explorer.Packages
             {
                 MEConstructorDelegate = MEPackage.Initialize();
                 MEConstructorStreamDelegate = MEPackage.InitializeStream();
+                MEConstructorQuickDelegate = MEPackage.InitializeQuick();
                 initialized = true;
             }
         }
@@ -30,9 +32,7 @@ namespace ME3Explorer.Packages
         {
             if (!initialized)
             {
-                MEConstructorDelegate = MEPackage.Initialize();
-                MEConstructorStreamDelegate = MEPackage.InitializeStream();
-                initialized = true;
+                Initialize();
             }
             ushort version;
             ushort licenseVersion;
@@ -61,9 +61,7 @@ namespace ME3Explorer.Packages
         {
             if (!initialized)
             {
-                MEConstructorDelegate = MEPackage.Initialize();
-                MEConstructorStreamDelegate = MEPackage.InitializeStream();
-                initialized = true;
+                Initialize();
             }
             pathToFile = Path.GetFullPath(pathToFile); //STANDARDIZE INPUT
             ushort version;
@@ -93,6 +91,39 @@ namespace ME3Explorer.Packages
         {
             MEConstructorDelegate(path, game).save();
         }
+        /// <summary>
+        /// Opens a package, but only reads the header. No names, imports or exports are parsed. The package is not decompressed.
+        /// </summary>
+        /// <param name="targetPath"></param>
+        /// <returns></returns>
+        public static MEPackage QuickOpenMEPackage(string pathToFile)
+        {
+            if (!initialized)
+            {
+                Initialize();
+            }
+            pathToFile = Path.GetFullPath(pathToFile); //STANDARDIZE INPUT
+            ushort version;
+            ushort licenseVersion;
 
+            using (FileStream fs = new FileStream(pathToFile, FileMode.Open, FileAccess.Read))
+            {
+                fs.Seek(4, SeekOrigin.Begin);
+                version = fs.ReadUInt16();
+                licenseVersion = fs.ReadUInt16();
+            }
+
+
+            if (version == 684 && licenseVersion == 194 ||
+                version == 512 && licenseVersion == 130 ||
+                version == 491 && licenseVersion == 1008)
+            {
+                return MEConstructorDelegate(pathToFile, Mod.MEGame.Unknown);
+            }
+            else
+            {
+                throw new FormatException("Not an ME1, ME2 or ME3 package file.");
+            }
+        }
     }
 }
