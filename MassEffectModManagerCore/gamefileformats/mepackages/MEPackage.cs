@@ -40,6 +40,7 @@ namespace ME3Explorer.Packages
         public EPackageFlags Flags { get; private set; }
         public int PackageTypeId { get; private set; }
 
+        public uint OriginalDependencyTableSize { get; private set; }
         public override int NameCount { get; protected set; }
         public int NameOffset { get; private set; }
         public override int ExportCount { get; protected set; }
@@ -309,6 +310,9 @@ namespace ME3Explorer.Packages
                 exports.Add(e);
             }
 
+            inStream.Seek(DependencyTableOffset, SeekOrigin.Begin);
+            OriginalDependencyTableSize = inStream.ReadUInt32();
+
             if (Game == Mod.MEGame.ME1)
             {
                 ReadLocalTLKs();
@@ -467,13 +471,21 @@ namespace ME3Explorer.Packages
 
             DependencyTableOffset = (int)uncompressedStream.Position;
 
-            //ME3EXP STYLE - BLANK (?) table
-            //uncompressedStream.WriteInt32(0);//zero-count DependencyTable
-            //Unreal Engine style
-            for (int i = 0; i < ExportCount; i++)
+            if (OriginalDependencyTableSize > 0)
             {
-                uncompressedStream.WriteInt32(0); //write same blank table back out
+                //Unreal Engine style
+                for (int i = 0; i < ExportCount; i++)
+                {
+                    uncompressedStream.WriteInt32(0); //write same blank table back out
+                }
             }
+            else
+            {
+                //ME3EXP STYLE - BLANK (?) table
+                // This shouldn't be done like this...
+                uncompressedStream.WriteInt32(0);//zero-count DependencyTable
+            }
+
             FullHeaderSize = ImportExportGuidsOffset = (int)uncompressedStream.Position;
 
             //export data
@@ -1118,27 +1130,6 @@ namespace ME3Explorer.Packages
                 binData.OverwriteRange(12, BitConverter.GetBytes(newDataOffset + export.propsEnd() + 16));
                 export.setBinaryData(binData);
             }
-            //update offsets for pcc-stored mips in Textures
-            else if (export.IsTexture())
-            {
-                int baseOffset = newDataOffset + export.propsEnd();
-                MemoryStream binData = new MemoryStream(export.getBinaryData());
-                for (int i = binData.ReadInt32(); i > 0 && binData.Position < binData.Length; i--)
-                {
-                    if (binData.ReadInt32() == 0) //pcc-stored
-                    {
-                        int uncompressedSize = binData.ReadInt32();
-                        binData.Seek(4, SeekOrigin.Current); //skip compressed size
-                        binData.WriteInt32(baseOffset + (int)binData.Position + 4);//update offset
-                        binData.Seek(uncompressedSize + 8, SeekOrigin.Current); //skip texture and width + height values
-                    }
-                    else
-                    {
-                        binData.Seek(20, SeekOrigin.Current);//skip whole rest of mip definition
-                    }
-                }
-                export.setBinaryData(binData.ToArray());
-            }
             else if (export.ClassName == "ShaderCache")
             {
                 int oldDataOffset = export.DataOffset;
@@ -1188,60 +1179,6 @@ namespace ME3Explorer.Packages
                 }
 
                 export.Data = binData.ToArray();
-            }
-            else if (export.ClassName == "StaticMeshComponent")
-            {
-                int baseOffset = newDataOffset + export.propsEnd();
-                MemoryStream bin = new MemoryStream(export.Data);
-                bin.JumpTo(export.propsEnd());
-
-                int lodDataCount = bin.ReadInt32();
-                for (int i = 0; i < lodDataCount; i++)
-                {
-                    int shadowMapCount = bin.ReadInt32();
-                    bin.Skip(shadowMapCount * 4);
-                    int shadowVertCount = bin.ReadInt32();
-                    bin.Skip(shadowVertCount * 4);
-                    int lightMapType = bin.ReadInt32();
-                    if (lightMapType == 0) continue;
-                    int lightGUIDsCount = bin.ReadInt32();
-                    bin.Skip(lightGUIDsCount * 16);
-                    int bulkDataSize;
-                    switch (lightMapType)
-                    {
-                        case 1:
-                            bin.Skip(4 + 8);
-                            bulkDataSize = bin.ReadInt32();
-                            bin.WriteInt32(baseOffset + (int)bin.Position + 4);
-                            bin.Skip(bulkDataSize);
-                            bin.Skip(12 * 3 + 8);
-                            bulkDataSize = bin.ReadInt32();
-                            bin.WriteInt32(baseOffset + (int)bin.Position + 4);
-                            bin.Skip(bulkDataSize);
-                            break;
-                        case 2:
-                            bin.Skip((16) * 3 + 16);
-                            break;
-                        case 3:
-                            bin.Skip(8);
-                            bulkDataSize = bin.ReadInt32();
-                            bin.WriteInt32(baseOffset + (int)bin.Position + 4);
-                            bin.Skip(bulkDataSize);
-                            bin.Skip(24);
-                            break;
-                        case 4:
-                        case 6:
-                            bin.Skip(124);
-                            break;
-                        case 5:
-                            bin.Skip(4 + 8);
-                            bulkDataSize = bin.ReadInt32();
-                            bin.WriteInt32(baseOffset + (int)bin.Position + 4);
-                            bin.Skip(bulkDataSize);
-                            bin.Skip(12);
-                            break;
-                    }
-                }
             }
         }
     }

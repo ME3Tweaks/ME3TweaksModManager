@@ -130,6 +130,7 @@
                     Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <MenuItem
                     Header="{DynamicResource string_openModdesciniFile}"
+                    ToolTip="{DynamicResource string_tooltip_openModdescIniFile}"
                     Command="{Binding OpenModDescCommand}">
                     <MenuItem.Icon>
                         <fa:ImageAwesome
@@ -477,6 +478,14 @@
                             Click="ChangeSetting_Clicked"
                             IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}"
                             ToolTip="{DynamicResource string_tooltip_logModInstaller}"
+                            IsCheckable="True" />
+                        <MenuItem
+                            Name="LogModUpdater_MenuItem"
+                            Header="{DynamicResource string_LogModUpdater}"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.LogModUpdater)}"
+                            ToolTip="{DynamicResource string_tooltip_logModUpdater}"
                             IsCheckable="True" />
                     </MenuItem>
                     <Separator />
