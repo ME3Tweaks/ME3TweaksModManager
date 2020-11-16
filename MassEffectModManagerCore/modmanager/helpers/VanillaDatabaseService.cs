@@ -477,7 +477,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 default:
                     throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
             }
-
         }
 
         private static Dictionary<string, string> SUPPORTED_HASHES_ME1 = new Dictionary<string, string>
