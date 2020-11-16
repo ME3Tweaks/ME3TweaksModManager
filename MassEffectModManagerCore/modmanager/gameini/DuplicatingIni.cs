@@ -5,13 +5,36 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Input;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
     [Localizable(false)]
     public class DuplicatingIni
     {
+        public Section this[string sectionName]
+        {
+            get
+            {
+                var existingSection = Sections.FirstOrDefault(x => x.Header == sectionName);
+                if (existingSection != null) return existingSection;
+                var ns = new Section()
+                {
+                    Header = sectionName
+                };
+                Sections.Add(ns);
+                return ns;
+            }
+            set
+            {
+                var sectionToReplace = Sections.FirstOrDefault(x => x.Header == sectionName);
+                if (sectionToReplace != null)
+                {
+                    Sections.Remove(sectionToReplace);
+                }
+                Sections.Add(value);
+            }
+        }
+
         public List<Section> Sections = new List<Section>();
 
         public IniEntry GetValue(string sectionname, string key)
@@ -30,6 +53,11 @@ namespace MassEffectModManagerCore.modmanager.gameini
             return Sections.FirstOrDefault(x => x.Header.Equals(section.Header, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        /// <summary>
+        /// Loads an ini file from disk
+        /// </summary>
+        /// <param name="iniFile"></param>
+        /// <returns></returns>
         public static DuplicatingIni LoadIni(string iniFile)
         {
             return ParseIni(File.ReadAllText(iniFile));
@@ -76,14 +104,10 @@ namespace MassEffectModManagerCore.modmanager.gameini
             //bool isFirst = true;
             foreach (var section in Sections)
             {
-                //if (isFirst)
-                //{
-                //    isFirst = false;
-                //}
-                //else
-                //{
-                //    sb.AppendLine(); //add a newline between headers.
-                //}
+                if (!section.Entries.Any())
+                {
+                    continue; //Do not write out empty sections.
+                }
                 sb.Append($"[{section.Header}]");
                 sb.Append("\n"); //AppendLine does \r\n which we don't want.
                 foreach (var line in section.Entries)
@@ -114,6 +138,40 @@ namespace MassEffectModManagerCore.modmanager.gameini
             {
                 return Entries.FirstOrDefault(x => x.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
             }
+
+            public IniEntry this[string keyname]
+            {
+                get
+                {
+                    var firstExistingEntry = Entries.FirstOrDefault(x => x.Key == keyname);
+                    if (firstExistingEntry != null) return firstExistingEntry;
+
+                    var ne = new IniEntry(keyname, "");
+                    Entries.Add(ne);
+                    return ne;
+                }
+                set
+                {
+                    var keyToReplace = Entries.FirstOrDefault(x => x.Key == keyname);
+                    if (keyToReplace != null)
+                    {
+                        Entries.Remove(keyToReplace);
+                    }
+                    Entries.Add(value);
+                }
+            }
+
+            public void SetSingleEntry(string key, string value)
+            {
+                Entries.RemoveAll(x => x.Key == key);
+                Entries.Add(new IniEntry(key, value));
+            }
+
+            public void SetSingleEntry(string key, int value)
+            {
+                Entries.RemoveAll(x => x.Key == key);
+                Entries.Add(new IniEntry(key, value.ToString()));
+            }
         }
 
         [DebuggerDisplay("IniEntry {Key} = {Value}")]
@@ -127,6 +185,12 @@ namespace MassEffectModManagerCore.modmanager.gameini
             public IniEntry(string line)
             {
                 RawText = line;
+                Key = KeyPair.Key;
+                Value = KeyPair.Value;
+            }
+            public IniEntry(string key, string value)
+            {
+                RawText = $"{key}={value}";
                 Key = KeyPair.Key;
                 Value = KeyPair.Value;
             }

@@ -24,6 +24,7 @@ using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
 using Microsoft.Win32;
 using MassEffectModManagerCore.gamefileformats;
+using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -79,23 +80,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var customDLCJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
             if (customDLCJob != null)
             {
-                //Todo: Implement this for ME1, ME2
-                if (mod.Game == Mod.MEGame.ME3)
-                {
-                    var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
-                    customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
+                var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
+                customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
 
-                    if (customDLCFolders.Count > 0)
+                if (customDLCFolders.Count > 0)
+                {
+                    DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                     {
-                        DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-                        {
-                            ItemText = M3L.GetString(M3L.string_languageSupportCheck),
-                            ModToValidateAgainst = mod,
-                            ValidationFunction = CheckLocalizationsME3,
-                            ErrorsMessage = M3L.GetString(M3L.string_languageSupportCheckDetectedFollowingIssues),
-                            ErrorsTitle = M3L.GetString(M3L.string_languageSupportIssuesDetectedInMod)
-                        });
-                    }
+                        ItemText = M3L.GetString(M3L.string_languageSupportCheck),
+                        ModToValidateAgainst = mod,
+                        ValidationFunction = CheckLocalizations,
+                        ErrorsMessage = M3L.GetString(M3L.string_languageSupportCheckDetectedFollowingIssues),
+                        ErrorsTitle = M3L.GetString(M3L.string_languageSupportIssuesDetectedInMod)
+                    });
                 }
             }
             if (mod.Game >= Mod.MEGame.ME2)
@@ -158,7 +155,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     item.Errors.Add(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                     blocking = true;
-                    DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
                 }
 
                 var package = MEPackageHandler.QuickOpenMEPackage(p);
@@ -256,7 +252,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private void CheckLocalizationsME3(DeploymentChecklistItem obj)
+        private void CheckLocalizations(DeploymentChecklistItem obj)
         {
             var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
             var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
@@ -267,76 +263,141 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var customDLC in customDLCFolders)
             {
                 if (_closed) return;
-                var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, @"CookedPCConsole", customDLC);
-                Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
-                foreach (var language in languages)
+                if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
                 {
-                    if (_closed) return;
-                    var tlkLangPath = tlkBasePath + @"_" + language.filecode + @".tlk";
-                    if (File.Exists(tlkLangPath))
+                    var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == Mod.MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole", customDLC);
+                    Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
+                    foreach (var language in languages)
                     {
-                        //inspect
-                        TalkFileME2ME3 tf = new TalkFileME2ME3();
-                        tf.LoadTlkData(tlkLangPath);
-                        tlkMappings[language.filecode] = tf.StringRefs;
+                        if (_closed) return;
+                        var tlkLangPath = tlkBasePath + @"_" + language.filecode + @".tlk";
+                        if (File.Exists(tlkLangPath))
+                        {
+                            //inspect
+                            TalkFileME2ME3 tf = new TalkFileME2ME3();
+                            tf.LoadTlkData(tlkLangPath);
+                            tlkMappings[language.filecode] = tf.StringRefs;
 
-                        //Check string order
-                        var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
-                        var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
-                        string gender = M3L.GetString(M3L.string_male);
-                        if (!malestringRefsInRightOrder)
-                        {
-                            //Some TLK string will not work
-                            errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
+                            //Check string order
+                            var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
+                            var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
+                            string gender = M3L.GetString(M3L.string_male);
+                            if (!malestringRefsInRightOrder)
+                            {
+                                //Some TLK strings will not work
+                                errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
+                            }
+
+                            if (!femalestringRefsInRightOrder)
+                            {
+                                gender = M3L.GetString(M3L.string_female);
+                                //Some TLK strings will not work
+                                errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
+                            }
                         }
-                        if (!femalestringRefsInRightOrder)
+                        else
                         {
-                            gender = M3L.GetString(M3L.string_female);
-                            //Some TLK string will not work
-                            errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
+                            errors.Add(M3L.GetString(M3L.string_interp_customDLCMissingLocalizedTLK, customDLC, language.filecode));
+                        }
+                    }
+
+                    if (tlkMappings.Count > 1)
+                    {
+                        //find TLK with most entries
+                        //var tlkCounts = tlkMappings.Select(x => (x.Key, x.Value.Count));
+                        double numLoops = Math.Pow(tlkMappings.Count - 1, tlkMappings.Count - 1);
+                        int numDone = 0;
+                        foreach (var mapping1 in tlkMappings)
+                        {
+                            foreach (var mapping2 in tlkMappings)
+                            {
+                                if (mapping1.Equals(mapping2))
+                                {
+                                    continue;
+                                }
+
+                                var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
+                                foreach (var difference in differences)
+                                {
+                                    var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? M3L.GetString(M3L.string_errorFindingString);
+                                    errors.Add(M3L.GetString(M3L.string_interp_tlkDifference, difference.ToString(), mapping1.Key, mapping2.Key, str));
+                                }
+
+                                numDone++;
+                                double percent = (numDone * 100.0) / numLoops;
+                                obj.ItemText = $@"{M3L.GetString(M3L.string_languageCheckInProgress)} {percent:0.00}%";
+                            }
                         }
                     }
                     else
                     {
-                        errors.Add(M3L.GetString(M3L.string_interp_customDLCMissingLocalizedTLK, customDLC, language.filecode)); ;
+                        errors.Add(M3L.GetString(M3L.string_interp_dlcModHasNoTlkFiles, customDLC));
+                        obj.DeploymentBlocking = true;
                     }
                 }
-                if (tlkMappings.Count > 1)
+                else
                 {
-                    //find TLK with most entries
-                    //var tlkCounts = tlkMappings.Select(x => (x.Key, x.Value.Count));
-                    double numLoops = Math.Pow(tlkMappings.Count - 1, tlkMappings.Count - 1);
-                    int numDone = 0;
-                    foreach (var mapping1 in tlkMappings)
+                    // ME1
+                    var parsedIni = DuplicatingIni.LoadIni(Path.Combine(ModBeingDeployed.ModPath, customDLC, @"AutoLoad.ini"));
+
+                    if (int.TryParse(parsedIni[@"GUI"][@"NameStrRef"]?.Value, out var tlkid))
                     {
-                        foreach (var mapping2 in tlkMappings)
+                        var tlkFile = parsedIni[@"Packages"][@"GlobalTalkTable1"]?.Value;
+                        if (tlkFile == null)
                         {
-                            if (mapping1.Equals(mapping2))
+                            errors.Add(M3L.GetString(M3L.string_interp_dlcModMissingTlkInAutoloadIni, customDLC));
+                            obj.DeploymentBlocking = true;
+                        }
+                        else
+                        {
+                            // Check TLK exists.
+                            var tlkExportObjName = tlkFile.Split('.').Last();
+                            tlkFile = tlkFile.Substring(0, tlkFile.IndexOf(@"_tlk")); //They end with _tlk
+                            var tlkPackagePath = Directory.GetFiles(Path.Combine(ModBeingDeployed.ModPath, customDLC), $@"{tlkFile}.upk").FirstOrDefault();
+                            if (tlkPackagePath == null)
                             {
-                                continue;
+                                errors.Add(M3L.GetString(M3L.string_interp_dlcModMissingAutoLoadTlkFile, customDLC, tlkFile));
+                                obj.DeploymentBlocking = true;
                             }
-
-                            var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
-                            foreach (var difference in differences)
+                            else
                             {
-                                var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? M3L.GetString(M3L.string_errorFindingString);
-                                errors.Add(M3L.GetString(M3L.string_interp_tlkDifference, difference.ToString(), mapping1.Key, mapping2.Key, str));
-                            }
+                                // Open and inspect TLK package.
+                                var tlkPackage = MEPackageHandler.OpenMEPackage(tlkPackagePath);
+                                var tfExp = tlkPackage.Exports.FirstOrDefault(x => x.ObjectName == tlkExportObjName && x.ClassName == @"BioTlkFile");
+                                if (tfExp == null)
+                                {
+                                    errors.Add(M3L.GetString(M3L.string_interp_dlcModTlkPackageHasNoUsableTlk, customDLC));
+                                    obj.DeploymentBlocking = true;
+                                }
 
-                            numDone++;
-                            double percent = (numDone * 100.0) / numLoops;
-                            obj.ItemText = $@"{M3L.GetString(M3L.string_languageCheckInProgress)} {percent:0.00}%";
+                                TalkFileME1 tf = new TalkFileME1(tfExp);
+                                var str = tf.findDataById(tlkid);
+                                if (str == @"No Data")
+                                {
+                                    // INVALID
+                                    errors.Add(M3L.GetString(M3L.string_interp_dlcModTlkPackageMissingStringId, customDLC, tlkid));
+                                    obj.DeploymentBlocking = true;
+                                }
+                                else
+                                {
+                                    // Valid
+                                }
+                            }
                         }
                     }
-                    //use INT as master. Not sure if any mods are not-english based
-                    //TODO
+                    else
+                    {
+                        errors.Add(M3L.GetString(M3L.string_interp_dlcModAutoLoadMissingNameStrRef, customDLC));
+                        obj.DeploymentBlocking = true;
+                    }
                 }
             }
+
             if (errors.Count > 0)
             {
                 obj.HasError = true;
-                obj.Icon = FontAwesomeIcon.Warning;
-                obj.Foreground = Brushes.Orange;
+                obj.Icon = obj.DeploymentBlocking ? FontAwesomeIcon.TimesCircle : FontAwesomeIcon.Warning;
+                obj.Foreground = obj.DeploymentBlocking ? Brushes.Red : Brushes.Orange;
                 obj.Errors = errors;
                 obj.ItemText = M3L.GetString(M3L.string_languageCheckDetectedIssues);
                 obj.ToolTip = M3L.GetString(M3L.string_validationFailed);
@@ -982,6 +1043,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                MELoadedFiles.InvalidateCaches();
                 TaskbarHelper.SetProgress(0);
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 if (b.Error != null)
@@ -993,6 +1055,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (DeploymentChecklistItems.Any(x => x.DeploymentBlocking))
                 {
                     OperationText = M3L.GetString(M3L.string_deploymentBlockedUntilAboveItemsAreFixed);
+                    DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
                 }
                 else
                 {

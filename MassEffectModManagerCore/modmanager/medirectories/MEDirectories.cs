@@ -210,21 +210,21 @@ namespace MassEffectModManagerCore.GameDirectories
             return OfficialDLC(target.Game).Any(dlcFolder => path.StartsWith(Path.Combine(dlcPath, dlcFolder), StringComparison.CurrentCultureIgnoreCase));
         }
 
-        public static List<string> EnumerateGameFiles(Mod.MEGame GameVersion, string searchPath, bool recurse = true, Predicate<string> predicate = null)
+        public static List<string> EnumerateGameFiles(Mod.MEGame game, string searchPath, bool recurse = true, Predicate<string> predicate = null)
         {
             List<string> files = Directory.EnumerateFiles(searchPath, "*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToList();
 
-            files = EnumerateGameFiles(GameVersion, files, predicate);
+            files = EnumerateGameFiles(game, files, predicate);
 
             return files;
         }
 
-        public static List<string> EnumerateGameFiles(Mod.MEGame GameVersion, List<string> files, Predicate<string> predicate = null)
+        public static List<string> EnumerateGameFiles(Mod.MEGame game, List<string> files, Predicate<string> predicate = null)
         {
             if (predicate == null)
             {
                 // KFreon: Set default search predicate.
-                switch (GameVersion)
+                switch (game)
                 {
                     case Mod.MEGame.ME1:
                         predicate = s => s.ToLowerInvariant().EndsWith(".upk", true, null) || s.ToLowerInvariant().EndsWith(".u", true, null) || s.ToLowerInvariant().EndsWith(".sfm", true, null);

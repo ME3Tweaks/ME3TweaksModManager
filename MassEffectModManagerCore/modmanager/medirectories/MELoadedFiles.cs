@@ -18,6 +18,13 @@ namespace MassEffectModManagerCore.GameDirectories
 
         private static readonly string[] ME2and3FilePatternIncludeTFC = { "*.pcc", "*.tfc" };
 
+        public static void InvalidateCaches()
+        {
+            cachedME1LoadedFiles = cachedME2LoadedFiles = cachedME3LoadedFiles = null;
+            cachedME1TargetFiles = cachedME2TargetFiles = cachedME3TargetFiles = null;
+        }
+
+        #region LoadedFiles
         private static Dictionary<string, string> cachedME1LoadedFiles;
         private static Dictionary<string, string> cachedME2LoadedFiles;
         private static Dictionary<string, string> cachedME3LoadedFiles;
@@ -53,7 +60,47 @@ namespace MassEffectModManagerCore.GameDirectories
 
             return loadedFiles;
         }
+        #endregion
 
+        #region All Game Files
+        private static List<string> cachedME1TargetFiles;
+        private static List<string> cachedME2TargetFiles;
+        private static List<string> cachedME3TargetFiles;
+
+        /// <summary>
+        /// Gets a Dictionary of all loaded files in the given game. Key is the filename, value is file path
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static List<string> GetAllGameFiles(GameTarget target, bool forceReload = false, bool includeTFC = false)
+        {
+            var game = target.Game;
+            if (!forceReload)
+            {
+                if (game == Mod.MEGame.ME1 && cachedME1TargetFiles != null) return cachedME1TargetFiles;
+                if (game == Mod.MEGame.ME2 && cachedME2TargetFiles != null) return cachedME2TargetFiles;
+                if (game == Mod.MEGame.ME3 && cachedME3TargetFiles != null) return cachedME3TargetFiles;
+            }
+
+            //make dictionary from basegame files
+            var loadedFiles = new List<string>(2000);
+
+            foreach (string directory in GetEnabledDLC(target).OrderBy(dir => GetMountPriority(dir, game)).Prepend(MEDirectories.BioGamePath(target)))
+            {
+                foreach (string filePath in GetCookedFiles(game, directory, includeTFC))
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    if (fileName != null) loadedFiles.Add(filePath);
+                }
+            }
+
+            if (game == Mod.MEGame.ME1) cachedME1TargetFiles = loadedFiles;
+            if (game == Mod.MEGame.ME2) cachedME2TargetFiles = loadedFiles;
+            if (game == Mod.MEGame.ME3) cachedME3TargetFiles = loadedFiles;
+
+            return loadedFiles;
+        }
+#endregion
         /// <summary>
         /// Gets a Dictionary of all loaded files in the given target. Key is the filename, value is file path
         /// </summary>

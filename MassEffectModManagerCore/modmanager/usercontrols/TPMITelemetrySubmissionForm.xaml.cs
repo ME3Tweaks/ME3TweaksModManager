@@ -17,6 +17,7 @@ using Flurl;
 using Flurl.Http;
 using IniParser;
 using MassEffectModManagerCore.GameDirectories;
+using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
@@ -57,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape && !TelemetryPackages.Any(x=>x.TelemetrySubmissionInProgress))
+            if (e.Key == Key.Escape && !TelemetryPackages.Any(x => x.TelemetrySubmissionInProgress))
             {
                 OnClosing(DataEventArgs.Empty);
             }
@@ -91,7 +92,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public int MountFlag { get; set; }
             public string ModuleNumber { get; set; } = @"N/A";
             public string MountFlagHR { get; set; }
-            
+
             public ICommand SubmitCommand { get; set; }
 
             public TelemetryPackage()
@@ -155,7 +156,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var mapping in foldersToPrepare)
             {
                 var tp = GetTelemetryPackageForModDLC(TelemetryMod, mapping.Key, mapping.Value); //this might need to be changed if it's not same source/dest dirs.
-                telemetryPackages.Add(tp);
+                if (tp != null)
+                {
+                    telemetryPackages.Add(tp);
+                }
             }
 
             e.Result = telemetryPackages;
@@ -175,59 +179,65 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static TelemetryPackage GetTelemetryPackageForDLC(Mod.MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, Mod telemetryMod)
         {
-            TelemetryPackage tp = new TelemetryPackage();
-            var sourceDir = Path.Combine(dlcDirectory, dlcFoldername);
-            tp.DLCFolderName = destinationDLCName; //this most times will be the same as dlcFoldername, but in case of alternates, it might not be
-            if (telemetryMod != null && telemetryMod.HumanReadableCustomDLCNames.TryGetValue(dlcFoldername, out var modNameIni))
+            try
             {
-                tp.ModName = modNameIni;
-            }
-            else
-            {
-                tp.ModName = modName;
-            }
+                TelemetryPackage tp = new TelemetryPackage();
+                var sourceDir = Path.Combine(dlcDirectory, dlcFoldername);
+                tp.DLCFolderName = destinationDLCName; //this most times will be the same as dlcFoldername, but in case of alternates, it might not be
+                if (telemetryMod != null && telemetryMod.HumanReadableCustomDLCNames.TryGetValue(dlcFoldername, out var modNameIni))
+                {
+                    tp.ModName = modNameIni;
+                }
+                else
+                {
+                    tp.ModName = modName;
+                }
 
-            tp.ModAuthor = modAuthor;
-            tp.ModSite = modSite;
-            tp.Game = game;
-            switch (game)
-            {
-                case Mod.MEGame.ME1:
-                    {
-                        var ini = new FileIniDataParser();
-                        var parsedIni = ini.Parser.Parse(File.ReadAllText(Path.Combine(sourceDir, @"AutoLoad.ini")));
-                        tp.MountPriority = int.Parse(parsedIni[@"ME1DLCMOUNT"][@"ModMount"]);
-                        tp.ModMountTLK1 = int.Parse(parsedIni[@"GUI"][@"NameStrRef"]);
-                        tp.MountFlagHR = M3L.GetString(M3L.string_me1MountFlagsNotSupportedInM3);
-                        //No mount flag right now.
-                    }
-                    break;
-                case Mod.MEGame.ME2:
-                    {
-                        var mountFile = Path.Combine(sourceDir, @"CookedPC", @"mount.dlc");
-                        MountFile mf = new MountFile(mountFile);
-                        tp.ModMountTLK1 = mf.TLKID;
-                        tp.MountPriority = mf.MountPriority;
-                        tp.MountFlag = (int)mf.MountFlag;
-                        tp.MountFlagHR = mf.MountFlag.ToString();
-                        var ini = new FileIniDataParser();
-                        var parsedIni = ini.Parser.Parse(File.ReadAllText(Path.Combine(sourceDir, @"CookedPC", @"BIOEngine.ini")));
-                        tp.ModuleNumber = parsedIni[@"Engine.DLCModules"][dlcFoldername];
-                    }
-                    break;
-                case Mod.MEGame.ME3:
-                    {
-                        var mountFile = Path.Combine(sourceDir, @"CookedPCConsole", @"mount.dlc");
-                        MountFile mf = new MountFile(mountFile);
-                        tp.ModMountTLK1 = mf.TLKID;
-                        tp.MountPriority = mf.MountPriority;
-                        tp.MountFlag = (int)mf.MountFlag;
-                        tp.MountFlagHR = mf.MountFlag.ToString();
-                    }
-                    break;
-            }
+                tp.ModAuthor = modAuthor;
+                tp.ModSite = modSite;
+                tp.Game = game;
+                switch (game)
+                {
+                    case Mod.MEGame.ME1:
+                        {
+                            var parsedIni = DuplicatingIni.LoadIni(Path.Combine(sourceDir, @"AutoLoad.ini"));
+                            tp.MountPriority = int.Parse(parsedIni[@"ME1DLCMOUNT"][@"ModMount"]?.Value);
+                            tp.ModMountTLK1 = int.Parse(parsedIni[@"GUI"][@"NameStrRef"]?.Value);
+                            tp.MountFlagHR = M3L.GetString(M3L.string_me1MountFlagsNotSupportedInM3);
+                            //No mount flag right now.
+                        }
+                        break;
+                    case Mod.MEGame.ME2:
+                        {
+                            var mountFile = Path.Combine(sourceDir, @"CookedPC", @"mount.dlc");
+                            MountFile mf = new MountFile(mountFile);
+                            tp.ModMountTLK1 = mf.TLKID;
+                            tp.MountPriority = mf.MountPriority;
+                            tp.MountFlag = (int)mf.MountFlag;
+                            tp.MountFlagHR = mf.MountFlag.ToString();
+                            var ini = DuplicatingIni.LoadIni(Path.Combine(sourceDir, @"CookedPC", @"BIOEngine.ini"));
+                            tp.ModuleNumber = ini[@"Engine.DLCModules"][dlcFoldername]?.Value;
+                        }
+                        break;
+                    case Mod.MEGame.ME3:
+                        {
+                            var mountFile = Path.Combine(sourceDir, @"CookedPCConsole", @"mount.dlc");
+                            MountFile mf = new MountFile(mountFile);
+                            tp.ModMountTLK1 = mf.TLKID;
+                            tp.MountPriority = mf.MountPriority;
+                            tp.MountFlag = (int)mf.MountFlag;
+                            tp.MountFlagHR = mf.MountFlag.ToString();
+                        }
+                        break;
+                }
 
-            return tp;
+                return tp;
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Error building telemetry package for {dlcFoldername}: {e.Message}.");
+                return null;
+            }
         }
     }
 }
