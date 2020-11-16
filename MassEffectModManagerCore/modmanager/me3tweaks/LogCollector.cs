@@ -467,6 +467,24 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         addDiagLine($@"Game source: Unknown/Unsupported - {selectedDiagnosticTarget.ExecutableHash}", Severity.FATAL);
                     }
 
+                    if (selectedDiagnosticTarget.Game == Mod.MEGame.ME1)
+                    {
+                        Log.Information(@"Getting additional ME1 executable information");
+                        var exeInfo = ME1ExecutableInfo.GetExecutableInfo(MEDirectories.ExecutablePath(selectedDiagnosticTarget), false);
+                        if (avi != null)
+                        {
+                            addDiagLine($@"Large Address Aware: {exeInfo.HasLAAApplied}", exeInfo.HasLAAApplied ? Severity.GOOD : Severity.FATAL);
+                            addDiagLine($@"No-admin patched: {exeInfo.HasLAAApplied}", exeInfo.HasProductNameChanged ? Severity.GOOD : Severity.WARN);
+                            addDiagLine($@"enableLocalPhysXCore patched: {exeInfo.HasPhysXCoreChanged}", exeInfo.HasLAAApplied ? Severity.GOOD : Severity.WARN);
+                        }
+                        else
+                        {
+                            addDiagLine($@"Large Address Aware: {exeInfo.HasLAAApplied}");
+                            addDiagLine($@"No-admin patched: {exeInfo.HasLAAApplied}");
+                            addDiagLine($@"enableLocalPhysXCore patched: {exeInfo.HasLAAApplied}");
+                        }
+                    }
+
                     //Executable signatures
                     Log.Information(@"Checking executable signature");
 

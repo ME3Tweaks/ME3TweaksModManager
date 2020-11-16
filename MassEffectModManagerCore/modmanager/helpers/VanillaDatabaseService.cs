@@ -461,12 +461,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns>Game source if supported, null otherwise</returns>
         internal static (string hash, string result) GetGameSource(GameTarget target)
         {
-            var md5 = Utilities.CalculateMD5(MEDirectories.ExecutablePath(target));
+            var md5 = target.Game == Mod.MEGame.ME1 ? null : Utilities.CalculateMD5(MEDirectories.ExecutablePath(target));
             switch (target.Game)
             {
                 case Mod.MEGame.ME1:
-                    SUPPORTED_HASHES_ME1.TryGetValue(md5, out var me1result);
-                    return (md5, me1result);
+                    ME1ExecutableInfo me1ExecutableInfo = ME1ExecutableInfo.GetExecutableInfo(MEDirectories.ExecutablePath(target), true);
+                    SUPPORTED_HASHES_ME1.TryGetValue(me1ExecutableInfo.OriginalExecutableHash, out var me1result);
+                    return (me1ExecutableInfo.OriginalExecutableHash, me1result);
                 case Mod.MEGame.ME2:
                     SUPPORTED_HASHES_ME2.TryGetValue(md5, out var me2result);
                     return (md5, me2result);
@@ -482,18 +483,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
         private static Dictionary<string, string> SUPPORTED_HASHES_ME1 = new Dictionary<string, string>
         {
             [@"647b93621389709cab8d268379bd4c47"] = @"Steam",
-            [@"78ac3d9b4aad1989dae74505ea65aa6c"] = @"Steam, MEM patched",
-            [@"5c87b24a141bc6a487a2199dec9739a0"] = @"Steam, V4 MEM patched",
             [@"fef464b4b92c19ce76add75de6732ccf"] = @"Steam, BioWare signed",
-            [@"2390143503635f3c4cfaed0afe0b8c71"] = @"Origin, MEM patched",
-            [@"bfe090e76ca9f4d585e380662cf4980e"] = @"Origin, V4 MEM patched",
             [@"ff1f894fa1c2dbf4d4b9f0de85c166e5"] = @"Origin",
             [@"73b76699d4e245c92110a93c54980b78"] = @"DVD",
             [@"298c30a399d0959e5e997a9d64b42548"] = @"DVD, Polish",
-            [@"9a89527800722ec308c01a421bfeb478"] = @"DVD, Polish, MEM Patched",
-            [@"8bba14d838d9c95e10d8ceeb5c958976"] = @"Origin, German",
-            [@"a8d61af97159cb62040c07b94e44299e"] = @"Origin, Vanilla, Alternate?",
-            [@"b4737d250c00472aeb365c5d769ce6aa"] = @"Origin, MEM Patched, Alternate?",
+            [@"8bba14d838d9c95e10d8ceeb5c958976"] = @"Origin, Vanilla, Alternate1?",
+            [@"a8d61af97159cb62040c07b94e44299e"] = @"Origin, Vanilla, Alternate2?",
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_ME2 = new Dictionary<string, string>

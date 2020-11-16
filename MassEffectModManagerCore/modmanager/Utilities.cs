@@ -1316,23 +1316,11 @@ namespace MassEffectModManagerCore
                 throw new Exception("Cannot use softshadows parameter of SetLODs() with a game that is not ME1");
             }
 
+            Log.Information($@"Settings LODS for {target.Game}, highres: {highres}, 2K: {limit2k}, SS: {softshadows}");
+            
             try
             {
-                string settingspath = null;
-                switch (game)
-                {
-                    case Mod.MEGame.ME1:
-                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect", "Config", "BIOEngine.ini");
-                        break;
-                    case Mod.MEGame.ME2:
-                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 2", "BioGame", "Config", "GamerSettings.ini");
-                        break;
-                    case Mod.MEGame.ME3:
-                        settingspath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 3", "BioGame", "Config", "GamerSettings.ini");
-                        break;
-                }
-
-                ;
+                string settingspath = MEDirectories.LODConfigFile(game);
 
                 if (!File.Exists(settingspath) && game == Mod.MEGame.ME1)
                 {
@@ -1343,6 +1331,26 @@ namespace MassEffectModManagerCore
                 {
                     Directory.CreateDirectory(Directory.GetParent(settingspath).FullName); //ensure directory exists.
                     File.Create(settingspath).Close();
+                }
+
+                bool configFileReadOnly = false;
+                if (game == Mod.MEGame.ME1)
+                {
+                    try
+                    {
+                        // Get read only state for config file. It seems sometimes they get set read only.
+                        FileInfo fi = new FileInfo(settingspath);
+                        configFileReadOnly = fi.IsReadOnly;
+                        if (configFileReadOnly)
+                        {
+                            Log.Information(@"Removing read only flag from ME1 bioengine.ini");
+                            fi.IsReadOnly = false; //clear read only. might happen on some binkw32 in archives, maybe
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Error removing readonly flag from ME1 bioengine.ini: {e.Message}");
+                    }
                 }
 
                 DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
@@ -1472,6 +1480,20 @@ namespace MassEffectModManagerCore
 
                     File.WriteAllText(settingspath, ini.ToString());
                     Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
+                }
+
+                if (configFileReadOnly)
+                {
+                    try
+                    {
+                        Log.Information(@"Re-setting the read only flag on ME1 bioengine.ini");
+                        FileInfo fi = new FileInfo(settingspath);
+                        fi.IsReadOnly = true;
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Error re-setting readonly flag from ME1 bioengine.ini: {e.Message}");
+                    }
                 }
             }
             catch (Exception e)
