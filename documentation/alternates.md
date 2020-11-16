@@ -73,6 +73,18 @@ RequiredFileSizes = 13834296)
 ```
 This condition will automatically apply if the file `BIOGame\DLC\DLC_CON_TaliMaster\Movies\End03_Flashback_Tali.bik` is found and is of size `13834296`.
 
+Example 2: Installing files from a folder if a specific official DLC is present. This example is from MEUITM2's Miranda Mesh fixes mod.
+```
+(Condition=COND_DLC_PRESENT, # We will trigger if a specific DLC is installed
+ConditionalDLC=DLC_DHME1, # We will trigger if DLC_DHME1 is found installed
+ModOperation=OP_ADD_FOLDERFILES_TO_CUSTOMDLC,  # We will add a folder of files to our Custom DLC
+ModAltDLC=GENESIS, # Where the files we will add are located, relative to the root
+ModDestDLC=DLC_MOD_MirandaMEUITM2MeshFixes/CookedPC #Where the files will go IN the game, relative to the DLC root directory
+FriendlyName="Genesis DLC compatibility", #Name that is shown to the user
+Description="Installs Genesis DLC versions of files if Genesis DLC is installed" # The text that is shown to the user
+)
+```
+
 ## MultiLists
 MultiLists are a feature of moddesc 6.0 that enable a developer to provide alternate installation options that use the same file in at least 2 or more variations. This feature was developed initially for PEOM to enable ending compatibility across 4 different ending options, with different options using different files but some common to multiple options. This feature prevents having to pack additional copies of files into the archive.
 
