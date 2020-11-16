@@ -4,7 +4,7 @@
 		<PublishTrimmed>false</PublishTrimmed>
 		<PublishReadyToRun>true</PublishReadyToRun>
 		<PublishSingleFile>true</PublishSingleFile>
-		<TargetFramework>net5.0-windows</TargetFramework>
+		<TargetFramework>net5.0-windows8.1</TargetFramework>
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>

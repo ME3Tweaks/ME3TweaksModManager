@@ -92,6 +92,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_LogMixinStartup = "string_LogMixinStartup";
 		public static readonly string string_LogModInstallation = "string_LogModInstallation";
 		public static readonly string string_LogModMakerCompiler = "string_LogModMakerCompiler";
+		public static readonly string string_LogModUpdater = "string_LogModUpdater";
 		public static readonly string string_Checkforcontentupdates = "string_Checkforcontentupdates";
 		public static readonly string string_ChecksME3Tweaksforupdatestovariousservices = "string_ChecksME3Tweaksforupdatestovariousservices";
 		public static readonly string string_Reloadsmodsfromthemodlibrary = "string_Reloadsmodsfromthemodlibrary";
@@ -295,6 +296,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_logModLoading = "string_tooltip_logModLoading";
 		public static readonly string string_tooltip_logModMakerCompiler = "string_tooltip_logModMakerCompiler";
 		public static readonly string string_tooltip_logModInstaller = "string_tooltip_logModInstaller";
+		public static readonly string string_tooltip_logModUpdater = "string_tooltip_logModUpdater";
 		public static readonly string string_tooltip_importAnAlreadyinstalledDLCMod = "string_tooltip_importAnAlreadyinstalledDLCMod";
 		public static readonly string string_tooltip_downloadME3TweaksMod = "string_tooltip_downloadME3TweaksMod";
 		public static readonly string string_tooltip_createME3TweaksModMakerMod = "string_tooltip_createME3TweaksModMakerMod";
@@ -330,6 +332,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_manageNexusModsIntegration = "string_tooltip_manageNexusModsIntegration";
 		public static readonly string string_interp_visitSelectedModWebSite = "string_interp_visitSelectedModWebSite";
 		public static readonly string string_openModdesciniFile = "string_openModdesciniFile";
+		public static readonly string string_tooltip_openModdescIniFile = "string_tooltip_openModdescIniFile";
 		public static readonly string string_autoUpdateLODs2K = "string_autoUpdateLODs2K";
 		public static readonly string string_autoUpdateLODs4K = "string_autoUpdateLODs4K";
 		public static readonly string string_tooltip_autoLods2K = "string_tooltip_autoLods2K";
@@ -391,6 +394,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_errorUpdatingLocalization = "string_errorUpdatingLocalization";
 		public static readonly string string_noModsInTheLibraryHeader = "string_noModsInTheLibraryHeader";
 		public static readonly string string_noModsInLibraryDescription = "string_noModsInLibraryDescription";
+		public static readonly string string_interp_dialog_cannotDeployModNoTarget = "string_interp_dialog_cannotDeployModNoTarget";
+		public static readonly string string_cannotDeployMod = "string_cannotDeployMod";
+		public static readonly string string_interp_dialog_cannotDeployModNoBackup = "string_interp_dialog_cannotDeployModNoBackup";
 		public static readonly string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
@@ -546,6 +552,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_uncompressedModItems = "string_uncompressedModItems";
 		public static readonly string string_dialog_improperlyDeployedMod = "string_dialog_improperlyDeployedMod";
 		public static readonly string string_improperlyDeployedMod = "string_improperlyDeployedMod";
+		public static readonly string string_interp_packageFileNoNames = "string_interp_packageFileNoNames";
+		public static readonly string string_interp_packageFileNoImports = "string_interp_packageFileNoImports";
+		public static readonly string string_interp_packageFileNoExports = "string_interp_packageFileNoExports";
 		public static readonly string string_backupsAreShared = "string_backupsAreShared";
 		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public static readonly string string_backUp = "string_backUp";
@@ -688,6 +697,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_clickToOpenASIManager = "string_tooltip_clickToOpenASIManager";
 		public static readonly string string_manageASIsWithASIManager = "string_manageASIsWithASIManager";
 		public static readonly string string_binkw32DLCBypass = "string_binkw32DLCBypass";
+		public static readonly string string_dialog_restoringSFARWithoutBackup = "string_dialog_restoringSFARWithoutBackup";
+		public static readonly string string_backupNotAvailable = "string_backupNotAvailable";
 		public static readonly string string_selectALogToView = "string_selectALogToView";
 		public static readonly string string_collectingLogInformation = "string_collectingLogInformation";
 		public static readonly string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";

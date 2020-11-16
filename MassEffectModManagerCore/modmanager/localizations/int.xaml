@@ -339,7 +339,11 @@
     <!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language.-->
     <system:String xml:space="preserve" x:Key="string_noModsInLibraryDescription">Mods you import into Mod Manager will be listed here. You can import mods by dragging and dropping their downloaded archives (.7z/.rar/.zip/.exe/.me2mod) onto this window.&#10;&#10;Mods that are directly installed from the importer window will NOT be shown here, as they are installed into the game, not imported into the library. You can see what's installed by clicking 'Manage Target' in the top right of this window.&#10;&#10;Mods that are imported into the mod library are easy to reinstall, can be added to batch install queues, and more.</system:String>
     <!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
-
+    <system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">No game installation for {0} is available. Deploying a mod requires a game installation for the game so deployment can check for data in that installation that will not be accessible in another setup.</system:String>
+    <!-- 0=ME1/ME2/ME3 -->
+    <system:String x:Key="string_cannotDeployMod">Cannot deploy mod</system:String>
+    <system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">No backup for {0} is available. Deploying a mod requires a game backup for the game the mod will install to, so the deployment checks can check against a vanilla game installation.</system:String>
+    <!-- 0=ME1/ME2/ME3 -->
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
@@ -540,6 +544,12 @@
     <!-- This is a 'status' text to show what's being worked on-->
     <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it.</system:String>
     <system:String x:Key="string_improperlyDeployedMod">Improperly deployed mod</system:String>
+    <system:String x:Key="string_interp_packageFileNoNames">Package file {0} does not contain any names. This is an invalid package file</system:String>
+    <!-- 0=relative file path -->
+    <system:String x:Key="string_interp_packageFileNoImports">Package file {0} does not contain any imports. This is an invalid package file</system:String>
+    <!-- 0=relativepath -->
+    <system:String x:Key="string_interp_packageFileNoExports">Package file {0} does not contain any exports. This is an invalid package file</system:String>
+    <!-- 0=relativefilepath -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
@@ -718,6 +728,8 @@
     <system:String  x:Key="string_tooltip_clickToOpenASIManager">Click to open ASI Manager</system:String>
     <system:String  x:Key="string_manageASIsWithASIManager">Manage ASIs with ASI Manager</system:String>
     <system:String  x:Key="string_binkw32DLCBypass">Binkw32 DLC Bypass</system:String>
+    <system:String x:Key="string_dialog_restoringSFARWithoutBackup">Restoring SFARs without a backup will only delete unpacked files, as there is no backup file that can be copied in. This will leave the DLC in a broken, unusable state. You need to make a backup from an unmodified version of the game before you can properly restore DLC SFARs.</system:String>
+    <system:String x:Key="string_backupNotAvailable">Backup not available</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>

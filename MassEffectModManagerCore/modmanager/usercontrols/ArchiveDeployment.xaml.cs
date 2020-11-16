@@ -165,20 +165,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (package.NameCount == 0)
                     {
-                        item.Errors.Add($"Package file {p} does not contain any names. This is an invalid package file");
+                        item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
                         item.DeploymentBlocking = true;
                     }
 
                     if (package.ImportCount == 0)
                     {
                         // Is there always an import? I assume from native classes...?
-                        item.Errors.Add($"Package file {p} does not contain any imports. This is an invalid package file");
+                        item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
                         item.DeploymentBlocking = true;
                     }
 
                     if (package.ExportCount == 0)
                     {
-                        item.Errors.Add($"Package file {p} does not contain any exports. This is an invalid package file");
+                        item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
                         item.DeploymentBlocking = true;
                     }
                 }

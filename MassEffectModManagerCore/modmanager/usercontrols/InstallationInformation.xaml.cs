@@ -1,29 +1,18 @@
-﻿using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.modmanager.objects;
+﻿using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Serilog;
-
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
-using Pathoschild.FluentNexus.Models;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -281,8 +270,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var bup = BackupService.GetGameBackupPath(SelectedTarget.Game);
             if (bup == null)
             {
-                M3L.ShowDialog(Window.GetWindow(this),  "Restoring SFARs without a backup will only delete unpacked files, as there is no backup file that can be copied in. This will leave the DLC in a broken, unusable state. You need to make a backup from an unmodified version of the game before you can properly restore DLC SFARs.",
-                    "Backup not available", MessageBoxButton.OK, MessageBoxImage.Warning);
+                M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialog_restoringSFARWithoutBackup),
+                    M3L.GetString(M3L.string_backupNotAvailable), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

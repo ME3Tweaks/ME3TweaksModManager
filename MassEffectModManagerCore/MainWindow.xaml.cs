@@ -959,8 +959,8 @@ namespace MassEffectModManagerCore
             {
                 Log.Error($@"Cannot deploy mod, no current game install for {SelectedMod.Game} is available");
                 M3L.ShowDialog(this,
-                    $"No game installation for {SelectedMod.Game} is available. Deploying a mod requires a game installation for the game so deployment can check for data in that installation that will not be accessible in another setup.",
-                    "Cannot deploy mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.GetString(M3L.string_interp_dialog_cannotDeployModNoTarget, SelectedMod.Game),
+                    M3L.GetString(M3L.string_cannotDeployMod), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -975,8 +975,8 @@ namespace MassEffectModManagerCore
             {
                 Log.Error($@"Cannot deploy mod, no backup for {SelectedMod.Game} is available");
                 M3L.ShowDialog(this,
-                    $"No backup for {SelectedMod.Game} is available. Deploying a mod requires a game backup for the game the mod will install to, so the deployment checks can check against a vanilla game installation.",
-                    "Cannot deploy mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.GetString(M3L.string_interp_dialog_cannotDeployModNoBackup, SelectedMod.Game),
+                    M3L.GetString(M3L.string_cannotDeployMod), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
