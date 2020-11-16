@@ -555,6 +555,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_packageFileNoNames = "string_interp_packageFileNoNames";
 		public static readonly string string_interp_packageFileNoImports = "string_interp_packageFileNoImports";
 		public static readonly string string_interp_packageFileNoExports = "string_interp_packageFileNoExports";
+		public static readonly string string_interp_dlcModHasNoTlkFiles = "string_interp_dlcModHasNoTlkFiles";
+		public static readonly string string_interp_dlcModMissingTlkInAutoloadIni = "string_interp_dlcModMissingTlkInAutoloadIni";
+		public static readonly string string_interp_dlcModMissingAutoLoadTlkFile = "string_interp_dlcModMissingAutoLoadTlkFile";
+		public static readonly string string_interp_dlcModTlkPackageHasNoUsableTlk = "string_interp_dlcModTlkPackageHasNoUsableTlk";
+		public static readonly string string_interp_dlcModTlkPackageMissingStringId = "string_interp_dlcModTlkPackageMissingStringId";
+		public static readonly string string_interp_dlcModAutoLoadMissingNameStrRef = "string_interp_dlcModAutoLoadMissingNameStrRef";
 		public static readonly string string_backupsAreShared = "string_backupsAreShared";
 		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public static readonly string string_backUp = "string_backUp";
@@ -1387,5 +1393,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_selectWhichKeybindsToInstall = "string_selectWhichKeybindsToInstall";
 		public static readonly string string_resetKeybinds = "string_resetKeybinds";
 		public static readonly string string_installKeybinds = "string_installKeybinds";
+		public static readonly string string_error_couldNotFetchTextureData = "string_error_couldNotFetchTextureData";
+		public static readonly string string_error_me1TextureFileNotFound = "string_error_me1TextureFileNotFound";
+		public static readonly string string_error_me23TextureTFCNotFound = "string_error_me23TextureTFCNotFound";
+		public static readonly string string_interp_error_textureExceptionExternal = "string_interp_error_textureExceptionExternal";
+		public static readonly string string_interp_error_textureExceptionInternal = "string_interp_error_textureExceptionInternal";
 	}
 }

@@ -312,8 +312,6 @@
     <system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Checks for updates to mods that support checking for updates</system:String>
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
-    <system:String  x:Key="string_alotInstallerV4">ALOT Installer V4</system:String>
-    <!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
     <system:String  x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Auto inject custom keybinds into ModMaker mods</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectCustomKeybinds">Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu</system:String>
     <system:String  x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
@@ -350,7 +348,7 @@
 
     <!-- Mod Installer Panel -->
     <system:String x:Key="string_preparingToInstall">Preparing to install</system:String>
-    <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">ALOT is installed and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your ALOT installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_devModeAlotInstalledWarning">The installation target is texture modded and this mod installs package files. Continuing to install this mod will likely cause broken textures to occur or game crashes due to invalid texture pointers and possibly empty mips. It will also put your game installation into an unsupported configuration.\n\nContinue to install {0}? You have been warned.</system:String>
     <system:String x:Key="string_brokenTexturesWarning">Broken Textures Warning</system:String>
     <system:String x:Key="string_installing">Installing</system:String>
     <system:String x:Key="string_loadingModArchive">Loading mod archive</system:String>
@@ -379,7 +377,7 @@
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
     <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manager, please report this to Mgamerz on Discord.</system:String>
-    <system:String x:Key="string_dialogInstallationBlockedByALOT">Installation of mods that install package files to targets that have ALOT installed is not allowed. Package files must be installed before ALOT.</system:String>
+    <system:String x:Key="string_dialogInstallationBlockedByALOT">Installation of mods that install package files to targets that have been texture modded is not allowed. Package files must be installed before texture mods are installed.</system:String>
     <system:String x:Key="string_installationBlocked">Installation blocked</system:String>
     <system:String x:Key="string_installationSucceededMaybe">Installation succeeded, maybe</system:String>
     <system:String x:Key="string_dialogRunGameOnceFirst">Mods that modify configuration files require that Mass Effect be run at least once before they are installed. This is to ensure the game does not overwrite the files on first boot.</system:String>
@@ -550,6 +548,18 @@
     <!-- 0=relativepath -->
     <system:String x:Key="string_interp_packageFileNoExports">Package file {0} does not contain any exports. This is an invalid package file</system:String>
     <!-- 0=relativefilepath -->
+    <system:String x:Key="string_interp_dlcModHasNoTlkFiles">The DLC mod ({0}) has no TLK files. Mods must be deployed with at least one TLK file so user will be presented with a string if there is an error loading the mod.</system:String>
+    <!-- 0={filepath} -->
+    <system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">DLC mod {0} does not specify a TLK file in it's AutoLoad.ini. This attribute is required and a valid TLK file must be provided with every mod for modding scene purposes.</system:String>
+    <!-- 0={filepath} -->
+    <system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">DLC mod {0} specifies a TLK file named {1}(.upk) but this file does not exist in the DLC mod directory.</system:String>
+    <!-- 0={filepath} 1={filepath} -->
+    <system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">DLC mod {0}'s TLK package doesn't contain a usable TLK export in it.</system:String>
+    <!-- 0={filepath} -->
+    <system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">DLC mod {0}'s TLK package doesn't contain the listed string id {1}. The mod's TLK must contain the listed string id.</system:String>
+    <!-- 0={filepath} 1={integer} -->
+    <system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">DLC mod {0} does not specify a valid NameStrRef in the [GUI] header of the AutoLoad.ini file. This attribute must be specified for modding scene purposes.</system:String>
+    <!-- 0={filepath} -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer and ALOT Installer.</system:String>
@@ -661,14 +671,14 @@
     <system:String x:Key="string_dialogNoCompatPackRequired">The current game configuration does not need a compatibility pack.</system:String>
 
     <!-- Installation Information -->
-    <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Restoring files while ALOT is installed is not allowed as it will introduce invalid texture pointers into the installation.</system:String>
+    <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Restoring files on a texture modded target is not allowed as it will introduce invalid texture pointers into the installation. Only full game restores are allowed while a game is texture modded.</system:String>
     <system:String x:Key="string_cannotRestoreSfarFiles">Cannot restore SFAR files</system:String>
-    <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Restoring files while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. Please ensure you know what you are doing before continuing.</system:String>
+    <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Restoring files on a texture modded target will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. Please ensure you know what you are doing before continuing.</system:String>
     <system:String x:Key="string_invalidTexturePointersWarning">Invalid texture pointers warning</system:String>
     <system:String x:Key="string_restoreAllModifiedFilesQuestion">Restore all modified files?</system:String>
     <system:String x:Key="string_confirmRestoration">Confirm restoration</system:String>
-    <system:String x:Key="string_restoringSfarsAlotBlocked">Restoring SFAR files while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
-    <system:String x:Key="string_restoringSfarsAlotDevMode">Restoring SFARs while ALOT is installed will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.</system:String>
+    <system:String x:Key="string_restoringSfarsAlotBlocked">Restoring SFAR files on a texture modded target is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
+    <system:String x:Key="string_restoringSfarsAlotDevMode">Restoring SFARs on a texture modded target will introduce invalid texture pointers into the installation, which will cause black textures and possibly cause the game to crash. This operation will also delete all unpacked files from the directory. Please ensure you know what you are doing before continuing.</system:String>
     <system:String x:Key="string_restoreAllModifiedSfarsQuestion">Restore all modified SFARs?</system:String>
     <system:String x:Key="string_restoreSPSfarsQuestion">Restore all modified singleplayer SFARs?</system:String>
     <system:String x:Key="string_restoreMPSfarsQuestion">Restore all modified multiplayer SFARs?</system:String>
@@ -679,15 +689,15 @@
     <!-- 0 = gamename -->
     <system:String xml:space="preserve" x:Key="string_interp_deletingXwhileAlotInstalledUnsupported">Deleting {0} while ALOT is installed will not cause the game to become broken, however you will not be able to install updates to ALOT without a full reinstallation (unsupported configuration).\n\nAre you sure you want to delete the DLC mod?</system:String>
     <!-- 0 = mod name-->
-    <system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Deleting will put ALOT in unsupported configuration</system:String>
+    <system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Deleting will put game in unsupported configuration</system:String>
     <system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">Remove {0} from the game installation?</system:String>
     <!-- 0 = modname of dlc -->
     <system:String x:Key="string_interp_cannotRestoreFilesWhileXIsRunning">Cannot restore files while {0} is running.</system:String>
     <!-- 0 = game name-->
-    <system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Restoring {0} while ALOT is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
+    <system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Restoring {0} on a texture modded target is installed is not allowed, as it will introduce invalid texture pointers into the installation.</system:String>
     <!-- 0 = filename-->
     <system:String x:Key="string_cannotRestorePackageFiles">Cannot restore package files</system:String>
-    <system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Restoring {0} while ALOT is installed will very likely introduce invalid texture pointers into the installation, which may cause black textures or game crashes due to empty mips. Please ensure you know what you are doing before continuing.</system:String>
+    <system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Restoring {0} on a texture modded target will very likely introduce invalid texture pointers into the installation, which may cause black textures or game crashes due to empty mips. Please ensure you know what you are doing before continuing.</system:String>
     <!-- 0 = filename-->
     <system:String x:Key="string_interp_restoreXquestion">Restore {0}?</system:String>
     <!-- 0 = item (filename, dlc name)-->
@@ -742,11 +752,11 @@
     <system:String x:Key="string_logUploadFailed">Log upload failed</system:String>
     <system:String x:Key="string_logsAndDiagnostics">Logs and Diagnostics</system:String>
     <system:String x:Key="string_uploadToLogViewer">Upload to log viewer</system:String>
-    <system:String x:Key="string_selectWhatDataToCollect">Select what data to collect.</system:String>
+    <system:String x:Key="string_selectWhatDataToCollect">Select what data to collect. You can select one or both options.</system:String>
     <system:String x:Key="string_modManagerApplicationLog">Mod Manager application log</system:String>
     <system:String x:Key="string_applicationLogDescription">The application log details what occurred during a Mod Manager session and can be used to troubleshoot the application. If you are trying to identify why something occurred in Mod Manager, select an application log.</system:String>
     <system:String x:Key="string_gameDiagnostic">Game diagnostic</system:String>
-    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects information about a specific game target, including data on ALOT status, installed DLC, game version, crash logs (if any), texture issues, and more. If you are having an issue with a game, please select it.</system:String>
+    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects information about a specific game target, including data on texture imod status, installed DLC, game version, crash logs (if any), texture issues, and more. If you are having an issue with a game, please select it.</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_checkAllTexturesInGameDescription">Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes</system:String>
     <system:String x:Key="string_fullTexturesCheck">Full textures check</system:String>
     <system:String x:Key="string_diagShareTheLink">Share the resulting link of your log/diagnostic with your recipient. If you aren't sure what options to pick, simply select one from both.</system:String>
@@ -888,7 +898,7 @@
     <system:String x:Key="string_noBackup">No backup</system:String>
     <system:String x:Key="string_error">Error!</system:String>
     <system:String x:Key="string_fullGameRestore">Full game restore</system:String>
-    <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Changing the active boot target to one with ALOT installed will prompt you enable high resolution texture settings again.</system:String>
+    <system:String x:Key="string_restoringTextureLODs">Restoring from backup will reset your texture quality settings back to the defaults. Make sure you run the game through Mod Manager so the correct texture LODs are set.</system:String>
     <system:String x:Key="string_entireGameDirectoryWillBeDeleted">The entirety of the game directory will be deleted. If you are trying to do granular restoration, including removing DLC mods or restoring specific files/SFARs, use the restore options from the Manage Target button instead.</system:String>
     <system:String x:Key="string_youMaySeeElevationPromptOnRestore">You may see an elevation prompt when trying to restore your game. This is ME3Tweaks Mod Manager granting your user account permission to the new game directory after the old one has been deleted.</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_restoringXWillDeleteGameDir">Restoring {0} will completely delete the game directory and then copy the backup into the original location.\n\nDelete this installation and restore it from backup?</system:String>
@@ -1015,9 +1025,9 @@
     <!-- 0={FriendlyName} -->
 
     <!-- GameTarget -->
-    <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
+    <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot of Textures (ALOT) is installed\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->
-    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot installed</system:String>
+    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot of Textures (ALOT)\nNot installed</system:String>
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
     <!-- 0 = filename of file that is not found in game dir but should be there -->
     <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
@@ -1634,7 +1644,7 @@
 
     <!-- Official DLC Toggler -->
     <system:String x:Key="string_officialDLCToggler">Official DLC toggler</system:String>
-    <system:String x:Key="string_officialDLCTogglerDescription">Developers can use this tool to toggle installed offical DLC on or off. This is useful to see how a mod behaves when installed into a different environment. You can toggle DLC mods in the Installation Information panel.</system:String>
+    <system:String x:Key="string_officialDLCTogglerDescription">Developers can use this tool to toggle installed official DLC on or off. This is useful to see how a mod behaves when installed into a different environment. You can toggle DLC mods in the Installation Information panel.</system:String>
     <system:String x:Key="string_officialDLCTogglerME1ME2Warning">Toggled DLC for this game will only change how Mod Manager behaves when detecting installed DLC. Both Mass Effect and Mass Effect 2 will attempt to load DLC from all folders in their respective DLC directories.</system:String>
     <system:String x:Key="string_toggleOff">Toggle off</system:String>
     <system:String x:Key="string_toggleOn">Toggle on</system:String>
@@ -1715,5 +1725,15 @@
     <system:String  x:Key="string_resetKeybinds">Reset Keybinds</system:String>
     <system:String  x:Key="string_installKeybinds">Install Keybinds</system:String>
 
-
+    <!-- Texture2D -->
+    <system:String x:Key="string_error_couldNotFetchTextureData">Could not fetch texture data for texture {0} in file {1}</system:String>
+    <!-- 0=Shown when checking textures during deployment. 1 = export object name, so just a long string ID. 1 = filepath-->
+    <system:String x:Key="string_error_me1TextureFileNotFound">Externally referenced texture file not found in game: {0}.</system:String>
+    <!-- 0= filepath -->
+    <system:String x:Key="string_error_me23TextureTFCNotFound">Externally referenced texture cache not found: {0}.</system:String>
+    <!-- 0=filepath -->
+    <system:String xml:space="preserve" x:Key="string_interp_error_textureExceptionExternal">{0}\nFile: {1}\nStorageType: {2}\nExternal file offset: {3}</system:String>
+    <!-- This technical string is shown when there is error loading texture data. 0=exception message. 1=filepath. 2=string (pccUnc, extLZO...) 3=file offset 0xhhhhhhhh -->
+    <system:String xml:space="preserve" x:Key="string_interp_error_textureExceptionInternal">{0}\nStorageType: {1}\n</system:String>
+    <!-- 0={exception message} 1={storage type (pccUnc, pccLZO, pccZLib)} -->
 </ResourceDictionary>

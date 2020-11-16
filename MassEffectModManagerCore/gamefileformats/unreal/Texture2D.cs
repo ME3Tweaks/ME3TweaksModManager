@@ -8,12 +8,12 @@ using ME3Explorer.Packages;
 using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using Buffer = System.Buffer;
 using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.gamefileformats.unreal
 {
-
 
     public class Texture2D
     {
@@ -27,10 +27,10 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
         {
             Export = export;
             PropertyCollection properties = export.GetProperties();
-            TextureFormat = properties.GetProp<EnumProperty>("Format").Value.Name;
-            var cache = properties.GetProp<NameProperty>("TextureFileCacheName");
+            TextureFormat = properties.GetProp<EnumProperty>(@"Format").Value.Name;
+            var cache = properties.GetProp<NameProperty>(@"TextureFileCacheName");
 
-            NeverStream = properties.GetProp<BoolProperty>("NeverStream") ?? false;
+            NeverStream = properties.GetProp<BoolProperty>(@"NeverStream") ?? false;
             Mips = GetTexture2DMipInfos(export, cache?.Value);
             if (Export.Game != Mod.MEGame.ME1)
             {
@@ -152,7 +152,6 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             {
                 if (useLowerMipsIfTFCMissing)
                 {
-                    Debug.WriteLine(@"External cache not found. Defaulting to internal mips.");
                     //External archive not found - using built in mips (will be hideous, but better than nothing)
                     info = Mips.FirstOrDefault(x => x.storageType == StorageTypes.pccUnc);
                     if (info != null)
@@ -167,8 +166,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             }
             if (imageBytes == null)
             {
-                // todo: Localize this?
-                throw new Exception("Could not fetch texture data for texture " + info?.Export.ObjectName);
+                throw new Exception(M3L.GetString(M3L.string_error_couldNotFetchTextureData, info?.Export.GetInstancedFullPath, info?.Export.FileRef.FilePath));
             }
             return imageBytes;
         }
@@ -235,7 +233,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                     }
                     catch (Exception e)
                     {
-                        throw new Exception($"{e.Message}\nStorageType: {mipToLoad.storageType}\n");
+                        throw new Exception(M3L.GetString(M3L.string_interp_error_textureExceptionInternal, e.Message, mipToLoad.storageType));
                     }
                 }
                 else
@@ -246,7 +244,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             else if (mipToLoad.storageType == StorageTypes.extUnc || mipToLoad.storageType == StorageTypes.extLZO || mipToLoad.storageType == StorageTypes.extZlib)
             {
                 string filename = null;
-                List<string> loadedFiles = MEDirectories.EnumerateGameFiles(target.Game, target.TargetPath);
+                List<string> loadedFiles = MELoadedFiles.GetAllGameFiles(target, false, false);
                 if (mipToLoad.Export.Game == Mod.MEGame.ME1)
                 {
                     var fullPath = loadedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(mipToLoad.TextureCacheName, StringComparison.InvariantCultureIgnoreCase));
@@ -257,12 +255,12 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                     }
                     else
                     {
-                        throw new FileNotFoundException($"Externally referenced texture file not found in game: {mipToLoad.TextureCacheName}.");
+                        throw new FileNotFoundException(M3L.GetString(M3L.string_error_me1TextureFileNotFound, mipToLoad.TextureCacheName));
                     }
                 }
                 else
                 {
-                    string archive = mipToLoad.TextureCacheName + ".tfc";
+                    string archive = mipToLoad.TextureCacheName + @".tfc";
 
                     var localDirectoryTFCPath = Path.Combine(Path.GetDirectoryName(mipToLoad.Export.FileRef.FilePath), archive);
                     if (File.Exists(localDirectoryTFCPath))
@@ -284,7 +282,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                         }
                         else
                         {
-                            throw new FileNotFoundException($@"Externally referenced texture cache not found: {archive}.");
+                            throw new FileNotFoundException(M3L.GetString(M3L.string_error_me23TextureTFCNotFound, archive));
                         }
                     }
                 }
@@ -310,9 +308,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                                         }
                                         catch (Exception e)
                                         {
-                                            throw new Exception(e.Message + "\n" + "File: " + filename + "\n" +
-                                                                "StorageType: " + mipToLoad.storageType + "\n" +
-                                                                "External file offset: " + mipToLoad.externalOffset);
+                                            throw new Exception(M3L.GetString(M3L.string_interp_error_textureExceptionExternal, e.Message, filename, mipToLoad.storageType, mipToLoad.externalOffset));
                                         }
                                     }
                                 }
@@ -328,17 +324,13 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                         }
                         catch (Exception e)
                         {
-                            throw new Exception(e.Message + "\n" + "File: " + filename + "\n" +
-                                "StorageType: " + mipToLoad.storageType + "\n" +
-                                "External file offset: " + mipToLoad.externalOffset);
+                            throw new Exception(M3L.GetString(M3L.string_interp_error_textureExceptionExternal, e.Message, filename, mipToLoad.storageType, mipToLoad.externalOffset));
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    throw new Exception(e.Message + "\n" + "File: " + filename + "\n" +
-                        "StorageType: " + mipToLoad.storageType + "\n" +
-                        "External file offset: " + mipToLoad.externalOffset);
+                    throw new Exception(M3L.GetString(M3L.string_interp_error_textureExceptionExternal, e.Message, filename, mipToLoad.storageType, mipToLoad.externalOffset));
                 }
             }
             return imagebytes;
@@ -358,7 +350,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
         //}
     }
 
-    [DebuggerDisplay("Texture2DMipInfo for {Export.ObjectName.Instanced} | {width}x{height} | {storageType}")]
+    [DebuggerDisplay(@"Texture2DMipInfo for {Export.ObjectName.Instanced} | {width}x{height} | {storageType}")]
     public class Texture2DMipInfo
     {
         public ExportEntry Export;
@@ -381,7 +373,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                 if (Export.Game != Mod.MEGame.ME1) return _textureCacheName; //ME2/ME3 have property specifying the name. ME1 uses package lookup
 
                 //ME1 externally references the UPKs. I think. It doesn't load external textures from SFMs
-                string baseName = Export.FileRef.FollowLink(Export.idxLink).Split('.')[0].ToUpper() + ".upk"; //get top package name
+                string baseName = Export.FileRef.FollowLink(Export.idxLink).Split('.')[0].ToUpper() + @".upk"; //get top package name
 
                 if (storageType == StorageTypes.extLZO || storageType == StorageTypes.extZlib || storageType == StorageTypes.extUnc)
                 {
@@ -401,33 +393,6 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                 return null;
             }
             set => _textureCacheName = value; //This isn't INotifyProperty enabled so we don't need to SetProperty this
-        }
-
-        public string MipDisplayString
-        {
-            get
-            {
-                string mipinfostring = "Mip " + index;
-                mipinfostring += "\nStorage Type: ";
-                mipinfostring += storageType;
-                if (storageType == StorageTypes.extLZO || storageType == StorageTypes.extZlib || storageType == StorageTypes.extUnc)
-                {
-                    mipinfostring += "\nLocated in: ";
-                    mipinfostring += TextureCacheName ?? "(NULL!)";
-                }
-
-                mipinfostring += "\nUncompressed size: ";
-                mipinfostring += uncompressedSize;
-                mipinfostring += "\nCompressed size: ";
-                mipinfostring += compressedSize;
-                mipinfostring += "\nOffset: ";
-                mipinfostring += externalOffset;
-                mipinfostring += "\nWidth: ";
-                mipinfostring += width;
-                mipinfostring += "\nHeight: ";
-                mipinfostring += height;
-                return mipinfostring;
-            }
         }
     }
 }
