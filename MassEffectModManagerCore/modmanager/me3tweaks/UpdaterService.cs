@@ -17,6 +17,7 @@ using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
+using ME3Explorer.Packages;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
@@ -179,26 +180,50 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         foreach (var serverFile in modUpdateInfo.sourceFiles)
                         {
                             var localFile = Path.Combine(modBasepath, serverFile.relativefilepath);
+                            Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
                             if (File.Exists(localFile))
                             {
-                                var info = new FileInfo(localFile);
-                                if (info.Length != serverFile.size)
+                                string localMd5 = null;
+                                long localSize = new FileInfo(localFile).Length;
+                                if (localFile.RepresentsPackageFilePath())
                                 {
+                                    // We need to make sure it's decompressed
+                                    var qPackage = MEPackageHandler.QuickOpenMEPackage(localFile);
+                                    if (qPackage.IsCompressed)
+                                    {
+                                        CLog.Information($" >> Decompressing compressed package for update comparison check: {serverFile.relativefilepath}", Settings.LogModUpdater);
+                                        qPackage = MEPackageHandler.OpenMEPackage(localFile);
+                                        MemoryStream tStream = new MemoryStream();
+                                        tStream = qPackage.saveToStream(includeAdditionalPackagesToCook: true);
+                                        localMd5 = Utilities.CalculateMD5(tStream);
+                                        localSize = tStream.Length;
+                                    }
+                                }
+
+                                if (localSize != serverFile.size)
+                                {
+                                    CLog.Information($" >> File is applicable for updates: {serverFile.relativefilepath}. File size is different. Local: {localSize}, Server: {serverFile.size}", Settings.LogModUpdater);
                                     modUpdateInfo.applicableUpdates.Add(serverFile);
                                 }
                                 else
                                 {
                                     //Check hash
-                                    CLog.Information("Hashing file for update check: " + localFile, Settings.LogModUpdater);
-                                    var md5 = Utilities.CalculateMD5(localFile);
-                                    if (md5 != serverFile.hash)
+                                    localMd5 ??= Utilities.CalculateMD5(localFile);
+
+                                    if (localMd5 != serverFile.hash)
                                     {
+                                        CLog.Information($" >> File is applicable for updates: {serverFile.relativefilepath}. Local hash: {localMd5}, Server hash: {serverFile.hash}", Settings.LogModUpdater);
                                         modUpdateInfo.applicableUpdates.Add(serverFile);
+                                    }
+                                    else
+                                    {
+                                        CLog.Information(@" >> File is up to date", Settings.LogModUpdater);
                                     }
                                 }
                             }
                             else
                             {
+                                CLog.Information($" >> File is applicable for updates: {serverFile.relativefilepath}. File does not exist locally", Settings.LogModUpdater);
                                 modUpdateInfo.applicableUpdates.Add(serverFile);
                             }
                         }

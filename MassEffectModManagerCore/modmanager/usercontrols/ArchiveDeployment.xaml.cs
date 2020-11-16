@@ -7,15 +7,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shell;
 using ByteSizeLib;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.GameDirectories;
@@ -27,7 +22,6 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
-using UserControl = System.Windows.Controls.UserControl;
 using Microsoft.Win32;
 using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -45,8 +39,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
         public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
-        public ArchiveDeployment(Mod mod)
+        public ArchiveDeployment(GameTarget validationTarget, Mod mod)
         {
+            ValidationTarget = validationTarget;
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
@@ -109,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     ItemText = M3L.GetString(M3L.string_audioCheck),
                     ModToValidateAgainst = mod,
-                    ValidationFunction = CheckModForAFCCompactability,
+                    ValidationFunction = CheckAFCs,
                     ErrorsMessage = M3L.GetString(M3L.string_audioCheckDetectedErrors),
                     ErrorsTitle = M3L.GetString(M3L.string_audioIssuesDetectedInMod)
                 });
@@ -164,6 +159,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     item.Errors.Add(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                     blocking = true;
                     DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
+                }
+
+                var package = MEPackageHandler.QuickOpenMEPackage(p);
+                {
+                    if (package.NameCount == 0)
+                    {
+                        item.Errors.Add($"Package file {p} does not contain any names. This is an invalid package file");
+                        item.DeploymentBlocking = true;
+                    }
+
+                    if (package.ImportCount == 0)
+                    {
+                        // Is there always an import? I assume from native classes...?
+                        item.Errors.Add($"Package file {p} does not contain any imports. This is an invalid package file");
+                        item.DeploymentBlocking = true;
+                    }
+
+                    if (package.ExportCount == 0)
+                    {
+                        item.Errors.Add($"Package file {p} does not contain any exports. This is an invalid package file");
+                        item.DeploymentBlocking = true;
+                    }
                 }
             }
 
@@ -341,12 +358,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.ItemText = M3L.GetString(M3L.string_checkingSFARFilesSizes);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
-            GameTarget validationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
-            List<string> gameFiles = MEDirectories.EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
-
             var errors = new List<string>();
-            Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
-
             bool hasSFARs = false;
             foreach (var f in referencedFiles)
             {
@@ -401,15 +413,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.ToolTip = M3L.GetString(M3L.string_thisItemMustBeManuallyCheckedByYou);
         }
 
-        private void CheckModForAFCCompactability(DeploymentChecklistItem item)
+        private void CheckAFCs(DeploymentChecklistItem item)
         {
             bool hasError = false;
             item.HasError = false;
             item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
-            GameTarget validationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
-            List<string> gameFiles = MEDirectories.EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
+            List<string> gameFiles = MEDirectories.EnumerateGameFiles(ValidationTarget);
 
             var errors = new List<string>();
             Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
@@ -460,17 +471,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (fullPath != null)
                                 {
                                     afcPath = fullPath;
-                                    isInOfficialArea = MEDirectories.IsInBasegame(afcPath, validationTarget) || MEDirectories.IsInOfficialDLC(afcPath, validationTarget);
+                                    isInOfficialArea = MEDirectories.IsInBasegame(afcPath, ValidationTarget) || MEDirectories.IsInOfficialDLC(afcPath, ValidationTarget);
                                 }
                                 else if (cachedAudio.TryGetValue(afcNameProp.Value.Name, out var cachedAudioStream))
                                 {
                                     audioStream = cachedAudioStream;
                                     //isInOfficialArea = true; //cached from vanilla SFAR
                                 }
-                                else if (MEDirectories.OfficialDLC(validationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
+                                else if (MEDirectories.OfficialDLC(ValidationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
                                 {
                                     var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf(@"_", StringComparison.InvariantCultureIgnoreCase));
-                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcName, afcNameWithExtension /*, validationTarget*/);
+                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcName, afcNameWithExtension /*, ValidationTarget*/);
                                     if (audio != null)
                                     {
                                         cachedAudio[afcNameProp.Value.Name] = audio;
@@ -530,10 +541,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (isInOfficialArea)
                                 {
                                     //Verify offset is not greater than vanilla size
-                                    var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(validationTarget, afcPath.Substring(validationTarget.TargetPath.Length + 1));
+                                    var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(ValidationTarget, afcPath.Substring(ValidationTarget.TargetPath.Length + 1));
                                     if (vanillaInfo == null)
                                     {
-                                        Crashes.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(validationTarget.TargetPath.Length + 1)}"));
+                                        Crashes.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(ValidationTarget.TargetPath.Length + 1)}"));
                                     }
                                     if (audioOffset >= vanillaInfo[0].size)
                                     {
@@ -592,7 +603,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == @".tfc").ToList();
             int numChecked = 0;
-            GameTarget validationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
+            GameTarget ValidationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
             var errors = new List<string>();
             foreach (var f in referencedFiles)
             {
@@ -619,7 +630,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     Texture2D tex = new Texture2D(texture);
                                     try
                                     {
-                                        tex.GetImageBytesForMip(tex.GetTopMip(), validationTarget, false, allTFCs); //use active target
+                                        tex.GetImageBytesForMip(tex.GetTopMip(), ValidationTarget, false, allTFCs); //use active target
                                     }
                                     catch (Exception e)
                                     {
@@ -665,7 +676,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 {
                                     try
                                     {
-                                        tex.GetImageBytesForMip(mip, validationTarget, false);
+                                        tex.GetImageBytesForMip(mip, ValidationTarget, false);
                                     }
                                     catch (Exception e)
                                     {
@@ -891,6 +902,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private DateTime lastPercentUpdateTime;
         private bool _closed;
+        private GameTarget ValidationTarget;
 
         public class DeploymentChecklistItem : INotifyPropertyChanged
         {

@@ -152,7 +152,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             {
                 if (useLowerMipsIfTFCMissing)
                 {
-                    Debug.WriteLine("External cache not found. Defaulting to internal mips.");
+                    Debug.WriteLine(@"External cache not found. Defaulting to internal mips.");
                     //External archive not found - using built in mips (will be hideous, but better than nothing)
                     info = Mips.FirstOrDefault(x => x.storageType == StorageTypes.pccUnc);
                     if (info != null)
@@ -167,6 +167,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             }
             if (imageBytes == null)
             {
+                // todo: Localize this?
                 throw new Exception("Could not fetch texture data for texture " + info?.Export.ObjectName);
             }
             return imageBytes;

@@ -165,39 +165,44 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         private static void RefreshBackupStatus(Mod.MEGame game, bool installed, bool backedUp, Action<string> setStatus, Action<string> setStatusToolTip)
         {
-            if (installed)
+            //if (installed)
+            //{
+            var bPath = GetGameBackupPath(game, forceReturnPath: true);
+            if (backedUp)
             {
-                var bPath = GetGameBackupPath(game, forceReturnPath: true);
-                if (backedUp)
-                {
-                    setStatus(M3L.GetString(M3L.string_backedUp));
-                    setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusStoredAt, bPath));
-                }
-                else if (bPath == null)
-                {
+                setStatus(M3L.GetString(M3L.string_backedUp));
+                setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusStoredAt, bPath));
+            }
+            else if (bPath == null)
+            {
 
-                    setStatus(M3L.GetString(M3L.string_notBackedUp));
-                    setStatusToolTip(M3L.GetString(M3L.string_gameHasNotBeenBackedUp));
-                }
-                else if (!Directory.Exists(bPath))
-                {
-                    setStatus(M3L.GetString(M3L.string_backupUnavailable));
-                    setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusNotAccessible, bPath));
-                }
-                else
-                {
-                    var nonVanillaPath = GetGameBackupPath(game, forceCmmVanilla: false);
-                    if (nonVanillaPath != null)
-                    {
-                        setStatus(M3L.GetString(M3L.string_backupNotVanilla));
-                        setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusNotVanilla, nonVanillaPath));
-                    }
-                }
+                setStatus(M3L.GetString(M3L.string_notBackedUp));
+                setStatusToolTip(M3L.GetString(M3L.string_gameHasNotBeenBackedUp));
+            }
+            else if (!Directory.Exists(bPath))
+            {
+                setStatus(M3L.GetString(M3L.string_backupUnavailable));
+                setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusNotAccessible, bPath));
             }
             else
             {
-                setStatus(M3L.GetString(M3L.string_notInstalled));
-                setStatusToolTip(M3L.GetString(M3L.string_gameNotInstalledHasItBeenRunOnce));
+                var nonVanillaPath = GetGameBackupPath(game, forceCmmVanilla: false);
+                if (nonVanillaPath != null)
+                {
+                    setStatus(M3L.GetString(M3L.string_backupNotVanilla));
+                    setStatusToolTip(M3L.GetString(M3L.string_interp_backupStatusNotVanilla, nonVanillaPath));
+                }
+                else if (!installed)
+                {
+                    setStatus(M3L.GetString(M3L.string_notInstalled));
+                    setStatusToolTip(M3L.GetString(M3L.string_gameNotInstalledHasItBeenRunOnce));
+                }
+                else
+                {
+                    // This is just generic error. It shouldn't occur
+                    setStatus(M3L.GetString(M3L.string_notBackedUp));
+                    setStatusToolTip(M3L.GetString(M3L.string_gameHasNotBeenBackedUp));
+                }
             }
         }
 

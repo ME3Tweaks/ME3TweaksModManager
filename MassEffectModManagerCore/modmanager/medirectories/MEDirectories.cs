@@ -449,5 +449,10 @@ namespace MassEffectModManagerCore.GameDirectories
                     throw new ArgumentOutOfRangeException(nameof(game), game, null);
             }
         }
+
+        internal static List<string> EnumerateGameFiles(GameTarget validationTarget)
+        {
+            return EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
+        }
     }
 }

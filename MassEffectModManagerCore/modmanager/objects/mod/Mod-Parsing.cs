@@ -59,6 +59,15 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public MEGame Game { get; set; }
         /// <summary>
+        /// Flag if the moddesc.ini is stored properly in the archive file when the archive was loaded. Can be used to detect if mod was actually
+        /// properly deployed, or if developer decided to skip M3 deployment, which shouldn't be done. Only used when loading mod from archive.
+        /// </summary>
+        public bool DeployedWithM3 { get; set; }
+        /// <summary>
+        /// If this mod should check if it was deploying using M3 or not.
+        /// </summary>
+        public bool CheckDeployedWithM3 { get; private set; }
+        /// <summary>
         /// The mod's name.
         /// </summary>
         public string ModName { get; set; }
@@ -314,7 +323,10 @@ namespace MassEffectModManagerCore.modmanager
             MemoryStream ms = new MemoryStream();
             try
             {
+                Log.Information($@"moddesc.ini file is stored with compression {moddescArchiveEntry.Method}");
                 archive.ExtractFile(moddescArchiveEntry.FileName, ms);
+                CheckDeployedWithM3 = true;
+                DeployedWithM3 = Path.GetExtension(archive.FileName) == @".7z" && moddescArchiveEntry.Method == @"Copy";
             }
             catch (Exception e)
             {
@@ -444,6 +456,12 @@ namespace MassEffectModManagerCore.modmanager
                 ModDescTargetVersion = 1.0;
             }
 
+            if (parsedModCmmVer < 6.0)
+            {
+                CheckDeployedWithM3 = false;
+                DeployedWithM3 = false;
+            }
+            
             ModName = iniData[@"ModInfo"][@"modname"];
             if (string.IsNullOrEmpty(ModName))
             {

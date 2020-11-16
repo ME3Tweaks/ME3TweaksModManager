@@ -28,7 +28,7 @@ using Microsoft.AppCenter.Analytics;
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
-    /// Interaction logic foru ModArchiveImporter.xaml
+    /// Interaction logic for ModArchiveImporter.xaml
     /// </summary>
     public partial class ModArchiveImporter : MMBusyPanelBase
     {
@@ -101,6 +101,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         CompressedMods_ListBox.SelectedIndex = 0; //Select the only item
                     }
+
                     ArchiveScanned = true;
                     TriggerPropertyChangedFor(nameof(CanCompressPackages));
                 }
@@ -127,6 +128,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressIndeterminate = false;
                 TaskRunning = false;
                 CommandManager.InvalidateRequerySuggested();
+
+                var hasAnyImproperlyPackedMods =
+                    CompressedMods.Any(x => x.CheckDeployedWithM3 && !x.DeployedWithM3);
+                if (hasAnyImproperlyPackedMods && !Flighting.IsFeatureEnabled(@"passive_checkM3DeployedArchives"))
+                {
+                    Analytics.TrackEvent(@"Detected improperly packed M3 mod", new Dictionary<string, string>()
+                    {
+                        {@"Archive name", Path.GetFileName(filepath)}
+                    });
+                    Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
+                    M3L.ShowDialog(Window.GetWindow(this),
+                        M3L.GetString(M3L.string_dialog_improperlyDeployedMod),
+                        M3L.GetString(M3L.string_improperlyDeployedMod), MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             };
             ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
 
@@ -704,7 +719,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //get total size requirement
-            long requiredDiskSpace = mods.Sum(x=>x.SizeRequiredtoExtract);
+            long requiredDiskSpace = mods.Sum(x => x.SizeRequiredtoExtract);
             if (Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freespaceBytes))
             {
                 requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
@@ -936,7 +951,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //This will have to pass some sort of validation code later.
             return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
-                   && !TaskRunning /*&& !CompressPackages*/ && mainwindow.InstallationTargets.Any(x=>x.Game == cm.Game);
+                   && !TaskRunning /*&& !CompressPackages*/ && mainwindow.InstallationTargets.Any(x => x.Game == cm.Game);
         }
 
         private void InstallCompressedMod()

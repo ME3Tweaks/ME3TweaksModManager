@@ -389,6 +389,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_updatingLocalization = "string_updatingLocalization";
 		public static readonly string string_updatedLocalization = "string_updatedLocalization";
 		public static readonly string string_errorUpdatingLocalization = "string_errorUpdatingLocalization";
+		public static readonly string string_noModsInTheLibraryHeader = "string_noModsInTheLibraryHeader";
+		public static readonly string string_noModsInLibraryDescription = "string_noModsInLibraryDescription";
 		public static readonly string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public static readonly string string_preparingToInstall = "string_preparingToInstall";
 		public static readonly string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
@@ -542,6 +544,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_error_outOfOrderTLK = "string_interp_error_outOfOrderTLK";
 		public static readonly string string_compressedModItems = "string_compressedModItems";
 		public static readonly string string_uncompressedModItems = "string_uncompressedModItems";
+		public static readonly string string_dialog_improperlyDeployedMod = "string_dialog_improperlyDeployedMod";
+		public static readonly string string_improperlyDeployedMod = "string_improperlyDeployedMod";
 		public static readonly string string_backupsAreShared = "string_backupsAreShared";
 		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public static readonly string string_backUp = "string_backUp";
