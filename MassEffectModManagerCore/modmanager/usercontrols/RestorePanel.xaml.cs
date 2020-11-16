@@ -158,7 +158,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     nbw.DoWork += (a, b) =>
                     {
                         RestoreInProgress = true;
-
+                        // Nuke the LODs
+                        if (!RestoreTarget.IsCustomOption)
+                        {
+                            Log.Information($@"Resetting LODs for {RestoreTarget.Game}");
+                            Utilities.SetLODs(RestoreTarget, false, false, false);
+                        }
 
                         string restoreTargetPath = b.Argument as string;
                         string backupPath = BackupLocation;
