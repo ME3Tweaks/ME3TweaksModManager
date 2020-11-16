@@ -100,7 +100,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllBasegame()
         {
-            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress; //check if ifles being restored
+            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress && BackupService.GetGameBackupPath(SelectedTarget.Game) != null; //check if ifles being restored
         }
 
         public string ModifiedFilesFilterText { get; set; }
@@ -179,6 +179,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RestoreSPSFARs()
         {
             bool restore;
+            checkSFARRestoreForBackup();
             if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
@@ -213,6 +214,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RestoreMPSFARs()
         {
             bool restore;
+            checkSFARRestoreForBackup();
             if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
@@ -247,6 +249,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RestoreAllSFARs()
         {
             bool restore;
+            checkSFARRestoreForBackup();
             if (SelectedTarget.TextureModded)
             {
                 if (!Settings.DeveloperMode)
@@ -258,13 +261,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoringSfarsAlotDevMode), M3L.GetString(M3L.string_invalidTexturePointersWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     restore = res == MessageBoxResult.Yes;
-
                 }
             }
             else
             {
                 restore = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_restoreAllModifiedSfarsQuestion), M3L.GetString(M3L.string_confirmRestoration), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
-
             }
             if (restore)
             {
@@ -272,6 +273,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     SelectedTarget.RestoreSFAR(v, true);
                 }
+            }
+        }
+
+        private void checkSFARRestoreForBackup()
+        {
+            var bup = BackupService.GetGameBackupPath(SelectedTarget.Game);
+            if (bup == null)
+            {
+                M3L.ShowDialog(Window.GetWindow(this),  "Restoring SFARs without a backup will only delete unpacked files, as there is no backup file that can be copied in. This will leave the DLC in a broken, unusable state. You need to make a backup from an unmodified version of the game before you can properly restore DLC SFARs.",
+                    "Backup not available", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

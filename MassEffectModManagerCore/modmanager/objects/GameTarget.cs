@@ -549,35 +549,43 @@ namespace MassEffectModManagerCore.modmanager.objects
                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"RestoreSFARThread");
                     nbw.DoWork += (a, b) =>
                     {
-                        var backupFile = Path.Combine(BackupService.GetGameBackupPath(target.Game), FilePath);
-                        var targetFile = Path.Combine(target.TargetPath, FilePath);
-                        Restoring = true;
-
-                        var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
-                        RestoreButtonContent = M3L.GetString(M3L.string_cleaningUp);
-                        foreach (var file in unpackedFiles)
+                        var bup = BackupService.GetGameBackupPath(target.Game);
+                        if (bup != null)
                         {
-                            if (!file.EndsWith(@".sfar"))
+                            var backupFile = Path.Combine(bup, FilePath);
+                            var targetFile = Path.Combine(target.TargetPath, FilePath);
+                            Restoring = true;
+
+                            var unpackedFiles = Directory.GetFiles(DLCDirectory, @"*", SearchOption.AllDirectories);
+                            RestoreButtonContent = M3L.GetString(M3L.string_cleaningUp);
+                            foreach (var file in unpackedFiles)
                             {
-                                Log.Information(@"Deleting unpacked file: " + file);
-                                File.Delete(file);
-                            }
-                        }
-
-                        // Check if we actually need to restore SFAR
-                        if (new FileInfo(targetFile).Length == 32 || !VanillaDatabaseService.IsFileVanilla(target, targetFile, false))
-                        {
-                            Log.Information($@"Restoring SFAR from backup: {backupFile} -> {targetFile}");
-                            XCopy.Copy(backupFile, targetFile, true, true,
-                                (o, pce) =>
+                                if (!file.EndsWith(@".sfar"))
                                 {
-                                    RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent,
-                                        pce.ProgressPercentage.ToString());
-                                });
-                        }
+                                    Log.Information(@"Deleting unpacked file: " + file);
+                                    File.Delete(file);
+                                }
+                            }
 
-                        Utilities.DeleteEmptySubdirectories(DLCDirectory);
-                        RestoreButtonContent = M3L.GetString(M3L.string_restored);
+                            // Check if we actually need to restore SFAR
+                            if (new FileInfo(targetFile).Length == 32 || !VanillaDatabaseService.IsFileVanilla(target, targetFile, false))
+                            {
+                                Log.Information($@"Restoring SFAR from backup: {backupFile} -> {targetFile}");
+                                XCopy.Copy(backupFile, targetFile, true, true,
+                                    (o, pce) =>
+                                    {
+                                        RestoreButtonContent = M3L.GetString(M3L.string_interp_restoringXpercent,
+                                            pce.ProgressPercentage.ToString());
+                                    });
+                            }
+
+                            Utilities.DeleteEmptySubdirectories(DLCDirectory);
+                            RestoreButtonContent = M3L.GetString(M3L.string_restored);
+                        }
+                        else
+                        {
+                            Restoring = false;
+                        }
                     };
                     nbw.RunWorkerCompleted += (a, b) =>
                     {
