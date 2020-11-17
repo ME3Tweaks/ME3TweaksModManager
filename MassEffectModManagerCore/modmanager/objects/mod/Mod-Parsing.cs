@@ -361,15 +361,16 @@ namespace MassEffectModManagerCore.modmanager
         /// <summary>
         /// Initializes a mod from a moddesc.ini file
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="expectedGame"></param>
-        public Mod(string filePath, MEGame expectedGame)
+        /// <param name="filePath">moddesc.ini path</param>
+        /// <param name="expectedGame">Game that the mod is expected to resolve to. Set to unknown if it is not known.</param>
+        /// <param name="blankLoad">If this mod is supposed to be 'blank'. Suppresses output about this mod being invalid, essentially this flag indicates the caller knows what they are doing.</param>
+        public Mod(string filePath, MEGame expectedGame, bool blankLoad = false)
         {
             ModPath = Path.GetDirectoryName(filePath);
             Log.Information(@"Loading moddesc: " + filePath);
             try
             {
-                loadMod(File.ReadAllText(filePath), expectedGame);
+                loadMod(File.ReadAllText(filePath), expectedGame, blankLoad: blankLoad);
             }
             catch (Exception e)
             {
@@ -422,7 +423,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         /// <param name="iniText"></param>
         /// <param name="expectedGame"></param>
-        private void loadMod(string iniText, MEGame expectedGame)
+        private void loadMod(string iniText, MEGame expectedGame, bool blankLoad = false)
         {
             Game = expectedGame; //we will assign this later. This is for startup errors only
             var parser = new IniDataParser();
@@ -1649,12 +1650,7 @@ namespace MassEffectModManagerCore.modmanager
                 CLog.Information($@"Finalizing: {InstallationJobs.Count} installation job(s) were found.", Settings.LogModStartup);
                 ValidMod = true;
             }
-            //else if (emptyModIsOK) //Empty Load OK is used by Mixins. This may be redone for MM6
-            //{
-            //    CLog.Information($@"Finalizing: No installation jobs were found, but empty mods are allowed in this loading session.", Settings.LogModStartup);
-            //    ValidMod = true;
-            //}
-            else
+            else if (!blankLoad)
             {
                 Log.Error(@"No installation jobs were specified. This mod does nothing.");
                 LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_modDoesNothing);
