@@ -18,10 +18,11 @@
 	<system:String x:Key="string_SwitchUItodarktheme">Переключает интерфейс на ночной режим</system:String>
 	<system:String x:Key="string_Logging">Логирование</system:String>
 	<system:String x:Key="string_Enabletelemetry">Включить телеметрию</system:String>
-	<system:String x:Key="string_LogModStartup">Логировать Запуск Мода</system:String>
-	<system:String x:Key="string_LogMixinStartup">Логировать Запуск Mixin Startup</system:String>
-	<system:String x:Key="string_LogModInstallation">Логировать Установку Мода</system:String>
-	<system:String x:Key="string_LogModMakerCompiler">Логировать ModMaker Compiler</system:String>
+	<system:String x:Key="string_LogModStartup">Логирование Запуска Мода</system:String>
+	<system:String x:Key="string_LogMixinStartup">Логирование Запуска Mixin Startup</system:String>
+	<system:String x:Key="string_LogModInstallation">Логирование Установки Мода</system:String>
+	<system:String x:Key="string_LogModMakerCompiler">Логирование ModMaker Compiler</system:String>
+	<system:String x:Key="string_LogModUpdater">Логирование Mod Updater</system:String>
 	<system:String x:Key="string_Checkforcontentupdates">Проверить обновления контента Mod Manager</system:String>
 	<system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Проверяет ME3Tweaks.com на наличие обновлений для различных сервисов</system:String>
 	<system:String x:Key="string_Reloadsmodsfromthemodlibrary">Обновить библиотеку модов</system:String>
@@ -228,6 +229,7 @@
 	<system:String x:Key="string_tooltip_logModLoading">Логирование детальной информации о загрузке модов из библиотеки или архивов</system:String>
 	<system:String x:Key="string_tooltip_logModMakerCompiler">Логирование детальной информации работы ModMaker compiler</system:String>
 	<system:String x:Key="string_tooltip_logModInstaller">Логирование детальной информации об установке</system:String>
+	<system:String x:Key="string_tooltip_logModUpdater">Логирование информации о проверках обновлений модов</system:String>
 	<system:String x:Key="string_tooltip_importAnAlreadyinstalledDLCMod">Импортировать уже установленный DLC-мод в Mod Manager</system:String>
 	<system:String x:Key="string_tooltip_downloadME3TweaksMod">Скачать и скомпилировать моды, созданные в ME3Tweaks ModMaker</system:String>
 	<system:String x:Key="string_tooltip_createME3TweaksModMakerMod">Создание модов геймплея с помощью простого, хорошо задокументированного веб-приложения</system:String>
@@ -264,6 +266,7 @@
 	<system:String x:Key="string_interp_visitSelectedModWebSite">Посетить сайт {0}</system:String>
 	<!-- 0=SelectedMod.ModName -->
 	<system:String x:Key="string_openModdesciniFile">Открыть файл moddesc.ini</system:String>
+	<system:String x:Key="string_tooltip_openModdescIniFile">Открыть moddesc.ini данного мода для редактирования</system:String>
 	<system:String x:Key="string_autoUpdateLODs2K">Автообновление LOD (2K, хорошее качество)</system:String>
 	<system:String x:Key="string_autoUpdateLODs4K">Автообновление LOD (4K, лучшее качество)</system:String>
 	<system:String x:Key="string_tooltip_autoLods2K" xml:space="preserve">Автоматически обновляет настройки уровня детализации текстур (LOD) при восстановлении и запуске игры.&#10;Это обеспечит корректные настройки текстур для любой целевой игры, если она запускается из Mod Manager.&#10;&#10;Данная настройка устанавливает 'хорошее' качество. Это даст средний уровень улучшения относительно настроек по умолчанию при совмещении с модом текстур высокого разрешения, например ALOT.&#10;Опция 2K использует меньше памяти и повышает стабильность игры при использовании больших модов</system:String>
@@ -309,8 +312,6 @@
 	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Проверяет обновления для модов, поддерживающих обновления</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
-	<system:String x:Key="string_alotInstallerV4">ALOT Installer V4</system:String>
-	<!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
 	<system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Автоинтеграция пользовательских привязок клавиш в моды ModMaker</system:String>
 	<system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Автоматическая интеграция пользовательского файла BioInput.xml (при наличии) в директорию keybindsoveride.&#10;Определите привязки через Custom Keybinds Injector в меню Инструменты</system:String>
 	<system:String x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
@@ -336,6 +337,11 @@
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
 	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Здесь будут отображаться моды, импортируемые в Mod Manager. Вы можете импортировать моды, перетаскивая их архивные файлы (.7z/.rar/.zip/.exe/.me2mod) в это окно.&#10;&#10;Моды, установленные через окно импортирования НЕ будут отображаться здесь, поскольку устанавливаются напрямую в игру, а не добавляются в библиотеку. Вы можете посмотреть, что уже установлено, нажав 'Настройка Игры' в правом верхнем углу данного окна.&#10;&#10;Моды, импортированные в библиотеку, легко переустановить, добавить в очередь установки и не только.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">Установка игры {0} не обнаружена. Конвертация мода требует установленной игры для проверки данных, которые будут недоступны в другой установке.</system:String>
+	<!-- 0=ME1/ME2/ME3 -->
+	<system:String x:Key="string_cannotDeployMod">Невозможно сконвертировать мод</system:String>
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">Архив {0} недоступен. Конвертация мода требует наличия архива игры в которую будет устанавливаться мод, поэтому проверка проводится относительно оригинальной игры.</system:String>
+	<!-- 0=ME1/ME2/ME3 -->
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Эта игра содержит модифицированные текстуры</system:String>
@@ -371,7 +377,7 @@
 	<system:String x:Key="string_dialogRequiredContentMissing">Данный мод требует предварительной установки следующих DLC/модов:{0}</system:String>
 	<!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
 	<system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Мод был установлен, но не прошел верификацию счетчика числа установок. Вероятно, это баг в Mod Manager, сообщите о нем Mgamerz в Discord.</system:String>
-	<system:String x:Key="string_dialogInstallationBlockedByALOT">Запрещена установка модов, содержащих пакетные файлы, в игры, где установлен ALOT. Пакетные файлы должны быть установлены перед ALOT.</system:String>
+	<system:String x:Key="string_dialogInstallationBlockedByALOT">Запрещена установка модов, содержащих пакетные файлы, в игры с модифицированными текстурами. Пакетные файлы должны быть установлены до текстурных модов.</system:String>
 	<system:String x:Key="string_installationBlocked">Установка заблокирована</system:String>
 	<system:String x:Key="string_installationSucceededMaybe">Успешная установка, возможно</system:String>
 	<system:String x:Key="string_dialogRunGameOnceFirst">Моды, изменяющие файлы конфигурации, требуют хотя бы однократного запуска Mass Effect перед своей установкой. Это необходимо, чтобы избежать перезаписи файлов игрой при первой загрузке.</system:String>
@@ -534,6 +540,26 @@
 	<!-- This is a 'status' text to show what's being worked on -->
 	<system:String x:Key="string_uncompressedModItems">Несжатые компоненты мода</system:String>
 	<!-- This is a 'status' text to show what's being worked on -->
+	<system:String x:Key="string_dialog_improperlyDeployedMod" xml:space="preserve">Архив содержит мод, созданный при помощи ME3Tweaks Mod Manager, но сам архив был создан другими средствами. Моды в данном архиве могут поддерживаться неполностью и содержать другие проблемы.\n\nМоды, созданные для ME3Tweaks Mod Manager должны конвертироваться через него.</system:String>
+	<system:String x:Key="string_improperlyDeployedMod">Некорректно сконвертированный мод</system:String>
+	<system:String x:Key="string_interp_packageFileNoNames">Пакетный файл {0} не содежит никаких имен. Данный файл недопустим</system:String>
+	<!-- 0=relative file path -->
+	<system:String x:Key="string_interp_packageFileNoImports">Пакетный файл {0} не содежит никаких импортов. Данный файл недопустим</system:String>
+	<!-- 0=relativepath -->
+	<system:String x:Key="string_interp_packageFileNoExports">Пакетный файл {0} не содежит никаких экспортов. Данный файл недопустим</system:String>
+	<!-- 0=relativefilepath -->
+	<system:String x:Key="string_interp_dlcModHasNoTlkFiles">В DLC-моде ({0}) отсутствуют файлы TLK. Конвертируемые моды должны включать хотя бы один файл TLK, чтобы отображалась строка при ошибке загрузки мода.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">В AutoLoad.ini DLC-мода {0} не указан файл TLK. Данный атрибут и соответствующий файл TLK должны присутствовать в каждом моде для возможности работы с ними.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">В DLC-моде указан файл TLK с именем {1} (.upk), но данный файл отсутствует в папке DLC-мода.</system:String>
+	<!-- 0={filepath} 1={filepath} -->
+	<system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">TLK-пакет DLC-мода не содержит пригодного TLK-экспорта.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">TLK-пакет DLC-мода не содержит указанный id строки {1}. Требуется наличие указанного id строки в TLK мода.</system:String>
+	<!-- 0={filepath} 1={integer} -->
+	<system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">AutoLoad.ini DLC-мода {0} не содержит допустимого NameStrRef в заголовке [GUI]. Данный атрибут должен быть указан для возможности работы с модом.</system:String>
+	<!-- 0={filepath} -->
 
 	<!-- Backup Creator -->
 	<system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Mass Effect Randomizer и ALOT Installer.</system:String>
@@ -633,7 +659,7 @@
 	<!-- Plural version of file -->
 	<system:String x:Key="string_interp_XFilesNeedToBePatched">Файлов требует обновления: {0}</system:String>
 	<!-- 0 = number, 1 = singular/plural version of file -->
-	<system:String x:Key="string_interp_compatPackModDescription" xml:space="preserve">Сгенерированый пользователем пакет совместимости предназначен для интеграции надлежащих файлов интерфейса из текущей конфигурации игры в другие DLC-моды. Этот пакет был создан для работы со следующими модами и не должен использоваться с какой-либо иной конфигурацией.\n - {0}\n\nЭтот пакет совместимости был сгенерирован {1}</system:String>
+	<system:String x:Key="string_interp_compatPackModDescription" xml:space="preserve">Сгенерированный пользователем пакет совместимости предназначен для интеграции надлежащих файлов интерфейса из текущей конфигурации игры в другие DLC-моды. Этот пакет был создан для работы со следующими модами и не должен использоваться с какой-либо иной конфигурацией.\n - {0}\n\nЭтот пакет совместимости был сгенерирован {1}</system:String>
 	<!-- 0 = bulleted dlc list, 1 = date time -->
 	<system:String x:Key="string_guiCompatibilityPack">Пакет Совместимости GUI</system:String>
 	<system:String x:Key="string_preparingUiLibrary">Подготовка библиотеки UI</system:String>
@@ -645,14 +671,14 @@
 	<system:String x:Key="string_dialogNoCompatPackRequired">Текущая конфигурация игры не требует пакета совместимости</system:String>
 
 	<!-- Installation Information -->
-	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Восстановление файлов при установленном ALOT запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
+	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Восстановление файлов при установленных текстурных модах запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
 	<system:String x:Key="string_cannotRestoreSfarFiles">Невозможно восстановить файлы SFAR</system:String>
-	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Восстановление файлов при установленном ALOT внесет недопустимые указатели текстур в установку игры, что приведет к отсутствующим текстурам и, возможно, к падению игры. Пожалуйста, убедитесь что вы знаете, что делаете, перед тем как продолжить.</system:String>
+	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Восстановление файлов при установленных текстурных модах внесет недопустимые указатели текстур в установку игры, что приведет к отсутствующим текстурам и, возможно, к падению игры. Пожалуйста, убедитесь что вы знаете, что делаете, перед тем как продолжить.</system:String>
 	<system:String x:Key="string_invalidTexturePointersWarning">Предупреждение о недопустимых указателях текстур</system:String>
 	<system:String x:Key="string_restoreAllModifiedFilesQuestion">Восстановить все модифицированные файлы?</system:String>
 	<system:String x:Key="string_confirmRestoration">Подтвердить восстановление</system:String>
-	<system:String x:Key="string_restoringSfarsAlotBlocked">Восстановление файлов SFAR при установленном ALOT запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
-	<system:String x:Key="string_restoringSfarsAlotDevMode">Восстановление SFAR при установленном ALOT внесет недопустимые указатели текстур в установку игры, что приведет к отсутствующим текстурам и, возможно, к падению игры. Эта операция также удалит все нераспакованные файлы в папке назначения. Пожалуйста, убедитесь что вы знаете, что делаете, перед тем как продолжить.</system:String>
+	<system:String x:Key="string_restoringSfarsAlotBlocked">Восстановление файлов SFAR при установленных текстурных модах запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
+	<system:String x:Key="string_restoringSfarsAlotDevMode">Восстановление SFAR при установленных текстурных модах внесет недопустимые указатели текстур в установку игры, что приведет к отсутствующим текстурам и, возможно, к падению игры. Эта операция также удалит все нераспакованные файлы в папке назначения. Пожалуйста, убедитесь что вы знаете, что делаете, перед тем как продолжить.</system:String>
 	<system:String x:Key="string_restoreAllModifiedSfarsQuestion">Восстановить все модифицированные SFAR?</system:String>
 	<system:String x:Key="string_restoreSPSfarsQuestion">Восстановить все модифицированные SFAR одиночной игры?</system:String>
 	<system:String x:Key="string_restoreMPSfarsQuestion">Восстановить все модифицированные SFAR коллективной игры?</system:String>
@@ -663,15 +689,15 @@
 	<!-- 0 = gamename -->
 	<system:String x:Key="string_interp_deletingXwhileAlotInstalledUnsupported" xml:space="preserve">Удаление {0} пока ALOT установлен не приведет к повреждению игры, однако вы не сможете устанавливать обновления ALOT без его полной переустановки (неподдерживаемая конфигурация).\n\nВы уверены, что хотите удалить DLC-мод?</system:String>
 	<!-- 0 = mod name -->
-	<system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Удаление приведет к неподдерживаемой конфигурации ALOT.</system:String>
+	<system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Удаление приведет к неподдерживаемой конфигурации игры</system:String>
 	<system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">Удалить {0} из установленной игры?</system:String>
 	<!-- 0 = modname of dlc -->
 	<system:String x:Key="string_interp_cannotRestoreFilesWhileXIsRunning">Невозможно восстановить файлы пока {0} запущен.</system:String>
 	<!-- 0 = game name -->
-	<system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Восстановление {0} при установленном ALOT запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
+	<system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Восстановление {0} при установленных текстурных модах запрещено, поскольку это приведет к внесению недопустимых указателей текстур в установку игры.</system:String>
 	<!-- 0 = filename -->
 	<system:String x:Key="string_cannotRestorePackageFiles">Невозможно восстановить пакетные файлы</system:String>
-	<system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Восстановление {0} при установленном ALOT внесет недопустимые указатели текстур в установку игры, что приведет к отсутствующим текстурам и, возможно, к падению игры из-за пустых MIP. Пожалуйста, убедитесь, что вы знаете, что делаете, перед тем как продолжить.</system:String>
+	<system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Восстановление {0} при установленных текстурных модах внесет недопустимые указатели текстур в установку игры, что приведет к отсутствующим текстурам и, возможно, к падению игры из-за пустых MIP. Пожалуйста, убедитесь, что вы знаете, что делаете, перед тем как продолжить.</system:String>
 	<!-- 0 = filename -->
 	<system:String x:Key="string_interp_restoreXquestion">Восстановить {0}?</system:String>
 	<!-- 0 = item (filename, dlc name) -->
@@ -712,6 +738,8 @@
 	<system:String x:Key="string_tooltip_clickToOpenASIManager">Нажмите для открытия ASI Manager</system:String>
 	<system:String x:Key="string_manageASIsWithASIManager">Управление ASI через ASI Manager</system:String>
 	<system:String x:Key="string_binkw32DLCBypass">Binkw32 DLC Байпас</system:String>
+	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Восстановление SFAR без архива лишь удалит нераспакованные файлы, поскольку не будет источника для копирования. Это приведет DLC в поврежденное состояние. Необходимо создать архив оригинальной игры для возможности корректного востановления DLC SFAR.</system:String>
+	<system:String x:Key="string_backupNotAvailable">Архив недоступен</system:String>
 
 	<!-- Log uploader -->
 	<system:String x:Key="string_selectALogToView">Выберите лог для анализа с помощью сервиса просмотра логов</system:String>
@@ -724,11 +752,11 @@
 	<system:String x:Key="string_logUploadFailed">Ошибка отправки лога</system:String>
 	<system:String x:Key="string_logsAndDiagnostics">Логи и Диагностика</system:String>
 	<system:String x:Key="string_uploadToLogViewer">Отправить в Просмотр логов</system:String>
-	<system:String x:Key="string_selectWhatDataToCollect">Выбрать данные для сбора.</system:String>
+	<system:String x:Key="string_selectWhatDataToCollect">Выбрать данные для сбора. Можно выбрать один или оба варианта.</system:String>
 	<system:String x:Key="string_modManagerApplicationLog">Лог программы Mod Manager</system:String>
 	<system:String x:Key="string_applicationLogDescription">Лог программы содержит информацию о работе сессии Mod Manager и может быть использован ME3Tweaks для отладки приложения. Если вы пытаетесь определить причину произошедшего в Mod Manager, выберите лог программы.</system:String>
 	<system:String x:Key="string_gameDiagnostic">Диагностика игры</system:String>
-	<system:String x:Key="string_gameDiagnosticDescription">Диагностика игры собирает информацию по выбранной игре, включая данные о статусе ALOT, установленных DLC, версии игры, логах падений (если есть), проблемах с текстурами и прочее. Если у вас возникают проблемы в игре, пожалуйста выберите её.</system:String>
+	<system:String x:Key="string_gameDiagnosticDescription">Диагностика игры собирает информацию по выбранной игре, включая данные о статусе текстурных модов, установленных DLC, версии игры, логах падений (если есть), проблемах с текстурами и прочее. Если у вас возникают проблемы в игре, пожалуйста выберите её.</system:String>
 	<system:String x:Key="string_tooltip_checkAllTexturesInGameDescription" xml:space="preserve">Выбор данной опции проверяет все текстуры в игре.&#10;Проверка текстур может занять несколько минут.</system:String>
 	<system:String x:Key="string_fullTexturesCheck">Полная проверка текстур</system:String>
 	<system:String x:Key="string_diagShareTheLink">Поделитесь конечной ссылкой на ваш лог/диагностику с вашим получателем. Если вы не уверены, какие опции выбрать, просто выберите по одной из каждой группы.</system:String>
@@ -870,7 +898,7 @@
 	<system:String x:Key="string_noBackup">Архив отсутствует</system:String>
 	<system:String x:Key="string_error">Ошибка!</system:String>
 	<system:String x:Key="string_fullGameRestore">Полное восстановление игры</system:String>
-	<system:String x:Key="string_restoringTextureLODs">Восстановление из архива сбросит ваши настройки качества текстур на значения по умолчанию. Изменение текущей запускаемой игры на версию с установленным ALOT попросит вас снова выставить высокое качество текстур в настройках.</system:String>
+	<system:String x:Key="string_restoringTextureLODs">Восстановление из архива сбросит ваши настройки качества текстур на значения по умолчанию. Удостоверьтесь, что запускаете игру через ModManager для установки корректного уровня детализации текстур.</system:String>
 	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">Директория игры будет полностью удалена. Если вы пытаетесь выполнить частичное восстановление, включая удаление DLC-модов, восстановление отдельных файлов или SFAR, используйте опции восстановления по нажатию кнопки Настройка Игры</system:String>
 	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">При попытке восстановления игры может появиться всплывающее сообщение. Это индикация того,  ME3Tweaks Mod Manager дает вашей учетной записи правда доступа в новой директории игры после удаления старой.</system:String>
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Восстановление {0} полностью удалит директорию игры и затем скопирует содержимое архива по исходному пути.\n\nУдалить данную игру и восстановить ее из архива?</system:String>
@@ -885,7 +913,7 @@
 	<system:String x:Key="string_submitToME3Tweaks">Оправить на ME3Tweaks</system:String>
 	<system:String x:Key="string_submitting">Отправка...</system:String>
 	<system:String x:Key="string_submitted">Отправлено</system:String>
-	<system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 в настоящий момемт не поддерживает флаги загрузки в Mod Manager</system:String>
+	<system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 в настоящий момент не поддерживает флаги загрузки в Mod Manager</system:String>
 	<system:String x:Key="string_mE3TweaksTPMISubmission">Передача ME3Tweaks TPMI</system:String>
 	<system:String x:Key="string_telemetryPanelHeader">Передача информации о вашем моде базе данных Идентификации Сторонних Модов позволяет Mod Manager улучшать свои сервисы для сообщества моддинга.</system:String>
 	<system:String x:Key="string_dLCFolderNameColon">Имя папки DLC:</system:String>
@@ -1694,4 +1722,6 @@
 	<system:String x:Key="string_selectWhichKeybindsToInstall">Выберите привязки клавиш для установки:</system:String>
 	<system:String x:Key="string_resetKeybinds">Сбросить Привязки Клавиш</system:String>
 	<system:String x:Key="string_installKeybinds">Установить Привязки Клавиш</system:String>
+
+	<!-- Texture2D -->
 </ResourceDictionary>
