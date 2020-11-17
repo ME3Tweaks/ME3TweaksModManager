@@ -16,6 +16,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using ME3Explorer.Packages;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
 
@@ -461,7 +462,7 @@ namespace MassEffectModManagerCore.modmanager
                 CheckDeployedWithM3 = false;
                 DeployedWithM3 = false;
             }
-            
+
             ModName = iniData[@"ModInfo"][@"modname"];
             if (string.IsNullOrEmpty(ModName))
             {
@@ -526,7 +527,7 @@ namespace MassEffectModManagerCore.modmanager
                 // Enables/disables the mod from being able to check in with Nexus
                 NexusUpdateCheck = nexusupdatecheck;
             }
-            
+
             if (ModClassicUpdateCode == 0)
             {
                 //try in old location
@@ -1104,7 +1105,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    
+
                     //AltDLC: Mod Manager 4.4
                     if (!string.IsNullOrEmpty(altdlcstr))
                     {
@@ -1542,28 +1543,6 @@ namespace MassEffectModManagerCore.modmanager
             }
             #endregion
 
-            #region Updater Service (Devs only)
-            //For 104
-            //UpdaterServiceServerFolder = iniData[@"UPDATES"][@"serverfolder"];
-            //var blacklistedFilesStr = iniData[@"UPDATES"][@"blacklistedfiles"];
-            //if (blacklistedFilesStr != null)
-            //{
-            //    var blacklistedFiles = blacklistedFilesStr.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-            //    foreach (var blf in blacklistedFiles)
-            //    {
-            //        var fullpath = Path.Combine(ModPath, blf);
-            //        if (File.Exists(fullpath))
-            //        {
-
-            //            Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
-            //            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_blacklistedfileFound, fullpath);
-            //            return;
-            //        }
-            //    }
-            //    UpdaterServiceBlacklistedFiles = blacklistedFiles;
-            //}
-            #endregion
-
             //What tool to launch post-install
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
 
@@ -1573,8 +1552,98 @@ namespace MassEffectModManagerCore.modmanager
                 ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"][@"builtagainst"]));
             }
 
+            // SECURITY CHECK
+            #region TASK SILOING CHECK
+            // Lordy this is gonna be messy
+            foreach (var job in InstallationJobs)
+            {
+                if (ModJob.IsJobScoped(job))
+                {
+                    var siloScopes = ModJob.GetScopedSilos(job, Game);
 
-            //Thread.Sleep(500);
+                    // Ensure there is at least one silo. If there isn't, then the mod will never validate
+                    if (!siloScopes.AllowedSilos.Any())
+                    {
+                        Log.Fatal($@"{ModName}'s job {job.Header} does not have any allowed silos! This is a bug, all jobs that are scoped should have at least one silo. Please report this to Mgamerz.");
+                        LoadFailedReason = $@"{ModName}'s job {job.Header} does not have any allowed silos! This is a bug, all jobs that are scoped should have at least one silo. Please report this to Mgamerz.";
+                        return;
+                    }
+
+                    // Custom DLC sourcedirs/destdirs are not checked as they are automatically scoped. However,
+                    // their alternates are scoped.
+
+                    List<string> allPossibleTargets = new List<string>();
+                    allPossibleTargets.AddRange(job.FilesToInstall.Keys);
+                    if (job.Header == ModJob.JobHeader.CUSTOMDLC)
+                    {
+                        allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
+                            x.Operation == AlternateFile.AltFileOperation.OP_INSTALL ||
+                            x.Operation == AlternateFile.AltFileOperation.OP_SUBSTITUTE).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.ModFile)));
+                        allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
+                            x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.MultiListTargetPath)));
+                        allPossibleTargets.AddRange(job.AlternateDLCs.Where(x =>
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC ||
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
+                    }
+                    else
+                    {
+                        allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
+                            x.Operation == AlternateFile.AltFileOperation.OP_INSTALL ||
+                            x.Operation == AlternateFile.AltFileOperation.OP_SUBSTITUTE).Select(x => x.ModFile));
+                        allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
+                            x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => x.MultiListTargetPath));
+                        allPossibleTargets.AddRange(job.AlternateDLCs.Where(x =>
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC ||
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
+
+                    }
+
+                    allPossibleTargets = allPossibleTargets.Distinct().ToList();
+                    // Check all files are within allowed silos.
+                    foreach (var f in allPossibleTargets)
+                    {
+                        if (!siloScopes.AllowedSilos.Any(silo => f.StartsWith(silo, StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            Analytics.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
+                                {
+                                    {@"Mod name", ModName},
+                                    {@"Header", job.Header.ToString()},
+                                    {@"Game", Game.ToString()},
+                                });
+                            // The target of this file is outside the silo
+                            Log.Error($@"{ModName}'s job {job.Header} file target {f} is outside of allow locations for this header. This is a security risk, mods must only install files to their specified task header directories.");
+                            LoadFailedReason = $"{ModName}'s job {job.Header} installs a file to {f}, which is outside of the allowed locations by this header. This is a security risk, mods must only install files to their specified task header directories.";
+                            return;
+                        }
+                    }
+
+                    // See if any files are in disallowed silos.
+                    if (siloScopes.DisallowedSilos.Any())
+                    {
+                        // We need to check it's silos
+                        foreach (var f in allPossibleTargets)
+                        {
+                            if (siloScopes.DisallowedSilos.Any(silo => f.StartsWith(silo, StringComparison.InvariantCultureIgnoreCase)))
+                            {
+                                Analytics.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
+                                {
+                                    {@"Mod name", ModName},
+                                    {@"Header", job.Header.ToString()},
+                                    {@"Game", Game.ToString()},
+                                });
+                                // The target of this file is outside the silo
+                                Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file into a disallowed silo scope. This is a security risk, mods must only install files to their specified task header directories, and not into protected directories, such as DLC when using BASEGAME tasks.");
+                                LoadFailedReason = $"{ModName}'s job {job.Header} installs a file to {f}, which is not an allowed location to install files to for this task header. This is a security risk, mods may only install to specific directories, for example the BASEGAME header cannot install files into the DLC directory.";
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+
             if (InstallationJobs.Count > 0)
             {
                 CLog.Information($@"Finalizing: {InstallationJobs.Count} installation job(s) were found.", Settings.LogModStartup);

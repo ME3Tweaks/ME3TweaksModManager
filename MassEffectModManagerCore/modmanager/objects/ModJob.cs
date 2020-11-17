@@ -5,9 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using IniParser.Model;
+using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using Pathoschild.FluentNexus.Models;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -49,12 +51,10 @@ namespace MassEffectModManagerCore.modmanager
             TERMINUS_WEAPON_ARMOR,
             UMBRA_VISOR,
             ZAEED,
-            //ME2_COALESCED,
             ME2_RCWMOD, //RCW Mod Manager coalesced mods
 
             //ME3 ONLY
-            BALANCE_CHANGES,
-            //COALESCED,
+            BALANCE_CHANGES, //For replacing the balance changes file
             RESURGENCE,
             REBELLION,
             EARTH,
@@ -396,9 +396,21 @@ namespace MassEffectModManagerCore.modmanager
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }
         }
+        /// <summary>
+        /// String to display to the user when this job cannot be applied due to missing vanilla DLC for the specified header.
+        /// </summary>
         public string RequirementText { get; set; }
+        /// <summary>
+        /// List of alternate file objects for this header
+        /// </summary>
         public ObservableCollection<AlternateFile> AlternateFiles { get; } = new ObservableCollection<AlternateFile>();
+        /// <summary>
+        /// List of Alternate dlc objects for this header. This is only supported on the CUSTOMDLC header.
+        /// </summary>
         public ObservableCollection<AlternateDLC> AlternateDLCs { get; } = new ObservableCollection<AlternateDLC>();
+        /// <summary>
+        /// List of files that should be set to read-only on install. Used for exec files for EGM
+        /// </summary>
         public List<string> ReadOnlyIndicators = new List<string>();
 
         internal static JobHeader[] GetSupportedNonCustomDLCHeaders(Mod.MEGame game)
@@ -497,6 +509,97 @@ namespace MassEffectModManagerCore.modmanager
                     moddessc[header][@"destdirs"] = string.Join(';', CustomDLCFolderMapping.Values);
                 }
             }
+        }
+
+        public static bool IsVanillaJob(ModJob job, Mod.MEGame game)
+        {
+            var officialHeaders = GetHeadersToDLCNamesMap(game);
+            return officialHeaders.ContainsKey(job.Header) || job.Header == JobHeader.BASEGAME;
+        }
+
+        /// <summary>
+        /// Gets a list of allowable and not-allowable directories that can be installed to by this job. Disallowed always overrides allowed and if an item is not listed in allowed it is implicitly not allowed
+        /// </summary>
+        /// <param name="job"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static SiloScopes GetScopedSilos(ModJob job, Mod.MEGame game)
+        {
+            switch (job.Header)
+            {
+                case JobHeader.LOCALIZATION:
+                case JobHeader.ME1_CONFIG:
+                case JobHeader.ME2_RCWMOD:
+                case JobHeader.BALANCE_CHANGES:
+                    return null; // There are no scopes for these headers.
+            }
+
+            SiloScopes scopes = new SiloScopes();
+            var dlcDir = MEDirectories.DLCPath("", game) + Path.DirectorySeparatorChar;
+
+            if (job.Header == JobHeader.BASEGAME)
+            {
+                // There are specific directories we allow installation to.
+                if (game == Mod.MEGame.ME3)
+                {
+                    scopes.DisallowedSilos.Add(@"Binaries\\Win32" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory. ME1/2 unfortuantely share exec with exe dir.
+                }
+
+                scopes.AllowedSilos.Add(@"Binaries" + Path.DirectorySeparatorChar); //Exec files
+                scopes.AllowedSilos.Add(@"BioGame" + Path.DirectorySeparatorChar); // Stuff in biogame
+                scopes.DisallowedSilos.Add(dlcDir); // BASEGAME is not allowed into DLC
+                scopes.AllowedSilos.Add(@"Engine" + Path.DirectorySeparatorChar); //Shaders
+            }
+            else if (GetHeadersToDLCNamesMap(game).TryGetValue(job.Header, out var dlcFoldername))
+            {
+                // It's an official DLC
+                var relativeDlcDir = Path.Combine(MEDirectories.DLCPath("", game), dlcFoldername) + Path.DirectorySeparatorChar;
+                scopes.AllowedSilos.Add(relativeDlcDir); //Silos are folders. We should ensure they end with a slash
+            }
+            else if (job.Header == JobHeader.CUSTOMDLC)
+            {
+                // Have to get all resolved target folders. These are the scopes.AllowedSilos
+                foreach (var cdlcn in job.CustomDLCFolderMapping.Values)
+                {
+                    scopes.AllowedSilos.Add(Path.Combine(dlcDir, cdlcn) + Path.DirectorySeparatorChar);
+                }
+
+                // Get alternate dlc targets
+                foreach (var adlc in job.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC))
+                {
+                    scopes.AllowedSilos.Add(Path.Combine(dlcDir, adlc.DestinationDLCFolder) + Path.DirectorySeparatorChar);
+                }
+            }
+
+            return scopes;
+        }
+
+        /// <summary>
+        /// Pair of allowed silos and disallowed silos for installing mod files
+        /// </summary>
+        public class SiloScopes
+        {
+            public List<string> AllowedSilos = new List<string>();
+            public List<string> DisallowedSilos = new List<string>();
+        }
+
+        /// <summary>
+        /// If this header is scoped to only allow installation to certain areas. Items that are not scoped are scoped in other ways in the mod parser, such as never reading a list of values or predefined target files
+        /// </summary>
+        /// <param name="job"></param>
+        /// <returns></returns>
+        public static bool IsJobScoped(ModJob job)
+        {
+            switch (job.Header)
+            {
+                case JobHeader.LOCALIZATION:
+                case JobHeader.ME1_CONFIG:
+                case JobHeader.ME2_RCWMOD:
+                case JobHeader.BALANCE_CHANGES:
+                    return false; // There are no scopes for these headers.
+            }
+
+            return true;
         }
     }
 }
