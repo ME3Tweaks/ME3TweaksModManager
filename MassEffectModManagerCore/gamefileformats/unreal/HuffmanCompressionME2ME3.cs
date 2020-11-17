@@ -433,7 +433,7 @@ namespace ME3Explorer
             }
 
             /* preparing TLK Header */
-            int magic = 7040084;
+            int magic = 7040084; //Tlk\0
             int ver = 3;
             int min_ver = 2;
             int entry1Count = maleStrings.Count;

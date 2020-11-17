@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows8.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Version>1.15</Version>
     <Description>Styles implementing AdonisUI's theme definitions to provide classic look and feel.</Description>
