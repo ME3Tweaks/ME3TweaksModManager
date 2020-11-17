@@ -1936,9 +1936,16 @@ namespace MassEffectModManagerCore
                     if (matchingServerMod != null)
                     {
                         var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
-                        if (serverVer > mm.ParsedModVersion)
+                        if (serverVer > mm.ParsedModVersion || restoreMode)
                         {
-                            Log.Information($@"ModMaker mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
+                            if (!restoreMode)
+                            {
+                                Log.Information($@"ModMaker mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
+                            }
+                            else
+                            {
+                                Log.Information($@"Restore mode: Show ModMaker mod {mm.ModName} as out of date. Server version: {serverVer}");
+                            }
                             matchingServerMod.mod = mm;
                             updates.Add(matchingServerMod);
                             matchingServerMod.SetLocalizedInfo();

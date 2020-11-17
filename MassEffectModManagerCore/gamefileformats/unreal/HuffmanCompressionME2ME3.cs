@@ -6,11 +6,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using MassEffectModManagerCore.modmanager.helpers;
 using static MassEffectModManagerCore.gamefileformats.TalkFileME1;
 
 namespace ME3Explorer
 {
-    class HuffmanCompressionME2ME3
+    public class HuffmanCompressionME2ME3
     {
         private Version _inputFileVersion = null;
         private List<TLKStringRef> _inputData = new List<TLKStringRef>();
@@ -85,92 +86,8 @@ namespace ME3Explorer
         /// <param name="fileName"></param>
         public static void SaveToTlkFile(string fileName, List<TLKStringRef> stringRefs = null)
         {
-            HuffmanCompressionME2ME3 hc = new HuffmanCompressionME2ME3();
-            File.Delete(fileName);
-            if (stringRefs != null)
-            {
-                hc._inputData = stringRefs.OrderBy(x => x.CalculatedStringID).ToList();
-                hc.PrepareHuffmanCoding();
-            }
-            /* converts Huffmann Tree to binary form */
-            List<int> treeBuffer = hc.ConvertHuffmanTreeToBuffer();
-
-            /* preparing data and entries for writing to file
-             * entries list consists of pairs <String ID, Offset> */
-            List<BitArray> binaryData = new List<BitArray>();
-            Dictionary<int, int> maleStrings = new Dictionary<int, int>();
-            Dictionary<int, int> femaleStrings = new Dictionary<int, int>();
-            int offset = 0;
-
-            foreach (var entry in hc._inputData)
-            {
-                if (entry.StringID < 0)
-                {
-                    if (!maleStrings.ContainsKey(entry.StringID))
-                        maleStrings.Add(entry.StringID, Convert.ToInt32(entry.ASCIIData));
-                    else
-                        femaleStrings.Add(entry.StringID, Convert.ToInt32(entry.ASCIIData));
-                    continue;
-                }
-
-                if (!maleStrings.ContainsKey(entry.StringID))
-                    maleStrings.Add(entry.StringID, offset);
-                else
-                    femaleStrings.Add(entry.StringID, offset);
-
-                /* for every character in a string, put it's binary code into data array */
-                foreach (char c in entry.ASCIIData)
-                {
-                    binaryData.Add(hc._huffmanCodes[c]);
-                    offset += hc._huffmanCodes[c].Count;
-                }
-            }
-
-            /* preparing TLK Header */
-            int magic = 7040084;
-            int ver = 3;
-            int min_ver = 2;
-            int entry1Count = maleStrings.Count;
-            int entry2Count = femaleStrings.Count;
-            int treeNodeCount = treeBuffer.Count() / 2;
-            int dataLength = offset / 8;
-            if (offset % 8 > 0)
-                ++dataLength;
-
-            BinaryWriter bw = new BinaryWriter(File.OpenWrite(fileName));
-
-            /* writing TLK Header */
-            bw.Write(magic);
-            bw.Write(ver);
-            bw.Write(min_ver);
-            bw.Write(entry1Count);
-            bw.Write(entry2Count);
-            bw.Write(treeNodeCount);
-            bw.Write(dataLength);
-
-            /* writing entries */
-            foreach (var entry in maleStrings)
-            {
-                bw.Write(entry.Key);
-                bw.Write(entry.Value);
-            }
-            foreach (var entry in femaleStrings)
-            {
-                bw.Write(entry.Key);
-                bw.Write(entry.Value);
-            }
-
-            /* writing HuffmanTree */
-            foreach (int element in treeBuffer)
-            {
-                bw.Write(element);
-            }
-
-            /* writing data */
-            byte[] data = BitArrayListToByteArray(binaryData, offset);
-            bw.Write(data);
-
-            bw.Close();
+            var memStream = SaveToTlkStream(stringRefs);
+            memStream.WriteToFile(fileName);
         }
 
         /// <summary>
@@ -470,6 +387,94 @@ namespace ME3Explorer
         private static int CompareNodes(HuffmanNode L1, HuffmanNode L2)
         {
             return L1.FrequencyCount.CompareTo(L2.FrequencyCount);
+        }
+
+        public static MemoryStream SaveToTlkStream(List<TLKStringRef> stringRefs)
+        {
+            var memStream = new MemoryStream();
+            HuffmanCompressionME2ME3 hc = new HuffmanCompressionME2ME3();
+            if (stringRefs != null)
+            {
+                hc._inputData = stringRefs.OrderBy(x => x.CalculatedStringID).ToList();
+                hc.PrepareHuffmanCoding();
+            }
+            /* converts Huffmann Tree to binary form */
+            List<int> treeBuffer = hc.ConvertHuffmanTreeToBuffer();
+
+            /* preparing data and entries for writing to file
+             * entries list consists of pairs <String ID, Offset> */
+            List<BitArray> binaryData = new List<BitArray>();
+            Dictionary<int, int> maleStrings = new Dictionary<int, int>();
+            Dictionary<int, int> femaleStrings = new Dictionary<int, int>();
+            int offset = 0;
+
+            foreach (var entry in hc._inputData)
+            {
+                if (entry.StringID < 0)
+                {
+                    if (!maleStrings.ContainsKey(entry.StringID))
+                        maleStrings.Add(entry.StringID, Convert.ToInt32(entry.ASCIIData));
+                    else
+                        femaleStrings.Add(entry.StringID, Convert.ToInt32(entry.ASCIIData));
+                    continue;
+                }
+
+                if (!maleStrings.ContainsKey(entry.StringID))
+                    maleStrings.Add(entry.StringID, offset);
+                else
+                    femaleStrings.Add(entry.StringID, offset);
+
+                /* for every character in a string, put it's binary code into data array */
+                foreach (char c in entry.ASCIIData)
+                {
+                    binaryData.Add(hc._huffmanCodes[c]);
+                    offset += hc._huffmanCodes[c].Count;
+                }
+            }
+
+            /* preparing TLK Header */
+            int magic = 7040084;
+            int ver = 3;
+            int min_ver = 2;
+            int entry1Count = maleStrings.Count;
+            int entry2Count = femaleStrings.Count;
+            int treeNodeCount = treeBuffer.Count() / 2;
+            int dataLength = offset / 8;
+            if (offset % 8 > 0)
+                ++dataLength;
+
+
+            /* writing TLK Header */
+            memStream.WriteInt32(magic);
+            memStream.WriteInt32(ver);
+            memStream.WriteInt32(min_ver);
+            memStream.WriteInt32(entry1Count);
+            memStream.WriteInt32(entry2Count);
+            memStream.WriteInt32(treeNodeCount);
+            memStream.WriteInt32(dataLength);
+
+            /* writing entries */
+            foreach (var entry in maleStrings)
+            {
+                memStream.WriteInt32(entry.Key);
+                memStream.WriteInt32(entry.Value);
+            }
+            foreach (var entry in femaleStrings)
+            {
+                memStream.WriteInt32(entry.Key);
+                memStream.WriteInt32(entry.Value);
+            }
+
+            /* writing HuffmanTree */
+            foreach (int element in treeBuffer)
+            {
+                memStream.WriteInt32(element);
+            }
+
+            /* writing data */
+            byte[] data = BitArrayListToByteArray(binaryData, offset);
+            memStream.Write(data);
+            return memStream;
         }
     }
 }

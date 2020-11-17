@@ -405,8 +405,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, true); //set to true once compression bugs are fixed
-                                                             //finalStream.WriteToFile(outfile);
+                                package.save(outfile, true);
                             }
                         }
                     });
@@ -1094,7 +1093,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             File.WriteAllText(moddescPath, ini.ToString());
 
             //Generate and load mod - it will be invalid as it has no jobs yet.
-            Mod m = new Mod(moddescPath, MEGame.ME3);
+            Mod m = new Mod(moddescPath, MEGame.ME3, blankLoad: true);
             return m;
         }
     }
