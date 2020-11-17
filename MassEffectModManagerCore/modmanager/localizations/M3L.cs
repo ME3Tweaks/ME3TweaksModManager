@@ -373,7 +373,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_checkModsForUpdates = "string_checkModsForUpdates";
 		public static readonly string string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates = "string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates";
 		public static readonly string string_mEMVanillaDBViewer = "string_mEMVanillaDBViewer";
-		public static readonly string string_alotInstallerV4 = "string_alotInstallerV4";
 		public static readonly string string_autoInjectCustomKeybindsIntoModMakerMods = "string_autoInjectCustomKeybindsIntoModMakerMods";
 		public static readonly string string_tooltip_autoInjectCustomKeybinds = "string_tooltip_autoInjectCustomKeybinds";
 		public static readonly string string_customKeybindsInjectorMenuItem = "string_customKeybindsInjectorMenuItem";
@@ -1016,6 +1015,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_validation_modparsing_invalidDlcNameLocalization = "string_interp_validation_modparsing_invalidDlcNameLocalization";
 		public static readonly string string_interp_validation_modparsing_invalidLocalizationFilename = "string_interp_validation_modparsing_invalidLocalizationFilename";
 		public static readonly string string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX = "string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX";
+		public static readonly string string_interp_validation_modparsing_securityCheckOutsideAllowSilo = "string_interp_validation_modparsing_securityCheckOutsideAllowSilo";
+		public static readonly string string_interp_validation_modparsing_securityCheckInsideDisallowedSilo = "string_interp_validation_modparsing_securityCheckInsideDisallowedSilo";
 		public static readonly string string_tooltip_hello = "string_tooltip_hello";
 		public static readonly string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public static readonly string string_libraries = "string_libraries";

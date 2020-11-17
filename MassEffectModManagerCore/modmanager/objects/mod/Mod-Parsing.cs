@@ -1612,7 +1612,7 @@ namespace MassEffectModManagerCore.modmanager
                                 });
                             // The target of this file is outside the silo
                             Log.Error($@"{ModName}'s job {job.Header} file target {f} is outside of allow locations for this header. This is a security risk, mods must only install files to their specified task header directories.");
-                            LoadFailedReason = $"{ModName}'s job {job.Header} installs a file to {f}, which is outside of the allowed locations by this header. This is a security risk, mods must only install files to their specified task header directories.";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityCheckOutsideAllowSilo, ModName, job.Header, f);
                             return;
                         }
                     }
@@ -1633,7 +1633,7 @@ namespace MassEffectModManagerCore.modmanager
                                 });
                                 // The target of this file is outside the silo
                                 Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file into a disallowed silo scope. This is a security risk, mods must only install files to their specified task header directories, and not into protected directories, such as DLC when using BASEGAME tasks.");
-                                LoadFailedReason = $"{ModName}'s job {job.Header} installs a file to {f}, which is not an allowed location to install files to for this task header. This is a security risk, mods may only install to specific directories, for example the BASEGAME header cannot install files into the DLC directory.";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityCheckInsideDisallowedSilo, ModName, job.Header, f);
                                 return;
                             }
                         }
