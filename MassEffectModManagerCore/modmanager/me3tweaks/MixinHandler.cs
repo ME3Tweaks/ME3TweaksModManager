@@ -16,6 +16,7 @@ using Microsoft.IO;
 using ByteSizeLib;
 using System.Runtime;
 using MassEffectModManagerCore.modmanager.localizations;
+using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -242,7 +243,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     JPatch.ApplyJPatch(decompressedStream, mixin.PatchData, outStream);
                     if (!mixin.IsFinalizer && outStream.Length != decompressedStream.Length)
                     {
-                        Log.Error($@"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed!! The output of this mixin patch will be discarded.");
+                        Log.Error($@"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed! The output of this mixin patch will be discarded.");
+                        Crashes.TrackError(new Exception($@"Applied mixin {mixin.PatchName} is not a finalizer but the filesize has changed! The output of this mixin patch will be discarded."));
                     }
                     else
                     {
@@ -253,6 +255,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 else
                 {
+                    Crashes.TrackError(new Exception($@"Mixin {mixin.PatchName} cannot be applied, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}"));
                     Log.Error($@"Mixin {mixin.PatchName} cannot be applied to this data, length of data is wrong. Expected size {mixin.TargetSize} but received source data size of {decompressedStream.Length}");
                     failedApplicationCallback?.Invoke(M3L.GetString(M3L.string_interp_cannotApplyMixinWrongSize, mixin.PatchName, mixin.TargetFile, mixin.TargetSize, decompressedStream.Length));
                 }
