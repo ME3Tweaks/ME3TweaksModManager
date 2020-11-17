@@ -20,11 +20,14 @@ steps:
   inputs:
     packageType: 'sdk'
     version: '5.0.x'
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+    
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
   inputs:
-    restoreSolution: '$(solution)'
+    command: 'restore'
+    projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
+    feedsToUse: 'select'
+    verbosityRestore: 'Minimal'
 
 - task: VSBuild@1
   inputs:
