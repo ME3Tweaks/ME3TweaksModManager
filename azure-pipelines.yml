@@ -26,8 +26,6 @@ steps:
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
-    feedsToUse: 'config'
-    nugetConfigPath: 'nuget.config'
 
 - task: VSBuild@1
   inputs:
