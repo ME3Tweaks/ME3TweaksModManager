@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
@@ -234,7 +235,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     CloseProgressPanel();
-                    ShowCloseButton = true;
+                    //ShowCloseButton = true;
                 }
                 CommandManager.InvalidateRequerySuggested();
 
@@ -307,13 +308,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        public override void OnPanelVisible()
+        public override async void OnPanelVisible()
         {
             CanInjectKeybinds = File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
             if (BackupService.GetGameBackupPath(Mod.MEGame.ME3) == null)
             {
                 M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            await Task.Delay(100); //This is so UI control can fully load. It's kind of a hack to make the next focus call work
+            ModMakerCode_TextBox.Focus();
         }
 
         public void CompilationInProgress()
@@ -358,6 +362,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Storyboard.SetTarget(sb, DownloadingProgressPanel);
                 sb.Begin();
             });
+        }
+
+        private void ModMakerCodeTextBox_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return && CanStartCompiler())
+            {
+                StartCompiler();
+            }
         }
     }
 }
