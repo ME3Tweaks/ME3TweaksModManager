@@ -59,17 +59,17 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Indicates that this is a custom, abnormal game object. It may be used only for UI purposes, but it depends on the context.
         /// </summary>
         public bool IsCustomOption { get; set; } = false;
-        public GameTarget(Mod.MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false)
+        public GameTarget(Mod.MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false)
         {
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
             this.TargetPath = targetRootPath.TrimEnd('\\');
             MemoryAnalyzer.AddTrackedMemoryItem($@"{game} GameTarget {TargetPath} - IsCustomOption: {isCustomOption}", new WeakReference(this));
-            ReloadGameTarget();
+            ReloadGameTarget(isTest: true);
         }
 
-        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false)
+        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool isTest = false)
         {
             if (Game != Mod.MEGame.Unknown && !IsCustomOption)
             {
@@ -96,7 +96,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
 
                     CLog.Information(@"Getting game source for target " + TargetPath, lodUpdateAndLogging);
-                    var hashCheckResult = VanillaDatabaseService.GetGameSource(this);
+                    var hashCheckResult = VanillaDatabaseService.GetGameSource(this, !isTest);
 
                     GameSource = hashCheckResult.result;
                     ExecutableHash = hashCheckResult.hash;

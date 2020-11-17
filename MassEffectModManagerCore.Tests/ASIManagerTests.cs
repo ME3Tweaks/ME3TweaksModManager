@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.Tests
             {
                 var root = GlobalTest.GetTestGameFoldersDirectory(game);
                 var normal = Path.Combine(root, "normal");
-                GameTarget gt = new GameTarget(game, normal, true, false);
+                GameTarget gt = new GameTarget(game, normal, true, false, isTest: true);
 
                 var asiDir = MEDirectories.ASIPath(gt);
                 if (Directory.Exists(asiDir))

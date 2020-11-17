@@ -459,15 +459,19 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="target">Target to get source for</param>
         /// <returns>Game source if supported, null otherwise</returns>
-        internal static (string hash, string result) GetGameSource(GameTarget target)
+        internal static (string hash, string result) GetGameSource(GameTarget target, bool reverseME1 = true)
         {
-            var md5 = target.Game == Mod.MEGame.ME1 ? null : Utilities.CalculateMD5(MEDirectories.ExecutablePath(target));
+            var md5 = (target.Game == Mod.MEGame.ME1 && reverseME1) ? null : Utilities.CalculateMD5(MEDirectories.ExecutablePath(target));
             switch (target.Game)
             {
                 case Mod.MEGame.ME1:
-                    ME1ExecutableInfo me1ExecutableInfo = ME1ExecutableInfo.GetExecutableInfo(MEDirectories.ExecutablePath(target), true);
-                    SUPPORTED_HASHES_ME1.TryGetValue(me1ExecutableInfo.OriginalExecutableHash, out var me1result);
-                    return (me1ExecutableInfo.OriginalExecutableHash, me1result);
+                    if (reverseME1)
+                    {
+                        ME1ExecutableInfo me1ExecutableInfo = ME1ExecutableInfo.GetExecutableInfo(MEDirectories.ExecutablePath(target), true);
+                        md5 = me1ExecutableInfo.OriginalExecutableHash;
+                    }
+                    SUPPORTED_HASHES_ME1.TryGetValue(md5, out var me1result);
+                    return (md5, me1result);
                 case Mod.MEGame.ME2:
                     SUPPORTED_HASHES_ME2.TryGetValue(md5, out var me2result);
                     return (md5, me2result);
