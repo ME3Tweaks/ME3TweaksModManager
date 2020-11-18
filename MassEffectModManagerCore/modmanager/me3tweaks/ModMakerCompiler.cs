@@ -390,17 +390,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         else
                         {
                             //dlc
-                            var dlcPackage =
-                        VanillaDatabaseService
-                            .FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                            var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
                             foreach (var file in mapping.Value)
                             {
-                                using var packageAsStream =
-                                    VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key,
-                                        forcedDLC: dlcPackage);
-                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
-                                    completedSingleApplicationCallback);
+                                using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
+                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback); 
+                                //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);

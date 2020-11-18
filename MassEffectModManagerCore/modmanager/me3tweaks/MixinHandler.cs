@@ -235,7 +235,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             foreach (var mixin in mixins)
             {
-                Log.Information(@"Applying mixin: " + mixin.PatchName);
+                Log.Information($@"Applying mixin:{mixin.PatchName} on {mixin.TargetFile}");
                 if (decompressedStream.Length == mixin.TargetSize)
                 {
                     var outStream = MixinMemoryStreamManager.GetStream();

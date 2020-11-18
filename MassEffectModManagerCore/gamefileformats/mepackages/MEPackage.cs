@@ -145,7 +145,7 @@ namespace ME3Explorer.Packages
         public static MemoryStream GetDecompressedPackageStream(MemoryStream stream, bool mixinRules = false)
         {
             var package = MEPackageHandler.OpenMEPackage(stream);
-            return package.saveToStream(false, !mixinRules);
+            return package.saveToStream(false, mixinRules: mixinRules);
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace ME3Explorer.Packages
             }
         }
 
-        public MemoryStream saveToStream(bool compress = false, bool includeAdditionalPackagesToCook = true)
+        public MemoryStream saveToStream(bool compress = false, bool includeAdditionalPackagesToCook = true, bool mixinRules = false)
         {
             bool compressed = IsCompressed;
             if (!compress || Game == Mod.MEGame.ME1) //do not compress ME1 files
@@ -395,7 +395,7 @@ namespace ME3Explorer.Packages
             {
                 if (CanReconstruct)
                 {
-                    return saveToStreamByReconstructing(compressed, compressionType, includeAdditionalPackagesToCook);
+                    return saveToStreamByReconstructing(compressed, compressionType, includeAdditionalPackagesToCook, mixinRules);
                 }
                 else
                 {
@@ -417,12 +417,17 @@ namespace ME3Explorer.Packages
             var saveStream = saveToStreamByReconstructing(packageOriginallyCompressed, compressionType);
             saveStream.WriteToFile(path);
         }
-        private MemoryStream saveToStreamByReconstructing(bool packageOriginallyCompressed, CompressionType compressionType = CompressionType.None, bool includeAdditionalPackagesToCook = true)
+        private MemoryStream saveToStreamByReconstructing(bool packageOriginallyCompressed, CompressionType compressionType = CompressionType.None, bool includeAdditionalPackagesToCook = true, bool mixinRules = false)
         {
             if (!includeAdditionalPackagesToCook && !packageOriginallyCompressed)
             {
-                includeAdditionalPackagesToCook = true; //always write if decompressed. This flag can only do something when file is becoming decompressed
+                includeAdditionalPackagesToCook = true; //This flag can only do something the file hasn't been already saved with the table removed. We should keep it in for SFAR files as they may not have been saved which lost it. uncompressed basegame will always have been saved
             }
+            else if (mixinRules)
+            {
+                includeAdditionalPackagesToCook = false; //mixins were built without these
+            }
+
             //try
             //{
             var uncompressedStream = new MemoryStream();
@@ -471,19 +476,18 @@ namespace ME3Explorer.Packages
 
             DependencyTableOffset = (int)uncompressedStream.Position;
 
-            if (OriginalDependencyTableSize > 0)
+            if (OriginalDependencyTableSize > 0 || mixinRules)
             {
                 //Unreal Engine style
                 for (int i = 0; i < ExportCount; i++)
                 {
-                    uncompressedStream.WriteInt32(0); //write same blank table back out
+                    uncompressedStream.WriteInt32(0); //write same blank table back out. No count for this table.
                 }
             }
             else
             {
-                //ME3EXP STYLE - BLANK (?) table
-                // This shouldn't be done like this...
-                uncompressedStream.WriteInt32(0);//zero-count DependencyTable
+                //ME3EXP STYLE -BLANK(?) table
+                uncompressedStream.WriteInt32(0); //Technically this is not a count. The count is the number of exports. but this is just for consistency with ME3Exp.
             }
 
             FullHeaderSize = ImportExportGuidsOffset = (int)uncompressedStream.Position;
@@ -616,7 +620,7 @@ namespace ME3Explorer.Packages
                         chunk.blocks.Add(block);
                     }
 
-                    if (chunk.blocks.Count != numBlocksInChunk) throw new Exception("Number of blocks does not match expected amount");
+                    if (chunk.blocks.Count != numBlocksInChunk) throw new Exception(@"Number of blocks does not match expected amount");
 
                     //Compress blocks
                     Parallel.For(0, chunk.blocks.Count, b =>
@@ -627,9 +631,9 @@ namespace ME3Explorer.Packages
                         else if (compressionType == CompressionType.Zlib)
                             block.compressedData = ZlibHelper.Zlib.Compress(block.uncompressedData);
                         else
-                            throw new Exception("Internal error: Unsupported compression type for compressing blocks: " + compressionType);
+                            throw new Exception(@"Internal error: Unsupported compression type for compressing blocks: " + compressionType);
                         if (block.compressedData.Length == 0)
-                            throw new Exception("Internal error: Block compression failed! Compressor returned no bytes");
+                            throw new Exception(@"Internal error: Block compression failed! Compressor returned no bytes");
                         block.compressedsize = (int)block.compressedData.Length;
                         chunk.blocks[b] = block;
                     });
@@ -664,39 +668,14 @@ namespace ME3Explorer.Packages
                 //Write final header
                 compressedStream.Position = 0;
                 WriteHeader(compressedStream, compressionType, chunks, includeAdditionalPackagesToCook);
-
-                //for (int c = 0; c < chunks.Count; c++)
-                //{
-                //    chunk = chunks[c];
-                //    chunk.blocks.Clear();
-                //    chunk.blocks = null;
-                //}
-                //chunks.Clear();
-                //chunks = null;
                 return compressedStream;
-                //compressedStream.WriteToFile(path);
-                //File.WriteAllBytes(path, compressedStream.ToArray());
-                // validation
-                //var validatePackage = MEPackageHandler.OpenMEPackage(path);
-                //foreach (var export in validatePackage.Exports)
-                //{
-                //    export.GetProperties();
-                //}
             }
-            //AfterSave();
-            //}
-            //catch (Exception ex)
-            //{
-            //    // TODO: Implement this for how Mod Manager saves things.
-            //    throw ex;
-            //    //MessageBox.Show($"Error saving {FilePath}:\n{App.FlattenException(ex)}");
-            //}
         }
 
         private void WriteHeader(Stream ms, CompressionType compressionType = CompressionType.None, List<CompressionHelper.Chunk> chunks = null, bool writeAdditionalPackagesToCook = true)
         {
             if (chunks == null) chunks = new List<CompressionHelper.Chunk>();
-            if (ms.Position != 0) throw new Exception("Must position stream to zero when writing header data to stream");
+            if (ms.Position != 0) throw new Exception(@"Must position stream to zero when writing header data to stream");
             ms.WriteUInt32(packageTag);
             //version
             switch (Game)
@@ -826,7 +805,7 @@ namespace ME3Explorer.Packages
                 if (chunk.blocks != null)
                 {
                     var chunksize = chunk.compressedSize + CompressionHelper.SIZE_OF_CHUNK_HEADER + CompressionHelper.SIZE_OF_CHUNK_BLOCK_HEADER * chunk.blocks.Count;
-                    Debug.WriteLine($"Writing chunk table chunk {i} size: {chunksize}");
+                    //Debug.WriteLine($"Writing chunk table chunk {i} size: {chunksize}");
                     ms.WriteInt32(chunksize); //Size of compressed data + chunk header + block header * number of blocks in the chunk
                 }
                 else
@@ -847,7 +826,6 @@ namespace ME3Explorer.Packages
 
             if (writeAdditionalPackagesToCook && (Game == Mod.MEGame.ME3 || Game == Mod.MEGame.ME2))
             {
-                //this code is not in me3exp right now
                 ms.WriteInt32(AdditionalPackagesToCook.Count);
                 foreach (var pname in AdditionalPackagesToCook)
                 {
@@ -864,7 +842,7 @@ namespace ME3Explorer.Packages
             }
             else if (!writeAdditionalPackagesToCook && (Game == Mod.MEGame.ME3 || Game == Mod.MEGame.ME2))
             {
-                ms.WriteInt32(0); //4 bytes...? old pccobject class copied data but it seems to be wrong.
+                ms.WriteInt32(0); // List of additional packages to cook - empty
             }
 
 

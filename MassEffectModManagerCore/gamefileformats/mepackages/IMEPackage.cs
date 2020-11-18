@@ -179,7 +179,7 @@ namespace ME3Explorer.Packages
 
         //saving
         void save(bool compress = false);
-        MemoryStream saveToStream(bool compress = false, bool includeAdditionalPackagesToCook = true);
+        MemoryStream saveToStream(bool compress = false, bool includeAdditionalPackagesToCook = true, bool mixinRules = false);
         void save(string path, bool compress = false);
         byte[] getHeader();
         //ObservableCollection<GenericWindow> Tools { get; }
