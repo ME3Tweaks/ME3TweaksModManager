@@ -22,6 +22,7 @@
 	<system:String x:Key="string_LogMixinStartup">Relatar Inicialização de Mixins</system:String>
 	<system:String x:Key="string_LogModInstallation">Relatar instalação de Mods</system:String>
 	<system:String x:Key="string_LogModMakerCompiler">Relatar Compilador do ModMaker</system:String>
+	<system:String x:Key="string_LogModUpdater">Relatar Atualizador de Mods</system:String>
 	<system:String x:Key="string_Checkforcontentupdates">Buscar atualizações para o Gerenciador de Mods</system:String>
 	<system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checar ME3Tweaks.com por atualizações para vários serviços</system:String>
 	<system:String x:Key="string_Reloadsmodsfromthemodlibrary">Recarregar Biblioteca de Mods</system:String>
@@ -228,6 +229,7 @@
 	<system:String x:Key="string_tooltip_logModLoading">Relata informações detalhadas sobre Mods carregados da Biblioteca ou de arquivos</system:String>
 	<system:String x:Key="string_tooltip_logModMakerCompiler">Relata informações detalhadas quando o compilador do ModMaker estiver rodando</system:String>
 	<system:String x:Key="string_tooltip_logModInstaller">Relata informações detalhadas de instalação</system:String>
+	<system:String x:Key="string_tooltip_logModUpdater">Relata informações sobre verificações de atualização de Mods</system:String>
 	<system:String x:Key="string_tooltip_importAnAlreadyinstalledDLCMod">Importa um DLC já instalado para o Gerenciador de Mods</system:String>
 	<system:String x:Key="string_tooltip_downloadME3TweaksMod">Baixa e compila Mods feitos no ModMaker do ME3Tweaks</system:String>
 	<system:String x:Key="string_tooltip_createME3TweaksModMakerMod">Desenvolve Mods de jogabilidade usando uma aplicação web fácil e bem documentada</system:String>
@@ -264,6 +266,7 @@
 	<system:String x:Key="string_interp_visitSelectedModWebSite">Visitar website de {0}</system:String>
 	<!-- 0=SelectedMod.ModName -->
 	<system:String x:Key="string_openModdesciniFile">Abrir arquivo moddesc.ini</system:String>
+	<system:String x:Key="string_tooltip_openModdescIniFile">Abrir o arquivo moddesc.ini deste Mod para edição</system:String>
 	<system:String x:Key="string_autoUpdateLODs2K">Atualizar LODs automaticamente (2K, boa qualidade)</system:String>
 	<system:String x:Key="string_autoUpdateLODs4K">Atualizar LODs automaticamente (4K, melhor qualidade)</system:String>
 	<system:String x:Key="string_tooltip_autoLods2K" xml:space="preserve">Atualiza automaticamente o nível de detalhe de texturas (LOD) ao restaurar e executar o jogo.&#10;Isso assegura que qualquer destino que inicie tenha as definições de textura corretas, desde que seja iniciado à partir do Gerenciador de Mods.&#10;Esta é a definição para "boa" qualidade. Essa definição providencia uma modesta melhora nas texturas padrão quando usado em conjunto com um Mod de textura de alta qualidade como o ALOT.&#10;A opção 2K usa menos memória e promove uma melhora estabilidade para o jogo quando se usa Mods grandes</system:String>
@@ -309,8 +312,6 @@
 	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Verificar atualizaçõesem mods que suportam atualizações</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">Visualizador MEM Vanilla DB</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
-	<system:String x:Key="string_alotInstallerV4">Instalador ALOT V4</system:String>
-	<!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
 	<system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Auto injetar teclas de atalho personalizadas aos Mods do ModMaker</system:String>
 	<system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Injeta automaticamente um arquivo BioInput.xml personalizado no diretório keybindsoverride.&#10;Define teclas personalizadas no Injetor de Teclas de atalho no menu Ferramentas</system:String>
 	<system:String x:Key="string_customKeybindsInjectorMenuItem">Injetor de teclas de atalho (ME3)</system:String>
@@ -336,6 +337,11 @@
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
 	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Mods importados para o Gerenciador de Mods serão listados aqui. É possível importar Mods ao arrastar e soltar os arquivos baixados (.7z/.rar/.zip/.exe/.me2mod) nesta janela.&#10;&#10;Mods instalados diretamente pela janela do importador NÃO serão exibidos aqui, já que estarão instalados no jogo, e não importados na Biblioteca. É possível verificar as instalações clicando em "Gerenciar Destino" no canto superior direito desta janela.&#10;&#10;Mods importados para a Biblioteca são fáceis de reinstalar, podem ser adicionados a filas de instalação e mais.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">Não há jogo instalado para {0} disponível. Implantação de Mods requer o jogo instalado para que a implantação verifique dados que não serão usados em outro processo.</system:String>
+	<!-- 0=ME1/ME2/ME3 -->
+	<system:String x:Key="string_cannotDeployMod">Impossível  implantar Mod</system:String>
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">Não há backup de {0} disponível. Implantar um Mod requer a existência de um backup do jogo que receberá o Mod, assim a instalação pode comparar as versões do jogo.</system:String>
+	<!-- 0=ME1/ME2/ME3 -->
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Este destino recebeu Mods de textura</system:String>
@@ -534,6 +540,26 @@
 	<!-- This is a 'status' text to show what's being worked on -->
 	<system:String x:Key="string_uncompressedModItems">Itens do Mod não compactados</system:String>
 	<!-- This is a 'status' text to show what's being worked on -->
+	<system:String x:Key="string_dialog_improperlyDeployedMod" xml:space="preserve">Este arquivo contém um Mod que foi construído usando o Gerenciador de Mods ME3Tweaks, porém o arquivo distribuído não foi criado usando o Gerenciador. Os Mods nesse arquivo pode não ser suportados ou ter problemas.\n\nMods criados para o Gerenciador de Mods ME3Tweaks devem sem implantados através do Gerenciador.</system:String>
+	<system:String x:Key="string_improperlyDeployedMod">Mod implantado indevidamente</system:String>
+	<system:String x:Key="string_interp_packageFileNoNames">Pacote de arquivos {0} não contém nomes. Este é um pacote inválido</system:String>
+	<!-- 0=relative file path -->
+	<system:String x:Key="string_interp_packageFileNoImports">Pacote de arquivos {0} não contém nenhum arquivo importado. Este é um pacote Inválido</system:String>
+	<!-- 0=relativepath -->
+	<system:String x:Key="string_interp_packageFileNoExports">Pacote de arquivos {0} não contém arquivos exportados. Este é um pacote inválido</system:String>
+	<!-- 0=relativefilepath -->
+	<system:String x:Key="string_interp_dlcModHasNoTlkFiles">O Mod de DLC ({0}) não possui arquivos TLK. Mods devem ser implantados com pelo menos um arquivo TLK para que o usuário receba uma mensagem de se houver erro ao carregar o Mod.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">O Mod de DLC {0} não especifica um arquivo TLK em seu AutoLoad.ini. Esse atributo é requerido e um arquivo TLK válido deve estar presente em cada Mod por conta de outros Modders.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">O Mod de DLC {0} especifica um arquivo TLK chamado {1} (.upk) porém esse arquivo não existe no diretório do Mod.</system:String>
+	<!-- 0={filepath} 1={filepath} -->
+	<system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">O pacote TLK do Mod de DLC {0} não contém um TLK exportado usável.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">O pacote TLK do Mod de DLC {0} não contém a string id listada {1}. O TLK do Mod deve conter a string id listada.</system:String>
+	<!-- 0={filepath} 1={integer} -->
+	<system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">O Mod de DLC {0} não especifica um NameStrRef válido no [GUI] cabeçalho do arquivo AutoLoad.ini Este atributo deve ser especificado por conta de outros Modders.</system:String>
+	<!-- 0={filepath} -->
 
 	<!-- Backup Creator -->
 	<system:String x:Key="string_backupsAreShared">Backups são usados por várias ferramentas incluindo o Randomizador Mass Effect e o Instalador ALOT.</system:String>
@@ -712,6 +738,8 @@
 	<system:String x:Key="string_tooltip_clickToOpenASIManager">Clique para abrir o Gerenciador ASI</system:String>
 	<system:String x:Key="string_manageASIsWithASIManager">Gerenciar ASIs com o Gerenciador ASI</system:String>
 	<system:String x:Key="string_binkw32DLCBypass">Pular DLC Binkw32</system:String>
+	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Restaurar SFARs sem um backup somente excluirá arquivos descompactados, porquê não há arquivo de backup que pode ser copiado. Isto impedirá o uso do DLC. É necessário criar um backup de uma versão sem modificações do jogo antes de poder restaurar SFARs de DLC.</system:String>
+	<system:String x:Key="string_backupNotAvailable">Backup indisponível</system:String>
 
 	<!-- Log uploader -->
 	<system:String x:Key="string_selectALogToView">Selecione um relatório para examinar</system:String>
@@ -724,7 +752,7 @@
 	<system:String x:Key="string_logUploadFailed">O envio do relatório falhou</system:String>
 	<system:String x:Key="string_logsAndDiagnostics">Relatóiros de Diagnósticos</system:String>
 	<system:String x:Key="string_uploadToLogViewer">Carregar para o visualizador de relatórios</system:String>
-	<system:String x:Key="string_selectWhatDataToCollect">Selecione quais dados coletar.</system:String>
+	<system:String x:Key="string_selectWhatDataToCollect">Selecione quais dados coletar. É possível selecionar uma ou ambas opções.</system:String>
 	<system:String x:Key="string_modManagerApplicationLog">Relatório do Gerenciador de Mods</system:String>
 	<system:String x:Key="string_applicationLogDescription">O relatório do aplicativo detalha o que ocorreu durante uma sessão do Gerencidor de Mods e pode ser usado na soluação de problemas. Se você está tentando identificar por quê algo ocorreu no Gerenciador Mods, selecione um relatório do aplicativo.</system:String>
 	<system:String x:Key="string_gameDiagnostic">Diagnósticos de Jogo</system:String>
@@ -835,7 +863,7 @@
 	<system:String x:Key="string_updateVersion">Versão da atualização:</system:String>
 	<system:String x:Key="string_releaseNotes">Notas</system:String>
 	<system:String x:Key="string_updateInProgress">Atualização em progresso</system:String>
-	<system:String x:Key="string_modManagerWillAutomaticallyRestart">O Gerenciador de Mods reinicirá para aplicar a atualização. Isso pode alguns segundos depois que a janela for fechada.</system:String>
+	<system:String x:Key="string_modManagerWillAutomaticallyRestart">O Gerenciador de Mods reinicirá para aplicar a atualização. Isso pode levar alguns segundos depois que a janela for fechada.</system:String>
 	<system:String x:Key="string_notNow">Agora não</system:String>
 	<system:String x:Key="string_viewChangelog">Ver changelog</system:String>
 	<system:String x:Key="string_installUpdate">Instalar atualização</system:String>
@@ -1694,4 +1722,16 @@
 	<system:String x:Key="string_selectWhichKeybindsToInstall">Selecione qual tecla instalar:</system:String>
 	<system:String x:Key="string_resetKeybinds">Redefinir teclas</system:String>
 	<system:String x:Key="string_installKeybinds">Instalar teclas</system:String>
+
+	<!-- Texture2D -->
+	<system:String x:Key="string_error_couldNotFetchTextureData">Impossível obter dados para a textura {0} no arquivo {1}</system:String>
+	<!-- 0=Shown when checking textures during deployment. 1 = export object name, so just a long string ID. 1 = filepath -->
+	<system:String x:Key="string_error_me1TextureFileNotFound">Arquivo de textura referenciado externamente não encontrado no jogo: {0}.</system:String>
+	<!-- 0= filepath -->
+	<system:String x:Key="string_error_me23TextureTFCNotFound">Cache de textura referenciado externamente não encontrado: {0}.</system:String>
+	<!-- 0=filepath -->
+	<system:String x:Key="string_interp_error_textureExceptionExternal" xml:space="preserve">{0}\nArquivo: {1}\nStorageType: {2}\nOffset de arquivo externo: {3}</system:String>
+	<!-- This technical string is shown when there is error loading texture data. 0=exception message. 1=filepath. 2=string (pccUnc, extLZO...) 3=file offset 0xhhhhhhhh -->
+	<system:String x:Key="string_interp_error_textureExceptionInternal" xml:space="preserve">{0}\nStorageType: {1}\n</system:String>
+	<!-- 0={exception message} 1={storage type (pccUnc, pccLZO, pccZLib)} -->
 </ResourceDictionary>
