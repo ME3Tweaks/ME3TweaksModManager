@@ -1,7 +1,16 @@
 # Alternates - conditional file installation both manual and automatic
 Alternates are a feature of M3 that allow you to change what is installed based on current game state, and manually so user can choose a supported configuration of your mod. It is a complex but powerful system, and many users enjoy these features given feedback I have received.
 
-**Note that these only take place at install time. So installation order for automatic configuration can matter! If a conditional DLC is installed after your mod, it may make mod install different than if it it was installed before.**
+**Note that these only take place at install time. So installation order for automatic configuration can matter! If a conditional DLC is installed after your mod, it may make the mod install differently than if it was installed before.**
+
+Note that there are two alternate systems: Alternate Files (altfile), and AlternateDLC (altdlc). Alternate Files were developed first, which were expanded on for the CUSTOMDLC job.
+
+When to use altfiles:
+  - When you're creating alternates for any header but CUSTOMDLC (it works on all directory headers - BASEGAME, Official DLC, CUSTOMDLC)
+  
+When to use altdlc:
+ - When you are creating alternates for the CUSTOMDLC header (this descriptor only works on CUSTOMDLC)
+
 
 ## altfiles specification
 The altfiles descriptor allows you to substitute, add, or remove files from your BASEGAME, Official DLC, or CUSTOMDLC job based on the existence, or non existence, of one or more other DLC. It uses a list of parenthesis objects. Below is a substitution done in SP Controller Support for example, which is targeting ModDesc 5.0.
