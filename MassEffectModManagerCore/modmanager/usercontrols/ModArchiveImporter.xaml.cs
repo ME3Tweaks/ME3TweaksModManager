@@ -90,6 +90,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                ActionText = null;
+                Log.Information(@"Archive scan thread exited");
                 if (b.Error != null)
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
@@ -140,8 +142,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         {@"Archive name", Path.GetFileName(filepath)}
                     });
-                    Log.Error(
-                        @"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
+                    Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
                     if (!Flighting.IsFeatureEnabled(@"passive_checkM3DeployedArchives"))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
@@ -152,9 +153,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
-
-                nbw.RunWorkerAsync(filepath);
             };
+            nbw.RunWorkerAsync(filepath);
         }
 
 
@@ -180,6 +180,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ActionText = M3L.GetString(M3L.string_interp_openingX, ScanningFile);
 
             var archive = e.Argument as string;
+            Log.Information($@"Scanning archive for mods: {archive}");
             void AddCompressedModCallback(Mod m)
             {
                 Application.Current.Dispatcher.Invoke(delegate
