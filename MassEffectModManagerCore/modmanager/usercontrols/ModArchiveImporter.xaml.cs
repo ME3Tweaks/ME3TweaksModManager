@@ -136,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (hasAnyImproperlyPackedMods)
                 {
-                    Analytics.TrackEvent(@"Detected improperly packed M3 mod", new Dictionary<string, string>()
+                    Analytics.TrackEvent(@"Detected improperly packed M3 mod v2", new Dictionary<string, string>()
                     {
                         {@"Archive name", Path.GetFileName(filepath)}
                     });
