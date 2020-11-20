@@ -21,20 +21,19 @@ steps:
     packageType: 'sdk'
     version: '3.1.x'
     
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: 'restore'
-    projects: 'MassEffectModManagerCore\\MassEffectModManagerCore.csproj'
-    feedsToUse: 'select'
-    verbosityRestore: 'Minimal'
+# - task: DotNetCoreCLI@2
+#   displayName: 'dotnet restore'
+#   inputs:
+#     command: 'restore'
+#     projects: '**/*.csproj'
+#     feedsToUse: 'select'
+#     verbosityRestore: 'Minimal'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    msbuildArchitecture: 'x64'
+    command: 'build'
+    projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
+    arguments: '-c Release'
 
 - task: DotNetCoreCLI@2
   inputs:
