@@ -29,12 +29,10 @@ steps:
 #     feedsToUse: 'select'
 #     verbosityRestore: 'Minimal'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    msbuildArchitecture: 'x64'
+    command: 'build'
+    projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
 
 - task: DotNetCoreCLI@2
   inputs:
