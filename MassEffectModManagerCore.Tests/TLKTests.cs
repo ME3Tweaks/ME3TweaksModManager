@@ -34,7 +34,9 @@ namespace MassEffectModManagerCore.Tests
                 foreach (var v in talkFileMe2.StringRefs)
                 {
                     var fd = reloadedTlk.findDataById(v.StringID);
-                    Assert.AreEqual(v.Data, fd);
+
+                    if (fd == "\"Male\"") continue; //Male/Female, we don't have way to distinguish these
+                    Assert.AreEqual($"\"{v.Data}\"", fd);
                 }
             }
         }
