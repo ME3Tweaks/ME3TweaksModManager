@@ -33,6 +33,7 @@ steps:
   inputs:
     command: 'build'
     projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
+    arguments: '-c Release'
 
 - task: DotNetCoreCLI@2
   inputs:
