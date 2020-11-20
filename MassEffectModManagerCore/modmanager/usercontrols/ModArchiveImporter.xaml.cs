@@ -131,12 +131,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 var hasAnyImproperlyPackedMods =
                     CompressedMods.Any(x => x.CheckDeployedWithM3 && !x.DeployedWithM3);
+                Analytics.TrackEvent(@"Detected improperly packed M3 mod", new Dictionary<string, string>()
+                {
+                    {@"Archive name", Path.GetFileName(filepath)}
+                });
                 if (hasAnyImproperlyPackedMods && !Flighting.IsFeatureEnabled(@"passive_checkM3DeployedArchives"))
                 {
-                    Analytics.TrackEvent(@"Detected improperly packed M3 mod", new Dictionary<string, string>()
-                    {
-                        {@"Archive name", Path.GetFileName(filepath)}
-                    });
+                    
                     Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
                     M3L.ShowDialog(Window.GetWindow(this),
                         M3L.GetString(M3L.string_dialog_improperlyDeployedMod),

@@ -1565,6 +1565,10 @@ namespace MassEffectModManagerCore.modmanager
                     // Ensure there is at least one silo. If there isn't, then the mod will never validate
                     if (!siloScopes.AllowedSilos.Any())
                     {
+                        Analytics.TrackEvent(@"Mod has no scoped silos", new Dictionary<string, string>(){
+                            {@"Mod name", ModName},
+                            {@"Mod version", ModVersionString},
+                        });
                         Log.Fatal($@"{ModName}'s job {job.Header} does not have any allowed silos! This is a bug, all jobs that are scoped should have at least one silo. Please report this to Mgamerz.");
                         LoadFailedReason = $@"{ModName}'s job {job.Header} does not have any allowed silos! This is a bug, all jobs that are scoped should have at least one silo. Please report this to Mgamerz.";
                         return;
